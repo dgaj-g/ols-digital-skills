@@ -64,7 +64,7 @@
   GJ.app = GJ.app || {};
   GJ.app.surfaces = {
     cover: ['first-visit', 'returning', 'fallback-name', 'wrong-class', 'preview', 'busy', 'staff'],
-    shelf: ['none-ticked', 'some-ticked', 'locked-spine', 'star-earned', 'in-progress'],
+    shelf: ['none-ticked', 'some-ticked', 'star-earned', 'in-progress'],
     'book-contents': ['fresh', 'mid-book', 'finished'],
     movie: ['step-n', 'end', 'instant', 'reduced-motion', 'nudge-banner'],
     question: ['fresh', 'mid-attempt', 'checked-right', 'checked-wrong-1', 'checked-wrong-2', 'locked-restore', 'resume-mid', 'amber', 'help-strip'],
@@ -949,12 +949,17 @@
 
     var wrap = document.getElementById('shelf-tiles');
     wrap.innerHTML = '';
-    var anyLocked = false, anyOut = false, anyStar = false, anyProgress = false;
+    var anyOut = false, anyStar = false, anyProgress = false;
 
     ACTIVITIES.forEach(function (a) {
       var pack = window.GJ_CONTENT[a.id];
       if (!pack) return;
       var out = !!me.acts[a.id];
+      /* ruling 36 (Damien Gartland, 11 Sept 2026): a book that is not ticked
+         does not appear on the pupil's shelf at all \u2014 no locked spine, no
+         "not set yet" card. It is simply absent. */
+      if (!out) return;
+      anyOut = true;
       var sum = me.summaries[a.id];
       var done = sum && sum.done ? sum.done : 0;
       var total = sum && sum.total ? sum.total : 0;
@@ -964,14 +969,12 @@
       if (finished) anyStar = true;
       if (done && !finished) anyProgress = true;
 
-      var card = document.createElement(out ? 'button' : 'div');
-      card.className = 'book' + (out ? ' lit-' + a.livery : ' not-set');
+      var card = document.createElement('button');
+      card.className = 'book lit-' + a.livery;
       card.setAttribute('data-book', a.id);
-      if (!out) { anyLocked = true; card.setAttribute('aria-label', a.title + ' \u2014 ' + (T.shelfNotSet || '')); }
-      else { anyOut = true; }
 
       var cover = document.createElement('div');
-      cover.className = 'bcover' + (out ? ' livery-' + a.livery : '');
+      cover.className = 'bcover livery-' + a.livery;
       /* the series and its audience band share ONE row, so a long series name
          shortens instead of running under the chip (F37) */
       cover.innerHTML =
@@ -1002,25 +1005,20 @@
         meta.appendChild(star);
       }
       var line = document.createElement('span');
-      line.textContent = out
-        ? (total ? fill(T.shelfMarks || '', { got: got, max: max, done: done, total: total }) : a.meta)
-        : (T.shelfNotSet || '');
+      line.textContent = total ? fill(T.shelfMarks || '', { got: got, max: max, done: done, total: total }) : a.meta;
       meta.appendChild(line);
       card.appendChild(meta);
 
-      if (out) card.addEventListener('click', function () { openActivity(a); });
+      card.addEventListener('click', function () { openActivity(a); });
       wrap.appendChild(card);
     });
 
-    document.getElementById('shelf-note').textContent = anyLocked
-      ? (T.shelfNotSetNote || '')
-      : (T.shelfMore || '');
+    document.getElementById('shelf-note').textContent = T.shelfMore || '';
 
     setState(root, 'shelf',
       !anyOut ? 'none-ticked'
         : anyStar ? 'star-earned'
         : anyProgress ? 'in-progress'
-        : anyLocked ? 'locked-spine'
         : 'some-ticked');
   }
 

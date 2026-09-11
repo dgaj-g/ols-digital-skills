@@ -63,9 +63,51 @@ const STAGES_OF = `((qid) => {
   const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
     .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
   if (!root) return { stages: [], stage: null };
+  /* THE STRIP IS READ TOO (DESIGN 4.0, 11 Sept 2026): which pill is lit, the
+     stages that pill says it holds, and the label the root says it is on */
+  const now = root.querySelector('.stage-strip .stage-pill[aria-current="step"]');
+  const lit = root.querySelectorAll('.stage-strip .stage-pill[aria-current="step"]').length;
   return {
     stages: (root.getAttribute('data-stages') || '').split(' ').filter(Boolean),
-    stage: root.getAttribute('data-stage') || null
+    stage: root.getAttribute('data-stage') || null,
+    label: root.getAttribute('data-stage-label') || null,
+    strip: root.querySelector('.stage-strip') ? {
+      lit: lit,
+      pill: now ? (now.querySelector('.stage-pill-name') || now).textContent.trim() : null,
+      pillStages: now ? (now.getAttribute('data-pill-stages') || '').split(' ').filter(Boolean) : []
+    } : null
+  };
+})`;
+
+/* THE ATTENTION BEAT AND THE GOLD GLOW, as the stylesheet actually resolves
+   them (DESIGN 4.0, 11 Sept 2026). Read straight after a press, before the
+   walk settles: the beat class is on the lit pill for 2.5 s and the glow on
+   the Check for 1.3 s. Headless Chrome does not advance the animation
+   timeline, so the proof is the COMPUTED animation - its name and that it
+   runs a fixed number of times, never for ever - not a sampled opacity. */
+const BEAT_OF = `((qid) => {
+  const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+  if (!root) return null;
+  const pill = root.querySelector('.stage-strip .stage-pill[aria-current="step"]');
+  const check = root.querySelector('.check-row .btn-stamp');
+  const cs = (n, pseudo) => n ? getComputedStyle(n, pseudo || null) : null;
+  /* how far the action row sits below the board (ruling 42): the dock's top
+     against the boards' bottom, in CSS px - nothing tall may sit between */
+  const boards = root.querySelector('.stat-board-host') || root.querySelector('.stat-boards'), dock = root.querySelector('[data-surface="dock"]');
+  const gap = (boards && dock && !dock.hidden) ? Math.round(dock.getBoundingClientRect().top - boards.getBoundingClientRect().bottom) : null;
+  return {
+    kind: root.getAttribute('data-kind') || null,
+    dockGap: gap,
+    label: root.getAttribute('data-stage-label') || null,
+    strip: !!root.querySelector('.stage-strip'),
+    beating: !!(pill && pill.classList.contains('is-beat')),
+    beatAnim: pill ? cs(pill).animationName : null,
+    beatCount: pill ? cs(pill).animationIterationCount : null,
+    checkLit: !!(check && !check.disabled),
+    glowing: !!(check && check.classList.contains('glow-once')),
+    glowAnim: check ? cs(check, '::after').animationName : null,
+    glowCount: check ? cs(check, '::after').animationIterationCount : null
   };
 })`;
 
@@ -346,6 +388,6 @@ const ACTIONS = {
 };
 
 module.exports = {
-  DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, STAGES_OF, ANSWER, CHECK, ATTEMPT_COUNT,
+  DETECT_KIND, QUESTION_ID, QUESTIONS_ON_SCREEN, STAGES_OF, BEAT_OF, ANSWER, CHECK, ATTEMPT_COUNT,
   STATE_OF, HELP_STRIP, ACTIONS, settle, leaves, MOVES, WRONG_MOVES, SETTLE
 };

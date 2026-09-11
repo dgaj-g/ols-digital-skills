@@ -924,18 +924,28 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 /* ═══ login-gated polish: gold "this can take a moment" wait-card + guard spinner ═══ */
 .panel-loading {
   display: flex; align-items: center; justify-content: center; gap: 14px;
-  margin: 14px auto; max-width: 480px; padding: 16px 20px;
+  margin: 14px auto; max-width: 480px; padding: 17px 22px;
   background: linear-gradient(180deg, #FFF3CF, #FCE7A0);
   border: 2px solid var(--foil); border-radius: 12px;
-  color: var(--navy); font-weight: 800; font-size: 1.02rem; line-height: 1.25;
+  color: var(--navy); font-weight: 800; font-size: 1.15rem; line-height: 1.3;
+  letter-spacing: 0.1px;
   box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18);
   /* A PULSE NOBODY CAN SEE IS NOT A PULSE. This card grew and shrank by two per
      cent, which is "technically animated, humanly static" - his words on
-     9 Sept 2026: "Checking the passcode..." still read as flat text. It now
-     breathes the way the cover's waiting line does (opacity 1 -> .58), with
-     the turning mark beside it, and both stop under prefers-reduced-motion
-     where the words do the work. */
-  animation: gj-breathe 1.5s ease-in-out infinite;
+     9 Sept 2026: "Checking the passcode..." still read as flat text. A first
+     fix (opacity 1 -> .58, shared with the cover's own is-waiting line) DID
+     breathe correctly, proved frame by frame in puppeteer with the transport
+     slowed to live speed - so the fault was never a dead animation. It was a
+     11 Sept 2026 finding: the swing was too shallow to register as motion at
+     a glance, especially over one short local round trip and easy to miss
+     entirely under macOS "Reduce Motion" (which this app already, correctly,
+     honours - see the media query below). THIS card - the one ruling 35 wants
+     pronounced anyway - now has its own deeper breath: opacity swings to .45
+     rather than .58, and the card's own border and shadow breathe with it, so
+     there are three things changing at once instead of one subtle one. The
+     cover's plain is-waiting line is untouched; it was never the one he could
+     not see. */
+  animation: gj-breathe-card 1.5s ease-in-out infinite;
 }
 .panel-spinner, .spinner {
   border-radius: 50%; flex: 0 0 auto;
@@ -960,6 +970,20 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
    up beside the Staff link underneath it */
 .cover-msg.is-waiting { display: flex; justify-content: center; }
 @keyframes gj-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
+/* the gold wait-card's own, deeper breath (ruling 35, 11 Sept 2026): opacity
+   swings further than the shared gj-breathe (.45 rather than .58) AND the
+   card swells very slightly with it, so two things move instead of one and
+   it reads as "working" even to someone glancing at it mid-cycle rather than
+   watching it continuously. box-shadow and border-color were the first draft
+   of this - qa-compositor is right to refuse them, since a shadow or a border
+   colour repaints the card every frame instead of compositing it, and a
+   pulsing card is exactly the place that cost would be paid forty times a
+   passcode. transform is the cheap way to get the same "it is breathing"
+   read. */
+@keyframes gj-breathe-card {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .45; transform: scale(1.015); }
+}
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner, .is-waiting, .is-waiting::before { animation: none; } }
 .act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
@@ -1359,3 +1383,55 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 /* the teacher's copy of a pupil's board: reading size, never interactive */
 .qv-artefact, .jp-artefact { margin: 6px 0 10px; max-width: 420px; }
 .qv-artefact .stat-board-frame, .jp-artefact .stat-board-frame { border: 1px solid var(--hairline); }
+
+/* ═══ THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, 11 Sept 2026) ═══
+   His first live test of Book C: "I could see the clear stages and which stage
+   I'm working on". The current pill is filled copper (white 600 on --copper,
+   5.4:1); done pills are a copper ring with a tick; upcoming pills a pencil
+   outline. The instruction under it is body size with a copper bar and names
+   the whole act. One attention beat when a stage begins (two breaths, then
+   still); one gold glow when the Check lights. Nothing pulses for ever. */
+.stage-strip { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 8px 0 4px; padding: 0; }
+.stage-pill {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 3px 12px 3px 6px;
+  border-radius: 999px; border: 1.5px solid var(--pencil); background: var(--panel); color: var(--ink);
+  font: 600 13.5px var(--f-ui); line-height: 1.2;
+}
+.stage-pill-n {
+  display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+  border-radius: 50%; border: 1.5px solid currentColor; font: 700 12px var(--f-mono); flex: 0 0 auto;
+}
+.stage-pill.is-now { background: var(--copper); border-color: var(--copper); color: #fff; }
+.stage-pill.is-now .stage-pill-n { background: #fff; color: var(--copper-ink); border-color: #fff; }
+.stage-pill.is-done { border-color: var(--copper); color: var(--copper-ink); }
+.stage-pill.is-done .stage-pill-n { border-color: var(--copper); color: var(--copper-ink); }
+.stage-pill.is-next { border-style: dashed; }
+.stat-q .stat-msg.stage-now {
+  margin: 6px 0 10px; padding: 6px 0 6px 12px; border-left: 4px solid var(--copper);
+  color: var(--ink); font-size: 15.5px; line-height: 1.45;
+}
+.stat-q .stat-msg.stage-now:empty { display: none; }
+@keyframes gj-stage-beat { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+.stage-pill.is-beat, .stat-msg.stage-now.is-beat { animation: gj-stage-beat 1.2s ease-in-out 2; }
+/* the glow is a halo whose OPACITY animates (the compositor law: never a
+   box-shadow keyframe) - the shadow itself is static on the pseudo-element */
+@keyframes gj-glow-once { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+.btn-stamp.glow-once { position: relative; }
+.btn-stamp.glow-once::after {
+  content: ''; position: absolute; inset: -4px; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(228, 184, 36, .6), 0 0 18px 6px rgba(228, 184, 36, .5);
+  opacity: 0; animation: gj-glow-once 1.2s ease-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-pill.is-beat, .stat-msg.stage-now.is-beat, .btn-stamp.glow-once::after { animation: none; }
+}
+
+/* ═══ EXERCISE 3'S LAYOUT: the action row directly under the board (ruling 42) ═══
+   The given table sits after the dock in the flow, so on a phone the Join
+   button is one flick from the chart; the chart itself is capped at 55vh.
+   From 768px the table is lifted into a column beside the chart. */
+@media (min-width: 768px) {
+  .stat-q-cfplot > .jq-body { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
+  .stat-q-cfplot > .jq-body > * { grid-column: 1; min-width: 0; }
+  .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }
+}

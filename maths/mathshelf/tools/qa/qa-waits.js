@@ -32,6 +32,12 @@ const COVERS = { books: '*', kinds: [], surfaces: '*', widths: [1280], projector
 const CONTROLS = [
   { id: 'control-with-no-busy-state', kind: 'fixture', plant: 'fixture-renderers', mustFail: /with nothing on screen/ },
   { id: 'outbox-dropped-on-reload', kind: 'fixture', plant: 'fixture-no-outbox', mustFail: /her work would be gone/ },
+  /* rulings 34/35/37, 11 Sept 2026: a wait card that is declared but does not
+     actually move on screen, and a tick that moves only after the server
+     answers, are both "a breath the eye cannot see is not a breath" - the same
+     fault as a busy state that never appears, one frame later. */
+  { id: 'wait-card-still', kind: 'fixture', plant: 'fixture-wait-card-still', mustFail: /does not breathe in rendered frames/ },
+  { id: 'tick-waits', kind: 'fixture', plant: 'fixture-tick-waits', mustFail: /waits for the server before it moves/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -76,6 +82,85 @@ const g = new Gate('qa-waits');
     });
     g.note('outbox keys on this device at rest: ' + held.before);
     await page.close();
+
+    /* ═══ THE STAFF SIDE (rulings 34/35/37, 11 Sept 2026) ═══════════════
+       A rendered-frame check for the passcode screen's gold wait-card: it is
+       not enough for the CSS to declare an animation, because a card that is
+       replaced, re-parented, or sitting under a media query nobody expected
+       can carry an animation nobody ever sees. Two samples 700ms apart, on
+       the actual computed opacity of the actual element on screen, at live
+       transport speed - a full 1.5s breath goes 1 -> .58 (or deeper) -> 1, so
+       two points 700ms apart must differ by at least 0.15 or the breath is
+       not there for a human either. */
+    const fs = require('fs');
+    const outDir = A.qa('out/polish/E');
+    fs.mkdirSync(outDir, { recursive: true });
+    const staffPage = await B.newPage(browser, { width: 1280 });
+    await staffPage.goto(S.BASE + '?class=demo&nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await new Promise(r => setTimeout(r, 1000));
+    await staffPage.evaluate(() => localStorage.clear());
+    await staffPage.reload({ waitUntil: 'domcontentloaded' });
+    await new Promise(r => setTimeout(r, 1000));
+    /* slow the transport BEFORE the passcode is submitted, so the busy card
+       is actually on screen long enough to sample twice */
+    await staffPage.evaluate(() => {
+      const real = window.GJ.app.call;
+      window.GJ.app.call = function (a, p) { return new Promise(r => setTimeout(() => real(a, p).then(r), 2000)); };
+    });
+    await staffPage.evaluate(() => document.getElementById('cover-staff').click());
+    await staffPage.waitForFunction(() => !!document.querySelector('#st-pass') && !!document.querySelector('#st-go'),
+      { timeout: 15000 }).catch(() => {});
+    await staffPage.evaluate(() => {
+      const i = document.querySelector('#st-pass');
+      if (!i) throw new Error('the staff passcode box never appeared');
+      i.value = 'demo';
+      document.querySelector('#st-go').click();
+    });
+    const sample = () => staffPage.evaluate(() => {
+      const m = document.querySelector('#st-msg');
+      if (!m) return null;
+      return { opacity: parseFloat(getComputedStyle(m).opacity), className: m.className };
+    });
+    const frame1 = await sample();
+    await staffPage.screenshot({ path: outDir + '/passcode-frame-1.png' }).catch(() => {});
+    await new Promise(r => setTimeout(r, 700));
+    const frame2 = await sample();
+    await staffPage.screenshot({ path: outDir + '/passcode-frame-2.png' }).catch(() => {});
+    const bothCards = !!(frame1 && frame2 && /\bpanel-loading\b/.test(frame1.className) && /\bpanel-loading\b/.test(frame2.className));
+    const diff = (frame1 && frame2) ? Math.abs(frame1.opacity - frame2.opacity) : 0;
+    g.note('passcode wait-card opacity: t=' + JSON.stringify(frame1) + ', t+700ms=' + JSON.stringify(frame2) + ', diff=' + diff.toFixed(3));
+    g.check(bothCards && diff >= 0.15, 'style.css :: .panel-loading', 'waits',
+      'the wait card does not breathe in rendered frames — a breath the eye cannot see is not a breath');
+    await staffPage.close();
+
+    /* A TICK REACTS AT ONCE: the box must already be flipped, and the message
+       slot must already be the gold wait-card, in the SAME synchronous turn as
+       the change event - never after the (here, slowed) server round trip. */
+    const teacherPage = await S.openApp(browser, { width: 1280, staff: true });
+    await teacherPage.evaluate(() => {
+      const real = window.GJ.app.call;
+      window.GJ.app.call = function (a, p) { return new Promise(r => setTimeout(() => real(a, p).then(r), 2000)); };
+    });
+    const tick = await teacherPage.evaluate(() => {
+      const cb = document.querySelector('.acts-ticks input[type=checkbox]');
+      if (!cb) return { found: false };
+      const before = cb.checked;
+      cb.click();
+      const cmsg = document.querySelector('#st-cmsg');
+      return {
+        found: true,
+        flippedAtOnce: cb.checked !== before,
+        cmsgIsBusyCard: !!(cmsg && /\bpanel-loading\b/.test(cmsg.className))
+      };
+    });
+    await teacherPage.screenshot({ path: outDir + '/tick-saving.png' }).catch(() => {});
+    g.check(tick.found, 'staff.js :: showClasses', 'waits',
+      'no class tickbox was found to test — Set-up must show at least one class with a book to tick');
+    if (tick.found) {
+      g.check(tick.flippedAtOnce && tick.cmsgIsBusyCard, 'staff.js :: addTick', 'waits',
+        'a tick waits for the server before it moves — the box flips at once and the card says it is saving');
+    }
+    await teacherPage.close();
   } finally { await browser.close(); }
   g.done();
 })().catch(e => { console.log('  FAIL  qa-waits x crash: ' + (e && e.stack ? e.stack : e)); process.exit(1); });

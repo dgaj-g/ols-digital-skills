@@ -1,0 +1,404 @@
+{
+  "rings": [
+    {
+      "width": 1280,
+      "step": 3,
+      "cap": "3",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step3-1280.png",
+      "rects": {
+        "ring": {
+          "left": 444.53125,
+          "top": 406.90625,
+          "right": 507.671875,
+          "bottom": 440.90625,
+          "width": 63.140625,
+          "height": 34
+        },
+        "vals": [
+          {
+            "left": 251,
+            "top": 410.90625,
+            "right": 306.875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 317.6875,
+            "top": 410.90625,
+            "right": 370.953125,
+            "bottom": 436.90625
+          },
+          {
+            "left": 381.765625,
+            "top": 410.90625,
+            "right": 437.71875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 448.53125,
+            "top": 410.90625,
+            "right": 503.671875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 514.484375,
+            "top": 410.90625,
+            "right": 570.15625,
+            "bottom": 436.90625
+          },
+          {
+            "left": 580.96875,
+            "top": 410.90625,
+            "right": 641.96875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 652.78125,
+            "top": 410.90625,
+            "right": 710.421875,
+            "bottom": 436.90625
+          }
+        ]
+      }
+    },
+    {
+      "width": 1280,
+      "step": 4,
+      "cap": "4",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step4-1280.png",
+      "rects": {
+        "ring": {
+          "left": 313.6875,
+          "top": 406.90625,
+          "right": 374.953125,
+          "bottom": 440.90625,
+          "width": 61.265625,
+          "height": 34
+        },
+        "vals": [
+          {
+            "left": 251,
+            "top": 410.90625,
+            "right": 306.875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 317.6875,
+            "top": 410.90625,
+            "right": 370.953125,
+            "bottom": 436.90625
+          },
+          {
+            "left": 381.765625,
+            "top": 410.90625,
+            "right": 437.71875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 448.53125,
+            "top": 410.90625,
+            "right": 503.671875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 514.484375,
+            "top": 410.90625,
+            "right": 570.15625,
+            "bottom": 436.90625
+          },
+          {
+            "left": 580.96875,
+            "top": 410.90625,
+            "right": 641.96875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 652.78125,
+            "top": 410.90625,
+            "right": 710.421875,
+            "bottom": 436.90625
+          }
+        ]
+      }
+    },
+    {
+      "width": 1280,
+      "step": 5,
+      "cap": "5",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step5-1280.png",
+      "rects": {
+        "ring": {
+          "left": 576.96875,
+          "top": 406.90625,
+          "right": 645.96875,
+          "bottom": 440.90625,
+          "width": 69,
+          "height": 34
+        },
+        "vals": [
+          {
+            "left": 251,
+            "top": 410.90625,
+            "right": 306.875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 317.6875,
+            "top": 410.90625,
+            "right": 370.953125,
+            "bottom": 436.90625
+          },
+          {
+            "left": 381.765625,
+            "top": 410.90625,
+            "right": 437.71875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 448.53125,
+            "top": 410.90625,
+            "right": 503.671875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 514.484375,
+            "top": 410.90625,
+            "right": 570.15625,
+            "bottom": 436.90625
+          },
+          {
+            "left": 580.96875,
+            "top": 410.90625,
+            "right": 641.96875,
+            "bottom": 436.90625
+          },
+          {
+            "left": 652.78125,
+            "top": 410.90625,
+            "right": 710.421875,
+            "bottom": 436.90625
+          }
+        ]
+      }
+    },
+    {
+      "width": 375,
+      "step": 3,
+      "cap": "3",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step3-375.png",
+      "rects": {
+        "ring": {
+          "left": 195.09375,
+          "top": 512.875,
+          "right": 250.359375,
+          "bottom": 543.875,
+          "width": 55.265625,
+          "height": 31
+        },
+        "vals": [
+          {
+            "left": 29.796875,
+            "top": 516.875,
+            "right": 77.6875,
+            "bottom": 539.875
+          },
+          {
+            "left": 86.953125,
+            "top": 516.875,
+            "right": 132.609375,
+            "bottom": 539.875
+          },
+          {
+            "left": 141.875,
+            "top": 516.875,
+            "right": 189.828125,
+            "bottom": 539.875
+          },
+          {
+            "left": 199.09375,
+            "top": 516.875,
+            "right": 246.359375,
+            "bottom": 539.875
+          },
+          {
+            "left": 255.625,
+            "top": 516.875,
+            "right": 303.34375,
+            "bottom": 539.875
+          },
+          {
+            "left": 29.796875,
+            "top": 543.875,
+            "right": 82.078125,
+            "bottom": 566.875
+          },
+          {
+            "left": 91.34375,
+            "top": 543.875,
+            "right": 140.75,
+            "bottom": 566.875
+          }
+        ]
+      }
+    },
+    {
+      "width": 375,
+      "step": 4,
+      "cap": "4",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step4-375.png",
+      "rects": {
+        "ring": {
+          "left": 82.953125,
+          "top": 512.875,
+          "right": 136.609375,
+          "bottom": 543.875,
+          "width": 53.65625,
+          "height": 31
+        },
+        "vals": [
+          {
+            "left": 29.796875,
+            "top": 516.875,
+            "right": 77.6875,
+            "bottom": 539.875
+          },
+          {
+            "left": 86.953125,
+            "top": 516.875,
+            "right": 132.609375,
+            "bottom": 539.875
+          },
+          {
+            "left": 141.875,
+            "top": 516.875,
+            "right": 189.828125,
+            "bottom": 539.875
+          },
+          {
+            "left": 199.09375,
+            "top": 516.875,
+            "right": 246.359375,
+            "bottom": 539.875
+          },
+          {
+            "left": 255.625,
+            "top": 516.875,
+            "right": 303.34375,
+            "bottom": 539.875
+          },
+          {
+            "left": 29.796875,
+            "top": 543.875,
+            "right": 82.078125,
+            "bottom": 566.875
+          },
+          {
+            "left": 91.34375,
+            "top": 543.875,
+            "right": 140.75,
+            "bottom": 566.875
+          }
+        ]
+      }
+    },
+    {
+      "width": 375,
+      "step": 5,
+      "cap": "5",
+      "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/ring-step5-375.png",
+      "rects": {
+        "ring": {
+          "left": 25.796875,
+          "top": 539.875,
+          "right": 86.078125,
+          "bottom": 570.875,
+          "width": 60.28125,
+          "height": 31
+        },
+        "vals": [
+          {
+            "left": 29.796875,
+            "top": 516.875,
+            "right": 77.6875,
+            "bottom": 539.875
+          },
+          {
+            "left": 86.953125,
+            "top": 516.875,
+            "right": 132.609375,
+            "bottom": 539.875
+          },
+          {
+            "left": 141.875,
+            "top": 516.875,
+            "right": 189.828125,
+            "bottom": 539.875
+          },
+          {
+            "left": 199.09375,
+            "top": 516.875,
+            "right": 246.359375,
+            "bottom": 539.875
+          },
+          {
+            "left": 255.625,
+            "top": 516.875,
+            "right": 303.34375,
+            "bottom": 539.875
+          },
+          {
+            "left": 29.796875,
+            "top": 543.875,
+            "right": 82.078125,
+            "bottom": 566.875
+          },
+          {
+            "left": 91.34375,
+            "top": 543.875,
+            "right": 140.75,
+            "bottom": 566.875
+          }
+        ]
+      }
+    }
+  ],
+  "box": {
+    "width": 375,
+    "screenshot": "/Users/damiengartland/Sites/ols-wt-maths/maths/mathshelf/tools/qa/out/polish/C/box-step8-375.png",
+    "rects": {
+      "text": {
+        "left": 29.796875,
+        "top": 571.875,
+        "right": 269.0625,
+        "bottom": 594.875,
+        "width": 239.265625,
+        "height": 23
+      },
+      "box": {
+        "left": 21.796875,
+        "top": 563.875,
+        "right": 277.0625,
+        "bottom": 602.875,
+        "width": 255.265625,
+        "height": 39
+      }
+    }
+  },
+  "pace": [
+    {
+      "t": 2523.899999856949,
+      "text": "Here are the hourly rates of pay for 7 workers, in the order they were recorded."
+    },
+    {
+      "t": 8127.299999952316,
+      "text": "Order the list first, smallest to largest — the quartiles only make sense once it is in order."
+    },
+    {
+      "t": 15034.199999809265,
+      "text": "Position of the median = (n + 1) ÷ 2. There are 7 values, so (7 + 1) ÷ 2 = 4. Ring the 4th value."
+    },
+    {
+      "t": 23396.5,
+      "text": "Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2. Ring the 2nd value."
+    }
+  ]
+}

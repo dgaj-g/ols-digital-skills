@@ -298,7 +298,16 @@
 
     function paperWrite(op, instant) {
       var line = el('div', 'movie-line');
-      var eq = el('span', 'ml-eq', op.write.text);
+      var eq = el('span', 'ml-eq');
+      /* RULING 39: A RING NEEDS SOMETHING TO RING. Every written line splits
+         itself into its comma-separated values up front, each in its own
+         span, so a later `ring` op can find and measure the exact value it
+         names — never a guessed offset. A line with no comma (an equation,
+         a single total) is one span covering the whole line, which a ring
+         at i:0 can still find. */
+      eq.innerHTML = String(op.write.text).split(/,\s*/).map(function (v) {
+        return '<span class="ml-val">' + v + '</span>';
+      }).join(', ');
       line.appendChild(eq);
       if (op.write.margin) line.appendChild(el('span', 'ml-margin', op.write.margin));
       stage.appendChild(line);
@@ -327,15 +336,76 @@
       var line = paperLines[op.box.line];
       if (!line) return Promise.resolve();
       var eq = line.querySelector('.ml-eq');
-      var w = eq.offsetWidth + 22, h = eq.offsetHeight + 8;
+      if (!eq) return Promise.resolve();
+      /* RULING 39: "THE GOLD BORDER ENCROACHES ON THE TEXT." The old box's
+         viewBox was built from eq's size plus hand-picked insets (+22/+8)
+         that did not match .answer-boxed's own CSS padding (2px/10px) — so
+         the SVG's actual on-screen size (100% of that padded box, set by
+         style.css) never matched the coordinate system the path was drawn
+         in, and the box quietly stretched onto the glyphs.
+         Measured from the glyph rect instead — and measured AFTER wrapping,
+         never before: a span that is about to stop being a flex item and
+         become a plain nested inline one does not report the same rect both
+         ways (proved empirically, ~4px out, not a rounding error), so the
+         wrapper is built first and every dimension below comes from what is
+         ACTUALLY on screen once it exists. The wrapper's own box is not
+         assumed to coincide with the glyph box either — the offset between
+         them is measured, not guessed, so the drawn box sits exactly 8px
+         outside the text on every side however the two boxes differ. style.css
+         is not touched: every dimension is inline, including a `max-width`
+         override — `.movie-stage svg` sets `max-width:100%` for every SVG on
+         the stage, which would otherwise clamp this one straight back down
+         to its own wrapper's width. */
+      var pad = 8;
       var hold = el('span', 'answer-boxed');
+      hold.style.cssText = 'display:inline-block;position:relative;padding:0';
       eq.parentNode.insertBefore(hold, eq);
       hold.appendChild(eq);
+      var hr = hold.getBoundingClientRect();
+      var er = eq.getBoundingClientRect();
+      var w = er.width + pad * 2, h = er.height + pad * 2;
+      var left = (er.left - hr.left) - pad, top = (er.top - hr.top) - pad;
       var s = sv('svg', { class: 'box-draw', viewBox: '0 0 ' + w + ' ' + h });
-      var p = sv('path', { d: 'M2 2 H ' + (w - 2) + ' V ' + (h - 2) + ' H 2 Z' });
+      s.style.cssText = 'position:absolute;overflow:visible;max-width:none;max-height:none;' +
+        'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+      var inset = 2; // keeps the 3px stroke fully inside the canvas
+      var p = sv('path', { d: 'M' + inset + ' ' + inset + ' H ' + (w - inset) + ' V ' + (h - inset) + ' H ' + inset + ' Z' });
       s.appendChild(p);
       hold.appendChild(s);
       return drawStroke(p, instant);
+    }
+
+    function paperRing(op, instant) {
+      /* RULING 39: A FILM DRAWS WHAT ITS CAPTION SAYS. "Ring the 4th value"
+         had been landing on nothing — PAPER mode has no diagram to hand a
+         `ring` op to, so it fell all the way through applyOp to the
+         diagram-only branch and drew nothing at all. This rings the i-th
+         value of a paper line (the line most recently written, or
+         op.ring.line when given) with a copper ellipse measured from THAT
+         value's own rendered rect — never a guessed offset — so it sits over
+         the actual glyphs whatever font, width or wrap they end up with.
+         Deviation note: statchart.js's own ring(i) (below) only ever knew
+         about plotted chart points; this is the separate paper-mode ring. */
+      var line = op.ring.line != null ? paperLines[op.ring.line] : paperLines[paperLines.length - 1];
+      if (!line) return Promise.resolve();
+      var target = line.querySelectorAll('.ml-val')[op.ring.i];
+      if (!target) return Promise.resolve();
+      if (!line.style.position) line.style.position = 'relative';
+      var pad = 4;
+      var lr = line.getBoundingClientRect();
+      var vr = target.getBoundingClientRect();
+      var w = vr.width + pad * 2, h = vr.height + pad * 2;
+      var s = sv('svg', { class: 'ml-ring ring-draw', viewBox: '0 0 ' + w + ' ' + h });
+      s.style.cssText = 'position:absolute;overflow:visible;pointer-events:none;max-width:none;max-height:none;' +
+        'left:' + (vr.left - lr.left - pad) + 'px;top:' + (vr.top - lr.top - pad) + 'px;' +
+        'width:' + w + 'px;height:' + h + 'px';
+      var e = sv('ellipse', {
+        cx: w / 2, cy: h / 2, rx: Math.max(2, w / 2 - 1.5), ry: Math.max(2, h / 2 - 1.5),
+        fill: 'none', stroke: 'var(--copper)', 'stroke-width': 1.8
+      });
+      s.appendChild(e);
+      line.appendChild(s);
+      return drawStroke(e, instant);
     }
 
     function paperGrid(op, instant) {
@@ -422,6 +492,7 @@
       if (op.write) return paperWrite(op, instant);
       if (op.tick) return paperTick(op, instant);
       if (op.box) return paperBox(op, instant);
+      if (op.ring && movie.mode === 'paper') return paperRing(op, instant);
       if (op.grid) return paperGrid(op, instant);
       if (op.balance) return paperBalance(op, instant);
       if (op.stamp) return doStamp(op, instant);
@@ -516,11 +587,17 @@
     }
 
     function readTime(i) {
-      // dwell AFTER the step's animation has finished. The caption has been
-      // on screen throughout the draw, so this is top-up reading time, not
-      // the whole read — keep it snappy. ~270 wpm, floored and capped.
+      // dwell AFTER the step's animation has finished (ruling 38, 11 Sept
+      // 2026 — "it travels too quickly from step to step when the play
+      // button is pressed"). The caption has been on screen throughout the
+      // draw, so this tops up reading time at ~170 wpm, floored so even a
+      // one-word caption gets a beat and capped so a long caption cannot
+      // stall the film — she is never trapped in the wait: pause, Back and
+      // Next all work while it is running.
       var words = (movie.steps[i].say || '').split(/\s+/).length;
-      return Math.min(3600, Math.max(850, words * 200));
+      /* named as a delay so the human-pace inventory can see the three numbers */
+      var delayMs = Math.min(8000, Math.max(1200, words * 350));
+      return delayMs;
     }
     function scheduleAuto() {
       if (!playing) return;

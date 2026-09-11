@@ -271,6 +271,51 @@
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
 
+    /* A TICK REACTS AT ONCE (ruling 37, 11 Sept 2026): the box is a real
+       checkbox, so it has already flipped before this code runs at all - the
+       fault he saw was never the box, it was everything ELSE waiting for the
+       disabled attribute and the round trip before it looked settled. Nothing
+       here disables the box or defers the flip. What it has to get right
+       instead is a SECOND flip landing while the first save is still in
+       flight: c._tickSync (one per class, lazily created) holds a queue of
+       one - the latest desired state - and a busy flag, so two quick clicks
+       send one call each in order rather than racing two calls that could
+       land out of turn and leave the box showing whichever answer happened
+       to arrive last. */
+    function runTickSync(c) {
+      var sync = c._tickSync;
+      if (!sync || sync.busy || !sync.queued) return;
+      var acts = sync.queued, pending = sync.pending, tw = sync.tickWrap;
+      sync.queued = null;
+      sync.busy = true;
+      call('setActs', { className: c.name, acts: acts }).then(function (r) {
+        sync.busy = false;
+        if (r && r.ok) {
+          c.acts = acts;
+          SURF('set-up', 'tickboxes');
+          clearBusy(cmsg, TT(pending.on ? 'tickOn' : 'tickOff', { book: pending.title, 'class': c.name }));
+        } else {
+          /* revert every box in this row to the last state the server actually
+             confirmed - simpler and safer than guessing which one failed when
+             a second click queued a different book while this call was out */
+          Object.keys(acts).forEach(function (id) {
+            var box = tw.querySelector('input[data-act-id="' + id + '"]');
+            if (box) box.checked = !!(c.acts && c.acts[id]);
+          });
+          clearBusy(cmsg, SAYS(r && r.error, TT('couldNotSave')));
+        }
+        if (sync.queued) runTickSync(c);
+      }).catch(function () {
+        sync.busy = false;
+        Object.keys(acts).forEach(function (id) {
+          var box = tw.querySelector('input[data-act-id="' + id + '"]');
+          if (box) box.checked = !!(c.acts && c.acts[id]);
+        });
+        clearBusy(cmsg, TT('couldNotSave'));
+        if (sync.queued) runTickSync(c);
+      });
+    }
+
     function render() {
       rows.innerHTML = '';
       if (!classes.length) {
@@ -298,23 +343,27 @@
           var lab = el('label', 'tickbox');
           var cb = document.createElement('input');
           cb.type = 'checkbox';
+          cb.setAttribute('data-act-id', a.id);
           cb.checked = !!(c.acts && c.acts[a.id]);
           cb.addEventListener('change', function () {
+            /* the box has already flipped - this reads the WHOLE row's live
+               state (not just c.acts) so a second box ticked while the first
+               save is still in flight is not lost */
             var acts = {};
-            window.GJ.app.activities.forEach(function (a2) { acts[a2.id] = a2.id === a.id ? cb.checked : !!(c.acts && c.acts[a2.id]); });
-            cb.disabled = true;
-            /* A TICK THAT IS SAVING SAYS SO. The box greyed out while the call
-               ran and nothing else moved, so the teacher read a fault (his
-               words, 9 Sept 2026). The class line now breathes with the words
-               while the server answers, then settles on what happened. */
-            cmsg.classList.add('is-waiting');
-            cmsg.textContent = TT('tickSaving', { book: a.title, 'class': c.name });
-            call('setActs', { className: c.name, acts: acts }).then(function (r) {
-              cb.disabled = false;
-              cmsg.classList.remove('is-waiting');
-              if (r && r.ok) { c.acts = acts; SURF('set-up', 'tickboxes'); cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '’s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.classList.remove('is-waiting'); cmsg.textContent = TT('couldNotSave'); });
+            window.GJ.app.activities.forEach(function (a2) {
+              var box = tickWrap.querySelector('input[data-act-id="' + a2.id + '"]');
+              acts[a2.id] = box ? box.checked : !!(c.acts && c.acts[a2.id]);
+            });
+            c._tickSync = c._tickSync || { busy: false, queued: null, pending: null, tickWrap: tickWrap };
+            c._tickSync.tickWrap = tickWrap;
+            c._tickSync.queued = acts;
+            c._tickSync.pending = { title: a.title, on: cb.checked };
+            /* A SAVING MESSAGE IS PRONOUNCED, NOT A WHISPER (ruling 35). The
+               class line used to breathe quietly with .is-waiting; it now
+               becomes the same gold wait-card the passcode screen uses, in the
+               same tick as the change event - never after the call starts. */
+            busyCard(cmsg, TT('tickSaving', { book: a.title, 'class': c.name }));
+            runTickSync(c);
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));

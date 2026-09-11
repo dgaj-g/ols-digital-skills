@@ -19,8 +19,6 @@ I judged all 268 lines in `_v4.md`, one row per line, in order, reading each alo
 | PASS | strings.js > pupil > shelfGreetingMorning | Good morning | Fine as is. |
 | PASS | strings.js > pupil > shelfGreetingAfternoon | Good afternoon | Fine as is. |
 | PASS | strings.js > pupil > shelfPlain | Your maths books live here. Your teacher chooses which ones are out. | The checklist's own approved shelf line, unchanged. |
-| PASS | strings.js > pupil > shelfNotSet | Not set yet | A plain status word, explained by the very next line. |
-| PASS | strings.js > pupil > shelfNotSetNote | A book that is not set yet is one your teacher has not put out for this class. | Defines the status in plain words using the shelf picture she already has. |
 | PASS | strings.js > pupil > shelfMore | Your teacher will add more books to this shelf during the year. | Clear, keeps the same shelf picture. |
 | PASS | strings.js > pupil > shelfMarks | 6 of 8 marks · 5 of 8 answered | A plain scorecard in ordinary school words. |
 | PASS | strings.js > pupil > backToShelf | The shelf | Plain nav label, a noun she already knows. |
@@ -59,20 +57,16 @@ I judged all 268 lines in `_v4.md`, one row per line, in order, reading each alo
 | PASS | strings.js > pupil > statFrequency | Frequency | Plain heading, core term. |
 | PASS | strings.js > pupil > statCumulativeFrequency | Cumulative frequency | Gives the real term in full as a heading. |
 | PASS | strings.js > pupil > statReading | reading | Plain label. |
-| PASS | strings.js > pupil > statQlistOrder | Choose the values in order, smallest first. | Device-neutral verb, clear, doesn't give away which value is which. |
 | PASS | strings.js > pupil > statQlistOrderWhy | Put every value in the row first. | Clear prompt. |
-| PASS | strings.js > pupil > statQlistPick | Now choose the median. | Clear, names the task, not the method. |
 | PASS | strings.js > pupil > statQlistPickWhy | Choose each value you were asked for first. | Clear. |
 | PASS | strings.js > pupil > statQlistCommit | That's my median | Same commit label as above, fine here too. |
 | PASS | strings.js > pupil > statQlistCommitWhy | Choose a value in the row first. | Clear. |
-| PASS | strings.js > pupil > statQlistIqr | Work out the interquartile range. | States the task, not the subtraction that finds it. |
 | PASS | strings.js > pupil > statQlistIqrWhy | Work out the interquartile range first. | Clear prompt. |
 | PASS | strings.js > pupil > statQlistTruth | In order: 4, 7, 7, 9, 12, 15, 21 | The true answer, shown only once her attempts are used up — real numbers matching the worked example. |
 | PASS | strings.js > pupil > statPickOne | median = 65 | A plain readout of her own working. |
 | PASS | strings.js > pupil > statPickPair | median = (9 + 12) ÷ 2 = 65 | A plain readout of her own calculation. |
 | PASS | strings.js > pupil > statLineOne | median = 65 | Same readout, fine here too. |
 | PASS | strings.js > pupil > statLinePair | median = (9 + 12) ÷ 2 = 65 | Same readout, fine here too. |
-| REWRITE | strings.js > pupil > statCftableStart | Choose a box in the last column and put its running total in. | This is the first time "running total" is used as a nickname for cumulative frequency, and it isn't tied to the real name the way the checklist asks — the nickname and the real term need to sit in the same sentence the first time it's used. → "Choose a box in the cumulative frequency column and put its running total in." |
 | PASS | strings.js > pupil > statCftableRow | Cumulative frequency up to 65 minutes | Uses the real term directly, with a real number and unit. |
 | PASS | strings.js > pupil > statCftableWhy | Put a running total in at least one row first. | Reads cleanly aloud despite the run of short words; "running total" has now been tied to its real name by the line before it. |
 | PASS | strings.js > pupil > statCftableTruth | Running totals: 4, 7, 7, 9, 12, 15, 21 | The true answer, shown only after her attempts are used up, matching the same worked set throughout. |
@@ -89,11 +83,8 @@ I judged all 268 lines in `_v4.md`, one row per line, in order, reading each alo
 | PASS | strings.js > pupil > statNudgeUp | One square up | Clear. |
 | PASS | strings.js > pupil > statNudgeDown | One square down | Clear. |
 | PASS | strings.js > pupil > statRemovePoint | Take this point off | "this point" is the one she's selected. |
-| PASS | strings.js > pupil > statReadFind | Find the median. | States the task, not the method. |
 | PASS | strings.js > pupil > statReadWhy | Find every value you were asked for first. | Clear. |
 | PASS | strings.js > pupil > statReadMoveWhy | Move the rule to the height you need first. | Uses the already-defined "rule" correctly. |
-| PASS | strings.js > pupil > statReadIqr | Work out the interquartile range. | Clear, states the task. |
-| PASS | strings.js > pupil > statReadAtX | Move the rule across to 30. | A real number matching the axis in front of her. |
 | PASS | strings.js > pupil > statReadAtXWhy | Move the rule across and put your answer in first. | Clear. |
 | PASS | strings.js > pupil > statValueReadout | 65 | A plain readout. |
 | PASS | strings.js > pupil > statCfReadout | 65 | A plain readout. |
@@ -101,16 +92,12 @@ I judged all 268 lines in `_v4.md`, one row per line, in order, reading each alo
 | PASS | strings.js > pupil > statHowManyBelow | How many below | Plain label. |
 | PASS | strings.js > pupil > statPctAbove | Percentage above | Plain label. |
 | PASS | strings.js > pupil > statPctBelow | Percentage below | Plain label. |
-| PASS | strings.js > pupil > statBoxChooseMarker | Choose a marker. | Clear, uses the already-defined markers. |
-| PASS | strings.js > pupil > statBoxPlaceOnScale | Now press the scale where it belongs. | Device-neutral verb, clear. |
-| PASS | strings.js > pupil > statBoxPlaced | median at 65 | Plain readout. |
 | PASS | strings.js > pupil > statBoxPlaceWhy | Put all five markers on the scale first. | Clear, matches the five markers she actually has. |
 | PASS | strings.js > pupil > statDrawBoxPlot | Draw the box plot | Plain button. |
 | PASS | strings.js > pupil > statBoxDrawWhy | Draw the box plot first. | Clear. |
 | PASS | strings.js > pupil > statBoxDrawnAlready | The box plot is drawn. | Plain status. |
 | REWRITE | strings.js > pupil > statBoxStageWhy | Finish the first part first. | "First part first" uses the same word twice for two different jobs right next to each other — she'd have to read it twice to be sure it isn't a mistake. → "Finish the first part before you draw the box plot." |
 | PASS | strings.js > pupil > statNextDrawBox | Next: draw the box plot | Clear. |
-| PASS | strings.js > pupil > statCompareStart | Finish both sentences. | Clear, states the task. |
 | PASS | strings.js > pupil > statCompareWhy | Finish both sentences first. | Only one "first" here — no collision, reads clean. |
 | PASS | strings.js > pupil > statCompareValue | Value | Plain chip. |
 | PASS | strings.js > pupil > statCmpHigherMedian | had the higher median | A sentence-building chip — a fragment by design, meant to be slotted in. |
@@ -124,7 +111,6 @@ I judged all 268 lines in `_v4.md`, one row per line, in order, reading each alo
 | PASS | strings.js > pupil > statCmpMore | more | Sentence-building chip. |
 | PASS | strings.js > pupil > statCmpLess | less | Sentence-building chip. |
 | PASS | strings.js > pupil > statCmpConsistent | consistent | Sentence-building chip, and an everyday word. |
-| REWRITE | strings.js > pupil > statJudgeStart | Decide about each claim. | "Decide about" isn't how this is said in real speech — you decide whether something is true, or you judge it, but you don't "decide about" it; the same book says "Decide whether…" correctly elsewhere. → "Judge each claim." |
 | PASS | strings.js > pupil > statFairToSay | Fair to say | Plain chip. |
 | PASS | strings.js > pupil > statNotFair | Not fair | Plain chip, and ordinary spoken English. |
 | REWRITE | strings.js > pupil > statJudgeDecideWhy | Decide every claim first. | "Decide" doesn't take a claim as its object like this in natural English — you don't "decide a claim". → "Judge every claim first." |

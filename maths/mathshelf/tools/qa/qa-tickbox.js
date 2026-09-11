@@ -36,6 +36,7 @@ const COVERS = {
 const CONTROLS = [
   { id: 'setacts-wipes-rows', kind: 'fixture', plant: 'fixture-server-wipe', mustFail: /lost the pupil's work/ },
   { id: 'new-book-defaults-true', kind: 'mutation', plant: 'fixture-server-default-true', mustFail: /arrives ticked/ },
+  { id: 'unticked-book-on-shelf', kind: 'fixture', plant: 'fixture-shelf-shows-unticked', mustFail: /still on the pupil's shelf/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -47,8 +48,23 @@ const TPL = A.app('server/Code.gs.template');
 
 const g = new Gate('qa-tickbox');
 g.exempt([
-  'the pupil\'s shelf actually greying out or hiding the tile in the DOM is not re-rendered here; this gate proves only the acts map the shelf reads to decide (script.js: "if (!me.acts[a.id])")'
+  'the pupil\'s shelf cannot actually be re-rendered inside this sandbox: both call sites for renderShelf() (script.js) sit inside click handlers, and domstub.js\'s addEventListener/click/dispatchEvent are all no-ops, so there is no click to drive through it and no DOM to read back. The absence of an unticked book (ruling 36) is proved by SOURCE instead, below: renderShelf skips before creating any element for a book the class does not have, and the retired "not-set" card and "locked-spine" state exist nowhere in script.js'
 ]);
+
+/* ═══════════════════ the shelf itself (ruling 36) ════════════════════
+   "I want any book that isn't ticked on the staff side not to appear on the
+   student side at all" (Damien Gartland, 11 Sept 2026). Proved by source, for
+   the reason given in the exempt() above. */
+const shelfSrc = A.stripComments(A.read(A.app('script.js')));
+const renderShelfIdx = shelfSrc.indexOf('function renderShelf');
+g.check(renderShelfIdx >= 0, 'renderShelf', 'tickbox',
+  'this gate could not find renderShelf() in script.js at all — script.js has moved and this check reads nothing');
+const afterRenderShelf = renderShelfIdx >= 0 ? shelfSrc.indexOf('\n  function ', renderShelfIdx + 20) : -1;
+const renderShelfBody = renderShelfIdx >= 0 ? shelfSrc.slice(renderShelfIdx, afterRenderShelf > 0 ? afterRenderShelf : renderShelfIdx + 4000) : '';
+g.check(/if\s*\(\s*!out\s*\)\s*return;/.test(renderShelfBody), 'renderShelf', 'tickbox',
+  "an unticked book is still on the pupil's shelf — a book the class does not have is absent, not locked");
+g.check(!/not-set/.test(renderShelfBody) && shelfSrc.indexOf('locked-spine') < 0, 'renderShelf', 'tickbox',
+  "an unticked book is still on the pupil's shelf — a book the class does not have is absent, not locked");
 
 /* ═══════════════════ the server home ════════════════════════════════ */
 const data = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW });

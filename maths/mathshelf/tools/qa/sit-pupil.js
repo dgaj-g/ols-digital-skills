@@ -30,6 +30,21 @@ const { Gate, matrix } = require('./lib/report.js');
 const B = require('./lib/browser.js');
 const W = require('./lib/walk-moves.js');
 const P = require('./lib/stat-probes.js');
+
+/* the ledger's waived cells, read once: `<surface>:<state> @<width> × <law>` */
+const WAIVED = (() => {
+  const out = new Map();
+  try {
+    A.read(A.qa('MATHS_COVERAGE_DEBT.md')).split('\n').forEach(l => {
+      const cols = l.split('|').map(x => x.trim());
+      if (cols.length < 7 || !/×/.test(cols[1])) return;
+      if (/WAIVED BY HIS RULING/.test(cols[6])) out.set(cols[1], cols[6]);
+    });
+  } catch (e) {}
+  return out;
+})();
+function waivedFor(cell) { return WAIVED.get(cell) || null; }
+let REDUCED_PASS = false;   /* the pass being walked asked for less motion: the beat and the glow must NOT run */
 const AUD = require('./lib/audits.js');
 const S = require('./lib/stage.js');
 
@@ -71,13 +86,26 @@ const CONTROLS = [
      sentence the check actually holds. */
   { id: 'unreachable-planted-fault', kind: 'fixture', plant: 'fixture-unreachable-surface', mustFail: /never reached/ },
   { id: 'console-error', kind: 'fixture', plant: 'fixture-renderers', mustFail: /console error/ },
-  /* the shelf a class sees when a book is not ticked for it: found on 8 Sept
-     2026 by the first walk ever to stand on it (package V4-STATES) */
-  { id: 'locked-spine-unreadable', kind: 'fixture', plant: 'fixture-css-locked-spine', mustFail: /against what is actually behind it/ },
+  /* the locked spine (a book not ticked for the class, drawn greyed-out on
+     the shelf) was retired by ruling 36 (11 Sept 2026): that book no longer
+     renders at all, so there is no card left to mis-colour. The readability
+     risk moves onto the cards that DO render — a ticked book's own cover —
+     so this control now plants exactly that: a legible-looking but
+     near-invisible ink on `.book .series`/`.book .band`. */
+  { id: 'stage-strip-behind', kind: 'fixture', plant: 'stats-strip-behind', mustFail: /the strip is one stage behind the question/ },
+  { id: 'stage-without-a-beat', kind: 'fixture', plant: 'stats-no-beat', mustFail: /no attention beat when the stage/ },
+  { id: 'check-without-a-glow', kind: 'fixture', plant: 'stats-no-glow', mustFail: /without its one gold glow/ },
+  { id: 'film-ring-draws-nothing', kind: 'fixture', plant: 'film-ring-draws-nothing', mustFail: /ring\(s\) drawn — a film draws what its caption says/ },
+  { id: 'film-box-on-the-glyphs', kind: 'fixture', plant: 'film-box-on-the-glyphs', mustFail: /px from the text it boxes/ },
+  { id: 'table-between-board-and-dock', kind: 'fixture', plant: 'stats-table-between', mustFail: /the control for the current stage is directly under the board, never a screen away/ },
+  { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
      reading was nonsense - the sampler was asking `color` of a glyph that is
-     painted with `fill`. This one moves nothing but the SVG glyph. */
+     painted with `fill`. This one moves nothing but the SVG glyph.
+     NOTE (package D, 11 Sept 2026): this still plants against the retired
+     `.book.not-set .motif` selector, which now matches nothing shipped — see
+     the D-REPORT for the lead. */
   { id: 'svg-glyph-lost-in-its-plate', kind: 'fixture', plant: 'fixture-css-svg-glyph-in-plate', mustFail: /against what is actually behind it/ },
   /* the chip put back in the corner it used to float in, where a long series
      name runs underneath it — the shelf fault of 6 Sept 2026 */
@@ -154,8 +182,17 @@ async function walkBook(page, book, width, sidecar, transcript) {
       (a.findings[k] || []).forEach(f => {
         /* the raw row behind a finding, when you are arguing with a number */
         if (process.env.MS_DEBUG_FINDINGS) g.note('RAW ' + k + ' ' + JSON.stringify(f));
-        g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width, k,
-          k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
+        const where = surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + width;
+        const said = k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f);
+        /* A RED ON AN OLD SCREEN IS A DEBT ROW, NEVER A FIX IN A BOOK BUILD (his
+           ruling of 8 Sept 2026, written into the prompt's TIME rules). A cell
+           the ledger carries as WAIVED BY HIS RULING is printed here every run
+           with its measurement - never hidden - and does not fail the walk;
+           the law itself still bites on every other cell, which is what its
+           own controls prove. The waiver is exact: surface, state, width, law. */
+        const waiver = waivedFor(surface + ':' + state + ' @' + width + ' × ' + k);
+        if (waiver) g.note('WAIVED (' + waiver + ') ' + where + ' x ' + k + ': ' + said);
+        else g.fail(where, k, said);
       });
     });
     return row;
@@ -220,6 +257,58 @@ async function walkBook(page, book, width, sidecar, transcript) {
     const movie = await page.evaluate(async (s) => await eval(s)(), W.ACTIONS.playMovieToEnd);
     if (movie.steps) {
       await record('movie', 'end', { section: si });
+      /* A FILM DRAWS WHAT ITS CAPTION SAYS (ruling 39, 11 Sept 2026). On a paper
+         film every `ring` op must have left a copper ring on the stage, drawn
+         round the i-th value of the line it names - its box encloses that
+         value's rendered glyphs - and a `box` op's gold frame sits clear of
+         the text it boxes on every side, measured from the rects, never from
+         a guessed offset. Read at the film's end, where every op has landed. */
+      const film = await page.evaluate((bk, i) => {
+        const pack = window.GJ_CONTENT && window.GJ_CONTENT[bk];
+        const mv = pack && pack.sections && pack.sections[i] && pack.sections[i].movie;
+        if (!mv || mv.mode !== 'paper') return null;
+        const steps = mv.steps || [];
+        const ops = [];
+        steps.forEach(st => (st.do || []).forEach(op => ops.push(op)));
+        /* a `clear` after a ring wipes the stage: only rings after the last clear are on screen */
+        const lastClear = ops.map((op, k) => op.clear ? k : -1).filter(k => k >= 0).pop();
+        const live = ops.slice(lastClear == null ? 0 : lastClear + 1);
+        const rings = live.filter(op => op.ring).map(op => op.ring);
+        const boxes = live.filter(op => op.box).map(op => op.box);
+        const stage = document.querySelector('.movie .movie-stage');
+        if (!stage) return { rings: rings.length, boxes: boxes.length, drawn: 0, problems: ['no stage'] };
+        const lines = [...stage.querySelectorAll('.movie-line')];
+        const r = (n) => { const b = n.getBoundingClientRect(); return { l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width, h: b.height }; };
+        const problems = [];
+        const drawnRings = [...stage.querySelectorAll('.ml-ring')];
+        if (drawnRings.length < rings.length) problems.push('the film has ' + rings.length + ' ring op(s) and ' + drawnRings.length + ' ring(s) drawn');
+        drawnRings.forEach((el, k) => {
+          const rr = r(el);
+          if (!(rr.w > 4 && rr.h > 4)) { problems.push('ring ' + (k + 1) + ' has no size'); return; }
+          /* the value it should enclose: a .ml-val inside the same line */
+          const line = el.closest('.movie-line') || lines[lines.length - 1];
+          const vals = line ? [...line.querySelectorAll('.ml-val')] : [];
+          const enclosed = vals.some(v => { const vr = r(v); return vr.w > 0 && rr.l <= vr.l + 1 && rr.r >= vr.r - 1 && rr.t <= vr.t + 1 && rr.b >= vr.b - 1; });
+          if (!enclosed) problems.push('ring ' + (k + 1) + ' encloses no value of its line');
+        });
+        const drawnBoxes = [...stage.querySelectorAll('.box-draw')];
+        if (drawnBoxes.length < boxes.length) problems.push('the film has ' + boxes.length + ' box op(s) and ' + drawnBoxes.length + ' box(es) drawn');
+        drawnBoxes.forEach((el, k) => {
+          const hold = el.closest('.answer-boxed') || el.parentNode;
+          const eq = hold && hold.querySelector('.ml-eq');
+          if (!eq) { problems.push('box ' + (k + 1) + ' boxes no text'); return; }
+          const path = el.querySelector('path, rect') || el;
+          const br = r(path), tr = r(eq);
+          const clear = Math.min(tr.l - br.l, br.r - tr.r, tr.t - br.t, br.b - tr.b);
+          if (clear < 7) problems.push('the gold box sits ' + Math.round(clear) + ' px from the text it boxes — it is measured from the text and pads 8 px on every side');
+        });
+        return { rings: rings.length, boxes: boxes.length, drawn: drawnRings.length, problems };
+      }, book, si);
+      if (film) {
+        if (film.problems.length) film.problems.forEach(pr => g.fail('movie:end > ' + book + ' s' + (si + 1) + ' @' + width, 'film-draws',
+          pr + ' — a film draws what its caption says'));
+        else g.note('film s' + (si + 1) + ': ' + film.rings + ' ring(s) and ' + film.boxes + ' box(es) drawn where the captions say');
+      }
       const caps = await page.evaluate(() => [...document.querySelectorAll('.movie .ml-say, .movie .caption, .movie figcaption')]
         .map(e => (e.textContent || '').trim()).filter(Boolean));
       caps.forEach(say);
@@ -304,13 +393,57 @@ async function walkBook(page, book, width, sidecar, transcript) {
       const visited = [];
       if (declared.stage) visited.push(declared.stage);
       let answered;
+      let lastLabel = null, checkWasLit = false;
       if (declared.stages.length) {
         for (const stg of declared.stages) {
           answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false, stg]);
           if (!answered.ok) break;
+          /* ONE ATTENTION BEAT when a stage begins, ONE GOLD GLOW when the
+             Check lights - and neither for ever (ruling 40; DESIGN 4.0). Read
+             before the walk settles, while the classes are still on. */
+          const b = await page.evaluate((s2, id) => eval(s2)(id), W.BEAT_OF, qid);
+          if (b && b.strip) {
+            if (lastLabel !== null && b.label !== lastLabel) {
+              if (REDUCED_PASS) {
+                if (b.beatAnim === 'gj-stage-beat')
+                  g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the stage pill on ' + qid + ' beats under prefers-reduced-motion — she asked her machine for less motion');
+              } else if (!b.beating || b.beatAnim !== 'gj-stage-beat')
+                g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'no attention beat when the stage "' + b.label + '" began on ' + qid + ' — one beat, two breaths, then still');
+              else if (b.beatCount === 'infinite')
+                g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the stage pill on ' + qid + ' pulses for ever — a screen that nags is a screen she stops reading');
+            }
+            if (b.checkLit && !checkWasLit) {
+              if (REDUCED_PASS) {
+                if (b.glowAnim === 'gj-glow-once')
+                  g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the Check on ' + qid + ' glows under prefers-reduced-motion');
+              } else if (!b.glowing || b.glowAnim !== 'gj-glow-once')
+                g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the Check lit on ' + qid + ' without its one gold glow');
+              else if (b.glowCount === 'infinite')
+                g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the Check on ' + qid + ' glows for ever');
+            }
+            lastLabel = b.label; checkWasLit = b.checkLit;
+          }
+          /* THE CONTROL SHE NEEDS NEXT IS WITHIN REACH (ruling 42): on a plot
+             the action row sits directly under the board - never below the
+             data table, a screen away. 80 px allows the marked rows' margins
+             and nothing else. */
+          if (b && b.kind === 'cfplot' && b.dockGap !== null && b.dockGap > 80)
+            g.fail('question > ' + qid + ' @' + width, 'reach', 'the action row sits ' + b.dockGap + ' px below the board on ' + qid + ' — the control for the current stage is directly under the board, never a screen away');
           await W.settle(page);
           const now = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
           if (now.stage && visited.indexOf(now.stage) === -1) visited.push(now.stage);
+          /* THE STRIP SAYS WHERE SHE IS (ruling 40, DESIGN 4.0 Correction 11 Sept
+             2026). On every board the lit pill must be the one the root's
+             stage belongs to, and its name must be the label the root carries
+             - a strip one stage behind is a strip that lies to her. */
+          if (now.strip) {
+            const st = now.strip;
+            if (st.lit !== 1) g.fail('question > ' + qid + ' @' + width, 'stage-strip',
+              st.lit + ' pills are lit on ' + qid + ' at stage "' + now.stage + '" — exactly one stage is current');
+            else if ((st.pillStages.length && st.pillStages.indexOf(now.stage) === -1) || st.pill !== now.label)
+              g.fail('question > ' + qid + ' @' + width, 'stage-strip',
+                'the stage strip says "' + st.pill + '" while the board is on "' + now.stage + '" (' + now.label + ') — the strip is one stage behind the question');
+          }
           await record('question', 'mid-attempt', { qid, section: si, book, stage: now.stage });
         }
         if (answered && answered.ok) {
@@ -589,17 +722,25 @@ async function coverStatesPass() {
   }
 }
 
-/* ---- shelf: none-ticked, locked-spine (some-ticked/in-progress/star-earned
-   are stood on by the ordinary walk above). A CLASS THE OFFLINE STUB HAS
-   NEVER SEEN GETS EVERY BOOK ON (script.js's own `store()`, for the preview
-   only, so a walk can reach a book at all) - which is exactly why neither of
-   these two is reachable through it. Seeding the SAME localStorage shape
-   `store()` itself reads, before script.js's first read of it, is the
-   offline transport's own contract, not a way around it. */
+/* ---- shelf: none-ticked, some-ticked-from-a-class-with-books-held-back
+   (in-progress/star-earned are stood on by the ordinary walk above). A CLASS
+   THE OFFLINE STUB HAS NEVER SEEN GETS EVERY BOOK ON (script.js's own
+   `store()`, for the preview only, so a walk can reach a book at all) - which
+   is exactly why neither of these is reachable through it. Seeding the SAME
+   localStorage shape `store()` itself reads, before script.js's first read of
+   it, is the offline transport's own contract, not a way around it.
+
+   RULING 36 (Damien Gartland, 11 Sept 2026) retired the locked spine: a book
+   the class does not have no longer renders at all, so the second seed below
+   no longer proves a "locked-spine" state - that state does not exist any
+   more (GJ.app.surfaces). What it proves instead is the ruling itself: with
+   only angles ticked, the shelf still reads "some-ticked" (the ordinary
+   two-book-ticked state), and the DOM holds exactly the ticked books - one
+   card, not three, and none of them the retired `.book.not-set`. */
 async function shelfLockStatesPass() {
   const seeds = [
     { state: 'none-ticked', acts: {} },
-    { state: 'locked-spine', acts: { angles: true } }
+    { state: 'some-ticked', acts: { angles: true } }
   ];
   for (const width of WIDTHS) {
     const sidecar = newExtraSidecar(width);
@@ -621,6 +762,14 @@ async function shelfLockStatesPass() {
       const state = await page.evaluate(() => (document.querySelector('[data-surface="shelf"]') || {}).getAttribute('data-state'));
       g.check(state === sd.state, 'shelf:' + sd.state + ' @' + width, 'walk',
         'a class seeded with acts ' + JSON.stringify(sd.acts) + ' produced shelf state "' + state + '", not "' + sd.state + '"');
+      const ticked = Object.keys(sd.acts).filter((k) => sd.acts[k]).length;
+      const cards = await page.evaluate(() => document.querySelectorAll('#shelf-tiles .book').length);
+      g.check(cards === ticked, 'shelf:' + sd.state + ' @' + width, 'walk',
+        'a class seeded with acts ' + JSON.stringify(sd.acts) + ' drew ' + cards + ' book card(s) on the shelf, not ' + ticked +
+        ' — a book that is not ticked must be absent from the pupil\'s shelf, not merely locked (ruling 36)');
+      const notSetCards = await page.evaluate(() => document.querySelectorAll('#shelf-tiles .book.not-set').length);
+      g.check(notSetCards === 0, 'shelf:' + sd.state + ' @' + width, 'walk',
+        'the retired "not-set" book card is still in the DOM (' + notSetCards + ' found) — the locked spine was retired by ruling 36 and must never be drawn');
       if (state) await auditAndPush(page, sidecar, 'shelf', state, { width });
       await page.close(); await browser.close();
     }
@@ -927,6 +1076,7 @@ async function resumeMidProbe() {
     for (const book of (pass.books || books)) {
       const browser = await B.launch();
       const page = await B.newPage(browser, { width, reducedMotion: pass.reduced });
+      REDUCED_PASS = !!pass.reduced;
       await page.evaluateOnNewDocument((table) => {
         /* the answer channel, primed before the app boots */
         window.__modelAttempt = (qid, wrong) => {

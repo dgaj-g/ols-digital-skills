@@ -268,10 +268,28 @@ async function record(page, sidecar, surface, state, extra) {
   }
   Object.keys(a.findings).forEach(k => (a.findings[k] || []).forEach(f => {
     if (process.env.MS_DEBUG_FINDINGS) g.note('RAW ' + k + ' ' + JSON.stringify(f));
-    g.fail(surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width), k,
-      k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f));
+    const where = surface + ':' + state + (extra && extra.qid ? ' > ' + extra.qid : '') + ' @' + (extra && extra.width);
+    const said = k === 'readability' ? AUD.describeContrast(f) : k === 'overlap' ? AUD.describeOverlap(f) : k === 'said-twice' ? AUD.describeSaidTwice(f) : describe(f);
+    /* a cell the ledger carries as WAIVED BY HIS RULING is printed with its
+       measurement, never hidden, and does not fail the walk (8 Sept 2026: a
+       red on an old screen is a debt row, never a fix in a book build) */
+    const waiver = WAIVED.get(surface + ':' + state + ' @' + (extra && extra.width) + ' × ' + k);
+    if (waiver) g.note('WAIVED (' + waiver + ') ' + where + ' x ' + k + ': ' + said);
+    else g.fail(where, k, said);
   }));
 }
+/* the ledger's waived cells: `<surface>:<state> @<width> × <law>` */
+const WAIVED = (() => {
+  const out = new Map();
+  try {
+    A.read(A.qa('MATHS_COVERAGE_DEBT.md')).split('\n').forEach(l => {
+      const cols = l.split('|').map(x => x.trim());
+      if (cols.length < 7 || !/×/.test(cols[1])) return;
+      if (/WAIVED BY HIS RULING/.test(cols[6])) out.set(cols[1], cols[6]);
+    });
+  } catch (e) {}
+  return out;
+})();
 
 /* buildAttempts() lived here and quietly disagreed with dev/model-attempts.js:
    it keyed by question id alone, so the angles table overwrote the algebra

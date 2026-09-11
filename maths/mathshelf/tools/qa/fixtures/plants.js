@@ -103,17 +103,17 @@ const PLANTS = {
   },
 
   /* ── CSS that breaks a law the pixels are measured against ────────── */
-  /* ── the locked spine, as it was before 8 Sept 2026 ──────────────────
-     A book a class does not have is drawn on a pale gradient, and the audience
-     band and the motif were left in the colours the OPEN cover uses: the band
-     measured 4.12:1 against a 4.5 floor and the motif's letter 1.01:1 against
-     a 3:1 one - invisible. No walk had ever stood on a shelf with an unticked
-     book, so nothing had ever measured it. This plant puts both colours back. */
-  'fixture-css-locked-spine': (dir) => {
+  /* ── a lit book, painted near-invisible on its own cover (ruling 36,
+     11 Sept 2026) ────────────────────────────────────────────────────
+     The locked spine is retired: a book the class does not have is absent
+     from the shelf outright, so there is no card left to mis-colour. The risk
+     moves onto the cards that DO render — a legible-looking but near-invisible
+     ink on a ticked book's own series/band row. This plant puts exactly that
+     back, on `.book`, not on the retired `.book.not-set`. */
+  'fixture-css-lit-spine': (dir) => {
     fs.appendFileSync(path.join(dir, 'shell.css'),
       '\n/* planted by a control, never shipped */\n' +
-      '.book.not-set .series, .book.not-set .band { color: #47566F !important; }\n' +
-      '.book.not-set .motif text, .book.not-set .motif path { fill: #E4B824 !important; stroke: #E4B824 !important; }\n');
+      '.book .series, .book .band { color: #C9D2DF !important; }\n');
   },
 
   /* ── a glyph drawn in SVG, in almost the colour of its own plate ─────
@@ -703,11 +703,76 @@ const PLANTS = {
       '  --grid-major: var(--panel);   /* planted: the grid cannot be seen */');
   },
 
+  /* ── the strip lit one stage behind the board (ruling 40, 11 Sept 2026) ─ */
+  'stats-strip-behind': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      var first = curPill < 0;\n      curPill = i;",
+      "      var first = curPill < 0;\n      curPill = first ? i : Math.max(0, i - 1);   /* planted: the strip lags one pill behind */");
+  },
+
+  'stats-table-between': (dir) => {
+    /* the given table put back between the chart and its controls (his
+       Exercise 3 of 11 Sept 2026) */
+    edit(dir, 'jotter-stats.js',
+      "    ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));",
+      "    ctx.boardHost.appendChild(tableWrap);   /* planted: the table sits between the board and the dock again */");
+    edit(dir, 'style.css',
+      "  .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }",
+      "  /* planted: no side column */");
+  },
+  /* ── a film that does not draw what its caption says (ruling 39) ──────── */
+  'film-ring-draws-nothing': (dir) => {
+    edit(dir, 'player.js', "if (op.ring && movie.mode === 'paper') return paperRing(op, instant);", '/* planted: the ring op draws nothing again */');
+  },
+  'film-box-on-the-glyphs': (dir) => {
+    /* the box drawn from the 8 Sept guess: no padding from the text */
+    edit(dir, 'player.js', '      var pad = 8;', '      var pad = 0;   /* planted: the box sits on the glyphs */');
+  },
+
+  /* ── a film paced for the machine, not the reader (ruling 38) ────────── */
+  'fixture-pace-fast-film': (dir) => {
+    edit(dir, 'player.js', 'var delayMs = Math.min(8000, Math.max(1200, words * 350));',
+      'var delayMs = Math.min(3600, Math.max(850, words * 200));   /* planted: the 8 Sept pace */');
+  },
+  'stats-no-beat': (dir) => {
+    edit(dir, 'jotter-stats.js', "      if (!first && !quiet) beat();", "      /* planted: no beat */");
+  },
+  'stats-no-glow': (dir) => {
+    edit(dir, 'jotter-stats.js', "      if (r.ok && checkBtn.disabled) {", "      if (false) {   /* planted: no glow */");
+  },
+
   /* ── the drive that stops before the last stage and records nothing ──── */
   'stats-stage-skipped': (dir) => {
     edit(dir, 'tools/qa/lib/drive.js',
       "      if (S.joined) {\n        const join = one('.stat-join');\n        if (!join) return { ok: false, why: 'no Join button on ' + qid };\n        if (!join.disabled) join.click();                          /* disabled here means already joined */\n      }\n      return null;\n    }",
       "      return null;   /* planted: the drive stops before \"joined\" and records nothing */\n      if (S.joined) {\n        const join = one('.stat-join');\n        if (!join) return { ok: false, why: 'no Join button on ' + qid };\n        if (!join.disabled) join.click();                          /* disabled here means already joined */\n      }\n      return null;\n    }");
+  },
+
+  /* ── a book the class does not have, drawn on the shelf anyway (ruling 36,
+     11 Sept 2026) ────────────────────────────────────────────────────────
+     renderShelf() (script.js) skips an unticked book before it makes any
+     element at all — `if (!out) return;`, straight after `var out =
+     !!me.acts[a.id];`. This plant removes exactly that skip, so an unticked
+     book is drawn again, and qa-tickbox's source check has to catch it. */
+  'fixture-shelf-shows-unticked': (dir) => {
+    edit(dir, 'script.js',
+      '      if (!out) return;\n      anyOut = true;',
+      '      anyOut = anyOut || out;   /* planted: the skip is gone, an unticked book is drawn */');
+  },
+
+  /* ── the two waits polish rulings 34/35/37 (11 Sept 2026) ─────────── */
+  /* a card that never moves: the exact fault he saw, planted directly rather
+     than by removing the CSS this cut adds - so the plant survives whichever
+     of gj-breathe / gj-breathe-card ends up carrying the animation. */
+  'fixture-wait-card-still': (dir) => {
+    fs.appendFileSync(path.join(dir, 'style.css'), '\n.panel-loading { animation: none !important; }\n');
+  },
+  /* the box waits for the server before it moves, instead of flipping in the
+     same tick as the change event - the fault ruling 37 named. */
+  'fixture-tick-waits': (dir) => {
+    edit(dir, 'staff.js',
+      "          cb.addEventListener('change', function () {\n            /* the box has already flipped",
+      "          cb.addEventListener('change', function () {\n            cb.checked = !cb.checked;   /* planted: undo the flip until the server answers */\n            /* the box has already flipped");
   },
 
   /* ── a cold-read verdict filed against text that has since changed ── */
