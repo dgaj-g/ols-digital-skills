@@ -58,6 +58,9 @@ function fromRef(dir, repoRoot, ref, repoPath, rel) {
   write(dir, rel, text);
 }
 
+/* the stats controls walk Book C, not the battery's default first book */
+const BOOK_C = { MS_BOOK: 'stats-quartiles' };
+
 const PLANTS = {
 
   /* ── a book nobody walks, and a kind nobody lints ────────────────── */
@@ -127,7 +130,9 @@ const PLANTS = {
   'fixture-css-svg-glyph-in-plate': (dir) => {
     fs.appendFileSync(path.join(dir, 'shell.css'),
       '\n/* planted by a control, never shipped */\n' +
-      '.book.not-set .motif text { fill: #C9D2DF !important; }\n');
+      /* the locked spine is retired (ruling 36, 11 Sept 2026): the glyph
+         is drawn on the LIT plum cover (the one whose motif is a glyph), one step off its own plate */
+      '.book.lit-plum .motif text { fill: #7E4293 !important; }\n');
   },
 
   /* ── the link-and-QR modal's message slot, as it was ──────────────────
@@ -708,6 +713,7 @@ const PLANTS = {
     edit(dir, 'jotter-stats.js',
       "      var first = curPill < 0;\n      curPill = i;",
       "      var first = curPill < 0;\n      curPill = first ? i : Math.max(0, i - 1);   /* planted: the strip lags one pill behind */");
+    return { env: BOOK_C };
   },
 
   'stats-table-between': (dir) => {
@@ -719,14 +725,17 @@ const PLANTS = {
     edit(dir, 'style.css',
       "  .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }",
       "  /* planted: no side column */");
+    return { env: BOOK_C };
   },
   /* ── a film that does not draw what its caption says (ruling 39) ──────── */
   'film-ring-draws-nothing': (dir) => {
     edit(dir, 'player.js', "if (op.ring && movie.mode === 'paper') return paperRing(op, instant);", '/* planted: the ring op draws nothing again */');
+    return { env: BOOK_C };
   },
   'film-box-on-the-glyphs': (dir) => {
     /* the box drawn from the 8 Sept guess: no padding from the text */
     edit(dir, 'player.js', '      var pad = 8;', '      var pad = 0;   /* planted: the box sits on the glyphs */');
+    return { env: BOOK_C };
   },
 
   /* ── a film paced for the machine, not the reader (ruling 38) ────────── */
@@ -736,9 +745,11 @@ const PLANTS = {
   },
   'stats-no-beat': (dir) => {
     edit(dir, 'jotter-stats.js', "      if (!first && !quiet) beat();", "      /* planted: no beat */");
+    return { env: BOOK_C };
   },
   'stats-no-glow': (dir) => {
     edit(dir, 'jotter-stats.js', "      if (r.ok && checkBtn.disabled) {", "      if (false) {   /* planted: no glow */");
+    return { env: BOOK_C };
   },
 
   /* ── the drive that stops before the last stage and records nothing ──── */

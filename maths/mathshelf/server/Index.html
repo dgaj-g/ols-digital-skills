@@ -1135,18 +1135,28 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 /* \2550 \2550 \2550  login-gated polish: gold "this can take a moment" wait-card + guard spinner \2550 \2550 \2550  */
 .panel-loading {
   display: flex; align-items: center; justify-content: center; gap: 14px;
-  margin: 14px auto; max-width: 480px; padding: 16px 20px;
+  margin: 14px auto; max-width: 480px; padding: 17px 22px;
   background: linear-gradient(180deg, #FFF3CF, #FCE7A0);
   border: 2px solid var(--foil); border-radius: 12px;
-  color: var(--navy); font-weight: 800; font-size: 1.02rem; line-height: 1.25;
+  color: var(--navy); font-weight: 800; font-size: 1.15rem; line-height: 1.3;
+  letter-spacing: 0.1px;
   box-shadow: 0 6px 18px rgba(26, 58, 107, 0.18);
   /* A PULSE NOBODY CAN SEE IS NOT A PULSE. This card grew and shrank by two per
      cent, which is "technically animated, humanly static" - his words on
-     9 Sept 2026: "Checking the passcode..." still read as flat text. It now
-     breathes the way the cover's waiting line does (opacity 1 -> .58), with
-     the turning mark beside it, and both stop under prefers-reduced-motion
-     where the words do the work. */
-  animation: gj-breathe 1.5s ease-in-out infinite;
+     9 Sept 2026: "Checking the passcode..." still read as flat text. A first
+     fix (opacity 1 -> .58, shared with the cover's own is-waiting line) DID
+     breathe correctly, proved frame by frame in puppeteer with the transport
+     slowed to live speed - so the fault was never a dead animation. It was a
+     11 Sept 2026 finding: the swing was too shallow to register as motion at
+     a glance, especially over one short local round trip and easy to miss
+     entirely under macOS "Reduce Motion" (which this app already, correctly,
+     honours - see the media query below). THIS card - the one ruling 35 wants
+     pronounced anyway - now has its own deeper breath: opacity swings to .45
+     rather than .58, and the card's own border and shadow breathe with it, so
+     there are three things changing at once instead of one subtle one. The
+     cover's plain is-waiting line is untouched; it was never the one he could
+     not see. */
+  animation: gj-breathe-card 1.5s ease-in-out infinite;
 }
 .panel-spinner, .spinner {
   border-radius: 50%; flex: 0 0 auto;
@@ -1171,6 +1181,20 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
    up beside the Staff link underneath it */
 .cover-msg.is-waiting { display: flex; justify-content: center; }
 @keyframes gj-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
+/* the gold wait-card's own, deeper breath (ruling 35, 11 Sept 2026): opacity
+   swings further than the shared gj-breathe (.45 rather than .58) AND the
+   card swells very slightly with it, so two things move instead of one and
+   it reads as "working" even to someone glancing at it mid-cycle rather than
+   watching it continuously. box-shadow and border-color were the first draft
+   of this - qa-compositor is right to refuse them, since a shadow or a border
+   colour repaints the card every frame instead of compositing it, and a
+   pulsing card is exactly the place that cost would be paid forty times a
+   passcode. transform is the cheap way to get the same "it is breathing"
+   read. */
+@keyframes gj-breathe-card {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .45; transform: scale(1.015); }
+}
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner, .is-waiting, .is-waiting::before { animation: none; } }
 .act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
@@ -1571,6 +1595,58 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .qv-artefact, .jp-artefact { margin: 6px 0 10px; max-width: 420px; }
 .qv-artefact .stat-board-frame, .jp-artefact .stat-board-frame { border: 1px solid var(--hairline); }
 
+/* \2550 \2550 \2550  THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, 11 Sept 2026) \2550 \2550 \2550 
+   His first live test of Book C: "I could see the clear stages and which stage
+   I'm working on". The current pill is filled copper (white 600 on --copper,
+   5.4:1); done pills are a copper ring with a tick; upcoming pills a pencil
+   outline. The instruction under it is body size with a copper bar and names
+   the whole act. One attention beat when a stage begins (two breaths, then
+   still); one gold glow when the Check lights. Nothing pulses for ever. */
+.stage-strip { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 8px 0 4px; padding: 0; }
+.stage-pill {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 3px 12px 3px 6px;
+  border-radius: 999px; border: 1.5px solid var(--pencil); background: var(--panel); color: var(--ink);
+  font: 600 13.5px var(--f-ui); line-height: 1.2;
+}
+.stage-pill-n {
+  display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+  border-radius: 50%; border: 1.5px solid currentColor; font: 700 12px var(--f-mono); flex: 0 0 auto;
+}
+.stage-pill.is-now { background: var(--copper); border-color: var(--copper); color: #fff; }
+.stage-pill.is-now .stage-pill-n { background: #fff; color: var(--copper-ink); border-color: #fff; }
+.stage-pill.is-done { border-color: var(--copper); color: var(--copper-ink); }
+.stage-pill.is-done .stage-pill-n { border-color: var(--copper); color: var(--copper-ink); }
+.stage-pill.is-next { border-style: dashed; }
+.stat-q .stat-msg.stage-now {
+  margin: 6px 0 10px; padding: 6px 0 6px 12px; border-left: 4px solid var(--copper);
+  color: var(--ink); font-size: 15.5px; line-height: 1.45;
+}
+.stat-q .stat-msg.stage-now:empty { display: none; }
+@keyframes gj-stage-beat { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+.stage-pill.is-beat, .stat-msg.stage-now.is-beat { animation: gj-stage-beat 1.2s ease-in-out 2; }
+/* the glow is a halo whose OPACITY animates (the compositor law: never a
+   box-shadow keyframe) - the shadow itself is static on the pseudo-element */
+@keyframes gj-glow-once { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+.btn-stamp.glow-once { position: relative; }
+.btn-stamp.glow-once::after {
+  content: ''; position: absolute; inset: -4px; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(228, 184, 36, .6), 0 0 18px 6px rgba(228, 184, 36, .5);
+  opacity: 0; animation: gj-glow-once 1.2s ease-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-pill.is-beat, .stat-msg.stage-now.is-beat, .btn-stamp.glow-once::after { animation: none; }
+}
+
+/* \2550 \2550 \2550  EXERCISE 3'S LAYOUT: the action row directly under the board (ruling 42) \2550 \2550 \2550 
+   The given table sits after the dock in the flow, so on a phone the Join
+   button is one flick from the chart; the chart itself is capped at 55vh.
+   From 768px the table is lifted into a column beside the chart. */
+@media (min-width: 768px) {
+  .stat-q-cfplot > .jq-body { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 20px; align-items: start; }
+  .stat-q-cfplot > .jq-body > * { grid-column: 1; min-width: 0; }
+  .stat-q-cfplot > .jq-body > .stat-given { grid-column: 2; grid-row: 5 / span 3; align-self: start; margin-top: 6px; }
+}
+
 /* ===== shell.css (the v4 identity layer, LAST so it wins) ===== */
 /* \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
    MATHSHELF \b7  "THE BLACKBOARD, AFTER DARK"
@@ -1836,21 +1912,8 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .bbar i { display: block; height: 3px; }
 .bmeta { padding: 12px 16px 14px; font-size: 13px; color: var(--chalk-muted); display: flex; align-items: center; gap: 8px; }
 .bmeta .star { color: var(--gold-ink); font-size: 15px; }
-/* a book the teacher has not set: unlit, padlocked, still legible */
-.book.not-set { cursor: default; }
-.book.not-set .bcover { background: linear-gradient(170deg, #DDE3EC, #C9D2DF); }
-.book.not-set .title { color: #33415C; }
-/* A BOOK SHE CANNOT OPEN IS STILL A BOOK SHE READS. The locked spine kept the
-   open cover's colours on a pale ground: the audience band measured 4.12:1
-   against a 4.5 floor and the motif's own letter 1.01:1 against a 3:1 one -
-   invisible. No walk had ever stood on a shelf with an unticked book, so
-   nothing had ever measured it (found 8 Sept 2026 by the first walk that did;
-   control: sit-pupil.locked-spine-unreadable). The band and the series now
-   wear the title's ink, and the motif is drawn in it too rather than in a gold
-   that says nothing on this ground. */
-.book.not-set .series, .book.not-set .band { color: #33415C; }
-.book.not-set .motif text { fill: #33415C; }
-.book.not-set .motif path { stroke: #33415C; }
+/* the locked spine is RETIRED (his ruling 36, 11 Sept 2026): a book the class
+   does not have is not on the shelf at all, so there is nothing to style */
 
 /* \2500 \2500  CHROME on an open book \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500 \2500  */
 .act-bar {
@@ -2266,8 +2329,6 @@ window.OLS_TRANSPORT = {
       shelfGreetingMorning: 'Good morning',
       shelfGreetingAfternoon: 'Good afternoon',
       shelfPlain: 'Your maths books live here. Your teacher chooses which ones are out.',
-      shelfNotSet: 'Not set yet',
-      shelfNotSetNote: 'A book that is not set yet is one your teacher has not put out for this class.',
       shelfMore: 'Your teacher will add more books to this shelf during the year.',
       shelfMarks: '{got} of {max} marks \u00b7 {done} of {total} answered',
 
@@ -2306,8 +2367,8 @@ window.OLS_TRANSPORT = {
       statPutBack: 'Press it again to put it back.',
       statRemoveLast: 'Remove the last one',
       statNextRow: 'next \u2193',
-      statThatsMine: 'That\u2019s my answer',
-      statThatsMyOne: 'That\u2019s my {name}',
+      statThatsMine: '\u2713 That\u2019s my answer',
+      statThatsMyOne: '\u2713 That\u2019s my {name}',
       /* the two fictions */
       statRuleFiction: 'The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve.',
       statTrayFiction: 'Five markers \u2014 put each one on the scale where it belongs.',
@@ -2324,13 +2385,10 @@ window.OLS_TRANSPORT = {
       statCumulativeFrequency: 'Cumulative frequency',
       statReading: 'reading',
       /* the ordered list and its cuts */
-      statQlistOrder: 'Choose the values in order, smallest first.',
       statQlistOrderWhy: 'Put every value in the row first.',
-      statQlistPick: 'Now choose the {name}.',
       statQlistPickWhy: 'Choose each value you were asked for first.',
-      statQlistCommit: 'That\u2019s my {name}',
+      statQlistCommit: '\u2713 That\u2019s my {name}',
       statQlistCommitWhy: 'Choose a value in the row first.',
-      statQlistIqr: 'Work out the interquartile range.',
       statQlistIqrWhy: 'Work out the interquartile range first.',
       statQlistTruth: 'In order: {list}',
       statPickOne: '{name} = {value}',
@@ -2338,14 +2396,13 @@ window.OLS_TRANSPORT = {
       statLineOne: '{name} = {value}',
       statLinePair: '{name} = ({a} + {b}) \u00f7 2 = {value}',
       /* the cumulative frequency column */
-      statCftableStart: 'Choose a box in the last column and put its running total in.',
       statCftableRow: 'Cumulative frequency up to {value} {unit}',
       statCftableWhy: 'Put a running total in at least one row first.',
       statCftableTruth: 'Running totals: {list}',
       /* plotting and joining */
       statPlotPlaceWhy: 'Place every point first.',
       statPlotJoinWhy: 'Join the points first.',
-      statJoinPoints: 'Join the points',
+      statJoinPoints: '\u2713 Join the points',
       statPlotJoinedAlready: 'The points are joined.',
       statPlotEnough: 'You have all the points you need \u2014 move one instead.',
       statPointReadout: '({x}, {y})',
@@ -2358,11 +2415,8 @@ window.OLS_TRANSPORT = {
       statNudgeDown: 'One square down',
       statRemovePoint: 'Take this point off',
       /* reading the curve */
-      statReadFind: 'Find the {name}.',
       statReadWhy: 'Find every value you were asked for first.',
       statReadMoveWhy: 'Move the rule to the height you need first.',
-      statReadIqr: 'Work out the interquartile range.',
-      statReadAtX: 'Move the rule across to {x}.',
       statReadAtXWhy: 'Move the rule across and put your answer in first.',
       statValueReadout: '{value}',
       statCfReadout: '{value}',
@@ -2371,17 +2425,13 @@ window.OLS_TRANSPORT = {
       statPctAbove: 'Percentage above',
       statPctBelow: 'Percentage below',
       /* the box plot */
-      statBoxChooseMarker: 'Choose a marker.',
-      statBoxPlaceOnScale: 'Now press the scale where it belongs.',
-      statBoxPlaced: '{name} at {value}',
       statBoxPlaceWhy: 'Put all five markers on the scale first.',
-      statDrawBoxPlot: 'Draw the box plot',
+      statDrawBoxPlot: '\u2713 Draw the box plot',
       statBoxDrawWhy: 'Draw the box plot first.',
       statBoxDrawnAlready: 'The box plot is drawn.',
       statBoxStageWhy: 'Finish the first part first.',
       statNextDrawBox: 'Next: draw the box plot',
       /* comparing two distributions */
-      statCompareStart: 'Finish both sentences.',
       statCompareWhy: 'Finish both sentences first.',
       statCompareValue: 'Value',
       statCmpHigherMedian: 'had the higher median',
@@ -2396,7 +2446,6 @@ window.OLS_TRANSPORT = {
       statCmpLess: 'less',
       statCmpConsistent: 'consistent',
       /* weighing a claim */
-      statJudgeStart: 'Decide about each claim.',
       statFairToSay: 'Fair to say',
       statNotFair: 'Not fair',
       statJudgeDecideWhy: 'Decide every claim first.',
@@ -2404,6 +2453,40 @@ window.OLS_TRANSPORT = {
       /* number-pad answers */
       statValuesStart: 'Choose a box and put your answer in.',
       statValuesWhy: 'Put a number in at least one box first.',
+
+      /* THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, Correction
+         11 Sept 2026 \u2014 his first live test of Book C). A pill is two or three
+         words; an instruction names the whole act, how many, and what happens
+         next; every {n} is a live count. The instruction table in the design
+         is the source of every sentence here. */
+      statPillOrder: 'Put in order',
+      statPillCuts: 'Mark the cuts',
+      statPillIqr: 'Find the IQR',
+      statPillCftable: 'Fill the running total',
+      statPillValues: 'Work out the values',
+      statPillPlot: 'Plot the points',
+      statPillJoin: 'Join the points',
+      statPillRead: 'Read the {name}',
+      statPillReadAt: 'Read at {x}',
+      statPillBoxPlace: 'Place the markers',
+      statPillBoxDraw: 'Draw the plot',
+      statPillCompare1: 'The averages',
+      statPillCompare2: 'The spread',
+      statPillJudge: 'Decide each one',
+      statStageQlistOrder: 'Build the ordered list. Choose the smallest value first, then the next smallest, and keep going until every value is in the row. ({n} still to place.)',
+      statStageQlistPick: 'Now choose the value you think is the {name}. If it sits between two values, choose both. Then press \u2713 That\u2019s my {name}.',
+      statStageIqr: 'Enter the interquartile range on the pad, then press \u2713.',
+      statStageCftable: 'Fill in the running total from the top row down: each box is the total so far plus that row\u2019s frequency. Choose a box, then use the pad.',
+      statStageCfplotPlace: 'Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. ({n} of {m} placed.)',
+      statStageCfplotJoin: 'Every point is placed. Join them to draw the curve: press \u2713 Join the points.',
+      statStageCfread: 'Move the rule up the frequency axis to the height for the {name}, then read where it meets the curve. Press \u2713 That\u2019s my {name} to keep it.',
+      statStageCfreadAtX: 'Move the rule along the bottom axis to {x}, and read the total where it meets the curve. Then enter the answer on the pad.',
+      statStageBoxPlace: 'Choose a marker, then choose where it belongs on the scale. All five go on. ({n} of 5 placed.)',
+      statStageBoxDraw: 'All five markers are on the scale. Press \u2713 Draw the box plot.',
+      statStageCompare1: 'Finish the first sentence: choose the group with the higher median, then enter both medians.',
+      statStageCompare2: 'Finish the second sentence: choose the measure, the group and the two values.',
+      statStageJudge: 'For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.',
+      statStageJudgeOptions: 'Choose what happens to each one.',
       numpadDefaultLabel: 'Enter a number',
 
       /* the movie player */
@@ -2536,6 +2619,11 @@ window.OLS_TRANSPORT = {
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode\u2026',
       tickSaving: 'Saving {book} for {class}\u2026',
+      /* the outcome of a tick, named (rule 23): these used to be built by
+         string concatenation on the render path itself, invisible to any
+         language gate */
+      tickOn: '{book} is now on {class}\u2019s shelf.',
+      tickOff: '{book} removed from {class}\u2019s shelf.',
       passcodeWrong: 'That passcode was not accepted.',
       openMarkbook: 'Open the markbook',
       noServer: 'We could not reach the server. Try again.',
@@ -2572,6 +2660,7 @@ window.OLS_TRANSPORT = {
       csvCopied: 'Copied. Paste it into a spreadsheet.',
       csvFallback: 'Your browser would not let the page copy for you. Select the text below and copy it yourself.',
       setUpHint: 'Tick the books this class should see.',
+      setUpClosedHint: 'A book that is not ticked is closed for that class: it is not on the pupils\u2019 shelf at all.',
 
       /* the markbook's own words */
       overConfident: 'Over-confident \u2014 confidence high, working weaker',
@@ -8594,8 +8683,15 @@ function statsBoard(q, wrong) {
 
     // =====================================================================
     // ring / bracket - decorative highlight over already-plotted points
-    // (the qlist "circle the middle two" beat; deviation noted in the
-    // build report - see statchart's header comment).
+    // (the qlist "circle the middle two" beat). This ring only ever knows
+    // about a CHART POINT (st.points[i]) - it has no idea what a written
+    // paper line is, and never did. Ruling 39 (11 Sept 2026) needed a ring
+    // on a WRITTEN line too ("ring the 4th value" in an ordered list, mode
+    // 'paper', no chart in sight) - that one lives in player.js's own
+    // paperRing(), a separate function against a separate model (the
+    // .ml-val spans a written line splits itself into), not a call to this
+    // one. The two rings share a look (copper ellipse, pen-speed draw) and
+    // nothing else - no deviation left open here.
     // =====================================================================
     function ring(i) {
       var pt = st.points[i];
@@ -9066,7 +9162,16 @@ function statsBoard(q, wrong) {
 
     function paperWrite(op, instant) {
       var line = el('div', 'movie-line');
-      var eq = el('span', 'ml-eq', op.write.text);
+      var eq = el('span', 'ml-eq');
+      /* RULING 39: A RING NEEDS SOMETHING TO RING. Every written line splits
+         itself into its comma-separated values up front, each in its own
+         span, so a later `ring` op can find and measure the exact value it
+         names \u2014 never a guessed offset. A line with no comma (an equation,
+         a single total) is one span covering the whole line, which a ring
+         at i:0 can still find. */
+      eq.innerHTML = String(op.write.text).split(/,\s*/).map(function (v) {
+        return '<span class="ml-val">' + v + '</span>';
+      }).join(', ');
       line.appendChild(eq);
       if (op.write.margin) line.appendChild(el('span', 'ml-margin', op.write.margin));
       stage.appendChild(line);
@@ -9095,15 +9200,79 @@ function statsBoard(q, wrong) {
       var line = paperLines[op.box.line];
       if (!line) return Promise.resolve();
       var eq = line.querySelector('.ml-eq');
-      var w = eq.offsetWidth + 22, h = eq.offsetHeight + 8;
+      if (!eq) return Promise.resolve();
+      /* RULING 39: "THE GOLD BORDER ENCROACHES ON THE TEXT." The old box's
+         viewBox was built from eq's size plus hand-picked insets (+22/+8)
+         that did not match .answer-boxed's own CSS padding (2px/10px) \u2014 so
+         the SVG's actual on-screen size (100% of that padded box, set by
+         style.css) never matched the coordinate system the path was drawn
+         in, and the box quietly stretched onto the glyphs.
+         Measured from the glyph rect instead \u2014 and measured AFTER wrapping,
+         never before: a span that is about to stop being a flex item and
+         become a plain nested inline one does not report the same rect both
+         ways (proved empirically, ~4px out, not a rounding error), so the
+         wrapper is built first and every dimension below comes from what is
+         ACTUALLY on screen once it exists. The wrapper's own box is not
+         assumed to coincide with the glyph box either \u2014 the offset between
+         them is measured, not guessed, so the drawn box sits exactly 8px
+         outside the text on every side however the two boxes differ. style.css
+         is not touched: every dimension is inline, including a `max-width`
+         override \u2014 `.movie-stage svg` sets `max-width:100%` for every SVG on
+         the stage, which would otherwise clamp this one straight back down
+         to its own wrapper's width. */
+      var pad = 8;
       var hold = el('span', 'answer-boxed');
+      hold.style.cssText = 'display:inline-block;position:relative;padding:0';
       eq.parentNode.insertBefore(hold, eq);
       hold.appendChild(eq);
+      var inset = 2; // keeps the 3px stroke fully inside the canvas
+      /* the 8px is CLEAR paper between the glyphs and the stroke's inner edge,
+         so the canvas reaches further out by the inset and half the stroke */
+      var gap = pad + inset + 1.5;
+      var hr = hold.getBoundingClientRect();
+      var er = eq.getBoundingClientRect();
+      var w = er.width + gap * 2, h = er.height + gap * 2;
+      var left = (er.left - hr.left) - gap, top = (er.top - hr.top) - gap;
       var s = sv('svg', { class: 'box-draw', viewBox: '0 0 ' + w + ' ' + h });
-      var p = sv('path', { d: 'M2 2 H ' + (w - 2) + ' V ' + (h - 2) + ' H 2 Z' });
+      s.style.cssText = 'position:absolute;overflow:visible;max-width:none;max-height:none;' +
+        'left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px';
+      var p = sv('path', { d: 'M' + inset + ' ' + inset + ' H ' + (w - inset) + ' V ' + (h - inset) + ' H ' + inset + ' Z' });
       s.appendChild(p);
       hold.appendChild(s);
       return drawStroke(p, instant);
+    }
+
+    function paperRing(op, instant) {
+      /* RULING 39: A FILM DRAWS WHAT ITS CAPTION SAYS. "Ring the 4th value"
+         had been landing on nothing \u2014 PAPER mode has no diagram to hand a
+         `ring` op to, so it fell all the way through applyOp to the
+         diagram-only branch and drew nothing at all. This rings the i-th
+         value of a paper line (the line most recently written, or
+         op.ring.line when given) with a copper ellipse measured from THAT
+         value's own rendered rect \u2014 never a guessed offset \u2014 so it sits over
+         the actual glyphs whatever font, width or wrap they end up with.
+         Deviation note: statchart.js's own ring(i) (below) only ever knew
+         about plotted chart points; this is the separate paper-mode ring. */
+      var line = op.ring.line != null ? paperLines[op.ring.line] : paperLines[paperLines.length - 1];
+      if (!line) return Promise.resolve();
+      var target = line.querySelectorAll('.ml-val')[op.ring.i];
+      if (!target) return Promise.resolve();
+      if (!line.style.position) line.style.position = 'relative';
+      var pad = 4;
+      var lr = line.getBoundingClientRect();
+      var vr = target.getBoundingClientRect();
+      var w = vr.width + pad * 2, h = vr.height + pad * 2;
+      var s = sv('svg', { class: 'ml-ring ring-draw', viewBox: '0 0 ' + w + ' ' + h });
+      s.style.cssText = 'position:absolute;overflow:visible;pointer-events:none;max-width:none;max-height:none;' +
+        'left:' + (vr.left - lr.left - pad) + 'px;top:' + (vr.top - lr.top - pad) + 'px;' +
+        'width:' + w + 'px;height:' + h + 'px';
+      var e = sv('ellipse', {
+        cx: w / 2, cy: h / 2, rx: Math.max(2, w / 2 - 1.5), ry: Math.max(2, h / 2 - 1.5),
+        fill: 'none', stroke: 'var(--copper)', 'stroke-width': 1.8
+      });
+      s.appendChild(e);
+      line.appendChild(s);
+      return drawStroke(e, instant);
     }
 
     function paperGrid(op, instant) {
@@ -9190,6 +9359,7 @@ function statsBoard(q, wrong) {
       if (op.write) return paperWrite(op, instant);
       if (op.tick) return paperTick(op, instant);
       if (op.box) return paperBox(op, instant);
+      if (op.ring && movie.mode === 'paper') return paperRing(op, instant);
       if (op.grid) return paperGrid(op, instant);
       if (op.balance) return paperBalance(op, instant);
       if (op.stamp) return doStamp(op, instant);
@@ -9284,11 +9454,17 @@ function statsBoard(q, wrong) {
     }
 
     function readTime(i) {
-      // dwell AFTER the step's animation has finished. The caption has been
-      // on screen throughout the draw, so this is top-up reading time, not
-      // the whole read \u2014 keep it snappy. ~270 wpm, floored and capped.
+      // dwell AFTER the step's animation has finished (ruling 38, 11 Sept
+      // 2026 \u2014 "it travels too quickly from step to step when the play
+      // button is pressed"). The caption has been on screen throughout the
+      // draw, so this tops up reading time at ~170 wpm, floored so even a
+      // one-word caption gets a beat and capped so a long caption cannot
+      // stall the film \u2014 she is never trapped in the wait: pause, Back and
+      // Next all work while it is running.
       var words = (movie.steps[i].say || '').split(/\s+/).length;
-      return Math.min(3600, Math.max(850, words * 200));
+      /* named as a delay so the human-pace inventory can see the three numbers */
+      var delayMs = Math.min(8000, Math.max(1200, words * 350));
+      return delayMs;
     }
     function scheduleAuto() {
       if (!playing) return;
@@ -11252,6 +11428,52 @@ function statsBoard(q, wrong) {
     judge: 'statCheckJudge', values: 'statCheckValues'
   };
 
+  /* \u2500\u2500 THE STAGE STRIP: the stages, SHOWN (DESIGN 4.0, Correction 11 Sept
+     2026). His words: "it would be really helpful if I could see the clear
+     stages and which stage I'm working on". A pill groups the boards a
+     pupil experiences as ONE act (the ordered row is one act however many
+     tiles are in it); the strip is derived from the SAME stage list the root
+     declares, so the two can never disagree, and the walker asserts that the
+     lit pill is the one the root's data-stage belongs to. A kind whose pills
+     are its ASKS (cfread) or its SENTENCES (compare) lights them itself
+     through ctx.setPill, because its boards are shared between the acts. */
+  function pillsFor(q, stages) {
+    var t = T();
+    var out = [];
+    function pill(name, list) { out.push({ name: name, stages: list.filter(function (s2) { return stages.indexOf(s2) > -1; }) }); }
+    function has(s2) { return stages.indexOf(s2) > -1; }
+    var kind = q.kind;
+    if (kind === 'qlist') {
+      /* the completed row IS the start of the cuts: the pick instruction is
+         showing the moment the last tile lands, so that board is the cuts' */
+      pill(t.statPillOrder, ['tray', 'ordering', 'selected'].concat(has('picking') ? [] : ['ordered']));
+      if (has('picking')) pill(t.statPillCuts, ['ordered', 'picking', 'cut-committed']);
+      if (has('iqr')) pill(t.statPillIqr, ['iqr']);
+    } else if (kind === 'cftable') pill(t.statPillCftable, ['empty', 'filling']);
+    else if (kind === 'values') pill(t.statPillValues, ['empty', 'filling']);
+    else if (kind === 'cfplot') { pill(t.statPillPlot, ['empty', 'selected']); pill(t.statPillJoin, ['placed', 'joined']); }
+    else if (kind === 'cfread') {
+      (q.ask || []).forEach(function (a) {
+        if (a === 'IQR') pill(t.statPillIqr, ['iqr']);
+        else if (a && a.type === 'atX') pill(fill(t.statPillReadAt, { x: a.x }), ['at-x']);
+        else pill(fill(t.statPillRead, { name: readName(a) }), ['parked', 'sliding', 'committed']);
+      });
+    }
+    else if (kind === 'boxplot') { pill(t.statPillBoxPlace, ['tray', 'marker-selected', 'placing']); pill(t.statPillBoxDraw, ['placed', 'drawn']); }
+    /* both sentences are "building" boards: the kind lights the pill itself */
+    else if (kind === 'compare') { pill(t.statPillCompare1, ['empty', 'building']); pill(t.statPillCompare2, ['building']); }
+    else if (kind === 'judge') pill(t.statPillJudge, ['empty', 'judging', 'reason-open']);
+    /* the finished board belongs to the last act */
+    if (out.length && has('ready')) out[out.length - 1].stages.push('ready');
+    return out;
+  }
+  /* the plain name of a reading ask, shared by the pill and the instruction */
+  function readName(a) {
+    var t = T();
+    var m = { median: t.statMedian, Q1: t.statLowerQuartile, Q2: t.statMedian, Q3: t.statUpperQuartile, IQR: t.statIqr };
+    return (typeof a === 'string' && m[a]) || (typeof a === 'string' ? a : t.statReading);
+  }
+
   /* \u2500\u2500 derangement: a tray never comes out in the answer order \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
   /* `items` are objects; `key` returns the value the ANSWER order is written
      in. A derangement is the strong form of the law: no item may sit in the
@@ -11361,7 +11583,7 @@ function statsBoard(q, wrong) {
     if (!rec.att) rec.att = [];
     var t0 = Date.now();
 
-    var wrap = el('div', 'jotter-q stat-q');
+    var wrap = el('div', 'jotter-q stat-q stat-q-' + q.kind);
     wrap.id = 'jq-' + q.id;
     tagQuestionRoot(wrap, q, hooks);
     var stages = stagesFor(q);
@@ -11379,9 +11601,74 @@ function statsBoard(q, wrong) {
     body.appendChild(el('p', 'jq-prompt',
       esc(q.prompt) + ' <span class="q-marks">[' + marksTotal + (marksTotal === 1 ? ' mark' : ' marks') + ']</span>'));
 
+    /* THE STRIP: numbered pills, the current one filled copper, done ones a
+       copper ring with a tick, upcoming ones a pencil outline. It is READ,
+       so it is not data-ornament. A two-stage item shows the first kind's
+       pills then the second's (the prefixed stages map onto them). */
+    var strip = null, pills = [], curPill = -1, beatTimer = null;
+    function pillsOf() {
+      if (q.kind === 'boxplot' && q.from) {
+        var first = q.from === 'curve' ? 'cfread' : q.from;
+        var stageQ = {}, k2;
+        for (k2 in q) if (q.hasOwnProperty(k2) && k2 !== 'kind' && k2 !== 'from') stageQ[k2] = q[k2];
+        stageQ.kind = first;
+        var pre = pillsFor(stageQ, stages.filter(function (s2) { return s2.indexOf(first + ':') === 0; })
+          .map(function (s2) { return s2.slice(first.length + 1); }));
+        pre.forEach(function (p2) { p2.stages = p2.stages.map(function (s2) { return first + ':' + s2; }); });
+        return pre.concat(pillsFor(q, stages));
+      }
+      return pillsFor(q, stages);
+    }
+    pills = pillsOf();
+    if (pills.length > 1) {
+      strip = el('div', 'stage-strip');
+      strip.setAttribute('role', 'list');
+      body.appendChild(strip);
+    }
+    function renderStrip() {
+      if (!strip) return;
+      strip.innerHTML = '';
+      pills.forEach(function (p2, i) {
+        var pl = el('span', 'stage-pill ' + (i < curPill ? 'is-done' : i === curPill ? 'is-now' : 'is-next'));
+        pl.setAttribute('role', 'listitem');
+        pl.setAttribute('data-pill-stages', p2.stages.join(' '));
+        if (i === curPill) pl.setAttribute('aria-current', 'step');
+        var n = el('span', 'stage-pill-n', i < curPill ? '\u2713' : String(i + 1));
+        n.setAttribute('aria-hidden', 'true');
+        pl.appendChild(n);
+        pl.appendChild(el('span', 'stage-pill-name', esc(p2.name)));
+        strip.appendChild(pl);
+      });
+    }
+    /* ONE ATTENTION BEAT when a stage begins - two breaths, then still. A
+       screen that nags is a screen she stops reading, so nothing pulses for
+       ever; under prefers-reduced-motion the stylesheet skips the beat. */
+    function beat() {
+      var pl = strip && strip.querySelector('.stage-pill.is-now');
+      [pl, msg].forEach(function (n) { if (n) { n.classList.remove('is-beat'); void n.offsetWidth; n.classList.add('is-beat'); } });
+      clearTimeout(beatTimer);
+      beatTimer = setTimeout(function () { [pl, msg].forEach(function (n) { if (n) n.classList.remove('is-beat'); }); }, 2500);
+    }
+    function pillOfStage(s2) {
+      for (var i = 0; i < pills.length; i++) if (pills[i].stages.indexOf(s2) > -1) return i;
+      return curPill < 0 ? 0 : curPill;
+    }
+    function setPill(i, quiet) {
+      if (!pills.length) return;
+      i = Math.max(0, Math.min(pills.length - 1, i));
+      if (i === curPill) return;
+      var first = curPill < 0;
+      curPill = i;
+      wrap.setAttribute('data-stage-label', pills[i].name);
+      renderStrip();
+      if (!first && !quiet) beat();
+    }
+
     /* the one live message slot: a stage instruction REPLACES the last one
-       rather than stacking, so no question ever says the same thing twice */
-    var msg = el('p', 'ui-msg stat-msg');
+       rather than stacking, so no question ever says the same thing twice.
+       It is the CURRENT INSTRUCTION - body size, a copper bar - and it names
+       the whole act before the control that does it. */
+    var msg = el('p', 'ui-msg stat-msg stage-now');
     body.appendChild(msg);
 
     var ghost = el('div', 'stat-ghost');           /* attempt 1, struck through */
@@ -11419,12 +11706,18 @@ function statsBoard(q, wrong) {
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
-      setStage: function (s) { if (stages.indexOf(s) > -1) wrap.setAttribute('data-stage', s); },
+      setStage: function (s) {
+        if (stages.indexOf(s) === -1) return;
+        wrap.setAttribute('data-stage', s);
+        setPill(pillOfStage(s));
+      },
+      setPill: function (i) { setPill(i); },
       changed: function () { onChange(); }
     };
     body.addEventListener('click', function () { ctx.clearSelection(); });
 
     var kind = BUILD[q.kind](ctx);
+    setPill(pillOfStage(stages[0]), true);
 
     /* \u2500\u2500 the open attempt, so a reload lands on resume-mid \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
     var saveTimer = null;
@@ -11447,6 +11740,11 @@ function statsBoard(q, wrong) {
     function onChange() {
       if (rec.lock || settling) return;
       var r = kind.ready();
+      /* ONE GOLD GLOW when the Check lights, then still (DESIGN 4.0) */
+      if (r.ok && checkBtn.disabled) {
+        checkBtn.classList.remove('glow-once'); void checkBtn.offsetWidth; checkBtn.classList.add('glow-once');
+        setTimeout(function () { checkBtn.classList.remove('glow-once'); }, 1300);
+      }
       checkBtn.disabled = !r.ok;
       setLockedWhy(checkBtn, r.ok ? null : r.why);
       /* WHICH BOARD SHE IS LOOKING AT IS THE KIND'S OWN BUSINESS. This used to
@@ -11530,6 +11828,7 @@ function statsBoard(q, wrong) {
         setLockedWhy(checkBtn, kind.ready().why);
         ctx.say(T().statTryAgain);
         wrap.setAttribute('data-stage', stages[0]);
+        curPill = -1; setPill(pillOfStage(stages[0]), true);
       }
       if (!instant) {
         var fr = feedback.getBoundingClientRect();
@@ -11741,12 +12040,12 @@ function statsBoard(q, wrong) {
       pad = null;
       if (order.length < values().length) {
         window.GJ.setState(ctx.dock, 'dock', 'tray');
-        ctx.say(T().statQlistOrder);
+        ctx.say(fill(T().statStageQlistOrder, { n: values().length - order.length }));
         return;
       }
       if (cutIdx < cuts.length) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
-        ctx.say(fill(T().statQlistPick, { name: cutName(cuts[cutIdx]) }));
+        ctx.say(fill(T().statStageQlistPick, { name: cutName(cuts[cutIdx]) }));
         var commit = el('button', 'btn-quiet', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
         commit.type = 'button';
         commit.disabled = !pending.length;
@@ -11771,7 +12070,7 @@ function statsBoard(q, wrong) {
         /* the last board: the pad is open and, once a value is in it, the
            Check is lit and she is ready */
         ctx.setStage(iqr ? 'ready' : 'iqr');
-        ctx.say(T().statQlistIqr);
+        ctx.say(T().statStageIqr);
         pad = makeNumPad(ctx.dock, {
           label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) { iqr = v; ctx.setStage(v ? 'ready' : 'iqr'); ctx.changed(); }
@@ -11795,7 +12094,7 @@ function statsBoard(q, wrong) {
     function render() { renderTray(); renderRow(); renderReadout(); renderDock(); }
 
     return {
-      start: function () { render(); ctx.say(T().statQlistOrder); },
+      start: function () { render(); },
       reset: function () { order = []; picks = {}; pending = []; iqr = ''; cutIdx = 0; committed = []; lines.innerHTML = ''; render(); },
       restore: function (S) {
         S = S || {};
@@ -11914,13 +12213,12 @@ function statsBoard(q, wrong) {
     function renderDock() {
       ctx.dock.innerHTML = '';
       pad = null;
+      ctx.say(T().statStageCftable);
       if (open < 0) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
-        ctx.say(T().statCftableStart);
         return;
       }
       window.GJ.setState(ctx.dock, 'dock', 'numpad');
-      ctx.say(rowLabel(open));
       pad = makeNumPad(ctx.dock, {
         label: rowLabel(open), decimal: true,
         onChange: function (v) { cf[open] = v; paint(); ctx.changed(); }
@@ -12138,8 +12436,13 @@ function statsBoard(q, wrong) {
     var boardWrap = el('div', 'stat-board-host');
     boardWrap.setAttribute('data-work', '');
     ctx.boardHost.appendChild(boardWrap);
+    /* THE TABLE IS BESIDE THE CHART, NEVER BETWEEN THE CHART AND ITS
+       CONTROLS (his Exercise 3, 11 Sept 2026: "a huge amount to scroll on
+       the graph before I can join the dots"). It sits after the dock in the
+       flow, so on a phone the Join button is directly under the board; from
+       768px the stylesheet lifts it into a column beside the chart. */
     var tableWrap = el('div', 'stat-given');
-    ctx.boardHost.appendChild(tableWrap);
+    ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));
 
     function givenTable() {
       tableWrap.innerHTML = '';
@@ -12228,7 +12531,7 @@ function statsBoard(q, wrong) {
         after();
       });
       ctx.dock.appendChild(join);
-      ctx.say(n < maxPts ? T().statPlotPlaceWhy : (joined ? '' : T().statPlotJoinWhy));
+      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, { n: n, m: maxPts }) : (joined ? '' : T().statStageCfplotJoin));
     }
 
     return {
@@ -12340,7 +12643,7 @@ function statsBoard(q, wrong) {
       if (a === 'IQR') {
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-        ctx.say(T().statReadIqr);
+        ctx.say(T().statStageIqr);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
         pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
@@ -12367,7 +12670,7 @@ function statsBoard(q, wrong) {
       }
       if (isAtX(a)) {
         window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
-        ctx.say(fill(T().statReadAtX, { x: a.x }));
+        ctx.say(fill(T().statStageCfreadAtX, { x: a.x }));
         var doneX = el('button', 'btn-quiet', T().statThatsMine);
         /* THE COMMIT KEEPS LOOKING. It was judged once, when the dock was
            built, and never again - so moving the rule and keying the answer
@@ -12410,7 +12713,7 @@ function statsBoard(q, wrong) {
         return;
       }
       window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
-      ctx.say(fill(T().statReadFind, { name: nameOf(a) }));
+      ctx.say(fill(T().statStageCfread, { name: nameOf(a) }));
       var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
       /* THE DOCK IS NOT REBUILT WHILE SHE IS WORKING IN IT. Moving the rule
          redraws the BOARD and re-reads the commit; rebuilding the whole dock
@@ -12589,13 +12892,14 @@ function statsBoard(q, wrong) {
       bd = window.GJ_STATCHART.render(boardWrap, q.scale, {
         onGridTap: function (x) {
           if (ctx.locked()) return;
-          if (!sel) { ctx.say(T().statBoxChooseMarker); return; }
+          /* a press on the scale with no marker chosen: the instruction
+             already says "choose a marker, then..." - it stays, with its
+             live count, rather than being replaced by a shorter hint */
+          if (!sel) return;
           pos[sel] = x;
-          var placed = sel;
           sel = null;
           ctx.setStage(Object.keys(pos).length === 5 ? 'placed' : 'placing');
           paint(); ctx.changed();
-          ctx.say(fill(T().statBoxPlaced, { name: markerLabel(placed), value: x }));
         },
         onChange: function (evt) {
           if (!evt || ctx.locked()) return;
@@ -12603,7 +12907,6 @@ function statsBoard(q, wrong) {
         }
       });
       fictionLine(ctx, T().statTrayFiction);
-      ctx.say(T().statBoxChooseMarker);
       ctx.setStage('tray');
       paint();
     }
@@ -12678,8 +12981,8 @@ function statsBoard(q, wrong) {
         paint(); ctx.changed();
       });
       ctx.dock.appendChild(draw);
-      if (Object.keys(pos).length < 5) ctx.say(sel ? T().statBoxPlaceOnScale : T().statBoxChooseMarker);
-      else if (!drawn) ctx.say(T().statBoxDrawWhy);
+      if (Object.keys(pos).length < 5) ctx.say(fill(T().statStageBoxPlace, { n: Object.keys(pos).length }));
+      else if (!drawn) ctx.say(T().statStageBoxDraw);
     }
 
     return {
@@ -12815,6 +13118,8 @@ function statsBoard(q, wrong) {
       var ok2 = s2.who && s2.size && s2.meas && s2.cons && s2.v && s2.v[0] && s2.v[1];
       var touched = s1.who || s2.who || (s1.v && s1.v[0]) || (s2.v && s2.v[0]);
       ctx.setStage((ok1 && ok2) ? 'ready' : (touched ? 'building' : 'empty'));
+      ctx.setPill(ok1 ? 1 : 0);
+      ctx.say(ok1 ? T().statStageCompare2 : T().statStageCompare1);
       sentences.innerHTML = '';
       var l1 = el('p', 'stat-sentence');
       l1.appendChild(document.createTextNode(''));
@@ -12868,7 +13173,6 @@ function statsBoard(q, wrong) {
       });
       render();
       window.GJ.setState(ctx.dock, 'dock', 'chips');
-      ctx.say(T().statCompareStart);
     }
 
     return {
@@ -12982,7 +13286,11 @@ function statsBoard(q, wrong) {
     }
 
     return {
-      start: function () { render(); ctx.say(T().statJudgeStart); },
+      start: function () {
+        render();
+        var allOptions = claims.length > 0 && claims.every(function (c) { return !!c.options; });
+        ctx.say(allOptions ? T().statStageJudgeOptions : T().statStageJudge);
+      },
       reset: function () { j = claims.map(function () { return {}; }); render(); },
       restore: function (S) { j = (S && S.j) || claims.map(function () { return {}; }); render(); },
       state: function () { return { j: j }; },
@@ -13497,10 +13805,55 @@ function statsBoard(q, wrong) {
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
-      '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.</p>';
+      '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' ' + esc(TT('setUpClosedHint')) + '</p>';
     shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
+
+    /* A TICK REACTS AT ONCE (ruling 37, 11 Sept 2026): the box is a real
+       checkbox, so it has already flipped before this code runs at all - the
+       fault he saw was never the box, it was everything ELSE waiting for the
+       disabled attribute and the round trip before it looked settled. Nothing
+       here disables the box or defers the flip. What it has to get right
+       instead is a SECOND flip landing while the first save is still in
+       flight: c._tickSync (one per class, lazily created) holds a queue of
+       one - the latest desired state - and a busy flag, so two quick clicks
+       send one call each in order rather than racing two calls that could
+       land out of turn and leave the box showing whichever answer happened
+       to arrive last. */
+    function runTickSync(c) {
+      var sync = c._tickSync;
+      if (!sync || sync.busy || !sync.queued) return;
+      var acts = sync.queued, pending = sync.pending, tw = sync.tickWrap;
+      sync.queued = null;
+      sync.busy = true;
+      call('setActs', { className: c.name, acts: acts }).then(function (r) {
+        sync.busy = false;
+        if (r && r.ok) {
+          c.acts = acts;
+          SURF('set-up', 'tickboxes');
+          clearBusy(cmsg, TT(pending.on ? 'tickOn' : 'tickOff', { book: pending.title, 'class': c.name }));
+        } else {
+          /* revert every box in this row to the last state the server actually
+             confirmed - simpler and safer than guessing which one failed when
+             a second click queued a different book while this call was out */
+          Object.keys(acts).forEach(function (id) {
+            var box = tw.querySelector('input[data-act-id="' + id + '"]');
+            if (box) box.checked = !!(c.acts && c.acts[id]);
+          });
+          clearBusy(cmsg, SAYS(r && r.error, TT('couldNotSave')));
+        }
+        if (sync.queued) runTickSync(c);
+      }).catch(function () {
+        sync.busy = false;
+        Object.keys(acts).forEach(function (id) {
+          var box = tw.querySelector('input[data-act-id="' + id + '"]');
+          if (box) box.checked = !!(c.acts && c.acts[id]);
+        });
+        clearBusy(cmsg, TT('couldNotSave'));
+        if (sync.queued) runTickSync(c);
+      });
+    }
 
     function render() {
       rows.innerHTML = '';
@@ -13529,23 +13882,30 @@ function statsBoard(q, wrong) {
           var lab = el('label', 'tickbox');
           var cb = document.createElement('input');
           cb.type = 'checkbox';
+          cb.setAttribute('data-act-id', a.id);
           cb.checked = !!(c.acts && c.acts[a.id]);
           cb.addEventListener('change', function () {
+            /* the box has already flipped - this reads the WHOLE row's live
+               state (not just c.acts) so a second box ticked while the first
+               save is still in flight is not lost */
             var acts = {};
-            window.GJ.app.activities.forEach(function (a2) { acts[a2.id] = a2.id === a.id ? cb.checked : !!(c.acts && c.acts[a2.id]); });
-            cb.disabled = true;
-            /* A TICK THAT IS SAVING SAYS SO. The box greyed out while the call
-               ran and nothing else moved, so the teacher read a fault (his
-               words, 9 Sept 2026). The class line now breathes with the words
-               while the server answers, then settles on what happened. */
-            cmsg.classList.add('is-waiting');
-            cmsg.textContent = TT('tickSaving', { book: a.title, 'class': c.name });
-            call('setActs', { className: c.name, acts: acts }).then(function (r) {
-              cb.disabled = false;
-              cmsg.classList.remove('is-waiting');
-              if (r && r.ok) { c.acts = acts; SURF('set-up', 'tickboxes'); cmsg.textContent = a.title + (cb.checked ? ' is now on ' : ' removed from ') + c.name + '\u2019s shelf.'; }
-              else { cb.checked = !cb.checked; cmsg.textContent = SAYS(r && r.error, TT('couldNotSave')); }
-            }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; cmsg.classList.remove('is-waiting'); cmsg.textContent = TT('couldNotSave'); });
+            window.GJ.app.activities.forEach(function (a2) {
+              var box = tickWrap.querySelector('input[data-act-id="' + a2.id + '"]');
+              acts[a2.id] = box ? box.checked : !!(c.acts && c.acts[a2.id]);
+            });
+            c._tickSync = c._tickSync || { busy: false, queued: null, pending: null, tickWrap: tickWrap };
+            c._tickSync.tickWrap = tickWrap;
+            c._tickSync.queued = acts;
+            c._tickSync.pending = { title: a.title, on: cb.checked };
+            /* A SAVING MESSAGE IS PRONOUNCED, NOT A WHISPER (ruling 35). The
+               class line used to breathe quietly with .is-waiting; it now
+               becomes the same gold wait-card the passcode screen uses, in the
+               same tick as the change event - never after the call starts. */
+            /* busyCard takes html, and a class name is the teacher's own free
+               text - escape it, the way every other html-taking call site
+               in this file already does */
+            busyCard(cmsg, TT('tickSaving', { book: esc(a.title), 'class': esc(c.name) }));
+            runTickSync(c);
           });
           lab.appendChild(cb);
           lab.appendChild(document.createTextNode(a.title));
@@ -14791,7 +15151,7 @@ function statsBoard(q, wrong) {
   GJ.app = GJ.app || {};
   GJ.app.surfaces = {
     cover: ['first-visit', 'returning', 'fallback-name', 'wrong-class', 'preview', 'busy', 'staff'],
-    shelf: ['none-ticked', 'some-ticked', 'locked-spine', 'star-earned', 'in-progress'],
+    shelf: ['none-ticked', 'some-ticked', 'star-earned', 'in-progress'],
     'book-contents': ['fresh', 'mid-book', 'finished'],
     movie: ['step-n', 'end', 'instant', 'reduced-motion', 'nudge-banner'],
     question: ['fresh', 'mid-attempt', 'checked-right', 'checked-wrong-1', 'checked-wrong-2', 'locked-restore', 'resume-mid', 'amber', 'help-strip'],
@@ -15676,12 +16036,17 @@ function statsBoard(q, wrong) {
 
     var wrap = document.getElementById('shelf-tiles');
     wrap.innerHTML = '';
-    var anyLocked = false, anyOut = false, anyStar = false, anyProgress = false;
+    var anyOut = false, anyStar = false, anyProgress = false;
 
     ACTIVITIES.forEach(function (a) {
       var pack = window.GJ_CONTENT[a.id];
       if (!pack) return;
       var out = !!me.acts[a.id];
+      /* ruling 36 (Damien Gartland, 11 Sept 2026): a book that is not ticked
+         does not appear on the pupil's shelf at all \u2014 no locked spine, no
+         "not set yet" card. It is simply absent. */
+      if (!out) return;
+      anyOut = true;
       var sum = me.summaries[a.id];
       var done = sum && sum.done ? sum.done : 0;
       var total = sum && sum.total ? sum.total : 0;
@@ -15691,14 +16056,12 @@ function statsBoard(q, wrong) {
       if (finished) anyStar = true;
       if (done && !finished) anyProgress = true;
 
-      var card = document.createElement(out ? 'button' : 'div');
-      card.className = 'book' + (out ? ' lit-' + a.livery : ' not-set');
+      var card = document.createElement('button');
+      card.className = 'book lit-' + a.livery;
       card.setAttribute('data-book', a.id);
-      if (!out) { anyLocked = true; card.setAttribute('aria-label', a.title + ' \u2014 ' + (T.shelfNotSet || '')); }
-      else { anyOut = true; }
 
       var cover = document.createElement('div');
-      cover.className = 'bcover' + (out ? ' livery-' + a.livery : '');
+      cover.className = 'bcover livery-' + a.livery;
       /* the series and its audience band share ONE row, so a long series name
          shortens instead of running under the chip (F37) */
       cover.innerHTML =
@@ -15729,25 +16092,20 @@ function statsBoard(q, wrong) {
         meta.appendChild(star);
       }
       var line = document.createElement('span');
-      line.textContent = out
-        ? (total ? fill(T.shelfMarks || '', { got: got, max: max, done: done, total: total }) : a.meta)
-        : (T.shelfNotSet || '');
+      line.textContent = total ? fill(T.shelfMarks || '', { got: got, max: max, done: done, total: total }) : a.meta;
       meta.appendChild(line);
       card.appendChild(meta);
 
-      if (out) card.addEventListener('click', function () { openActivity(a); });
+      card.addEventListener('click', function () { openActivity(a); });
       wrap.appendChild(card);
     });
 
-    document.getElementById('shelf-note').textContent = anyLocked
-      ? (T.shelfNotSetNote || '')
-      : (T.shelfMore || '');
+    document.getElementById('shelf-note').textContent = T.shelfMore || '';
 
     setState(root, 'shelf',
       !anyOut ? 'none-ticked'
         : anyStar ? 'star-earned'
         : anyProgress ? 'in-progress'
-        : anyLocked ? 'locked-spine'
         : 'some-ticked');
   }
 

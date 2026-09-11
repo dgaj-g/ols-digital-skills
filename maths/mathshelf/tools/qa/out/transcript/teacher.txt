@@ -1,6 +1,6 @@
 The markbook is for staff. Enter the department passcode.
 That passcode was not accepted.
-You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.
+You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.
 GCSE (M3 & M4) / KS3 (M2) / GCSE (M3 & M4) / KS3 (M2)
 Loading 10B Maths (demo)…
 12 pupils in 10B Maths (demo)
@@ -39,4 +39,4 @@ Back to the app’s mark.
 Spot the slip · starter 1 of 2
 Where has this gone wrong — and what should the line say?
 You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
-http://localhost:8099/maths/mathshelf/index.html?class=demo
+http://localhost:8424/maths/mathshelf/index.html?class=demo

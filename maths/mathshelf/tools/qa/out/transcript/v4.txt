@@ -13,8 +13,6 @@ strings.js > pupil > coverPreview  ::  This is the preview copy of MathShelf. No
 strings.js > pupil > shelfGreetingMorning  ::  Good morning
 strings.js > pupil > shelfGreetingAfternoon  ::  Good afternoon
 strings.js > pupil > shelfPlain  ::  Your maths books live here. Your teacher chooses which ones are out.
-strings.js > pupil > shelfNotSet  ::  Not set yet
-strings.js > pupil > shelfNotSetNote  ::  A book that is not set yet is one your teacher has not put out for this class.
 strings.js > pupil > shelfMore  ::  Your teacher will add more books to this shelf during the year.
 strings.js > pupil > shelfMarks  ::  6 of 8 marks · 5 of 8 answered
 strings.js > pupil > backToShelf  ::  The shelf
@@ -38,8 +36,8 @@ strings.js > pupil > statTryAgain  ::  Not quite. Your first go stays above — 
 strings.js > pupil > statPutBack  ::  Press it again to put it back.
 strings.js > pupil > statRemoveLast  ::  Remove the last one
 strings.js > pupil > statNextRow  ::  next ↓
-strings.js > pupil > statThatsMine  ::  That’s my answer
-strings.js > pupil > statThatsMyOne  ::  That’s my median
+strings.js > pupil > statThatsMine  ::  ✓ That’s my answer
+strings.js > pupil > statThatsMyOne  ::  ✓ That’s my median
 strings.js > pupil > statRuleFiction  ::  The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve.
 strings.js > pupil > statTrayFiction  ::  Five markers — put each one on the scale where it belongs.
 strings.js > pupil > statMedian  ::  median
@@ -53,26 +51,22 @@ strings.js > pupil > statClassColumn  ::  Group
 strings.js > pupil > statFrequency  ::  Frequency
 strings.js > pupil > statCumulativeFrequency  ::  Cumulative frequency
 strings.js > pupil > statReading  ::  reading
-strings.js > pupil > statQlistOrder  ::  Choose the values in order, smallest first.
 strings.js > pupil > statQlistOrderWhy  ::  Put every value in the row first.
-strings.js > pupil > statQlistPick  ::  Now choose the median.
 strings.js > pupil > statQlistPickWhy  ::  Choose each value you were asked for first.
-strings.js > pupil > statQlistCommit  ::  That’s my median
+strings.js > pupil > statQlistCommit  ::  ✓ That’s my median
 strings.js > pupil > statQlistCommitWhy  ::  Choose a value in the row first.
-strings.js > pupil > statQlistIqr  ::  Work out the interquartile range.
 strings.js > pupil > statQlistIqrWhy  ::  Work out the interquartile range first.
 strings.js > pupil > statQlistTruth  ::  In order: 4, 7, 7, 9, 12, 15, 21
 strings.js > pupil > statPickOne  ::  median = 65
 strings.js > pupil > statPickPair  ::  median = (9 + 12) ÷ 2 = 65
 strings.js > pupil > statLineOne  ::  median = 65
 strings.js > pupil > statLinePair  ::  median = (9 + 12) ÷ 2 = 65
-strings.js > pupil > statCftableStart  ::  Choose a box in the last column and put its running total in.
 strings.js > pupil > statCftableRow  ::  Cumulative frequency up to 65 minutes
 strings.js > pupil > statCftableWhy  ::  Put a running total in at least one row first.
 strings.js > pupil > statCftableTruth  ::  Running totals: 4, 7, 7, 9, 12, 15, 21
 strings.js > pupil > statPlotPlaceWhy  ::  Place every point first.
 strings.js > pupil > statPlotJoinWhy  ::  Join the points first.
-strings.js > pupil > statJoinPoints  ::  Join the points
+strings.js > pupil > statJoinPoints  ::  ✓ Join the points
 strings.js > pupil > statPlotJoinedAlready  ::  The points are joined.
 strings.js > pupil > statPlotEnough  ::  You have all the points you need — move one instead.
 strings.js > pupil > statPointReadout  ::  (30, 18)
@@ -83,11 +77,8 @@ strings.js > pupil > statNudgeRight  ::  One square right
 strings.js > pupil > statNudgeUp  ::  One square up
 strings.js > pupil > statNudgeDown  ::  One square down
 strings.js > pupil > statRemovePoint  ::  Take this point off
-strings.js > pupil > statReadFind  ::  Find the median.
 strings.js > pupil > statReadWhy  ::  Find every value you were asked for first.
 strings.js > pupil > statReadMoveWhy  ::  Move the rule to the height you need first.
-strings.js > pupil > statReadIqr  ::  Work out the interquartile range.
-strings.js > pupil > statReadAtX  ::  Move the rule across to 30.
 strings.js > pupil > statReadAtXWhy  ::  Move the rule across and put your answer in first.
 strings.js > pupil > statValueReadout  ::  65
 strings.js > pupil > statCfReadout  ::  65
@@ -95,16 +86,12 @@ strings.js > pupil > statHowManyAbove  ::  How many above
 strings.js > pupil > statHowManyBelow  ::  How many below
 strings.js > pupil > statPctAbove  ::  Percentage above
 strings.js > pupil > statPctBelow  ::  Percentage below
-strings.js > pupil > statBoxChooseMarker  ::  Choose a marker.
-strings.js > pupil > statBoxPlaceOnScale  ::  Now press the scale where it belongs.
-strings.js > pupil > statBoxPlaced  ::  median at 65
 strings.js > pupil > statBoxPlaceWhy  ::  Put all five markers on the scale first.
-strings.js > pupil > statDrawBoxPlot  ::  Draw the box plot
+strings.js > pupil > statDrawBoxPlot  ::  ✓ Draw the box plot
 strings.js > pupil > statBoxDrawWhy  ::  Draw the box plot first.
 strings.js > pupil > statBoxDrawnAlready  ::  The box plot is drawn.
 strings.js > pupil > statBoxStageWhy  ::  Finish the first part first.
 strings.js > pupil > statNextDrawBox  ::  Next: draw the box plot
-strings.js > pupil > statCompareStart  ::  Finish both sentences.
 strings.js > pupil > statCompareWhy  ::  Finish both sentences first.
 strings.js > pupil > statCompareValue  ::  Value
 strings.js > pupil > statCmpHigherMedian  ::  had the higher median
@@ -118,13 +105,40 @@ strings.js > pupil > statCmpSoTheirs  ::  so theirs were
 strings.js > pupil > statCmpMore  ::  more
 strings.js > pupil > statCmpLess  ::  less
 strings.js > pupil > statCmpConsistent  ::  consistent
-strings.js > pupil > statJudgeStart  ::  Decide about each claim.
 strings.js > pupil > statFairToSay  ::  Fair to say
 strings.js > pupil > statNotFair  ::  Not fair
 strings.js > pupil > statJudgeDecideWhy  ::  Decide every claim first.
 strings.js > pupil > statJudgeReasonWhy  ::  Give a reason for each one you called not fair.
 strings.js > pupil > statValuesStart  ::  Choose a box and put your answer in.
 strings.js > pupil > statValuesWhy  ::  Put a number in at least one box first.
+strings.js > pupil > statPillOrder  ::  Put in order
+strings.js > pupil > statPillCuts  ::  Mark the cuts
+strings.js > pupil > statPillIqr  ::  Find the IQR
+strings.js > pupil > statPillCftable  ::  Fill the running total
+strings.js > pupil > statPillValues  ::  Work out the values
+strings.js > pupil > statPillPlot  ::  Plot the points
+strings.js > pupil > statPillJoin  ::  Join the points
+strings.js > pupil > statPillRead  ::  Read the median
+strings.js > pupil > statPillReadAt  ::  Read at 30
+strings.js > pupil > statPillBoxPlace  ::  Place the markers
+strings.js > pupil > statPillBoxDraw  ::  Draw the plot
+strings.js > pupil > statPillCompare1  ::  The averages
+strings.js > pupil > statPillCompare2  ::  The spread
+strings.js > pupil > statPillJudge  ::  Decide each one
+strings.js > pupil > statStageQlistOrder  ::  Build the ordered list. Choose the smallest value first, then the next smallest, and keep going until every value is in the row. (3 still to place.)
+strings.js > pupil > statStageQlistPick  ::  Now choose the value you think is the median. If it sits between two values, choose both. Then press ✓ That’s my median.
+strings.js > pupil > statStageIqr  ::  Enter the interquartile range on the pad, then press ✓.
+strings.js > pupil > statStageCftable  ::  Fill in the running total from the top row down: each box is the total so far plus that row’s frequency. Choose a box, then use the pad.
+strings.js > pupil > statStageCfplotPlace  ::  Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. (3 of 5 placed.)
+strings.js > pupil > statStageCfplotJoin  ::  Every point is placed. Join them to draw the curve: press ✓ Join the points.
+strings.js > pupil > statStageCfread  ::  Move the rule up the frequency axis to the height for the median, then read where it meets the curve. Press ✓ That’s my median to keep it.
+strings.js > pupil > statStageCfreadAtX  ::  Move the rule along the bottom axis to 30, and read the total where it meets the curve. Then enter the answer on the pad.
+strings.js > pupil > statStageBoxPlace  ::  Choose a marker, then choose where it belongs on the scale. All five go on. (3 of 5 placed.)
+strings.js > pupil > statStageBoxDraw  ::  All five markers are on the scale. Press ✓ Draw the box plot.
+strings.js > pupil > statStageCompare1  ::  Finish the first sentence: choose the group with the higher median, then enter both medians.
+strings.js > pupil > statStageCompare2  ::  Finish the second sentence: choose the measure, the group and the two values.
+strings.js > pupil > statStageJudge  ::  For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.
+strings.js > pupil > statStageJudgeOptions  ::  Choose what happens to each one.
 strings.js > pupil > movieWorkedExample  ::  Worked example
 strings.js > pupil > moviePrevStep  ::  Previous step
 strings.js > pupil > movieNextStep  ::  Next step
@@ -185,6 +199,8 @@ strings.js > pupil > angleUnreadableLine  ::  That does not read as a number yet
 strings.js > teacher > artefactUndrawable  ::  Her work is saved, but this screen could not re-draw the board.
 strings.js > teacher > passcodeChecking  ::  Checking the passcode…
 strings.js > teacher > tickSaving  ::  Saving Angles for 10A-Maths…
+strings.js > teacher > tickOn  ::  Angles is now on 10A-Maths’s shelf.
+strings.js > teacher > tickOff  ::  Angles removed from 10A-Maths’s shelf.
 strings.js > teacher > openMarkbook  ::  Open the markbook
 strings.js > teacher > noServer  ::  We could not reach the server. Try again.
 strings.js > teacher > wallStale  ::  This class page could not be refreshed. What you see is the last it loaded.
@@ -215,6 +231,7 @@ strings.js > teacher > needsYouStuck  ::  Nothing saved for 20 minutes on Angles
 strings.js > teacher > csvCopied  ::  Copied. Paste it into a spreadsheet.
 strings.js > teacher > csvFallback  ::  Your browser would not let the page copy for you. Select the text below and copy it yourself.
 strings.js > teacher > setUpHint  ::  Tick the books this class should see.
+strings.js > teacher > setUpClosedHint  ::  A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.
 strings.js > teacher > overConfident  ::  Over-confident — confidence high, working weaker
 strings.js > teacher > quietlyExcelling  ::  Quietly excelling — doing well, low confidence
 strings.js > teacher > cellWrongAtStep  ::  Wrong at step 2
