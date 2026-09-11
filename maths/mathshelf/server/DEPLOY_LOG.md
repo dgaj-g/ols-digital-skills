@@ -31,6 +31,8 @@ log showing the deployment actually ran.
 | 2026-09-08 20:02 | FRONT DOOR | Version 22 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 15bf8ab | 122eedb38f4eaa42350aad6439b51b22 | fb45387250d97d2473767540d6dbbba3 |
 | 2026-09-09 22:01 | DATA | Version 23 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-09 22:03 | FRONT DOOR | Version 24 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-11 09:50 | DATA | Version 25 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-11 09:57 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -242,6 +244,31 @@ with it as a NEW project with a NEW client, so the consent screen now reads
 allowed it).
 
 ---
+
+**DATA Version 25 and FRONT DOOR Version 26 — the Book C polish cut, 11 Sept
+2026, from `f2a5f7b`.** `Code.gs` is UNCHANGED (md5 `6c2eb7d5…`, the same
+bytes as Version 23): a client-only cut, so the eight-item smoke list does not
+re-open; the polish cut's own smoke lines are in the done message. Index.html
+was fetched into the editor from the pushed branch (1,137,739 bytes, the
+committed file's exact length). The deployer's visit, quoted from the
+Executions log as it displays them:
+
+```
+Version 26  doGet    Web app  11 Sept 2026, 18:49:35  2.017 s  Completed
+Version 26  apiCall  Web app  11 Sept 2026, 18:49:39  6.38 s   Completed
+Version 25  doPost   Web app  11 Sept 2026, 18:49:42  2.4 s    Completed
+Version 26  apiCall  Web app  11 Sept 2026, 18:49:46  9.254 s  Completed
+Version 25  doPost   Web app  11 Sept 2026, 18:49:50  4.759 s  Completed
+```
+
+(The log's clock reads 18:49 for a 09:58 BST visit and re-labels every older
+row with the deployment's CURRENT version — his 08:30 ticks now show as
+"Version 26 / Version 25". The durations are the rows' own.) The tick round
+trip he felt this morning, from those rows: `apiCall` 7.1–10.3 s wrapping
+`doPost` 4.7–6.9 s. Both hops are Google's — the relay to DATA and the Sheet
+write under its lock — and the client change does not shorten them; what it
+changes is that the box flips at once and the gold card says it is saving
+while they run.
 
 ## The live smoke list — his eyes, after any server change (DFM 234b)
 

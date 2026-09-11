@@ -59,7 +59,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | Angles (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | Algebra (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | v4 MathShelf (the shell, the markbook, the login) | PENDING | — |
-| Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE | 8 Sept 2026 |
+| Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE — polish cut live 11 Sept 2026 (V26/V25 from `f2a5f7b`) | 8 Sept 2026 |
 | Handling Data A / B | PENDING (not built) | — |
 
 ---
