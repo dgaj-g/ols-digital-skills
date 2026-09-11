@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "063c0ae8464c",
- "when": "2026-09-11T07:46:55.286Z",
+ "contentHash": "67c52fecc2d5",
+ "when": "2026-09-11T07:56:15.244Z",
  "states": [
   {
    "surface": "cover",
@@ -11598,7 +11598,7 @@
    },
    "measured": {
     "said-twice": 8,
-    "readability": 27
+    "readability": 26
    }
   },
   {
@@ -14072,7 +14072,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 21
+    "readability": 22
    }
   },
   {

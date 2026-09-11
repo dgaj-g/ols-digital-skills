@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: 3ccf153d01ecf103
+TRANSCRIPT HASH: 93e87394fa08bf67
 sentences: 42
-taken: 2026-09-09 21:07:00
+taken: 2026-09-11 08:05:35
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -10,7 +10,7 @@ as it was RENDERED on the running app. Nothing here is source.
 ---
 The markbook is for staff. Enter the department passcode.
 That passcode was not accepted.
-You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: pupils see it on the shelf, marked as not set yet, and cannot open it.
+You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.
 GCSE (M3 & M4) / KS3 (M2) / GCSE (M3 & M4) / KS3 (M2)
 Loading 10B Maths (demo)…
 12 pupils in 10B Maths (demo)

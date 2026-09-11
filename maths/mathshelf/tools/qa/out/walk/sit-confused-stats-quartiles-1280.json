@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "697f84d208d1",
- "when": "2026-09-09T21:27:31.338Z",
+ "contentHash": "67c52fecc2d5",
+ "when": "2026-09-11T07:58:15.889Z",
  "states": [
   {
    "surface": "question",
@@ -944,9 +944,9 @@
   },
   {
    "surface": "question",
-   "state": "mid-attempt",
+   "state": "checked-wrong-1",
    "expected": "checked-wrong-1",
-   "stood": false,
+   "stood": true,
    "qid": "q14",
    "book": "stats-quartiles",
    "section": 2,
@@ -968,9 +968,33 @@
   },
   {
    "surface": "question",
-   "state": "checked-wrong-1",
+   "state": "checked-wrong-2",
    "expected": "checked-wrong-2",
-   "stood": false,
+   "stood": true,
+   "qid": "q14",
+   "book": "stats-quartiles",
+   "section": 2,
+   "width": 1280,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   }
+  },
+  {
+   "surface": "question",
+   "state": "help-strip",
+   "expected": "help-strip",
+   "stood": true,
    "qid": "q14",
    "book": "stats-quartiles",
    "section": 2,

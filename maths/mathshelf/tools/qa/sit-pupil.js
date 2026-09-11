@@ -263,6 +263,25 @@ async function walkBook(page, book, width, sidecar, transcript) {
          value's rendered glyphs - and a `box` op's gold frame sits clear of
          the text it boxes on every side, measured from the rects, never from
          a guessed offset. Read at the film's end, where every op has landed. */
+      /* THE LAST STEP IS STILL DRAWING when the player says "end": the caption
+         lands first and the ops run after it at pen speed, so a box that
+         follows a written line is not on the stage for another half second.
+         Wait for the drawing, up to three seconds, before reading it. */
+      for (let t = 0, quiet = 0; t < 12 && quiet < 2; t++) {
+        /* COMPUTED style, not the inline value: the inline value is set to its
+           end state at once and the transition plays out underneath it */
+        const drawing = await page.evaluate(() => {
+          const m = document.querySelector('.movie');
+          if (!m) return false;
+          const mid = [...m.querySelectorAll('.movie-stage .ml-eq')].some(e => {
+            const cp = getComputedStyle(e).clipPath; return cp && cp !== 'none' && !/inset\(0px(?: 0px){0,3}\)/.test(cp) && !/inset\(0(?: 0){0,3}\)/.test(cp);
+          });
+          const stroke = [...m.querySelectorAll('.movie-stage path, .movie-stage ellipse')].some(p => parseFloat(getComputedStyle(p).strokeDashoffset) > 0.5);
+          return mid || stroke;
+        });
+        quiet = drawing ? 0 : quiet + 1;
+        await new Promise(r => setTimeout(r, 250));
+      }
       const film = await page.evaluate((bk, i) => {
         const pack = window.GJ_CONTENT && window.GJ_CONTENT[bk];
         const mv = pack && pack.sections && pack.sections[i] && pack.sections[i].movie;
