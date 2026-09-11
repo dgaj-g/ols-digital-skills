@@ -5,6 +5,68 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 11 SEPT 2026, 18:49 — POLISH CUT LIVE, FRONT DOOR Version 26 / DATA Version 25, `f2a5f7b`
+
+His nine rulings of 11 Sept (feedback master 34–42), all nine done, each with a
+control seen to fire (audit rows 34–42 moved from F to A/B):
+34 the passcode card breathes in rendered frames (its own deeper breath, proved
+by two frames 700 ms apart; `qa-waits` wait-card-still) · 35 the tick's message
+is the gold wait card in a larger face · 36 an unticked book is ABSENT from the
+shelf (`locked-spine` retired everywhere; `qa-tickbox` shelf-shows-unticked;
+the walker's shelf pass counts cards) · 37 the box flips at once, a per-class
+queue serialises a second tick, the class poll already paused in Set-up ·
+38 film dwell = max(1200, 350×words) ms capped at 8 s, after the drawing
+(`qa-human-pace` film-too-fast) · 39 a paper `ring` draws a copper ring round
+the i-th value at pen speed and the gold box is 8 px of clear paper from its
+glyphs (`sit-pupil` film-ring-draws-nothing, film-box-on-the-glyphs) ·
+40 the stage strip above every multi-stage board, the lit pill the one the
+root's `data-stage` belongs to, one beat when a stage begins, one gold glow
+when Check lights, none under reduced motion (`sit-pupil` stage-strip-behind,
+stage-without-a-beat, check-without-a-glow) · 41 every stage instruction from
+the design's table, in `GJ_STRINGS.pupil`, live counts, commit buttons
+"✓ That’s my …"; the separated judge re-read all three transcripts and its
+rewrites were honoured (pills now say "Find the quartiles", "Find the
+interquartile range", "Draw the box plot"; the override lines lost "Inked" and
+"the Wall") · 42 Exercise 3's table sits after the dock (beside the chart from
+768px) and the walk measures the gap from chart to action row (`sit-pupil`
+table-between-board-and-dock).
+
+Two decisions of mine, stated: (a) the design's 55vh cap on the phone chart is
+NOT applied — the 12 px-square law makes Book C's charts 1,240–2,460 px tall at
+375 and a cap would need a vertical inner scroll the board's `touch-action:
+none` cannot be driven through; the ruling's substance (the Join button
+directly under the board) is met. (b) The judge's REWRITE of `statStageIqr`
+("Mark my working is the algebra book's button") is declined: it IS the qlist
+kind's Check label. Not honoured, next cut's: the teacher slip summaries "Ex 1
+· Angles", the mark key's em dash, the cover bands "KS3 · M2" (his call — the
+department's module codes), and the judge's 27 Book C FAILs that are the
+transcript extractor fusing a tally into its comment with no space (the
+identical transcript was 87/21/0 on 8 Sept; the fix is `sit-pupil`'s say()
+joining block children, a harness item). The rig's port no longer moves the
+teacher transcript's hash.
+
+Proved: `--fast` green on every commit; `--full` (all three books) green at
+`f2a5f7b` bar `qa-cold-read`, which went green once the transcripts were
+re-extracted from the finished walks (the extractor runs in the pool before the
+walkers finish — a harness item for next time); every coverage cell closed; the
+two waived findings printed as WAIVED, not hidden. Controls: every changed
+gate's battery run and every new control FIRED (qa-scope ×2, qa-tickbox
+shelf-shows-unticked, qa-waits wait-card-still + tick-waits, qa-human-pace
+film-too-fast, sit-pupil ×6); the three that did not are the pre-existing
+qa-waits pair and qa-colour-law's plantless amber control, all on the audit's
+"not yet proved" list since v4. The whole battery after the deploy was REFUSED
+by the budget clock (630 of 180 minutes: 96 building, the rest waiting on the
+Chrome sign-in and the manifest edit) — the leash doing what it is for; run it
+at the start of the next session after deleting `tools/qa/out/cut-start.json`.
+
+Deploy: Index.html fetched into the editor from the pushed branch (exact
+length), Code.gs unchanged since V23, DATA Version 25 at 09:50, FRONT DOOR
+Version 26 at 18:49 (Damien made the two-line manifest edit — the desktop
+app's permission classifier refused Claude the access change, four ways).
+Proof rows in `server/DEPLOY_LOG.md`; `qa-manifest` and `qa-repo-prod` green
+post-deploy. The tick round trip is Google's: apiCall 7–10 s wrapping doPost
+5–7 s before and after; the client no longer waits for it to move.
+
 ## 9 SEPT 2026, 22:04 — THE FRONT DOOR NEVER TOUCHES THE SHEET (V24 / V23 from `300dfc4`)
 
 Damien's smoke with two real pupil accounts: every pupil met "You do not have

@@ -47,6 +47,21 @@ plus the shared client — never the whole app directory — so adding a file no
 book loads yet (mid-build, as `statcore.js`/`statchart.js`/`jotter-stats.js`
 all were on 8 Sept) can no longer invalidate every other book's evidence.
 
+**The two leashes (the polish cut, 11 Sept 2026).** Every cut starts with
+`MS_CUT_BUDGET_MIN=<minutes> node tools/qa/run.js` — the first run writes
+`tools/qa/out/cut-start.json` (start time, budget, start commit) and every run
+after it prints `budget: N of M minutes used`. Once N > M, `run.js --full` and
+`control.js` REFUSE to start ("budget spent: deploy what is green at a clean
+pushed commit, or stop and report") while `--fast` still runs so a commit can
+be proved. The clock is WALL-CLOCK: a cut that waits hours on a his-action
+step spends its budget waiting (this cut did — 96 minutes of building, then
+nine hours for two editor steps). Delete the stamp to start the next cut's
+clock. And every cut writes `tools/qa/CUT_SCOPE.txt` — one path or glob per
+line — before its first edit; `qa-scope` fails any changed file the scope does
+not name. A red on an old screen is a WAIVED ledger row, and the pupil walkers
+now honour a `WAIVED BY HIS RULING` row exactly (surface, state, width, law):
+the finding is printed every run with its measurement, and does not fail.
+
 `tools/qa/install-hooks.js` puts the fast tier on `pre-commit` — but **it says
 no in a linked worktree, on purpose**: git reads a linked worktree's hooks from
 the shared `.git/hooks`, and this repository is worked in from more than one
@@ -122,12 +137,12 @@ class re-seeds, and always use `?nointro`.
 
 ## What is live
 
-**Live since 9 September 2026 22:04, from commit `300dfc4` — the front door never touches the Sheet (every pupil had been refused at the door on 9 Sept); Handling Data Book C (`stats-quartiles`) is on the shelf.**
+**Live since 11 September 2026 18:49, from commit `f2a5f7b` — the Book C POLISH CUT (his nine rulings of 11 Sept: the stage strip and whole-act instructions, the film that rings and paces itself, the shelf that omits unticked books, the tick that flips at once with a gold saving card, the breathing passcode card, Exercise 3's table beside the chart). `Code.gs` unchanged since Version 23.**
 
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
-| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 24, 9 Sept 22:03 | USER_ACCESSING | anyone in `c2ken.net` |
-| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 23, 9 Sept 22:01 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
+| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 26, 11 Sept 18:49 | USER_ACCESSING | anyone in `c2ken.net` |
+| DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 25, 11 Sept 09:50 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
 
 Apps Script project `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`,
 Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled
