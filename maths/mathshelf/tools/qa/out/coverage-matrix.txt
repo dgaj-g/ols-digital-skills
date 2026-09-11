@@ -1,92 +1,30 @@
 
-  COVERAGE MATRIX (content hash 195fb79d2523, tier full)
+  COVERAGE MATRIX (content hash 1e57bcd2ae75, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  185     37
-  colour        185     37
-  consequence   185     37
+  click-safety  222
+  colour        222
+  consequence   222
   deploy        3
-  empty         185     37
-  geometry      185     37
+  empty         222
+  geometry      222
   human-pace    35
   movie         54
-  mute-locks    185     37
-  nested        185     37
-  overlap       185     37
-  readability   185     37
-  said-twice    185     37
-  steps         185     37
+  mute-locks    222
+  nested        222
+  overlap       222
+  readability   222
+  said-twice    222
+  steps         222
   truth         81
   two-homes     13
   verdict       2
-  waits         185     37
-  walk-right    215     28
+  waits         222
+  walk-right    243
   walk-stage    1047
-  walk-wrong    225     18
+  walk-wrong    243
 
-  CELLS NOTHING CLOSES (490)
-  family        cell                                                              why
-  ------------  -------------------------------------------------------  -------  ---
-  walk-right    algebra > s5 > q17 (solve) @768 × walk-right             MISSING
-  walk-right    algebra > s5 > q17 (solve) @1280 × walk-right            MISSING
-  walk-right    algebra > s5 > q18 (solve) @768 × walk-right             MISSING
-  walk-right    algebra > s5 > q18 (solve) @1280 × walk-right            MISSING
-  walk-right    algebra > s6 > q23 (form) @768 × walk-right              MISSING
-  walk-right    algebra > s6 > q23 (form) @1280 × walk-right             MISSING
-  walk-wrong    angles > s1 > c1 (classify) @375 × walk-wrong            MISSING
-  walk-right    angles > s1 > c1 (classify) @768 × walk-right            MISSING
-  walk-wrong    angles > s1 > c1 (classify) @768 × walk-wrong            MISSING
-  walk-right    angles > s1 > c1 (classify) @1280 × walk-right           MISSING
-  walk-wrong    angles > s1 > c1 (classify) @1280 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c2 (classify) @375 × walk-wrong            MISSING
-  walk-right    angles > s1 > c2 (classify) @768 × walk-right            MISSING
-  walk-wrong    angles > s1 > c2 (classify) @768 × walk-wrong            MISSING
-  walk-right    angles > s1 > c2 (classify) @1280 × walk-right           MISSING
-  walk-wrong    angles > s1 > c2 (classify) @1280 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c3 (classify) @375 × walk-wrong            MISSING
-  walk-right    angles > s1 > c3 (classify) @768 × walk-right            MISSING
-  walk-wrong    angles > s1 > c3 (classify) @768 × walk-wrong            MISSING
-  walk-right    angles > s1 > c3 (classify) @1280 × walk-right           MISSING
-  walk-wrong    angles > s1 > c3 (classify) @1280 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > c4 (classify) @375 × walk-wrong            MISSING
-  walk-right    angles > s1 > c4 (classify) @768 × walk-right            MISSING
-  walk-wrong    angles > s1 > c4 (classify) @768 × walk-wrong            MISSING
-  walk-right    angles > s1 > c4 (classify) @1280 × walk-right           MISSING
-  walk-wrong    angles > s1 > c4 (classify) @1280 × walk-wrong           MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @375 × walk-wrong          MISSING
-  walk-right    angles > s1 > m1 (protractor) @768 × walk-right          MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @768 × walk-wrong          MISSING
-  walk-right    angles > s1 > m1 (protractor) @1280 × walk-right         MISSING
-  walk-wrong    angles > s1 > m1 (protractor) @1280 × walk-wrong         MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @375 × walk-wrong          MISSING
-  walk-right    angles > s1 > m2 (protractor) @768 × walk-right          MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @768 × walk-wrong          MISSING
-  walk-right    angles > s1 > m2 (protractor) @1280 × walk-right         MISSING
-  walk-wrong    angles > s1 > m2 (protractor) @1280 × walk-wrong         MISSING
-  walk-right    angles > s5 > q17 (reasoned) @768 × walk-right           MISSING
-  walk-right    angles > s5 > q17 (reasoned) @1280 × walk-right          MISSING
-  walk-right    angles > s5 > q18 (reasoned) @768 × walk-right           MISSING
-  walk-right    angles > s5 > q18 (reasoned) @1280 × walk-right          MISSING
-  walk-right    stats-quartiles > s4 > q17 (cfread) @768 × walk-right    MISSING
-  walk-right    stats-quartiles > s4 > q17 (cfread) @1280 × walk-right   MISSING
-  walk-right    stats-quartiles > s4 > q18 (cfread) @768 × walk-right    MISSING
-  walk-right    stats-quartiles > s4 > q18 (cfread) @1280 × walk-right   MISSING
-  walk-right    stats-quartiles > s5 > q23 (compare) @768 × walk-right   MISSING
-  walk-right    stats-quartiles > s5 > q23 (compare) @1280 × walk-right  MISSING
-  geometry      cover:first-visit @375 × geometry                        MISSING
-  colour        cover:first-visit @375 × colour                          MISSING
-  consequence   cover:first-visit @375 × consequence                     MISSING
-  click-safety  cover:first-visit @375 × click-safety                    MISSING
-  empty         cover:first-visit @375 × empty                           MISSING
-  nested        cover:first-visit @375 × nested                          MISSING
-  steps         cover:first-visit @375 × steps                           MISSING
-  mute-locks    cover:first-visit @375 × mute-locks                      MISSING
-  waits         cover:first-visit @375 × waits                           MISSING
-  readability   cover:first-visit @375 × readability                     MISSING
-  overlap       cover:first-visit @375 × overlap                         MISSING
-  said-twice    cover:first-visit @375 × said-twice                      MISSING
-  geometry      cover:first-visit @768 × geometry                        MISSING
-  colour        cover:first-visit @768 × colour                          MISSING
+  every cell is closed.
 
   DEBT LEDGER (printed every run)
   cell                                          owner / phase                                                                                                                                  file                state

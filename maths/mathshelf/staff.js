@@ -1348,7 +1348,7 @@
               if (rec.ovr == null && worthLook) wrap.classList.add('worth-look'); else wrap.classList.remove('worth-look');
               paintVerdict();
               SURF('book-view', val === 1 ? 'inked-mine-tick' : val === 0 ? 'inked-mine-cross' : 'inked-app');
-              inkMsg.textContent = (val === 1) ? 'Inked right — full marks. Your mark wins on the Wall.' : (val === 0) ? 'Inked wrong. Your mark wins on the Wall.' : 'Back to the app’s mark.';
+              inkMsg.textContent = (val === 1) ? TT('overrideRight') : (val === 0) ? TT('overrideWrong') : TT('overrideBack');
               ink.hidden = true; vmark.setAttribute('aria-expanded', 'false');
             } else inkMsg.textContent = (r2 && r2.error) || TT('saveFailedMark');
           }).catch(function () { btn.disabled = false; inkMsg.textContent = TT('saveFailedMark'); });

@@ -1362,7 +1362,7 @@
       if (a === 'IQR') {
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-        ctx.say(T().statStageIqr);
+        ctx.say(T().statStageIqrCommit);
         var doneI = el('button', 'btn-quiet', T().statThatsMine);
         pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {

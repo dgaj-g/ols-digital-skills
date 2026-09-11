@@ -48,7 +48,7 @@
       shelfGreetingMorning: 'Good morning',
       shelfGreetingAfternoon: 'Good afternoon',
       shelfPlain: 'Your maths books live here. Your teacher chooses which ones are out.',
-      shelfMore: 'Your teacher will add more books to this shelf during the year.',
+      shelfMore: 'Your teacher decides which books are on this shelf, and may add more during the year.',
       shelfMarks: '{got} of {max} marks · {done} of {total} answered',
 
       /* inside a book */
@@ -148,7 +148,7 @@
       statDrawBoxPlot: '✓ Draw the box plot',
       statBoxDrawWhy: 'Draw the box plot first.',
       statBoxDrawnAlready: 'The box plot is drawn.',
-      statBoxStageWhy: 'Finish the first part first.',
+      statBoxStageWhy: 'Finish the first part before this one.',
       statNextDrawBox: 'Next: draw the box plot',
       /* comparing two distributions */
       statCompareWhy: 'Finish both sentences first.',
@@ -179,8 +179,8 @@
          next; every {n} is a live count. The instruction table in the design
          is the source of every sentence here. */
       statPillOrder: 'Put in order',
-      statPillCuts: 'Mark the cuts',
-      statPillIqr: 'Find the IQR',
+      statPillCuts: 'Find the quartiles',
+      statPillIqr: 'Find the interquartile range',
       statPillCftable: 'Fill the running total',
       statPillValues: 'Work out the values',
       statPillPlot: 'Plot the points',
@@ -188,13 +188,14 @@
       statPillRead: 'Read the {name}',
       statPillReadAt: 'Read at {x}',
       statPillBoxPlace: 'Place the markers',
-      statPillBoxDraw: 'Draw the plot',
+      statPillBoxDraw: 'Draw the box plot',
       statPillCompare1: 'The averages',
       statPillCompare2: 'The spread',
       statPillJudge: 'Decide each one',
       statStageQlistOrder: 'Build the ordered list. Choose the smallest value first, then the next smallest, and keep going until every value is in the row. ({n} still to place.)',
       statStageQlistPick: 'Now choose the value you think is the {name}. If it sits between two values, choose both. Then press ✓ That’s my {name}.',
-      statStageIqr: 'Enter the interquartile range on the pad, then press ✓.',
+      statStageIqr: 'Enter the interquartile range on the pad. When it is in, press Mark my working.',
+      statStageIqrCommit: 'Enter the interquartile range on the pad, then press ✓ That’s my answer.',
       statStageCftable: 'Fill in the running total from the top row down: each box is the total so far plus that row’s frequency. Choose a box, then use the pad.',
       statStageCfplotPlace: 'Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. ({n} of {m} placed.)',
       statStageCfplotJoin: 'Every point is placed. Join them to draw the curve: press ✓ Join the points.',
@@ -305,7 +306,7 @@
 
       /* the jotter: angle reasoning steps */
       angleOneOpenHint: 'One angle is dashed on the diagram — choose it, give its size, and choose the reason.',
-      angleMultiOpenHint: 'Choose a dashed angle on the diagram, give its size and reason, then work your way to {target}.',
+      angleMultiOpenHint: 'Choose a dashed angle on the diagram, give its size and reason, then work your way to angle {target}.',
       removeLastStepBtn: '↶ remove last step',
       removedLastStep: 'Removed your last step.',
       angleStepHeading: 'Work out ∠{name}',
@@ -333,11 +334,14 @@
       /* when a pupil's own board cannot be re-drawn on this screen - a saved
          record from a version of the book that no longer exists, say. It says
          what is missing and does not pretend the work is not there. */
-      artefactUndrawable: 'Her work is saved, but this screen could not re-draw the board.',
+      artefactUndrawable: 'The pupil’s work is saved, but this screen could not re-draw the board.',
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode…',
       tickSaving: 'Saving {book} for {class}…',
+      overrideRight: 'Marked right — full marks. Your mark is the one pupils and staff now see.',
+      overrideWrong: 'Marked wrong. Your mark is the one pupils and staff now see.',
+      overrideBack: 'Back to the app’s mark.',
       /* the outcome of a tick, named (rule 23): these used to be built by
          string concatenation on the render path itself, invisible to any
          language gate */
