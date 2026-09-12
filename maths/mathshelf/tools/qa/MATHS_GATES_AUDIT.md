@@ -328,5 +328,7 @@ _Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut
 
 | rule | gap | owner / phase |
 |---|---|---|
+| 51 | the front door's round trip to the store is 3–68 s against 1–7 s of work; no gate times the live hop, and the save card waits for a tap | THE STORE AND THE FILMS CUT (before Book A): measure with `timingCheck_`, then the email cache / no bearer / the DATA split; qa-waits under a 40 s simulated latency for the self-clearing card |
+| 50 | five of Book C's six films use ops the player cannot draw (table, tcell, stamp, chart, plot, curve, rule, drop, scale, marker); the film-draws law counts ring and box only | THE FILMS CUT (before Book A): player.js paper/chart ops for every kind the films use, the law counting every op kind, a plant per kind |
 | 49 | a tick's row was reverted by guess after a slow relay answer while the store had saved (fixed 12 Sept 16:3x, front door only: the row re-reads the store); no control yet proves the re-read | next harness session: qa-waits control `tick-reverted-by-guess` under a stub whose setActs answers relay-failed after saving |
 | (none open) | | |

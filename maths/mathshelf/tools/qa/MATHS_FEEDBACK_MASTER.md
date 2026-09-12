@@ -186,4 +186,25 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     the front door's answer came back 36 s later as relay-failed; the screen
     put the tick back on while the pupils' shelf had lost the book. After a
     relay failure the row asks the store what it holds and shows that.
+50. **A film draws every step it says.** (12 Sept 2026) "the video in
+    exercise [4] moves through the steps but doesn't actually show anything
+    on the squared grid until step 8." Audited the same evening: five of the
+    six Book C films use ops the player cannot draw — Ex 2 `table`/`tcell`/
+    `stamp`, Ex 3 `table`/`chart`/`plot`/`curve` (nothing at all is drawn),
+    Ex 4 `chart`/`curve`/`rule`/`drop`, Ex 5 `scale`/`marker`, Ex 6 `stamp`;
+    only Ex 1's film draws every step. The film-draws law counted `ring` and
+    `box` alone. Every op named in a film is drawn, and the law counts every
+    op kind, with a plant per kind.
+51. **The store answers in seconds, not minutes.** (12 Sept 2026) "there is
+    something wrong with the amount of time it takes to talk to the server,
+    or the place where things are loaded from or saved to, no matter what I
+    do … this issue needs to be addressed with the save and load times,
+    urgently." The Executions log that day: `doPost` (the Sheet write)
+    1.4–6.7 s every time; `apiCall` (the front door's round trip) 3–68 s,
+    giving up at about a minute. The two suspects, to be MEASURED before
+    anything is changed: `apiCall` fetches Google's userinfo endpoint on every
+    call (`userEmail_`) before it even reaches the store, and the reply from
+    the anonymous DATA web app comes back through a redirect. The pupil's
+    "Still saving…" card must clear itself when a retry lands; Try again is
+    never the only way out.
 
