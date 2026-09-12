@@ -7,6 +7,38 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ## 12 SEPT 2026, evening — THE STORE AND THE FILMS CUT (clock stamped 17:39, budget 120 min)
 
+**STORE AND FILMS CUT LIVE, FRONT DOOR Version 31 / DATA Version 25 (unchanged), `85a5660`.**
+Deployed 19:27 (`server/DEPLOY_LOG.md` carries the manifest reads, the exact byte
+count and the Executions proof rows). `Code.gs` byte-identical, md5
+`6c2eb7d561a77ab149f8f1163c885abc`, so the front door was re-cut ALONE and nobody
+had to touch the manifest — it still rests at `USER_ACCESSING` + `DOMAIN`.
+
+**The proof that stands behind it.** `run.js --fast` green at the commit (bar
+`qa-repo-prod`, dirty until the record commit). `run.js --full --book
+stats-quartiles` at 18:28 found two REAL faults the new film law had just made
+visible, both fixed and re-walked: a film table shipped empty `<td>`s, and the
+theorem stamp's entrance keyframe owned its own opacity with `fill: both` so a
+stamp whose entrance did not run was held at ZERO — right words, right size,
+invisible; then, once the stamps could be SEEN, the overlap law caught them
+sitting on each other and on the red note, and their clearance is now measured
+from the rotated box in padding (margins collapse; that is why 7 px of overlap
+survived the first attempt). After those: **`sit-confused` GREEN (600 checks, 0
+failed)** and `sit-pupil`'s film-draws law green on all six films at all three
+widths — "every op kind drawn", with the op counts printed per film. `qa-waits`
+GREEN (21) and **`control.js --only qa-waits` GREEN: all 7 controls FIRED,
+including the new `outbox-card-tap-only`, and the shipped tree PASSES
+over-tightening.**
+
+**What did NOT fit inside the 120 minutes, and is running or owed:**
+`control.js --only sit-pupil` for the eleven new film plants, a final confirming
+`sit-pupil`, the whole-tree `run.js --full`, and the separated cold read on
+re-extracted transcripts. The films themselves are proved by the walk that ran;
+what is owed is the proof that the LAW can be made to say no, one kind at a time.
+Nothing shipped on an unproved law: the law was written first and the fixes were
+found BY it.
+
+
+
 ### PACKAGE A — THE HOP, MEASURED. RULING 51 NOW HAS NUMBERS.
 
 `timingCheck_()` went into the LIVE project's `Code.gs` in the Chrome editor and
