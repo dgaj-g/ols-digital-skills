@@ -207,4 +207,12 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     the anonymous DATA web app comes back through a redirect. The pupil's
     "Still saving…" card must clear itself when a retry lands; Try again is
     never the only way out.
+    _Measured, then cut (12 Sept 2026, evening). The userinfo suspect was a
+    misreading: `userEmail_` is 1 ms. The hop ITSELF is the cost — Apps
+    Script calling Apps Script measured 3–68 s, the same POST from a browser
+    2.1–2.5 s — so THE STORE CUT has the page call the DATA web app directly
+    with a signed store token (`BOOT.store`; HMAC over `email|exp`, eight
+    hours), the relay kept as the fallback and its bearer removed (it made
+    two probes in three come back 404). Held by qa-two-homes and qa-waits;
+    the live before/after numbers are in `server/DEPLOY_LOG.md`._
 

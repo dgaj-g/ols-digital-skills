@@ -26,7 +26,22 @@ pair when Code.gs changed, a front-door-only row otherwise.
 | | what it is | executeAs | who has access | who ever visits it |
 |---|---|---|---|---|
 | **DATA** | the main `/exec`. Owns the bound Sheet, the marking store, the class registry and the per-teacher scoping. | `USER_DEPLOYING` (Me) | **Anyone, including anonymous** — see below | nobody — only the front door, server to server |
-| **FRONT DOOR** | a NEW deployment. Serves the page, reads the pupil's own name from her own Google token, and relays every data call to DATA. | `USER_ACCESSING` (User) | Anyone within `c2ken.net` | every pupil and every teacher |
+| **FRONT DOOR** | a NEW deployment. Serves the page, reads the pupil's own name from her own Google token, mints her STORE TOKEN, and relays a data call to DATA when the page's own road is closed. | `USER_ACCESSING` (User) | Anyone within `c2ken.net` | every pupil and every teacher |
+
+**THE DIRECT PATH (the store cut, 12 Sept 2026, ruling 51).** The page calls
+DATA itself. `doGet` puts `BOOT.store = { url, email, exp, sig }` in the served
+page — the DATA `/exec`, her verified email, an expiry eight hours out and an
+HMAC-SHA256 of `email|exp` under `relaySecret` — and `script.js` POSTs every
+call there as a simple request (`text/plain`, `redirect: follow`, a 25 s
+timeout). `doPost` accepts EITHER the secret (the relay, unchanged) OR a token
+whose signature it recomputes; `token-expired` makes the page ask `apiCall`
+`{action:'token'}` for a fresh one and retry once; a token refused twice, a
+network error or the timeout fall back to the relay for that call, and the
+console says so. WHY: the relay — `UrlFetchApp` from Apps Script to Apps Script
+— measured 3–68 s for a call whose own Sheet write is 0.8–7 s; the same POST
+from a browser measured 2.1–2.5 s (12 Sept 2026, 20:08, on the live page).
+The bearer the relay used to send is gone: it made two of three probes 404.
+Both deployments are cut for it (below), DATA first.
 
 **Why two.** Full line-by-line working cannot live in ScriptProperties at class
 scale, so the store has to be the owner's private Sheet — and that needs
@@ -114,16 +129,24 @@ Google Drive files"* on every pupil's consent screen. Proved on 6 Sept 2026:
 `RELAYDIAG code=401`, and before that an Executions log with an `apiCall` row
 and no `doPost` row beside it.
 
-So DATA is published to Anyone and **the shared secret is the whole lock**:
+So DATA is published to Anyone and **the shared secret is the whole lock** —
+directly for the relay, and as the signing key of the store token for the page:
 
 - it is 256 bits of URL-safe random, generated with
   `python3 -c "import secrets;print(secrets.token_urlsafe(32))"`;
 - it lives only in a script property of this one project — never in this repo,
-  never in a commit message, never in a chat window;
-- the DATA URL that goes with it is never sent to a browser: `qa-two-homes`
-  walks every return value, every BOOT field and the built `Index.html`;
-- `apiRelay` refuses any call whose secret does not match, and refuses every
-  call if no secret is configured at all.
+  never in a commit message, never in a chat window, never in the served page:
+  `qa-two-homes` walks every return value, every BOOT field, the served doGet
+  output and the built `Index.html` (control `secret-in-the-page` plants it in);
+- the DATA URL DOES reach the browser since the store cut (`BOOT.store.url`):
+  the page calls it. What guards the door is not the URL but the token — a
+  call with neither the secret nor a valid signature is `bad-secret`; a forged
+  signature `token-bad`; an old one `token-expired`; and the signature covers
+  the email, so a token minted for one pupil cannot be presented as another
+  (controls `token-any-signature`, `token-never-expires`,
+  `token-for-another-pupil`). A token buys eight hours of being HERSELF: the
+  same calls she could already make through the front door as herself;
+- `apiRelay` refuses every call if no secret is configured at all.
 
 The FRONT DOOR — the only `/exec` anybody visits — stays `DOMAIN`.
 

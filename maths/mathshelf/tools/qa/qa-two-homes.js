@@ -40,6 +40,13 @@ const CONTROLS = [
   { id: 'secret-in-a-return-value', kind: 'fixture', plant: 'fixture-server-secret-leak', mustFail: /the shared secret/ },
   /* the 9 Sept fault, planted back: a Config read on the pupil's own page */
   { id: 'front-door-touches-the-sheet', kind: 'fixture', plant: 'fixture-front-door-reads-sheet', mustFail: /touched the Sheet as a pupil/ },
+  /* THE STORE CUT (ruling 51, 12 Sept 2026): the page's own road to DATA */
+  { id: 'token-any-signature', kind: 'fixture', plant: 'fixture-token-any-sig', mustFail: /forged/ },
+  { id: 'token-never-expires', kind: 'fixture', plant: 'fixture-token-never-expires', mustFail: /expired token/ },
+  { id: 'token-for-another-pupil', kind: 'fixture', plant: 'fixture-token-unsigned-email', mustFail: /another pupil/ },
+  { id: 'secret-in-the-page', kind: 'fixture', plant: 'fixture-boot-carries-secret', mustFail: /secret .* served page/ },
+  { id: 'relay-with-bearer', kind: 'fixture', plant: 'fixture-relay-bearer', mustFail: /bearer/ },
+  { id: 'store-payload-disagrees', kind: 'fixture', plant: 'fixture-store-payload-drift', mustFail: /two roads/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -330,6 +337,120 @@ const admin = (env, req) => env.call('apiAdmin')(req);
       g.check(!/relaySecret/.test(html), 'built Index.html', 'two-homes',
         'the shared secret\'s property name is in the built artefact — anything in Index.html is in every pupil\'s browser');
     }
+  }
+
+  /* --- THE STORE TOKEN (ruling 51, the store cut, 12 Sept 2026) ---------
+     The page talks to DATA directly with a token doGet minted for it. Every
+     claim below is EXECUTED in the two sandboxes: the front door mints, DATA
+     verifies, and the secret is looked for everywhere a browser could read. */
+  {
+    const src = A.read(TPL);
+    front.state.active = PUPIL;
+    /* the served page carries the token, and the token carries no secret */
+    let page = null, boot = null;
+    try { page = front.call('doGet')({ parameter: { class: '10A-Maths' } }).getContent(); } catch (e) { page = ''; }
+    try { boot = JSON.parse((/data-boot="([^"]*)"/.exec(page) || [])[1].replace(/&quot;/g, '"')); } catch (e) { boot = null; }
+    g.check(!!(boot && boot.storeUrl === DATA_URL && boot.storeSig && Number(boot.storeExp) > Math.floor(Date.now() / 1000)),
+      'doGet', 'two-homes',
+      'the served page carries no usable store token (BOOT.store: url, exp, sig) — the page would have to relay every call through the front door, the hop this cut removes: ' + JSON.stringify(boot));
+    g.check(page.indexOf(SECRET) < 0 && !/relaySecret/.test(page), 'doGet', 'two-homes',
+      'the shared secret is in the served page — anything doGet prints is in every pupil\'s browser (the store token is a SIGNATURE under the secret, never the secret)');
+    const good = boot ? { email: PUPIL, exp: Number(boot.storeExp), sig: boot.storeSig } : null;
+    if (good) {
+      const relay = data.call('apiRelay');
+      /* the same answer down both roads */
+      const viaSecret = relay({ secret: SECRET, email: PUPIL, action: 'hello', payload: { classCode: '10A-Maths' } });
+      const viaToken = relay({ email: good.email, exp: good.exp, sig: good.sig, action: 'hello', payload: { classCode: '10A-Maths' } });
+      g.check(viaToken && viaToken.ok === true && JSON.stringify(viaToken) === JSON.stringify(viaSecret), 'doPost', 'two-homes',
+        'the direct path (token) did not get the same answer as the relay (secret) for the same call: ' + JSON.stringify(viaToken).slice(0, 120));
+      const sv = relay({ email: good.email, exp: good.exp, sig: good.sig, action: 'save', payload: { classCode: '10A-Maths', act: 'angles', state: '{"v":1,"qs":{}}', summary: '{}' } });
+      g.check(sv && sv.ok === true && sv.saved === true, 'doPost', 'two-homes',
+        'a save down the direct path was refused: ' + JSON.stringify(sv));
+      /* a forged signature */
+      const forged = relay({ email: good.email, exp: good.exp, sig: good.sig.slice(0, -2) + 'AA', action: 'hello', payload: { classCode: '10A-Maths' } });
+      g.check(forged && forged.ok === false && forged.error === 'token-bad', 'doPost', 'two-homes',
+        'a forged signature was accepted by the store (' + JSON.stringify(forged).slice(0, 80) + ') — anyone who found the URL could name any pupil');
+      const noSig = relay({ email: good.email, exp: good.exp, action: 'hello', payload: { classCode: '10A-Maths' } });
+      g.check(noSig && noSig.ok === false, 'doPost', 'two-homes',
+        'a call with neither the secret nor a signature was answered — a forged (absent) signature opened the store');
+      /* a token for one pupil, presented as another: the signature covers the
+         email, so the swap must read as forged */
+      const swapped = relay({ email: TA, exp: good.exp, sig: good.sig, action: 'hello', payload: { classCode: '10A-Maths' } });
+      g.check(swapped && swapped.ok === false && swapped.error === 'token-bad', 'doPost', 'two-homes',
+        'a token minted for one pupil was accepted for another pupil\'s email — the signature must cover the email, or any pupil can act as any other');
+      /* an expired token, minted honestly, is refused by name */
+      const oldExp = Math.floor(Date.now() / 1000) - 60;
+      const oldSig = front.call('storeSign_')(PUPIL, oldExp, SECRET);
+      const expired = relay({ email: PUPIL, exp: oldExp, sig: oldSig, action: 'hello', payload: { classCode: '10A-Maths' } });
+      g.check(expired && expired.ok === false && expired.error === 'token-expired', 'doPost', 'two-homes',
+        'an expired token was not refused as token-expired (' + JSON.stringify(expired).slice(0, 80) + ') — a token is eight hours of being herself, not forever');
+      /* the token's email, not the body's: the signature is over the email as
+         given, and DATA trusts only that */
+      const whoami = relay({ email: good.email, exp: good.exp, sig: good.sig, action: 'whoami', payload: {} });
+      g.check(whoami && whoami.ok && String(whoami.email).toLowerCase() === PUPIL.toLowerCase(), 'doPost', 'two-homes',
+        'the store answered a token call as somebody other than the token\'s own pupil: ' + JSON.stringify(whoami));
+      /* a fresh token on request, minted on the front door with no hop */
+      const before = front.state.fetches.length;
+      const fresh = front.call('apiCall')({ action: 'token' });
+      g.check(fresh && fresh.ok && fresh.store && fresh.store.url === DATA_URL && fresh.store.sig && fresh.store.exp > Math.floor(Date.now() / 1000),
+        'apiCall token', 'two-homes',
+        'apiCall({action:"token"}) did not answer with a fresh store token — a token that expires mid-lesson would strand her on the relay: ' + JSON.stringify(fresh).slice(0, 120));
+      g.check(front.state.fetches.length === before, 'apiCall token', 'two-homes',
+        'the token request made a UrlFetch — a fresh token is minted on the front door itself, with no hop');
+      g.check(JSON.stringify(fresh || {}).indexOf(SECRET) < 0, 'apiCall token', 'two-homes',
+        'the shared secret came back with the fresh token');
+      const freshOk = relay({ email: fresh.store.email, exp: fresh.store.exp, sig: fresh.store.sig, action: 'whoami', payload: {} });
+      g.check(freshOk && freshOk.ok === true, 'apiCall token', 'two-homes',
+        'the fresh token the front door minted is not accepted by the store: ' + JSON.stringify(freshOk));
+    }
+    /* NO BEARER on the relay (S4): with it, two of three probes came back 404 */
+    front.state.fetches.length = 0;
+    front.call('apiCall')({ action: 'hello', payload: { classCode: '10A-Maths' } });
+    const relayed = front.state.fetches.filter(x => x.url === DATA_URL);
+    const bearer = relayed.some(x => x.params && x.params.headers && /Authorization/i.test(Object.keys(x.params.headers).join(',')));
+    g.check(relayed.length === 1 && !bearer, 'apiCall', 'two-homes',
+      'the relay still sends a bearer to the DATA web app — measured 12 Sept 2026: with it two of three POSTs were answered 404 (which apiCall turns into relay-failed); without it, three of three were 200');
+    /* the direct path is on the page's own road: script.js calls the store
+       when BOOT.store exists and falls back to the relay */
+    const js = A.read(A.app('script.js'));
+    g.check(/BOOT\.store/.test(js) && /fetch\(/.test(js) && /'token-expired'/.test(js), 'script.js', 'two-homes',
+      'script.js does not call the store directly with BOOT.store — every call still takes the 3-68 s relay hop');
+  }
+
+  /* --- ONE PAYLOAD, TWO ROADS: the shim's shaping and script.js's agree --- */
+  {
+    /* the transport shim is a template string inside server/build-pathb.js;
+       it is evaluated here with google.script.run stubbed to capture what it
+       would send, and compared with GJ.app.storePayload for every action */
+    const bp = A.read(A.app('server/build-pathb.js'));
+    const m = /const shim = `([\s\S]*?)`;/.exec(bp);
+    let shimOk = false, drift = [];
+    if (m && stub.GJ.app.storePayload) {
+      const sb = { window: {}, Promise, Error };
+      sb.window.OLS_BOOT = { name: 'Aoife Gartland' };
+      vm.createContext(sb);
+      vm.runInContext(m[1], sb);
+      const samples = [
+        { action: 'whoami' },
+        { action: 'hello', classCode: '10A-Maths' },
+        { action: 'load', classCode: '10A-Maths', act: 'angles' },
+        { action: 'save', classCode: '10A-Maths', act: 'angles', state: '{"v":1}', summary: '{}' },
+        { action: 'setname', classCode: '10A-Maths', name: 'Aoife' },
+        { action: 'admin', classCode: '10A-Maths', passcode: 'x', sub: 'override', className: '10A-Maths', acts: { angles: true }, act: 'angles', email: PUPIL, q: 'c1', idx: 'q', val: 1, sec: 's1::c1' }
+      ];
+      shimOk = true;
+      for (const p of samples) {
+        let sent = null;
+        sb.google = { script: { run: { withSuccessHandler() { return this; }, withFailureHandler() { return this; }, apiCall(x) { sent = x; } } } };
+        sb.window.OLS_BOOT.name = 'Aoife Gartland';
+        sb.window.OLS_TRANSPORT.call(Object.assign({}, p));
+        stub.GJ.app.boot.name = 'Aoife Gartland';
+        const mine = stub.GJ.app.storePayload(Object.assign({}, p));
+        if (!sent || JSON.stringify(sent.payload) !== JSON.stringify(mine)) drift.push(p.action + ': shim=' + JSON.stringify(sent && sent.payload) + ' direct=' + JSON.stringify(mine));
+      }
+    }
+    g.check(shimOk && drift.length === 0, 'storePayload', 'two-homes',
+      'the two roads to the store carry different payloads for the same call — the shim (server/build-pathb.js) and script.js storePayload must shape one payload, or the fallback silently sends a different request: ' + drift.join('; '));
   }
 
   /* --- the quota arithmetic, reported --------------------------------- */

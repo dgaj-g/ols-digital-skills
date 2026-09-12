@@ -175,9 +175,14 @@ const PLANTS = {
 
   /* ── a server that trusts anybody, and a stub that serves a closed book ── */
   'fixture-server': (dir) => {
+    /* the guard has two doors since the store cut (secret OR token); the
+       plant takes the lock off both, so a call with nothing at all walks in */
     edit(dir, 'server/Code.gs.template',
-      "  if (String(body.secret || '') !== secret) return { ok: false, error: 'bad-secret' };",
-      "  /* THE GUARD, REMOVED: this is what the control proves the gate catches. */");
+      "    if (!sameString_(body.secret, secret)) return { ok: false, error: 'bad-secret' };",
+      "    /* THE GUARD, REMOVED: this is what the control proves the gate catches. */");
+    edit(dir, 'server/Code.gs.template',
+      "  } else {\n    return { ok: false, error: 'bad-secret' };\n  }",
+      "  } else {\n    email = normEmail_(body.email);   /* planted: no credentials, still served */\n  }");
     edit(dir, 'script.js',
       "        var regL = s.classes.filter(function (c) { return c.name === cls; })[0];\n        if (regL && regL.acts && !regL.acts[p.act]) return Promise.resolve({ ok: false, error: 'not-set' });",
       "        /* THE STUB'S TICKBOX GATE, REMOVED. */");
@@ -255,6 +260,45 @@ const PLANTS = {
   'fixture-surface-dead-state': (dir) => {
     edit(dir, 'script.js', "    slips: ['ranked', 'starter-board'],",
       "    slips: ['ranked', 'starter-board', 'never-written-anywhere'],");
+  },
+
+  /* ── THE STORE CUT (ruling 51, 12 Sept 2026): six ways the direct path
+     could be wrong, each planted back into the template ──────────────── */
+  /* a store that takes any signature: the compare is skipped */
+  'fixture-token-any-sig': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  if (!sameString_(storeSign_(email, exp, secret), sig)) return { ok: false, error: 'token-bad' };",
+      "  /* planted: any signature will do */");
+  },
+  /* a token that never expires: the clock is not read */
+  'fixture-token-never-expires': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  if (exp < Math.floor(Date.now() / 1000)) return { ok: false, error: 'token-expired' };",
+      "  /* planted: a token is forever */");
+  },
+  /* a signature over the expiry alone: swap the email and it still verifies */
+  'fixture-token-unsigned-email': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  var bytes = Utilities.computeHmacSha256Signature(String(email) + '|' + String(exp), String(secret));",
+      "  var bytes = Utilities.computeHmacSha256Signature('|' + String(exp), String(secret));   /* planted: the email is not signed */");
+  },
+  /* the secret itself printed into the page beside the token */
+  'fixture-boot-carries-secret': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  t.storeSig = String(st.sig || '');",
+      "  t.storeSig = String(st.sig || '');\n  t.storeKey = relaySecret_();   /* planted: the secret in BOOT */");
+  },
+  /* the bearer back on the relay fetch: the 404 maker */
+  'fixture-relay-bearer': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "      contentType: 'application/json',\n      payload: JSON.stringify(payload),",
+      "      contentType: 'application/json',\n      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },   /* planted */\n      payload: JSON.stringify(payload),");
+  },
+  /* script.js's shaping drifts from the shim's: the save loses its summary */
+  'fixture-store-payload-drift': (dir) => {
+    edit(dir, 'script.js',
+      "      case 'save':    return { classCode: cls, act: p.act, state: p.state, summary: p.summary };",
+      "      case 'save':    return { classCode: cls, act: p.act, state: p.state };   /* planted: one road drops the summary */");
   },
 
   /* ── a data deployment that serves a book the class does not have ── */
@@ -914,6 +958,26 @@ const PLANTS = {
     edit(dir, 'script.js',
       '  function startOutboxRetry() {\n    if (outboxRetryTimer) return;\n    outboxRetryTimer = setInterval(outboxRetryTick, OUTBOX_RETRY_MS);\n    outboxRetryTick();\n  }',
       '  function startOutboxRetry() { /* planted: the old tap-only card - no self re-send at all */ }');
+  },
+
+  /* ── THE STORE CUT (ruling 51): four ways the page's own road could fail her ── */
+  'fixture-store-no-direct': (dir) => {
+    edit(dir, 'script.js', '      if (hasStore()) return storeCall(p);\n', '      /* planted: the direct path is never taken */\n');
+  },
+  'fixture-store-no-fallback': (dir) => {
+    edit(dir, 'script.js',
+      "    return window.OLS_TRANSPORT.call(p);\n  }\n  /* a fresh token from the front door",
+      "    return Promise.reject(new Error('planted: no road home'));\n  }\n  /* a fresh token from the front door");
+  },
+  'fixture-store-no-refresh': (dir) => {
+    edit(dir, 'script.js',
+      "        if (out.error === 'token-expired' || out.error === 'token-bad') {",
+      "        if (false) {   /* planted: an old token is never refreshed */");
+  },
+  'fixture-store-no-timeout': (dir) => {
+    edit(dir, 'script.js',
+      "    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, STORE_TIMEOUT_MS);",
+      "    var timer = 0;   /* planted: a silent store is waited on forever */");
   },
 
   /* ── a cold-read verdict filed against text that has since changed ── */

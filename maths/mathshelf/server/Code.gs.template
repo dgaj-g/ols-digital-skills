@@ -16,6 +16,22 @@
  *     secret, and trusts the relayed email only because the secret proves the
  *     caller is the front door.
  *
+ *   THE DIRECT PATH (THE STORE CUT, 12 Sept 2026, ruling 51). The relay hop -
+ *     Apps Script calling Apps Script with UrlFetchApp - was MEASURED at 3-68 s
+ *     for a call whose own Sheet write takes 0.8-7 s, while the same POST from
+ *     a browser takes 2.1-2.5 s. So the page now talks to DATA itself. doGet
+ *     mints a STORE TOKEN for the page: her verified email, an expiry eight
+ *     hours out, and an HMAC-SHA256 of "email|exp" under the shared secret.
+ *     BOOT.store carries the DATA url and that token; the secret itself never
+ *     reaches the page (qa-two-homes: a plant that writes it in must fail).
+ *     DATA's doPost accepts EITHER the secret (the relay, unchanged, now the
+ *     fallback) OR a token whose signature it recomputes; the email it trusts
+ *     is the one the signature covers, never a bare field. A token expired is
+ *     'token-expired' (the page fetches a fresh one through apiCall 'token'
+ *     and retries once); a token forged is 'token-bad'. What a token buys its
+ *     holder: eight hours of being HERSELF - the same calls she could already
+ *     make through the front door as herself, nothing more.
+ *
  * WHY, in one line: full line-by-line working cannot live in ScriptProperties
  * at class scale, so the store has to be the owner's Sheet (execute-as-Me);
  * but a pupil's real name can only be read with the PUPIL's own token
@@ -137,6 +153,14 @@ function doGet(e) {
      which runs on the DATA side. qa-two-homes now executes doGet as a pupil
      who cannot open the Sheet, so this cannot come back. */
   t.firstVisit = 'no';
+  /* THE STORE TOKEN (ruling 51): the page will call DATA directly with this.
+     Minted here, under execute-as-User, from the email Google just verified;
+     empty fields when the store is not configured, and the page then uses the
+     relay for everything. The secret is used to SIGN and is never printed. */
+  var st = (who ? storeToken_(who) : null) || { url: '', exp: 0, sig: '' };
+  t.storeUrl = String(st.url || '');
+  t.storeExp = Number(st.exp || 0);
+  t.storeSig = String(st.sig || '');
   return t.evaluate()
     .setTitle('OLS \u2014 MathShelf')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
@@ -185,35 +209,77 @@ var RELAY_EMAIL = '';                       /* set only inside a relayed call */
 function relaySecret_() { return String(sp_().getProperty('relaySecret') || ''); }
 function dataUrl_() { return String(sp_().getProperty('dataUrl') || ''); }
 
+/* ---------- THE STORE TOKEN (ruling 51) ----------
+   sig = base64url( HMAC-SHA256( email + '|' + exp, relaySecret ) ), exp in
+   epoch seconds, eight hours out. The email is normalised BEFORE signing and
+   DATA verifies over the exact string it receives, so a token minted for one
+   pupil cannot be presented as another: change the email and the signature no
+   longer matches. Nothing here needs a scope: Utilities is local. */
+var STORE_TOKEN_HOURS = 8;
+function storeSign_(email, exp, secret) {
+  var bytes = Utilities.computeHmacSha256Signature(String(email) + '|' + String(exp), String(secret));
+  return Utilities.base64EncodeWebSafe(bytes).replace(/=+$/, '');
+}
+function storeToken_(who) {
+  var url = dataUrl_(), secret = relaySecret_();
+  if (!url || !secret) return null;
+  var email = normEmail_(who);
+  if (!email) return null;
+  var exp = Math.floor(Date.now() / 1000) + STORE_TOKEN_HOURS * 3600;
+  return { url: url, email: email, exp: exp, sig: storeSign_(email, exp, secret) };
+}
+/* the two strings must be compared in constant time: an early-out compare
+   leaks how many leading characters were right, one call at a time */
+function sameString_(a, b) {
+  a = String(a || ''); b = String(b || '');
+  var diff = a.length ^ b.length;
+  for (var i = 0; i < a.length && i < b.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+/* the DATA side's reading of a token: { ok, email } or { ok:false, error } */
+function storeVerify_(body, secret) {
+  var email = String(body.email || ''), exp = Number(body.exp || 0), sig = String(body.sig || '');
+  if (!email || !exp || !sig) return { ok: false, error: 'token-bad' };
+  if (!sameString_(storeSign_(email, exp, secret), sig)) return { ok: false, error: 'token-bad' };
+  if (exp < Math.floor(Date.now() / 1000)) return { ok: false, error: 'token-expired' };
+  return { ok: true, email: normEmail_(email) };
+}
+
 function apiCall(req) {
   req = req || {};
   var who = userEmail_();
   if (!who) return { ok: false, error: 'not-signed-in' };
   var url = dataUrl_(), secret = relaySecret_();
   if (!url || !secret) return { ok: false, error: 'not-configured' };
+  /* A FRESH STORE TOKEN, answered here on the front door with no hop at all:
+     the page asks for one when the store says 'token-expired' mid-lesson. */
+  if (String(req.action || '') === 'token') return { ok: true, store: storeToken_(who) };
   var payload = { secret: secret, email: who, action: String(req.action || ''), payload: req.payload || {} };
   try {
-    /* THE BEARER IS NOT OPTIONAL. DATA is published to "Anyone within the
-       domain", and a plain UrlFetch carries no credentials at all: Google
-       answers it with the sign-in page, not with doPost, and the front door
-       gets a 200 of HTML it cannot parse. Proved on 6 Sept 2026 -- apiCall
-       completed, and the Executions log showed NO doPost row to match it.
-       ScriptApp.getOAuthToken() is the caller's own token (the pupil's, under
-       execute-as-User). It is sent for the day DATA is domain-restricted again;
-       it is NOT what opens the door today -- Google answers a bearer of these
-       scopes with 401, and DATA is therefore published to Anyone with the
-       shared secret as its lock (see THE GUARD, below). Redirects stay
-       followed -- a web app answers a POST with a 302 to googleusercontent,
-       and turning that off would break the good path along with the bad. */
+    /* NO BEARER. Measured on 12 Sept 2026 (timingCheck_, three rounds): with
+       ScriptApp.getOAuthToken() on the request, two of three POSTs to the DATA
+       /exec came back 404; without it, three of three came back 200. A 404 is
+       what apiCall turns into 'relay-failed', so the header was MAKING some of
+       the failures Damien has been meeting. It bought nothing: Google answers a
+       bearer of these scopes with 401, DATA is published to Anyone, and the
+       shared secret is the lock (see THE GUARD). It cost no time either - 4.9 /
+       18.4 / 19.4 s with it against 15.4 / 13.6 / 37.8 s without. The day DATA
+       is domain-restricted again, this comes back WITH a re-measurement.
+       Redirects stay followed: a web app answers a POST with a 302 to
+       googleusercontent and turning that off would break the good path too. */
     var resp = UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/json',
-      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
       followRedirects: true
     });
-    if (resp.getResponseCode() !== 200) return { ok: false, error: 'relay-failed' };
+    var code = resp.getResponseCode();
+    if (code !== 200) {
+      /* so the Executions log says WHICH failure it was next time */
+      Logger.log('relay-failed: DATA answered ' + code + ' for ' + String(req.action || ''));
+      return { ok: false, error: 'relay-failed' };
+    }
     var out = JSON.parse(resp.getContentText());
     /* belt and braces: nothing that came back may carry the secret onward */
     if (out && typeof out === 'object') { delete out.secret; delete out.dataUrl; }
@@ -242,14 +308,32 @@ function apiRelay(body) {
      ScriptApp.getOAuthToken() is answered with 401 unless the caller also holds
      a Drive scope -- which would put "see and download all your Drive files" on
      every pupil's consent screen (proved 6 Sept 2026, RELAYDIAG code=401).
-     So the secret is the whole lock. It is 256 bits, it lives only in a script
-     property, and the URL that goes with it is never sent to a browser:
-     qa-two-homes walks every return value, every BOOT field and the built
-     Index.html to prove that. Without this check the endpoint would answer
-     anybody who found the URL, as any pupil they cared to name. */
+     So the secret is the whole lock. It is 256 bits and it lives only in a
+     script property: qa-two-homes walks every return value, every BOOT field
+     and the built Index.html to prove it never reaches a browser. The URL
+     DOES reach the browser since the store cut (BOOT.store, 12 Sept 2026) -
+     the page calls this endpoint itself - which is why the second key below
+     is a SIGNED token and not the URL's obscurity. Without this check the
+     endpoint would answer anybody who found the URL, as any pupil they cared
+     to name. */
   if (!secret) return { ok: false, error: 'no-secret-configured' };
-  if (String(body.secret || '') !== secret) return { ok: false, error: 'bad-secret' };
-  var email = normEmail_(body.email);
+  var email = '';
+  if (body.secret != null && body.secret !== '') {
+    /* the relay: the front door proves itself with the secret and names her */
+    if (!sameString_(body.secret, secret)) return { ok: false, error: 'bad-secret' };
+    email = normEmail_(body.email);
+  } else if (body.sig != null && body.sig !== '') {
+    /* THE DIRECT PATH (ruling 51): the page proves itself with the token doGet
+       minted for it. The email trusted is the one the signature covers; a
+       token that fails is 'token-bad', one that is merely old 'token-expired'
+       - two words, because the page answers them differently (a fresh token
+       and one retry for the second; the relay for the first). */
+    var tk = storeVerify_(body, secret);
+    if (!tk.ok) return tk;
+    email = tk.email;
+  } else {
+    return { ok: false, error: 'bad-secret' };
+  }
   if (!email) return { ok: false, error: 'no-email' };
   var action = String(body.action || '');
   var p = body.payload || {};

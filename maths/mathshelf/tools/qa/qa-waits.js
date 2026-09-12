@@ -62,6 +62,12 @@ const CONTROLS = [
      itself - re-sending by itself and clearing itself once a retry lands.
      This plants back the OLD card, which only ever came down on a tap. */
   { id: 'outbox-card-tap-only', kind: 'fixture', plant: 'fixture-outbox-card-tap-only', mustFail: /never re-sent by itself/ },
+  /* THE STORE CUT (ruling 51, 12 Sept 2026): the page's own road to the store,
+     and the relay kept as the road home when it is closed */
+  { id: 'store-never-direct', kind: 'fixture', plant: 'fixture-store-no-direct', mustFail: /never took the direct path/ },
+  { id: 'store-no-fallback', kind: 'fixture', plant: 'fixture-store-no-fallback', mustFail: /did not fall back to the relay/ },
+  { id: 'store-no-refresh', kind: 'fixture', plant: 'fixture-store-no-refresh', mustFail: /token-expired reached the screen/ },
+  { id: 'store-no-timeout', kind: 'fixture', plant: 'fixture-store-no-timeout', mustFail: /did not time out/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -393,6 +399,88 @@ const g = new Gate('qa-waits');
         'a refused save was sent again on its own (' + refusedCalls + ' calls seen) — a refusal will not heal by retrying, so nothing should retry it for her');
     }
     await refusedPage.close();
+
+    /* ═══ THE DIRECT PATH TO THE STORE (ruling 51, the store cut) ══════════
+       When the page was served with a store token (BOOT.store), a call goes
+       straight to the DATA web app by fetch - a simple request (text/plain,
+       redirect: follow, no preflight) - and the relay is the road home when
+       that road is closed: a network error, a 25 s silence, or a token the
+       store will not take even after one fresh one. Measured on the app's
+       own public call, with fetch and the relay both stubbed and COUNTED, so
+       "the direct path was used" and "the relay was used" are counts, not
+       claims. The preview serves no token, so the token is put on the boot
+       object the app itself reads (GJ.app.boot IS the app's BOOT). */
+    const storePage = await S.openApp(browser, { width: 1280 });
+    const storeIn = await S.openExercise(storePage, healBook, 0);
+    g.check(!!storeIn, 'lib/stage.js :: openExercise', 'waits',
+      'could not open a book to test the direct path to the store — nothing below this was checked');
+    const consoleLines = [];
+    storePage.on('console', m => { try { consoleLines.push(m.text()); } catch (e) {} });
+    if (storeIn) {
+      await storePage.evaluate(() => {
+        window.__relayCalls = []; window.__fetches = []; window.__mode = 'ok';
+        window.OLS_TRANSPORT = {
+          call: function (p) {
+            window.__relayCalls.push(p.action);
+            if (p.action === 'token') return Promise.resolve({ ok: true, store: { url: 'https://store.invalid/exec', email: 'you@offline.preview', exp: 9999999999, sig: 'FRESH' } });
+            return new Promise(function (r) { setTimeout(function () { r({ ok: true, saved: true, via: 'relay' }); }, 200); });
+          }
+        };
+        window.GJ.app.boot.store = { url: 'https://store.invalid/exec', email: 'you@offline.preview', exp: 9999999999, sig: 'OLD' };
+        window.fetch = function (url, opts) {
+          var body = {}; try { body = JSON.parse(opts.body); } catch (e) {}
+          window.__fetches.push({ url: url, method: opts.method, ct: opts.headers && opts.headers['Content-Type'], redirect: opts.redirect, sig: body.sig, email: body.email, action: body.action, hasPayload: !!body.payload, hasSignal: !!opts.signal, hasSecret: 'secret' in body });
+          var reply = function (o) { return Promise.resolve({ text: function () { return Promise.resolve(JSON.stringify(o)); } }); };
+          if (window.__mode === 'ok') return reply({ ok: true, saved: true, via: 'store' });
+          if (window.__mode === 'neterr') return Promise.reject(new TypeError('Failed to fetch'));
+          if (window.__mode === 'expired') return reply(body.sig === 'FRESH' ? { ok: true, saved: true, via: 'store' } : { ok: false, error: 'token-expired' });
+          if (window.__mode === 'hang') return new Promise(function (res, rej) {
+            if (opts.signal) opts.signal.addEventListener('abort', function () { var e = new Error('aborted'); e.name = 'AbortError'; rej(e); });
+          });
+          return reply({ ok: false, error: 'unknown-mode' });
+        };
+      });
+      const saveVia = (mode) => storePage.evaluate((mode) => {
+        window.__mode = mode; window.__fetches.length = 0; window.__relayCalls.length = 0;
+        var t0 = Date.now();
+        return Promise.race([
+          window.GJ.app.call('save', { act: 'angles', state: '{"v":1}', summary: '{}' }),
+          new Promise(function (r) { setTimeout(function () { r({ testDeadline: true }); }, 40000); })
+        ]).then(function (r) { return { r: r, fetches: window.__fetches.slice(), relay: window.__relayCalls.slice(), ms: Date.now() - t0, sig: window.GJ.app.boot.store.sig }; });
+      }, mode);
+
+      /* 1. the direct road, taken, as a simple request */
+      const ok = await saveVia('ok');
+      g.note('direct path: ' + JSON.stringify(ok));
+      g.check(ok.r && ok.r.ok && ok.r.via === 'store' && ok.fetches.length === 1 && ok.relay.length === 0, 'script.js :: storeCall', 'waits',
+        'with a store token on the page the save never took the direct path (fetches=' + ok.fetches.length + ', relay=' + JSON.stringify(ok.relay) + ') — every call still takes the 3-68 s relay hop');
+      const f0 = ok.fetches[0] || {};
+      g.check(f0.method === 'POST' && f0.ct === 'text/plain' && f0.redirect === 'follow' && f0.hasSignal && f0.sig === 'OLD' && f0.action === 'save' && f0.hasPayload && !f0.hasSecret,
+        'script.js :: storeCall', 'waits',
+        'the direct request is not the simple request the 20:08 probe proved (POST, text/plain, redirect follow, a timeout signal, the token and no secret): ' + JSON.stringify(f0));
+
+      /* 2. the road home: a network error, and the relay carries the save */
+      const net = await saveVia('neterr');
+      g.note('network error: ' + JSON.stringify(net));
+      g.check(net.r && net.r.ok && net.r.via === 'relay' && net.relay.indexOf('save') > -1, 'script.js :: storeFallback', 'waits',
+        'on a network error the direct path did not fall back to the relay (' + JSON.stringify(net.r) + ', relay=' + JSON.stringify(net.relay) + ') — a closed road with no way home is a lost save');
+      g.check(consoleLines.some(l => /store: direct path/.test(l)), 'script.js :: storeFallback', 'waits',
+        'the fallback said nothing in the console — a slow lesson could not be read afterwards');
+
+      /* 3. an expired token: one fresh token from the front door, one retry, no relay */
+      const exp = await saveVia('expired');
+      g.note('expired token: ' + JSON.stringify(exp));
+      g.check(exp.r && exp.r.ok && exp.r.via === 'store' && exp.fetches.length === 2 && exp.fetches[1].sig === 'FRESH' && exp.relay.join(',') === 'token' && exp.sig === 'FRESH',
+        'script.js :: storeRefresh', 'waits',
+        (exp.r && exp.r.error === 'token-expired' ? 'token-expired reached the screen — ' : '') + 'an expired token was not refreshed once and retried on the direct path (fetches=' + exp.fetches.length + ', relay=' + JSON.stringify(exp.relay) + ', kept sig=' + exp.sig + ')');
+
+      /* 4. a store that never answers: 25 s, then the relay */
+      const hang = await saveVia('hang');
+      g.note('silent store: ' + JSON.stringify({ r: hang.r, ms: hang.ms, relay: hang.relay }));
+      g.check(hang.r && hang.r.ok && hang.r.via === 'relay' && hang.ms >= 20000 && hang.ms < 38000, 'script.js :: STORE_TIMEOUT_MS', 'waits',
+        'a store that never answered did not time out at 25 s and fall back to the relay (' + JSON.stringify(hang.r) + ' after ' + hang.ms + ' ms)');
+    }
+    await storePage.close();
   } finally { await browser.close(); }
   g.done();
 })().catch(e => { console.log('  FAIL  qa-waits x crash: ' + (e && e.stack ? e.stack : e)); process.exit(1); });
