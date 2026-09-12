@@ -471,6 +471,14 @@
        the data deployment", a sentence that names a fault nobody had. The
        joined-or-not sentence is kept for the codes that actually mean it. */
     'relay-failed': 'serverStoreSlow',
+    /* THE STORE TOKEN (ruling 51, the store cut). The page's own call to the
+       store is answered 'token-expired' or 'token-bad' when its token is old
+       or wrong; script.js fetches a fresh one and retries, then falls back to
+       the relay, so neither word should ever reach a screen. If one does, it
+       is the slow-store sentence - never "not joined", which names a fault
+       that is not there. */
+    'token-expired': 'serverStoreSlow',
+    'token-bad': 'serverStoreSlow',
     'state-too-big': 'serverTooBig',
     'summary-too-big': 'serverTooBig',
     'unknown-action': 'serverUnknownAction',

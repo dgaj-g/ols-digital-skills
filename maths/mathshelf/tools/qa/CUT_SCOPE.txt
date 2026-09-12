@@ -3,28 +3,30 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# THE STORE AND THE FILMS CUT, 12 Sept 2026 evening (Opus 5). Rulings 50 and 51:
-# every op a film names is DRAWN (player.js paper mode gains table/tcell/stamp/
-# scale/marker and the chart block chart/plot/curve/rule/drop), and the pupil's
-# "Still saving your work…" card re-sends by itself and clears itself when the
-# store answers. Package A (measure the hop) reads only. Package B (the hop fix)
-# is DESIGNED, not applied: server/Code.gs.template and server/Code.gs are NOT
-# touched this cut, so the deploy is front door only. 120-minute clock.
-player.js
-statchart.js
+# THE STORE CUT, 12 Sept 2026, 20:07 (Opus 5). Ruling 51, the hop itself: the
+# page talks to the DATA web app DIRECTLY with a signed store token (S1–S3),
+# the relay stays as the fallback and loses its bearer (S4). A SERVER change:
+# both deployments are cut, DATA first (server/DEPLOY.md). 120-minute clock.
+server/Code.gs.template
+server/Code.gs
+server/Index.html
+server/appsscript.json
+server/build-pathb.js
 script.js
+staff.js
 strings.js
 style.css
-content-stats-quartiles.js
+tools/qa/qa-two-homes.js
+tools/qa/qa-waits.js
 tools/qa/*.js
 tools/qa/lib/*
-tools/qa/fixtures/*
-tools/qa/CUT_SCOPE.txt
+tools/qa/fixtures/plants.js
 tools/qa/MATHS_*.md
 tools/qa/vocab/*
 tools/qa/out/*
-server/Index.html
-server/DEPLOY_LOG.md
-server/DEPLOY.md
+tools/qa/CUT_SCOPE.txt
 HANDOVER.md
 PROGRESS.md
+server/DEPLOY_LOG.md
+server/DEPLOY.md
+dev/test-server-scoping.js

@@ -118,10 +118,20 @@ function makeEnv(opts) {
         return { getResponseCode: () => 404, getContentText: () => '' };
       }
     },
+    Logger: { log() {} },
     Utilities: {
       sleep() {},
       getUuid: () => 'mock-uuid',
-      computeHmacSha256Signature: (a, b) => Array.from(String(a) + String(b)).map(c => c.charCodeAt(0) & 255)
+      /* THE REAL HMAC, in the real shape. Apps Script returns a byte[] of
+         SIGNED bytes (-128..127) and base64EncodeWebSafe pads with '='; the
+         store token (12 Sept 2026) is signed and verified through these two,
+         so a mock that was not a real MAC of both inputs under the key would
+         let a forged signature "verify" and prove nothing about the guard. */
+      computeHmacSha256Signature: (value, key) => Array.from(
+        require('crypto').createHmac('sha256', Buffer.from(String(key), 'utf8')).update(Buffer.from(String(value), 'utf8')).digest()
+      ).map(b => (b > 127 ? b - 256 : b)),
+      base64EncodeWebSafe: (bytes) => Buffer.from(bytes.map(b => (b < 0 ? b + 256 : b))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_'),
+      base64Encode: (bytes) => Buffer.from(bytes.map(b => (b < 0 ? b + 256 : b))).toString('base64')
     },
     HtmlService: {
       createTemplateFromFile: (n) => ({
@@ -130,7 +140,10 @@ function makeEnv(opts) {
           const self = this;
           const out = {
             _title: '', _meta: {},
-            getContent: () => '<html data-template="' + self._n + '" data-boot="' + JSON.stringify({ classCode: self.classCode, baseUrl: self.baseUrl, email: self.email, name: self.name }).replace(/"/g, '&quot;') + '"></html>',
+            /* EVERY field the server set on the template is what the page
+               gets - the store token's three fields included - so a gate can
+               read the served BOOT as the browser would */
+            getContent: () => '<html data-template="' + self._n + '" data-boot="' + JSON.stringify(Object.keys(self).filter(k => k !== '_n' && typeof self[k] !== 'function').reduce((o, k) => (o[k] = self[k], o), {})).replace(/"/g, '&quot;') + '"></html>',
             setTitle(t) { this._title = t; return this; },
             addMetaTag(k, v) { this._meta[k] = v; return this; },
             setSandboxMode() { return this; },

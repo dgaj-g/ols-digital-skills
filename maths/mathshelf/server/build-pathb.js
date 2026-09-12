@@ -346,7 +346,7 @@ ${cssOut}
 </style>
 </head>
 ${bodyOpen}
-<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>", email: "<?= email ?>", name: "<?= name ?>", firstVisit: "<?= firstVisit ?>" }; window.OLS_ASSET_BASE = "${GHACT}/";</script>
+<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>", email: "<?= email ?>", name: "<?= name ?>", firstVisit: "<?= firstVisit ?>", store: { url: "<?= storeUrl ?>", email: "<?= email ?>", exp: Number("<?= storeExp ?>") || 0, sig: "<?= storeSig ?>" } }; window.OLS_ASSET_BASE = "${GHACT}/";</script>
 ${asciiHtml(body)}
 ${scriptsHtml}
 </body>

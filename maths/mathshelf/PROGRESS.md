@@ -5,6 +5,53 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 12 SEPT 2026, night — THE STORE CUT (clock stamped 20:11, budget 120 min; ruling 51, the hop itself)
+
+**What changed, in one line: the page talks to the DATA web app itself, with a
+signed store token, and the relay is the road home when that road is closed.**
+
+The numbers it was built on (PACKAGE A below, plus the 20:08 probe): the relay —
+`UrlFetchApp` from the front door to the DATA `/exec`, Apps Script calling Apps
+Script — 4.9–37.8 s for a call DATA rejects at the door, 3–68 s for real calls;
+the same POST from a browser on the live page at 20:08: 2.5 / 2.3 / 2.1 s, status
+200, the JSON readable; the bearer the relay sent came back 404 two times in
+three. So (S1) `doGet` mints `BOOT.store = { url, email, exp, sig }` — `sig` =
+base64url(HMAC-SHA256(`email|exp`, relaySecret)), `exp` eight hours out — and
+`apiCall({action:'token'})` mints a fresh one with no hop; (S2) `script.js`
+`call()` POSTs every call to `BOOT.store.url` as a simple request (`text/plain`,
+`redirect: follow`, an AbortController at 25 s) and falls back to the relay on a
+network error, the timeout, a non-JSON reply, or a token refused twice, saying so
+in the console; `token-expired`/`token-bad` → one fresh token and one retry;
+(S3) `apiRelay` accepts EITHER the secret OR a token — signature recomputed and
+compared in constant time, `token-bad` on mismatch, `token-expired` when `exp` is
+past, and the email trusted is the one the signature covers; (S4) the
+Authorization header is gone from the relay fetch and a non-200 is `Logger.log`ged
+with its code; (S5) NOT done — one call for cover+shelf is a design of its own.
+`storePayload` in script.js mirrors the shim's shaping and qa-two-homes runs both
+over every action and asks that they agree (the shim in `build-pathb.js` is
+untouched; the assembler only gained the four `store` fields in the BOOT
+scriptlet).
+
+**Proof.** `qa-two-homes` GREEN (62): the served page carries the token and not
+the secret; a good token gets the SAME answer as the secret path (hello and a
+save); a forged signature → `token-bad`; no signature → refused; a token for one
+pupil under another's email → `token-bad`; an honestly-minted expired token →
+`token-expired`; `whoami` under a token answers the token's own pupil; `apiCall
+token` mints without a UrlFetch and the store takes it; the relay fetch carries
+no bearer. `control.js --only qa-two-homes` GREEN — all 12 FIRED (six new:
+`token-any-signature`, `token-never-expires`, `token-for-another-pupil`,
+`secret-in-the-page`, `relay-with-bearer`, `store-payload-disagrees`; the
+old `data-without-secret-guard` re-aimed at the two-door guard). `qa-waits`
+GREEN (28) with the direct path measured on the app's own `call`, fetch and the
+relay both stubbed and COUNTED: a save with a token goes by fetch (POST,
+text/plain, follow, a signal, the token, no secret) and never to the relay; a
+network error lands it through the relay with a console line; an expired token
+is refreshed once through `apiCall token` and retried with the fresh signature
+kept; a silent store is abandoned at 25.2 s for the relay. `--fast` GREEN at the
+build (bar `qa-repo-prod`, dirty until the commit). The walkers are unaffected:
+the preview serves no token, so `hasStore()` is false there and `call()` is the
+same function it was.
+
 ## 12 SEPT 2026, evening — THE STORE AND THE FILMS CUT (clock stamped 17:39, budget 120 min)
 
 _Steward's note, 20:05: the session that made this cut was stopped by the steward after its deploy (Version 31, 19:27) while its background `control.js --only sit-pupil` battery was still walking; it had begun an unproven style.css edit for a readability finding the battery raised (11 px ink on q31/q32's checked-right state at 375 — its words: "the ink loses to its own antialiased edges at 11px"), which was NOT kept. That finding is open: a dated row for the next cut, or the class fix Book A's opening list already names (small labels checked at their rendered size). The battery's own logs were discarded with it; run it again after the store cut._

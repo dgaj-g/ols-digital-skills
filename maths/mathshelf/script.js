@@ -597,9 +597,89 @@
     p.action = action;
     p['class'] = p.classCode = p.classCode || BOOT.classCode;
     if (window.OLS_TRANSPORT && typeof window.OLS_TRANSPORT.call === 'function') {
+      if (hasStore()) return storeCall(p);
       return window.OLS_TRANSPORT.call(p);
     }
     return offlineCall(action, p);
+  }
+
+  /* ═════════ THE DIRECT PATH TO THE STORE (ruling 51, 12 Sept 2026) ════
+     The relay - the front door's UrlFetch to the DATA web app, Apps Script
+     calling Apps Script - was measured at 3-68 s for a call whose own Sheet
+     write is 0.8-7 s. The same POST from a browser is 2.1-2.5 s. So when the
+     page was served with a store token (BOOT.store: the DATA url, her email,
+     an expiry and a signature the server minted), every call goes straight
+     to the store from here, and the relay is kept as the fallback for the
+     moments the direct road is closed: a network error, a timeout, a reply
+     that is not the store's JSON, or a token the store will not take even
+     after one fresh one. The console says so each time the fallback is used,
+     so a slow lesson can be read afterwards. A simple request on purpose -
+     text/plain, no headers of our own - so the browser sends it without a
+     preflight, and redirect: follow because a web app answers a POST with a
+     302 to googleusercontent. The two token words the store can answer:
+     'token-expired' (ask the front door for a fresh token, retry once) and
+     'token-bad' (likewise, and if it is still refused, the relay). Neither
+     ever reaches her as a sentence: whatever comes back to the screen came
+     from the store or the relay itself. */
+  var STORE_TIMEOUT_MS = 25000;
+  function hasStore() {
+    var st = BOOT && BOOT.store;
+    return !!(st && st.url && st.sig && typeof fetch === 'function');
+  }
+  /* the same shaping the transport shim gives the relay (server/build-pathb.js),
+     so both roads carry one payload; qa-two-homes runs both over every action
+     and asks that they agree */
+  function storePayload(p) {
+    var cls = (p.classCode != null) ? p.classCode : p['class'];
+    switch (p.action) {
+      case 'whoami':  return {};
+      case 'hello':   return { classCode: cls, bootName: (BOOT && BOOT.name) || '' };
+      case 'load':    return { classCode: cls, act: p.act };
+      case 'save':    return { classCode: cls, act: p.act, state: p.state, summary: p.summary };
+      case 'setname': return { classCode: cls, name: p.name };
+      case 'admin':   return { passcode: p.passcode, sub: p.sub, className: p.className, acts: p.acts, act: p.act, email: p.email, q: p.q, idx: p.idx, val: p.val, sec: p.sec };
+    }
+    return null;
+  }
+  function storeFallback(p, why) {
+    try { console.warn('[MathShelf] store: direct path ' + why + ' for ' + p.action + '; using the relay for this call'); } catch (e) {}
+    return window.OLS_TRANSPORT.call(p);
+  }
+  /* a fresh token from the front door (no hop: apiCall answers it itself) */
+  function storeRefresh() {
+    return window.OLS_TRANSPORT.call({ action: 'token' }).then(function (r) {
+      if (r && r.ok && r.store && r.store.sig) { BOOT.store = r.store; return true; }
+      return false;
+    }, function () { return false; });
+  }
+  function storeCall(p, retried) {
+    var shaped = storePayload(p);
+    if (!shaped) return storeFallback(p, 'has no shape');
+    var st = BOOT.store;
+    var body = JSON.stringify({ email: st.email, exp: st.exp, sig: st.sig, action: p.action, payload: shaped });
+    var ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, STORE_TIMEOUT_MS);
+    var opts = { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, redirect: 'follow' };
+    if (ctl) opts.signal = ctl.signal;
+    return fetch(st.url, opts)
+      .then(function (r) { return r.text(); })
+      .then(function (text) {
+        clearTimeout(timer);
+        var out = null;
+        try { out = JSON.parse(text); } catch (e) { out = null; }
+        if (!out || typeof out !== 'object') return storeFallback(p, 'answered something that is not the store');
+        if (out.error === 'token-expired' || out.error === 'token-bad') {
+          if (retried) return storeFallback(p, 'was refused twice (' + out.error + ')');
+          return storeRefresh().then(function (fresh) {
+            return fresh ? storeCall(p, true) : storeFallback(p, 'could not get a fresh token');
+          });
+        }
+        return out;
+      }, function (err) {
+        clearTimeout(timer);
+        var why = (err && err.name === 'AbortError') ? 'timed out at ' + Math.round(STORE_TIMEOUT_MS / 1000) + ' s' : 'failed (' + ((err && err.name) || 'error') + ')';
+        return storeFallback(p, why);
+      });
   }
 
   /* ═════════ summary building (shared with demo seeder) ═══════════ */
@@ -1817,6 +1897,7 @@
   Object.assign(GJ.app, {
     boot: BOOT,
     call: call,
+    storePayload: storePayload,
     me: function () { return me; },
     activities: ACTIVITIES,
     content: function (id) { return window.GJ_CONTENT[id]; },
