@@ -77,6 +77,27 @@ minutes of the 120; the record commit and the background controls after.
 Packages C and D were built by a sonnet subagent (its notes in
 `tools/qa/out/polish2/CD_NOTES.md`); the cold read by a separated sonnet judge.
 
+**The cold read (filed 14:13–14:23, after the clock; `qa-cold-read` GREEN, 11
+checks, hashes 2948e55f / 323340a2 / d141eb38):** Book C 101 PASS / 6 REWRITE /
+2 FAIL; the shell 270 / 10 / 8; the teacher 40 / 1 / 1. This cut's own
+sentences: "Checking the passcode…", "Saving changes…", the enough-points
+note and "Not quite…" PASS. Two verdicts on this cut, both left for the next
+cut because honouring either re-opens the hash and the front door after the
+clock: (1) `statScrollGraph` FAIL → "Scroll or swipe the graph sideways to
+see all of it." — HONOUR IT first thing in Book A's cut (a mouse cannot
+swipe; the note shows only while the frame hides width, which on a laptop is
+the box-plot scale boards). (2) `statStageCfplotPlace` FAIL — the judge says
+"Next: across 15, up 18" hands her the cumulative frequency she should read
+from the table. DECLINED, stated: the table in a cfplot question is GIVEN and
+filled (reading it is Exercise 2's skill, not this one's); naming the next
+point is his ruling 45 and the design's sentence. The rest of the REWRITE/
+FAIL rows are older sentences (q2's stem "The speeds of 11 cars…: 19, …"
+read as a fragment; q8's fill-ins with no marked blank; q14's "grouped
+below"; "Clean read-off."; "every mark earned"; the two teacher lines that
+name Damien; the preview's localhost link) — all carried to Book A's opening
+list in `Maths/MATHS_STATS_OPUS_PROMPT_RESUME_AB.txt`'s spirit: the next cut
+honours what it can and re-judges.
+
 ## 11 SEPT 2026, evening — STEWARD RE-CUT OF EXERCISE 3'S CHART: PROVED IN THE TREE AT `f1ca1f2`, NOT YET LIVE
 
 Fable's review of the polish cut (the steward brief, 11 Sept): repo == prod,
