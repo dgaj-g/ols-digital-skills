@@ -214,5 +214,7 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     with a signed store token (`BOOT.store`; HMAC over `email|exp`, eight
     hours), the relay kept as the fallback and its bearer removed (it made
     two probes in three come back 404). Held by qa-two-homes and qa-waits;
-    the live before/after numbers are in `server/DEPLOY_LOG.md`._
+    the live before/after numbers are in `server/DEPLOY_LOG.md`. His verdict
+    on the live site, 12 Sept 2026, 20:4x: "This is FAR better. far more
+    responsive and far quicker to load and save."_
 
