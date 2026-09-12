@@ -1044,6 +1044,10 @@
 
   /* — activity — */
   function openActivity(a) {
+    /* the same leaving-the-book stop as act-back, below, kept here too so no
+       route into a new book can leave the old one's self re-send running
+       against a screen she is no longer looking at (ruling 51) */
+    stopOutboxRetry(); clearSlowTimer(); saveTrouble(false);
     var pack = window.GJ_CONTENT[a.id];
     current.act = a; current.section = 0; current.state = null;
     document.documentElement.style.setProperty('--act-accent', a.accent);
@@ -1572,6 +1576,20 @@
      error (unchanged, below). While a save is actually running, a quiet
      moving line says so, and "Try again" cannot fire a second call on top of
      the first. */
+  /* THE STORE AND THE FILMS CUT (ruling 51, 12 Sept 2026): apiCall runs 3-68 s
+     against a 1-7 s Sheet write, and she must never be stranded by the gap.
+     A REFUSAL - the store saying no - is named at once, below; retrying it is
+     pointless. Everything else, 'relay-failed' included, is the store being
+     LATE rather than wrong: the card still waits for the same thirty seconds,
+     and once it is up the outbox keeps asking by itself every twenty, until
+     the store answers ok, refuses outright, or she leaves the book. */
+  /* How often the outbox asks the store again, by itself, once a save has
+     gone past OUTBOX_WARN. It is its own pacing decision and it is written as
+     its own number with its own inventory row: a clock expressed as arithmetic
+     on another clock is a clock the scanner cannot see, and the rule is that no
+     clock ships unexplained, not that no clock ships unnoticed. */
+  var OUTBOX_RETRY_MS = 20000;
+  var SAVE_REFUSED = { 'bad-secret': 1, 'not-configured': 1, 'no-secret-configured': 1 };
   var saveInFlight = false;
   function outboxKey(actId) {
     return 'outbox:' + BOOT.classCode + ':' + (me.email || 'anon') + ':' + actId;
@@ -1585,15 +1603,32 @@
   function outboxRead(actId) {
     try { return JSON.parse(localStorage.getItem(outboxKey(actId)) || 'null'); } catch (e) { return null; }
   }
-  function saveTrouble(on, retry) {
+  /* THE HONEST DEFAULT (ruling 51): saveHeldLocal already said exactly this -
+     nothing is lost, and it goes the moment the page can reach the store -
+     and had no caller yet (rule 23: one home for every sentence, even one
+     still waiting for a screen). Pairing it with saveWaiting is what stops
+     "Try again" reading as the only way out: the card says out loud that it
+     is trying again on its own. */
+  function troubleMessage() { return (T.saveWaiting || '') + ' ' + (T.saveHeldLocal || ''); }
+  function saveTrouble(on, retry, msg) {
     var el = document.getElementById('gj-save-trouble');
     if (!on) { if (el) el.remove(); return; }
-    if (el) return;
+    var text = msg || troubleMessage();
+    if (el) {
+      /* UPDATE, NEVER RE-BUILD, A CARD ALREADY UP. Its own message can still
+         change under her - a save that was only late turns out refused, or
+         the other way round on the next try - and a card that no-ops once
+         born could never say so. */
+      var line = el.firstChild;
+      if (line && line.nodeValue !== text) line.nodeValue = text;
+      syncRetry();
+      return;
+    }
     el = document.createElement('div');
     el.id = 'gj-save-trouble';
     el.className = 'gj-save-trouble';
     el.setAttribute('role', 'status');
-    el.appendChild(document.createTextNode(T.saveWaiting || ''));
+    el.appendChild(document.createTextNode(text));
     var b = document.createElement('button');
     b.className = 'toolbtn';
     b.textContent = T.saveRetry || '';
@@ -1630,6 +1665,46 @@
     host.appendChild(line);
   }
 
+  /* ONE CLOCK PER TROUBLE EPISODE (ruling 51). A retry that fires while the
+     card is already up - or already waited for - must not push its 30 s mark
+     further out, or a save that keeps failing would never actually be named.
+     Every attempt after the first shares the one clock the first attempt
+     set; only a settle (below) ever clears it. */
+  var slow = null;
+  function armSlowTimer() {
+    if (slow || document.getElementById('gj-save-trouble')) return;
+    slow = setTimeout(function () {
+      slow = null;
+      saveTrouble(true, flushSave);
+      startOutboxRetry();
+    }, OUTBOX_WARN);
+  }
+  function clearSlowTimer() { if (slow) { clearTimeout(slow); slow = null; } }
+
+  /* THE SELF RE-SEND (ruling 51). Once the card is up, the outbox asks the
+     store again every twenty seconds without her - "Try again" stays hers to
+     press, but pressing it is never the only way this ends. A tick never
+     stacks on a call already running (saveInFlight - the same guard flushSave
+     itself keeps a line above); it fires again once the previous attempt has
+     settled, one way or the other. The loop stops the moment there is
+     nothing left to send, the store refuses outright, or she leaves the book
+     (openActivity and the back button, below) - no timer here outlives any
+     of those three. */
+  var outboxRetryTimer = null;
+  function outboxRetryTick() {
+    if (saveInFlight) return;
+    if (!current.dirty || !current.act) { stopOutboxRetry(); return; }
+    flushSave();
+  }
+  function startOutboxRetry() {
+    if (outboxRetryTimer) return;
+    outboxRetryTimer = setInterval(outboxRetryTick, OUTBOX_RETRY_MS);
+    outboxRetryTick();
+  }
+  function stopOutboxRetry() {
+    if (outboxRetryTimer) { clearInterval(outboxRetryTimer); outboxRetryTimer = null; }
+  }
+
   function flushSave() {
     saveTimer = null;
     if (!current.dirty || !current.act) return;
@@ -1646,20 +1721,42 @@
     me.summaries[actId] = sum;
     var sumStr = JSON.stringify(sum);
     outboxPut(actId, stateStr, sumStr);
-    var slow = setTimeout(function () { saveTrouble(true, flushSave); }, OUTBOX_WARN);
+    armSlowTimer();
     saveInFlight = true;
     saveLine(true);
     call('save', { act: actId, state: stateStr, summary: sumStr })
       .then(function (r) {
-        clearTimeout(slow);
         saveInFlight = false; saveLine(false); syncRetry();
-        if (r && r.ok) { outboxClear(actId); saveTrouble(false); if (current.dirty) scheduleSave(); }
-        else { current.dirty = true; saveTrouble(true, flushSave); }
+        if (r && r.ok) {
+          clearSlowTimer(); stopOutboxRetry();
+          outboxClear(actId); saveTrouble(false);
+          if (current.dirty) scheduleSave();
+        } else if (r && SAVE_REFUSED[r.error]) {
+          /* A REFUSAL WILL NOT HEAL BY RETRYING (ruling 51): say so at once,
+             whatever the clock says, and stop asking on her behalf - "Try
+             again" (already on the card) stays hers to press. */
+          clearSlowTimer(); stopOutboxRetry();
+          current.dirty = true;
+          saveTrouble(true, flushSave, T.saveRefused);
+        } else {
+          /* LATE IS NOT REFUSED (ruling 51). relay-failed, and anything else
+             the store did not actually turn down, waits for the SAME 30 s
+             clock as a save that is merely slow - armSlowTimer already has
+             it running, and its own callback both raises the card and starts
+             the self re-send. Showing anything here would put the card up
+             before 30 s for a fault ruling 48 already settled. The one
+             exception is a card already up on an older refusal: if the store
+             no longer refuses it, the card must stop saying it does. */
+          current.dirty = true;
+          if (document.getElementById('gj-save-trouble')) saveTrouble(true, flushSave);
+        }
       })
       .catch(function () {
-        clearTimeout(slow);
+        /* a thrown/network error carries no code at all, so it is late, not
+           refused, exactly as above */
         saveInFlight = false; saveLine(false); syncRetry();
-        current.dirty = true; saveTrouble(true, flushSave);
+        current.dirty = true;
+        if (document.getElementById('gj-save-trouble')) saveTrouble(true, flushSave);
       });
   }
 
@@ -1680,6 +1777,11 @@
 
   document.getElementById('act-back').addEventListener('click', function () {
     if (current.dirty) flushSave();
+    /* LEAVING THE BOOK STOPS THE SELF RE-SEND (ruling 51). The unsent attempt
+       stays safe under its own outbox key and outboxReplay picks it up next
+       time this book opens; what must not survive is a card, or a twenty-
+       second loop, still asking on behalf of a book she is no longer on. */
+    stopOutboxRetry(); clearSlowTimer(); saveTrouble(false);
     renderShelf(); show('shelf');
   });
 

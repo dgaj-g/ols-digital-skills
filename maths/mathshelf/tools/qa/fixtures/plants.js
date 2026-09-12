@@ -776,6 +776,69 @@ const PLANTS = {
     edit(dir, 'player.js', "if (op.ring && movie.mode === 'paper') return paperRing(op, instant);", '/* planted: the ring op draws nothing again */');
     return { env: BOOK_C };
   },
+  /* ── RULING 50: ONE PLANT PER OP KIND ─────────────────────────────────
+     The fault of 12 September 2026, replanted a kind at a time: the op is
+     named by the film, the player has no branch for it any more, and it falls
+     through applyOp to the diagram-only tail and draws NOTHING — exactly how
+     five of Book C's six films came to be shipped. Each of these must make
+     `sit-pupil`'s film-draws law say no, by name. Book C at one width: the
+     question a control asks is answered no better by walking three books. */
+  'film-no-table': (dir) => {
+    edit(dir, 'player.js', "      if (op.table) return paperTable(op, instant);",
+      '      /* planted: the `table` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-tcell': (dir) => {
+    edit(dir, 'player.js', "      if (op.tcell) return paperTcell(op, instant);",
+      '      /* planted: the `tcell` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-chart': (dir) => {
+    edit(dir, 'player.js', "      if (op.chart) return paperChart(op, instant);",
+      '      /* planted: the `chart` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-plot': (dir) => {
+    edit(dir, 'player.js', "      if (op.plot) return paperPlot(op, instant);",
+      '      /* planted: the `plot` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-curve': (dir) => {
+    edit(dir, 'player.js', "      if (op.curve) return paperCurve(op, instant);",
+      '      /* planted: the `curve` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-rule': (dir) => {
+    edit(dir, 'player.js', "      if (op.rule) return paperRule(op, instant);",
+      '      /* planted: the `rule` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-drop': (dir) => {
+    edit(dir, 'player.js', "      if (op.drop) return paperDrop(op, instant);",
+      '      /* planted: the `drop` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-scale': (dir) => {
+    edit(dir, 'player.js', "      if (op.scale) return paperScale(op, instant);",
+      '      /* planted: the `scale` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-marker': (dir) => {
+    edit(dir, 'player.js', "      if (op.marker) return paperMarker(op, instant);",
+      '      /* planted: the `marker` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-stamp': (dir) => {
+    edit(dir, 'player.js', "      if (op.stamp) return doStamp(op, instant);",
+      '      /* planted: the `stamp` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+  'film-no-boxplot': (dir) => {
+    edit(dir, 'player.js', "      if (op.box) return paperBoxPlot(op, instant);",
+      '      /* planted: the `boxplot` op draws nothing again */');
+    return { env: BOOK_C };
+  },
+
   'film-box-on-the-glyphs': (dir) => {
     /* the box drawn from the 8 Sept guess: no padding from the text */
     edit(dir, 'player.js', '      var pad = 8;', '      var pad = 0;   /* planted: the box sits on the glyphs */');
@@ -840,6 +903,17 @@ const PLANTS = {
      is genuinely just live. */
   'fixture-outbox-warns-at-eight': (dir) => {
     edit(dir, 'script.js', 'var OUTBOX_WARN = 30000;', 'var OUTBOX_WARN = 8000;   /* planted: the 8 s card */');
+  },
+  /* ruling 51, 12 Sept 2026: the OLD outbox card, replanted - the one that
+     only ever came down on a tap. Neutering startOutboxRetry alone gets both
+     halves of that fault back at once: nothing re-sends on her behalf, so
+     nothing she did not press herself ever clears the card either. The 30 s
+     appearance and the immediate refusal sentence are untouched, because
+     this plant is about the healing, not the naming. */
+  'fixture-outbox-card-tap-only': (dir) => {
+    edit(dir, 'script.js',
+      '  function startOutboxRetry() {\n    if (outboxRetryTimer) return;\n    outboxRetryTimer = setInterval(outboxRetryTick, OUTBOX_RETRY_MS);\n    outboxRetryTick();\n  }',
+      '  function startOutboxRetry() { /* planted: the old tap-only card - no self re-send at all */ }');
   },
 
   /* ── a cold-read verdict filed against text that has since changed ── */

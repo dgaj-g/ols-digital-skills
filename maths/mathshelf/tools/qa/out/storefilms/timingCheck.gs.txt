@@ -1,0 +1,47 @@
+/* timingCheck_() — PACKAGE A, 12 Sept 2026. Measures ruling 51's hop.
+   Paste at the END of Code.gs in the editor, save, choose timingCheck_ in the
+   function selector, press Run, then read the Execution log. It WRITES NOTHING:
+   every probe fetch carries a deliberately wrong secret, so the DATA guard
+   rejects it at the door and only the transport is timed. Delete it afterwards
+   (Code.gs must go back byte-identical to the repo's server/Code.gs). */
+function timingCheck_() {
+  var url = dataUrl_();
+  var wrong = JSON.stringify({ secret: 'deliberately-wrong', email: 'probe@c2ken.net', action: 'probe', payload: {} });
+  for (var r = 1; r <= 3; r++) {
+    var t0 = Date.now();
+    var who = userEmail_();
+    var tEmail = Date.now() - t0;
+
+    t0 = Date.now();
+    var nm = autoName_();
+    var tName = Date.now() - t0;
+
+    t0 = Date.now();
+    var c1 = 0;
+    try {
+      c1 = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
+        headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+        payload: wrong, muteHttpExceptions: true, followRedirects: true }).getResponseCode();
+    } catch (e) { c1 = -1; }
+    var tWith = Date.now() - t0;
+
+    t0 = Date.now();
+    var c2 = 0;
+    try {
+      c2 = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
+        payload: wrong, muteHttpExceptions: true, followRedirects: true }).getResponseCode();
+    } catch (e) { c2 = -1; }
+    var tNo = Date.now() - t0;
+
+    t0 = Date.now();
+    var out = apiCall({ action: 'probe' });
+    var tApi = Date.now() - t0;
+
+    Logger.log('ROUND ' + r +
+      ' | userEmail_=' + tEmail + 'ms (' + (who ? 'filled' : 'EMPTY') + ')' +
+      ' | autoName_=' + tName + 'ms (' + (nm ? 'filled' : 'EMPTY') + ')' +
+      ' | fetch WITH bearer=' + tWith + 'ms (code ' + c1 + ')' +
+      ' | fetch NO bearer=' + tNo + 'ms (code ' + c2 + ')' +
+      ' | apiCall probe=' + tApi + 'ms (' + (out && out.ok ? 'ok' : (out && out.error) || '?') + ')');
+  }
+}

@@ -289,6 +289,7 @@
     function resetStage() {
       stage.innerHTML = '';
       paperLines = []; balanceEl = null; dgm = null;
+      chart = null; scaleBd = null; tableEl = null;
       if (movie.mode === 'diagram' && movie.diagram) {
         var dwrap = el('div', 'jq-diagram');
         stage.appendChild(dwrap);
@@ -428,6 +429,310 @@
       return pr;
     }
 
+    /* ═════ RULING 50: A FILM DRAWS EVERY STEP IT SAYS ═══════════════════
+       (12 Sept 2026 — "the video in exercise 4 moves through the steps but
+       doesn't actually show anything on the squared grid until step 8.")
+       PAPER mode knew write / ring / box / tick / note. The six Book C films
+       between them also ask for `table`, `tcell`, `stamp`, `scale`, `marker`
+       and a whole chart block — `chart`, `plot`, `curve`, `rule`, `drop` —
+       and every one of those fell through applyOp to the diagram-only branch
+       and drew NOTHING. Exercise 3's film drew nothing at all from first step
+       to last.
+
+       EVERY NUMBER BELOW IS MEASURED FROM THE OP. The chart's scales come from
+       the op's own min/max/step, a point sits where its own x and y put it, the
+       curve runs through its own listed points, and the drop reads the x where
+       the CURVE's own points cross the rule's height — never a guessed offset,
+       the same law the paper ring was rebuilt under (ruling 39). `sit-pupil`'s
+       film-draws law counts a drawn element of EVERY op kind the film names,
+       at every walked width, with a plant per kind. */
+    var CH = { W: 400, H: 268, L: 54, R: 16, T: 14, B: 50 };   /* chart canvas, user units */
+    var SCL = { W: 400, H: 132, L: 30, R: 30, AXIS: 98 };      /* number-line canvas */
+    var chart = null, scaleBd = null, tableEl = null;
+
+    function tidy(v) {
+      var r = Math.round(v * 100) / 100;
+      return String(r);
+    }
+    /* a smooth line through the points (Catmull-Rom → cubic), so a cumulative
+       frequency curve is a CURVE — "never straight lines", which is what the
+       film's own caption tells her to draw */
+    function smoothPath(pts) {
+      if (pts.length < 2) return '';
+      if (pts.length === 2) return 'M ' + pts[0][0] + ' ' + pts[0][1] + ' L ' + pts[1][0] + ' ' + pts[1][1];
+      var d = 'M ' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || pts[i + 1];
+        var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += ' C ' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) +
+             ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+      }
+      return d;
+    }
+    function fadeIn(node, instant, ms) {
+      if (instant || REDUCED) { node.style.opacity = 1; return Promise.resolve(); }
+      node.style.opacity = 0; node.getBoundingClientRect();
+      node.style.transition = 'opacity ' + (ms || 260) + 'ms';
+      node.style.opacity = 1;
+      return new Promise(function (r) { setTimeout(r, (ms || 260) + 30); });
+    }
+
+    /* A CELL THE FILM HAS NOT FILLED YET IS NOT EMPTY: it carries the faint
+       rule a printed table carries, so she can see WHERE the number is going
+       before it arrives — and so the empty-container law (J13c) is answered by
+       drawing something rather than by an exemption. `tcell` writes over it. */
+    function blankCell(td) {
+      var r = sv('svg', { class: 'ml-blank', viewBox: '0 0 60 12', 'aria-hidden': 'true' });
+      r.appendChild(sv('line', { x1: 6, y1: 9, x2: 54, y2: 9, stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1.4, 'stroke-linecap': 'round' }));
+      td.appendChild(r);
+    }
+
+    /* ── a small table written on the paper, and a cell filled per step ── */
+    function paperTable(op, instant) {
+      var t = op.table || {};
+      var head = t.head || [], rows = t.rows || [];
+      var cols = head.length;
+      rows.forEach(function (r) { cols = Math.max(cols, r.length); });
+      var tb = el('table', 'ml-table');
+      var thead = document.createElement('thead');
+      var htr = document.createElement('tr');
+      for (var c = 0; c < cols; c++) {
+        var th = document.createElement('th');
+        th.textContent = head[c] == null ? '' : head[c];
+        th.setAttribute('data-c', c);
+        htr.appendChild(th);
+      }
+      thead.appendChild(htr); tb.appendChild(thead);
+      var tbody = document.createElement('tbody');
+      rows.forEach(function (row, r) {
+        var tr = document.createElement('tr');
+        for (var c = 0; c < cols; c++) {
+          var td = document.createElement('td');
+          td.setAttribute('data-r', r); td.setAttribute('data-c', c);
+          if (c === 0) td.className = 'ml-tlabel';
+          if (row[c] == null || row[c] === '') blankCell(td); else td.textContent = row[c];
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+      tb.appendChild(tbody);
+      stage.appendChild(tb);
+      tableEl = tb;
+      if (instant || REDUCED) return Promise.resolve();
+      var trs = [].slice.call(tb.querySelectorAll('tbody tr'));
+      var pr = Promise.resolve();
+      trs.forEach(function (tr) {
+        tr.style.opacity = 0; tr.style.transition = 'opacity 150ms';
+        pr = pr.then(function () {
+          tr.style.opacity = 1;
+          return new Promise(function (r) { setTimeout(r, 130); });
+        });
+      });
+      return pr;
+    }
+    /* A TCELL MAY NAME A COLUMN THE TABLE DOES NOT HAVE YET — the cumulative
+       frequency column is the one the film is there to build. The table grows
+       to hold it rather than dropping the number on the floor. */
+    function paperTcell(op, instant) {
+      if (!tableEl) return Promise.resolve();
+      var q = op.tcell;
+      var head = tableEl.querySelector('thead tr');
+      while (head.children.length <= q.c) {
+        var th = document.createElement('th');
+        th.setAttribute('data-c', head.children.length);
+        th.textContent = (q.head && head.children.length === q.c) ? q.head : '';
+        head.appendChild(th);
+        [].forEach.call(tableEl.querySelectorAll('tbody tr'), function (tr, r) {
+          var td = document.createElement('td');
+          td.setAttribute('data-r', r); td.setAttribute('data-c', tr.children.length);
+          blankCell(td);
+          tr.appendChild(td);
+        });
+      }
+      var cell = tableEl.querySelector('tbody td[data-r="' + q.r + '"][data-c="' + q.c + '"]');
+      if (!cell) return Promise.resolve();
+      cell.textContent = q.text == null ? '' : q.text;   /* the rule goes with it */
+      cell.classList.add('ml-tcell');
+      return fadeIn(cell, instant, 280);
+    }
+
+    /* ── the chart block: a grid with axes, points, a curve, a rule, a drop ── */
+    function paperChart(op, instant) {
+      var spec = op.chart || {};
+      var xs = spec.x || { min: 0, max: 10, step: 1 }, ys = spec.y || { min: 0, max: 10, step: 1 };
+      var svg = sv('svg', { viewBox: '0 0 ' + CH.W + ' ' + CH.H, class: 'ml-chart', role: 'img' });
+      svg.setAttribute('aria-label', (xs.label || 'x') + ' against ' + (ys.label || 'y'));
+      var px = function (v) { return CH.L + (v - xs.min) / (xs.max - xs.min) * (CH.W - CH.L - CH.R); };
+      var py = function (v) { return (CH.H - CH.B) - (v - ys.min) / (ys.max - ys.min) * (CH.H - CH.B - CH.T); };
+      var gGrid = sv('g', { class: 'ml-chart-grid' }), gInk = sv('g', {});
+      svg.appendChild(gGrid); svg.appendChild(gInk);
+      var v;
+      for (v = xs.min; v <= xs.max + 1e-9; v += xs.step) {
+        gGrid.appendChild(sv('line', { x1: px(v), y1: CH.T, x2: px(v), y2: CH.H - CH.B, stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1 }));
+        var tx = sv('text', { x: px(v), y: CH.H - CH.B + 15, 'text-anchor': 'middle', class: 'ml-axis-num' });
+        tx.textContent = tidy(v); gGrid.appendChild(tx);
+      }
+      for (v = ys.min; v <= ys.max + 1e-9; v += ys.step) {
+        gGrid.appendChild(sv('line', { x1: CH.L, y1: py(v), x2: CH.W - CH.R, y2: py(v), stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1 }));
+        var ty = sv('text', { x: CH.L - 7, y: py(v) + 4, 'text-anchor': 'end', class: 'ml-axis-num' });
+        ty.textContent = tidy(v); gGrid.appendChild(ty);
+      }
+      gGrid.appendChild(sv('path', {
+        d: 'M ' + CH.L + ' ' + CH.T + ' V ' + (CH.H - CH.B) + ' H ' + (CH.W - CH.R),
+        fill: 'none', stroke: '#14213A', 'stroke-width': 2
+      }));
+      var xl = sv('text', { x: (CH.L + CH.W - CH.R) / 2, y: CH.H - 8, 'text-anchor': 'middle', class: 'ml-axis-label' });
+      xl.textContent = xs.label || ''; gGrid.appendChild(xl);
+      var yl = sv('text', { x: 0, y: 0, 'text-anchor': 'middle', class: 'ml-axis-label',
+        transform: 'translate(13,' + ((CH.T + CH.H - CH.B) / 2) + ') rotate(-90)' });
+      yl.textContent = ys.label || ''; gGrid.appendChild(yl);
+      stage.appendChild(svg);
+      chart = { svg: svg, ink: gInk, px: px, py: py, xs: xs, ys: ys, pts: [], curve: null, ruleH: null };
+      return fadeIn(svg, instant, 300);
+    }
+    function paperPlot(op, instant) {
+      if (!chart) return Promise.resolve();
+      var p = op.plot;
+      chart.pts.push([p.x, p.y]);
+      var c = sv('circle', { cx: chart.px(p.x), cy: chart.py(p.y), r: 3.6, class: 'ml-plot',
+        fill: 'var(--copper, #A8572A)', stroke: 'none' });
+      chart.ink.appendChild(c);
+      return fadeIn(c, instant, 220);
+    }
+    function paperCurve(op, instant) {
+      if (!chart) return Promise.resolve();
+      var through = op.curve && op.curve.through;
+      var src = (!through || through === 'all') ? chart.pts.slice() : through;
+      if (src.length < 2) return Promise.resolve();
+      chart.curve = src.slice().sort(function (a, b) { return a[0] - b[0]; });
+      var scr = chart.curve.map(function (p) { return [chart.px(p[0]), chart.py(p[1])]; });
+      var path = sv('path', { d: smoothPath(scr), class: 'ml-curve', fill: 'none',
+        stroke: 'var(--navy, #1A3A6B)', 'stroke-width': 2.2, 'stroke-linecap': 'round' });
+      chart.ink.appendChild(path);
+      return drawStroke(path, instant);
+    }
+    /* THE RULE LANDS IN ITS OWN COORDINATES, AND ONLY THE TRAVEL IS A
+       TRANSFORM. Drawing the line at y = 0 and living permanently on a CSS
+       transform would leave the whole picture resting on transform support for
+       an SVG child; the `d` carries the real height, and the slide is a
+       transform that starts at the offset from the last height and ends at
+       identity, so a browser that ignores it still shows the rule in the right
+       place — it simply appears there instead of travelling. */
+    function paperRule(op, instant) {
+      if (!chart) return Promise.resolve();
+      var h = op.rule.h;
+      var yTo = chart.py(h);
+      var yFrom = chart.ruleH == null ? (CH.H - CH.B) : chart.py(chart.ruleH);
+      var r = chart.svg.querySelector('.ml-rule');
+      if (!r) {
+        r = sv('path', { class: 'ml-rule', fill: 'none',
+          stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.8, 'stroke-dasharray': '6 4' });
+        chart.ink.appendChild(r);
+      }
+      r.setAttribute('d', 'M ' + CH.L + ' ' + yTo.toFixed(1) + ' H ' + (CH.W - CH.R));
+      chart.ruleH = h;
+      if (instant || REDUCED) { r.style.transition = 'none'; r.style.transform = 'none'; return Promise.resolve(); }
+      r.style.transition = 'none';
+      r.style.transform = 'translateY(' + (yFrom - yTo).toFixed(1) + 'px)';
+      r.getBoundingClientRect();
+      r.style.transition = 'transform 520ms ease-in-out';
+      r.style.transform = 'translateY(0px)';
+      return new Promise(function (res) { setTimeout(res, 560); });
+    }
+    /* where the CURVE'S OWN POINTS cross the rule's height — interpolated
+       between the two points that bracket it, never read off the picture */
+    function xAtHeight(pts, h) {
+      for (var i = 0; i < pts.length - 1; i++) {
+        var a = pts[i], b = pts[i + 1];
+        if ((h >= a[1] && h <= b[1]) || (h <= a[1] && h >= b[1])) {
+          if (b[1] === a[1]) return a[0];
+          return a[0] + (h - a[1]) * (b[0] - a[0]) / (b[1] - a[1]);
+        }
+      }
+      return null;
+    }
+    function paperDrop(op, instant) {
+      if (!chart || chart.ruleH == null || !chart.curve) return Promise.resolve();
+      var h = chart.ruleH;
+      var x = xAtHeight(chart.curve, h);
+      if (x == null) return Promise.resolve();
+      var g = sv('g', { class: 'ml-drop' });
+      var across = sv('path', { d: 'M ' + CH.L + ' ' + chart.py(h).toFixed(1) + ' H ' + chart.px(x).toFixed(1),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.7, 'stroke-linecap': 'round' });
+      var down = sv('path', { d: 'M ' + chart.px(x).toFixed(1) + ' ' + chart.py(h).toFixed(1) + ' V ' + (CH.H - CH.B),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.7, 'stroke-linecap': 'round' });
+      g.appendChild(across); g.appendChild(down);
+      var lbl = sv('text', { x: chart.px(x).toFixed(1), y: CH.H - CH.B + 30, 'text-anchor': 'middle', class: 'ml-read' });
+      lbl.textContent = tidy(x);
+      g.appendChild(lbl);
+      chart.ink.appendChild(g);
+      return drawStroke(across, instant)
+        .then(function () { return drawStroke(down, instant); })
+        .then(function () { return fadeIn(lbl, instant, 200); });
+    }
+
+    /* ── the number line, its markers, and the box plot they make ── */
+    function paperScale(op, instant) {
+      var s = op.scale || {};
+      var min = s.min, max = s.max, step = s.step || (max - min) / 5;
+      var svg = sv('svg', { viewBox: '0 0 ' + SCL.W + ' ' + SCL.H, class: 'ml-scale', role: 'img' });
+      svg.setAttribute('aria-label', s.label || 'number line');
+      var px = function (v) { return SCL.L + (v - min) / (max - min) * (SCL.W - SCL.L - SCL.R); };
+      svg.appendChild(sv('path', { d: 'M ' + SCL.L + ' ' + SCL.AXIS + ' H ' + (SCL.W - SCL.R),
+        fill: 'none', stroke: '#14213A', 'stroke-width': 2 }));
+      for (var v = min; v <= max + 1e-9; v += step) {
+        svg.appendChild(sv('line', { x1: px(v), y1: SCL.AXIS - 5, x2: px(v), y2: SCL.AXIS + 5, stroke: '#14213A', 'stroke-width': 1.4 }));
+        var t = sv('text', { x: px(v), y: SCL.AXIS + 20, 'text-anchor': 'middle', class: 'ml-axis-num' });
+        t.textContent = tidy(v); svg.appendChild(t);
+      }
+      var lb = sv('text', { x: (SCL.L + SCL.W - SCL.R) / 2, y: SCL.H - 4, 'text-anchor': 'middle', class: 'ml-axis-label' });
+      lb.textContent = s.label || ''; svg.appendChild(lb);
+      stage.appendChild(svg);
+      scaleBd = { svg: svg, px: px, marks: {} };
+      return fadeIn(svg, instant, 260);
+    }
+    function paperMarker(op, instant) {
+      if (!scaleBd) return Promise.resolve();
+      var m = op.marker;
+      scaleBd.marks[m.role] = m.at;
+      var x = scaleBd.px(m.at);
+      var g = sv('g', { class: 'ml-marker', 'data-role': String(m.role) });
+      var p = sv('path', { d: 'M ' + x.toFixed(1) + ' ' + (SCL.AXIS - 44) + ' V ' + (SCL.AXIS - 2),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 2, 'stroke-linecap': 'round' });
+      g.appendChild(p);
+      var t = sv('text', { x: x.toFixed(1), y: SCL.AXIS - 50, 'text-anchor': 'middle', class: 'ml-read' });
+      t.textContent = tidy(m.at);
+      g.appendChild(t);
+      scaleBd.svg.appendChild(g);
+      return drawStroke(p, instant).then(function () { return fadeIn(t, instant, 180); });
+    }
+    /* A BARE `box` IS THE BOX PLOT, not the gold frame round a written line.
+       It is built from the markers already placed on this scale — their own
+       recorded values — so it can never disagree with what she just watched
+       being put there. */
+    function paperBoxPlot(op, instant) {
+      if (!scaleBd) return Promise.resolve();
+      var m = scaleBd.marks;
+      if (m.Q1 == null || m.Q2 == null || m.Q3 == null) return Promise.resolve();
+      var top = SCL.AXIS - 44, bot = SCL.AXIS - 12, mid = (top + bot) / 2;
+      var g = sv('g', { class: 'ml-boxplot' });
+      var x1 = scaleBd.px(m.Q1), x2 = scaleBd.px(m.Q3), xm = scaleBd.px(m.Q2);
+      var strokes = [];
+      if (m.min != null) strokes.push('M ' + scaleBd.px(m.min).toFixed(1) + ' ' + mid + ' H ' + x1.toFixed(1));
+      if (m.max != null) strokes.push('M ' + x2.toFixed(1) + ' ' + mid + ' H ' + scaleBd.px(m.max).toFixed(1));
+      strokes.push('M ' + x1.toFixed(1) + ' ' + top + ' H ' + x2.toFixed(1) + ' V ' + bot + ' H ' + x1.toFixed(1) + ' Z');
+      strokes.push('M ' + xm.toFixed(1) + ' ' + top + ' V ' + bot);
+      var pr = Promise.resolve();
+      strokes.forEach(function (d) {
+        var p = sv('path', { d: d, fill: 'none', stroke: 'var(--navy, #1A3A6B)', 'stroke-width': 2, 'stroke-linejoin': 'round' });
+        g.appendChild(p);
+        pr = pr.then(function () { return drawStroke(p, instant); });
+      });
+      scaleBd.svg.appendChild(g);
+      return pr;
+    }
+
     function paperBalance(op, instant) {
       if (!balanceEl) {
         balanceEl = el('div', 'movie-balance');
@@ -470,11 +775,34 @@
           return false;
         });
       }
-      var st = el('div', 'theorem-stamp' + (instant || REDUCED ? '' : ' stamp-in'), text || '');
+      var st = el('div', 'theorem-stamp ml-stamp' + (instant || REDUCED ? '' : ' stamp-in'), text || '');
       var holder = el('div', '');
       holder.style.cssText = 'text-align:center;margin:8px 0';
       holder.appendChild(st);
       stage.appendChild(holder);
+      /* A ROTATED BOX IS TALLER THAN ITS LAYOUT BOX, and layout does not know
+         it. At -3 degrees a 253 px stamp reaches about 13 px past the line it
+         sits on at each end, so two stamps in a row — and a stamp under a red
+         note — sat ON each other's words (the overlap law, 12 Sept 2026; it
+         could not see them before, because they were at opacity 0). The room
+         they need is MEASURED from the rendered box, never guessed. */
+      var lay = st.offsetHeight || 0, rot = st.getBoundingClientRect().height || 0;
+      var over = Math.max(0, Math.ceil((rot - lay) / 2));
+      /* PADDING, NOT MARGIN: two adjacent margins COLLAPSE to the larger of the
+         two, so asking each stamp for its own clearance in margin gave the pair
+         one clearance between them and they still touched by 7 px. Padding is
+         each holder's own and never collapses. */
+      holder.style.margin = '0';
+      holder.style.padding = (8 + over) + 'px 0';
+      /* AND THE STAMP IS NEVER LEFT INVISIBLE. `stamp-in` carries opacity 0 → 1
+         with `fill: both`, so a keyframe that does not get to run holds the
+         stamp at ZERO and the sentence the beat exists to leave her with is
+         simply not on the paper — measured in the walk on 12 Sept 2026, Book C
+         s2 and s6, where the element was the right size with the right words
+         and opacity 0 at every width. An animation that is running still wins
+         the cascade over this, so the entrance is untouched; this is only what
+         the stamp falls back to. */
+      st.style.opacity = '1';
       return new Promise(function (r) { setTimeout(r, instant ? 0 : 240); });
     }
 
@@ -494,8 +822,20 @@
     function applyOp(op, instant) {
       if (op.write) return paperWrite(op, instant);
       if (op.tick) return paperTick(op, instant);
-      if (op.box) return paperBox(op, instant);
+      /* a `box` WITH a line is the gold frame round written working; a BARE
+         `box` is the box plot assembling on the scale above it (ruling 50) */
+      if (op.box && op.box.line != null) return paperBox(op, instant);
+      if (op.box) return paperBoxPlot(op, instant);
       if (op.ring && movie.mode === 'paper') return paperRing(op, instant);
+      if (op.table) return paperTable(op, instant);
+      if (op.tcell) return paperTcell(op, instant);
+      if (op.chart) return paperChart(op, instant);
+      if (op.plot) return paperPlot(op, instant);
+      if (op.curve) return paperCurve(op, instant);
+      if (op.rule) return paperRule(op, instant);
+      if (op.drop) return paperDrop(op, instant);
+      if (op.scale) return paperScale(op, instant);
+      if (op.marker) return paperMarker(op, instant);
       if (op.grid) return paperGrid(op, instant);
       if (op.balance) return paperBalance(op, instant);
       if (op.stamp) return doStamp(op, instant);

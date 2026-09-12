@@ -63,6 +63,11 @@
       saveInFlight: 'Saving…',
       saveRetry: 'Try again',
       saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
+      /* RULING 51 (12 Sept 2026): the store can take a while, and that is not
+         the same as the store saying no. This is the one sentence for when
+         it genuinely refuses a save, so trying again on her own is not the
+         only thing she is told to do. */
+      saveRefused: 'The server will not accept your save right now. Nothing you wrote is lost — try again in a moment, or tell your teacher.',
 
       /* the jotter: the composer and number-pad widgets (default labels — most
          callers pass their own, but these are the ones actually reached) */
@@ -365,9 +370,9 @@
       serverNotYourClass: 'That class was made by another teacher, so it is not yours to change.',
       serverExists: 'There is already a class with that name.',
       serverNotFound: 'That could not be found. Reload the page and try again.',
-      serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
-      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien.',
-      serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
+      serverUnreachableStore: 'The app cannot reach its store, so nothing was saved and nothing was lost. Tell the ICT office.',
+      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell the ICT office.',
+      serverTooBig: 'There is more working in this book than one save can carry. Tell the ICT office before the class writes any more.',
       serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
       loadingClass: 'Loading {class}…',
