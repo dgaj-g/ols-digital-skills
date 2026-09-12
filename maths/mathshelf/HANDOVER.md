@@ -137,13 +137,11 @@ class re-seeds, and always use `?nointro`.
 
 ## What is live
 
-**Live since 11 September 2026 18:49, from commit `f2a5f7b` — the Book C POLISH CUT (his nine rulings of 11 Sept: the stage strip and whole-act instructions, the film that rings and paces itself, the shelf that omits unticked books, the tick that flips at once with a gold saving card, the breathing passcode card, Exercise 3's table beside the chart). `Code.gs` unchanged since Version 23.**
-
-**The branch tip is AHEAD of prod by one re-cut (Fable, 11 Sept evening): Exercise 3's chart no longer squeezed by its side column on tablets and laptops, a board drawn at its own law-6 size, the given table beside the chart only when the body can hold both — proved in the tree, awaiting the two cuts. PROGRESS.md's top entry says whether it is live; if the versions below still read 26/25, deploy it with `server/DEPLOY.md` (the two manifest lines are Damien's step).**
+**Live since 12 September 2026 13:45, from commit `6263421` — POLISH CUT 2 (his rulings 43–48 of 12 Sept: the board pans by touch on a phone with a swipe note and a scroll track, axis numbers clear of the line, the stage line never replaced by a note and the plotting instruction naming the next point, every stage's control a filled copper button, the passcode wait as the pupil's own spinner line, "Saving changes…", the pupil's save quiet until 30 s; q17's reading judged to the grid's resolution) — carrying the steward re-cut of 11 Sept (Exercise 3's chart never squeezed by its side column). `Code.gs` unchanged since Version 23, so only the FRONT DOOR was re-cut: the manifest now RESTS at `USER_ACCESSING` + `DOMAIN` and a client-only cut needs nobody's hands on it (`server/DEPLOY.md`, top).**
 
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
-| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 26, 11 Sept 18:49 | USER_ACCESSING | anyone in `c2ken.net` |
+| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 27, 12 Sept 13:45 | USER_ACCESSING | anyone in `c2ken.net` |
 | DATA (nobody; the relay only) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 25, 11 Sept 09:50 | USER_DEPLOYING | anyone who holds the shared secret — see `server/DEPLOY.md` |
 
 Apps Script project `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`,

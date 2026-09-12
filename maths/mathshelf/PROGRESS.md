@@ -5,6 +5,78 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 12 SEPT 2026, 13:45 — POLISH CUT 2 LIVE, FRONT DOOR Version 27 / DATA Version 25 (unchanged), `6263421` — it also carries the steward re-cut of 11 Sept
+
+His second live test (12 Sept, an iPhone and a laptop) gave rulings 43–48
+(feedback master; DESIGN §4.0 [Correction, 12 Sept 2026]); the steward's
+q17 marking fault rode with them. All done, each with a control:
+43 the board pans by touch on a phone — `touch-action: pan-x pan-y` on the
+SVG, `none` on the draggable hit targets only (a point, the rule handle, a
+marker; `data-hit`); a tap places only when the pointer comes UP where it
+went down, so the browser's own pan never plants a point (the walker's
+`pressGrid` now taps down+up); the chart host reclaims the phone gutter like
+`.jq-diagram` (the words stay in the text column); while width is hidden a
+thin scroll track and "Swipe the graph sideways to see all of it." sit under
+the grid in their own elements, never the stage line (`sit-pupil`
+`stats-board-no-pan`) · 44 every axis number is seated in `relayout()` from
+the counter-scaled font — baseline one font + 4 CSS px below its line, the y
+numbers 6 CSS px left of theirs, the titles a line further out — and the
+grid's margins hold the numbers at phone scale (`stats-axis-number-on-the-
+line`; the law measures every number's rendered box ≥ 3 px clear at every
+width: 7.6 px at 375) · 45 `.stat-note` under the stage line carries the
+passing notes (enough points, put it back, try again), cleared on the next
+stage change; `.stat-msg.stage-now` is written only by the stage table
+(`stage-line-replaced`); cfplot · 1 now reads "Plot one point for each row of
+the table: across at the top of the class, up at the running total. Next:
+across {hi}, up {cf}. ({n} of {m} placed.)" from the engine's own expected
+points; every stage's control ("✓ Join the points", "✓ Draw the box plot",
+"✓ That's my …", "Next: draw the box plot") is `.btn-stage`, filled copper,
+white ink, 44 px (`qa-language` green on the sentence) · 46 "Checking the
+passcode…" is the pupil's own `is-waiting` spinner line (`qa-waits`
+wait-card-still re-aimed: class, breath in frames, the `::before` spin) ·
+47 the tick's gold card reads "Saving changes…" · 48 `OUTBOX_WARN` 30 s; while
+a save is in flight a quiet `is-waiting` "Saving…" line sits in the act bar
+and Try again is disabled; the card comes at 30 s or at once on a refusal
+(`qa-waits` outbox-warns-at-eight under a simulated 20 s save) · q17: statcore
+`ruleAtHeight()` judges a reading to the grid's resolution — |h − wantH| <
+sq.y/2 strictly (selfTest RD31–RD34, floor 156 → 160; validate-all 81/81; the
+corrupt cfread board gives the RANGE for the IQR when half-the-axis would now
+be right, so the wrong walk stays wrong); q17's three walk-right cells stood
+at every width and their debt rows are closed. q18/q23's rows stay, dated
+(not investigated: the clock).
+
+The deploy rule (package G): `qa-manifest` post-deploy now asks that the last
+FRONT DOOR row's commit carries the Code.gs md5 the last DATA row was cut with
+(control `front-door-without-its-data` FIRED); `DEPLOY.md` says a client-only
+cut re-cuts the front door ONLY and the manifest RESTS at `USER_ACCESSING` +
+`DOMAIN`. It did (read before and after the cut): this release needed nobody's
+hands on the manifest.
+
+Faults of the cut itself the walks caught before it shipped: the gutter rule
+on the whole board container overlapped the Q-number margin with tile trays
+and notes (now the chart host only, the note back in the text column, board
+labels inset by the measured margin); the boxplot's stage sub-ctx had no
+`note()`; a tap exactly on the y-axis was lost to a half-pixel rounding at
+1280 (a tap within half a square of an edge is on the edge); "Next: across
+NaN" (the engine speaks in rationals).
+
+Proved at `6263421`: `--fast` green; `--full --book stats-quartiles` green
+(three widths + reduced motion) and the whole-tree `--full` GREEN with every
+coverage cell closed (the nine 11 Sept debt rows now six, all q18/q23) bar
+`qa-cold-read`, re-filed by the separated judge on the re-extracted
+transcripts after the walkers (see the record commit); `qa-manifest` and
+`qa-waits` controls FIRED (see above); `control.js --only sit-pupil` ran in
+the background after the deploy — its matrix is in
+`tools/qa/out/polish2/controls-sit-pupil.log` and the done message. Deploy:
+Index.html fetched into the editor from the pushed branch (1,159,916 bytes,
+exact), FRONT DOOR Version 27 at 13:45 by deployment id, proof rows doGet →
+apiCall → doPost at 13:46 in `server/DEPLOY_LOG.md`; `MS_POST_DEPLOY=1`
+qa-manifest GREEN (18), qa-repo-prod green bar the record commit. Time: clock
+stamped 12:14, the cut committed and pushed at 13:42, live at 13:45 — 91
+minutes of the 120; the record commit and the background controls after.
+Packages C and D were built by a sonnet subagent (its notes in
+`tools/qa/out/polish2/CD_NOTES.md`); the cold read by a separated sonnet judge.
+
 ## 11 SEPT 2026, evening — STEWARD RE-CUT OF EXERCISE 3'S CHART: PROVED IN THE TREE AT `f1ca1f2`, NOT YET LIVE
 
 Fable's review of the polish cut (the steward brief, 11 Sept): repo == prod,
