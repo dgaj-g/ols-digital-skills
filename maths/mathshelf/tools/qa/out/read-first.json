@@ -180,6 +180,30 @@
     "locked": true
   },
   {
+    "path": "stats-collect > s1 > movie > step7 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Another leading question, this time about sport on television.",
+    "locked": false
+  },
+  {
+    "path": "stats-collect > s2 > q15 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "89 like maths, 44 like science, 21 like both and 37 like neither.",
+    "locked": false
+  },
+  {
+    "path": "stats-collect > s4 > movie > step1 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The weights of 13 boys, in kg, as recorded.",
+    "locked": false
+  },
+  {
+    "path": "stats-collect > s4 > q22 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "The stem-and-leaf diagram shows the weights, in kg, of some babies.",
+    "locked": false
+  },
+  {
     "path": "stats-quartiles > s1 > movie > step3 > say",
     "kind": "FRAGMENT-RUN",
     "text": "Position of the median = (n + 1) ÷ 2.  /  Ring the 4th value.",
@@ -195,12 +219,6 @@
     "path": "stats-quartiles > s1 > movie > step5 > say",
     "kind": "FRAGMENT-RUN",
     "text": "Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6.  /  Ring the 6th value.",
-    "locked": false
-  },
-  {
-    "path": "stats-quartiles > s1 > q2 > prompt",
-    "kind": "FRAGMENT-CHAIN",
-    "text": "The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36.",
     "locked": false
   },
   {
@@ -236,7 +254,7 @@
   {
     "path": "stats-quartiles > s3 > q14 > prompt",
     "kind": "FRAGMENT-CHAIN",
-    "text": "In a survey, 184 people stated their weekly wage, grouped below.",
+    "text": "In a survey, 184 people stated their weekly wage.",
     "locked": false
   },
   {
@@ -345,6 +363,18 @@
     "path": "strings.js > pupil > statValuesWhy",
     "kind": "PREPOSITION-PILEUP",
     "text": "Put a number in at least one box first.",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statScNone",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "No correlation",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statPieNoAngles",
+    "kind": "NEGATION-FRAGMENT",
+    "text": "no angles yet",
     "locked": false
   },
   {

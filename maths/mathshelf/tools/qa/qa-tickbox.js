@@ -67,7 +67,24 @@ g.check(!/not-set/.test(renderShelfBody) && shelfSrc.indexOf('locked-spine') < 0
   "an unticked book is still on the pupil's shelf — a book the class does not have is absent, not locked");
 
 /* ═══════════════════ the server home ════════════════════════════════ */
-const data = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW });
+/* THE CONFIG ROW `acts` (the DATA split, 12 Sept 2026). The server's whitelist
+   is its built-in ACTS unioned with the Config row `acts`, so a new book is a
+   client change plus ONE cell in the live Sheet - and the two homes agree only
+   when that cell names every book the shelf carries that the built-in list
+   does not. The row the deploy must carry is DERIVED here from the shelf's
+   own manifest (ACTIVITIES) minus the template's literal ACTS, printed as a
+   note so the deploy step can copy it, and seeded into this mock so the
+   shape check below asks the question the live app will be asked. A book on
+   the shelf with an id the server's regex refuses is a red by name. */
+const { shelfActsRow } = require('./lib/mockenv.js');
+const shelfRow = shelfActsRow();
+const builtIn = shelfRow.builtIn, extraIds = shelfRow.extra;
+extraIds.forEach(id => g.check(/^[a-z][a-z0-9-]{1,40}$/.test(id), id, 'tickbox',
+  'the shelf carries a book id the server\'s acts_() would refuse: "' + id + '"'));
+g.note(extraIds.length
+  ? 'THE LIVE SHEET\'S CONFIG ROW: Key `acts`, Value `' + JSON.stringify(extraIds) + '` — every shelf book the built-in list [' + builtIn.join(', ') + '] does not name'
+  : 'no Config row `acts` is needed: every shelf book is in the built-in list [' + builtIn.join(', ') + ']');
+const data = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW, actsRow: 'shelf' });
 loadTemplate(data, TPL);
 data.call('initJotter')();
 data.as(TEACHER);

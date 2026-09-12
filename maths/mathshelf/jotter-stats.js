@@ -25,7 +25,9 @@
 (function () {
   'use strict';
 
-  var KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  var KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+    /* Book A - Collecting and displaying (12 Sept 2026) */
+    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function T() { return (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {}; }
@@ -58,7 +60,15 @@
     boxplot: ['tray', 'marker-selected', 'placing', 'placed', 'drawn'],
     compare: ['empty', 'building', 'ready'],
     judge: ['empty', 'judging', 'reason-open', 'ready'],
-    values: ['empty', 'filling', 'ready']
+    values: ['empty', 'filling', 'ready'],
+    /* Book A (DESIGN 17; the contract in tools/qa/out/bookA/CONTRACT_A.md) */
+    order: ['tray', 'ordering', 'selected', 'ready'],
+    pick: ['empty', 'picked', 'ready'],
+    /* a leaf is "selected" whether it was lifted from the tray or from a
+       stem; "key" exists only when the question asks her to write one */
+    stemleaf: ['tray', 'leaf-selected', 'placing', 'key', 'ready'],
+    pie: ['table', 'table-done', 'rim', 'bounds-done', 'drawn', 'ready'],
+    scatter: ['plotting', 'plotted', 'line', 'estimate', 'corr', 'outlier', 'ready']
   };
   /* WHAT THIS QUESTION CAN ACTUALLY SHOW. The kind's list above is every board
      the kind HAS; a particular question shows only the ones its own data
@@ -121,6 +131,9 @@
       var everyClaimAsksWhy = claims.length > 0 &&
         claims.every(function (c) { return !c.options && c.fair === false; });
       if (everyClaimAsksWhy) drop('judging');
+      /* ONE claim: the press that judges it is the press that finishes the
+         question, so "some judged, nothing open" is not a board it shows */
+      if (claims.length === 1) drop('judging');
       /* IN THE ORDER SHE MEETS THEM. When the FIRST claim is one she has to
          give a reason for, the reason picker is the board she sees before any
          "some judged, nothing open" board exists. */
@@ -128,6 +141,17 @@
         var iJ = own.indexOf('judging'), iR = own.indexOf('reason-open');
         if (iJ > -1 && iR > -1) { own[iJ] = 'reason-open'; own[iR] = 'judging'; }
       }
+    }
+    if (q.kind === 'stemleaf' && !(q.key && q.key.ask)) drop('key');
+    if (q.kind === 'scatter') {
+      var asked = (q.asks || []).map(function (a) { return a && a.type; });
+      if (asked.indexOf('lobf') === -1) drop('line');
+      if (asked.indexOf('estimate') === -1) drop('estimate');
+      if (asked.indexOf('corr') === -1) drop('corr');
+      if (asked.indexOf('outlier') === -1) drop('outlier');
+      /* with nothing after the points, "every point placed" IS the finished
+         board: the Check lights on the last point */
+      if (asked.length === 0) drop('plotted');
     }
     if (q.kind === 'boxplot' && q.from) {
       var first = q.from === 'curve' ? 'cfread' : q.from;
@@ -144,7 +168,9 @@
   var CHECK_LABEL = {
     qlist: 'statCheckQlist', cftable: 'statCheckCftable', cfplot: 'statCheckCfplot',
     cfread: 'statCheckCfread', boxplot: 'statCheckBoxplot', compare: 'statCheckCompare',
-    judge: 'statCheckJudge', values: 'statCheckValues'
+    judge: 'statCheckJudge', values: 'statCheckValues',
+    order: 'statCheckOrder', pick: 'statCheckPick', stemleaf: 'statCheckStemleaf',
+    pie: 'statCheckPie', scatter: 'statCheckScatter'
   };
 
   /* ── THE STAGE STRIP: the stages, SHOWN (DESIGN 4.0, Correction 11 Sept
@@ -182,6 +208,21 @@
     /* both sentences are "building" boards: the kind lights the pill itself */
     else if (kind === 'compare') { pill(t.statPillCompare1, ['empty', 'building']); pill(t.statPillCompare2, ['building']); }
     else if (kind === 'judge') pill(t.statPillJudge, ['empty', 'judging', 'reason-open']);
+    /* Book A */
+    else if (kind === 'order') pill(t.statPillOrder, ['tray', 'ordering', 'selected']);
+    else if (kind === 'pick') { pill(t.statPillPickChoose, ['empty']); pill(t.statPillPickWhy, ['picked']); }
+    else if (kind === 'stemleaf') { pill(t.statPillSlPlace, ['tray', 'leaf-selected', 'placing']); if (has('key')) pill(t.statPillSlKey, ['key']); }
+    else if (kind === 'pie') { pill(t.statPillPieTable, ['table', 'table-done']); pill(t.statPillPieRim, ['rim', 'bounds-done']); pill(t.statPillPieLabels, ['drawn']); }
+    else if (kind === 'scatter') {
+      pill(t.statPillScPlot, ['plotting', 'plotted']);
+      (q.asks || []).forEach(function (a) {
+        if (!a) return;
+        if (a.type === 'lobf') pill(t.statPillScLine, ['line']);
+        else if (a.type === 'estimate') pill(fill(t.statPillScEst, { at: a.at }), ['estimate']);
+        else if (a.type === 'corr') pill(t.statPillScCorr, ['corr']);
+        else if (a.type === 'outlier') pill(t.statPillScOutlier, ['outlier']);
+      });
+    }
     /* the finished board belongs to the last act */
     if (out.length && has('ready')) out[out.length - 1].stages.push('ready');
     return out;
@@ -626,6 +667,11 @@
     if (kind === 'judge') return 'judge';
     if (kind === 'qlist') return 'order';
     if (kind === 'cftable') return 'table';
+    if (kind === 'order') return 'cycle';
+    if (kind === 'pick') return 'pick';
+    if (kind === 'stemleaf') return 'stemleaf';
+    if (kind === 'pie') return 'pie';
+    if (kind === 'scatter') return 'scatter';
     return 'values';
   }
 
@@ -1023,8 +1069,62 @@
     var q = ctx.q;
     var order = q.order || (q.slots || []).map(function (s) { return s.id; });
     var v = {}, open = -1, pad = null;
+    /* THE FIGURE (Book A, DESIGN 17.1): a Venn diagram carries its boxes ON
+       the regions - HTML buttons laid over the board at the region centres the
+       chart reports, so the overlap and readability laws judge them as text;
+       a given stem-and-leaf diagram or a printed list is drawn above the
+       boxes. A slot with a `region` lives on the figure; every other slot
+       stays in the list below. */
+    var fig = q.fig || null;
+    var isVenn = !!(fig && (fig.type === 'venn2' || fig.type === 'venn3'));
+    var figHost = null, venn = null, overlay = null;
+    if (fig) {
+      figHost = el('div', 'stat-fig stat-fig-' + fig.type);
+      figHost.setAttribute('data-work', '');
+      ctx.boardHost.appendChild(figHost);
+      if (isVenn && window.GJ_STATCHART && window.GJ_STATCHART.venn) {
+        venn = window.GJ_STATCHART.venn(figHost, fig, {});
+        overlay = el('div', 'stat-fig-overlay');
+        (venn.frame || figHost).appendChild(overlay);
+        if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { placeOverlay(); }).observe(venn.frame || figHost);
+      } else if (fig.type === 'stemleaf') {
+        figHost.appendChild(slTable({ stems: fig.stems || [], rows: fig.rows || {}, readOnly: true, given: {} }));
+        if (fig.key) { var kl = el('p', 'stat-sl-key'); kl.textContent = slKeyLine(fig.key, fig.decimals === 1 ? 1 : 0, fig.unit); figHost.appendChild(kl); }
+      } else if (fig.type === 'list') {
+        figHost.appendChild(el('p', 'stat-list', esc((fig.values || []).join(', '))));
+      }
+    }
     var host = el('div', 'stat-slots');
     ctx.boardHost.appendChild(host);
+    function onFig(id) { return !!(isVenn && venn && slot(id).region); }
+    function cellFor(id, i) {
+      var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
+      b.type = 'button';
+      b.textContent = v[id] || '';
+      if (v[id]) b.setAttribute('data-placed', '');
+      b.setAttribute('aria-label', slot(id).label);
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (ctx.locked()) return;
+        open = i; render(); ctx.changed();
+      });
+      return b;
+    }
+    function placeOverlay() {
+      if (!overlay || !venn) return;
+      /* a box stays INSIDE the frame: one that hung past the right edge made
+         the frame hide 13 px behind its own overflow (the walk, 12 Sept 2026) */
+      var fw = (venn.frame || figHost).clientWidth || 0, fh = (venn.frame || figHost).clientHeight || 0;
+      overlay.querySelectorAll('.stat-fig-box').forEach(function (box) {
+        var c = venn.regionCenter(box.getAttribute('data-region'));
+        if (!c) return;
+        var bw = box.offsetWidth || 44, bh = box.offsetHeight || 44;
+        var x = fw ? Math.min(Math.max(c.x, bw / 2 + 1), fw - bw / 2 - 1) : c.x;
+        var y = fh ? Math.min(Math.max(c.y, bh / 2 + 1), fh - bh / 2 - 1) : c.y;
+        box.style.left = Math.round(x) + 'px';
+        box.style.top = Math.round(y) + 'px';
+      });
+    }
 
     function slot(id) {
       var s = q.slots || [], i;
@@ -1034,23 +1134,23 @@
     function render() {
       stage();
       host.innerHTML = '';
+      if (overlay) overlay.innerHTML = '';
       order.forEach(function (id, i) {
+        if (onFig(id)) {
+          var box = el('div', 'stat-fig-box');
+          box.setAttribute('data-region', slot(id).region);
+          box.appendChild(el('span', 'stat-fig-box-label', esc(slot(id).label)));
+          box.appendChild(cellFor(id, i));
+          overlay.appendChild(box);
+          return;
+        }
         var line = el('div', 'stat-slot');
         line.appendChild(el('span', 'stat-slot-label', esc(slot(id).label)));
-        var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
-        b.type = 'button';
-        b.textContent = v[id] || '';
-        if (v[id]) b.setAttribute('data-placed', '');
-        b.setAttribute('aria-label', slot(id).label);
-        b.addEventListener('click', function (e) {
-          e.stopPropagation();
-          if (ctx.locked()) return;
-          open = i; render(); ctx.changed();
-        });
-        line.appendChild(b);
+        line.appendChild(cellFor(id, i));
         if (slot(id).unit) line.appendChild(el('span', 'stat-slot-unit', esc(slot(id).unit)));
         host.appendChild(line);
       });
+      placeOverlay();
       renderDock();
     }
     function renderDock() {
@@ -1082,11 +1182,11 @@
     }
     function paint() {
       stage();
-      var cells = host.querySelectorAll('.stat-cell');
-      order.forEach(function (id, i) {
-        if (!cells[i]) return;
-        cells[i].textContent = v[id] || '';
-        if (v[id]) cells[i].setAttribute('data-placed', ''); else cells[i].removeAttribute('data-placed');
+      order.forEach(function (id) {
+        var cell = ctx.boardHost.querySelector('.stat-cell[aria-label="' + String(slot(id).label).replace(/"/g, '\\"') + '"]');
+        if (!cell) return;
+        cell.textContent = v[id] || '';
+        if (v[id]) cell.setAttribute('data-placed', ''); else cell.removeAttribute('data-placed');
       });
     }
 
@@ -1101,7 +1201,7 @@
       },
       lock: function () {
         ctx.dock.innerHTML = '';
-        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+        ctx.boardHost.querySelectorAll('.stat-cell').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
       },
       showTruth: function () {
         var box = el('div', 'stat-truth');
@@ -1377,6 +1477,15 @@
     /* where the rule meets the curve, read on the board itself */
     function dropRule(v) {
       bd.rule(v);
+      /* A PARKED RULE READS NOTHING (12 Sept 2026). At the axis the drop met
+         the curve's own start point and wrote its x on the scale - a stray
+         "0" (or "70") on the opening screen of every reading question at
+         375, before she had moved anything. The read-out exists once the
+         rule is off the axis. */
+      if (!(v > ((q.chart && q.chart.y && q.chart.y.min) || 0))) {
+        if (bd.clearDrop) bd.clearDrop();
+        return null;
+      }
       var d = bd.drop();
       return d ? d.x : null;
     }
@@ -1991,8 +2100,12 @@
        go stale. A question may still carry its own bank when the source's
        wording differs. */
     function reasonBank() {
-      if (q.reasons && q.reasons.length) return q.reasons.slice();
       var bank = (window.GJ_STATS && window.GJ_STATS.REASONS) || {};
+      /* a question may name its bank as ids (Book A: the Q_* flaws it offers)
+         or carry its own {id, text} rows when the source's wording differs */
+      if (q.reasons && q.reasons.length) {
+        return q.reasons.map(function (r) { return typeof r === 'string' ? { id: r, text: bank[r] || r } : r; });
+      }
       return Object.keys(bank).map(function (id) { return { id: id, text: bank[id] }; });
     }
     function render() {
@@ -2109,6 +2222,1057 @@
     };
   };
 
+  /* ══════════════════════ BOOK A — Collecting and displaying ══════════════ */
+
+  /* ══ order — put the cards of a cycle in sequence ══════════════════════ */
+
+  BUILD.order = function (ctx) {
+    var q = ctx.q;
+    var tiles = q.tiles || [];
+    var seq = [];                              /* tile indices in the pupil's order */
+    var host = el('div', 'stat-order');
+    ctx.boardHost.appendChild(host);
+    var trayWrap = el('div', 'stat-tray');
+    trayWrap.setAttribute('data-tray', 'order-tiles-' + q.id);
+    var rowWrap = el('div', 'stat-row stat-order-row');
+    rowWrap.setAttribute('data-tray-row', '');
+    host.appendChild(trayWrap); host.appendChild(rowWrap);
+
+    function renderTray() {
+      trayWrap.innerHTML = '';
+      var left = [];
+      tiles.forEach(function (t, i) { if (seq.indexOf(i) === -1) left.push({ t: t, i: i }); });
+      /* the answer order is the cycle as authored; the tray never comes out
+         in it (Part 8.2) */
+      var answerKeys = (q.answer || []).map(function (i) { return tiles[i]; });
+      derange(left, answerKeys, function (o) { return o.t; }, q.id).forEach(function (o) {
+        var b = el('button', 'stat-tile stat-card');
+        b.type = 'button';
+        b.textContent = String(o.t);
+        b.setAttribute('data-tray-item', '');
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          ctx.clearSelection();
+          seq.push(o.i);
+          ctx.setStage(seq.length === tiles.length ? 'ready' : 'ordering');
+          render(); ctx.changed();
+        });
+        trayWrap.appendChild(b);
+      });
+    }
+    function renderRow() {
+      rowWrap.innerHTML = '';
+      seq.forEach(function (ti, p) {
+        var b = el('button', 'stat-tile stat-card stat-tile-placed');
+        b.type = 'button';
+        b.textContent = String(tiles[ti]);
+        b.setAttribute('data-row-pos', String(p));
+        ctx.selectedStage = 'selected';
+        twoPress(ctx, b, function () {
+          seq.splice(p, 1);
+          ctx.setStage(seq.length ? 'ordering' : 'tray');
+          render(); ctx.changed();
+        });
+        rowWrap.appendChild(b);
+        if (p < seq.length - 1 || q.cyclic) {
+          var arrow = el('span', 'stat-order-arrow', '→');
+          arrow.setAttribute('aria-hidden', 'true');
+          rowWrap.appendChild(arrow);
+        }
+      });
+      if (q.cyclic && seq.length === tiles.length) {
+        var back = el('span', 'stat-order-back', esc(String(tiles[seq[0]])));
+        rowWrap.appendChild(back);
+      }
+    }
+    function say() {
+      if (seq.length === tiles.length) ctx.say(T().statStageOrderDone);
+      else ctx.say(fill(T().statStageOrder, { n: tiles.length - seq.length }));
+    }
+    function render() { renderTray(); renderRow(); say(); window.GJ.setState(ctx.dock, 'dock', 'chips'); }
+
+    return {
+      start: function () { fictionLine(ctx, T().statTrayFictionOrder); ctx.setStage('tray'); render(); },
+      reset: function () { seq = []; ctx.setStage('tray'); render(); },
+      restore: function (S) {
+        seq = ((S && S.seq) || []).filter(function (i) { return tiles[i] !== undefined; });
+        ctx.setStage(!seq.length ? 'tray' : seq.length === tiles.length ? 'ready' : 'ordering');
+        render();
+      },
+      state: function () { return { seq: seq.slice() }; },
+      ready: function () {
+        return seq.length === tiles.length ? { ok: true } : { ok: false, why: T().statOrderWhy };
+      },
+      lock: function () {
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        box.textContent = (q.answer || []).map(function (i) { return tiles[i]; }).join(' → ') + (q.cyclic ? ' → …' : '');
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var g = el('div', 'stat-row struck');
+        (((att.S || {}).seq) || []).forEach(function (i) {
+          var t = el('span', 'stat-tile'); t.textContent = String(tiles[i]); g.appendChild(t);
+        });
+        holder.appendChild(g);
+      }
+    };
+  };
+
+  /* ══ pick — choose the better question, then say why the others fall short ═ */
+
+  BUILD.pick = function (ctx) {
+    var q = ctx.q;
+    var options = q.options || [];
+    var pick = null, why = null;
+    var host = el('div', 'stat-pick');
+    ctx.boardHost.appendChild(host);
+
+    function bank() {
+      var all = (window.GJ_STATS && window.GJ_STATS.REASONS) || {};
+      var ids = q.reasons && q.reasons.length ? q.reasons.slice() : Object.keys(all).filter(function (id) { return id.indexOf('Q_') === 0; });
+      return ids.map(function (id) { return typeof id === 'string' ? { id: id, text: all[id] || id } : id; });
+    }
+    function render() {
+      host.innerHTML = '';
+      var tray = el('div', 'stat-options');
+      tray.setAttribute('data-tray', 'pick-options-' + q.id);
+      /* the answer order is the authored order (the best one is where the
+         source printed it); the tray never comes out in it */
+      var laid = derange(options.map(function (o, i) { return { o: o, i: i }; }),
+        options.map(function (o) { return o.text; }), function (x) { return x.o.text; }, q.id);
+      laid.forEach(function (x) {
+        var b = el('button', 'stat-option');
+        b.type = 'button';
+        b.setAttribute('data-tray-item', '');
+        b.setAttribute('aria-pressed', pick === x.i ? 'true' : 'false');
+        b.appendChild(el('span', 'stat-option-text', esc(x.o.text)));
+        if (x.o.boxes && x.o.boxes.length) {
+          var bx = el('span', 'stat-option-boxes');
+          x.o.boxes.forEach(function (t) { bx.appendChild(el('span', 'stat-option-box', '☐ ' + esc(t))); });
+          b.appendChild(bx);
+        }
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          pick = x.i; why = null;
+          ctx.setStage('picked');
+          render(); ctx.changed();
+        });
+        tray.appendChild(b);
+      });
+      host.appendChild(tray);
+      if (pick !== null) {
+        var rg = el('div', 'stat-chips stat-reasons');
+        rg.setAttribute('data-tray', 'pick-why-' + q.id);
+        var bk = bank();
+        derange(bk, bk.map(function (r) { return r.id; }), function (r) { return r.id; }, q.id + 'w').forEach(function (r) {
+          var b = el('button', 'chip chip-reason');
+          b.type = 'button';
+          b.textContent = r.text;
+          b.setAttribute('data-tray-item', '');
+          b.setAttribute('data-reason', r.id);
+          b.setAttribute('aria-pressed', why === r.id ? 'true' : 'false');
+          b.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (ctx.locked()) return;
+            why = r.id;
+            ctx.setStage('ready');
+            render(); ctx.changed();
+          });
+          rg.appendChild(b);
+        });
+        host.appendChild(rg);
+      }
+      ctx.say(pick === null ? T().statStagePick : T().statStagePickWhy);
+      window.GJ.setState(ctx.dock, 'dock', 'chips');
+    }
+
+    return {
+      start: function () { ctx.setStage('empty'); render(); },
+      reset: function () { pick = null; why = null; ctx.setStage('empty'); render(); },
+      restore: function (S) {
+        pick = (S && S.pick !== undefined && S.pick !== null && options[S.pick]) ? S.pick : null;
+        why = (S && S.why) || null;
+        ctx.setStage(pick === null ? 'empty' : (why ? 'ready' : 'picked'));
+        render();
+      },
+      state: function () { return { pick: pick, why: why }; },
+      ready: function () {
+        if (pick === null) return { ok: false, why: T().statPickWhy };
+        if (!why) return { ok: false, why: T().statPickWhyWhy };
+        return { ok: true };
+      },
+      lock: function () {
+        host.querySelectorAll('button').forEach(function (b) {
+          b.disabled = true; setLockedWhy(b, T().statAlreadyMarked);
+          if (b.getAttribute('aria-pressed') === 'true') b.setAttribute('data-placed', '');
+        });
+      },
+      showTruth: function () {
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        var best = options.filter(function (o) { return o.best; })[0];
+        box.textContent = best ? best.text : '';
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var g = el('div', 'stat-row struck');
+        var S = att.S || {};
+        var t = el('span', 'stat-tile');
+        t.textContent = (options[S.pick] || {}).text || '—';
+        g.appendChild(t);
+        holder.appendChild(g);
+      }
+    };
+  };
+
+  /* ══ stemleaf — the shared diagram, then the kind ══════════════════════ */
+
+  /* WHAT A VALUE'S STEM AND LEAF ARE. The engine's rule is the truth
+     (GJ_STATS.stemLeafOf); this is the same split, kept here only so the
+     board can draw before the engine has loaded in a scratch page. */
+  function stemLeafOf(v, decimals) {
+    if (window.GJ_STATS && window.GJ_STATS.stemLeafOf) return window.GJ_STATS.stemLeafOf(v, decimals);
+    var n = Number(v);
+    if (decimals === 1) { var st = Math.floor(n + 1e-9); return { stem: st, leaf: Math.round((n - st) * 10) }; }
+    return { stem: Math.floor(n / 10), leaf: Math.round(n - Math.floor(n / 10) * 10) };
+  }
+  function slValueText(stem, leaf, decimals) {
+    return decimals === 1 ? (stem + '.' + leaf) : String(stem * 10 + leaf);
+  }
+  function slMeans(stem, leaf, decimals, unit) {
+    return slValueText(stem, leaf, decimals) + (unit ? ' ' + unit : '');
+  }
+  /* the diagram, as HTML (a table she reads; its digits are text the
+     readability law measures). o.rows = the pupil's leaves per stem (buttons,
+     two-press); o.given = locked leaves per stem (spans); o.back = the given
+     other side, growing leftward; o.onZone(stem) = a press on a stem row. */
+  function slTable(o) {
+    var t = el('table', 'stat-sl');
+    var tt = T();
+    if (o.back) {
+      var hr = el('tr');
+      hr.appendChild(el('th', 'stat-sl-side', esc(o.back.label || '')));
+      hr.appendChild(el('th', 'stat-sl-stem-head', esc(tt.statSlStem)));
+      hr.appendChild(el('th', 'stat-sl-side', esc(o.mine || '')));
+      t.appendChild(hr);
+    }
+    (o.stems || []).forEach(function (stem) {
+      var tr = el('tr');
+      tr.setAttribute('data-stem-row', String(stem));
+      if (o.back) {
+        var bc = el('td', 'stat-sl-back');
+        /* leaves grow AWAY from the stem: smallest nearest it */
+        ((o.back.rows || {})[String(stem)] || []).slice().reverse().forEach(function (d) {
+          bc.appendChild(el('span', 'stat-sl-leaf stat-sl-given', esc(String(d))));
+        });
+        tr.appendChild(bc);
+      }
+      tr.appendChild(el('th', 'stat-sl-stem', esc(String(stem))));
+      var cell = el('td', 'stat-sl-cell');
+      ((o.given || {})[String(stem)] || []).forEach(function (d) {
+        cell.appendChild(el('span', 'stat-sl-leaf stat-sl-given', esc(String(d))));
+      });
+      ((o.rows || {})[String(stem)] || []).forEach(function (d, idx) {
+        if (o.readOnly) { cell.appendChild(el('span', 'stat-sl-leaf', esc(String(d)))); return; }
+        var b = el('button', 'stat-sl-leaf');
+        b.type = 'button';
+        b.textContent = String(d);
+        b.setAttribute('data-stem', String(stem));
+        b.setAttribute('data-leaf-pos', String(idx));
+        if (o.onLeaf) o.onLeaf(b, stem, idx);
+        cell.appendChild(b);
+      });
+      if (o.onZone && !o.readOnly) {
+        var z = el('button', 'stat-sl-zone');
+        z.type = 'button';
+        z.setAttribute('data-stem', String(stem));
+        z.setAttribute('aria-label', tt.statSlStem + ' ' + stem);
+        z.textContent = '+';
+        z.addEventListener('click', function (e) { e.stopPropagation(); o.onZone(stem); });
+        cell.appendChild(z);
+      }
+      tr.appendChild(cell);
+      t.appendChild(tr);
+    });
+    return t;
+  }
+  function slKeyLine(key, decimals, unit) {
+    var tt = T();
+    if (!key || key.stem === undefined || key.stem === null || key.stem === '' || key.leaf === undefined || key.leaf === null || key.leaf === '') return '';
+    var means = key.means || slMeans(Number(key.stem), Number(key.leaf), decimals, unit);
+    return fill(tt.statSlKeyLine, { stem: key.stem, leaf: key.leaf, means: means });
+  }
+
+  BUILD.stemleaf = function (ctx) {
+    var q = ctx.q;
+    var decimals = q.decimals === 1 ? 1 : 0;
+    var values = (q.values || []).slice();
+    var stems = (q.stems || []).slice();
+    var askKey = !!(q.key && q.key.ask);
+    /* the GIVEN leaves: prefilled stems are drawn and locked, and the values
+       they hold are not the pupil's to place */
+    var given = {}, mine = [];
+    var doneStems = (q.prefill && q.prefill.stemsDone) || [];
+    values.forEach(function (v, i) {
+      var sl = stemLeafOf(v, decimals);
+      if (doneStems.indexOf(sl.stem) > -1) { (given[String(sl.stem)] = given[String(sl.stem)] || []).push(sl.leaf); }
+      else mine.push(i);
+    });
+    Object.keys(given).forEach(function (k) { given[k].sort(function (a, b) { return a - b; }); });
+    var backRows = null;
+    if (q.back && q.back.values) {
+      backRows = {};
+      q.back.values.forEach(function (v) {
+        var sl = stemLeafOf(v, decimals);
+        (backRows[String(sl.stem)] = backRows[String(sl.stem)] || []).push(sl.leaf);
+      });
+      Object.keys(backRows).forEach(function (k) { backRows[k].sort(function (a, b) { return a - b; }); });
+    }
+
+    var rows = {};                 /* stem -> [{i (value index), leaf}] in placed order */
+    var picked = null;             /* a tray value index waiting for a stem */
+    var key = { stem: '', leaf: '' };
+    var host = el('div', 'stat-stemleaf');
+    ctx.boardHost.appendChild(host);
+    var trayWrap = el('div', 'stat-tray');
+    trayWrap.setAttribute('data-tray', 'stemleaf-leaves-' + q.id);
+    var diagram = el('div', 'stat-sl-host');
+    diagram.setAttribute('data-work', '');
+    var keyWrap = el('div', 'stat-sl-keywrap');
+    host.appendChild(trayWrap); host.appendChild(diagram); host.appendChild(keyWrap);
+
+    function placedIdx() { var out = []; Object.keys(rows).forEach(function (k) { rows[k].forEach(function (r) { out.push(r.i); }); }); return out; }
+    function allPlaced() { return placedIdx().length === mine.length; }
+    function keyDone() { return key.stem !== '' && key.leaf !== ''; }
+    function stage() {
+      var n = placedIdx().length;
+      if (picked !== null) return ctx.setStage('leaf-selected');
+      if (!n) return ctx.setStage('tray');
+      if (n < mine.length) return ctx.setStage('placing');
+      if (askKey && !keyDone()) return ctx.setStage('key');
+      ctx.setStage('ready');
+    }
+    function renderTray() {
+      trayWrap.innerHTML = '';
+      var left = mine.filter(function (i) { return placedIdx().indexOf(i) === -1; })
+        .map(function (i) { return { i: i, v: values[i] }; });
+      var answerKeys = ascendingKeys(left.map(function (o) { return o.v; }));
+      derange(left, answerKeys, function (o) { return o.v; }, q.id).forEach(function (o) {
+        var b = el('button', 'stat-tile' + (picked === o.i ? ' is-selected' : ''));
+        b.type = 'button';
+        b.textContent = String(o.v);
+        b.setAttribute('data-tray-item', '');
+        if (picked === o.i) b.setAttribute('aria-current', 'true');
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          ctx.clearSelection();
+          picked = (picked === o.i) ? null : o.i;
+          render(); ctx.changed();
+        });
+        trayWrap.appendChild(b);
+      });
+    }
+    function renderDiagram() {
+      diagram.innerHTML = '';
+      var rowDigits = {};
+      Object.keys(rows).forEach(function (k) { rowDigits[k] = rows[k].map(function (r) { return r.leaf; }); });
+      diagram.appendChild(slTable({
+        stems: stems, given: given, rows: rowDigits, back: backRows ? { label: q.back.label, rows: backRows } : null,
+        mine: q.back ? (q.back.mine || '') : '',
+        onZone: function (stem) {
+          if (ctx.locked() || picked === null) { if (picked === null) ctx.note(T().statStageSlPlace ? '' : ''); return; }
+          var sl = stemLeafOf(values[picked], decimals);
+          (rows[String(stem)] = rows[String(stem)] || []).push({ i: picked, leaf: sl.leaf });
+          picked = null;
+          render(); ctx.changed();
+        },
+        onLeaf: function (b, stem, idx) {
+          ctx.selectedStage = 'leaf-selected';
+          twoPress(ctx, b, function () {
+            rows[String(stem)].splice(idx, 1);
+            if (!rows[String(stem)].length) delete rows[String(stem)];
+            render(); ctx.changed();
+          });
+        }
+      }));
+    }
+    function renderKey() {
+      keyWrap.innerHTML = '';
+      var line = el('p', 'stat-sl-key');
+      line.setAttribute('data-board-label', '');
+      if (askKey) {
+        if (allPlaced()) {
+          var ks = el('div', 'stat-chips stat-sl-keytray');
+          ks.setAttribute('data-tray', 'stemleaf-keystem-' + q.id);
+          ks.appendChild(el('span', 'stat-sl-keylabel', esc(T().statSlKeyStem)));
+          derange(stems.map(function (x) { return { v: x }; }), stems.slice(), function (o) { return o.v; }, q.id + 'ks').forEach(function (o) {
+            var b = el('button', 'chip');
+            b.type = 'button'; b.textContent = String(o.v);
+            b.setAttribute('data-tray-item', '');
+            b.setAttribute('aria-pressed', String(key.stem) === String(o.v) ? 'true' : 'false');
+            b.addEventListener('click', function (e) { e.stopPropagation(); if (ctx.locked()) return; key.stem = String(o.v); render(); ctx.changed(); });
+            ks.appendChild(b);
+          });
+          var kl = el('div', 'stat-chips stat-sl-keytray');
+          kl.setAttribute('data-tray', 'stemleaf-keyleaf-' + q.id);
+          kl.appendChild(el('span', 'stat-sl-keylabel', esc(T().statSlKeyLeaf)));
+          var digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+          derange(digits.map(function (x) { return { v: x }; }), digits.slice(), function (o) { return o.v; }, q.id + 'kl').forEach(function (o) {
+            var b = el('button', 'chip');
+            b.type = 'button'; b.textContent = String(o.v);
+            b.setAttribute('data-tray-item', '');
+            b.setAttribute('aria-pressed', String(key.leaf) === String(o.v) ? 'true' : 'false');
+            b.addEventListener('click', function (e) { e.stopPropagation(); if (ctx.locked()) return; key.leaf = String(o.v); render(); ctx.changed(); });
+            kl.appendChild(b);
+          });
+          keyWrap.appendChild(ks); keyWrap.appendChild(kl);
+        }
+        line.textContent = slKeyLine(key, decimals, q.unit);
+      } else if (q.key && q.key.stem !== undefined) {
+        line.textContent = slKeyLine(q.key, decimals, q.unit);
+      }
+      if (line.textContent) keyWrap.appendChild(line);
+    }
+    function say() {
+      var n = placedIdx().length;
+      if (n < mine.length) ctx.say(fill(T().statStageSlPlace, { n: n, m: mine.length }));
+      else if (askKey && !keyDone()) ctx.say(T().statStageSlKey);
+      else ctx.say(T().statStageSlDone);
+    }
+    function render() { stage(); renderTray(); renderDiagram(); renderKey(); say(); window.GJ.setState(ctx.dock, 'dock', 'chips'); }
+    function stateRows() {
+      var out = {};
+      Object.keys(rows).forEach(function (k) { out[k] = rows[k].map(function (r) { return String(r.leaf); }); });
+      return out;
+    }
+
+    return {
+      start: function () { fictionLine(ctx, T().statTrayFictionLeaves); render(); },
+      reset: function () { rows = {}; picked = null; key = { stem: '', leaf: '' }; render(); },
+      restore: function (S) {
+        rows = {}; picked = null;
+        var used = [];
+        Object.keys((S && S.rows) || {}).forEach(function (k) {
+          S.rows[k].forEach(function (d) {
+            /* find an unplaced value of mine with this stem and leaf */
+            var found = mine.filter(function (i) {
+              if (used.indexOf(i) > -1) return false;
+              var sl = stemLeafOf(values[i], decimals);
+              return String(sl.leaf) === String(d);
+            })[0];
+            if (found === undefined) return;
+            used.push(found);
+            (rows[k] = rows[k] || []).push({ i: found, leaf: Number(d) });
+          });
+        });
+        key = { stem: (S && S.key && S.key.stem) || '', leaf: (S && S.key && S.key.leaf !== undefined && S.key.leaf !== null) ? String(S.key.leaf) : '' };
+        if (key.stem !== '') key.stem = String(key.stem);
+        render();
+      },
+      state: function () {
+        var S = { rows: stateRows() };
+        if (askKey) S.key = { stem: key.stem, leaf: key.leaf };
+        return S;
+      },
+      ready: function () {
+        if (!allPlaced()) return { ok: false, why: T().statSlWhy };
+        if (askKey && !keyDone()) return { ok: false, why: T().statSlKeyWhy };
+        return { ok: true };
+      },
+      lock: function () {
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        var truth = {};
+        mine.forEach(function (i) { var sl = stemLeafOf(values[i], decimals); (truth[String(sl.stem)] = truth[String(sl.stem)] || []).push(sl.leaf); });
+        Object.keys(truth).forEach(function (k) { truth[k].sort(function (a, b) { return a - b; }); });
+        box.appendChild(slTable({ stems: stems, given: given, rows: truth, readOnly: true,
+          back: backRows ? { label: q.back.label, rows: backRows } : null, mine: q.back ? (q.back.mine || '') : '' }));
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var S = att.S || {};
+        var g = el('div', 'stat-row struck');
+        Object.keys(S.rows || {}).forEach(function (k) {
+          var t = el('span', 'stat-tile'); t.textContent = k + ' | ' + (S.rows[k] || []).join(' '); g.appendChild(t);
+        });
+        holder.appendChild(g);
+      }
+    };
+  };
+
+  /* ══ pie — the angle table, then the circle, then the labels ═══════════ */
+
+  BUILD.pie = function (ctx) {
+    var q = ctx.q;
+    var cats = q.cats || [];
+    var angles = {}, bounds = [], labels = {};      /* bounds: the n-1 placed, in cats order */
+    var open = -1, pad = null, drawn = false, pickedLabel = null, selBound = -1, pieBd = null;
+    var host = el('div', 'stat-pie');
+    ctx.boardHost.appendChild(host);
+    var tableWrap = el('div', 'stat-pie-table');
+    var boardWrap = el('div', 'stat-board-host stat-pie-host');
+    boardWrap.setAttribute('data-work', '');
+    var labelTray = el('div', 'stat-tray stat-pie-labelwrap');
+    labelTray.setAttribute('data-tray', 'pie-labels-' + q.id);
+    host.appendChild(tableWrap); host.appendChild(boardWrap); host.appendChild(labelTray);
+    var overlay = null;
+
+    function nAng() { return cats.filter(function (c) { return !!angles[c.id]; }).length; }
+    function tableDone() { return nAng() === cats.length; }
+    function nBounds() { return bounds.length; }
+    function boundsDone() { return nBounds() >= cats.length - 1; }
+    function nLabels() { return Object.keys(labels).length; }
+    function labelsDone() { return nLabels() === cats.length; }
+    function inRim() { return tableDone() && stageIsRim; }
+    var stageIsRim = false;
+
+    function stage() {
+      if (!stageIsRim) ctx.setStage(tableDone() ? 'table-done' : 'table');
+      else if (!drawn) ctx.setStage(boundsDone() ? 'bounds-done' : 'rim');
+      else ctx.setStage(labelsDone() ? 'ready' : 'drawn');
+    }
+    function renderTable() {
+      tableWrap.innerHTML = '';
+      var t = el('table', 'stat-table');
+      var hr = el('tr');
+      hr.appendChild(el('th', null, esc(q.catHead || T().statPieCategory)));
+      hr.appendChild(el('th', null, esc(T().statPieNumber)));
+      hr.appendChild(el('th', null, esc(T().statPieAngle)));
+      t.appendChild(hr);
+      cats.forEach(function (c, i) {
+        var tr = el('tr');
+        tr.appendChild(el('td', null, esc(c.label)));
+        tr.appendChild(el('td', null, esc(String(c.f))));
+        var td = el('td', 'stat-pie-angle');
+        var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
+        b.type = 'button';
+        b.textContent = angles[c.id] ? angles[c.id] + '°' : '';
+        if (angles[c.id]) b.setAttribute('data-placed', '');
+        b.setAttribute('aria-label', fill(T().statPieAngleLabel, { label: c.label }));
+        b.disabled = stageIsRim;
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked() || stageIsRim) return;
+          open = i; render(); ctx.changed();
+        });
+        td.appendChild(b);
+        tr.appendChild(td);
+        t.appendChild(tr);
+      });
+      /* the totals row: the paper's total, and the running sum of HER angles -
+         the self-check the SUM unit pays for, never the 360 it should be */
+      var tot = el('tr', 'stat-pie-total');
+      tot.appendChild(el('td', null, esc(T().statPieTotal)));
+      tot.appendChild(el('td', null, esc(String(q.total))));
+      var sum = 0, any = false;
+      cats.forEach(function (c) { var v = Number(angles[c.id]); if (angles[c.id] && !isNaN(v)) { sum += v; any = true; } });
+      var sumCell = el('td', 'stat-pie-sum', esc(any ? fill(T().statPieDegrees, { deg: Math.round(sum * 10) / 10 }) : T().statPieNoAngles));
+      sumCell.setAttribute('data-board-label', '');
+      tot.appendChild(sumCell);
+      t.appendChild(tot);
+      tableWrap.appendChild(t);
+    }
+    function buildBoard() {
+      boardWrap.innerHTML = '';
+      pieBd = null;
+      if (!stageIsRim) return;
+      pieBd = window.GJ_STATCHART.pie(boardWrap, {
+        onRimTap: function (deg) {
+          if (ctx.locked() || drawn) return;
+          if (boundsDone()) { ctx.note(T().statStagePieBoundsDone); return; }
+          deg = Math.round(deg);
+          bounds.push(deg);
+          selBound = bounds.length - 1;
+          pieBd.boundary(deg, { placed: true });
+          after();
+        },
+        onBoundaryMove: function (i, deg) {
+          if (ctx.locked() || drawn) return;
+          bounds[i] = Math.round(deg); selBound = i;
+          after();
+        },
+        onBoundaryPress: function (i) {
+          if (ctx.locked() || drawn) return;
+          selBound = i; after();
+        },
+        onSectorPress: function (i) {
+          if (ctx.locked() || !drawn || pickedLabel === null) return;
+          /* one label per sector: the label moves if it was somewhere else */
+          Object.keys(labels).forEach(function (k) { if (labels[k] === pickedLabel) delete labels[k]; });
+          labels[String(i)] = pickedLabel;
+          pickedLabel = null;
+          after();
+        }
+      });
+      overlay = el('div', 'stat-fig-overlay');
+      pieBd.frame.appendChild(overlay);
+      bounds.forEach(function (d) { pieBd.boundary(d, { placed: true }); });
+      if (drawn) drawSectors(true);
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { placeLabels(); }).observe(pieBd.frame);
+    }
+    function runningBounds() {
+      var out = [], acc = 0;
+      bounds.forEach(function (b) { out.push(b); });
+      return out;
+    }
+    function drawSectors(instant) {
+      if (!pieBd) return;
+      pieBd.clearSectors();
+      var from = 0;
+      var all = bounds.slice(0, cats.length - 1).concat([360]);
+      all.forEach(function (to, i) {
+        pieBd.sector(from, to, i, { instant: !!instant, press: true });
+        from = to;
+      });
+    }
+    function placeLabels() {
+      if (!overlay || !pieBd) return;
+      overlay.innerHTML = '';
+      if (!drawn) return;
+      var all = bounds.slice(0, cats.length - 1).concat([360]);
+      var from = 0;
+      all.forEach(function (to, i) {
+        var cid = labels[String(i)];
+        if (cid) {
+          var cat = cats.filter(function (c) { return c.id === cid; })[0];
+          var pt = pieBd.labelPoint(from, to);
+          var lb = el('button', 'stat-pie-label');
+          lb.type = 'button';
+          lb.setAttribute('data-placed', '');
+          lb.setAttribute('data-sector', String(i));
+          lb.textContent = cat ? cat.label : cid;
+          lb.style.left = Math.round(pt.x) + 'px'; lb.style.top = Math.round(pt.y) + 'px';
+          ctx.selectedStage = 'drawn';
+          twoPress(ctx, lb, function () { delete labels[String(i)]; after(); });
+          overlay.appendChild(lb);
+        }
+        from = to;
+      });
+    }
+    function renderLabelTray() {
+      labelTray.innerHTML = '';
+      if (!drawn) return;
+      var used = Object.keys(labels).map(function (k) { return labels[k]; });
+      var left = cats.filter(function (c) { return used.indexOf(c.id) === -1; });
+      derange(left, cats.map(function (c) { return c.id; }), function (c) { return c.id; }, q.id + 'lb').forEach(function (c) {
+        var b = el('button', 'stat-tile stat-card' + (pickedLabel === c.id ? ' is-selected' : ''));
+        b.type = 'button';
+        b.textContent = c.label;
+        b.setAttribute('data-tray-item', '');
+        if (pickedLabel === c.id) b.setAttribute('aria-current', 'true');
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          pickedLabel = pickedLabel === c.id ? null : c.id;
+          renderLabelTray();
+        });
+        labelTray.appendChild(b);
+      });
+    }
+    function renderDock() {
+      ctx.dock.innerHTML = '';
+      pad = null;
+      if (!stageIsRim) {
+        if (open > -1 && cats[open]) {
+          var c = cats[open];
+          window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
+          pad = makeNumPad(ctx.dock, {
+            label: fill(T().statPieAngleLabel, { label: c.label }), fraction: false, decimal: true,
+            onChange: function (val) { angles[c.id] = val; renderTable(); stage(); say(); ctx.changed(); }
+          });
+          pad.set(angles[c.id] || '');
+          if (open < cats.length - 1) {
+            var next = el('button', 'btn-quiet', T().statNextRow);
+            next.type = 'button';
+            next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+            ctx.dock.appendChild(next);
+          }
+        } else window.GJ.setState(ctx.dock, 'dock', 'chips');
+        var go = el('button', 'btn-stage stat-next', T().statPieNextRim);
+        go.type = 'button';
+        go.disabled = !tableDone();
+        if (go.disabled) setLockedWhy(go, T().statPieWhyTable);
+        go.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked() || go.disabled) return;
+          stageIsRim = true; open = -1;
+          renderTable(); buildBoard(); after();
+        });
+        ctx.dock.appendChild(go);
+        return;
+      }
+      if (!drawn) {
+        if (selBound > -1 && bounds[selBound] !== undefined) {
+          window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
+          ctx.dock.appendChild(nudgePad(ctx, {
+            onNudge: function (dx, dy) {
+              var step = dx !== 0 ? dx : -dy;          /* right/up = clockwise one degree */
+              var d = ((bounds[selBound] + step) % 360 + 360) % 360;
+              bounds[selBound] = d;
+              pieBd.boundary(d, { i: selBound });
+              after();
+            },
+            onRemove: function () {
+              pieBd.removeBoundary(selBound);
+              bounds.splice(selBound, 1);
+              selBound = -1;
+              after();
+            }
+          }));
+          if (pieBd) pieBd.readout(fill(T().statPieReadout, { deg: bounds[selBound] }));
+        } else { window.GJ.setState(ctx.dock, 'dock', 'chips'); if (pieBd) pieBd.clearReadout(); }
+        var draw = el('button', 'btn-stage stat-draw', T().statPieDraw);
+        draw.type = 'button';
+        draw.disabled = !boundsDone();
+        if (draw.disabled) setLockedWhy(draw, T().statPieWhyRim);
+        draw.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked() || draw.disabled) return;
+          drawn = true; selBound = -1;
+          if (pieBd) pieBd.clearReadout();
+          drawSectors(false);
+          after();
+        });
+        ctx.dock.appendChild(draw);
+        return;
+      }
+      window.GJ.setState(ctx.dock, 'dock', 'chips');
+    }
+    function say() {
+      if (!stageIsRim) ctx.say(tableDone() ? T().statStagePieTableDone : fill(T().statStagePieTable, { n: nAng(), m: cats.length }));
+      else if (!drawn) ctx.say(boundsDone() ? T().statStagePieBoundsDone : fill(T().statStagePieRim, { n: nBounds(), m: cats.length - 1 }));
+      else ctx.say(labelsDone() ? '' : fill(T().statStagePieLabels, { n: nLabels(), m: cats.length }));
+    }
+    function after() { stage(); placeLabels(); renderLabelTray(); renderDock(); say(); ctx.changed(); }
+    function render() { stage(); renderTable(); renderDock(); say(); }
+
+    return {
+      start: function () { stageIsRim = false; render(); },
+      reset: function () {
+        angles = {}; bounds = []; labels = {}; open = -1; drawn = false; pickedLabel = null; selBound = -1; stageIsRim = false;
+        buildBoard(); render();
+      },
+      restore: function (S) {
+        S = S || {};
+        angles = S.angles || {};
+        bounds = (S.bounds || []).slice(0, cats.length - 1).map(Number).filter(function (x) { return !isNaN(x); });
+        labels = S.labels || {};
+        drawn = !!S.drawn;
+        stageIsRim = drawn || bounds.length > 0 || !!S.rim;
+        open = -1; selBound = -1; pickedLabel = null;
+        renderTable(); buildBoard(); after();
+      },
+      state: function () {
+        var S = { angles: angles, bounds: bounds.slice(0, cats.length - 1).concat([360]), labels: labels };
+        if (drawn) S.drawn = true;
+        if (stageIsRim) S.rim = true;
+        return S;
+      },
+      ready: function () {
+        if (!tableDone()) return { ok: false, why: T().statPieWhyTable };
+        if (!boundsDone()) return { ok: false, why: T().statPieWhyRim };
+        if (!drawn) return { ok: false, why: T().statPieWhyDraw };
+        if (!labelsDone()) return { ok: false, why: T().statPieWhyLabels };
+        return { ok: true };
+      },
+      lock: function () {
+        ctx.dock.innerHTML = '';
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        var tot = Number(q.total) || cats.reduce(function (a, c) { return a + Number(c.f); }, 0);
+        box.textContent = cats.map(function (c) { return c.label + ' ' + (Number(c.f) * 360 / tot) + '°'; }).join(' · ');
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var S = att.S || {};
+        var g = el('div', 'stat-row struck');
+        cats.forEach(function (c) { var t = el('span', 'stat-tile'); t.textContent = ((S.angles || {})[c.id] || '—') + '°'; g.appendChild(t); });
+        holder.appendChild(g);
+      },
+      board: function () {
+        if (!pieBd) return null;
+        /* the drive channel speaks the SVG's own user units (pressGrid maps
+           them to client px); rimUser/degAtUser are that space */
+        return { toPx: function (deg) { return pieBd.rimUser(deg); }, toAxis: function (px, py) { return pieBd.degAtUser(px, py); }, snap: pieBd.snap, svg: pieBd.svg };
+      }
+    };
+  };
+
+  /* ══ scatter — plot, the line of best fit, an estimate, the correlation ══ */
+
+  BUILD.scatter = function (ctx) {
+    var q = ctx.q;
+    var given = q.given || [], toPlot = q.toPlot || [];
+    var asks = (q.asks || []).filter(Boolean);
+    var askOf = function (t) { return asks.filter(function (a) { return a.type === t; })[0] || null; };
+    var order = ['plotting'].concat(asks.map(function (a) { return a.type === 'lobf' ? 'line' : a.type === 'estimate' ? 'estimate' : a.type === 'corr' ? 'corr' : 'outlier'; }));
+    var step = 0;                     /* index into `order` */
+    var sel = -1, bd = null, est = '', corr = null, outlier = null, pad = null, lineDone = false;
+    var boardWrap = el('div', 'stat-board-host stat-scatter');
+    boardWrap.setAttribute('data-work', '');
+    ctx.boardHost.appendChild(boardWrap);
+    var tableWrap = el('div', 'stat-given');
+    ctx.body.insertBefore(tableWrap, ctx.body.querySelector('.check-row'));
+    var lines = el('div', 'wlines stat-lines');
+    ctx.boardHost.appendChild(lines);
+    var sq = q.chart && q.chart.sq ? q.chart.sq : { x: 1, y: 1 };
+
+    function layoutGiven() {
+      var table = tableWrap.firstElementChild;
+      if (!bd || !table || !ctx.body.clientWidth) return;
+      var bcs = getComputedStyle(ctx.body);
+      var inner = ctx.body.clientWidth - parseFloat(bcs.paddingLeft || 0) - parseFloat(bcs.paddingRight || 0);
+      var need = bd.minWidth() + 20 + table.getBoundingClientRect().width;
+      var stack = inner < need + 2;
+      if (ctx.body.classList.contains('stat-stack') !== stack) ctx.body.classList.toggle('stat-stack', stack);
+    }
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { layoutGiven(); }).observe(ctx.body);
+
+    function givenTable() {
+      tableWrap.innerHTML = '';
+      if (!q.table) return;
+      var t = el('table', 'stat-table');
+      var hr = el('tr');
+      (q.table.head || []).forEach(function (h) { hr.appendChild(el('th', null, esc(h))); });
+      t.appendChild(hr);
+      (q.table.rows || []).forEach(function (r) {
+        var tr = el('tr');
+        r.forEach(function (c) { tr.appendChild(el('td', null, esc(String(c)))); });
+        t.appendChild(tr);
+      });
+      tableWrap.appendChild(t);
+    }
+    function cur() { return order[step]; }
+    function plotted() { return bd ? bd.points().length : 0; }
+    function allPlotted() { return plotted() >= toPlot.length; }
+    function build() {
+      boardWrap.innerHTML = '';
+      bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
+        scrollNote: T().statScrollGraph,
+        onGridTap: function (x, y) {
+          if (ctx.locked() || cur() !== 'plotting') return;
+          if (allPlotted()) { ctx.note(T().statPlotEnough); return; }
+          sel = bd.addPoint(x, y, { select: true });
+          after();
+        },
+        onChange: function (evt) {
+          if (!evt || ctx.locked()) return;
+          if (evt.type === 'point-select' || evt.type === 'point-move') { if (cur() === 'plotting') sel = evt.i; }
+          if (evt.type === 'lobf-move') { lineDone = true; }
+          after();
+        }
+      });
+      given.forEach(function (pt) { bd.addPoint(Number(pt[0]), Number(pt[1]), { given: true }); });
+      layoutGiven();
+    }
+    function ensureLine() {
+      if (!bd || bd.handles().length >= 2) return;
+      /* a neutral flat line through the middle of the chart: no hint of the
+         slope, both handles well inside the frame */
+      var cx = q.chart.x, cy = q.chart.y;
+      var xr = cx.max - cx.min, yr = cy.max - cy.min;
+      var midY = cy.min + Math.round((yr / 2) / sq.y) * sq.y;
+      var x1 = cx.min + Math.round((xr / 4) / sq.x) * sq.x, x2 = cx.min + Math.round((3 * xr / 4) / sq.x) * sq.x;
+      bd.handleAt(x1, midY, 0);
+      bd.handleAt(x2, midY, 1);
+    }
+    function estimateSetup() {
+      var a = askOf('estimate');
+      if (!a || !bd) return;
+      if (a.from === 'y') bd.rule(Number(a.at)); else bd.ruleX(Number(a.at));
+      bd.drop();
+    }
+    function stage() {
+      var c = cur();
+      /* the last ask, answered, IS the finished board */
+      if (step >= order.length - 1 && stepDone()) { ctx.setStage('ready'); return; }
+      if (c === 'plotting') ctx.setStage(allPlotted() && order.length > 1 ? 'plotted' : 'plotting');
+      else if (c === 'line') ctx.setStage('line');
+      else if (c === 'estimate') ctx.setStage('estimate');
+      else if (c === 'corr') ctx.setStage('corr');
+      else if (c === 'outlier') ctx.setStage('outlier');
+      else ctx.setStage('ready');
+    }
+    function nextLabel() {
+      var n = order[step + 1];
+      return n === 'line' ? T().statScNextLine : n === 'estimate' ? T().statScNextEst : n === 'corr' ? T().statScNextCorr : n === 'outlier' ? T().statScNextOutlier : '';
+    }
+    function stepDone() {
+      var c = cur();
+      if (c === 'plotting') return allPlotted();
+      if (c === 'line') return lineDone;
+      if (c === 'estimate') return est !== '';
+      if (c === 'corr') return !!corr;
+      if (c === 'outlier') return outlier !== null;
+      return true;
+    }
+    function advance() {
+      if (step >= order.length - 1) { step = order.length; return; }
+      step++;
+      sel = -1;
+      bd.enablePress(null);
+      if (cur() === 'line') { ensureLine(); }
+      if (cur() === 'estimate') { estimateSetup(); }
+      if (cur() === 'outlier') { bd.enablePress(function (i) { if (ctx.locked()) return; outlier = i; bd.markOutlier(i); after(); }); }
+    }
+    function renderDock() {
+      ctx.dock.innerHTML = '';
+      pad = null;
+      var c = cur();
+      if (c === 'plotting' && sel > -1 && bd.points().length) {
+        window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
+        ctx.dock.appendChild(nudgePad(ctx, {
+          onNudge: function (dx, dy) {
+            var all = bd.allPoints().filter(function (p) { return p.i === sel; })[0];
+            if (!all) return;
+            bd.movePoint(sel, all.x + dx * sq.x, all.y + dy * sq.y);
+            after();
+          },
+          onRemove: function () { bd.removePoint(sel); sel = -1; after(); }
+        }));
+      } else if (c === 'estimate') {
+        var a = askOf('estimate');
+        window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
+        pad = makeNumPad(ctx.dock, {
+          label: T().statEstimateLabel, fraction: false, decimal: true,
+          onChange: function (val) { est = val; writeEst(); stage(); say(); ctx.changed(); }
+        });
+        pad.set(est || '');
+      } else if (c === 'corr') {
+        window.GJ.setState(ctx.dock, 'dock', 'chips');
+        var tray = el('div', 'stat-chips');
+        tray.setAttribute('data-tray', 'scatter-corr-' + q.id);
+        var opts = [{ v: 'positive', t: T().statScPositive }, { v: 'negative', t: T().statScNegative }, { v: 'none', t: T().statScNone }];
+        derange(opts, opts.map(function (o) { return o.v; }), function (o) { return o.v; }, q.id + 'c').forEach(function (o) {
+          var b = el('button', 'chip');
+          b.type = 'button'; b.textContent = o.t;
+          b.setAttribute('data-tray-item', '');
+          b.setAttribute('aria-pressed', corr === o.v ? 'true' : 'false');
+          b.addEventListener('click', function (e) { e.stopPropagation(); if (ctx.locked()) return; corr = o.v; after(); });
+          tray.appendChild(b);
+        });
+        ctx.dock.appendChild(tray);
+      } else window.GJ.setState(ctx.dock, 'dock', 'chips');
+      if (step < order.length - 1) {
+        var isLine = c === 'line';
+        var nx = el('button', 'btn-stage stat-next', isLine ? T().statScThatsMyLine : nextLabel());
+        nx.type = 'button';
+        nx.disabled = !stepDone();
+        if (nx.disabled) setLockedWhy(nx, whyFor(c));
+        nx.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked() || nx.disabled) return;
+          advance(); after();
+        });
+        ctx.dock.appendChild(nx);
+      }
+    }
+    function whyFor(c) {
+      return c === 'plotting' ? T().statScWhyPlot : c === 'line' ? T().statScWhyLine : c === 'estimate' ? T().statScWhyEst : c === 'corr' ? T().statScWhyCorr : T().statScWhyOutlier;
+    }
+    function writeEst() {
+      lines.innerHTML = '';
+      if (est === '') return;
+      var a = askOf('estimate');
+      var row = el('div', 'wline stat-wline stat-est-line');
+      row.setAttribute('data-placed', '');
+      row.textContent = T().statEstimateLabel + ' ' + (a ? 'at ' + a.at + ': ' : '') + est;
+      lines.appendChild(row);
+    }
+    function say() {
+      var c = cur(), a;
+      if (c === 'plotting') ctx.say(allPlotted() ? (order.length > 1 ? T().statStageScPlotDone : '') : fill(T().statStageScPlot, { n: plotted(), m: toPlot.length }));
+      else if (c === 'line') ctx.say(T().statStageScLine);
+      else if (c === 'estimate') { a = askOf('estimate'); ctx.say(fill(T().statStageScEst, { at: a ? a.at : '' })); }
+      else if (c === 'corr') ctx.say(T().statStageScCorr);
+      else if (c === 'outlier') ctx.say(T().statStageScOutlier);
+      else ctx.say('');
+    }
+    function after() { stage(); renderDock(); say(); ctx.changed(); }
+
+    return {
+      start: function () { givenTable(); build(); step = 0; after(); },
+      reset: function () { step = 0; sel = -1; est = ''; corr = null; outlier = null; lineDone = false; build(); lines.innerHTML = ''; after(); },
+      restore: function (S) {
+        S = S || {};
+        givenTable(); build();
+        (S.pts || []).forEach(function (pt) { bd.addPoint(Number(pt[0]), Number(pt[1])); });
+        est = S.est || ''; corr = S.corr || null; outlier = (S.outlier === undefined || S.outlier === null) ? null : Number(S.outlier);
+        lineDone = !!(S.line && S.line.length === 2);
+        step = 0;
+        /* replay the steps she had completed, in order */
+        if (allPlotted()) {
+          while (step < order.length - 1) {
+            var c = cur();
+            var done = c === 'plotting' ? true : c === 'line' ? lineDone : c === 'estimate' ? est !== '' : c === 'corr' ? !!corr : outlier !== null;
+            if (!done) break;
+            advance();
+          }
+          if (step === order.length - 1 && stepDone()) { /* every stage complete: stay on the last board */ }
+        }
+        if (S.line && S.line.length === 2 && order.indexOf('line') > -1) {
+          if (bd.handles().length < 2) { bd.handleAt(Number(S.line[0][0]), Number(S.line[0][1]), 0); bd.handleAt(Number(S.line[1][0]), Number(S.line[1][1]), 1); }
+          else { bd.moveHandle(0, Number(S.line[0][0]), Number(S.line[0][1])); bd.moveHandle(1, Number(S.line[1][0]), Number(S.line[1][1])); }
+        }
+        if (outlier !== null && bd.allPoints()[outlier] !== undefined) bd.markOutlier(outlier);
+        writeEst();
+        after();
+      },
+      state: function () {
+        var S = { pts: bd ? bd.points() : [] };
+        if (askOf('lobf')) { var h = bd ? bd.handles() : []; if (h.length === 2) S.line = h; }
+        if (askOf('estimate')) S.est = est;
+        if (askOf('corr')) S.corr = corr;
+        if (askOf('outlier')) S.outlier = outlier;
+        return S;
+      },
+      ready: function () {
+        if (!allPlotted()) return { ok: false, why: T().statScWhyPlot };
+        for (var i = 1; i < order.length; i++) {
+          var c = order[i];
+          var done = c === 'line' ? lineDone : c === 'estimate' ? est !== '' : c === 'corr' ? !!corr : outlier !== null;
+          if (!done) return { ok: false, why: whyFor(c) };
+        }
+        return { ok: true };
+      },
+      lock: function () { ctx.dock.innerHTML = ''; if (bd) bd.enablePress(null); },
+      showTruth: function () {
+        toPlot.forEach(function (pt) { bd.annotate('target', [Number(pt[0]), Number(pt[1])]); });
+        if (askOf('lobf') && window.GJ_STATS.leastSquares) {
+          var ls = window.GJ_STATS.leastSquares(given.concat(toPlot));
+          var rv = function (r) { return (r && typeof r === 'object' && r.d) ? r.n / r.d : Number(r); };
+          if (ls) {
+            var m = rv(ls.m), c0 = rv(ls.c), x1 = q.chart.x.min, x2 = q.chart.x.max;
+            bd.line([x1, m * x1 + c0], [x2, m * x2 + c0], { cls: 'stat-lobf stat-lobf-truth' });
+          }
+        }
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var pts = ((att.S || {}).pts) || [];
+        pts.forEach(function (pt) { bd.addPoint(Number(pt[0]), Number(pt[1]), { ghost: true }); });
+      },
+      board: function () { return bd; }
+    };
+  };
+
   /* ══ the teacher's read-only view of one pupil's artefact ════════════ */
 
   function renderReadOnly(host, q, att, verdict) {
@@ -2141,6 +3305,26 @@
           if (r && r.x !== undefined && r.x !== null) bd.annotate('tick', [Number(r.x), q.chart.y.min]);
         });
       }
+    } else if (q.kind === 'scatter') {
+      var b3 = el('div', 'stat-board stat-board-small');
+      wrap.appendChild(b3);
+      var bd3 = window.GJ_STATCHART.render(b3, q.chart, { readOnly: true });
+      (q.given || []).forEach(function (pt) { bd3.addPoint(Number(pt[0]), Number(pt[1]), { given: true }); });
+      (S.pts || []).forEach(function (pt) {
+        bd3.addPoint(Number(pt[0]), Number(pt[1]));
+        var hit = (q.toPlot || []).some(function (w) { return Number(w[0]) === Number(pt[0]) && Number(w[1]) === Number(pt[1]); });
+        bd3.annotate(hit ? 'right' : 'wrong', [Number(pt[0]), Number(pt[1])]);
+      });
+      if (S.line && S.line.length === 2) bd3.line([Number(S.line[0][0]), Number(S.line[0][1])], [Number(S.line[1][0]), Number(S.line[1][1])], { instant: true });
+      if (S.outlier !== undefined && S.outlier !== null) bd3.markOutlier(Number(S.outlier));
+      var line3 = el('div', 'stat-row'); line3.textContent = summariseState(q, S); wrap.appendChild(line3);
+    } else if (q.kind === 'pie') {
+      var b4 = el('div', 'stat-board stat-board-small');
+      wrap.appendChild(b4);
+      var pb = window.GJ_STATCHART.pie(b4, { readOnly: true });
+      var bs = (S.bounds || []).map(Number), from = 0;
+      bs.forEach(function (to, i) { if (i < bs.length - 1) pb.boundary(to, { plain: true }); pb.sector(from, to, i, { instant: true }); from = to; });
+      var line4 = el('div', 'stat-row'); line4.textContent = summariseState(q, S); wrap.appendChild(line4);
     } else if (q.kind === 'boxplot') {
       var b2 = el('div', 'stat-board stat-board-small');
       wrap.appendChild(b2);
@@ -2184,6 +3368,11 @@
       var a = S.s1 || {}, b = S.s2 || {};
       return [a.who, a.ctx, '·', b.who, b.size].filter(Boolean).join(' ');
     }
+    if (q.kind === 'order') return (S.seq || []).map(function (i) { return (q.tiles || [])[i]; }).join(' → ');
+    if (q.kind === 'pick') return ((q.options || [])[S.pick] || {}).text || '';
+    if (q.kind === 'stemleaf') return Object.keys(S.rows || {}).map(function (k) { return k + ' | ' + (S.rows[k] || []).join(' '); }).join('   ');
+    if (q.kind === 'pie') return (q.cats || []).map(function (c) { return c.label + ' ' + ((S.angles || {})[c.id] || '—') + '°'; }).join(' · ');
+    if (q.kind === 'scatter') return [(S.pts || []).length + ' points', S.est !== undefined && S.est !== '' ? 'estimate ' + S.est : null, S.corr || null].filter(Boolean).join(' · ');
     return '';
   }
 

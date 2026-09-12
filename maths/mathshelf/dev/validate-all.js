@@ -31,7 +31,8 @@ var MA = require('./model-attempts.js');
    the coverage machine can prove every question of every kind has its (A)/(B)
    pair (L5/DFM 206). A kind added to a pack and not added here fails coverage. */
 const KINDS = ['classify', 'protractor', 'reasoned', 'subst', 'simplify', 'expand', 'solve', 'form',
-  'qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  'qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+  /* Book A (12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter'];
 
 var rows = [], fails = 0;
 function rat(x) { return x && x.d ? (x.d === 1 ? x.n : x.n + '/' + x.d) : x; }

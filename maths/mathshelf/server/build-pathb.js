@@ -81,6 +81,7 @@ const INPUTS = {
   'statchart.js':       path.join(ACT, 'statchart.js'),
   'content-angles.js':  path.join(ACT, 'content-angles.js'),
   'content-algebra.js': path.join(ACT, 'content-algebra.js'),
+  'content-stats-collect.js': path.join(ACT, 'content-stats-collect.js'),
   'content-stats-quartiles.js': path.join(ACT, 'content-stats-quartiles.js'),
   'player.js':          path.join(ACT, 'player.js'),
   'jotter.js':          path.join(ACT, 'jotter.js'),
@@ -113,7 +114,7 @@ const stringsJs  = read('strings.js');
    page loads that this list forgets is a book the deployed app silently
    lacks. */
 const moduleJs   = ['strings.js', 'mathcore.js', 'anglecore.js', 'statcore.js',
-                    'content-angles.js', 'content-algebra.js', 'content-stats-quartiles.js',
+                    'content-angles.js', 'content-algebra.js', 'content-stats-collect.js', 'content-stats-quartiles.js',
                     'statchart.js', 'player.js', 'jotter.js', 'jotter-stats.js',
                     'staff-pages.js', 'staff.js', 'script.js'].map(function (k) { return [k, read(k)]; });
 const introJsRaw = read('intro-loader.js');

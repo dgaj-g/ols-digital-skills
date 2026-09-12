@@ -1,0 +1,102 @@
+{
+ "hypothesis": {
+  "phrase": "a hypothesis is a statement that may or may not be true",
+  "definedIn": "s1"
+ },
+ "data-handling cycle": {
+  "phrase": "every piece of data handling follows the same cycle",
+  "definedIn": "s1"
+ },
+ "leading question": {
+  "phrase": "a leading question pushes you towards one answer",
+  "definedIn": "s1"
+ },
+ "response boxes": {
+  "phrase": "a good question is answerable by yes/no, a number, or a choice",
+  "definedIn": "s1"
+ },
+ "open-ended": {
+  "phrase": "open-ended — the answers cannot be counted",
+  "definedIn": "s1"
+ },
+ "venn diagram": {
+  "phrase": "start in the middle",
+  "definedIn": "s2"
+ },
+ "region": {
+  "phrase": "milk only = the milk circle’s total minus the overlap",
+  "definedIn": "s2"
+ },
+ "overlap": {
+  "phrase": "the overlap goes in first",
+  "definedIn": "s2"
+ },
+ "pie chart": {
+  "phrase": "draw the circle and a radius at 12 o’clock",
+  "definedIn": "s3"
+ },
+ "sector": {
+  "phrase": "sweep the first sector, strawberry, 144° clockwise",
+  "definedIn": "s3"
+ },
+ "angle": {
+  "phrase": "360 ÷ 120 = 3 degrees for every person",
+  "definedIn": "s3"
+ },
+ "stem": {
+  "phrase": "the stems are the tens digit",
+  "definedIn": "s4"
+ },
+ "leaf": {
+  "phrase": "land each leaf on its stem, in order along the row",
+  "definedIn": "s4"
+ },
+ "key": {
+  "phrase": "the key tells you what one leaf means",
+  "definedIn": "s4"
+ },
+ "back-to-back": {
+  "phrase": "here are 31 coin weights, already sorted onto a diagram",
+  "definedIn": "s4"
+ },
+ "range": {
+  "phrase": "the range is the biggest weight minus the smallest",
+  "definedIn": "s4"
+ },
+ "mode": {
+  "phrase": "the mode is the value that appears most often",
+  "definedIn": "s4"
+ },
+ "median": {
+  "phrase": "the median is the middle value, the 16th of 31",
+  "definedIn": "s4"
+ },
+ "scatter graph": {
+  "phrase": "tim and june recorded minutes spent on different homeworks",
+  "definedIn": "s5"
+ },
+ "line of best fit": {
+  "phrase": "draw a line of best fit through the middle of the cloud of points",
+  "definedIn": "s5"
+ },
+ "correlation": {
+  "phrase": "as tim’s time goes up, june’s does too",
+  "definedIn": "s5"
+ },
+ "positive correlation": {
+  "phrase": "positive correlation",
+  "definedIn": "s5"
+ },
+ "negative correlation": {
+  "phrase": "negative correlation would be the reverse",
+  "definedIn": "s5"
+ },
+ "outlier": {
+  "phrase": "every point here follows the trend, so there is no outlier",
+  "definedIn": "s5"
+ },
+ "estimate": {
+  "phrase": "read up to the line, then across",
+  "definedIn": "s5"
+ }
+}

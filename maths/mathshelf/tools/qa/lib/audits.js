@@ -511,6 +511,8 @@ function describeSaidTwice(f) {
 /* the words a collision is reported in */
 function describeOverlap(f) {
   if (f && f.error) return 'the overlap pass crashed: ' + f.error;
+  /* trim() folds the fourth finding onward into one marker row */
+  if (f && f.more) return f.sel || ('(and ' + f.more + ' more of the same)');
   return 'two pieces of text sit on top of one another by ' + f.by + ' — ' +
     f.one + ' and ' + f.two + '  ["' + String(f.text || '') + '"]';
 }

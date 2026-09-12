@@ -1,0 +1,36 @@
+
+== width 375 (reduced motion, goto instant) — film ended on step 8/8
+PASS film-draws: every op kind drawn — {"venn":1,"vfill":4,"pie":1,"sector":4,"stemleaf":1,"leaf":3,"key":1,"chart":1,"plot":4,"lobf":1,"rule":1,"drop":1,"stamp":1}
+PASS stat-board SVG text >= 13 CSS px rendered (51 texts, min 13.60)
+     (player's own .ml-chart text sizes, pre-existing style.css: [8.8,9.6,10.4] — not mine, noted)
+PASS venn3 region centres inside their regions (user + CSS round-trip): out✓ A✓ B✓ AB✓ ABC✓ AC✓ BC✓ C✓
+PASS film venn2: four vfills each inside its region: [{"region":"AB","at":"AB","ok":true,"text":"22"},{"region":"A","at":"A","ok":true,"text":"59"},{"region":"B","at":"B","ok":true,"text":"26"},{"region":"out","at":"out","ok":true,"text":"23"}]
+PASS pie rimPoint(90) is to the right of centre, level with it
+PASS pie degAt(rimPoint(d)) ≈ d for d = 0..359 step 37: 0→0 37→37 74→74 111→111 148→148 185→185 222→222 259→259 296→296 333→333
+PASS pie question board: 2 sectors, 2 placed boundaries (hit widths 44.0,44.0 px), bounds [156,240], labelPoint(0,156)=237,146
+PASS every [data-hit] >= 44 px (lobf handles >= 48)
+PASS grid: 5 given (.is-given, no data-placed/hit), points()=1 hers, allPoints()=6
+PASS grid: lobf line 1 (box 223,186), handles 2, outlier 1, ends [[8.000000000000002,20],[100,96.66666666666667]]
+PASS grid: ruleX(60) + drop() reads the LOBF: {"x":60,"y":63.333333333333336} (line through (20,30),(80,80) gives y=63.33 at x=60)
+PASS grid: y.min=20 draws the y-axis break glyph (1 break path; x.min=0 draws none)
+     rig at 375: hidden 0, reclaimed 54, margin -54px (phone: not asserted)
+PASS zero console errors
+
+== width 1280 (animated advance) — film ended on step 8/8
+PASS film-draws: every op kind drawn — {"venn":1,"vfill":4,"pie":1,"sector":4,"stemleaf":1,"leaf":3,"key":1,"chart":1,"plot":4,"lobf":1,"rule":1,"drop":1,"stamp":1}
+PASS stat-board SVG text >= 13 CSS px rendered (51 texts, min 13.60)
+     (player's own .ml-chart text sizes, pre-existing style.css: [11,12,13] — not mine, noted)
+PASS venn3 region centres inside their regions (user + CSS round-trip): out✓ A✓ B✓ AB✓ ABC✓ AC✓ BC✓ C✓
+PASS film venn2: four vfills each inside its region: [{"region":"AB","at":"AB","ok":true,"text":"22"},{"region":"A","at":"A","ok":true,"text":"59"},{"region":"B","at":"B","ok":true,"text":"26"},{"region":"out","at":"out","ok":true,"text":"23"}]
+PASS pie rimPoint(90) is to the right of centre, level with it
+PASS pie degAt(rimPoint(d)) ≈ d for d = 0..359 step 37: 0→0 37→37 74→74 111→111 148→148 185→185 222→222 259→259 296→296 333→333
+PASS pie question board: 2 sectors, 2 placed boundaries (hit widths 44.0,44.0 px), bounds [156,240], labelPoint(0,156)=237,146
+PASS every [data-hit] >= 44 px (lobf handles >= 48)
+PASS grid: 5 given (.is-given, no data-placed/hit), points()=1 hers, allPoints()=6
+PASS grid: lobf line 1 (box 223,186), handles 2, outlier 1, ends [[8.000000000000002,20],[100,96.66666666666667]]
+PASS grid: ruleX(60) + drop() reads the LOBF: {"x":60,"y":63.333333333333336} (line through (20,30),(80,80) gives y=63.33 at x=60)
+PASS grid: y.min=20 draws the y-axis break glyph (1 break path; x.min=0 draws none)
+PASS laptop reclaim: host 752 px vs law-6 752 px → reclaimed 54 px (margin-left -54px), hidden width now 0 px
+PASS zero console errors
+
+ALL PASS

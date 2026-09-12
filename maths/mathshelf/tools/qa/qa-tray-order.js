@@ -26,10 +26,12 @@ const W = require('./lib/walk-moves.js');
 const TIER = 'full';
 const ORDER = 74;
 const MOUNTS = 5;
-const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
-const COVERS = { books: '*', kinds: ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'], surfaces: ['question'], widths: [1280], projector: false, tier: ['preview'], cells: ['tray-order'] };
+const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+  /* Book A (12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+const COVERS = { books: '*', kinds: ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values', 'order', 'pick', 'stemleaf', 'pie', 'scatter'], surfaces: ['question'], widths: [1280], projector: false, tier: ['preview'], cells: ['tray-order'] };
 const CONTROLS = [
   { id: 'stats-sorted-tray', kind: 'mutation', plant: 'stats-sorted-tray', mustFail: /came out in the answer order/ },
+  { id: 'stats-a-sorted-tray', kind: 'mutation', plant: 'stats-a-sorted-tray', mustFail: /came out in the answer order/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -60,9 +62,40 @@ function expected(q, strings) {
         ? c.options.slice().map(String)
         : [String(T.statFairToSay), String(T.statNotFair)];
       if (!c.options) {
-        out['judge-why-' + i + '-' + q.id] = (q.reasons || []).map(r => String(r.text));
+        if (!global.window.GJ_STATS) { try { require(A.app('statcore.js')); } catch (e) { /* the bank stays empty; ids then stand for themselves */ } }
+        const bank = (global.window && global.window.GJ_STATS && global.window.GJ_STATS.REASONS) || {};
+        out['judge-why-' + i + '-' + q.id] = (q.reasons || []).map(r => String(typeof r === 'string' ? (bank[r] || r) : r.text));
       }
     });
+  }
+  /* Book A's trays (12 Sept 2026): the answer order each is deranged from,
+     exactly as jotter-stats.js writes them (a judge question's Q_* reasons
+     are read from the engine bank by id, so the tray's answer order is the
+     bank's own order - the ids' order in the pack, or the bank's) */
+  if (q.kind === 'order') {
+    out['order-tiles-' + q.id] = (q.answer || []).map(i => String((q.tiles || [])[i]));
+  }
+  if (q.kind === 'pick') {
+    out['pick-options-' + q.id] = (q.options || []).map(o => String(o.text));
+  }
+  if (q.kind === 'stemleaf') {
+    const done = (q.prefill && q.prefill.stemsDone) || [];
+    const dec = q.decimals === 1 ? 1 : 0;
+    const stemOf = (v) => dec === 1 ? Math.floor(Number(v) + 1e-9) : Math.floor(Number(v) / 10);
+    out['stemleaf-leaves-' + q.id] = (q.values || []).filter(v => done.indexOf(stemOf(v)) < 0)
+      .slice().sort((a, b) => Number(a) - Number(b)).map(String);
+    if (q.key && q.key.ask) {
+      out['stemleaf-keystem-' + q.id] = (q.stems || []).map(String);
+      out['stemleaf-keyleaf-' + q.id] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    }
+  }
+  if (q.kind === 'pie') {
+    out['pie-labels-' + q.id] = (q.cats || []).map(c => String(c.label));
+  }
+  if (q.kind === 'scatter') {
+    if ((q.asks || []).some(a => a && a.type === 'corr')) {
+      out['scatter-corr-' + q.id] = [T.statScPositive, T.statScNegative, T.statScNone].map(String);
+    }
   }
   if (q.kind === 'compare') {
     const labels = (q.plots || []).map(p => String(p.label));

@@ -106,7 +106,24 @@
     JUDGE_REJECTS_FAIR: 'Rejected a fair conclusion',
     JUDGE_WRONG_REASON: 'Right verdict, wrong limitation',
     TFN_GROUPED_EXACT: 'Claimed an exact value from grouped data',
-    TFN_ESTIMATE_AS_FALSE: 'Called a sound estimate false because it was not exact'
+    TFN_ESTIMATE_AS_FALSE: 'Called a sound estimate false because it was not exact',
+    /* Books A and B (DESIGN §7). SL_BACK_DIRECTION is deliberately absent: the
+       tap-first stem zone grows the pupil's side outward by construction, so
+       the slip cannot be made. The AV_* and RM_* ids are Book B's and arrive
+       with their detections. */
+    SL_UNORDERED: 'Leaves not in order along the stem',
+    SL_WRONG_STEM: 'A leaf on the wrong stem',
+    SL_MISSED_LEAF: 'A value left out (or entered twice)',
+    SL_KEY_WRONG: 'Key does not match the data',
+    VENN_TOTAL_AS_ONLY: 'Put the whole-circle total in the “only” region',
+    VENN_OUTSIDE_LOST: 'Forgot the people outside both circles',
+    PIE_PCT_NOT_DEG: 'Worked in percentages, not degrees',
+    PIE_TOTAL_WRONG: 'Divided by the wrong total',
+    PIE_SECTOR_OFF: 'A sector drawn to the wrong angle',
+    SC_XY_SWAPPED: 'Plotted the two values the wrong way round',
+    SC_LINE_OFF_TREND: 'Line of best fit does not follow the points',
+    SC_READ_WRONG_AXIS: 'Read the estimate from the wrong axis',
+    SC_CORR_SIGN: 'Correlation named the wrong way (positive/negative)'
   };
 
   /* The reason bank for `judge`. Ids are fixed; the sentence a pupil reads is
@@ -120,7 +137,18 @@
     TIME_PLACE: 'When and where the sample was taken changes the answer.',
     USE_IQR_OUTLIERS: 'The interquartile range ignores extreme values.',
     USE_RANGE_ALL: 'The range uses every value, so one odd value distorts it.',
-    USE_MIDDLE_HALF: 'The IQR tells you how spread out the middle half is.'
+    USE_MIDDLE_HALF: 'The IQR tells you how spread out the middle half is.',
+    /* the questionnaire bank (DESIGN §17.8) - `pick` flaws and `judge` reasons */
+    Q_OVERLAP: 'Two boxes overlap — a value could go in both.',
+    Q_GAP: 'Some values have no box.',
+    Q_NO_ZERO: 'There is no box for none / zero.',
+    Q_NO_TIME: 'It does not say over what time (a week? a month?).',
+    Q_LEADING: 'It leads people towards one answer.',
+    Q_VAGUE: 'Words like ‘a lot’ mean different things to different people.',
+    Q_NO_OTHER: 'There is no other / don’t know option.',
+    Q_ONLY_POSITIVE: 'Every option is positive.',
+    Q_PERSONAL: 'It asks something too personal.',
+    Q_OPEN: 'It is open-ended — the answers cannot be counted.'
   };
 
   /* ---------- pack conventions ---------- */
@@ -312,6 +340,11 @@
       case 'compare': return compareUnits(q);
       case 'judge': return judgeUnits(q);
       case 'values': return valuesUnits(q);
+      case 'order': return orderUnits(q);
+      case 'pick': return pickUnits(q);
+      case 'stemleaf': return stemleafUnits(q);
+      case 'pie': return pieUnits(q);
+      case 'scatter': return scatterUnits(q);
       default: return [];
     }
   }
@@ -426,6 +459,68 @@
     return null;
   }
 
+  /* ---- Book A's kinds (CONTRACT_A.md; DESIGN §17) ---- */
+
+  /* order: a cycle is marked pair by pair so a rotation earns full marks; the
+     closing pair carries the accuracy mark. A plain sequence is one unit. */
+  function orderUnits(q) {
+    var n = (q.answer || []).length, out = [], i;
+    if (!q.cyclic) return [U('SEQ', 'The order', 'accuracy', 1, false)];
+    for (i = 0; i < n; i++) {
+      out.push(U('PAIR_' + i, 'Pair ' + (i + 1), i === n - 1 ? 'accuracy' : 'method', 1, false));
+    }
+    return out;
+  }
+
+  function pickUnits() {
+    return [U('PICK', 'The better question', 'accuracy', 1, false),
+            U('WHY', 'Why the others fall short', 'method', 1, false)];
+  }
+
+  /* stemleaf: LEAVES and ORDERED are method; KEY (only when asked) accuracy -
+     the contract's bands, taken literally: a no-key question carries marks
+     [m, 0]. */
+  function stemleafUnits(q) {
+    var out = [U('LEAVES', 'Every leaf on its stem', 'method', 1, false),
+               U('ORDERED', 'Leaves in order', 'method', 1, false)];
+    if (q.key && q.key.ask) out.push(U('KEY', 'The key', 'accuracy', 1, false));
+    return out;
+  }
+
+  /* pie: one angle unit per category (a follow-through from THEIR first angle
+     earns - §6.5's default for method units), the self-check SUM, then the
+     drawn SECTORS (ft earns: drawn to their own table) and LABELS. */
+  function pieUnits(q) {
+    var out = [];
+    (q.cats || []).forEach(function (c) {
+      out.push(U('ANG_' + c.id, (c.label || c.id) + ' angle', 'method', 1, true));
+    });
+    out.push(U('SUM', 'Angles add to 360°', 'method', 1, false));
+    out.push(U('SECTORS', 'Sectors', 'accuracy', 1, true));
+    out.push(U('LABELS', 'Labels', 'accuracy', 1, false));
+    return out;
+  }
+
+  /* scatter: POINTS always; the rest only as the asks name them. ESTIMATE
+     earns on follow-through from their own line (the schemes' "ft their
+     line"). */
+  function scatterUnits(q) {
+    var out = [U('POINTS', 'Points', 'method', q.pointsW || 1, false)];
+    (q.asks || []).forEach(function (a) {
+      if (!a) return;
+      if (a.type === 'lobf') out.push(U('LOBF', 'Line of best fit', 'method', 1, false));
+      else if (a.type === 'estimate') out.push(U('ESTIMATE', 'Estimate at ' + a.at, 'accuracy', 1, true));
+      else if (a.type === 'corr') out.push(U('CORR', 'Correlation', 'accuracy', 1, false));
+      else if (a.type === 'outlier') out.push(U('OUTLIER', 'The odd one out', 'accuracy', 1, false));
+    });
+    return out;
+  }
+  function askOf(q, type) {
+    var i, a = q.asks || [];
+    for (i = 0; i < a.length; i++) if (a[i] && a[i].type === type) return a[i];
+    return null;
+  }
+
   /* ---------- the tally labels a pupil and a teacher read ---------- */
 
   /* WHAT THE SECOND BAND IS CALLED DEPENDS ON WHAT WAS ASKED. A list question
@@ -449,7 +544,12 @@
     boxplot: ['Box', 'Whiskers'],
     compare: ['Average', 'Spread'],
     judge: ['Reasons', 'Judgements'],
-    values: ['Working', 'Answers']
+    values: ['Working', 'Answers'],
+    order: ['Pairs', 'Order'],
+    pick: ['Reason', 'Choice'],
+    stemleaf: ['Leaves', 'Key'],
+    pie: ['Angles', 'Chart'],
+    scatter: ['Points and line', 'Readings']
   };
 
   /* ---------- follow-through rules for `values` slots (a CLOSED table) ---- */
@@ -549,6 +649,11 @@
       case 'compare': per = markCompare(q, S, r, units); break;
       case 'judge': per = markJudge(q, S, r, units); break;
       case 'values': per = markValues(q, S, r, units); break;
+      case 'order': per = markOrder(q, S, r, units); break;
+      case 'pick': per = markPick(q, S, r, units); break;
+      case 'stemleaf': per = markStemleaf(q, S, r, units); break;
+      case 'pie': per = markPie(q, S, r, units); break;
+      case 'scatter': per = markScatter(q, S, r, units); break;
       default: per = units.map(function (u) { return row(u, 0, null, 'not marked'); });
     }
     return settle(q, per, units);
@@ -1213,7 +1318,11 @@
     order.forEach(function (id, i) {
       var u = units[i], slot = slotById(q, id) || {};
       var mine = got[id];
-      if (!mine) { per.push(row(u, 0, null, 'left blank')); return; }
+      if (!mine) {
+        /* a blank OUTSIDE region is the classic Venn slip, not an unfinished board */
+        per.push(row(u, 0, slot.region === 'out' ? 'VENN_OUTSIDE_LOST' : null, 'left blank'));
+        return;
+      }
       var want = R(slot.answer && slot.answer.constraints ? null : slot.answer);
       if (slot.answer && slot.answer.constraints) {
         per.push(row(u, constraintsHold(slot, S) ? 1 : 0, null, null));
@@ -1226,7 +1335,7 @@
         per.push(row(u, 2, null, 'from your own earlier answer'));
         return;
       }
-      per.push(row(u, 0, slot.dx || null, null));
+      per.push(row(u, 0, slot.dx || valuesDx(slot, q, mine), null));
     });
     return per;
   }
@@ -1247,6 +1356,373 @@
     return ok;
   }
 
+  /* The Venn slips (DESIGN §17.1): an "only" region holding the circle's
+     whole total; the outside forgotten - the outside slot at 0, or `both`
+     computed as A + B - N. Only when the pack has not named a dx itself. */
+  function valuesDx(slot, q, mine) {
+    var ft = slot.ft || {}, fig = q.fig || {}, totals = fig.totals || {};
+    var circle = ft.rule === 'venn.only' ? ft.of : (slot.region && totals[slot.region] !== undefined ? slot.region : null);
+    if (circle !== null && circle !== undefined) {
+      var tot = R(figTotal(q, circle));
+      if (tot && eqR(mine, tot)) return 'VENN_TOTAL_AS_ONLY';
+    }
+    if (slot.region === 'out' && eqR(mine, rint(0))) return 'VENN_OUTSIDE_LOST';
+    if (ft.rule === 'venn.both.fromTotals') {
+      var a = R(figTotal(q, ft.of[0])), b = R(figTotal(q, ft.of[1])), n = R(fig.n);
+      if (a && b && n && eqR(mine, rsub(radd(a, b), n))) return 'VENN_OUTSIDE_LOST';
+    }
+    return null;
+  }
+
+  /* ---------- order ---------- */
+
+  function markOrder(q, S, r, units) {
+    var answer = (q.answer || []).map(Number), n = answer.length;
+    var seq = (S.seq || []).map(Number);
+    var complete = seq.length === n && answer.every(function (a) { return seq.indexOf(a) > -1; });
+    if (!q.cyclic) {
+      var u = units[0];
+      if (!complete) return [row(u, 0, null, 'not every card is in the row')];
+      var same = seq.every(function (v, i) { return v === answer[i]; });
+      return [row(u, same ? 1 : 0, null, same ? null : 'the cards are not in the right order')];
+    }
+    var pairs = {}, i;
+    for (i = 0; i < n; i++) pairs[answer[i] + '>' + answer[(i + 1) % n]] = true;
+    return units.map(function (u2, k) {
+      if (!complete) return row(u2, 0, null, 'not every card is in the row');
+      var ok = !!pairs[seq[k] + '>' + seq[(k + 1) % n]];
+      return row(u2, ok ? 1 : 0, null, ok ? null : 'these two do not follow each other');
+    });
+  }
+
+  /* ---------- pick ---------- */
+
+  function markPick(q, S, r, units) {
+    var opts = q.options || [], best = -1, flaws = [], i;
+    for (i = 0; i < opts.length; i++) {
+      if (opts[i].best) best = i;
+      else if (opts[i].flaw) flaws.push(opts[i].flaw);
+    }
+    var per = [], uP = units[0], uW = units[1];
+    var pick = (S.pick === undefined || S.pick === null || S.pick === '') ? null : Number(S.pick);
+    if (pick === null || isNaN(pick)) per.push(row(uP, 0, null, 'no question chosen'));
+    else per.push(row(uP, pick === best ? 1 : 0, null, pick === best ? null : 'the better question is another one'));
+    if (!S.why) per.push(row(uW, 0, null, 'no reason given'));
+    else if (flaws.indexOf(S.why) > -1) per.push(row(uW, 1, null, null));
+    else per.push(row(uW, 0, 'JUDGE_WRONG_REASON', null));
+    return per;
+  }
+
+  /* ---------- stemleaf ---------- */
+
+  /* The split. decimals 0: 36 -> 3 | 6. decimals 1: 3.6 -> 3 | 6. Done as one
+     rule on the value scaled to an integer, so both are exact. */
+  function stemLeafOf(value, decimals) {
+    var v = R(value);
+    if (!v) return null;
+    var scale = rint(Math.pow(10, Number(decimals) || 0));
+    var N = Math.round(rnum(rmul(v, scale)));
+    var stem = Math.floor(N / 10), leaf = N - stem * 10;
+    return { stem: stem, leaf: leaf };
+  }
+  /* {stem: [leaf digits ascending]} - the true rows for a list of values */
+  function stemleafRows(values, decimals) {
+    var rows = {};
+    (values || []).forEach(function (v) {
+      var sl = stemLeafOf(v, decimals);
+      if (!sl) return;
+      (rows[sl.stem] = rows[sl.stem] || []).push(sl.leaf);
+    });
+    Object.keys(rows).forEach(function (k) { rows[k].sort(function (a, b) { return a - b; }); });
+    return rows;
+  }
+  function slPairs(rows) {
+    var out = [];
+    Object.keys(rows || {}).forEach(function (stem) {
+      (rows[stem] || []).forEach(function (leaf) {
+        if (leaf === '' || leaf === null || leaf === undefined) return;
+        out.push({ stem: Number(stem), leaf: Number(leaf) });
+      });
+    });
+    return out;
+  }
+  function pairDiff(got, want) {
+    var key = function (p) { return p.stem + '|' + p.leaf; };
+    var pool = want.map(key), extra = [], missing, i, at;
+    for (i = 0; i < got.length; i++) {
+      at = pool.indexOf(key(got[i]));
+      if (at === -1) extra.push(got[i]); else pool.splice(at, 1);
+    }
+    missing = pool.map(function (k) { var p = k.split('|'); return { stem: Number(p[0]), leaf: Number(p[1]) }; });
+    return { missing: missing, extra: extra };
+  }
+
+  function markStemleaf(q, S, r, units) {
+    var dec = Number(q.decimals) || 0;
+    var done = (q.prefill && q.prefill.stemsDone) ? q.prefill.stemsDone.map(Number) : [];
+    var want = (q.values || []).map(function (v) { return stemLeafOf(v, dec); })
+      .filter(function (p) { return p && done.indexOf(p.stem) === -1; });
+    var rows = S.rows || {}, got = slPairs(rows);
+    var per = [], byId = {};
+    units.forEach(function (u) { byId[u.id] = u; });
+
+    var uL = byId.LEAVES, d = pairDiff(got, want);
+    if (!got.length) per.push(row(uL, 0, null, 'no leaves placed'));
+    else if (!d.missing.length && !d.extra.length) per.push(row(uL, 1, null, null));
+    else {
+      var wrongStem = d.extra.some(function (e) {
+        return d.missing.some(function (m) { return m.leaf === e.leaf && m.stem !== e.stem; });
+      });
+      per.push(row(uL, 0, wrongStem ? 'SL_WRONG_STEM' : 'SL_MISSED_LEAF',
+        wrongStem ? null : (d.missing.length ? 'a value is missing' : 'a value is in twice')));
+    }
+
+    var uO = byId.ORDERED;
+    if (!got.length) per.push(row(uO, 0, null, 'no leaves placed'));
+    else {
+      var ordered = Object.keys(rows).every(function (stem) {
+        var leaves = (rows[stem] || []).map(Number), i;
+        for (i = 1; i < leaves.length; i++) if (leaves[i] < leaves[i - 1]) return false;
+        return true;
+      });
+      per.push(row(uO, ordered ? 1 : 0, ordered ? null : 'SL_UNORDERED', null));
+    }
+
+    if (byId.KEY) {
+      var uK = byId.KEY, key = S.key || {};
+      if (key.stem === undefined || key.stem === null || key.stem === '' ||
+          key.leaf === undefined || key.leaf === null || key.leaf === '') {
+        per.push(row(uK, 0, null, 'no key built'));
+      } else {
+        var truth = stemleafRows(q.values || [], dec);
+        var okK = (truth[Number(key.stem)] || []).indexOf(Number(key.leaf)) > -1;
+        per.push(row(uK, okK ? 1 : 0, okK ? null : 'SL_KEY_WRONG', null));
+      }
+    }
+    return per;
+  }
+
+  /* ---------- pie ---------- */
+
+  /* {catId: rational degrees}; total defaults to the sum of the frequencies */
+  function pieAngles(cats, total) {
+    var out = {}, tot = R(total);
+    if (!tot) tot = (cats || []).reduce(function (a, c) { return radd(a, R(c.f) || rint(0)); }, rint(0));
+    (cats || []).forEach(function (c) {
+      var f = R(c.f);
+      out[c.id] = (f && tot.n !== 0) ? rdiv(rmul(f, rint(360)), tot) : null;
+    });
+    return out;
+  }
+
+  function markPie(q, S, r, units) {
+    var cats = q.cats || [], tot = R(q.total), n = cats.length;
+    var truth = pieAngles(cats, q.total);
+    var angles = S.angles || {}, mine = {}, per = [], byId = {}, i;
+    units.forEach(function (u) { byId[u.id] = u; });
+    cats.forEach(function (c) { mine[c.id] = R(angles[c.id]); });
+    var allIn = cats.every(function (c) { return !!mine[c.id]; });
+
+    /* the two column-wide slips, judged once */
+    var pctTol = rat(1, 20);                                /* a percentage keyed to 1 dp */
+    var allPct = allIn && tot && cats.every(function (c) {
+      return within(mine[c.id], rdiv(rmul(R(c.f), rint(100)), tot), pctTol);
+    });
+    var wrongTotal = null;
+    if (allIn && !allPct && cats.every(function (c) { return mine[c.id].n !== 0; })) {
+      var T = null, same = true;
+      cats.forEach(function (c) {
+        var t = rdiv(rmul(R(c.f), rint(360)), mine[c.id]);
+        if (T === null) T = t; else if (!req(T, t)) same = false;
+      });
+      if (same && T && tot && !req(T, tot)) wrongTotal = T;
+    }
+    var first = mine[cats[0] && cats[0].id], f0 = cats[0] ? R(cats[0].f) : null;
+
+    cats.forEach(function (c, k) {
+      var u = byId['ANG_' + c.id], m = mine[c.id], want = truth[c.id];
+      if (!m) { per.push(row(u, 0, null, 'left blank')); return; }
+      if (want && eqR(m, want)) { per.push(row(u, 1, null, null)); return; }
+      /* a follow-through needs a first angle that IS an angle: a percentage
+         column is one slip repeated, not a slip carried through */
+      if (k > 0 && !allPct && first && f0 && f0.n !== 0) {
+        var ftv = rmul(rdiv(first, f0), R(c.f));
+        if (eqR(m, ftv) && !eqR(ftv, want)) { per.push(row(u, 2, null, 'from your own first angle')); return; }
+      }
+      per.push(row(u, 0, allPct ? 'PIE_PCT_NOT_DEG' : (wrongTotal ? 'PIE_TOTAL_WRONG' : null), null));
+    });
+
+    var uS = byId.SUM;
+    if (!allIn) per.push(row(uS, 0, null, 'left blank'));
+    else {
+      var sum = cats.reduce(function (a, c) { return radd(a, mine[c.id]); }, rint(0));
+      var ok360 = eqR(sum, rint(360));
+      per.push(row(uS, ok360 ? 1 : 0, null, ok360 ? null : 'the angles add to ' + rstr2(sum) + ', not 360'));
+    }
+
+    var uB = byId.SECTORS, bounds = (S.bounds || []).map(R), tol = rint(2);
+    if (bounds.length < n || bounds.slice(0, Math.max(0, n - 1)).some(function (b) { return !b; })) {
+      per.push(row(uB, 0, null, 'not every boundary is placed'));
+    } else {
+      var runT = rint(0), runM = rint(0), okTrue = true, okMine = allIn;
+      for (i = 0; i < n - 1; i++) {
+        runT = radd(runT, truth[cats[i].id] || rint(0));
+        if (!within(bounds[i], runT, tol)) okTrue = false;
+        if (allIn) {
+          runM = radd(runM, mine[cats[i].id]);
+          if (!within(bounds[i], runM, tol)) okMine = false;
+        }
+      }
+      if (okTrue) per.push(row(uB, 1, null, null));
+      else if (okMine) per.push(row(uB, 2, null, 'drawn to your own angles'));
+      else per.push(row(uB, 0, 'PIE_SECTOR_OFF', null));
+    }
+
+    var uLb = byId.LABELS, labels = S.labels || {};
+    var placed = cats.every(function (c, k) { return labels[k] !== undefined && labels[k] !== null && labels[k] !== ''; });
+    if (!placed) per.push(row(uLb, 0, null, 'not every sector is labelled'));
+    else {
+      var okL = cats.every(function (c, k) { return labels[k] === c.id; });
+      per.push(row(uLb, okL ? 1 : 0, null, okL ? null : 'a label is on the wrong sector'));
+    }
+    return per;
+  }
+
+  /* ---------- scatter ---------- */
+
+  /* The least-squares line through a set of points, exact:
+     m = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²), c = ȳ − m·x̄. m is null when every x
+     is the same. */
+  function leastSquares(points) {
+    var p = (points || []).map(function (q) { return [R(q[0]), R(q[1])]; })
+      .filter(function (q) { return q[0] && q[1]; });
+    var n = p.length;
+    if (!n) return null;
+    var sx = rint(0), sy = rint(0), sxy = rint(0), sxx = rint(0);
+    p.forEach(function (q) {
+      sx = radd(sx, q[0]); sy = radd(sy, q[1]);
+      sxy = radd(sxy, rmul(q[0], q[1])); sxx = radd(sxx, rmul(q[0], q[0]));
+    });
+    var N = rint(n), meanX = rdiv(sx, N), meanY = rdiv(sy, N);
+    var den = rsub(rmul(N, sxx), rmul(sx, sx));
+    if (den.n === 0) return { m: null, c: null, meanX: meanX, meanY: meanY, n: n };
+    var m = rdiv(rsub(rmul(N, sxy), rmul(sx, sy)), den);
+    var c = rsub(meanY, rmul(m, meanX));
+    return { m: m, c: c, meanX: meanX, meanY: meanY, n: n };
+  }
+  /* a line is {m, c} or two points [[x1,y1],[x2,y2]]; null when undrawable */
+  function lineOf(line) {
+    if (!line) return null;
+    if (line.m !== undefined) return (line.m && line.c) ? { m: line.m, c: line.c } : null;
+    if (!Array.isArray(line) || line.length < 2) return null;
+    var x1 = R(line[0][0]), y1 = R(line[0][1]), x2 = R(line[1][0]), y2 = R(line[1][1]);
+    if (!x1 || !y1 || !x2 || !y2 || req(x1, x2)) return null;
+    var m = rdiv(rsub(y2, y1), rsub(x2, x1));
+    return { m: m, c: rsub(y1, rmul(m, x1)) };
+  }
+  function lineY(line, x) {
+    var L = lineOf(line), X = R(x);
+    return (L && X) ? radd(rmul(L.m, X), L.c) : null;
+  }
+  function lineX(line, y) {
+    var L = lineOf(line), Y = R(y);
+    if (!L || !Y || L.m.n === 0) return null;
+    return rdiv(rsub(Y, L.c), L.m);
+  }
+  function sqOf(q) {
+    var sq = (q.chart && q.chart.sq) || {};
+    return { x: R(sq.x) || rint(1), y: R(sq.y) || rint(1) };
+  }
+  function ptsR(list) {
+    return (list || []).map(function (p) { return [R(p[0]), R(p[1])]; })
+      .filter(function (p) { return p[0] && p[1]; });
+  }
+  function sign(r) { return !r ? 0 : (r.n > 0 ? 1 : (r.n < 0 ? -1 : 0)); }
+
+  function markScatter(q, S, r, units) {
+    var want = ptsR(q.toPlot), all = ptsR((q.given || []).concat(q.toPlot || []));
+    var got = ptsR(S.pts), sq = sqOf(q), per = [], byId = {};
+    units.forEach(function (u) { byId[u.id] = u; });
+
+    var uP = byId.POINTS, exact = sameSet(got, want);
+    if (exact) per.push(row(uP, 1, null, null));
+    else {
+      var dx = null, note = null, earned = null;
+      if (sameSet(got, want.map(function (p) { return [p[1], p[0]]; }))) dx = 'SC_XY_SWAPPED';
+      else {
+        var d = setDiff(got, want);
+        if (d.missing.length === 1 && d.extra.length === 1) { note = 'one point is out'; earned = Math.max(0, uP.w - 1); }
+        else if (d.missing.length === 1 && !d.extra.length) { note = 'one point is missing'; earned = Math.max(0, uP.w - 1); }
+        else if (d.extra.length && !d.missing.length) note = 'there is an extra point';
+      }
+      var pRow = row(uP, 0, dx, note);
+      if (earned !== null) pRow.earned = earned;
+      per.push(pRow);
+    }
+
+    var LS = leastSquares(all), theirs = lineOf(S.line);
+    if (byId.LOBF) {
+      var uL = byId.LOBF;
+      if (!theirs) per.push(row(uL, 0, null, 'the line is not drawn'));
+      else if (!LS || !LS.m) per.push(row(uL, 0, null, 'the points give no trend'));
+      else {
+        var atMean = lineY(theirs, LS.meanX);
+        var throughMean = within(atMean, LS.meanY, sq.y);
+        var rightSign = sign(theirs.m) === sign(LS.m);
+        /* HOW NEAR IS NEAR (12 Sept 2026, Book A's own data). "Within one small
+           square" is the right rule on the paper's grid, but a chart whose
+           points only land ON the grid at sq.y = 0.1 (M7's engine sizes:
+           8.6, 9.4, 5.9 km) makes one square a tenth of a kilometre, and the
+           least-squares line itself then has two of seven points "near" it.
+           So the band is one small square OR twice the median residual of
+           the least-squares line, whichever is wider: the true line always
+           passes its own test, and a pupil's line passes when it sits with
+           the points as well as the true one does. */
+        var F = function (v) { return (v && v.d !== undefined) ? v.n / v.d : Number(v); };
+        var resid = all.map(function (p) { return Math.abs(F(p[1]) - F(lineY(LS, p[0]))); }).sort(function (x, y) { return x - y; });
+        var medRes = resid.length ? resid[Math.floor((resid.length - 1) / 2)] : 0;
+        var band = Math.max(F(sq.y), 2 * medRes);
+        var near = all.filter(function (p) { return Math.abs(F(p[1]) - F(lineY(theirs, p[0]))) <= band + 1e-9; }).length;
+        var halfNear = near * 2 >= all.length;
+        var okL = throughMean && rightSign && halfNear;
+        per.push(row(uL, okL ? 1 : 0, okL ? null : 'SC_LINE_OFF_TREND',
+          okL ? null : (!throughMean ? 'the line misses the middle of the points' :
+                        (!rightSign ? 'the line slopes the wrong way' : 'fewer than half the points are near the line'))));
+      }
+    }
+
+    if (byId.ESTIMATE) {
+      var uE = byId.ESTIMATE, ask = askOf(q, 'estimate') || {}, at = R(ask.at), est = R(S.est);
+      var fromY = ask.from === 'y';
+      var tolE = fromY ? sq.x : sq.y;
+      var trueRead = LS && LS.m && at ? (fromY ? lineX(LS, at) : lineY(LS, at)) : null;
+      var mineRead = theirs && at ? (fromY ? lineX(theirs, at) : lineY(theirs, at)) : null;
+      if (!est) per.push(row(uE, 0, null, 'left blank'));
+      else if (trueRead && within(est, trueRead, tolE)) per.push(row(uE, 1, null, null));
+      else if (mineRead && within(est, mineRead, tolE)) per.push(row(uE, 2, null, 'read from your own line'));
+      else if (at && eqR(est, at)) per.push(row(uE, 0, 'SC_READ_WRONG_AXIS', null));
+      else per.push(row(uE, 0, null, null));
+    }
+
+    if (byId.CORR) {
+      var uC = byId.CORR, askC = askOf(q, 'corr') || {}, said = S.corr;
+      var signs = ['positive', 'negative'];
+      if (!said) per.push(row(uC, 0, null, 'no correlation chosen'));
+      else if (said === askC.answer) per.push(row(uC, 1, null, null));
+      else if (signs.indexOf(said) > -1 && signs.indexOf(askC.answer) > -1) per.push(row(uC, 0, 'SC_CORR_SIGN', null));
+      else per.push(row(uC, 0, null, null));
+    }
+
+    if (byId.OUTLIER) {
+      var uO = byId.OUTLIER, askO = askOf(q, 'outlier') || {};
+      var pickO = (S.outlier === undefined || S.outlier === null || S.outlier === '') ? null : Number(S.outlier);
+      if (pickO === null || isNaN(pickO)) per.push(row(uO, 0, null, 'no point chosen'));
+      else per.push(row(uO, pickO === Number(askO.answer) ? 1 : 0, null,
+        pickO === Number(askO.answer) ? null : 'that reading fits the pattern'));
+    }
+    return per;
+  }
+
   /* ---------- gist: the exercise grid's one-line header (<= 28 chars) ----- */
 
   function gist(q) {
@@ -1264,6 +1740,11 @@
       case 'compare': s = 'Compare two box plots'; break;
       case 'judge': s = 'Is the claim fair? ×' + (q.claims || []).length; break;
       case 'values': s = (q.slots || []).length + ' values to find'; break;
+      case 'order': s = q.cyclic ? 'Put the cycle in order' : 'Put the cards in order'; break;
+      case 'pick': s = 'Choose the better question'; break;
+      case 'stemleaf': s = 'Stem-and-leaf · n = ' + (q.values || []).length; break;
+      case 'pie': s = 'Pie chart · ' + (q.cats || []).length + ' sectors'; break;
+      case 'scatter': s = 'Scatter graph · n = ' + ((q.given || []).length + (q.toPlot || []).length); break;
       default: s = q.kind;
     }
     return s.length > 28 ? s.slice(0, 27) + '…' : s;
@@ -1297,7 +1778,8 @@
     return r.d === 1 ? String(r.n) : String(Math.round((r.n / r.d) * 1e6) / 1e6);
   }
   function isStatKind(k) { return KINDS_LIST.indexOf(k) > -1; }
-  var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+                    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
   function modelBoard(q, wrong, rules) {
     RULES = rules || null;
     return statsBoard(q, !!wrong);
@@ -1310,7 +1792,7 @@
    carrying that kind's own classic slip, so a walk of the wrong path is a walk
    of a real misconception. */
 function isStatKind(k) {
-  return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'].indexOf(k) > -1;
+  return KINDS_LIST.indexOf(k) > -1;
 }
 
 function qlistBoard(q, wrong) {
@@ -1530,6 +2012,113 @@ function valuesBoard(q, wrong) {
   bad[first] = String(Number(bad[first] || 0) + 1);
   return { v: bad };
 }
+/* ---- Book A's boards (CONTRACT_A.md) ---- */
+function orderBoard(q, wrong) {
+  var seq = (q.answer || []).slice();
+  if (!wrong || seq.length < 2) return { seq: seq };
+  /* the middle two swapped: a broken link in the cycle, a wrong sequence */
+  var i = Math.floor(seq.length / 2) - 1, t = seq[i];
+  seq[i] = seq[i + 1]; seq[i + 1] = t;
+  return { seq: seq };
+}
+function pickBoard(q, wrong) {
+  var opts = q.options || [], best = -1, firstBad = -1, k;
+  for (k = 0; k < opts.length; k++) {
+    if (opts[k].best && best === -1) best = k;
+    if (!opts[k].best && firstBad === -1) firstBad = k;
+  }
+  if (!wrong) return { pick: best, why: firstBad > -1 ? (opts[firstBad].flaw || null) : null };
+  /* the printed bad question chosen, its own flaw named */
+  return { pick: firstBad, why: firstBad > -1 ? (opts[firstBad].flaw || null) : null };
+}
+function stemleafBoard(q, wrong) {
+  var dec = Number(q.decimals) || 0;
+  var done = (q.prefill && q.prefill.stemsDone) ? q.prefill.stemsDone.map(Number) : [];
+  var mine = (q.values || []).filter(function (v) {
+    var sl = stemLeafOf(v, dec);
+    return sl && done.indexOf(sl.stem) === -1;
+  });
+  var rows = {};
+  function place(v) {
+    var sl = stemLeafOf(v, dec);
+    (rows[sl.stem] = rows[sl.stem] || []).push(String(sl.leaf));
+  }
+  var out;
+  if (!wrong) {
+    mine.slice().sort(function (a, b) { return Number(a) - Number(b); }).forEach(place);
+    out = { rows: rows };
+  } else {
+    /* the leaves in PRINTED order (SL_UNORDERED). When the printed order
+       already happens to be sorted on every stem, each row is reversed; when
+       no row has two different leaves, the first leaf goes on the next stem. */
+    mine.forEach(place);
+    var ordered = function () {
+      return Object.keys(rows).every(function (s2) {
+        var l = rows[s2].map(Number), i;
+        for (i = 1; i < l.length; i++) if (l[i] < l[i - 1]) return false;
+        return true;
+      });
+    };
+    if (ordered()) Object.keys(rows).forEach(function (s2) { rows[s2].reverse(); });
+    if (ordered() && mine.length) {
+      var sl0 = stemLeafOf(mine[0], dec), from = rows[sl0.stem];
+      from.splice(from.indexOf(String(sl0.leaf)), 1);
+      if (!from.length) delete rows[sl0.stem];
+      (rows[sl0.stem + 1] = rows[sl0.stem + 1] || []).push(String(sl0.leaf));
+    }
+    out = { rows: rows };
+  }
+  if (q.key && q.key.ask && (q.values || []).length) {
+    var k0 = stemLeafOf(q.values[0], dec);
+    out.key = { stem: String(k0.stem), leaf: String(k0.leaf) };
+  }
+  return out;
+}
+function pieBoard(q, wrong) {
+  var cats = q.cats || [], tot = Number(q.total) || 0, i;
+  var angles = {}, bounds = [], labels = {}, run = 0;
+  /* right: f × 360 ÷ total (whole degrees - the lint insists). wrong: the
+     column worked in PERCENTAGES, keyed to 1 dp as a number pad allows
+     (PIE_PCT_NOT_DEG reads a 1-dp percentage), the boundaries drawn to them. */
+  var vals = cats.map(function (c) {
+    var f = Number(c.f);
+    return wrong ? Math.round(f * 1000 / tot) / 10 : f * 360 / tot;
+  });
+  cats.forEach(function (c, k) { angles[c.id] = String(vals[k]); labels[k] = c.id; });
+  for (i = 0; i < cats.length - 1; i++) { run += vals[i]; bounds.push(Math.round(run * 10) / 10); }
+  bounds.push(360);
+  return { angles: angles, bounds: bounds, labels: labels };
+}
+function scatterBoard(q, wrong) {
+  var all = (q.given || []).concat(q.toPlot || []);
+  var LS = leastSquares(all), chart = q.chart || {}, x = chart.x || {}, y = chart.y || {};
+  var sq = sqOf(q), sqx = rnum2(sq.x), sqy = rnum2(sq.y);
+  var out = { pts: (q.toPlot || []).map(function (p) { return [Number(p[0]), Number(p[1])]; }) };
+  var asks = q.asks || [];
+  function has(t) { return asks.some(function (a) { return a && a.type === t; }); }
+  function ask(t) { return asks.filter(function (a) { return a && a.type === t; })[0]; }
+  if (has('lobf') && LS && LS.m) {
+    var x1 = Number(x.min) || 0, x2 = Number(x.max) || 0;
+    out.line = [[x1, snapTo(rnum2(lineY(LS, x1)), sqy)], [x2, snapTo(rnum2(lineY(LS, x2)), sqy)]];
+  }
+  if (has('estimate') && LS && LS.m) {
+    var a = ask('estimate');
+    var read = a.from === 'y' ? lineX(LS, a.at) : lineY(LS, a.at);
+    out.est = read ? String(snapTo(rnum2(read), a.from === 'y' ? sqx : sqy)) : '';
+  }
+  if (has('corr')) out.corr = ask('corr').answer;
+  if (has('outlier')) out.outlier = Number(ask('outlier').answer);
+  if (!wrong) return out;
+  /* the two values the wrong way round when every swapped point fits the
+     axes; else the first point one square to the right */
+  var swapped = out.pts.map(function (p) { return [p[1], p[0]]; });
+  var inside = swapped.every(function (p) {
+    return p[0] >= Number(x.min) && p[0] <= Number(x.max) && p[1] >= Number(y.min) && p[1] <= Number(y.max);
+  });
+  if (inside && swapped.length) out.pts = swapped;
+  else if (out.pts.length) out.pts[0] = [out.pts[0][0] + sqx, out.pts[0][1]];
+  return out;
+}
 function statsBoard(q, wrong) {
   switch (q.kind) {
     case 'qlist': return qlistBoard(q, wrong);
@@ -1540,6 +2129,11 @@ function statsBoard(q, wrong) {
     case 'compare': return compareBoard(q, wrong);
     case 'judge': return judgeBoard(q, wrong);
     case 'values': return valuesBoard(q, wrong);
+    case 'order': return orderBoard(q, wrong);
+    case 'pick': return pickBoard(q, wrong);
+    case 'stemleaf': return stemleafBoard(q, wrong);
+    case 'pie': return pieBoard(q, wrong);
+    case 'scatter': return scatterBoard(q, wrong);
     default: return null;
   }
 }
@@ -1914,6 +2508,252 @@ function statsBoard(q, wrong) {
     T('GS8 every gist is at most 28 characters',
       [QL, CT, PL, RDq, BX, CMP, JD, VL].every(function (qq) { return gist(qq).length <= 28; }));
 
+    /* ================= Book A (CONTRACT_A.md, 12 Sept 2026) ================= */
+
+    /* ---- order: the data-handling cycle (booklet 1.4) ---- */
+    var OR = { id: 'or', kind: 'order', marks: [1, 1], prompt: 'p', cyclic: true,
+               tiles: ['Collect the data', 'Present the data', 'Analyse the data', 'Interpret the results'],
+               answer: [0, 1, 2, 3] };
+    v = check(OR, { S: { seq: [0, 1, 2, 3] } });
+    T('OR1 the cycle in order earns full', v.res === 'OK' && mk(v, 1, 1));
+    T('OR2 a cycle of four is four pair units', v.perLine.length === 4 && v.perLine[0].unit === 'PAIR_0' && v.perLine[3].unit === 'PAIR_3');
+    T('OR3 the closing pair carries the accuracy mark', unitsOf(OR)[3].band === 'accuracy' && unitsOf(OR)[2].band === 'method');
+    v = check(OR, { S: { seq: [2, 3, 0, 1] } });
+    T('OR4 a rotation of the cycle earns full', v.res === 'OK' && mk(v, 1, 1));
+    v = check(OR, { S: { seq: [0, 2, 1, 3] } });
+    T('OR5 the middle two swapped breaks three pairs', v.res === 'X@1' && okAt(v, 0, 0) && okAt(v, 1, 0) && okAt(v, 2, 0) && okAt(v, 3, 1));
+    v = check(OR, { S: { seq: [3, 2, 1, 0] } });
+    T('OR6 the cycle backwards earns nothing', mk(v, 0, 0));
+    v = check(OR, { S: { seq: [0, 1, 2] } });
+    T('OR7 an unfinished row is not marked right', v.res === 'X@1' && /not every card/.test(v.perLine[0].note || ''));
+    T('OR8 order has no dx of its own', v.dx === null);
+    var ORw = statsBoard(OR, true);
+    T('OR9 the wrong model board fails and the right one passes',
+      check(OR, { S: statsBoard(OR, false) }).res === 'OK' && check(OR, { S: ORw }).res !== 'OK');
+    var ORs = { id: 'ors', kind: 'order', marks: [0, 1], prompt: 'p', tiles: ['3', '1', '2'], answer: [1, 2, 0] };
+    v = check(ORs, { S: { seq: [1, 2, 0] } });
+    T('OR10 a plain sequence is one accuracy unit', v.perLine.length === 1 && v.perLine[0].unit === 'SEQ' && v.res === 'OK' && mk(v, 0, 1));
+    v = check(ORs, { S: { seq: [2, 0, 1] } });
+    T('OR11 a rotation of a plain sequence is wrong', okAt(v, 0, 0));
+    T('OR12 order gist', gist(OR) === 'Put the cycle in order' && gist(ORs) === 'Put the cards in order');
+
+    /* ---- pick: the better questionnaire question ---- */
+    var PK = { id: 'pk', kind: 'pick', marks: [1, 1], prompt: 'p',
+               options: [{ text: 'How much TV do you watch?', best: false, flaw: 'Q_VAGUE' },
+                         { text: 'How many hours of TV did you watch last week?', boxes: ['0–2', '3–5', '6–8', 'more than 8'], best: true },
+                         { text: 'How many hours of TV do you watch?', boxes: ['0–2', '2–4', '4–6'], best: false, flaw: 'Q_OVERLAP' }] };
+    v = check(PK, { S: { pick: 1, why: 'Q_VAGUE' } });
+    T('PK1 the best question and a rejected option’s flaw', v.res === 'OK' && mk(v, 1, 1));
+    T('PK2 PICK is accuracy, WHY is method', unitsOf(PK)[0].band === 'accuracy' && unitsOf(PK)[1].band === 'method');
+    v = check(PK, { S: { pick: 1, why: 'Q_OVERLAP' } });
+    T('PK3 the OTHER rejected option’s flaw is accepted too', okAt(v, 1, 1));
+    v = check(PK, { S: { pick: 0, why: 'Q_VAGUE' } });
+    T('PK4 the wrong question picked fails PICK', okAt(v, 0, 0) && v.mk[1] === 0);
+    v = check(PK, { S: { pick: 1, why: 'Q_LEADING' } });
+    T('PK5 a reason no option has is the wrong limitation', dxAt(v, 1, 'JUDGE_WRONG_REASON'));
+    v = check(PK, { S: { pick: 1 } });
+    T('PK6 no reason given is named', /no reason/.test(v.perLine[1].note || ''));
+    v = check(PK, { S: {} });
+    T('PK7 nothing chosen is a fail state', v.res === 'X@1' && /no question chosen/.test(v.perLine[0].note || ''));
+    T('PK8 the model boards: right passes, wrong fails PICK',
+      check(PK, { S: statsBoard(PK, false) }).res === 'OK' && okAt(check(PK, { S: statsBoard(PK, true) }), 0, 0));
+    T('PK9 the ten Q_* reasons are in the bank with their texts',
+      ['Q_OVERLAP', 'Q_GAP', 'Q_NO_ZERO', 'Q_NO_TIME', 'Q_LEADING', 'Q_VAGUE', 'Q_NO_OTHER', 'Q_ONLY_POSITIVE', 'Q_PERSONAL', 'Q_OPEN']
+        .every(function (k) { return typeof REASONS[k] === 'string' && /\.$/.test(REASONS[k]); }) &&
+      REASONS.Q_GAP === 'Some values have no box.');
+    T('PK10 pick gist', gist(PK) === 'Choose the better question');
+
+    /* ---- stemleaf: M7 Q17's twigs (whole cm) ---- */
+    var twigs = [36, 24, 28, 41, 31, 28, 45, 22, 39, 30, 27, 44, 33, 26, 40];
+    var SLq = { id: 'sl', kind: 'stemleaf', marks: [2, 1], prompt: 'p', values: twigs, stems: [2, 3, 4], unit: 'cm', decimals: 0, key: { ask: true } };
+    var slRight = { '2': ['2', '4', '6', '7', '8', '8'], '3': ['0', '1', '3', '6', '9'], '4': ['0', '1', '4', '5'] };
+    v = check(SLq, { S: { rows: slRight, key: { stem: '3', leaf: '6' } } });
+    T('SL1 every leaf on its stem, in order, with a key', v.res === 'OK' && mk(v, 2, 1));
+    T('SL2 three units LEAVES ORDERED KEY', v.perLine.map(function (p) { return p.unit; }).join(',') === 'LEAVES,ORDERED,KEY');
+    var sl2 = stemLeafOf(36, 0), sl3 = stemLeafOf('3.6', 1), sl4 = stemLeafOf(40, 0);
+    T('SL3 the split at decimals 0', sl2.stem === 3 && sl2.leaf === 6 && sl4.stem === 4 && sl4.leaf === 0);
+    T('SL4 the split at decimals 1', sl3.stem === 3 && sl3.leaf === 6 && stemLeafOf(2.4, 1).stem === 2 && stemLeafOf(2.4, 1).leaf === 4);
+    var rows15 = stemleafRows(twigs, 0);
+    T('SL5 stemleafRows sorts each stem', rows15['2'].join('') === '246788' && rows15['3'].join('') === '01369' && rows15['4'].join('') === '0145');
+    v = check(SLq, { S: { rows: { '2': ['4', '8', '8', '2', '7', '6'], '3': ['6', '1', '9', '0', '3'], '4': ['1', '5', '4', '0'] }, key: { stem: '3', leaf: '6' } } });
+    T('SL6 leaves in printed order are unordered', okAt(v, 0, 1) && dxAt(v, 1, 'SL_UNORDERED') && mk(v, 1, 1));
+    v = check(SLq, { S: { rows: { '2': ['2', '4', '6', '7', '8', '8', '9'], '3': ['0', '1', '3', '6'], '4': ['0', '1', '4', '5'] }, key: { stem: '3', leaf: '6' } } });
+    T('SL7 a leaf on the wrong stem', dxAt(v, 0, 'SL_WRONG_STEM') && okAt(v, 1, 1));
+    v = check(SLq, { S: { rows: { '2': ['2', '4', '6', '7', '8'], '3': ['0', '1', '3', '6', '9'], '4': ['0', '1', '4', '5'] }, key: { stem: '3', leaf: '6' } } });
+    T('SL8 a value left out', dxAt(v, 0, 'SL_MISSED_LEAF') && /missing/.test(v.perLine[0].note || ''));
+    v = check(SLq, { S: { rows: { '2': ['2', '4', '6', '7', '8', '8', '8'], '3': ['0', '1', '3', '6', '9'], '4': ['0', '1', '4', '5'] }, key: { stem: '3', leaf: '6' } } });
+    T('SL9 a value entered twice', dxAt(v, 0, 'SL_MISSED_LEAF') && /twice/.test(v.perLine[0].note || ''));
+    v = check(SLq, { S: { rows: slRight, key: { stem: '2', leaf: '9' } } });
+    T('SL10 a key the data does not hold', dxAt(v, 2, 'SL_KEY_WRONG') && v.mk[1] === 0);
+    v = check(SLq, { S: { rows: slRight, key: { stem: '4', leaf: '5' } } });
+    T('SL11 any true stem-leaf pair is a right key', okAt(v, 2, 1));
+    v = check(SLq, { S: { rows: slRight } });
+    T('SL12 no key built is named', /no key/.test(v.perLine[2].note || ''));
+    v = check(SLq, { S: { rows: {} } });
+    T('SL13 an empty diagram is a fail state, not a crash', v.res === 'X@1' && okAt(v, 0, 0) && okAt(v, 1, 0));
+    var SLd = { id: 'sld', kind: 'stemleaf', marks: [2, 0], prompt: 'p', values: [2.4, 3.6, 2.8, 3.1, 2.2], stems: [2, 3], unit: 'kg', decimals: 1 };
+    v = check(SLd, { S: { rows: { '2': ['2', '4', '8'], '3': ['1', '6'] } } });
+    T('SL14 decimals 1: 3.6 is 3 | 6', v.res === 'OK' && mk(v, 2, 0));
+    T('SL15 no key asked, no KEY unit', unitsOf(SLd).length === 2);
+    var SLp = { id: 'slp', kind: 'stemleaf', marks: [2, 0], prompt: 'p', values: twigs, stems: [2, 3, 4], unit: 'cm', decimals: 0,
+                prefill: { stemsDone: [2, 3] } };
+    v = check(SLp, { S: { rows: { '4': ['0', '1', '4', '5'] } } });
+    T('SL16 prefilled stems are given, not marked', v.res === 'OK');
+    v = check(SLp, { S: { rows: { '4': ['0', '1', '4', '5'], '3': ['6'] } } });
+    T('SL17 a leaf placed on a prefilled stem is a doubled value', okAt(v, 0, 0));
+    var SLb = { id: 'slb', kind: 'stemleaf', marks: [2, 0], prompt: 'p', values: [12, 15, 21], stems: [1, 2], unit: 'marks', decimals: 0,
+                back: { label: 'Girls', mine: 'Boys', values: [11, 14, 19, 23] } };
+    v = check(SLb, { S: { rows: { '1': ['2', '5'], '2': ['1'] } } });
+    T('SL18 the back side is given: only my side is marked', v.res === 'OK' && unitsOf(SLb).length === 2);
+    var SLw = statsBoard(SLq, true), SLr = statsBoard(SLq, false);
+    T('SL19 the right model board passes with its key', check(SLq, { S: SLr }).res === 'OK' && SLr.key.stem === '3' && SLr.key.leaf === '6');
+    T('SL20 the wrong model board is the printed order', check(SLq, { S: SLw }).dx === 'SL_UNORDERED');
+    T('SL21 a wrong board whose printed order is sorted still fails',
+      check(SLd, { S: statsBoard({ id: 'x', kind: 'stemleaf', marks: [2, 0], values: [2.2, 2.4, 2.8, 3.1, 3.6], stems: [2, 3], decimals: 1 }, true) }).res !== 'OK');
+    T('SL22 stemleaf gist', gist(SLq) === 'Stem-and-leaf · n = 15');
+
+    /* ---- pie: M7 Q11's sports (60 pupils) ---- */
+    var PI = { id: 'pi', kind: 'pie', marks: [2, 2], prompt: 'p', total: 60,
+               cats: [{ id: 'fb', label: 'Football', f: 26 }, { id: 'rg', label: 'Rugby', f: 8 },
+                      { id: 'hk', label: 'Hockey', f: 12 }, { id: 'ot', label: 'Other', f: 14 }] };
+    var piA = pieAngles(PI.cats, 60);
+    T('PI1 pieAngles is exact', req(piA.fb, n(156)) && req(piA.rg, n(48)) && req(piA.hk, n(72)) && req(piA.ot, n(84)));
+    var piGood = { angles: { fb: '156', rg: '48', hk: '72', ot: '84' }, bounds: [156, 204, 276, 360], labels: { 0: 'fb', 1: 'rg', 2: 'hk', 3: 'ot' } };
+    v = check(PI, { S: piGood });
+    T('PI2 the whole pie right', v.res === 'OK' && mk(v, 2, 2));
+    T('PI3 seven units: four angles, SUM, SECTORS, LABELS', v.perLine.length === 7 && v.perLine[4].unit === 'SUM' && v.perLine[6].unit === 'LABELS');
+    T('PI4 SECTORS earns on follow-through, LABELS does not', unitsOf(PI)[5].ftEarns === true && unitsOf(PI)[6].ftEarns === false);
+    v = check(PI, { S: { angles: { fb: '43.3', rg: '13.3', hk: '20', ot: '23.3' }, bounds: [43.3, 56.6, 76.6, 360], labels: piGood.labels } });
+    T('PI5 the column worked in percentages', dxAt(v, 0, 'PIE_PCT_NOT_DEG') && v.dx === 'PIE_PCT_NOT_DEG');
+    T('PI6 a percentage column is not a follow-through', okAt(v, 1, 0) && okAt(v, 2, 0));
+    T('PI7 sectors drawn to their own percentages are hollow and earn', okAt(v, 5, 2) && v.perLine[5].earned === 1);
+    T('PI8 the SUM unit fails short of 360', okAt(v, 4, 0) && /99\.9, not 360/.test(v.perLine[4].note || ''));
+    v = check(PI, { S: { angles: { fb: '187.2', rg: '57.6', hk: '86.4', ot: '100.8' }, bounds: [187.2, 244.8, 331.2, 360], labels: piGood.labels } });
+    T('PI9 every angle consistent with one wrong total (÷ 50)', dxAt(v, 0, 'PIE_TOTAL_WRONG'));
+    T('PI10 the rest follow through from the first angle', okAt(v, 1, 2) && okAt(v, 2, 2) && okAt(v, 3, 2) && v.perLine[1].earned === 1);
+    v = check(PI, { S: { angles: { fb: '150', rg: '48', hk: '72', ot: '84' }, bounds: [150, 198, 270, 360], labels: piGood.labels } });
+    T('PI11 one angle wrong on its own carries no column dx', okAt(v, 0, 0) && v.perLine[0].dx === null && okAt(v, 1, 1));
+    T('PI12 a sum that is not 360 is named', okAt(v, 4, 0) && /354/.test(v.perLine[4].note || ''));
+    T('PI13 sectors drawn to their own wrong angle are hollow', okAt(v, 5, 2));
+    v = check(PI, { S: { angles: piGood.angles, bounds: [158, 204, 278, 360], labels: piGood.labels } });
+    T('PI14 a boundary within 2° is right', okAt(v, 5, 1));
+    v = check(PI, { S: { angles: piGood.angles, bounds: [160, 204, 276, 360], labels: piGood.labels } });
+    T('PI15 a boundary 4° out is a sector drawn to the wrong angle', dxAt(v, 5, 'PIE_SECTOR_OFF'));
+    v = check(PI, { S: { angles: piGood.angles, bounds: [156, 204, 276, 360], labels: { 0: 'fb', 1: 'hk', 2: 'rg', 3: 'ot' } } });
+    T('PI16 two labels swapped', okAt(v, 6, 0) && v.mk[1] === 1);
+    v = check(PI, { S: { angles: piGood.angles, bounds: [156, 204], labels: {} } });
+    T('PI17 boundaries and labels not placed are named', /boundary/.test(v.perLine[5].note || '') && /label/.test(v.perLine[6].note || ''));
+    v = check(PI, { S: { angles: { fb: '156', rg: '48' }, bounds: [], labels: {} } });
+    T('PI18 a blank angle is left blank and SUM waits', v.perLine[2].note === 'left blank' && v.perLine[4].note === 'left blank');
+    var PIw = statsBoard(PI, true), PIr = statsBoard(PI, false);
+    T('PI19 the right model board passes', check(PI, { S: PIr }).res === 'OK' && PIr.bounds.join(',') === '156,204,276,360');
+    T('PI20 the wrong model board is the percentage column and fails', check(PI, { S: PIw }).dx === 'PIE_PCT_NOT_DEG' && PIw.angles.fb === '43.3');
+    T('PI21 pie gist', gist(PI) === 'Pie chart · 4 sectors');
+
+    /* ---- scatter: M7 Q12's engine sizes (litres) against mpg — a hand-built set ---- */
+    var SCch = { x: { min: 0, max: 10, step: 1, label: 'x' }, y: { min: 0, max: 20, step: 2, label: 'y' }, sq: { x: 1, y: 1 } };
+    var LS1 = leastSquares([[1, 3], [2, 5], [3, 7], [4, 9]]);
+    T('LS1 a perfect line comes back exactly', req(LS1.m, n(2)) && req(LS1.c, n(1)) && req(LS1.meanX, { n: 5, d: 2 }) && req(LS1.meanY, n(6)));
+    var LS2 = leastSquares([[1, 2], [2, 4], [3, 5], [4, 4], [5, 5]]);
+    T('LS2 least squares on a scatter, as rationals', req(LS2.m, { n: 3, d: 5 }) && req(LS2.c, { n: 11, d: 5 }) && req(LS2.meanX, n(3)) && req(LS2.meanY, n(4)));
+    T('LS3 all x the same has no slope', leastSquares([[2, 1], [2, 5]]).m === null);
+    T('LS4 lineY and lineX on a two-point line', req(lineY([[0, 1], [10, 21]], 4), n(9)) && req(lineX([[0, 1], [10, 21]], 9), n(4)));
+    T('LS5 a vertical line is undrawable', lineY([[3, 1], [3, 9]], 3) === null);
+    var SC = { id: 'sc', kind: 'scatter', marks: [2, 2], prompt: 'p', chart: SCch, pointsW: 2,
+               given: [[1, 3], [2, 5], [3, 7]], toPlot: [[4, 9], [5, 11], [6, 13], [7, 15]],
+               asks: [{ type: 'lobf' }, { type: 'estimate', from: 'x', at: 8, want: 'y' }, { type: 'corr', answer: 'positive' }, { type: 'outlier', answer: 6 }] };
+    var scGood = { pts: [[4, 9], [5, 11], [6, 13], [7, 15]], line: [[0, 1], [10, 21]], est: '17', corr: 'positive', outlier: 6 };
+    v = check(SC, { S: scGood });
+    T('SC1 the whole graph right', v.res === 'OK' && mk(v, 2, 2));
+    T('SC2 POINTS weighs the paper’s two', v.perLine[0].w === 2 && v.perLine[0].earned === 2);
+    T('SC3 five units in the asks’ order', v.perLine.map(function (p) { return p.unit; }).join(',') === 'POINTS,LOBF,ESTIMATE,CORR,OUTLIER');
+    var SCo = { id: 'sco', kind: 'scatter', marks: [1, 0], prompt: 'p', chart: SCch, given: SC.given, toPlot: SC.toPlot, asks: [] };
+    T('SC4 only the asked units exist', unitsOf(SCo).length === 1 && unitsOf(SCo)[0].id === 'POINTS');
+    v = check(SC, { S: { pts: [[9, 4], [11, 5], [13, 6], [15, 7]], line: scGood.line, est: '17', corr: 'positive', outlier: 6 } });
+    T('SC5 the two values the wrong way round', dxAt(v, 0, 'SC_XY_SWAPPED') && v.perLine[0].earned === 0);
+    v = check(SC, { S: { pts: [[4, 9], [5, 11], [6, 14], [7, 15]], line: scGood.line, est: '17', corr: 'positive', outlier: 6 } });
+    T('SC6 one point out is named and earns w−1', /one point is out/.test(v.perLine[0].note || '') && v.perLine[0].earned === 1);
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, 2], [10, 20]], est: '17', corr: 'positive', outlier: 6 } });
+    T('SC7 a sound line drawn by eye passes the three-part test', okAt(v, 1, 1));
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, 4], [10, 24]], est: '20', corr: 'positive', outlier: 6 } });
+    T('SC8 a line missing the mean point', dxAt(v, 1, 'SC_LINE_OFF_TREND') && /middle/.test(v.perLine[1].note || ''));
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, 15], [10, 0]], est: '3', corr: 'positive', outlier: 6 } });
+    T('SC9 a line sloping the wrong way', dxAt(v, 1, 'SC_LINE_OFF_TREND') && /wrong way/.test(v.perLine[1].note || ''));
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, -15], [10, 45]], est: '33', corr: 'positive', outlier: 6 } });
+    T('SC10 a steep line through the mean has too few points near it', dxAt(v, 1, 'SC_LINE_OFF_TREND') && /half/.test(v.perLine[1].note || ''));
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, 2], [10, 20]], est: '16', corr: 'positive', outlier: 6 } });
+    T('SC11 an estimate within a square of the true line is right', okAt(v, 2, 1));
+    v = check(SC, { S: { pts: scGood.pts, line: [[0, 4], [10, 24]], est: '20', corr: 'positive', outlier: 6 } });
+    T('SC12 an estimate read from their own off line is hollow and earns', okAt(v, 2, 2) && v.perLine[2].earned === 1);
+    v = check(SC, { S: { pts: scGood.pts, line: scGood.line, est: '8', corr: 'positive', outlier: 6 } });
+    T('SC13 the asked value given back is the wrong axis', dxAt(v, 2, 'SC_READ_WRONG_AXIS'));
+    v = check(SC, { S: { pts: scGood.pts, line: scGood.line, est: '12', corr: 'positive', outlier: 6 } });
+    T('SC14 an estimate far from both lines is wrong with no dx', okAt(v, 2, 0) && v.perLine[2].dx === null);
+    v = check(SC, { S: { pts: scGood.pts, line: scGood.line, est: '17', corr: 'negative', outlier: 6 } });
+    T('SC15 correlation named the wrong way', dxAt(v, 3, 'SC_CORR_SIGN'));
+    v = check(SC, { S: { pts: scGood.pts, line: scGood.line, est: '17', corr: 'none', outlier: 6 } });
+    T('SC16 no correlation for a clear trend is wrong without the sign dx', okAt(v, 3, 0) && v.perLine[3].dx === null);
+    v = check(SC, { S: { pts: scGood.pts, line: scGood.line, est: '17', corr: 'positive', outlier: 2 } });
+    T('SC17 the wrong point named as the odd one out', okAt(v, 4, 0) && v.perLine[4].earned === 0 && /fits the pattern/.test(v.perLine[4].note || ''));
+    v = check(SC, { S: { pts: scGood.pts } });
+    T('SC18 a line not drawn, nothing read, nothing chosen', /not drawn/.test(v.perLine[1].note || '') && v.perLine[2].note === 'left blank' && /no correlation/.test(v.perLine[3].note || '') && /no point/.test(v.perLine[4].note || ''));
+    var SCy = { id: 'scy', kind: 'scatter', marks: [1, 1], prompt: 'p', chart: SCch, given: SC.given, toPlot: SC.toPlot,
+                asks: [{ type: 'lobf' }, { type: 'estimate', from: 'y', at: 17, want: 'x' }] };
+    v = check(SCy, { S: { pts: scGood.pts, line: scGood.line, est: '8' } });
+    T('SC19 an estimate from y solves the line for x', okAt(v, 2, 1) && v.res === 'OK');
+    v = check(SCy, { S: { pts: scGood.pts, line: scGood.line, est: '17' } });
+    T('SC20 from y, the asked value given back is the wrong axis', dxAt(v, 2, 'SC_READ_WRONG_AXIS'));
+    var SCr = statsBoard(SC, false), SCw = statsBoard(SC, true);
+    T('SC21 the right model board passes with the LS line at the majors', check(SC, { S: SCr }).res === 'OK' && SCr.line[0][0] === 0 && SCr.line[1][0] === 10 && SCr.est === '17');
+    T('SC22 the wrong model board fails POINTS', okAt(check(SC, { S: SCw }), 0, 0));
+    var SCsw = { id: 'scsw', kind: 'scatter', marks: [1, 0], prompt: 'p', chart: { x: { min: 0, max: 20, step: 2 }, y: { min: 0, max: 20, step: 2 }, sq: { x: 1, y: 1 } },
+                 given: [], toPlot: [[4, 9], [5, 11]], asks: [] };
+    T('SC23 the wrong board swaps x and y when the swapped points fit the axes', check(SCsw, { S: statsBoard(SCsw, true) }).dx === 'SC_XY_SWAPPED');
+    T('SC24 scatter gist counts every point', gist(SC) === 'Scatter graph · n = 7');
+    var SCg = { id: 'scg', kind: 'scatter', marks: [1, 1], prompt: 'p', chart: { x: { min: 0, max: 10, step: 1 }, y: { min: 0, max: 40, step: 4 }, sq: { x: 1, y: 2 } },
+                given: SC.given.map(function (p) { return [p[0], p[1] * 2]; }), toPlot: SC.toPlot.map(function (p) { return [p[0], p[1] * 2]; }),
+                asks: [{ type: 'lobf' }, { type: 'estimate', from: 'x', at: 8, want: 'y' }] };
+    v = check(SCg, { S: { pts: SCg.toPlot, line: [[0, 2], [10, 42]], est: '36' } });
+    T('SC25 "one small square" reads chart.sq: 2 units either way on a grid of 2', okAt(v, 2, 1));
+    v = check(SCg, { S: { pts: SCg.toPlot, line: [[0, 2], [10, 42]], est: '37' } });
+    T('SC26 three units out on a grid of 2 is wrong', okAt(v, 2, 0));
+
+    /* ---- values on a Venn figure: the two slips ---- */
+    var VN = { id: 'vn', kind: 'values', marks: [2, 1], prompt: 'p',
+               fig: { type: 'venn2', n: 130, circles: [{ id: 'A', label: 'Milk' }, { id: 'B', label: 'Sugar' }], totals: { A: 81, B: 48 } },
+               slots: [{ id: 'both', label: 'Both', region: 'AB', answer: { n: 22, d: 1 }, earns: 'method', ft: { rule: 'venn.both.fromTotals', of: ['A', 'B'], from: ['out'] } },
+                       { id: 'aOnly', label: 'Milk only', region: 'A', answer: { n: 59, d: 1 }, earns: 'method', ft: { rule: 'venn.only', of: 'A', from: ['both'] } },
+                       { id: 'out', label: 'Neither', region: 'out', answer: { n: 23, d: 1 }, earns: 'accuracy' }],
+               order: ['out', 'both', 'aOnly'] };
+    v = check(VN, { S: { v: { out: '23', both: '22', aOnly: '59' } } });
+    T('VN1 the Venn right', v.res === 'OK' && mk(v, 2, 1));
+    v = check(VN, { S: { v: { out: '23', both: '22', aOnly: '81' } } });
+    T('VN2 the whole-circle total in the only region', dxAt(v, 2, 'VENN_TOTAL_AS_ONLY'));
+    v = check(VN, { S: { v: { out: '0', both: '-1', aOnly: '82' } } });
+    T('VN3 the outside at zero is the outside forgotten', dxAt(v, 0, 'VENN_OUTSIDE_LOST'));
+    v = check(VN, { S: { v: { out: '23', both: '-1', aOnly: '82' } } });
+    T('VN4 both = A + B − N is the outside forgotten in the overlap', dxAt(v, 1, 'VENN_OUTSIDE_LOST'));
+    T('VN5 the only region follows through from their own overlap', okAt(v, 2, 2));
+    v = check(VN, { S: { v: { both: '22', aOnly: '59' } } });
+    T('VN6 a blank outside slot names the slip and stays left blank', dxAt(v, 0, 'VENN_OUTSIDE_LOST') && v.perLine[0].note === 'left blank');
+    T('VN7 a pack-authored slot dx still wins',
+      check({ kind: 'values', marks: [1, 0], slots: [{ id: 'a', label: 'A', region: 'A', answer: { n: 5, d: 1 }, earns: 'method', dx: 'CF_SKIPPED_ROW' }], order: ['a'],
+              fig: { type: 'venn2', n: 10, totals: { A: 7 } } }, { S: { v: { a: '7' } } }).dx === 'CF_SKIPPED_ROW');
+
+    /* ---- the kinds list, the labels, the names ---- */
+    T('KA1 the five Book A kinds are stat kinds', ['order', 'pick', 'stemleaf', 'pie', 'scatter'].every(isStatKind) && !isStatKind('table'));
+    T('KA2 every kind has a two-word tally', KINDS_LIST.every(function (k) { return MK_LABELS[k] && MK_LABELS[k].length === 2; }));
+    T('KA3 every Book A dx has a plain-English name',
+      ['SL_UNORDERED', 'SL_WRONG_STEM', 'SL_MISSED_LEAF', 'SL_KEY_WRONG', 'VENN_TOTAL_AS_ONLY', 'VENN_OUTSIDE_LOST',
+       'PIE_PCT_NOT_DEG', 'PIE_TOTAL_WRONG', 'PIE_SECTOR_OFF', 'SC_XY_SWAPPED', 'SC_LINE_OFF_TREND', 'SC_READ_WRONG_AXIS', 'SC_CORR_SIGN']
+        .every(function (k) { return typeof DX_NAMES[k] === 'string' && DX_NAMES[k].split(' ').length >= 3; }));
+    T('KA4 SL_BACK_DIRECTION is a stated omission', DX_NAMES.SL_BACK_DIRECTION === undefined && DX_NAMES.AV_DIV_ROWS === undefined);
+    T('KA5 every Book A gist is at most 28 characters', [OR, ORs, PK, SLq, PI, SC].every(function (qq) { return gist(qq).length <= 28; }));
+    T('KA6 every wrong model board fails at least one unit',
+      [OR, ORs, PK, SLq, SLd, PI, SC].every(function (qq) { return check(qq, { S: statsBoard(qq, true) }).res !== 'OK'; }));
+    T('KA7 every right model board marks full',
+      [OR, ORs, PK, SLq, SLd, SLp, PI, SC, SCy].every(function (qq) { var vv = check(qq, { S: statsBoard(qq, false) }); return vv.res === 'OK' && vv.mk[0] === vv.mkMax[0] && vv.mk[1] === vv.mkMax[1]; }));
+
     /* ---- rationals and rounding ---- */
     T('RT1 a terminating decimal is recognised', terminates(rat(1, 4)) === true);
     T('RT2 a recurring decimal is recognised', terminates(rat(1, 3)) === false);
@@ -1944,6 +2784,14 @@ function statsBoard(q, wrong) {
     gist: gist,
     rat: R,
     terminates: terminates,
+    /* Book A's helpers (renderer, lint and walker read these) */
+    stemLeafOf: stemLeafOf,
+    stemleafRows: stemleafRows,
+    pieAngles: pieAngles,
+    leastSquares: leastSquares,
+    lineY: lineY,
+    lineX: lineX,
+    KINDS: KINDS_LIST.slice(),
     DEFAULT_RULES: DEFAULT_RULES,
     FT_RULE_IDS: Object.keys(FT_RULES),
     REASONS: REASONS,

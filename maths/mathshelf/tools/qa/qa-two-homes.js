@@ -47,6 +47,12 @@ const CONTROLS = [
   { id: 'secret-in-the-page', kind: 'fixture', plant: 'fixture-boot-carries-secret', mustFail: /secret .* served page/ },
   { id: 'relay-with-bearer', kind: 'fixture', plant: 'fixture-relay-bearer', mustFail: /bearer/ },
   { id: 'store-payload-disagrees', kind: 'fixture', plant: 'fixture-store-payload-drift', mustFail: /two roads/ },
+  /* TWO PROJECTS (Book A's cut, 12 Sept 2026): the act list comes from the
+     Config row, validated, and every Sheet read goes through ss_() so the same
+     Code.gs runs in a STANDALONE DATA project with no active spreadsheet */
+  { id: 'acts-hardcoded', kind: 'fixture', plant: 'fixture-acts-hardcoded', mustFail: /still answered bad-act/ },
+  { id: 'acts-any-string', kind: 'fixture', plant: 'fixture-acts-any-string', mustFail: /junk id/ },
+  { id: 'active-spreadsheet-call-site', kind: 'fixture', plant: 'fixture-active-spreadsheet', mustFail: /STANDALONE/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -66,14 +72,62 @@ g.exempt([
 const TPL = A.app('server/Code.gs.template');
 const SECRET = 'mock-shared-secret-value';
 
-/* DATA: execute-as-Me, holds the Sheet and the secret */
-const data = makeEnv({ active: PUPIL, effective: DEPLOYER, passcode: PW, props: { relaySecret: SECRET } });
+/* ONE FILE, TWO HOMES - AND NOW TWO PROJECTS (Book A's cut, 12 Sept 2026).
+   The DATA code moves to a STANDALONE Apps Script project so its manifest can
+   rest at USER_DEPLOYING + ANYONE forever and the front door's at
+   USER_ACCESSING + DOMAIN forever - no flip, no hands, per cut. A standalone
+   script has NO active spreadsheet: SpreadsheetApp.getActiveSpreadsheet() gives
+   nothing, and the code must open the Sheet BY ID from the `sheetId` script
+   property (ss_()). makeWorld wraps makeEnv with the two things mockenv does
+   not model: an openById that answers ONLY the id the world was built with
+   (and refuses a pupil, exactly as getActiveSpreadsheet does), and a
+   `standalone:true` variant whose getActiveSpreadsheet throws. */
+function makeWorld(o) {
+  const env = makeEnv(o);
+  const SA = env.sandbox.SpreadsheetApp;
+  const ss = {
+    getSheetByName: (n) => (n === 'Config' ? env.configSheet : n === 'Data' ? env.dataSheet : null),
+    insertSheet: (n) => (n === 'Config' ? env.configSheet : env.dataSheet)
+  };
+  env.state.openById = 0;
+  env.state.activeCalls = 0;
+  SA.openById = (id) => {
+    env.state.openById++;
+    if (o.sheetAccess === false) throw new Error('You do not have permission to access the requested document.');
+    if (!o.sheetId || String(id) !== String(o.sheetId)) throw new Error('Unexpected error while getting the method or property openById on object SpreadsheetApp. (no Sheet with id ' + JSON.stringify(id) + ')');
+    return ss;
+  };
+  if (o.standalone) {
+    const was = SA.getActiveSpreadsheet;
+    SA.getActiveSpreadsheet = () => {
+      env.state.activeCalls++;
+      /* the real API returns null here and the next .getSheetByName is a
+         TypeError; the mock throws by name so the sentence says what happened */
+      throw new Error('getActiveSpreadsheet() returned null: a standalone script has no active spreadsheet');
+    };
+    void was;
+  }
+  return env;
+}
+
+/* DATA: execute-as-Me, holds the Sheet and the secret - the BOUND home
+   (sheetId unset, so ss_() falls back to the active spreadsheet) */
+const data = makeWorld({ active: PUPIL, effective: DEPLOYER, passcode: PW, props: { relaySecret: SECRET } });
 loadTemplate(data, TPL);
 data.call('initJotter')();
 
+/* DATA, STANDALONE: the same file in a project with no bound Sheet. sheetId is
+   the script property; the world answers openById for that id and nothing else */
+const SHEET_ID = '1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y';
+const solo = makeWorld({
+  active: PUPIL, effective: DEPLOYER, passcode: PW, standalone: true, sheetId: SHEET_ID,
+  props: { relaySecret: SECRET, sheetId: SHEET_ID }
+});
+loadTemplate(solo, TPL);
+
 /* FRONT DOOR: execute-as-User, relays to DATA */
 const DATA_URL = 'https://script.google.com/macros/s/MOCK-DATA/exec';
-const front = makeEnv({
+const front = makeWorld({
   active: PUPIL, effective: PUPIL, passcode: PW, sheetAccess: false,
   props: { relaySecret: SECRET, dataUrl: DATA_URL },
   relayTo: (url, params) => {
@@ -451,6 +505,190 @@ const admin = (env, req) => env.call('apiAdmin')(req);
     }
     g.check(shimOk && drift.length === 0, 'storePayload', 'two-homes',
       'the two roads to the store carry different payloads for the same call — the shim (server/build-pathb.js) and script.js storePayload must shape one payload, or the fallback silently sends a different request: ' + drift.join('; '));
+  }
+
+  /* --- TWO PROJECTS (Book A's cut, 12 Sept 2026) ------------------------
+     (1) THE SHEET BY ID. The same Code.gs runs in a STANDALONE DATA project:
+         every Sheet read goes through ss_(), which opens the `sheetId` script
+         property by id and falls back to the active spreadsheet only when the
+         property is unset (the bound front-door project). Executed: the whole
+         DATA-side matrix, through apiRelay, in a world whose
+         getActiveSpreadsheet THROWS.
+     (2) ACTS FROM THE CONFIG SHEET. A book is a Config row edit, not a server
+         change: the row `acts` (Value = a JSON array of ids) is UNIONED with the
+         built-ins, validated and de-duplicated; a malformed row falls back to
+         the built-ins; a junk id never reaches the live list. A book still
+         arrives UNTICKED. acts_() reads the Sheet, so it runs only on the DATA
+         side - the pupil's doGet is executed with no Sheet at all (above). */
+  {
+    const src = A.read(TPL);
+    const S = (name) => solo.call(name);
+    /* every call is caught: a throw is a named failure, never a crash */
+    const R = (body) => { try { return S('apiRelay')(body); } catch (e) { return { ok: false, error: 'threw', threw: String(e && e.message || e) }; } };
+    const asTA = (action, payload) => R({ secret: SECRET, email: TA, action, payload });
+    const asPupil = (action, payload) => R({ secret: SECRET, email: PUPIL, action, payload });
+    const say = (label, r) => 'in the STANDALONE DATA project ' + label + ' failed: ' + JSON.stringify(r).slice(0, 160) +
+      ' - a call site still reaches SpreadsheetApp.getActiveSpreadsheet() directly (a standalone script has none); every Sheet read goes through ss_() and the sheetId property';
+
+    let initErr = null;
+    try { S('initJotter')(); } catch (e) { initErr = String(e && e.message || e); }
+    g.check(!initErr, 'standalone', 'two-homes', say('initJotter', { threw: initErr }));
+    g.check(solo.state.openById > 0, 'standalone', 'two-homes',
+      'in the STANDALONE DATA project nothing opened the Sheet by id - ss_() must read the sheetId script property and call SpreadsheetApp.openById with it');
+    g.check(data.state.openById === 0, 'bound', 'two-homes',
+      'the BOUND project (sheetId unset) called openById ' + data.state.openById + ' time(s) - with no sheetId property ss_() must fall back to getActiveSpreadsheet, or the front-door project cannot run this file');
+
+    /* the DATA-side matrix, every action, in the standalone world */
+    const add = asTA('admin', { passcode: PW, sub: 'addClass', className: '10A Maths' });
+    g.check(add.ok === true && add.name === '10A-Maths', 'standalone', 'two-homes', say('addClass', add));
+    const older = asTA('admin', { passcode: PW, sub: 'addClass', className: 'Older' });
+    g.check(older.ok === true, 'standalone', 'two-homes', say('addClass Older', older));
+    const st = asTA('admin', { passcode: PW, sub: 'setActs', className: '10A-Maths', acts: { angles: true, algebra: false } });
+    g.check(st.ok === true && st.acts && st.acts.angles === true && st.acts.algebra === false, 'standalone', 'two-homes', say('setActs', st));
+    const h = asPupil('hello', { classCode: '10A-Maths' });
+    g.check(h.ok === true && h.acts && h.acts.angles === true, 'standalone', 'two-homes', say('hello', h));
+    const state = JSON.stringify({ v: 1, qs: { c1: { st: 'ok', L: [{ op: 'rw', t: 'x = 5' }] } } });
+    const sv = asPupil('save', { classCode: '10A-Maths', act: 'angles', state, summary: '{"qs":{}}' });
+    g.check(sv.ok === true && sv.saved === true, 'standalone', 'two-homes', say('save', sv));
+    const ld = asPupil('load', { classCode: '10A-Maths', act: 'angles' });
+    g.check(ld.ok === true && ld.state === state, 'standalone', 'two-homes', say('load', ld));
+    const sn = asPupil('setname', { name: 'Aoife Gartland' });
+    g.check(sn.ok === true, 'standalone', 'two-homes', say('setname', sn));
+    const w = asTA('admin', { passcode: PW, sub: 'wall', className: '10A-Maths', act: 'angles' });
+    g.check(w.ok === true && Array.isArray(w.pupils) && w.pupils.length === 1 && w.pupils[0].name === 'Aoife Gartland', 'standalone', 'two-homes', say('wall', w));
+    const jt = asTA('admin', { passcode: PW, sub: 'jotter', className: '10A-Maths', act: 'angles', email: PUPIL });
+    g.check(jt.ok === true && jt.state === state, 'standalone', 'two-homes', say('jotter', jt));
+    const ov = asTA('admin', { passcode: PW, sub: 'override', className: '10A-Maths', act: 'angles', email: PUPIL, q: 'c1', idx: 'q', val: 1 });
+    g.check(ov.ok === true, 'standalone', 'two-homes', say('override', ov));
+    const nd = asTA('admin', { passcode: PW, sub: 'nudge', className: '10A-Maths', act: 'angles', email: PUPIL, sec: 's1::c1' });
+    g.check(nd.ok === true, 'standalone', 'two-homes', say('nudge', nd));
+    const ld2 = asPupil('load', { classCode: '10A-Maths', act: 'angles' });
+    g.check(ld2.ok === true && ld2.nudge === 's1::c1', 'standalone', 'two-homes', say('load (nudge delivered)', ld2));
+    const cl = asTA('admin', { passcode: PW, sub: 'classes' });
+    g.check(cl.ok === true && (cl.classes || []).some(c => c.name === '10A-Maths' && c.count === 1), 'standalone', 'two-homes', say('classes', cl));
+    asTA('admin', { passcode: PW, sub: 'addClass', className: 'Throwaway' });
+    const del = asTA('admin', { passcode: PW, sub: 'deleteClass', className: 'Throwaway' });
+    g.check(del.ok === true, 'standalone', 'two-homes', say('deleteClass', del));
+    /* the same secret in two projects: a token the FRONT DOOR minted verifies
+       in the standalone store, so the split changes nothing the page can see */
+    const tk = front.call('storeToken_')(PUPIL);
+    const viaToken = tk ? R({ email: tk.email, exp: tk.exp, sig: tk.sig, action: 'whoami', payload: {} }) : null;
+    g.check(viaToken && viaToken.ok === true && String(viaToken.email).toLowerCase() === PUPIL.toLowerCase(), 'standalone', 'two-homes',
+      'a store token minted by the front door was not accepted by the STANDALONE DATA project: ' + JSON.stringify(viaToken) + ' - the two projects share one relaySecret, and the token is the page\'s only key');
+    g.check(solo.state.activeCalls === 0, 'standalone', 'two-homes',
+      'in the STANDALONE DATA project getActiveSpreadsheet() was reached ' + solo.state.activeCalls + ' time(s) - a call site bypasses ss_()');
+
+    /* (2) THE CONFIG ROW `acts` */
+    const BUILTIN = ['angles', 'algebra', 'stats-quartiles'];
+    const fresh = () => { try { S('ACTS_LIVE = null'); } catch (e) {} };
+    const setRow = (v) => { try { S('setConfig_')('acts', v); } catch (e) { g.fail('acts row', 'two-homes', 'in the STANDALONE DATA project setConfig_ threw writing the acts row: ' + String(e && e.message || e)); } fresh(); };
+    const liveActs = () => { try { fresh(); return S('acts_')(); } catch (e) { return { threw: String(e && e.message || e) }; } };
+    const keysOf = (o) => Object.keys(o || {}).sort().join(',');
+    const hasActs = /function\s+acts_\s*\(/.test(src);
+    g.check(hasActs, 'acts row', 'two-homes',
+      'there is no acts_() in the template - the act whitelist is still the hard-coded array, so every new book is a server change (a version cut of the DATA project) instead of one Config row');
+    g.check(!/\bACTS\.indexOf\(|for \(var si = 0; si < ACTS\.length/.test(src), 'acts row', 'two-homes',
+      'actOk_ or apiHello still reads the built-in ACTS array directly - every whitelist read must go through acts_() so the Config row counts everywhere');
+
+    /* before the row exists: built-ins work, a row-only book is refused */
+    setRow('');
+    const noRowTick = asTA('admin', { passcode: PW, sub: 'setActs', className: '10A-Maths', acts: { angles: true, 'stats-collect': true } });
+    g.check(noRowTick.ok === true && !('stats-collect' in (noRowTick.acts || {})), 'acts row', 'two-homes',
+      'with NO acts row the server let a class tick "stats-collect" (' + JSON.stringify(noRowTick.acts) + ') - a book the server does not know cannot be ticked; the row is what names it');
+    const noRowSave = asPupil('save', { classCode: '10A-Maths', act: 'stats-collect', state: '{"v":1,"qs":{}}', summary: '{}' });
+    g.check(noRowSave.ok === false && noRowSave.error === 'bad-act', 'acts row', 'two-homes',
+      'with NO acts row a save under "stats-collect" was answered ' + JSON.stringify(noRowSave).slice(0, 80) + ' - a book nobody has named is bad-act');
+    const noRowBuiltin = asPupil('save', { classCode: '10A-Maths', act: 'angles', state, summary: '{}' });
+    g.check(noRowBuiltin.ok === true, 'acts row', 'two-homes',
+      'with NO acts row a built-in book was refused: ' + JSON.stringify(noRowBuiltin).slice(0, 80) + ' - the app must work before the row exists');
+    g.check(keysOf(asPupil('hello', { classCode: '10A-Maths' }).acts) === BUILTIN.slice().sort().join(','), 'acts row', 'two-homes',
+      'with NO acts row hello\'s acts map is not exactly the built-ins');
+
+    /* the row names Book A: it is accepted, and only then */
+    setRow('["stats-collect"]');
+    const rowTick = asTA('admin', { passcode: PW, sub: 'setActs', className: '10A-Maths', acts: { angles: true, 'stats-collect': true } });
+    g.check(rowTick.ok === true && rowTick.acts && rowTick.acts['stats-collect'] === true, 'acts row', 'two-homes',
+      'the Config row `acts` names "stats-collect" and setActs still dropped it (' + JSON.stringify(rowTick.acts) + ') - coerceActs_ must derive its keys from acts_(), the union of the built-ins and the row');
+    const rowSave = asPupil('save', { classCode: '10A-Maths', act: 'stats-collect', state: '{"v":1,"qs":{}}', summary: '{}' });
+    g.check(rowSave.ok === true && rowSave.saved === true, 'acts row', 'two-homes',
+      'the Config row `acts` names "stats-collect" and the server still answered bad-act (' + JSON.stringify(rowSave).slice(0, 80) + ') - a book is a Config row edit now, not a server change; acts_() must read the row');
+    const rowLoad = asPupil('load', { classCode: '10A-Maths', act: 'stats-collect' });
+    g.check(rowLoad.ok === true && /"v":1/.test(String(rowLoad.state)), 'acts row', 'two-homes',
+      'the Config row names "stats-collect" and load still refused it: ' + JSON.stringify(rowLoad).slice(0, 80));
+    const rowBuiltin = asPupil('save', { classCode: '10A-Maths', act: 'angles', state, summary: '{}' });
+    g.check(rowBuiltin.ok === true, 'acts row', 'two-homes',
+      'with the acts row present a built-in book was refused: ' + JSON.stringify(rowBuiltin).slice(0, 80) + ' - the row is UNIONED with the built-ins, it never replaces them');
+    const rowHello = asPupil('hello', { classCode: '10A-Maths' });
+    g.check(keysOf(rowHello.acts) === BUILTIN.concat(['stats-collect']).sort().join(','), 'acts row', 'two-homes',
+      'hello\'s acts map is ' + keysOf(rowHello.acts) + ' - it must be exactly the union of the built-ins and the row');
+    g.check(rowHello.summaries && ('stats-collect' in rowHello.summaries) && rowHello.summaries['stats-collect'] && typeof rowHello.summaries['stats-collect'] === 'object', 'acts row', 'two-homes',
+      'hello\'s summaries carry no "stats-collect" entry after a save under it - apiHello still seeds its summaries from the built-in array');
+    /* the wall reads the new book too */
+    const rowWall = asTA('admin', { passcode: PW, sub: 'wall', className: '10A-Maths', act: 'stats-collect' });
+    g.check(rowWall.ok === true && (rowWall.pupils || []).length === 1, 'acts row', 'two-homes',
+      'the markbook cannot read the row-named book: ' + JSON.stringify(rowWall).slice(0, 80));
+    /* A BOOK STILL ARRIVES UNTICKED: the class made before the row shows it OFF */
+    const olderHello = asPupil('hello', { classCode: 'Older' });
+    g.check(olderHello.ok === true && olderHello.acts && olderHello.acts['stats-collect'] === false, 'acts row', 'two-homes',
+      'a class that predates the row shows "stats-collect" as ' + JSON.stringify(olderHello.acts && olderHello.acts['stats-collect']) + ' - a new book arrives UNTICKED (an absent key reads false), whether it came from the array or the row');
+    const olderSave = asPupil('save', { classCode: 'Older', act: 'stats-collect', state: '{"v":1,"qs":{}}', summary: '{}' });
+    g.check(olderSave.ok === false && olderSave.error === 'not-set', 'acts row', 'two-homes',
+      'an UNTICKED row-named book was answered ' + JSON.stringify(olderSave).slice(0, 80) + ' - known to the server (not bad-act) but closed for this class (not-set)');
+    /* the union, de-duplicated, in built-in order then row order */
+    setRow('["angles", "stats-collect", "stats-collect", "stats-averages"]');
+    const dup = liveActs();
+    g.check(Array.isArray(dup) && dup.join(',') === 'angles,algebra,stats-quartiles,stats-collect,stats-averages', 'acts row', 'two-homes',
+      'acts_() gave ' + JSON.stringify(dup) + ' for a row repeating a built-in and itself - the list is the built-ins first, then each new row id once');
+
+    /* malformed rows fall back to the built-ins, and never throw */
+    const bad = [
+      ['not json at all', 'plain text'],
+      ['{"a":1}', 'an object, not an array'],
+      ['"stats-collect"', 'a bare string'],
+      ['[42, null, {"x":1}, true]', 'non-strings'],
+      ['[]', 'an empty array']
+    ];
+    for (const [row, what] of bad) {
+      setRow(row);
+      const live = liveActs();
+      g.check(Array.isArray(live) && live.join(',') === BUILTIN.join(','), 'acts row', 'two-homes',
+        'a malformed acts row (' + what + ': ' + row + ') gave ' + JSON.stringify(live) + ' - a bad row must fall back to the built-ins without throwing, so nothing live can be switched off by a typo in a Sheet cell');
+    }
+    /* junk ids in an otherwise-valid row are dropped one by one */
+    const junk = ['Stats-Collect', 'a', 'stats collect', '-bad', '1abc', 'x'.repeat(50), '../etc', 'DROP TABLE', 'angles;', ''];
+    setRow(JSON.stringify(['stats-collect'].concat(junk)));
+    const withJunk = liveActs();
+    const leaked = Array.isArray(withJunk) ? withJunk.filter(id => BUILTIN.indexOf(id) < 0 && id !== 'stats-collect') : ['(threw) ' + JSON.stringify(withJunk)];
+    g.check(leaked.length === 0, 'acts row', 'two-homes',
+      'a junk id from the Config row reached the live act list: ' + JSON.stringify(leaked) + ' - acts_() must accept only strings matching /^[a-z][a-z0-9-]{1,40}$/, because an act id is a Sheet key, a class-registry key and a client tile name');
+    g.check(Array.isArray(withJunk) && withJunk.indexOf('stats-collect') > -1, 'acts row', 'two-homes',
+      'a valid id beside junk ids was dropped with them - validation is per id, not per row');
+    const junkTick = asTA('admin', { passcode: PW, sub: 'setActs', className: '10A-Maths', acts: { angles: true, 'DROP TABLE': true, 'Stats-Collect': true } });
+    g.check(junkTick.ok === true && !('DROP TABLE' in (junkTick.acts || {})) && !('Stats-Collect' in (junkTick.acts || {})), 'acts row', 'two-homes',
+      'a junk id from the Config row became a tickable key in the class registry: ' + JSON.stringify(junkTick.acts));
+    setRow('["stats-collect"]');
+
+    /* one Sheet read per execution: getConfig_ is the read, so count its
+       calls across one relayed hello (apiHello -> getClasses_ -> coerceActs_
+       per class, actOk_ per row, coerceActs_ for the answer) */
+    let reads = 0;
+    const cfgSheet = solo.configSheet, realRange = cfgSheet.getDataRange;
+    cfgSheet.getDataRange = function () { reads++; return realRange.call(this); };
+    asPupil('hello', { classCode: '10A-Maths' });
+    cfgSheet.getDataRange = realRange;
+    g.check(reads <= 4, 'acts row', 'two-homes',
+      'one relayed hello read the Config tab ' + reads + ' times - acts_() must cache per execution (a module variable), or every coerceActs_ in getClasses_ is a Sheet read of its own');
+
+    /* THE FRONT DOOR NEVER READS THE ROW. Executed above (doGet as a pupil with
+       no Sheet); said here in the source too, so a future acts_() call in doGet,
+       apiCall or the token minting is named before it is run */
+    const fd = /function doGet\([\s\S]*?\n}\n/.exec(src);
+    const call = /function apiCall\([\s\S]*?\n}\n/.exec(src);
+    const mint = /function storeToken_\([\s\S]*?\n}\n/.exec(src);
+    /* comments stripped: doGet's own comment tells the 9 Sept story by name */
+    const frontSrc = [fd, call, mint].map(m => (m ? m[0] : '')).join('\n').replace(/\/\*[\s\S]*?\*\//g, '');
+    g.check(!/acts_\(|ss_\(|getConfig_\(|coerceActs_\(|actOk_\(|SpreadsheetApp/.test(frontSrc), 'front door', 'two-homes',
+      'doGet, apiCall or storeToken_ names acts_/ss_/getConfig_/coerceActs_/actOk_/SpreadsheetApp - the act list lives in the Sheet now, and the front door runs as a pupil who cannot open it');
   }
 
   /* --- the quota arithmetic, reported --------------------------------- */

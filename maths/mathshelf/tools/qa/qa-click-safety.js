@@ -26,6 +26,8 @@ const ORDER = 73;
 const COVERS = { books: '*', kinds: '*', surfaces: ['question', 'dock'], widths: [375, 768, 1280], projector: false, tier: ['preview'], cells: ['click-safety'] };
 const CONTROLS = [
   { id: 'single-press-lift', kind: 'fixture', plant: 'fixture-renderers', mustFail: /A SINGLE PRESS DESTROYED PLACED WORK/ },
+  /* Book A (12 Sept 2026): a placed leaf returned to the tray on its FIRST press */
+  { id: 'stats-a-single-press-lift', kind: 'fixture', plant: 'stats-a-single-press-lift', mustFail: /A SINGLE PRESS DESTROYED PLACED WORK/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 

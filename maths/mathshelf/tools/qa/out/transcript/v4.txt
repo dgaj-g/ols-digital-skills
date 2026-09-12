@@ -40,7 +40,7 @@ strings.js > pupil > statNextRow  ::  next ↓
 strings.js > pupil > statThatsMine  ::  ✓ That’s my answer
 strings.js > pupil > statThatsMyOne  ::  ✓ That’s my median
 strings.js > pupil > statRuleFiction  ::  The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve.
-strings.js > pupil > statTrayFiction  ::  Five markers — put each one on the scale where it belongs.
+strings.js > pupil > statTrayFiction  ::  The tray is the row of markers waiting to be used. A marker leaves the tray when it goes on the scale.
 strings.js > pupil > statMedian  ::  median
 strings.js > pupil > statLowerQuartile  ::  lower quartile
 strings.js > pupil > statUpperQuartile  ::  upper quartile
@@ -71,7 +71,7 @@ strings.js > pupil > statJoinPoints  ::  ✓ Join the points
 strings.js > pupil > statPlotJoinedAlready  ::  The points are joined.
 strings.js > pupil > statPlotEnough  ::  You have all the points you need — move one instead.
 strings.js > pupil > statPointReadout  ::  (30, 18)
-strings.js > pupil > statScrollGraph  ::  Swipe the graph sideways to see all of it.
+strings.js > pupil > statScrollGraph  ::  Scroll or swipe the graph sideways to see all of it.
 strings.js > pupil > statNudgeLabel  ::  Move it one square
 strings.js > pupil > statNudgeLeft  ::  One square left
 strings.js > pupil > statNudgeRight  ::  One square right
@@ -141,6 +141,78 @@ strings.js > pupil > statStageCompare1  ::  Finish the first sentence: choose th
 strings.js > pupil > statStageCompare2  ::  Finish the second sentence: choose the measure, the group and the two values.
 strings.js > pupil > statStageJudge  ::  For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.
 strings.js > pupil > statStageJudgeOptions  ::  Choose what happens to each one.
+strings.js > pupil > statCheckOrder  ::  Mark my order
+strings.js > pupil > statCheckPick  ::  Mark my choice
+strings.js > pupil > statCheckStemleaf  ::  Mark my diagram
+strings.js > pupil > statCheckPie  ::  Mark my pie chart
+strings.js > pupil > statCheckScatter  ::  Mark my graph
+strings.js > pupil > statOrderWhy  ::  Put every card in the row first.
+strings.js > pupil > statPickWhy  ::  Choose the better question first.
+strings.js > pupil > statPickWhyWhy  ::  Say why the others fall short first.
+strings.js > pupil > statSlWhy  ::  Put every leaf on a stem first.
+strings.js > pupil > statSlKeyWhy  ::  Build the key first.
+strings.js > pupil > statPieWhyTable  ::  Fill in every angle first.
+strings.js > pupil > statPieWhyRim  ::  Place every sector boundary first.
+strings.js > pupil > statPieWhyDraw  ::  Press ✓ Draw the pie chart first.
+strings.js > pupil > statPieWhyLabels  ::  Put a label on every sector first.
+strings.js > pupil > statScWhyPlot  ::  Plot every point first.
+strings.js > pupil > statScWhyLine  ::  Draw the line of best fit first.
+strings.js > pupil > statScWhyEst  ::  Read the estimate and enter it first.
+strings.js > pupil > statScWhyCorr  ::  Choose the correlation first.
+strings.js > pupil > statScWhyOutlier  ::  Choose the reading that looks wrong first.
+strings.js > pupil > statTrayFictionOrder  ::  The tray is the row of cards waiting to be used. A card leaves the tray when it goes into the row.
+strings.js > pupil > statTrayFictionLeaves  ::  The tray is the row of values waiting to be used. A value leaves the tray when its leaf goes on a stem.
+strings.js > pupil > statPillPickChoose  ::  Choose the better question
+strings.js > pupil > statPillPickWhy  ::  Say why
+strings.js > pupil > statPillSlPlace  ::  Place the leaves
+strings.js > pupil > statPillSlKey  ::  Write the key
+strings.js > pupil > statPillPieTable  ::  Work out the angles
+strings.js > pupil > statPillPieRim  ::  Draw the sectors
+strings.js > pupil > statPillPieLabels  ::  Label the chart
+strings.js > pupil > statPillScPlot  ::  Plot the points
+strings.js > pupil > statPillScLine  ::  Draw the line
+strings.js > pupil > statPillScEst  ::  Estimate at {at}
+strings.js > pupil > statPillScCorr  ::  Name the correlation
+strings.js > pupil > statPillScOutlier  ::  Find the odd one out
+strings.js > pupil > statStageOrder  ::  Put the cards in the order the cycle happens. Choose the card that comes first, then the next, until every card is in the row. (3 still to place.)
+strings.js > pupil > statStageOrderDone  ::  Every card is in the row. If one is out of place, press it to send it back. Then press Mark my order.
+strings.js > pupil > statStagePick  ::  Read the three questions. Choose the one that would work best on a questionnaire.
+strings.js > pupil > statStagePickWhy  ::  Now choose the reason the other questions fall short. Then press Mark my choice.
+strings.js > pupil > statStageSlPlace  ::  Build the diagram. Choose a value from the tray, then choose the stem it belongs on; its leaf lands at the end of that row. (3 of 5 placed.)
+strings.js > pupil > statStageSlKey  ::  Every leaf is on. Now write the key: choose a stem, then a leaf, and the key line writes itself. Then press Mark my diagram.
+strings.js > pupil > statStageSlDone  ::  Every leaf is on. If one is on the wrong stem, press it to send it back. Then press Mark my diagram.
+strings.js > pupil > statStagePieTable  ::  Work out the angle for each row and put it in the Angle column. Choose a box, then use the pad. (3 of 5 filled.)
+strings.js > pupil > statStagePieTableDone  ::  Every angle is in. Press Next: draw the sectors.
+strings.js > pupil > statStagePieRim  ::  Draw the sectors in the order of your table, clockwise from the top. Choose a point on the rim for each boundary; use the arrows to move it one degree. (3 of 5 placed.)
+strings.js > pupil > statStagePieBoundsDone  ::  Every boundary is placed. Press ✓ Draw the pie chart.
+strings.js > pupil > statStagePieLabels  ::  Label each sector: choose a label, then choose the sector it belongs to. (3 of 5 labelled.)
+strings.js > pupil > statStageScPlot  ::  Plot one point for each pair in the table: across for the first value, up for the second. Choose a spot to place a point; choose a placed point to move it with the arrows. (3 of 5 placed.)
+strings.js > pupil > statStageScPlotDone  ::  Every point is placed. Press Next: draw the line.
+strings.js > pupil > statStageScLine  ::  Draw the line of best fit. Move the two handles so the line runs through the middle of the points, following their slope. Then press ✓ That’s my line.
+strings.js > pupil > statStageScEst  ::  The rule stands at {at}. Read where it meets your line, then enter the estimate on the pad.
+strings.js > pupil > statStageScCorr  ::  Choose the word that describes the correlation you see.
+strings.js > pupil > statStageScOutlier  ::  One reading does not follow the others. Choose the point that looks wrong.
+strings.js > pupil > statScNextLine  ::  Next: draw the line
+strings.js > pupil > statScThatsMyLine  ::  ✓ That’s my line
+strings.js > pupil > statScNextEst  ::  Next: read the estimate
+strings.js > pupil > statScNextCorr  ::  Next: name the correlation
+strings.js > pupil > statScNextOutlier  ::  Next: find the odd one out
+strings.js > pupil > statScPositive  ::  Positive
+strings.js > pupil > statScNegative  ::  Negative
+strings.js > pupil > statScNone  ::  No correlation
+strings.js > pupil > statPieNextRim  ::  Next: draw the sectors
+strings.js > pupil > statPieDraw  ::  ✓ Draw the pie chart
+strings.js > pupil > statPieAngleLabel  ::  {label} angle
+strings.js > pupil > statPieDegrees  ::  {deg}°
+strings.js > pupil > statPieReadout  ::  Boundary at {deg}°
+strings.js > pupil > statPieNumber  ::  Number
+strings.js > pupil > statPieAngle  ::  Angle
+strings.js > pupil > statSlStem  ::  Stem
+strings.js > pupil > statSlLeaf  ::  Leaf
+strings.js > pupil > statSlKeyLine  ::  {stem} | {leaf} means {means}
+strings.js > pupil > statSlKeyStem  ::  Stem
+strings.js > pupil > statSlKeyLeaf  ::  Leaf
+strings.js > pupil > statEstimateLabel  ::  Estimate
 strings.js > pupil > movieWorkedExample  ::  Worked example
 strings.js > pupil > moviePrevStep  ::  Previous step
 strings.js > pupil > movieNextStep  ::  Next step
@@ -267,16 +339,19 @@ strings.js > teacher > starterBtn  ::  Next-lesson starter ▶
 strings.js > teacher > csvCopiedFull  ::  CSV copied — paste it straight into a spreadsheet.
 strings.js > teacher > seriesKs3  ::  KS3 · M2
 strings.js > teacher > seriesGcse  ::  GCSE · M3 & M4
+stats-collect > s1 > movie > step7 > say  ::  Another leading question, this time about sport on television.   [carried from the approved build, flagged for a read]
+stats-collect > s2 > q15 > prompt  ::  89 like maths, 44 like science, 21 like both and 37 like neither.   [carried from the approved build, flagged for a read]
+stats-collect > s4 > movie > step1 > say  ::  The weights of 13 boys, in kg, as recorded.   [carried from the approved build, flagged for a read]
+stats-collect > s4 > q22 > prompt  ::  The stem-and-leaf diagram shows the weights, in kg, of some babies.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > movie > step3 > say  ::  Position of the median = (n + 1) ÷ 2.  /  Ring the 4th value.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > movie > step4 > say  ::  Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2.  /  Ring the 2nd value.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > movie > step5 > say  ::  Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6.  /  Ring the 6th value.   [carried from the approved build, flagged for a read]
-stats-quartiles > s1 > q2 > prompt  ::  The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > q6 > prompt  ::  The ages of 11 trees, from youngest to oldest, are shown below.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > q7 > prompt  ::  The scores, from lowest to highest, are shown below.   [carried from the approved build, flagged for a read]
 stats-quartiles > s1 > q8 > prompt  ::  Say what happens to each average and to the range when it is added.   [carried from the approved build, flagged for a read]
 stats-quartiles > s2 > q10 > prompt  ::  The marks in an examination, out of 80, are grouped below for 112 candidates.   [carried from the approved build, flagged for a read]
 stats-quartiles > s3 > q13 > prompt  ::  The marks in an examination, out of 80, are shown in the table below for 112 candidates.   [carried from the approved build, flagged for a read]
-stats-quartiles > s3 > q14 > prompt  ::  In a survey, 184 people stated their weekly wage, grouped below.   [carried from the approved build, flagged for a read]
+stats-quartiles > s3 > q14 > prompt  ::  In a survey, 184 people stated their weekly wage.   [carried from the approved build, flagged for a read]
 stats-quartiles > s4 > q15 > prompt  ::  The cumulative frequency graph shows the marks of 112 candidates in an examination.  /  What percentage of candidates passed?   [carried from the approved build, flagged for a read]
 stats-quartiles > s5 > q19 > prompt  ::  The table shows some information about the heights, in cm, of some plants.   [carried from the approved build, flagged for a read]
 stats-quartiles > s5 > q20 > prompt  ::  The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g.   [carried from the approved build, flagged for a read]

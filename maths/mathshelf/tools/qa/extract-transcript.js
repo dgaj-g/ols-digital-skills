@@ -80,7 +80,10 @@ const SAMPLE = {
   n: '3', m: '5',
   /* the plotting instruction names the next point (12 Sept 2026): "Next:
      across 15, up 18" - the first row of the table not yet plotted */
-  hi: '15', cf: '18'
+  hi: '15', cf: '18',
+  /* Book A (12 Sept 2026): the estimate's x, a pie category, a boundary's
+     degrees, a stem-and-leaf key */
+  at: '60', label: 'Football', deg: '156', stem: '4', leaf: '3', means: '4.3 cm'
 };
 /* ONE HOLE, THREE DIFFERENT WORDS. `{name}` is a pupil's own name on the cover,
    the name of a CUT on a Handling Data screen ("That's my median"), and the
