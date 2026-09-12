@@ -1699,7 +1699,10 @@
       return b.text(lx, ly, lab, { anchor: anchor, cls: 'stat-venn-label', group: gText, ink: 'var(--ink)' });
     });
     var nEl = null;
-    if (spec.n != null) nEl = b.text(rect.x + 8, rect.y + 20, 'n = ' + spec.n, { anchor: 'start', cls: 'stat-venn-n', group: gText, ink: 'var(--pencil)' });
+    /* the total sits in the BOTTOM-RIGHT corner, clear of the circle labels
+       (top-left met "Maths (M)" at 375, my own eyes 12 Sept 2026) and of the
+       outside region's box, which prefers the bottom-left */
+    if (spec.n != null) nEl = b.text(rect.x + rect.w - 8, rect.y + rect.h - 10, 'n = ' + spec.n, { anchor: 'end', cls: 'stat-venn-n', group: gText, ink: 'var(--ink)' });
 
     var ids = cs.map(function (_, i) { return circles[i] && circles[i].id != null ? String(circles[i].id) : String.fromCharCode(65 + i); });
     function membership(x, y) {

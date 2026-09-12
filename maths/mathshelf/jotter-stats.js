@@ -131,9 +131,13 @@
       var everyClaimAsksWhy = claims.length > 0 &&
         claims.every(function (c) { return !c.options && c.fair === false; });
       if (everyClaimAsksWhy) drop('judging');
-      /* ONE claim: the press that judges it is the press that finishes the
-         question, so "some judged, nothing open" is not a board it shows */
-      if (claims.length === 1) drop('judging');
+      /* "judging" - some judged, nothing open, the question not finished - is
+         a board only when a claim that opens no reason picker is FOLLOWED by
+         another claim: the press that judges the last claim finishes the
+         question in the same tick (the walk, 12 Sept 2026: every Book A
+         questionnaire put its one fair claim last) */
+      var judgingReachable = claims.slice(0, -1).some(function (c) { return !!c.options || c.fair !== false; });
+      if (!judgingReachable) drop('judging');
       /* IN THE ORDER SHE MEETS THEM. When the FIRST claim is one she has to
          give a reason for, the reason picker is the board she sees before any
          "some judged, nothing open" board exists. */
@@ -1096,7 +1100,10 @@
     }
     var host = el('div', 'stat-slots');
     ctx.boardHost.appendChild(host);
-    function onFig(id) { return !!(isVenn && venn && slot(id).region); }
+    /* ON the figure for two circles; a three-circle diagram has eight regions
+       and its boxes collided at 375 (the walk, 12 Sept 2026), so its slots
+       stay in the list under the drawing, named in words */
+    function onFig(id) { return !!(isVenn && venn && fig.type === 'venn2' && slot(id).region); }
     function cellFor(id, i) {
       var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
       b.type = 'button';
@@ -3066,6 +3073,9 @@
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
         scrollNote: T().statScrollGraph,
+        /* a chart may let a point sit on a half small square (chart.snap 2):
+           the paper's 0.2 km squares with data to 0.1 km */
+        snapDivisor: (q.chart && Number(q.chart.snap) >= 1) ? Number(q.chart.snap) : 1,
         onGridTap: function (x, y) {
           if (ctx.locked() || cur() !== 'plotting') return;
           if (allPlotted()) { ctx.note(T().statPlotEnough); return; }

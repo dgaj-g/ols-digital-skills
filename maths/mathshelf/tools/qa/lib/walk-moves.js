@@ -471,7 +471,13 @@ const ACTIONS = {
       if (!b || b.disabled) break;
       const was = capNo();
       let moved = false;
-      for (let t = 0; t < 60 && !moved; t++) {
+      /* A STEP'S DRAWING CAN OUTLAST 3.6 s. Book A's stem-and-leaf film lands
+         31 leaves in one step (31 x 180 ms = 5.6 s); the player refuses the
+         next press until the drawing is done, so a 3.6 s cap called the film
+         ended at step 6 and the law then said the last three steps drew
+         nothing (12 Sept 2026). Ten seconds: past any drawing the films make
+         (the dwell itself is capped at 8 s by ruling 38). */
+      for (let t = 0; t < 167 && !moved; t++) {
         if (t % 6 === 0) { const bb = fwd(); if (bb && !bb.disabled) { bb.click(); steps++; } }
         await new Promise(r => setTimeout(r, 60));
         if (capNo() !== was || movie.getAttribute('data-state') === 'end') moved = true;

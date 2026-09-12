@@ -1552,7 +1552,7 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
    \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
 
 .stat-q .stat-msg { margin: 6px 0 8px; color: var(--pencil); font-size: 14.5px; }
-.stat-fiction { margin: 4px 0 10px; color: var(--pencil); font-size: 14.5px; }
+.stat-fiction { margin: 4px 0 10px; color: var(--ink); font-size: 15px; }   /* read, so ink: the pencil face measured 2.18:1 over the board's paper at 375 (12 Sept 2026) */
 .stat-boards { margin: 6px 0 10px; }
 .stat-board-host { margin: 6px 0 10px; }
 .stat-given { margin: 8px 0 6px; }
@@ -1784,27 +1784,31 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-fig { margin: 6px 0 10px; }
 .stat-fig-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 .stat-fig-box { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: auto; }
+/* THE REGION IS THE LABEL. A written label beside every box collided with its
+   neighbours at 375 (the walk, 12 Sept 2026); the box sits ON its region, the
+   dock names the region while she fills it, and aria-label carries the name. */
+.stat-fig-box-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .stat-fig-box-label { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--ink); background: var(--paper); padding: 0 4px; border-radius: 3px; white-space: nowrap; }
-.stat-fig-box .stat-cell { min-width: 52px; min-height: 44px; font-size: 16px; }
+.stat-fig-box .stat-cell { min-width: 44px; min-height: 44px; font-size: 16px; padding: 0 4px; }
 .stat-list { font-family: var(--f-maths); font-size: 17px; color: var(--ink); margin: 4px 0 8px; }
 
 /* stemleaf \2014  the diagram is a table she reads */
 .stat-stemleaf { margin: 6px 0; }
-.stat-sl-host { margin: 8px 0; }
+.stat-sl-host { margin: 8px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }   /* a wide diagram scrolls sideways inside its own frame, never wraps its leaves (my own eyes at 375, 12 Sept 2026) */
 .stat-sl { border-collapse: collapse; font-family: var(--f-maths); font-size: 17px; color: var(--ink); }
-.stat-sl th, .stat-sl td { padding: 4px 8px; vertical-align: middle; }
+.stat-sl th, .stat-sl td { padding: 3px 6px; vertical-align: middle; white-space: nowrap; }
 .stat-sl-stem { border-right: 2px solid var(--ink); border-left: 2px solid var(--ink); text-align: center; font-weight: 700; min-width: 34px; }
 .stat-sl th.stat-sl-stem-head, .stat-sl th.stat-sl-side { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--pencil); border: 0; text-align: center; }
 .stat-sl-back { text-align: right; min-width: 40px; }
 .stat-sl-cell { text-align: left; min-height: 44px; }
-.stat-sl-cell, .stat-sl-back { line-height: 44px; }
-.stat-sl-leaf { display: inline-block; min-width: 24px; text-align: center; margin: 0 2px; color: var(--ink); font-family: var(--f-maths); font-size: 17px; }
+.stat-sl-cell, .stat-sl-back { line-height: 1.2; }
+.stat-sl-leaf { display: inline-block; min-width: 1.15em; text-align: center; margin: 0 3px; color: var(--ink); font-family: var(--f-maths); font-size: 17px; vertical-align: middle; }
 button.stat-sl-leaf { min-width: 44px; min-height: 44px; border: 1.5px solid var(--copper); border-radius: 8px; background: var(--panel); cursor: pointer; padding: 0 6px; }
 button.stat-sl-leaf.is-selected { box-shadow: 0 0 0 3px var(--copper); }
 button.stat-sl-leaf:disabled { opacity: 1; cursor: default; }
 .stat-sl-given { color: var(--ink); }
 .stat-sl-zone {
-  display: inline-block; min-width: 44px; min-height: 44px; margin-left: 6px; border: 1.5px dashed var(--copper); border-radius: 8px;
+  display: inline-block; min-width: 44px; min-height: 44px; margin: 2px 0 2px 6px; border: 1.5px dashed var(--copper); border-radius: 8px;
   background: var(--panel); color: var(--copper-ink); font: 700 20px var(--f-stationery, var(--f-ui)); cursor: pointer; vertical-align: middle;
 }
 .stat-sl-zone:disabled { opacity: 1; color: var(--pencil); border-color: var(--hairline); cursor: default; }
@@ -2763,6 +2767,9 @@ window.OLS_TRANSPORT = {
       statPieDegrees: '{deg}\u00b0',
       statPieReadout: 'Boundary at {deg}\u00b0',
       statPieNumber: 'Number',
+      statPieCategory: 'Category',
+      statPieTotal: 'Total',
+      statPieNoAngles: 'no angles yet',
       statPieAngle: 'Angle',
       statSlStem: 'Stem',
       statSlLeaf: 'Leaf',
@@ -8683,11 +8690,11 @@ function statsBoard(q, wrong) {
                    { leaf: { stem: 8, leaf: 1 } }, { leaf: { stem: 8, leaf: 1 } }, { leaf: { stem: 8, leaf: 2 } }, { leaf: { stem: 8, leaf: 4 } }, { leaf: { stem: 8, leaf: 6 } },
                    { leaf: { stem: 9, leaf: 2 } }, { leaf: { stem: 9, leaf: 3 } }] },
             { say: 'The range is the biggest weight minus the smallest: 9.3 \u2212 3.4 = 5.9 g.',
-              do: [{ write: { text: 'Range = 9.3 \u2212 3.4 = 5.9 g' } }, { tick: { line: 0 } }] },
+              do: [{ write: { text: 'Range = 9.3 \u2212 3.4 = 5.9 g' } }, { tick: { line: 2 } }] },
             { say: 'The mode is the value that appears most often: 7.5 g, three times.',
-              do: [{ write: { text: 'Mode = 7.5 g' } }, { tick: { line: 1 } }] },
+              do: [{ write: { text: 'Mode = 7.5 g' } }, { tick: { line: 3 } }] },
             { say: 'The median is the middle value, the 16th of 31: 6.7 g.',
-              do: [{ write: { text: 'Median = 6.7 g (the 16th value)' } }, { tick: { line: 2 } }] }
+              do: [{ write: { text: 'Median = 6.7 g (the 16th value)' } }, { tick: { line: 4 } }] }
           ]
         },
         questions: [
@@ -8802,9 +8809,12 @@ function statsBoard(q, wrong) {
         questions: [
           { id: 'q29', kind: 'scatter', marks: [3, 2], pointsW: 2,
             prompt: 'The table shows the engine size (litres) of different cars and the distance (km) they can travel on one litre of petrol. Draw a scatter graph, a line of best fit, and use it to estimate the engine size of a car that travels 7 km on one litre.',
+            /* the paper's grid: 5 small squares per 2 km (0.4) would leave 8.6 and
+               5.9 between lines, so the board uses 0.2 km squares and lets a
+               point sit on a HALF square (snap 2) - 60 squares tall, not 120 */
             chart: { x: { min: 0, max: 3, step: 1, label: 'Engine size (litres)' },
                      y: { min: 0, max: 12, step: 2, label: 'Distance (km)' },
-                     sq: { x: 0.1, y: 0.1 } },
+                     sq: { x: 0.1, y: 0.2 }, snap: 2 },
             given: [], toPlot: [[1.0, 12], [1.8, 8.6], [2.4, 5], [1.2, 9.4], [2.1, 5.9], [1.5, 10.2], [2.7, 3.8]],
             table: { head: ['Engine size', 'Distance'], rows: [['1.0', '12'], ['1.8', '8.6'], ['2.4', '5'], ['1.2', '9.4'], ['2.1', '5.9'], ['1.5', '10.2'], ['2.7', '3.8']] },
             asks: [{ type: 'lobf' }, { type: 'estimate', from: 'y', at: 7, want: 'x' }, { type: 'corr', answer: 'negative' }],
@@ -8822,7 +8832,7 @@ function statsBoard(q, wrong) {
             prompt: 'Nine science students each measured the current (in amps) that flowed through a circuit at various voltages. The first three points have already been plotted. Complete the scatter graph, find the student who took an incorrect reading, draw a line of best fit, and use it to estimate the correct current.',
             chart: { x: { min: 0, max: 100, step: 10, label: 'Voltage (volts)' },
                      y: { min: 0, max: 10, step: 1, label: 'Current (amps)' },
-                     sq: { x: 2, y: 0.1 } },
+                     sq: { x: 2, y: 0.2 }, snap: 2 },
             given: [[10, 1.1], [50, 5.2], [30, 3.2]],
             toPlot: [[20, 1.9], [80, 8.2], [40, 3.7], [60, 3.8], [70, 6.5], [90, 9.3]],
             table: { head: ['Student', 'Voltage', 'Current'],
@@ -10749,7 +10759,11 @@ function statsBoard(q, wrong) {
         (function (idx) {
           var p = toPx(st.points[idx]);
           var h = addHit(p[0], p[1], 'point-press', gPoints);
+          /* a PRESS target, not a drag target: it pans like the grid and is
+             not a [data-hit] the reach law's drag rule speaks about */
           h.el.style.touchAction = 'pan-x pan-y';
+          h.el.removeAttribute('data-hit');
+          h.el.setAttribute('data-press', 'point');
           h.el.addEventListener('click', function (e) { e.stopPropagation(); fn(idx); });
           st.pressHits.push(h);
         })(i);
@@ -11131,7 +11145,10 @@ function statsBoard(q, wrong) {
       return b.text(lx, ly, lab, { anchor: anchor, cls: 'stat-venn-label', group: gText, ink: 'var(--ink)' });
     });
     var nEl = null;
-    if (spec.n != null) nEl = b.text(rect.x + 8, rect.y + 20, 'n = ' + spec.n, { anchor: 'start', cls: 'stat-venn-n', group: gText, ink: 'var(--pencil)' });
+    /* the total sits in the BOTTOM-RIGHT corner, clear of the circle labels
+       (top-left met "Maths (M)" at 375, my own eyes 12 Sept 2026) and of the
+       outside region's box, which prefers the bottom-left */
+    if (spec.n != null) nEl = b.text(rect.x + rect.w - 8, rect.y + rect.h - 10, 'n = ' + spec.n, { anchor: 'end', cls: 'stat-venn-n', group: gText, ink: 'var(--ink)' });
 
     var ids = cs.map(function (_, i) { return circles[i] && circles[i].id != null ? String(circles[i].id) : String.fromCharCode(65 + i); });
     function membership(x, y) {
@@ -11240,7 +11257,11 @@ function statsBoard(q, wrong) {
     /* the rim is a tap target the whole way round: a transparent stroke on the
        circle, 44 px wide (kept so by relayout) */
     var rim = sv('circle', { cx: CX, cy: CY, r: R, fill: 'none', stroke: 'transparent', 'stroke-width': 44, class: 'stat-pie-rim' });
-    rim.style.cssText = 'pointer-events:stroke;cursor:crosshair;';
+    /* a tap target on the rim (44 px wide stroke); touch-action none so the
+       reach law's rule for every [data-hit] holds - a swipe that starts on the
+       rim places nothing (pointerup must land where pointerdown did) and does
+       not pan, which on a 320 px board is a ring a thumb's width */
+    rim.style.cssText = 'pointer-events:stroke;cursor:crosshair;touch-action:none;';
     rim.setAttribute('data-hit', 'rim');
     if (!opts.readOnly) gDisc.appendChild(rim);
 
@@ -14634,6 +14655,13 @@ function statsBoard(q, wrong) {
       var everyClaimAsksWhy = claims.length > 0 &&
         claims.every(function (c) { return !c.options && c.fair === false; });
       if (everyClaimAsksWhy) drop('judging');
+      /* "judging" - some judged, nothing open, the question not finished - is
+         a board only when a claim that opens no reason picker is FOLLOWED by
+         another claim: the press that judges the last claim finishes the
+         question in the same tick (the walk, 12 Sept 2026: every Book A
+         questionnaire put its one fair claim last) */
+      var judgingReachable = claims.slice(0, -1).some(function (c) { return !!c.options || c.fair !== false; });
+      if (!judgingReachable) drop('judging');
       /* IN THE ORDER SHE MEETS THEM. When the FIRST claim is one she has to
          give a reason for, the reason picker is the board she sees before any
          "some judged, nothing open" board exists. */
@@ -15596,7 +15624,10 @@ function statsBoard(q, wrong) {
     }
     var host = el('div', 'stat-slots');
     ctx.boardHost.appendChild(host);
-    function onFig(id) { return !!(isVenn && venn && slot(id).region); }
+    /* ON the figure for two circles; a three-circle diagram has eight regions
+       and its boxes collided at 375 (the walk, 12 Sept 2026), so its slots
+       stay in the list under the drawing, named in words */
+    function onFig(id) { return !!(isVenn && venn && fig.type === 'venn2' && slot(id).region); }
     function cellFor(id, i) {
       var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
       b.type = 'button';
@@ -15612,11 +15643,17 @@ function statsBoard(q, wrong) {
     }
     function placeOverlay() {
       if (!overlay || !venn) return;
+      /* a box stays INSIDE the frame: one that hung past the right edge made
+         the frame hide 13 px behind its own overflow (the walk, 12 Sept 2026) */
+      var fw = (venn.frame || figHost).clientWidth || 0, fh = (venn.frame || figHost).clientHeight || 0;
       overlay.querySelectorAll('.stat-fig-box').forEach(function (box) {
         var c = venn.regionCenter(box.getAttribute('data-region'));
         if (!c) return;
-        box.style.left = Math.round(c.x) + 'px';
-        box.style.top = Math.round(c.y) + 'px';
+        var bw = box.offsetWidth || 44, bh = box.offsetHeight || 44;
+        var x = fw ? Math.min(Math.max(c.x, bw / 2 + 1), fw - bw / 2 - 1) : c.x;
+        var y = fh ? Math.min(Math.max(c.y, bh / 2 + 1), fh - bh / 2 - 1) : c.y;
+        box.style.left = Math.round(x) + 'px';
+        box.style.top = Math.round(y) + 'px';
       });
     }
 
@@ -16594,8 +16631,12 @@ function statsBoard(q, wrong) {
        go stale. A question may still carry its own bank when the source's
        wording differs. */
     function reasonBank() {
-      if (q.reasons && q.reasons.length) return q.reasons.slice();
       var bank = (window.GJ_STATS && window.GJ_STATS.REASONS) || {};
+      /* a question may name its bank as ids (Book A: the Q_* flaws it offers)
+         or carry its own {id, text} rows when the source's wording differs */
+      if (q.reasons && q.reasons.length) {
+        return q.reasons.map(function (r) { return typeof r === 'string' ? { id: r, text: bank[r] || r } : r; });
+      }
       return Object.keys(bank).map(function (id) { return { id: id, text: bank[id] }; });
     }
     function render() {
@@ -17238,7 +17279,7 @@ function statsBoard(q, wrong) {
       tableWrap.innerHTML = '';
       var t = el('table', 'stat-table');
       var hr = el('tr');
-      hr.appendChild(el('th', null, esc(q.catHead || '')));
+      hr.appendChild(el('th', null, esc(q.catHead || T().statPieCategory)));
       hr.appendChild(el('th', null, esc(T().statPieNumber)));
       hr.appendChild(el('th', null, esc(T().statPieAngle)));
       t.appendChild(hr);
@@ -17262,10 +17303,16 @@ function statsBoard(q, wrong) {
         tr.appendChild(td);
         t.appendChild(tr);
       });
+      /* the totals row: the paper's total, and the running sum of HER angles -
+         the self-check the SUM unit pays for, never the 360 it should be */
       var tot = el('tr', 'stat-pie-total');
-      tot.appendChild(el('td', null, ''));
+      tot.appendChild(el('td', null, esc(T().statPieTotal)));
       tot.appendChild(el('td', null, esc(String(q.total))));
-      tot.appendChild(el('td', null, ''));
+      var sum = 0, any = false;
+      cats.forEach(function (c) { var v = Number(angles[c.id]); if (angles[c.id] && !isNaN(v)) { sum += v; any = true; } });
+      var sumCell = el('td', 'stat-pie-sum', esc(any ? fill(T().statPieDegrees, { deg: Math.round(sum * 10) / 10 }) : T().statPieNoAngles));
+      sumCell.setAttribute('data-board-label', '');
+      tot.appendChild(sumCell);
       t.appendChild(tot);
       tableWrap.appendChild(t);
     }
@@ -17550,6 +17597,9 @@ function statsBoard(q, wrong) {
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
         scrollNote: T().statScrollGraph,
+        /* a chart may let a point sit on a half small square (chart.snap 2):
+           the paper's 0.2 km squares with data to 0.1 km */
+        snapDivisor: (q.chart && Number(q.chart.snap) >= 1) ? Number(q.chart.snap) : 1,
         onGridTap: function (x, y) {
           if (ctx.locked() || cur() !== 'plotting') return;
           if (allPlotted()) { ctx.note(T().statPlotEnough); return; }
@@ -17585,7 +17635,9 @@ function statsBoard(q, wrong) {
     }
     function stage() {
       var c = cur();
-      if (c === 'plotting') ctx.setStage(allPlotted() && order.length > 1 ? 'plotted' : (allPlotted() ? 'ready' : 'plotting'));
+      /* the last ask, answered, IS the finished board */
+      if (step >= order.length - 1 && stepDone()) { ctx.setStage('ready'); return; }
+      if (c === 'plotting') ctx.setStage(allPlotted() && order.length > 1 ? 'plotted' : 'plotting');
       else if (c === 'line') ctx.setStage('line');
       else if (c === 'estimate') ctx.setStage('estimate');
       else if (c === 'corr') ctx.setStage('corr');

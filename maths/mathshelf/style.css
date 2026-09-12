@@ -1583,21 +1583,21 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* stemleaf — the diagram is a table she reads */
 .stat-stemleaf { margin: 6px 0; }
-.stat-sl-host { margin: 8px 0; }
+.stat-sl-host { margin: 8px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }   /* a wide diagram scrolls sideways inside its own frame, never wraps its leaves (my own eyes at 375, 12 Sept 2026) */
 .stat-sl { border-collapse: collapse; font-family: var(--f-maths); font-size: 17px; color: var(--ink); }
-.stat-sl th, .stat-sl td { padding: 4px 8px; vertical-align: middle; }
+.stat-sl th, .stat-sl td { padding: 3px 6px; vertical-align: middle; white-space: nowrap; }
 .stat-sl-stem { border-right: 2px solid var(--ink); border-left: 2px solid var(--ink); text-align: center; font-weight: 700; min-width: 34px; }
 .stat-sl th.stat-sl-stem-head, .stat-sl th.stat-sl-side { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--pencil); border: 0; text-align: center; }
 .stat-sl-back { text-align: right; min-width: 40px; }
 .stat-sl-cell { text-align: left; min-height: 44px; }
-.stat-sl-cell, .stat-sl-back { line-height: 44px; }
-.stat-sl-leaf { display: inline-block; min-width: 24px; text-align: center; margin: 0 2px; color: var(--ink); font-family: var(--f-maths); font-size: 17px; }
+.stat-sl-cell, .stat-sl-back { line-height: 1.2; }
+.stat-sl-leaf { display: inline-block; min-width: 1.15em; text-align: center; margin: 0 3px; color: var(--ink); font-family: var(--f-maths); font-size: 17px; vertical-align: middle; }
 button.stat-sl-leaf { min-width: 44px; min-height: 44px; border: 1.5px solid var(--copper); border-radius: 8px; background: var(--panel); cursor: pointer; padding: 0 6px; }
 button.stat-sl-leaf.is-selected { box-shadow: 0 0 0 3px var(--copper); }
 button.stat-sl-leaf:disabled { opacity: 1; cursor: default; }
 .stat-sl-given { color: var(--ink); }
 .stat-sl-zone {
-  display: inline-block; min-width: 44px; min-height: 44px; margin-left: 6px; border: 1.5px dashed var(--copper); border-radius: 8px;
+  display: inline-block; min-width: 44px; min-height: 44px; margin: 2px 0 2px 6px; border: 1.5px dashed var(--copper); border-radius: 8px;
   background: var(--panel); color: var(--copper-ink); font: 700 20px var(--f-stationery, var(--f-ui)); cursor: pointer; vertical-align: middle;
 }
 .stat-sl-zone:disabled { opacity: 1; color: var(--pencil); border-color: var(--hairline); cursor: default; }

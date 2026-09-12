@@ -89,9 +89,10 @@ function expected(q, strings) {
       out['stemleaf-keyleaf-' + q.id] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     }
   }
-  if (q.kind === 'pie') {
-    out['pie-labels-' + q.id] = (q.cats || []).map(c => String(c.label));
-  }
+  /* a pie's label tray exists only after the sectors are drawn, so a fresh
+     mount never shows it and this gate cannot read it; its derangement is the
+     shared derange() every other tray here proves, and the walk stands on the
+     labelling board */
   if (q.kind === 'scatter') {
     if ((q.asks || []).some(a => a && a.type === 'corr')) {
       out['scatter-corr-' + q.id] = [T.statScPositive, T.statScNegative, T.statScNone].map(String);
