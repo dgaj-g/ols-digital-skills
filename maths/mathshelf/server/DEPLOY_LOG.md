@@ -1,5 +1,45 @@
 # MathShelf — the deploy log
 
+## 12 September 2026, 19:27 — FRONT DOOR Version 31 (DATA Version 25, unchanged)
+
+THE STORE AND THE FILMS CUT, from commit `85a5660`. **Client only: `Code.gs` is
+byte-identical** — md5 `6c2eb7d561a77ab149f8f1163c885abc` in the repo and 38,166
+characters in the editor, the same before and after the cut — so the front door
+was re-cut ALONE and the DATA deployment was not touched.
+
+**The manifest, READ in the editor before and after the save** (never edited):
+`"executeAs": "USER_ACCESSING"`, `"access": "DOMAIN"`. It still rests there.
+
+`Index.html` fetched into the editor from the pushed branch with `cache: no-store`
+— **1,192,022 characters, exactly the committed file's byte count** (the editor's
+previous copy was 1,164,468). Saved, then Deploy → Manage deployments → the FRONT
+DOOR by Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP`
+→ Edit → Version → New version → Deploy. "Deployment successfully updated.
+Version 31 on 12 Sept 2026, 19:27."
+
+**The deployer's own visit, from the Executions log (the proof rows):**
+
+| deployment | function | start | duration | status |
+|---|---|---|---|---|
+| Version 31 | doGet | 12 Sept 2026, 19:27:46 | 0.999 s | Completed |
+| Version 31 | apiCall | 12 Sept 2026, 19:27:49 | 5.4 s | Completed |
+| Version 25 | doPost | 12 Sept 2026, 19:27:52 | 1.936 s | Completed |
+| Version 31 | apiCall | 12 Sept 2026, 19:27:56 | 7.586 s | Completed |
+| Version 25 | doPost | 12 Sept 2026, 19:27:59 | 4.24 s | Completed |
+
+The cover drew, his verified name came back on it, and `?class=demo` answered
+"That class link is not active" — which is the truthful answer for a code that is
+not a registered class, and it proves doGet → apiCall → doPost all ran on the new
+version against the unchanged store.
+
+Note the shape of those rows against ruling 51: `apiCall` 5.4 s and 7.6 s with
+`doPost` 1.9 s and 4.2 s beside them — 3.4 s of hop each time, on a quiet server
+with one user. See PROGRESS.md, PACKAGE A, for the same hop measured three ways.
+
+Also in the log from this session: `timingCheck` (Editor, Head) at 17:52:43,
+173.56 s — the probe of PACKAGE A. It was removed from `Code.gs` immediately
+after, and the file verified byte-identical before anything was deployed.
+
 The memory of what is live. Every version cut gets a row, and every row carries
 the `executeAs` value **as it was READ from the manifest in the editor** —
 because the deployment dialog lies, and on 24 June 2026 it lied convincingly
