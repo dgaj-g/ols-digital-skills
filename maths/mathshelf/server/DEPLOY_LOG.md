@@ -77,6 +77,7 @@ log showing the deployment actually ran.
 | 2026-09-12 16:02 | FRONT DOOR | Version 28 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there | 4199ee4 | 46f5f0ec563f96a66617eb5c9d3af04b | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:14 | FRONT DOOR | Version 29 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | d8dcef5 | f1108d9c5d675f15ac693987c99e1f71 | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:35 | FRONT DOOR | Version 30 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | 611a688 | 835eb4f78cca9321119f5da8d72650dd | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 19:27 | FRONT DOOR | Version 31 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 85a5660 | 8530a932d9a3a2478a645f1111ecee47 | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
