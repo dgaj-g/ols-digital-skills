@@ -117,3 +117,11 @@ there) still serves the page.
 - DEPLOY_LOG.md gets a `DATA` row naming the NEW project and a `FRONT DOOR`
   row when the cut happens (not mine to write before it does).
 - Nothing else. Tree parses, server gates green, nothing committed.
+
+## THE NEW DATA PROJECT — created 12 Sept 2026, 22:2x–22:31 (orchestrator, Chrome)
+- Project: **OLS — MathShelf DATA**, script id `14j0H7VGmJreENIQYSLfepXXVfU5F7QGhVv45TwSstXwEhm5eP7m7jn3h` (standalone, dgartland021@c2ken.net).
+- Code.gs pasted from the tree (46,004 chars, rolling hash 3891900974 == server/Code.gs at 8891d90), saved to Drive.
+- Script property `sheetId` = `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (typed by the session). `relaySecret` — Damien's paste (in progress).
+- Deployment (New deployment, Web app, Execute as Me, Who has access Anyone — the dropdown and Deploy were driven by the session after Damien allowed the action; the OAuth consent was his click): **Version 1 on 12 Sept 2026, 22:31**, Deployment ID `AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA`,
+  /exec: `https://script.google.com/macros/s/AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA/exec`
+- Still to do (session): front door's `dataUrl` → this /exec; Config row `acts` = ["stats-collect"]; front door Code.gs + Index.html new version; retire the old DATA deployment on the bound project; DEPLOY_LOG rows.

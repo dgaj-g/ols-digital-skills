@@ -171,7 +171,7 @@ strings.js > pupil > statPillPieRim  ::  Draw the sectors
 strings.js > pupil > statPillPieLabels  ::  Label the chart
 strings.js > pupil > statPillScPlot  ::  Plot the points
 strings.js > pupil > statPillScLine  ::  Draw the line
-strings.js > pupil > statPillScEst  ::  Estimate at {at}
+strings.js > pupil > statPillScEst  ::  Estimate at 60
 strings.js > pupil > statPillScCorr  ::  Name the correlation
 strings.js > pupil > statPillScOutlier  ::  Find the odd one out
 strings.js > pupil > statStageOrder  ::  Put the cards in the order the cycle happens. Choose the card that comes first, then the next, until every card is in the row. (3 still to place.)
@@ -189,7 +189,7 @@ strings.js > pupil > statStagePieLabels  ::  Label each sector: choose a label, 
 strings.js > pupil > statStageScPlot  ::  Plot one point for each pair in the table: across for the first value, up for the second. Choose a spot to place a point; choose a placed point to move it with the arrows. (3 of 5 placed.)
 strings.js > pupil > statStageScPlotDone  ::  Every point is placed. Press Next: draw the line.
 strings.js > pupil > statStageScLine  ::  Draw the line of best fit. Move the two handles so the line runs through the middle of the points, following their slope. Then press ✓ That’s my line.
-strings.js > pupil > statStageScEst  ::  The rule stands at {at}. Read where it meets your line, then enter the estimate on the pad.
+strings.js > pupil > statStageScEst  ::  The rule stands at 60. Read where it meets your line, then enter the estimate on the pad.
 strings.js > pupil > statStageScCorr  ::  Choose the word that describes the correlation you see.
 strings.js > pupil > statStageScOutlier  ::  One reading does not follow the others. Choose the point that looks wrong.
 strings.js > pupil > statScNextLine  ::  Next: draw the line
@@ -202,14 +202,17 @@ strings.js > pupil > statScNegative  ::  Negative
 strings.js > pupil > statScNone  ::  No correlation
 strings.js > pupil > statPieNextRim  ::  Next: draw the sectors
 strings.js > pupil > statPieDraw  ::  ✓ Draw the pie chart
-strings.js > pupil > statPieAngleLabel  ::  {label} angle
-strings.js > pupil > statPieDegrees  ::  {deg}°
-strings.js > pupil > statPieReadout  ::  Boundary at {deg}°
+strings.js > pupil > statPieAngleLabel  ::  Football angle
+strings.js > pupil > statPieDegrees  ::  156°
+strings.js > pupil > statPieReadout  ::  Boundary at 156°
 strings.js > pupil > statPieNumber  ::  Number
+strings.js > pupil > statPieCategory  ::  Category
+strings.js > pupil > statPieTotal  ::  Total
+strings.js > pupil > statPieNoAngles  ::  no angles yet
 strings.js > pupil > statPieAngle  ::  Angle
 strings.js > pupil > statSlStem  ::  Stem
 strings.js > pupil > statSlLeaf  ::  Leaf
-strings.js > pupil > statSlKeyLine  ::  {stem} | {leaf} means {means}
+strings.js > pupil > statSlKeyLine  ::  4 | 3 means 4.3 cm
 strings.js > pupil > statSlKeyStem  ::  Stem
 strings.js > pupil > statSlKeyLeaf  ::  Leaf
 strings.js > pupil > statEstimateLabel  ::  Estimate

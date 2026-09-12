@@ -8,14 +8,17 @@ Exercise 1 · Questions and questionnaires
 George wants to find out how much money people spend on coffee. He uses this question: "How much money do you spend on coffee?" Response boxes: £5–£10 / £10–£30 / £30–£50 / Over £50. Decide whether the response boxes are well chosen. [2 marks]
 The response boxes for this question are well chosen.
 The question asks specifically about spending on coffee.
+Reasons 1 of 1 · Judgements 1 of 1You weighed the evidence, not the claim.
 George wants a better question to find out how much people spend on coffee, with response boxes. Choose the better version. [2 marks]
 Aidan wants to find out people’s opinion on a new road being built. He uses this question: "A new road will cause a lot of traffic for the village, don’t you agree?" Response boxes: Yes / Maybe / Unsure. Decide whether this is a fair way to find out. [2 marks]
 This is a fair way to find out what people think about the new road.
 The question is about a new road being built.
+Reasons 1 of 1 · Judgements 1 of 1Good — you said why.
 Aidan wants a better question about the new road, with response boxes. Choose the better version. [2 marks]
 Mrs Jackson wants to find out how much pocket money students are given. She uses this question: "How much pocket money do you receive, each month?" Response boxes: £0–£5 / £0–£10 / £12–£20 / Over £20. Decide whether the response boxes are well chosen. [2 marks]
 These response boxes are well chosen.
 The question asks about pocket money given each month.
+Reasons 1 of 1 · Judgements 1 of 1Fair reading of what the figures can say.
 Cameron wants to find out how many televisions people own. He uses this question: "How many televisions do you own?" Response boxes: 1–3 / 4–6. Decide whether every possible answer has a box. [2 marks]
 Every possible answer has a box.
 The question asks how many televisions people own.
@@ -93,4 +96,4 @@ So the correlation between age and value is
 Judgements 2 of 2Good — you said why.
 My marks
 Handling Data · marks so far
-Handling Data · marks so far32 / 87Plenty to talk about in class — your teacher can see exactly where.11 of 32 questions checked · your whole book is on your te
+Handling Data · marks so far52 / 87Good — go back over the questions the red pen marked.21 of 32 questions checked · your whole book is on your teacher’s copy

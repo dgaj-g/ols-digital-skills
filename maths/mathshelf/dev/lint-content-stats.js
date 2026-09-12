@@ -1218,9 +1218,13 @@ function checkScatterKind(book, secId, q) {
   if (overlap) fail(book, secId, q.id, 'scatter', 'given and toPlot share a point');
 
   /* on-grid + inside axes with >=2 squares headroom */
+  /* `snap` (2 = a point may sit on a half small square): the board snaps to
+     sq / snap, so that is the grid a point must be on */
+  var snapDiv = (q.chart && Number(q.chart.snap) >= 1) ? Number(q.chart.snap) : 1;
+  var gx = sqx / snapDiv, gy = sqy / snapDiv;
   all.forEach(function (p) {
-    var offGridX = Math.abs(p[0] / sqx - Math.round(p[0] / sqx)) > 1e-9;
-    var offGridY = Math.abs(p[1] / sqy - Math.round(p[1] / sqy)) > 1e-9;
+    var offGridX = Math.abs(p[0] / gx - Math.round(p[0] / gx)) > 1e-9;
+    var offGridY = Math.abs(p[1] / gy - Math.round(p[1] / gy)) > 1e-9;
     var outOfAxes = (xr.min !== undefined && p[0] < xr.min) || (xr.max !== undefined && p[0] > xr.max) ||
       (yr.min !== undefined && p[1] < yr.min) || (yr.max !== undefined && p[1] > yr.max);
     var headroomX = xr.max !== undefined && (xr.max - p[0]) < 2 * sqx && (p[0] - (xr.min || 0)) < 2 * sqx ? false : true;

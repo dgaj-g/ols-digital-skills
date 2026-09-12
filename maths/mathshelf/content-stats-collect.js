@@ -482,9 +482,12 @@
         questions: [
           { id: 'q29', kind: 'scatter', marks: [3, 2], pointsW: 2,
             prompt: 'The table shows the engine size (litres) of different cars and the distance (km) they can travel on one litre of petrol. Draw a scatter graph, a line of best fit, and use it to estimate the engine size of a car that travels 7 km on one litre.',
+            /* the paper's grid: 5 small squares per 2 km (0.4) would leave 8.6 and
+               5.9 between lines, so the board uses 0.2 km squares and lets a
+               point sit on a HALF square (snap 2) - 60 squares tall, not 120 */
             chart: { x: { min: 0, max: 3, step: 1, label: 'Engine size (litres)' },
                      y: { min: 0, max: 12, step: 2, label: 'Distance (km)' },
-                     sq: { x: 0.1, y: 0.1 } },
+                     sq: { x: 0.1, y: 0.2 }, snap: 2 },
             given: [], toPlot: [[1.0, 12], [1.8, 8.6], [2.4, 5], [1.2, 9.4], [2.1, 5.9], [1.5, 10.2], [2.7, 3.8]],
             table: { head: ['Engine size', 'Distance'], rows: [['1.0', '12'], ['1.8', '8.6'], ['2.4', '5'], ['1.2', '9.4'], ['2.1', '5.9'], ['1.5', '10.2'], ['2.7', '3.8']] },
             asks: [{ type: 'lobf' }, { type: 'estimate', from: 'y', at: 7, want: 'x' }, { type: 'corr', answer: 'negative' }],
@@ -502,7 +505,7 @@
             prompt: 'Nine science students each measured the current (in amps) that flowed through a circuit at various voltages. The first three points have already been plotted. Complete the scatter graph, find the student who took an incorrect reading, draw a line of best fit, and use it to estimate the correct current.',
             chart: { x: { min: 0, max: 100, step: 10, label: 'Voltage (volts)' },
                      y: { min: 0, max: 10, step: 1, label: 'Current (amps)' },
-                     sq: { x: 2, y: 0.1 } },
+                     sq: { x: 2, y: 0.2 }, snap: 2 },
             given: [[10, 1.1], [50, 5.2], [30, 3.2]],
             toPlot: [[20, 1.9], [80, 8.2], [40, 3.7], [60, 3.8], [70, 6.5], [90, 9.3]],
             table: { head: ['Student', 'Voltage', 'Current'],

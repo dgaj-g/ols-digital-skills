@@ -2,7 +2,7 @@
 
 TRANSCRIPT HASH: d141eb38da65d7e3
 sentences: 42
-taken: 2026-09-12 21:04:38
+taken: 2026-09-12 21:27:03
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
