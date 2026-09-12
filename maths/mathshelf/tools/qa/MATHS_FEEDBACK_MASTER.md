@@ -141,4 +141,42 @@ number. They are not renumbered here; a gate cites `L7` and means that.
 42. **The control she needs next is within reach.** (11 Sept 2026) "There is a
     huge amount to scroll on the graph in Exercise 3 before I can join the
     dots." The action for the current stage sits directly under the board.
+43. **A wide board can be moved sideways by touch, on a phone.** (12 Sept
+    2026, his second live test, iPhone) "the graph can't be scrolled on a
+    phone, at least I'm not finding a way to do it." `touch-action: none` on
+    the whole SVG blocked every pan, so the last point of Exercise 3 (25, 100)
+    could not be placed at all. A swipe on empty grid pans the frame; a tap
+    places; a drag that starts ON a point, a rule handle or a marker moves it
+    (touch-action none on the hit targets only). The board reclaims the phone
+    gutter first, and says "Swipe the graph sideways" in its own line while
+    width is hidden.
+44. **An axis number never crosses its axis line.** (12 Sept 2026) "the x
+    axis values overlap the line." The baseline sat a fixed 16 units below the
+    axis while the counter-scaled font grew to 27; at phone scale the digits'
+    tops were 2 px above the line in Chrome and on the line in Safari. The
+    number's box is measured (getBBox) and sits at least 3 CSS px clear.
+45. **The stage instruction stays, names the next act exactly, and its
+    control looks like a button.** (12 Sept 2026) "I find it hard to
+    understand what I'm supposed to do in this question." His screenshot shows
+    "You have all the points you need — move one instead." where the stage
+    line should be: a passing note never replaces the stage line (it gets its
+    own line under it). The plotting instruction names the next point ("Next:
+    across 5, up 18"); the current stage's control is a filled copper button,
+    not an underlined link (ruling 41's "should be more pronounced", still
+    owed).
+46. **The passcode wait is the pupil's own waiting line.** (12 Sept 2026)
+    "this is still not working. I want it to flash like the 'getting your
+    details' message with the animated circle to the left on the student
+    side, not gold." The `is-waiting` line with its spinning circle, not the
+    gold card. (Ruling 34's breath was proved in frames and he still could not
+    see it: motion he can name beats motion a gate can measure.)
+47. **"Saving changes…"** (12 Sept 2026) "shouldn't it say 'Saving Changes'
+    instead, to make more sense?" The tick's gold card reads "Saving changes…".
+48. **A pupil's save is quiet until it is genuinely late.** (12 Sept 2026 —
+    the steward's reading of his two screenshots, not his words; stands unless
+    he strikes it) Both screenshots carry "Still saving your work… Try again".
+    The card came at 8 s while the Executions log shows his 19:05 saves taking
+    12–40 s and every one completing; "Try again" during a save in flight
+    sends it twice. A quiet moving "Saving…" line while in flight; the card
+    after 30 s or a refused call; Try again only when nothing is in flight.
 

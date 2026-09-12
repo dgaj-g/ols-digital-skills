@@ -315,3 +315,9 @@ _Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut
 
 | rule | gap | owner / phase |
 |---|---|---|
+| 43 | a phone cannot pan a wide board (touch-action none on the whole SVG); no gate reads the computed touch-action or asks whether the last point is reachable | POLISH CUT 2 (`Maths/MATHS_BOOKC_POLISH2_PROMPT.txt`), package A: sit-pupil computed-style check at 375 with a plant |
+| 44 | axis numbers sit on the axis line at phone scale (Safari) and 2 px over it in Chrome; no law measures a number's box against its axis | POLISH CUT 2, package A: a geometry check on getBBox with the old constant as its plant |
+| 45 | a passing note replaces the stage line; the plotting instruction does not name the next point; the stage's control is an underlined link | POLISH CUT 2, package B: sit-pupil `stage-line-replaced` control; qa-language on the new sentences |
+| 46 | the passcode wait is a gold card he cannot see move; the pupil's is-waiting line is the pattern he can | POLISH CUT 2, package C: qa-waits wait-card-still re-aimed at the is-waiting line |
+| 47 | the tick's card says "Saving Handling Data for …"; he wants "Saving changes…" | POLISH CUT 2, package C: strings ledger + the teacher cold read |
+| 48 | the pupil's save-trouble card comes at 8 s while the round trip is 12–40 s, and Try again duplicates a save in flight | POLISH CUT 2, package D: qa-waits under a 20 s simulated latency, with the 8 s constant as its plant |
