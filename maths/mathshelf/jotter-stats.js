@@ -280,8 +280,8 @@
       /* aria-CURRENT: this is the item she has picked up, not an answer she
          has pressed - the consequence law watches aria-pressed for the latter */
       node.setAttribute('aria-current', 'true');
-      ctx.say(T().statPutBack);
       ctx.setStage(ctx.selectedStage || 'selected');
+      ctx.note(T().statPutBack);
     });
   }
 
@@ -389,6 +389,15 @@
        the whole act before the control that does it. */
     var msg = el('p', 'ui-msg stat-msg stage-now');
     body.appendChild(msg);
+    /* A NOTE HAS ITS OWN LINE (ruling 45, 12 Sept 2026). "You have all the
+       points you need - move one instead." had REPLACED the instruction, so a
+       pupil who tapped once too often lost the sentence that told her what she
+       was doing. Passing notes - enough points, put it back, try again - live
+       here, under the stage line, in the pencil face, and go on the next state
+       change; the stage line is written only by the stage table. */
+    var note = el('p', 'ui-msg stat-note');
+    note.setAttribute('role', 'status');
+    body.appendChild(note);
 
     var ghost = el('div', 'stat-ghost');           /* attempt 1, struck through */
     body.appendChild(ghost);
@@ -425,8 +434,10 @@
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
+      note: function (text) { note.textContent = text || ''; },
       setStage: function (s) {
         if (stages.indexOf(s) === -1) return;
+        if (wrap.getAttribute('data-stage') !== s) note.textContent = '';   /* a state change clears the note */
         wrap.setAttribute('data-stage', s);
         setPill(pillOfStage(s));
       },
@@ -545,7 +556,7 @@
         window.GJ.setState(wrap, 'question', 'checked-wrong-1');
         checkBtn.disabled = true;
         setLockedWhy(checkBtn, kind.ready().why);
-        ctx.say(T().statTryAgain);
+        ctx.note(T().statTryAgain);
         wrap.setAttribute('data-stage', stages[0]);
         curPill = -1; setPill(pillOfStage(stages[0]), true);
       }
@@ -765,7 +776,7 @@
       if (cutIdx < cuts.length) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
         ctx.say(fill(T().statStageQlistPick, { name: cutName(cuts[cutIdx]) }));
-        var commit = el('button', 'btn-quiet', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
+        var commit = el('button', 'btn-stage', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
         commit.type = 'button';
         commit.disabled = !pending.length;
         if (!pending.length) setLockedWhy(commit, T().statQlistCommitWhy);
@@ -1206,9 +1217,12 @@
     function build() {
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
+        /* the board owns the swipe note (its own line under the grid, with the
+           scroll track) - never the stage line (ruling 43/45) */
+        scrollNote: T().statScrollGraph,
         onGridTap: function (x, y) {
           if (ctx.locked()) return;
-          if (bd.points().length >= maxPts) { ctx.say(T().statPlotEnough); return; }
+          if (bd.points().length >= maxPts) { ctx.note(T().statPlotEnough); return; }
           sel = bd.addPoint(x, y, { select: true });
           after();
         },
@@ -1220,7 +1234,6 @@
         }
       });
       layoutGiven();
-      if (bd.needsScroll()) ctx.say(T().statScrollGraph);
       after();
     }
     function after() {
@@ -1261,7 +1274,7 @@
       } else {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
       }
-      var join = el('button', 'btn-quiet stat-join', T().statJoinPoints);
+      var join = el('button', 'btn-stage stat-join', T().statJoinPoints);
       join.type = 'button';
       join.disabled = n < maxPts || joined;
       if (join.disabled) setLockedWhy(join, n < maxPts ? T().statPlotPlaceWhy : T().statPlotJoinedAlready);
@@ -1273,7 +1286,25 @@
         after();
       });
       ctx.dock.appendChild(join);
-      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, { n: n, m: maxPts }) : (joined ? '' : T().statStageCfplotJoin));
+      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, nextPoint(n, maxPts)) : (joined ? '' : T().statStageCfplotJoin));
+    }
+    /* THE INSTRUCTION NAMES THE NEXT POINT (ruling 45): the first expected
+       point, in x order, that is not yet on the board - "Next: across 15, up
+       18" - read from the engine's own expectation, never from a table row
+       the pupil has to find for herself. */
+    function nextPoint(n, m) {
+      /* the engine speaks in exact rationals ({n, d}); the board in numbers */
+      var rv = function (r) { return (r && typeof r === 'object' && r.d) ? r.n / r.d : Number(r); };
+      var want = (window.GJ_STATS.expectedPoints(q, packRulesOf(ctx) || window.GJ_STATS.DEFAULT_RULES) || [])
+        .map(function (w) { return [rv(w[0]), rv(w[1])]; });
+      var have = bd ? bd.points() : [];
+      var miss = null;
+      for (var i = 0; i < want.length && !miss; i++) {
+        var w = want[i], on = false;
+        for (var j = 0; j < have.length; j++) if (Math.abs(Number(have[j][0]) - w[0]) < 1e-9 && Math.abs(Number(have[j][1]) - w[1]) < 1e-9) { on = true; break; }
+        if (!on) miss = w;
+      }
+      return { n: n, m: m, hi: miss ? window.GJ_STATCHART.fmtNum(miss[0]) : '', cf: miss ? window.GJ_STATCHART.fmtNum(miss[1]) : '' };
     }
 
     return {
@@ -1332,6 +1363,7 @@
     function build() {
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
+        scrollNote: T().statScrollGraph,
         snapDivisor: 2,                       /* the convention height can be a half */
         onChange: function (evt) {
           if (!evt || ctx.locked()) return;
@@ -1386,7 +1418,7 @@
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
         ctx.say(T().statStageIqrCommit);
-        var doneI = el('button', 'btn-quiet', T().statThatsMine);
+        var doneI = el('button', 'btn-stage', T().statThatsMine);
         pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
             iqr = v;
@@ -1413,7 +1445,7 @@
       if (isAtX(a)) {
         window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
         ctx.say(fill(T().statStageCfreadAtX, { x: a.x }));
-        var doneX = el('button', 'btn-quiet', T().statThatsMine);
+        var doneX = el('button', 'btn-stage', T().statThatsMine);
         /* THE COMMIT KEEPS LOOKING. It was judged once, when the dock was
            built, and never again - so moving the rule and keying the answer
            left it dead and the question could not be finished at all. And the
@@ -1456,7 +1488,7 @@
       }
       window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
       ctx.say(fill(T().statStageCfread, { name: nameOf(a) }));
-      var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
+      var done = el('button', 'btn-stage', fill(T().statThatsMyOne, { name: nameOf(a) }));
       /* THE DOCK IS NOT REBUILT WHILE SHE IS WORKING IN IT. Moving the rule
          redraws the BOARD and re-reads the commit; rebuilding the whole dock
          would throw away the pad she was typing into mid-number, and it was
@@ -1582,6 +1614,7 @@
         locked: ctx.locked,
         clearSelection: function () { ctx.clearSelection(); },
         say: function (t) { ctx.say(t); },
+        note: function (t) { ctx.note(t); },
         setStage: function (s) { ctx.setStage(stageKind + ':' + s); },
         changed: function () { onStageChange(); }
       };
@@ -1600,7 +1633,7 @@
     function renderStageGate(r) {
       var old = ctx.dock.querySelector('.stat-next');
       if (old) old.parentNode.removeChild(old);
-      var next = el('button', 'btn-quiet stat-next', T().statNextDrawBox);
+      var next = el('button', 'btn-stage stat-next', T().statNextDrawBox);
       next.type = 'button';
       next.disabled = !r.ok;
       if (!r.ok) setLockedWhy(next, r.why);
@@ -1632,6 +1665,7 @@
       plotHost.appendChild(boardWrap);
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.scale, {
+        scrollNote: T().statScrollGraph,
         onGridTap: function (x) {
           if (ctx.locked()) return;
           /* a press on the scale with no marker chosen: the instruction
@@ -1711,7 +1745,7 @@
     function renderDock() {
       ctx.dock.innerHTML = '';
       window.GJ.setState(ctx.dock, 'dock', 'tray');
-      var draw = el('button', 'btn-quiet stat-draw', T().statDrawBoxPlot);
+      var draw = el('button', 'btn-stage stat-draw', T().statDrawBoxPlot);
       draw.type = 'button';
       draw.disabled = Object.keys(pos).length < 5 || drawn;
       if (draw.disabled) setLockedWhy(draw, Object.keys(pos).length < 5 ? T().statBoxPlaceWhy : T().statBoxDrawnAlready);

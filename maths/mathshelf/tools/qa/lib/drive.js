@@ -114,12 +114,17 @@ const ANSWER = `((args) => {
       const p = pt.matrixTransform(ctm);
       return { x: p.x, y: p.y };
     };
-    /* a real pointer press on the board itself - the SVG's own pointerdown
-       listener (statchart.js onGridTap) does the rest, including the snap */
+    /* a real pointer TAP on the board itself - down and up in the same place,
+       because since ruling 43 (12 Sept 2026) the SVG pans by touch and the
+       board places a point only when the pointer comes up where it went down;
+       the SVG's own listeners (statchart.js onGridTap) do the rest, including
+       the snap */
     const pressGrid = (svg, x, y) => {
       const c = svgPointToClient(svg, x, y);
       if (!c) return false;
-      svg.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: c.x, clientY: c.y, pointerId: 1, isPrimary: true, button: 0 }));
+      const init = { bubbles: true, clientX: c.x, clientY: c.y, pointerId: 1, isPrimary: true, button: 0 };
+      svg.dispatchEvent(new PointerEvent('pointerdown', init));
+      svg.dispatchEvent(new PointerEvent('pointerup', init));
       return true;
     };
     /* MOVING THE RULE IS A SCREEN OF ITS OWN. "sliding" - the rule moved, the
@@ -150,7 +155,7 @@ const ANSWER = `((args) => {
       }
       return null;
     };
-    const thatsMine = () => all('.btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
+    const thatsMine = () => all('.btn-stage, .btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
 
     /* ── qlist: tray tiles smallest first, then the cuts, then the IQR ──── */
     /* THE DRIVE IS RESUMABLE. It is called once per declared stage on the SAME
@@ -190,7 +195,7 @@ const ANSWER = `((args) => {
              two presses */
           const sp = maybeStop('chose a value for ' + cutName); if (sp) return sp;
         }
-        const commit = all('.btn-quiet').filter((b) => !b.classList.contains('stat-undo'))[0];
+        const commit = all('.btn-stage, .btn-quiet').filter((b) => !b.classList.contains('stat-undo') && /that.?s my/i.test(txt(b)))[0];
         if (!commit) return { ok: false, why: 'no commit button for ' + cutName + ' on ' + qid };
         commit.click();
         const s2 = maybeStop('committed ' + cutName); if (s2) return s2;
@@ -246,7 +251,7 @@ const ANSWER = `((args) => {
     }
 
     /* ── cfplot: press the grid at every point, then join them ──────────── */
-    function pressCfplot(S) {
+    function pressCfplot(S, pq) {
       const pts = S.pts || [];
       const bd = root.__statBoard;
       if (!bd || !bd.toPx || !bd.svg) return { ok: false, why: 'no board handle for ' + qid };
@@ -259,6 +264,20 @@ const ANSWER = `((args) => {
         if (on.some((p) => Number(p[0]) === Number(want[0]) && Number(p[1]) === Number(want[1]))) continue;
         const px = bd.toPx(Number(pts[i][0]), Number(pts[i][1]));
         if (!pressGrid(bd.svg, px[0], px[1])) return { ok: false, why: 'the board has no screen transform yet for ' + qid };
+        /* ONE TAP TOO MANY, ON PURPOSE (ruling 45, 12 Sept 2026): with every
+           point placed, a press on empty grid earns the enough-points note -
+           which must land in its own line, never over the stage instruction.
+           The walker presses once more so the law can read both lines. */
+        if (!root.__extraTapped && bd.points().length >= pts.length && pq && pq.chart && pq.chart.x) {
+          const ch = pq.chart, sq = ch.sq || { x: 1, y: 1 };
+          let spot = null;
+          for (let gx = Number(ch.x.min) + Number(sq.x || 1); gx < Number(ch.x.max) && !spot; gx += Number(sq.x || 1)) {
+            for (let gy = Number(ch.y.min) + Number(sq.y || 1); gy < Number(ch.y.max) && !spot; gy += Number(sq.y || 1)) {
+              if (!bd.points().some((p) => Number(p[0]) === gx && Number(p[1]) === gy)) spot = [gx, gy];
+            }
+          }
+          if (spot) { const ex = bd.toPx(spot[0], spot[1]); pressGrid(bd.svg, ex[0], ex[1]); root.__extraTapped = true; }
+        }
         const s = maybeStop('placed point ' + i); if (s) return s;
       }
       if (S.joined) {
@@ -379,7 +398,7 @@ const ANSWER = `((args) => {
       return { ok: true, how: 'opened every box and keyed its value', stage: curStage() };
     }
     if (kind === 'cfplot') {
-      const r = pressCfplot(attempt.S || {});
+      const r = pressCfplot(attempt.S || {}, packQ);
       if (r) return r;
       return { ok: true, how: 'pressed the grid at every point, then joined them', stage: curStage() };
     }

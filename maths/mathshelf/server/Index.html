@@ -1196,6 +1196,16 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   50% { opacity: .45; transform: scale(1.015); }
 }
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner, .is-waiting, .is-waiting::before { animation: none; } }
+/* the pupil's own quiet "Saving\2026 " line while a call is in flight (ruling 48,
+   12 Sept 2026): sits in flow under the exercise title, never over it, and
+   carries .is-waiting itself for the breath and the turning mark above. */
+.act-saving { font: 500 13px/1.3 var(--f-stationery); color: var(--pencil); margin: 0; }
+/* a "Try again" that is disabled while a save is already in flight must not
+   fade its own words: the disabled-control law (ruling 41/the btn-stamp note
+   above) wants full ink so she can still read what pressing it would do -
+   .toolbtn[disabled] alone fades to 55%, which is the fault this undoes for
+   this one button. */
+.gj-save-trouble button[disabled] { opacity: 1; cursor: default; }
 .act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */
@@ -1230,6 +1240,12 @@ body.dragging-active, body.dragging-active * {
      figure ran 13px off the left edge of the page. Part of a diagram a pupil
      cannot see is worse than a smaller one. */
   .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* a stat board reclaims the same gutter (ruling 43, 12 Sept 2026): a 349px
+     Exercise 3 grid then hides as little as a phone allows; what it still hides
+     is said under the grid, in its own line, with the scroll track */
+  .stat-q .stat-boards > .stat-board-host, .stat-q .stat-stage > .stat-board-host, .stat-q .stat-plot > div.stat-board { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* the words stay in the text column; only the grid takes the gutter */
+  .stat-q .stat-swipe-note { margin-left: calc(var(--sq) * 1.6 + 2px); }
   /* inside a film the diagram has no margin column to reclaim: the film IS the
      card, and a figure hanging off its edge is a figure with a piece missing */
   .movie .jq-diagram, .movie .prot-wrap { margin-left: 0; margin-right: 0; }
@@ -1492,6 +1508,13 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* the board itself is paper, whatever the shell does */
 .stat-board-frame { background: var(--panel); border: 1px solid var(--hairline); border-radius: 8px; }
+/* WHERE SHE IS IN A BOARD WIDER THAN HER SCREEN (ruling 43): the track under
+   the grid is the board's width, the thumb the share of it she can see; the
+   note is its own line in the pencil face - never the stage instruction */
+.stat-scroll-track { position: relative; height: 6px; margin: 6px 2px 0; border-radius: 3px; background: var(--hairline); overflow: hidden; }
+.stat-scroll-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; border-radius: 3px; background: var(--copper); }
+.stat-swipe-note { margin: 6px 2px 0; color: var(--pencil); font: 500 14px/1.35 var(--f-stationery, var(--f-ui)); }
+.stat-swipe-note[hidden], .stat-scroll-track[hidden] { display: none; }
 .stat-board { display: block; width: 100%; height: auto; background: var(--panel); color: var(--ink); }
 .stat-board text, .stat-svg-label { fill: currentColor; }
 .stat-svg-label { font-family: var(--f-maths); color: var(--ink); user-select: none; }
@@ -1568,6 +1591,20 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   font: 600 14px var(--f-stationery, var(--f-ui)); cursor: pointer;
 }
 .btn-quiet:disabled { background: var(--pencil); color: var(--cream); border-color: var(--pencil); cursor: default; opacity: 1; }
+/* THE STAGE'S CONTROL LOOKS LIKE A BUTTON (ruling 45; ruling 41's "should be
+   more pronounced"). The control that ends the current stage - "\2713  Join the
+   points", "\2713  Draw the box plot", "\2713  That's my median", "Next: draw the box
+   plot" - is filled copper with white ink at the Check's height; secondary
+   acts (Remove the last one, next \2193 ) stay quiet. White on --copper: 5.4:1.
+   Disabled: the same grey ground and full ink as every other button here. */
+.btn-stage {
+  min-height: 44px; padding: 10px 18px; margin: 6px 8px 6px 0; border: 1.5px solid var(--copper);
+  border-radius: 8px; background: var(--copper); color: #fff;
+  font: 700 14.5px var(--f-stationery, var(--f-ui)); cursor: pointer;
+  box-shadow: 0 2px 0 var(--copper-ink);
+}
+.btn-stage:active { transform: translateY(1px); box-shadow: none; }
+.btn-stage:disabled { background: var(--pencil); color: var(--cream); border-color: var(--pencil); box-shadow: none; cursor: default; opacity: 1; }
 .stat-answer { display: inline-block; vertical-align: top; }
 
 /* claims, chips and sentences */
@@ -1622,6 +1659,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   color: var(--ink); font-size: 15.5px; line-height: 1.45;
 }
 .stat-q .stat-msg.stage-now:empty { display: none; }
+/* the passing note: its own line under the stage instruction, pencil face */
+.stat-q .stat-note { margin: -4px 0 10px 16px; color: var(--pencil); font-size: 14.5px; line-height: 1.4; }
+.stat-q .stat-note:empty { display: none; }
 @keyframes gj-stage-beat { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
 .stage-pill.is-beat, .stat-msg.stage-now.is-beat { animation: gj-stage-beat 1.2s ease-in-out 2; }
 /* the glow is a halo whose OPACITY animates (the compositor law: never a
@@ -2353,6 +2393,7 @@ window.OLS_TRANSPORT = {
       selfEvalHeading: 'Exercise finished \u2014 how did that go?',
       selfEvalOptional: 'optional',
       saveWaiting: 'Still saving your work\u2026',
+      saveInFlight: 'Saving\u2026',
       saveRetry: 'Try again',
       saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
 
@@ -2418,7 +2459,7 @@ window.OLS_TRANSPORT = {
       statPlotJoinedAlready: 'The points are joined.',
       statPlotEnough: 'You have all the points you need \u2014 move one instead.',
       statPointReadout: '({x}, {y})',
-      statScrollGraph: 'Scroll the graph sideways to see all of it.',
+      statScrollGraph: 'Swipe the graph sideways to see all of it.',
       /* the nudge pad */
       statNudgeLabel: 'Move it one square',
       statNudgeLeft: 'One square left',
@@ -2490,7 +2531,7 @@ window.OLS_TRANSPORT = {
       statStageIqr: 'Enter the interquartile range on the pad. When it is in, press Mark my working.',
       statStageIqrCommit: 'Enter the interquartile range on the pad, then press \u2713 That\u2019s my answer.',
       statStageCftable: 'Fill in the running total from the top row down: each box is the total so far plus that row\u2019s frequency. Choose a box, then use the pad.',
-      statStageCfplotPlace: 'Put a point on the grid for every row of the table. Choose a spot to place a point; choose a placed point to move it with the arrows. ({n} of {m} placed.)',
+      statStageCfplotPlace: 'Plot one point for each row of the table: across at the top of the class, up at the running total. Next: across {hi}, up {cf}. ({n} of {m} placed.)',
       statStageCfplotJoin: 'Every point is placed. Join them to draw the curve: press \u2713 Join the points.',
       statStageCfread: 'Move the rule up the frequency axis to the height for the {name}, then read where it meets the curve. Press \u2713 That\u2019s my {name} to keep it.',
       statStageCfreadAtX: 'Move the rule along the bottom axis to {x}, and read the total where it meets the curve. Then enter the answer on the pad.',
@@ -2631,7 +2672,7 @@ window.OLS_TRANSPORT = {
       passcodeLabel: 'Staff passcode',
       passcodeEmpty: 'Enter the staff passcode.',
       passcodeChecking: 'Checking the passcode\u2026',
-      tickSaving: 'Saving {book} for {class}\u2026',
+      tickSaving: 'Saving changes\u2026',
       overrideRight: 'Marked right \u2014 full marks. Your mark is the one pupils and staff now see.',
       overrideWrong: 'Marked wrong. Your mark is the one pupils and staff now see.',
       overrideBack: 'Back to the app\u2019s mark.',
@@ -4938,8 +4979,16 @@ window.OLS_TRANSPORT = {
         var rec = reads[a] || {};
         var h = R(rec.h), x = R(rec.x);
         var wantH = heights[a === 'median' ? 'median' : a];
+        /* A READING IS JUDGED TO THE GRID'S RESOLUTION (DESIGN 4.4 / 6.2 as
+           corrected 12 Sept 2026, the steward's q17 finding). For n = 50 the
+           split50 convention wants the rule at (n+1)/2 = 25.5, and a rule that
+           moves in whole small squares of 2 (half a square dragged) can never
+           stand there - so RULE_median was a cross for every pupil who read the
+           javelin curve right. The rule is right when it is within half a
+           small square of the convention height, STRICTLY: 25 and 26 are both
+           right for 25.5; 26 is wrong for 25 (a whole square out). */
         if (!h) per.push(row(uR, 0, null, 'the rule was not moved'));
-        else if (eqR(h, wantH)) per.push(row(uR, 1, null, null));
+        else if (ruleAtHeight(h, wantH, q)) per.push(row(uR, 1, null, null));
         else per.push(row(uR, 0, ruleDx(a, h, wantH, heights, q), null));
 
         var trueX = curveX(q.curve, wantH);
@@ -4976,6 +5025,15 @@ window.OLS_TRANSPORT = {
       }
     });
     return per;
+  }
+
+  /* |h - wantH| < sq.y / 2, strictly - half a small square of the board the
+     question is drawn on (sq.y defaults to 1) */
+  function ruleAtHeight(h, wantH, q) {
+    if (!h || !wantH) return false;
+    var sqy = R((q.chart && q.chart.sq && q.chart.sq.y) || 1) || rint(1);
+    var half = rdiv(sqy, rint(2));
+    return rlt(rabs(rsub(h, wantH)), half);
   }
 
   function ruleDx(item, h, wantH, heights, q) {
@@ -5493,6 +5551,23 @@ function cfreadBoard(q, wrong) {
   /* half the AXIS, not half the total \u2014 the slip the axis invites */
   var axis = ((q.chart || {}).y || {}).max;
   var bad = JSON.parse(JSON.stringify(reads));
+  /* WHEN HALF THE AXIS IS THE RIGHT HEIGHT, IT IS NOT A SLIP (12 Sept 2026). A
+     reading is judged to the grid's resolution (half a small square, strictly),
+     so on a board whose axis runs to n - q17's javelin curve, 50 on an axis to
+     50 - "half the axis" lands within that of the convention height and would
+     be marked RIGHT: a wrong path that is a right path proves nothing. The slip
+     every class makes instead is the RANGE given for the interquartile range. */
+  var sqy = ((q.chart || {}).sq || {}).y || 1;
+  var halfAxisRight = false;
+  Object.keys(bad).forEach(function (k) {
+    if (k === 'atX' || k.indexOf('atX@') === 0 || !axis) return;
+    var wantH = heights[k === 'median' ? 'median' : k];
+    if (wantH && Math.abs(axis / 2 - rnum2(wantH)) < sqy / 2) halfAxisRight = true;
+  });
+  if (halfAxisRight && iqr !== '') {
+    var xs = (q.curve || []).map(function (p) { return Number(p[0]); });
+    return { reads: reads, answers: answers, iqr: String(Math.max.apply(null, xs) - Math.min.apply(null, xs)), answer: answer };
+  }
   Object.keys(bad).forEach(function (k) {
     if (k === 'atX' || !axis) return;
     bad[k].h = axis / 2;
@@ -5799,6 +5874,23 @@ function statsBoard(q, wrong) {
     T('RD24b a followed-through IQR earns nothing itself', v.perLine[4].earned === 0);
     v = check(RDq3, { S: { reads: { Q1: { h: 5, x: 5 }, Q3: { h: 60, x: 15 } }, iqr: '10' } });
     T('RD25 reading the wrong axis', dxAt(v, 0, 'READ_WRONG_AXIS'));
+    /* the grid's resolution (12 Sept 2026): n = 50 under split50 wants 25.5,
+       which a rule moving in squares of 2 cannot reach - both neighbours are
+       right, a whole square out is not, and an exact convention height still
+       refuses its neighbour a whole square away */
+    var RDg = { id: 'rdg', kind: 'cfread', marks: [1, 1], n: 50, ask: ['median'],
+                curve: [[70, 0], [75, 10], [80, 25], [85, 40], [90, 50]],
+                chart: { x: { min: 70, max: 90, step: 5 }, y: { min: 0, max: 50, step: 10 }, sq: { x: 1, y: 2 } } };
+    v = check(RDg, { S: { reads: { median: { h: 25, x: 80 } } } });
+    var vg26 = check(RDg, { S: { reads: { median: { h: 26, x: 80 } } } });
+    T('RD31 grid: 25 and 26 are both right for 25.5', okAt(v, 0, 1) && okAt(vg26, 0, 1) && v.res === 'OK');
+    v = check(RDg, { S: { reads: { median: { h: 24, x: 80 } } } });
+    T('RD32 grid: 24 is a whole square out for 25.5', okAt(v, 0, 0));
+    var RDe = { id: 'rde', kind: 'cfread', marks: [1, 1], n: 49, ask: ['median'], curve: RDg.curve, chart: RDg.chart };
+    v = check(RDe, { S: { reads: { median: { h: 26, x: 80 } } } });
+    T('RD33 grid: 26 is wrong for an exact 25', okAt(v, 0, 0));
+    v = check(RDe, { S: { reads: { median: { h: 25, x: 80 } } } });
+    T('RD34 grid: 25 is right for an exact 25', okAt(v, 0, 1));
     var RDx = { id: 'rdx', kind: 'cfread', marks: [1, 2], n: 80, curve: RDq.curve, chart: RDq.chart,
                 ask: [{ type: 'atX', x: 12, want: 'countAbove' }] };
     v = check(RDx, { S: { reads: { atX: { x: 12, cf: 48 } }, answer: '32' } });
@@ -7940,7 +8032,15 @@ function statsBoard(q, wrong) {
       var major = num(c.major, 5);
       var nSqX = Math.max(1, Math.round((xMax - xMin) / sqX));
       var nSqY = Math.max(1, Math.round((yMax - yMin) / sqY));
-      var marginLeft = 68, marginRight = 26, marginTop = 26, marginBottom = 58;
+      /* THE MARGINS HOLD THE NUMBERS AT PHONE SCALE (12 Sept 2026). relayout()
+         counter-scales every label to LABEL_TARGET_PX, so at the smallest
+         square (law 6) a digit is 27 user units tall, not 13: the bottom margin
+         must hold a row of numbers AND the axis title at that size, and the
+         left margin the widest frequency plus the rotated title. */
+      var fMax = LABEL_TARGET_PX / (MIN_SQUARE_PX / SQ_UNIT);
+      var yDigits = String(Math.round(yMax)).length;
+      var marginLeft = Math.ceil(fMax + 10 + yDigits * fMax * 0.56 + 12), marginRight = 26, marginTop = 26;
+      var marginBottom = Math.ceil(fMax * 2 + 24);
       var plotW = nSqX * SQ_UNIT, plotH = nSqY * SQ_UNIT;
       return {
         isScale: false,
@@ -8002,7 +8102,12 @@ function statsBoard(q, wrong) {
     /* everything presentational lives in style.css under .stat-board; only
        what is COMPUTED is set here (law: a sentence, a colour and a face are
        read by gates in the stylesheet, not out of a string literal) */
-    svg.style.touchAction = 'none';
+    /* A WIDE BOARD PANS BY TOUCH (ruling 43, 12 Sept 2026). `none` on the
+       whole SVG blocked every pan, so on a phone the last point of Exercise 3
+       could not be reached at all. The SVG permits the frame's sideways pan
+       (and the page's vertical one); `none` goes on the DRAGGABLE hit targets
+       only - addHit() - so a drag that starts on a point moves the point. */
+    svg.style.touchAction = 'pan-x pan-y';
     svg.setAttribute('data-work', '');
     frame.appendChild(svg);
 
@@ -8011,6 +8116,36 @@ function statsBoard(q, wrong) {
     frame.appendChild(htmlLayer);
 
     host.appendChild(frame);
+
+    /* WHERE SHE IS IN A BOARD WIDER THAN HER SCREEN (ruling 43): a thin track
+       under the grid whose thumb is the visible share of the board, and - in
+       its own line, never the stage line - the words that say to swipe. Both
+       exist only while the frame hides width (relayout() decides). */
+    var track = he('div', 'stat-scroll-track');
+    track.setAttribute('data-ornament', '');
+    track.setAttribute('aria-hidden', 'true');
+    var thumb = he('div', 'stat-scroll-thumb');
+    track.appendChild(thumb);
+    track.hidden = true;
+    host.appendChild(track);
+    var swipeNote = null;
+    if (opts.scrollNote) {
+      swipeNote = he('p', 'stat-swipe-note');
+      swipeNote.textContent = opts.scrollNote;
+      swipeNote.hidden = true;
+      host.appendChild(swipeNote);
+    }
+    function layoutTrack() {
+      var hidden = frame.scrollWidth - frame.clientWidth;
+      var show = hidden > 1;
+      track.hidden = !show;
+      if (swipeNote) swipeNote.hidden = !show;
+      if (!show) return;
+      var share = frame.clientWidth / frame.scrollWidth;
+      thumb.style.width = Math.max(8, Math.round(share * 100)) + '%';
+      thumb.style.left = Math.round((frame.scrollLeft / frame.scrollWidth) * 100) + '%';
+    }
+    frame.addEventListener('scroll', layoutTrack, { passive: true });
 
     // groups, back to front
     var gGrid = sv('g', { 'data-role': 'grid' });
@@ -8088,23 +8223,34 @@ function statsBoard(q, wrong) {
       gAxis.appendChild(arrowHead(g.plotX0, g.plotY1, g.plotX1 + 10, g.plotY1));
       gAxis.appendChild(arrowHead(g.plotX0, g.plotY1, g.plotX0, g.plotY0 - 10));
       gAxis.style.color = 'var(--ink)';
-      // tick numbers at xStep/yStep
+      // tick numbers at xStep/yStep - SEATED BY relayout(), never by a constant
+      // (ruling 44, 12 Sept 2026: a fixed 16 units below the axis while the
+      // counter-scaled font grew to 27 put the digits' tops on the line)
       var nx = Math.round((g.xMax - g.xMin) / g.xStep);
       for (var k = 0; k <= nx; k++) {
         var vx = g.xMin + k * g.xStep;
         var pxk = g.plotX0 + (vx - g.xMin) / g.sqX * SQ_UNIT;
-        gAxis.appendChild(svgLabel(pxk, g.plotY1 + 16, fmtNum(vx), { anchor: 'middle' }));
+        var xl = svgLabel(pxk, g.plotY1 + 16, fmtNum(vx), { anchor: 'middle' });
+        xl.setAttribute('data-axis', 'x'); xl.setAttribute('data-line', g.plotY1);
+        gAxis.appendChild(xl);
       }
       var ny = Math.round((g.yMax - g.yMin) / g.yStep);
       for (var k2 = 0; k2 <= ny; k2++) {
         var vy = g.yMin + k2 * g.yStep;
         var pyk = g.plotY1 - (vy - g.yMin) / g.sqY * SQ_UNIT;
-        gAxis.appendChild(svgLabel(g.plotX0 - 10, pyk + 4, fmtNum(vy), { anchor: 'end' }));
+        var yl = svgLabel(g.plotX0 - 10, pyk + 4, fmtNum(vy), { anchor: 'end' });
+        yl.setAttribute('data-axis', 'y'); yl.setAttribute('data-line', g.plotX0); yl.setAttribute('data-at', pyk);
+        gAxis.appendChild(yl);
       }
-      // axis titles
-      if (g.xLabel) gAxis.appendChild(svgLabel((g.plotX0 + g.plotX1) / 2, g.vbh - 8, g.xLabel, { anchor: 'middle' }));
+      // axis titles (the x title is seated under the numbers by relayout())
+      if (g.xLabel) {
+        var xt = svgLabel((g.plotX0 + g.plotX1) / 2, g.vbh - 8, g.xLabel, { anchor: 'middle' });
+        xt.setAttribute('data-axis-title', 'x'); xt.setAttribute('data-line', g.plotY1);
+        gAxis.appendChild(xt);
+      }
       if (g.yLabel) {
         var yt = svgLabel(0, 0, g.yLabel, { anchor: 'middle' });
+        yt.setAttribute('data-axis-title', 'y'); yt.setAttribute('data-at', (g.plotY0 + g.plotY1) / 2);
         yt.setAttribute('transform', 'translate(16,' + ((g.plotY0 + g.plotY1) / 2) + ') rotate(-90)');
         gAxis.appendChild(yt);
       }
@@ -8131,10 +8277,18 @@ function statsBoard(q, wrong) {
           'stroke-width': onStep ? 1.2 : 0.8,
           'vector-effect': 'non-scaling-stroke'
         }));
-        if (onStep) gAxis.appendChild(svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' }));
+        if (onStep) {
+          var sl = svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' });
+          sl.setAttribute('data-axis', 'x'); sl.setAttribute('data-line', s.trackY + 10);
+          gAxis.appendChild(sl);
+        }
       }
       gAxis.appendChild(sv('line', { x1: s.plotX0, y1: s.trackY, x2: s.plotX1, y2: s.trackY, stroke: 'currentColor', 'stroke-width': 1.4, 'vector-effect': 'non-scaling-stroke' }));
-      if (s.label) gAxis.appendChild(svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' }));
+      if (s.label) {
+        var stl = svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' });
+        stl.setAttribute('data-axis-title', 'x'); stl.setAttribute('data-line', s.trackY + 10);
+        gAxis.appendChild(stl);
+      }
       if (Math.abs(s.xMin) > 1e-9) {
         var bx2 = s.plotX0, by2 = s.trackY;
         var zz2 = 'M ' + (bx2 - 4) + ' ' + (by2 + 6) + ' l 3 -5 l 4 8 l 4 -8 l 3 5';
@@ -8234,6 +8388,13 @@ function statsBoard(q, wrong) {
       var sc = st.lastScale || 1;
       var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
       var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
+      /* A LABEL STAYS OUT OF THE GUTTER (12 Sept 2026). On a phone the host
+         reclaims the question-number column (a negative margin, style.css);
+         the grid may sit there, but a label's words may not - the overlap law
+         found "lower quartile" under "Q2". The inset is measured, never guessed. */
+      var inset = 0;
+      try { inset = Math.max(0, -parseFloat(getComputedStyle(host).marginLeft || '0')) ; } catch (e) { inset = 0; }
+      if (inset > 0) inset += 4;
       /* A LABEL WITH NO BOARD UNDER IT IS NOT A LABEL. On the exercise page the
          boards below the fold are laid out after their labels are made, so the
          layer is momentarily nothing at all - and a label placed on a layer of
@@ -8254,7 +8415,7 @@ function statsBoard(q, wrong) {
         rec.el.style.top = '0px';
         rec.w = rec.el.offsetWidth || 40;
         rec.h = rec.el.offsetHeight || 16;
-        rec.wantX = Math.max(rec.w / 2, Math.min(p[0] * sc, layerW - rec.w / 2));
+        rec.wantX = Math.max(inset + rec.w / 2, Math.min(p[0] * sc, layerW - rec.w / 2));
         rec.wantY = Math.max(rec.h, Math.min(p[1] * sc - 10, layerH));
         recs.push(rec);
       }
@@ -8297,7 +8458,7 @@ function statsBoard(q, wrong) {
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
           for (var d = 0; d < DX.length; d++) {
-            var cx = Math.max(r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
+            var cx = Math.max(inset + r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
             var cand = { l: cx - r.w / 2, t: top - r.h, r: cx + r.w / 2, b: top, x: cx };
             if (cand.t < 0 || cand.b > layerH) continue;
             if (!firstLegal) firstLegal = cand;
@@ -8325,7 +8486,11 @@ function statsBoard(q, wrong) {
     // =====================================================================
     function addHit(cx, cy, kind, group) {
       var hitEl = sv('circle', { cx: cx, cy: cy, r: 16, fill: 'transparent', stroke: 'none' });
-      hitEl.style.cssText = 'pointer-events:all;cursor:pointer;';
+      /* touch-action none HERE and only here (ruling 43): a drag that starts
+         on a point, a rule handle or a marker moves it; one that starts on
+         empty grid pans the frame */
+      hitEl.style.cssText = 'pointer-events:all;cursor:pointer;touch-action:none;';
+      hitEl.setAttribute('data-hit', kind);
       (group || svg).appendChild(hitEl);
       var rec = { el: hitEl, cx: cx, cy: cy };
       st.hitEls.push(rec);
@@ -8588,11 +8753,19 @@ function statsBoard(q, wrong) {
           stroke: onStep ? 'var(--grid-major)' : 'var(--grid-minor)',
           'stroke-width': onStep ? 1.2 : 0.8, 'vector-effect': 'non-scaling-stroke'
         }));
-        if (onStep) gAxis.appendChild(svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' }));
+        if (onStep) {
+          var sl2 = svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' });
+          sl2.setAttribute('data-axis', 'x'); sl2.setAttribute('data-line', s.trackY + 10);
+          gAxis.appendChild(sl2);
+        }
       }
       gAxis.appendChild(sv('line', { x1: s.plotX0, y1: s.trackY, x2: s.plotX1, y2: s.trackY, stroke: 'currentColor', 'stroke-width': 1.4, 'vector-effect': 'non-scaling-stroke' }));
       gAxis.style.color = 'var(--ink)';
-      if (s.label) gAxis.appendChild(svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' }));
+      if (s.label) {
+        var stl2 = svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' });
+        stl2.setAttribute('data-axis-title', 'x'); stl2.setAttribute('data-line', s.trackY + 10);
+        gAxis.appendChild(stl2);
+      }
       relayout();
     }
 
@@ -8792,9 +8965,31 @@ function statsBoard(q, wrong) {
       var fontUserUnits = LABEL_TARGET_PX / scaleFactor;
       var nodes = svg.querySelectorAll('[data-autosize]');
       for (var i = 0; i < nodes.length; i++) nodes[i].setAttribute('font-size', fontUserUnits.toFixed(2));
+      seatAxisText(fontUserUnits, scaleFactor);
       var hitUserUnits = MIN_HIT / 2 / scaleFactor;
       for (var j = 0; j < st.hitEls.length; j++) st.hitEls[j].el.setAttribute('r', Math.max(hitUserUnits, 8));
       layoutLabels();
+      layoutTrack();
+    }
+    /* AN AXIS NUMBER NEVER CROSSES ITS AXIS LINE (ruling 44). Every number is
+       seated from the font it is actually drawn at: an x number's baseline one
+       font plus 4 CSS px below its line (so the digits' tops clear the line
+       by 4 CSS px whatever the scale); a y number's right edge 6 CSS px left of
+       its axis, centred on its tick; the x title a line under the numbers. */
+    function seatAxisText(f, scale) {
+      var css = function (px) { return px / scale; };
+      var xs = svg.querySelectorAll('[data-axis="x"]');
+      var k;
+      for (k = 0; k < xs.length; k++) xs[k].setAttribute('y', (Number(xs[k].getAttribute('data-line')) + f + css(4)).toFixed(2));
+      var ys = svg.querySelectorAll('[data-axis="y"]');
+      for (k = 0; k < ys.length; k++) {
+        ys[k].setAttribute('x', (Number(ys[k].getAttribute('data-line')) - css(6)).toFixed(2));
+        ys[k].setAttribute('y', (Number(ys[k].getAttribute('data-at')) + f * 0.35).toFixed(2));
+      }
+      var xt = svg.querySelectorAll('[data-axis-title="x"]');
+      for (k = 0; k < xt.length; k++) xt[k].setAttribute('y', (Number(xt[k].getAttribute('data-line')) + f + css(4) + f + css(6)).toFixed(2));
+      var yt = svg.querySelectorAll('[data-axis-title="y"]');
+      for (k = 0; k < yt.length; k++) yt[k].setAttribute('transform', 'translate(' + (f * 0.75 + css(2)).toFixed(2) + ',' + yt[k].getAttribute('data-at') + ') rotate(-90)');
     }
 
     var ro = null;
@@ -8817,17 +9012,36 @@ function statsBoard(q, wrong) {
 
     // background tap -> caller decides whether it means "place a point"
     if (!opts.readOnly && typeof opts.onGridTap === 'function') {
+      /* A TAP PLACES; A SWIPE PANS (ruling 43). With the SVG free to pan, the
+         browser fires pointerdown at the start of a swipe too and pointercancel
+         once it has decided to scroll - so the press is only a tap when the
+         pointer comes UP where it went down. The place it went down is the
+         place she meant (a finger lifts a little off true). */
+      var tap = null;
       svg.addEventListener('pointerdown', function (e) {
+        tap = null;
         if (e.target !== svg && e.target.tagName !== 'line' && e.target !== gGrid) {
           // ignore taps that landed on an interactive glyph (handled by its own listener)
           if (e.target.closest && (e.target.closest('.stat-pt') || e.target.closest('.stat-marker') || e.target.closest('.stat-rule'))) return;
         }
-        var p = svgPointFromEvent(e);
+        tap = { id: e.pointerId, x: e.clientX, y: e.clientY, p: svgPointFromEvent(e) };
+      });
+      svg.addEventListener('pointercancel', function () { tap = null; });
+      svg.addEventListener('pointerup', function (e) {
+        if (!tap || (e.pointerId !== undefined && tap.id !== undefined && e.pointerId !== tap.id)) { tap = null; return; }
+        var moved = Math.abs(e.clientX - tap.x) + Math.abs(e.clientY - tap.y);
+        var p = tap.p;
+        tap = null;
+        if (moved > 12) return;                       /* a swipe, not a tap */
         var ax = toAxis(p.x, p.y);
         var g2 = st.geo;
+        /* a tap within half a small square of the edge is ON the edge - the
+           point snaps there anyway, and a press on the axis line itself (x = 0)
+           must place, not vanish on a half-pixel rounding of the event */
+        var tx = (g2.isScale ? g2.sq : g2.sqX) / 2 + 1e-6, ty = (g2.isScale ? 0 : g2.sqY / 2) + 1e-6;
         var inBounds = g2.isScale
-          ? (ax[0] >= g2.xMin - 1e-6 && ax[0] <= g2.xMax + 1e-6)
-          : (ax[0] >= g2.xMin - 1e-6 && ax[0] <= g2.xMax + 1e-6 && ax[1] >= g2.yMin - 1e-6 && ax[1] <= g2.yMax + 1e-6);
+          ? (ax[0] >= g2.xMin - tx && ax[0] <= g2.xMax + tx)
+          : (ax[0] >= g2.xMin - tx && ax[0] <= g2.xMax + tx && ax[1] >= g2.yMin - ty && ax[1] <= g2.yMax + ty);
         if (!inBounds) return;
         opts.onGridTap(snapX(ax[0]), snapY(ax[1]));
       });
@@ -11589,8 +11803,8 @@ function statsBoard(q, wrong) {
       /* aria-CURRENT: this is the item she has picked up, not an answer she
          has pressed - the consequence law watches aria-pressed for the latter */
       node.setAttribute('aria-current', 'true');
-      ctx.say(T().statPutBack);
       ctx.setStage(ctx.selectedStage || 'selected');
+      ctx.note(T().statPutBack);
     });
   }
 
@@ -11698,6 +11912,15 @@ function statsBoard(q, wrong) {
        the whole act before the control that does it. */
     var msg = el('p', 'ui-msg stat-msg stage-now');
     body.appendChild(msg);
+    /* A NOTE HAS ITS OWN LINE (ruling 45, 12 Sept 2026). "You have all the
+       points you need - move one instead." had REPLACED the instruction, so a
+       pupil who tapped once too often lost the sentence that told her what she
+       was doing. Passing notes - enough points, put it back, try again - live
+       here, under the stage line, in the pencil face, and go on the next state
+       change; the stage line is written only by the stage table. */
+    var note = el('p', 'ui-msg stat-note');
+    note.setAttribute('role', 'status');
+    body.appendChild(note);
 
     var ghost = el('div', 'stat-ghost');           /* attempt 1, struck through */
     body.appendChild(ghost);
@@ -11734,8 +11957,10 @@ function statsBoard(q, wrong) {
         ctx.selected = null;
       },
       say: function (text) { msg.textContent = text || ''; },
+      note: function (text) { note.textContent = text || ''; },
       setStage: function (s) {
         if (stages.indexOf(s) === -1) return;
+        if (wrap.getAttribute('data-stage') !== s) note.textContent = '';   /* a state change clears the note */
         wrap.setAttribute('data-stage', s);
         setPill(pillOfStage(s));
       },
@@ -11854,7 +12079,7 @@ function statsBoard(q, wrong) {
         window.GJ.setState(wrap, 'question', 'checked-wrong-1');
         checkBtn.disabled = true;
         setLockedWhy(checkBtn, kind.ready().why);
-        ctx.say(T().statTryAgain);
+        ctx.note(T().statTryAgain);
         wrap.setAttribute('data-stage', stages[0]);
         curPill = -1; setPill(pillOfStage(stages[0]), true);
       }
@@ -12074,7 +12299,7 @@ function statsBoard(q, wrong) {
       if (cutIdx < cuts.length) {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
         ctx.say(fill(T().statStageQlistPick, { name: cutName(cuts[cutIdx]) }));
-        var commit = el('button', 'btn-quiet', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
+        var commit = el('button', 'btn-stage', fill(T().statQlistCommit, { name: cutName(cuts[cutIdx]) }));
         commit.type = 'button';
         commit.disabled = !pending.length;
         if (!pending.length) setLockedWhy(commit, T().statQlistCommitWhy);
@@ -12515,9 +12740,12 @@ function statsBoard(q, wrong) {
     function build() {
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
+        /* the board owns the swipe note (its own line under the grid, with the
+           scroll track) - never the stage line (ruling 43/45) */
+        scrollNote: T().statScrollGraph,
         onGridTap: function (x, y) {
           if (ctx.locked()) return;
-          if (bd.points().length >= maxPts) { ctx.say(T().statPlotEnough); return; }
+          if (bd.points().length >= maxPts) { ctx.note(T().statPlotEnough); return; }
           sel = bd.addPoint(x, y, { select: true });
           after();
         },
@@ -12529,7 +12757,6 @@ function statsBoard(q, wrong) {
         }
       });
       layoutGiven();
-      if (bd.needsScroll()) ctx.say(T().statScrollGraph);
       after();
     }
     function after() {
@@ -12570,7 +12797,7 @@ function statsBoard(q, wrong) {
       } else {
         window.GJ.setState(ctx.dock, 'dock', 'chips');
       }
-      var join = el('button', 'btn-quiet stat-join', T().statJoinPoints);
+      var join = el('button', 'btn-stage stat-join', T().statJoinPoints);
       join.type = 'button';
       join.disabled = n < maxPts || joined;
       if (join.disabled) setLockedWhy(join, n < maxPts ? T().statPlotPlaceWhy : T().statPlotJoinedAlready);
@@ -12582,7 +12809,25 @@ function statsBoard(q, wrong) {
         after();
       });
       ctx.dock.appendChild(join);
-      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, { n: n, m: maxPts }) : (joined ? '' : T().statStageCfplotJoin));
+      ctx.say(n < maxPts ? fill(T().statStageCfplotPlace, nextPoint(n, maxPts)) : (joined ? '' : T().statStageCfplotJoin));
+    }
+    /* THE INSTRUCTION NAMES THE NEXT POINT (ruling 45): the first expected
+       point, in x order, that is not yet on the board - "Next: across 15, up
+       18" - read from the engine's own expectation, never from a table row
+       the pupil has to find for herself. */
+    function nextPoint(n, m) {
+      /* the engine speaks in exact rationals ({n, d}); the board in numbers */
+      var rv = function (r) { return (r && typeof r === 'object' && r.d) ? r.n / r.d : Number(r); };
+      var want = (window.GJ_STATS.expectedPoints(q, packRulesOf(ctx) || window.GJ_STATS.DEFAULT_RULES) || [])
+        .map(function (w) { return [rv(w[0]), rv(w[1])]; });
+      var have = bd ? bd.points() : [];
+      var miss = null;
+      for (var i = 0; i < want.length && !miss; i++) {
+        var w = want[i], on = false;
+        for (var j = 0; j < have.length; j++) if (Math.abs(Number(have[j][0]) - w[0]) < 1e-9 && Math.abs(Number(have[j][1]) - w[1]) < 1e-9) { on = true; break; }
+        if (!on) miss = w;
+      }
+      return { n: n, m: m, hi: miss ? window.GJ_STATCHART.fmtNum(miss[0]) : '', cf: miss ? window.GJ_STATCHART.fmtNum(miss[1]) : '' };
     }
 
     return {
@@ -12641,6 +12886,7 @@ function statsBoard(q, wrong) {
     function build() {
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.chart, {
+        scrollNote: T().statScrollGraph,
         snapDivisor: 2,                       /* the convention height can be a half */
         onChange: function (evt) {
           if (!evt || ctx.locked()) return;
@@ -12695,7 +12941,7 @@ function statsBoard(q, wrong) {
         ctx.setStage('iqr');
         window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
         ctx.say(T().statStageIqrCommit);
-        var doneI = el('button', 'btn-quiet', T().statThatsMine);
+        var doneI = el('button', 'btn-stage', T().statThatsMine);
         pad = makeNumPad(ctx.dock, { label: T().statIqr, fraction: true, decimal: true,
           onChange: function (v) {
             iqr = v;
@@ -12722,7 +12968,7 @@ function statsBoard(q, wrong) {
       if (isAtX(a)) {
         window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
         ctx.say(fill(T().statStageCfreadAtX, { x: a.x }));
-        var doneX = el('button', 'btn-quiet', T().statThatsMine);
+        var doneX = el('button', 'btn-stage', T().statThatsMine);
         /* THE COMMIT KEEPS LOOKING. It was judged once, when the dock was
            built, and never again - so moving the rule and keying the answer
            left it dead and the question could not be finished at all. And the
@@ -12765,7 +13011,7 @@ function statsBoard(q, wrong) {
       }
       window.GJ.setState(ctx.dock, 'dock', 'nudge-pad');
       ctx.say(fill(T().statStageCfread, { name: nameOf(a) }));
-      var done = el('button', 'btn-quiet', fill(T().statThatsMyOne, { name: nameOf(a) }));
+      var done = el('button', 'btn-stage', fill(T().statThatsMyOne, { name: nameOf(a) }));
       /* THE DOCK IS NOT REBUILT WHILE SHE IS WORKING IN IT. Moving the rule
          redraws the BOARD and re-reads the commit; rebuilding the whole dock
          would throw away the pad she was typing into mid-number, and it was
@@ -12891,6 +13137,7 @@ function statsBoard(q, wrong) {
         locked: ctx.locked,
         clearSelection: function () { ctx.clearSelection(); },
         say: function (t) { ctx.say(t); },
+        note: function (t) { ctx.note(t); },
         setStage: function (s) { ctx.setStage(stageKind + ':' + s); },
         changed: function () { onStageChange(); }
       };
@@ -12909,7 +13156,7 @@ function statsBoard(q, wrong) {
     function renderStageGate(r) {
       var old = ctx.dock.querySelector('.stat-next');
       if (old) old.parentNode.removeChild(old);
-      var next = el('button', 'btn-quiet stat-next', T().statNextDrawBox);
+      var next = el('button', 'btn-stage stat-next', T().statNextDrawBox);
       next.type = 'button';
       next.disabled = !r.ok;
       if (!r.ok) setLockedWhy(next, r.why);
@@ -12941,6 +13188,7 @@ function statsBoard(q, wrong) {
       plotHost.appendChild(boardWrap);
       boardWrap.innerHTML = '';
       bd = window.GJ_STATCHART.render(boardWrap, q.scale, {
+        scrollNote: T().statScrollGraph,
         onGridTap: function (x) {
           if (ctx.locked()) return;
           /* a press on the scale with no marker chosen: the instruction
@@ -13020,7 +13268,7 @@ function statsBoard(q, wrong) {
     function renderDock() {
       ctx.dock.innerHTML = '';
       window.GJ.setState(ctx.dock, 'dock', 'tray');
-      var draw = el('button', 'btn-quiet stat-draw', T().statDrawBoxPlot);
+      var draw = el('button', 'btn-stage stat-draw', T().statDrawBoxPlot);
       draw.type = 'button';
       draw.disabled = Object.keys(pos).length < 5 || drawn;
       if (draw.disabled) setLockedWhy(draw, Object.keys(pos).length < 5 ? T().statBoxPlaceWhy : T().statBoxDrawnAlready);
@@ -13631,6 +13879,17 @@ function statsBoard(q, wrong) {
     elm.className = (base !== null) ? base : elm.className.replace(/\bpanel-loading\b/g, '').trim();
     elm.textContent = text || '';
   }
+  /* the PUPIL's own waiting line (ruling 46, 12 Sept 2026): "I want it to
+     flash like the 'getting your details' message with the animated circle
+     to the left on the student side, not gold." Same is-waiting class the
+     pupil side already breathes with; clearBusy (above) already knows how to
+     restore data-base, so it undoes this too. */
+  function waitingLine(elm, text) {
+    if (!elm) return;
+    if (elm.getAttribute('data-base') === null) elm.setAttribute('data-base', elm.className);
+    elm.className = (elm.getAttribute('data-base') || 'ui-msg') + ' is-waiting';
+    elm.textContent = text || '';
+  }
   /* Two-tap confirm dialog (mirrors showQr): a gj-modal above the panel.
      Never native confirm() - it is unreliable in the sandboxed iframe. */
   function openConfirm(title, bodyText, okLabel, cb) {
@@ -13801,7 +14060,7 @@ function statsBoard(q, wrong) {
     function unlock() {
       if (go.disabled) return;
       go.disabled = true;
-      busyCard(body.querySelector('#st-msg'), 'Checking the passcode&hellip; this can take a moment');
+      waitingLine(body.querySelector('#st-msg'), TT('passcodeChecking'));
       /* THE WAIT IS ITS OWN SCREEN, AND IT WAS NEVER NAMED. The cover declared
          `busy` and `open` in the registry and no code ever set either, so the
          only states it could ever be in were "empty" and "wrong" - a teacher
@@ -13955,7 +14214,7 @@ function statsBoard(q, wrong) {
             /* busyCard takes html, and a class name is the teacher's own free
                text - escape it, the way every other html-taking call site
                in this file already does */
-            busyCard(cmsg, TT('tickSaving', { book: esc(a.title), 'class': esc(c.name) }));
+            busyCard(cmsg, TT('tickSaving'));
             runTickSync(c);
           });
           lab.appendChild(cb);
@@ -16679,10 +16938,18 @@ function statsBoard(q, wrong) {
   /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 THE OUTBOX \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
      A screen never claims saving that is not happening. Her attempt is kept on
      this device under outbox:<class>:<email>:<book> until the server says it
-     has it; if a save has not landed after eight seconds she is told, with a
+     has it; if a save has not landed after thirty seconds she is told, with a
      way to try again; and on the next load an unsent attempt newer than the
      server's copy is put back before the book opens. Client only. */
-  var OUTBOX_WARN = 8000;
+  var OUTBOX_WARN = 30000;
+  /* A LIVE SAVE IS NOT TROUBLE (ruling 48, 12 Sept 2026): his 19:05 Executions
+     log showed every save taking 12-40 s and completing, while the old 8 s
+     clock told her it had failed mid-flight. The card now waits for thirty -
+     comfortably past a slow live save - or fires at once on a real refusal or
+     error (unchanged, below). While a save is actually running, a quiet
+     moving line says so, and "Try again" cannot fire a second call on top of
+     the first. */
+  var saveInFlight = false;
   function outboxKey(actId) {
     return 'outbox:' + BOOT.classCode + ':' + (me.email || 'anon') + ':' + actId;
   }
@@ -16708,14 +16975,45 @@ function statsBoard(q, wrong) {
     b.className = 'toolbtn';
     b.textContent = T.saveRetry || '';
     b.setAttribute('data-busy-for', 'save');
+    b.disabled = saveInFlight;   /* a card raised mid-flight is born disabled */
     b.addEventListener('click', function () { saveTrouble(false); retry(); });
     el.appendChild(b);
     document.body.appendChild(el);
+  }
+  /* "Try again" tracks the flight, not just the card's own birth: a card
+     raised BEFORE a retry started must still disable itself once that retry
+     is under way, and re-enable when it settles. */
+  function syncRetry() {
+    var b = document.querySelector('#gj-save-trouble button');
+    if (b) b.disabled = saveInFlight;
+  }
+  /* the quiet moving line a save-in-flight owns (ruling 48): the pupil's own
+     is-waiting breath, pencil-ink, never gold - the gold card stays a staff
+     thing. Lives inside .act-bar-titles, in flow under the exercise title, so
+     it is never asked to overlap it. index.html is not touched: this element
+     exists only while a save is running. */
+  function saveLine(on) {
+    var line = document.getElementById('act-saving');
+    if (!on) { if (line) line.remove(); return; }
+    if (line) return;
+    var host = document.querySelector('.act-bar-titles') ||
+      (document.getElementById('act-back') && document.getElementById('act-back').parentNode);
+    if (!host) return;
+    line = document.createElement('p');
+    line.id = 'act-saving';
+    line.className = 'act-saving is-waiting';
+    line.setAttribute('role', 'status');
+    line.textContent = T.saveInFlight || '';
+    host.appendChild(line);
   }
 
   function flushSave() {
     saveTimer = null;
     if (!current.dirty || !current.act) return;
+    /* NEVER TWO CALLS AT ONCE. A retry pressed - or a timer firing - while one
+       is already running used to send the same save twice; this keeps the
+       newer state queued instead, and the settle path below re-sends it. */
+    if (saveInFlight) { current.dirty = true; return; }
     current.dirty = false;
     current.lastSave = Date.now();
     var actId = current.act.id;
@@ -16726,13 +17024,20 @@ function statsBoard(q, wrong) {
     var sumStr = JSON.stringify(sum);
     outboxPut(actId, stateStr, sumStr);
     var slow = setTimeout(function () { saveTrouble(true, flushSave); }, OUTBOX_WARN);
+    saveInFlight = true;
+    saveLine(true);
     call('save', { act: actId, state: stateStr, summary: sumStr })
       .then(function (r) {
         clearTimeout(slow);
-        if (r && r.ok) { outboxClear(actId); saveTrouble(false); }
+        saveInFlight = false; saveLine(false); syncRetry();
+        if (r && r.ok) { outboxClear(actId); saveTrouble(false); if (current.dirty) scheduleSave(); }
         else { current.dirty = true; saveTrouble(true, flushSave); }
       })
-      .catch(function () { clearTimeout(slow); current.dirty = true; saveTrouble(true, flushSave); });
+      .catch(function () {
+        clearTimeout(slow);
+        saveInFlight = false; saveLine(false); syncRetry();
+        current.dirty = true; saveTrouble(true, flushSave);
+      });
   }
 
   /* put an unsent attempt back before the book opens */

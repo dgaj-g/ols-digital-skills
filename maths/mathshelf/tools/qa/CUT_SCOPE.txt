@@ -3,18 +3,38 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# Steward re-cut, 11 Sept 2026 (Fable, after the polish cut went live at 18:49):
-# the Exercise 3 chart squeezed by its side column from 768px up. Two-hour clock.
+# POLISH CUT 2, 12 Sept 2026 (Opus 5): his rulings 43–48 of the second live
+# test (the board pans by touch on a phone, axis numbers clear of the line, the
+# stage line never replaced and the next point named, the passcode wait as the
+# pupil's own line, "Saving changes…", the pupil's save quiet until late) plus
+# q17's marking rule (a reading judged to the grid's resolution). Two-hour clock.
 jotter-stats.js
 statchart.js
+statcore.js
+strings.js
 style.css
-tools/qa/lib/walk-moves.js
-tools/qa/sit-pupil.js
+script.js
+staff.js
+content-stats-quartiles.js
+dev/test-statcore.js
+dev/model-attempts.js
+tools/qa/lib/*
 tools/qa/fixtures/plants.js
+tools/qa/sit-pupil.js
+tools/qa/sit-confused.js
+tools/qa/sit-teacher.js
+tools/qa/qa-waits.js
+tools/qa/qa-language.js
+tools/qa/qa-human-pace.js
+tools/qa/qa-manifest.js
+tools/qa/extract-transcript.js
 tools/qa/CUT_SCOPE.txt
 tools/qa/MATHS_*.md
+tools/qa/vocab/*
 tools/qa/out/*
 server/Index.html
+server/Code.gs
+server/DEPLOY.md
 server/DEPLOY_LOG.md
 HANDOVER.md
 PROGRESS.md

@@ -830,8 +830,16 @@
         var rec = reads[a] || {};
         var h = R(rec.h), x = R(rec.x);
         var wantH = heights[a === 'median' ? 'median' : a];
+        /* A READING IS JUDGED TO THE GRID'S RESOLUTION (DESIGN 4.4 / 6.2 as
+           corrected 12 Sept 2026, the steward's q17 finding). For n = 50 the
+           split50 convention wants the rule at (n+1)/2 = 25.5, and a rule that
+           moves in whole small squares of 2 (half a square dragged) can never
+           stand there - so RULE_median was a cross for every pupil who read the
+           javelin curve right. The rule is right when it is within half a
+           small square of the convention height, STRICTLY: 25 and 26 are both
+           right for 25.5; 26 is wrong for 25 (a whole square out). */
         if (!h) per.push(row(uR, 0, null, 'the rule was not moved'));
-        else if (eqR(h, wantH)) per.push(row(uR, 1, null, null));
+        else if (ruleAtHeight(h, wantH, q)) per.push(row(uR, 1, null, null));
         else per.push(row(uR, 0, ruleDx(a, h, wantH, heights, q), null));
 
         var trueX = curveX(q.curve, wantH);
@@ -868,6 +876,15 @@
       }
     });
     return per;
+  }
+
+  /* |h - wantH| < sq.y / 2, strictly - half a small square of the board the
+     question is drawn on (sq.y defaults to 1) */
+  function ruleAtHeight(h, wantH, q) {
+    if (!h || !wantH) return false;
+    var sqy = R((q.chart && q.chart.sq && q.chart.sq.y) || 1) || rint(1);
+    var half = rdiv(sqy, rint(2));
+    return rlt(rabs(rsub(h, wantH)), half);
   }
 
   function ruleDx(item, h, wantH, heights, q) {
@@ -1385,6 +1402,23 @@ function cfreadBoard(q, wrong) {
   /* half the AXIS, not half the total — the slip the axis invites */
   var axis = ((q.chart || {}).y || {}).max;
   var bad = JSON.parse(JSON.stringify(reads));
+  /* WHEN HALF THE AXIS IS THE RIGHT HEIGHT, IT IS NOT A SLIP (12 Sept 2026). A
+     reading is judged to the grid's resolution (half a small square, strictly),
+     so on a board whose axis runs to n - q17's javelin curve, 50 on an axis to
+     50 - "half the axis" lands within that of the convention height and would
+     be marked RIGHT: a wrong path that is a right path proves nothing. The slip
+     every class makes instead is the RANGE given for the interquartile range. */
+  var sqy = ((q.chart || {}).sq || {}).y || 1;
+  var halfAxisRight = false;
+  Object.keys(bad).forEach(function (k) {
+    if (k === 'atX' || k.indexOf('atX@') === 0 || !axis) return;
+    var wantH = heights[k === 'median' ? 'median' : k];
+    if (wantH && Math.abs(axis / 2 - rnum2(wantH)) < sqy / 2) halfAxisRight = true;
+  });
+  if (halfAxisRight && iqr !== '') {
+    var xs = (q.curve || []).map(function (p) { return Number(p[0]); });
+    return { reads: reads, answers: answers, iqr: String(Math.max.apply(null, xs) - Math.min.apply(null, xs)), answer: answer };
+  }
   Object.keys(bad).forEach(function (k) {
     if (k === 'atX' || !axis) return;
     bad[k].h = axis / 2;
@@ -1691,6 +1725,23 @@ function statsBoard(q, wrong) {
     T('RD24b a followed-through IQR earns nothing itself', v.perLine[4].earned === 0);
     v = check(RDq3, { S: { reads: { Q1: { h: 5, x: 5 }, Q3: { h: 60, x: 15 } }, iqr: '10' } });
     T('RD25 reading the wrong axis', dxAt(v, 0, 'READ_WRONG_AXIS'));
+    /* the grid's resolution (12 Sept 2026): n = 50 under split50 wants 25.5,
+       which a rule moving in squares of 2 cannot reach - both neighbours are
+       right, a whole square out is not, and an exact convention height still
+       refuses its neighbour a whole square away */
+    var RDg = { id: 'rdg', kind: 'cfread', marks: [1, 1], n: 50, ask: ['median'],
+                curve: [[70, 0], [75, 10], [80, 25], [85, 40], [90, 50]],
+                chart: { x: { min: 70, max: 90, step: 5 }, y: { min: 0, max: 50, step: 10 }, sq: { x: 1, y: 2 } } };
+    v = check(RDg, { S: { reads: { median: { h: 25, x: 80 } } } });
+    var vg26 = check(RDg, { S: { reads: { median: { h: 26, x: 80 } } } });
+    T('RD31 grid: 25 and 26 are both right for 25.5', okAt(v, 0, 1) && okAt(vg26, 0, 1) && v.res === 'OK');
+    v = check(RDg, { S: { reads: { median: { h: 24, x: 80 } } } });
+    T('RD32 grid: 24 is a whole square out for 25.5', okAt(v, 0, 0));
+    var RDe = { id: 'rde', kind: 'cfread', marks: [1, 1], n: 49, ask: ['median'], curve: RDg.curve, chart: RDg.chart };
+    v = check(RDe, { S: { reads: { median: { h: 26, x: 80 } } } });
+    T('RD33 grid: 26 is wrong for an exact 25', okAt(v, 0, 0));
+    v = check(RDe, { S: { reads: { median: { h: 25, x: 80 } } } });
+    T('RD34 grid: 25 is right for an exact 25', okAt(v, 0, 1));
     var RDx = { id: 'rdx', kind: 'cfread', marks: [1, 2], n: 80, curve: RDq.curve, chart: RDq.chart,
                 ask: [{ type: 'atX', x: 12, want: 'countAbove' }] };
     v = check(RDx, { S: { reads: { atX: { x: 12, cf: 48 } }, answer: '32' } });

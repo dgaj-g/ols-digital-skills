@@ -18,6 +18,14 @@
  * against it would pass a control that has no busy state at all. The transport
  * is slowed to two seconds first — the qa-skip-guard trick — so the gap a pupil
  * would see is the gap this gate sees.
+ *
+ * RULINGS 46/47/48 (12 Sept 2026) fold in here rather than opening a sixth
+ * gate, because they are the same law read twice: the passcode wait is now
+ * measured as the PUPIL's own is-waiting line, not the staff gold card
+ * (ruling 46 moved the fault, this gate's rendered-frame check moves with
+ * it); and a pupil's own save gets the identical treatment on her side of
+ * the app — quiet while it runs, honest only once it is genuinely late
+ * (ruling 48: a save that takes 12-40 s and completes is not trouble at 8 s).
  */
 'use strict';
 const A = require('./lib/app.js');
@@ -36,8 +44,9 @@ const CONTROLS = [
      actually move on screen, and a tick that moves only after the server
      answers, are both "a breath the eye cannot see is not a breath" - the same
      fault as a busy state that never appears, one frame later. */
-  { id: 'wait-card-still', kind: 'fixture', plant: 'fixture-wait-card-still', mustFail: /does not breathe in rendered frames/ },
+  { id: 'wait-card-still', kind: 'fixture', plant: 'fixture-passcode-line-still', mustFail: /does not breathe in rendered frames/ },
   { id: 'tick-waits', kind: 'fixture', plant: 'fixture-tick-waits', mustFail: /waits for the server before it moves/ },
+  { id: 'outbox-warns-at-eight', kind: 'fixture', plant: 'fixture-outbox-warns-at-eight', mustFail: /a trouble card before 30 s/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -83,15 +92,19 @@ const g = new Gate('qa-waits');
     g.note('outbox keys on this device at rest: ' + held.before);
     await page.close();
 
-    /* ═══ THE STAFF SIDE (rulings 34/35/37, 11 Sept 2026) ═══════════════
-       A rendered-frame check for the passcode screen's gold wait-card: it is
-       not enough for the CSS to declare an animation, because a card that is
-       replaced, re-parented, or sitting under a media query nobody expected
-       can carry an animation nobody ever sees. Two samples 700ms apart, on
-       the actual computed opacity of the actual element on screen, at live
-       transport speed - a full 1.5s breath goes 1 -> .58 (or deeper) -> 1, so
-       two points 700ms apart must differ by at least 0.15 or the breath is
-       not there for a human either. */
+    /* ═══ THE STAFF SIDE (rulings 34/35/37/46, 11-12 Sept 2026) ═════════
+       A rendered-frame check for the passcode screen's wait line. Ruling 46
+       moved this from the staff gold card to the pupil's own is-waiting line
+       ("I want it to flash like the 'getting your details' message... not
+       gold"), so the check now demands the pupil line's class AND its own
+       turning mark - not just an opacity swing that could belong to either.
+       It is not enough for the CSS to declare an animation, because a card
+       that is replaced, re-parented, or sitting under a media query nobody
+       expected can carry an animation nobody ever sees. Two samples 700ms
+       apart, on the actual computed opacity of the actual element on screen,
+       at live transport speed - a full 1.5s breath goes 1 -> .58 (or deeper)
+       -> 1, so two points 700ms apart must differ by at least 0.15 or the
+       breath is not there for a human either. */
     const fs = require('fs');
     const outDir = A.qa('out/polish/E');
     fs.mkdirSync(outDir, { recursive: true });
@@ -119,18 +132,24 @@ const g = new Gate('qa-waits');
     const sample = () => staffPage.evaluate(() => {
       const m = document.querySelector('#st-msg');
       if (!m) return null;
-      return { opacity: parseFloat(getComputedStyle(m).opacity), className: m.className };
+      const before = getComputedStyle(m, '::before');
+      return {
+        opacity: parseFloat(getComputedStyle(m).opacity),
+        className: m.className,
+        beforeAnim: before ? before.animationName : null
+      };
     });
     const frame1 = await sample();
     await staffPage.screenshot({ path: outDir + '/passcode-frame-1.png' }).catch(() => {});
     await new Promise(r => setTimeout(r, 700));
     const frame2 = await sample();
     await staffPage.screenshot({ path: outDir + '/passcode-frame-2.png' }).catch(() => {});
-    const bothCards = !!(frame1 && frame2 && /\bpanel-loading\b/.test(frame1.className) && /\bpanel-loading\b/.test(frame2.className));
+    const bothWaiting = !!(frame1 && frame2 && /\bis-waiting\b/.test(frame1.className) && /\bis-waiting\b/.test(frame2.className));
+    const beforeTurns = !!(frame1 && frame1.beforeAnim && frame1.beforeAnim !== 'none');
     const diff = (frame1 && frame2) ? Math.abs(frame1.opacity - frame2.opacity) : 0;
-    g.note('passcode wait-card opacity: t=' + JSON.stringify(frame1) + ', t+700ms=' + JSON.stringify(frame2) + ', diff=' + diff.toFixed(3));
-    g.check(bothCards && diff >= 0.15, 'style.css :: .panel-loading', 'waits',
-      'the wait card does not breathe in rendered frames — a breath the eye cannot see is not a breath');
+    g.note('passcode wait line: t=' + JSON.stringify(frame1) + ', t+700ms=' + JSON.stringify(frame2) + ', diff=' + diff.toFixed(3));
+    g.check(bothWaiting && diff >= 0.15 && beforeTurns, 'style.css :: .is-waiting', 'waits',
+      'the passcode waiting line does not breathe in rendered frames — a breath the eye cannot see is not a breath');
     await staffPage.close();
 
     /* A TICK REACTS AT ONCE: the box must already be flipped, and the message
@@ -161,6 +180,67 @@ const g = new Gate('qa-waits');
         'a tick waits for the server before it moves — the box flips at once and the card says it is saving');
     }
     await teacherPage.close();
+
+    /* ═══ A PUPIL'S OWN SAVE (ruling 48, 12 Sept 2026) ══════════════════
+       His Executions log showed her live saves taking 12-40 s and every one
+       completing, while the screen told her at 8 s that it had failed.
+       script.js's pupil-side `call()` is a private closure - flushSave never
+       goes through `window.GJ.app.call` (only staff.js's admin calls do, via
+       `window.GJ.app.call('admin', p)`), so slowing HER save needs the other
+       door `call()` already checks first: `window.OLS_TRANSPORT`. Installed
+       only once she is already inside a book (boot and the book-open used the
+       real, fast, offline path), so only what happens next - her save - is
+       slowed. 'save' answers after a SIMULATED 20 s - inside a real save's
+       own range, and well past the dead clock this replaces - everything
+       else at 2 s. */
+    const pupilPage = await S.openApp(browser, { width: 1280 });
+    const book0 = A.books()[0];
+    const gotIn = await S.openExercise(pupilPage, book0, 0);
+    g.check(!!gotIn, 'lib/stage.js :: openExercise', 'waits',
+      'could not open a book to test the pupil save law (' + book0 + ') — nothing below this was checked');
+    if (gotIn) {
+      await pupilPage.evaluate(() => {
+        window.OLS_TRANSPORT = {
+          call: function (p) {
+            var ms = (p.action === 'save') ? 20000 : 2000;
+            return new Promise(function (resolve) { setTimeout(function () { resolve({ ok: true }); }, ms); });
+          }
+        };
+      });
+      await pupilPage.evaluate(() => { window.GJ.app.save(); });
+      /* scheduleSave debounces up to ~10s in general, but her very first save
+         this session has nothing to debounce against (lastSave is 0), so the
+         line should be up well inside 4s - give it that long, not the full
+         debounce, so a genuinely missing line still fails this check. */
+      await pupilPage.waitForFunction(() => !!document.querySelector('#act-saving.is-waiting'),
+        { timeout: 4000 }).catch(() => {});
+      const appeared = await pupilPage.evaluate(() => !!document.querySelector('#act-saving.is-waiting'));
+      g.check(appeared, 'script.js :: saveLine', 'waits',
+        'the quiet "Saving…" line never appeared within 4 s of the save being scheduled — a save that gives no sign it started is a save she cannot trust');
+
+      if (appeared) {
+        /* the line itself breathes, same law as the passcode line above */
+        const sampleLine = () => pupilPage.evaluate(() => {
+          const m = document.getElementById('act-saving');
+          return m ? { opacity: parseFloat(getComputedStyle(m).opacity), className: m.className } : null;
+        });
+        const lf1 = await sampleLine();
+        await new Promise(r => setTimeout(r, 700));
+        const lf2 = await sampleLine();
+        const lineDiff = (lf1 && lf2) ? Math.abs(lf1.opacity - lf2.opacity) : 0;
+        g.note('pupil save line: t=' + JSON.stringify(lf1) + ', t+700ms=' + JSON.stringify(lf2) + ', diff=' + lineDiff.toFixed(3));
+        g.check(!!(lf1 && lf2 && lineDiff >= 0.15), 'style.css :: .act-saving', 'waits',
+          'the pupil save line does not breathe in rendered frames — a breath the eye cannot see is not a breath');
+
+        /* the ten seconds that prove the eight-second clock is gone, without
+           spending the full thirty on it (DFM: build time is a budget) */
+        await new Promise(r => setTimeout(r, 10000));
+        const troubleAt10 = await pupilPage.evaluate(() => !!document.getElementById('gj-save-trouble'));
+        g.check(!troubleAt10, 'script.js :: OUTBOX_WARN', 'waits',
+          'a trouble card before 30 s — she is told her live save has failed while it is still quietly running');
+      }
+    }
+    await pupilPage.close();
   } finally { await browser.close(); }
   g.done();
 })().catch(e => { console.log('  FAIL  qa-waits x crash: ' + (e && e.stack ? e.stack : e)); process.exit(1); });

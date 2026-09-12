@@ -3,6 +3,20 @@
 **One project, two deployments.** Do them in this order, and read the manifest
 before each version cut.
 
+**DATA NEEDS A NEW VERSION ONLY WHEN `Code.gs` CHANGES; A CLIENT-ONLY CUT
+RE-CUTS THE FRONT DOOR ONLY (12 Sept 2026).** `qa-build` prints both md5s;
+compare the Code.gs md5 with the last DATA row of `DEPLOY_LOG.md`.
+When it has not changed, skip section 1 entirely: paste the built `Index.html`,
+read the manifest, cut the FRONT DOOR as a new version, record one row. The
+manifest **RESTS at the front door's values — `USER_ACCESSING` + `DOMAIN` —
+between cuts**, and is flipped to `USER_DEPLOYING` + `ANYONE_ANONYMOUS` only for
+the minutes of a DATA cut, then put back. (The desktop app's permission layer
+refuses every Claude session an edit of the manifest's `executeAs`/`access`
+lines, so a cut that needs the flip needs Damien's hands; a front-door-only cut
+needs nobody's.) `qa-manifest` post-deploy asks that the last FRONT DOOR row's
+commit carries a `Code.gs` whose md5 equals the last DATA row's — a matched
+pair when Code.gs changed, a front-door-only row otherwise.
+
 > **THE DEPLOYMENT DIALOG LIES.** On 24 June 2026 a version was cut while the
 > dialog displayed "Execute as: Me" and the manifest said `USER_ACCESSING`; every
 > pupil in the school then ran the app as the deployer. The dialog is not
@@ -38,9 +52,10 @@ what makes her full name appear on her very first visit with nothing to type.
      in a commit message, or in a chat window.
    - `dataUrl` — filled in at step 3 below, once the DATA `/exec` exists.
 
-## 1 · DATA (do this one FIRST)
+## 1 · DATA (do this one FIRST — and ONLY when `Code.gs` changed)
 
-The front door has nothing to relay to until this exists.
+The front door has nothing to relay to until this exists. A cut whose `Code.gs`
+md5 equals the last DATA row's skips this whole section.
 
 1. Open the Apps Script project (`1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`), bound to
    the Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled
@@ -49,8 +64,11 @@ The front door has nothing to relay to until this exists.
    section of `DEPLOY_LOG.md`.
 2. Paste the built `server/Code.gs` into `Code.gs` and the built
    `server/Index.html` into the HTML file named exactly `Index`.
-3. **Open `appsscript.json` and read it.** It must say
-   `"executeAs": "USER_DEPLOYING"`. Write down what it actually said.
+3. **Open `appsscript.json` and read it.** It RESTS at `USER_ACCESSING` +
+   `DOMAIN` (the front door's), so for a DATA cut it must be flipped — both
+   fields — to `"executeAs": "USER_DEPLOYING"` and `"access":
+   "ANYONE_ANONYMOUS"`, saved, and **read again**. Write down what it actually
+   said. (This flip is Damien's two-line step; see the note at the top.)
 4. Save. Deploy → Manage deployments → the existing MAIN deployment → edit →
    **New version** → Deploy. The `/exec` does not change.
 5. Record the row in `DEPLOY_LOG.md`: date, `DATA`, the version number, the
@@ -62,10 +80,14 @@ The front door has nothing to relay to until this exists.
 
 ## 2 · FRONT DOOR
 
-1. **Edit `appsscript.json` in the editor** and change `"executeAs"` to
-   `"USER_ACCESSING"` **and `"access"` to `"DOMAIN"`**. Save. (The repo copy is
-   the DATA manifest: `USER_DEPLOYING` + `ANYONE_ANONYMOUS`. Both fields move.)
-2. **Read it again.** It must now say `USER_ACCESSING`. Write down what it said.
+1. **Open `appsscript.json` in the editor and READ it.** It must say
+   `"executeAs": "USER_ACCESSING"` and `"access": "DOMAIN"` — where it rests.
+   Only after a DATA cut (section 1) does it need changing back to those two
+   values: change both fields, Save. (The repo copy is the DATA manifest:
+   `USER_DEPLOYING` + `ANYONE_ANONYMOUS`; the editor's copy rests at the front
+   door's. If it reads `USER_DEPLOYING` and no DATA cut is in progress, somebody
+   put it back — that is Damien's two-line edit before the cut, not Claude's.)
+2. **Read it again.** It must say `USER_ACCESSING`. Write down what it said.
 3. **Updating the front door that already exists** (the normal case - every
    class link points at its `/exec`, so the URL must not change): Deploy →
    Manage deployments → the existing FRONT DOOR deployment → edit → **New
@@ -73,12 +95,13 @@ The front door has nothing to relay to until this exists.
    deployment** → Web app → Execute as: **User accessing the web app** → Who has
    access: **Anyone within c2ken.net** → Deploy.
 4. Record the row in `DEPLOY_LOG.md`: date, `FRONT DOOR`, version, the executeAs
-   as READ, the same commit, the same md5s.
+   as READ, the commit, the md5s (the Index.html md5 is this cut's; the Code.gs
+   md5 must equal the last DATA row's — `qa-manifest` checks both).
 5. Open the new `/exec` once yourself so the one-time permission screen is
    accepted, then open Executions and confirm `doGet` completes **and** that a
    relayed `apiCall` completes. Paste both lines in as proof rows.
-6. Put the manifest back to `USER_DEPLOYING` + `ANYONE_ANONYMOUS` and save, so
-   the next DATA cut starts from the state step 1.3 expects.
+6. LEAVE the manifest at `USER_ACCESSING` + `DOMAIN`. That is where it rests,
+   so the next client-only cut needs no edit from anyone.
 
 ## WHY DATA IS PUBLISHED TO ANYONE, AND WHY THAT IS SAFE
 

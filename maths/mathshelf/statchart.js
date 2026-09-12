@@ -218,7 +218,15 @@
       var major = num(c.major, 5);
       var nSqX = Math.max(1, Math.round((xMax - xMin) / sqX));
       var nSqY = Math.max(1, Math.round((yMax - yMin) / sqY));
-      var marginLeft = 68, marginRight = 26, marginTop = 26, marginBottom = 58;
+      /* THE MARGINS HOLD THE NUMBERS AT PHONE SCALE (12 Sept 2026). relayout()
+         counter-scales every label to LABEL_TARGET_PX, so at the smallest
+         square (law 6) a digit is 27 user units tall, not 13: the bottom margin
+         must hold a row of numbers AND the axis title at that size, and the
+         left margin the widest frequency plus the rotated title. */
+      var fMax = LABEL_TARGET_PX / (MIN_SQUARE_PX / SQ_UNIT);
+      var yDigits = String(Math.round(yMax)).length;
+      var marginLeft = Math.ceil(fMax + 10 + yDigits * fMax * 0.56 + 12), marginRight = 26, marginTop = 26;
+      var marginBottom = Math.ceil(fMax * 2 + 24);
       var plotW = nSqX * SQ_UNIT, plotH = nSqY * SQ_UNIT;
       return {
         isScale: false,
@@ -280,7 +288,12 @@
     /* everything presentational lives in style.css under .stat-board; only
        what is COMPUTED is set here (law: a sentence, a colour and a face are
        read by gates in the stylesheet, not out of a string literal) */
-    svg.style.touchAction = 'none';
+    /* A WIDE BOARD PANS BY TOUCH (ruling 43, 12 Sept 2026). `none` on the
+       whole SVG blocked every pan, so on a phone the last point of Exercise 3
+       could not be reached at all. The SVG permits the frame's sideways pan
+       (and the page's vertical one); `none` goes on the DRAGGABLE hit targets
+       only - addHit() - so a drag that starts on a point moves the point. */
+    svg.style.touchAction = 'pan-x pan-y';
     svg.setAttribute('data-work', '');
     frame.appendChild(svg);
 
@@ -289,6 +302,36 @@
     frame.appendChild(htmlLayer);
 
     host.appendChild(frame);
+
+    /* WHERE SHE IS IN A BOARD WIDER THAN HER SCREEN (ruling 43): a thin track
+       under the grid whose thumb is the visible share of the board, and - in
+       its own line, never the stage line - the words that say to swipe. Both
+       exist only while the frame hides width (relayout() decides). */
+    var track = he('div', 'stat-scroll-track');
+    track.setAttribute('data-ornament', '');
+    track.setAttribute('aria-hidden', 'true');
+    var thumb = he('div', 'stat-scroll-thumb');
+    track.appendChild(thumb);
+    track.hidden = true;
+    host.appendChild(track);
+    var swipeNote = null;
+    if (opts.scrollNote) {
+      swipeNote = he('p', 'stat-swipe-note');
+      swipeNote.textContent = opts.scrollNote;
+      swipeNote.hidden = true;
+      host.appendChild(swipeNote);
+    }
+    function layoutTrack() {
+      var hidden = frame.scrollWidth - frame.clientWidth;
+      var show = hidden > 1;
+      track.hidden = !show;
+      if (swipeNote) swipeNote.hidden = !show;
+      if (!show) return;
+      var share = frame.clientWidth / frame.scrollWidth;
+      thumb.style.width = Math.max(8, Math.round(share * 100)) + '%';
+      thumb.style.left = Math.round((frame.scrollLeft / frame.scrollWidth) * 100) + '%';
+    }
+    frame.addEventListener('scroll', layoutTrack, { passive: true });
 
     // groups, back to front
     var gGrid = sv('g', { 'data-role': 'grid' });
@@ -366,23 +409,34 @@
       gAxis.appendChild(arrowHead(g.plotX0, g.plotY1, g.plotX1 + 10, g.plotY1));
       gAxis.appendChild(arrowHead(g.plotX0, g.plotY1, g.plotX0, g.plotY0 - 10));
       gAxis.style.color = 'var(--ink)';
-      // tick numbers at xStep/yStep
+      // tick numbers at xStep/yStep - SEATED BY relayout(), never by a constant
+      // (ruling 44, 12 Sept 2026: a fixed 16 units below the axis while the
+      // counter-scaled font grew to 27 put the digits' tops on the line)
       var nx = Math.round((g.xMax - g.xMin) / g.xStep);
       for (var k = 0; k <= nx; k++) {
         var vx = g.xMin + k * g.xStep;
         var pxk = g.plotX0 + (vx - g.xMin) / g.sqX * SQ_UNIT;
-        gAxis.appendChild(svgLabel(pxk, g.plotY1 + 16, fmtNum(vx), { anchor: 'middle' }));
+        var xl = svgLabel(pxk, g.plotY1 + 16, fmtNum(vx), { anchor: 'middle' });
+        xl.setAttribute('data-axis', 'x'); xl.setAttribute('data-line', g.plotY1);
+        gAxis.appendChild(xl);
       }
       var ny = Math.round((g.yMax - g.yMin) / g.yStep);
       for (var k2 = 0; k2 <= ny; k2++) {
         var vy = g.yMin + k2 * g.yStep;
         var pyk = g.plotY1 - (vy - g.yMin) / g.sqY * SQ_UNIT;
-        gAxis.appendChild(svgLabel(g.plotX0 - 10, pyk + 4, fmtNum(vy), { anchor: 'end' }));
+        var yl = svgLabel(g.plotX0 - 10, pyk + 4, fmtNum(vy), { anchor: 'end' });
+        yl.setAttribute('data-axis', 'y'); yl.setAttribute('data-line', g.plotX0); yl.setAttribute('data-at', pyk);
+        gAxis.appendChild(yl);
       }
-      // axis titles
-      if (g.xLabel) gAxis.appendChild(svgLabel((g.plotX0 + g.plotX1) / 2, g.vbh - 8, g.xLabel, { anchor: 'middle' }));
+      // axis titles (the x title is seated under the numbers by relayout())
+      if (g.xLabel) {
+        var xt = svgLabel((g.plotX0 + g.plotX1) / 2, g.vbh - 8, g.xLabel, { anchor: 'middle' });
+        xt.setAttribute('data-axis-title', 'x'); xt.setAttribute('data-line', g.plotY1);
+        gAxis.appendChild(xt);
+      }
       if (g.yLabel) {
         var yt = svgLabel(0, 0, g.yLabel, { anchor: 'middle' });
+        yt.setAttribute('data-axis-title', 'y'); yt.setAttribute('data-at', (g.plotY0 + g.plotY1) / 2);
         yt.setAttribute('transform', 'translate(16,' + ((g.plotY0 + g.plotY1) / 2) + ') rotate(-90)');
         gAxis.appendChild(yt);
       }
@@ -409,10 +463,18 @@
           'stroke-width': onStep ? 1.2 : 0.8,
           'vector-effect': 'non-scaling-stroke'
         }));
-        if (onStep) gAxis.appendChild(svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' }));
+        if (onStep) {
+          var sl = svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' });
+          sl.setAttribute('data-axis', 'x'); sl.setAttribute('data-line', s.trackY + 10);
+          gAxis.appendChild(sl);
+        }
       }
       gAxis.appendChild(sv('line', { x1: s.plotX0, y1: s.trackY, x2: s.plotX1, y2: s.trackY, stroke: 'currentColor', 'stroke-width': 1.4, 'vector-effect': 'non-scaling-stroke' }));
-      if (s.label) gAxis.appendChild(svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' }));
+      if (s.label) {
+        var stl = svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' });
+        stl.setAttribute('data-axis-title', 'x'); stl.setAttribute('data-line', s.trackY + 10);
+        gAxis.appendChild(stl);
+      }
       if (Math.abs(s.xMin) > 1e-9) {
         var bx2 = s.plotX0, by2 = s.trackY;
         var zz2 = 'M ' + (bx2 - 4) + ' ' + (by2 + 6) + ' l 3 -5 l 4 8 l 4 -8 l 3 5';
@@ -512,6 +574,13 @@
       var sc = st.lastScale || 1;
       var layerW = htmlLayer.clientWidth || (st.geo.vbw * sc);
       var layerH = htmlLayer.clientHeight || (st.geo.vbh * sc);
+      /* A LABEL STAYS OUT OF THE GUTTER (12 Sept 2026). On a phone the host
+         reclaims the question-number column (a negative margin, style.css);
+         the grid may sit there, but a label's words may not - the overlap law
+         found "lower quartile" under "Q2". The inset is measured, never guessed. */
+      var inset = 0;
+      try { inset = Math.max(0, -parseFloat(getComputedStyle(host).marginLeft || '0')) ; } catch (e) { inset = 0; }
+      if (inset > 0) inset += 4;
       /* A LABEL WITH NO BOARD UNDER IT IS NOT A LABEL. On the exercise page the
          boards below the fold are laid out after their labels are made, so the
          layer is momentarily nothing at all - and a label placed on a layer of
@@ -532,7 +601,7 @@
         rec.el.style.top = '0px';
         rec.w = rec.el.offsetWidth || 40;
         rec.h = rec.el.offsetHeight || 16;
-        rec.wantX = Math.max(rec.w / 2, Math.min(p[0] * sc, layerW - rec.w / 2));
+        rec.wantX = Math.max(inset + rec.w / 2, Math.min(p[0] * sc, layerW - rec.w / 2));
         rec.wantY = Math.max(rec.h, Math.min(p[1] * sc - 10, layerH));
         recs.push(rec);
       }
@@ -575,7 +644,7 @@
             ? r.wantY - row * rowH
             : r.wantY + (row - maxUp) * rowH;
           for (var d = 0; d < DX.length; d++) {
-            var cx = Math.max(r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
+            var cx = Math.max(inset + r.w / 2, Math.min(layerW - r.w / 2, r.wantX + DX[d]));
             var cand = { l: cx - r.w / 2, t: top - r.h, r: cx + r.w / 2, b: top, x: cx };
             if (cand.t < 0 || cand.b > layerH) continue;
             if (!firstLegal) firstLegal = cand;
@@ -603,7 +672,11 @@
     // =====================================================================
     function addHit(cx, cy, kind, group) {
       var hitEl = sv('circle', { cx: cx, cy: cy, r: 16, fill: 'transparent', stroke: 'none' });
-      hitEl.style.cssText = 'pointer-events:all;cursor:pointer;';
+      /* touch-action none HERE and only here (ruling 43): a drag that starts
+         on a point, a rule handle or a marker moves it; one that starts on
+         empty grid pans the frame */
+      hitEl.style.cssText = 'pointer-events:all;cursor:pointer;touch-action:none;';
+      hitEl.setAttribute('data-hit', kind);
       (group || svg).appendChild(hitEl);
       var rec = { el: hitEl, cx: cx, cy: cy };
       st.hitEls.push(rec);
@@ -866,11 +939,19 @@
           stroke: onStep ? 'var(--grid-major)' : 'var(--grid-minor)',
           'stroke-width': onStep ? 1.2 : 0.8, 'vector-effect': 'non-scaling-stroke'
         }));
-        if (onStep) gAxis.appendChild(svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' }));
+        if (onStep) {
+          var sl2 = svgLabel(psx, s.trackY + 26, fmtNum(vsx), { anchor: 'middle' });
+          sl2.setAttribute('data-axis', 'x'); sl2.setAttribute('data-line', s.trackY + 10);
+          gAxis.appendChild(sl2);
+        }
       }
       gAxis.appendChild(sv('line', { x1: s.plotX0, y1: s.trackY, x2: s.plotX1, y2: s.trackY, stroke: 'currentColor', 'stroke-width': 1.4, 'vector-effect': 'non-scaling-stroke' }));
       gAxis.style.color = 'var(--ink)';
-      if (s.label) gAxis.appendChild(svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' }));
+      if (s.label) {
+        var stl2 = svgLabel((s.plotX0 + s.plotX1) / 2, s.vbh - 8, s.label, { anchor: 'middle' });
+        stl2.setAttribute('data-axis-title', 'x'); stl2.setAttribute('data-line', s.trackY + 10);
+        gAxis.appendChild(stl2);
+      }
       relayout();
     }
 
@@ -1070,9 +1151,31 @@
       var fontUserUnits = LABEL_TARGET_PX / scaleFactor;
       var nodes = svg.querySelectorAll('[data-autosize]');
       for (var i = 0; i < nodes.length; i++) nodes[i].setAttribute('font-size', fontUserUnits.toFixed(2));
+      seatAxisText(fontUserUnits, scaleFactor);
       var hitUserUnits = MIN_HIT / 2 / scaleFactor;
       for (var j = 0; j < st.hitEls.length; j++) st.hitEls[j].el.setAttribute('r', Math.max(hitUserUnits, 8));
       layoutLabels();
+      layoutTrack();
+    }
+    /* AN AXIS NUMBER NEVER CROSSES ITS AXIS LINE (ruling 44). Every number is
+       seated from the font it is actually drawn at: an x number's baseline one
+       font plus 4 CSS px below its line (so the digits' tops clear the line
+       by 4 CSS px whatever the scale); a y number's right edge 6 CSS px left of
+       its axis, centred on its tick; the x title a line under the numbers. */
+    function seatAxisText(f, scale) {
+      var css = function (px) { return px / scale; };
+      var xs = svg.querySelectorAll('[data-axis="x"]');
+      var k;
+      for (k = 0; k < xs.length; k++) xs[k].setAttribute('y', (Number(xs[k].getAttribute('data-line')) + f + css(4)).toFixed(2));
+      var ys = svg.querySelectorAll('[data-axis="y"]');
+      for (k = 0; k < ys.length; k++) {
+        ys[k].setAttribute('x', (Number(ys[k].getAttribute('data-line')) - css(6)).toFixed(2));
+        ys[k].setAttribute('y', (Number(ys[k].getAttribute('data-at')) + f * 0.35).toFixed(2));
+      }
+      var xt = svg.querySelectorAll('[data-axis-title="x"]');
+      for (k = 0; k < xt.length; k++) xt[k].setAttribute('y', (Number(xt[k].getAttribute('data-line')) + f + css(4) + f + css(6)).toFixed(2));
+      var yt = svg.querySelectorAll('[data-axis-title="y"]');
+      for (k = 0; k < yt.length; k++) yt[k].setAttribute('transform', 'translate(' + (f * 0.75 + css(2)).toFixed(2) + ',' + yt[k].getAttribute('data-at') + ') rotate(-90)');
     }
 
     var ro = null;
@@ -1095,17 +1198,36 @@
 
     // background tap -> caller decides whether it means "place a point"
     if (!opts.readOnly && typeof opts.onGridTap === 'function') {
+      /* A TAP PLACES; A SWIPE PANS (ruling 43). With the SVG free to pan, the
+         browser fires pointerdown at the start of a swipe too and pointercancel
+         once it has decided to scroll - so the press is only a tap when the
+         pointer comes UP where it went down. The place it went down is the
+         place she meant (a finger lifts a little off true). */
+      var tap = null;
       svg.addEventListener('pointerdown', function (e) {
+        tap = null;
         if (e.target !== svg && e.target.tagName !== 'line' && e.target !== gGrid) {
           // ignore taps that landed on an interactive glyph (handled by its own listener)
           if (e.target.closest && (e.target.closest('.stat-pt') || e.target.closest('.stat-marker') || e.target.closest('.stat-rule'))) return;
         }
-        var p = svgPointFromEvent(e);
+        tap = { id: e.pointerId, x: e.clientX, y: e.clientY, p: svgPointFromEvent(e) };
+      });
+      svg.addEventListener('pointercancel', function () { tap = null; });
+      svg.addEventListener('pointerup', function (e) {
+        if (!tap || (e.pointerId !== undefined && tap.id !== undefined && e.pointerId !== tap.id)) { tap = null; return; }
+        var moved = Math.abs(e.clientX - tap.x) + Math.abs(e.clientY - tap.y);
+        var p = tap.p;
+        tap = null;
+        if (moved > 12) return;                       /* a swipe, not a tap */
         var ax = toAxis(p.x, p.y);
         var g2 = st.geo;
+        /* a tap within half a small square of the edge is ON the edge - the
+           point snaps there anyway, and a press on the axis line itself (x = 0)
+           must place, not vanish on a half-pixel rounding of the event */
+        var tx = (g2.isScale ? g2.sq : g2.sqX) / 2 + 1e-6, ty = (g2.isScale ? 0 : g2.sqY / 2) + 1e-6;
         var inBounds = g2.isScale
-          ? (ax[0] >= g2.xMin - 1e-6 && ax[0] <= g2.xMax + 1e-6)
-          : (ax[0] >= g2.xMin - 1e-6 && ax[0] <= g2.xMax + 1e-6 && ax[1] >= g2.yMin - 1e-6 && ax[1] <= g2.yMax + 1e-6);
+          ? (ax[0] >= g2.xMin - tx && ax[0] <= g2.xMax + tx)
+          : (ax[0] >= g2.xMin - tx && ax[0] <= g2.xMax + tx && ax[1] >= g2.yMin - ty && ax[1] <= g2.yMax + ty);
         if (!inBounds) return;
         opts.onGridTap(snapX(ax[0]), snapY(ax[1]));
       });

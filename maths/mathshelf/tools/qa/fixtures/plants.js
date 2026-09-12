@@ -587,6 +587,18 @@ const PLANTS = {
       '| 2026-09-05 | FRONT DOOR | 1 | USER_DEPLOYING | deadbee | aaa | bbb |\n');
     return { env: { MS_POST_DEPLOY: '1' } };
   },
+  /* a FRONT DOOR re-cut on a later commit whose Code.gs is not the one the
+     DATA row was cut with - the page would call a server that does not know
+     it (12 Sept 2026, the front-door-only release rule) */
+  'DEPLOY_LOG.stale-data.md': (dir) => {
+    write(dir, 'server/DEPLOY_LOG.md',
+      '# control\n\n| date | deployment | version | executeAs (as READ from the manifest) | commit | md5 Index | md5 Code |\n|---|---|---|---|---|---|---|\n' +
+      '| 2026-09-05 | DATA | 25 | USER_DEPLOYING | deadbee | aaa | bbb |\n' +
+      '| 2026-09-05 | FRONT DOOR | 26 | USER_ACCESSING | deadbee | aaa | bbb |\n' +
+      '| 2026-09-06 | FRONT DOOR | 27 | USER_ACCESSING | cafef00 | ddd | ccc |\n' +
+      'Proof row, quoted from the Executions log: doGet Completed.\nProof row, quoted from the Executions log: apiCall Completed.\n');
+    return { env: { MS_POST_DEPLOY: '1' } };
+  },
 
   /* ══ THE STATS CONTROLS TABLE (DESIGN §11.3, [Review, 7 Sept 2026]) ═════
      One fault each, in today's jotter-stats.js / statcore.js / statchart.js
@@ -736,6 +748,29 @@ const PLANTS = {
       "  .stat-q-cfplot > .jq-body { display: grid;   /* planted: beside whether it fits or not */");
     return { env: BOOK_C };
   },
+  /* ── the board on a phone (rulings 43/44, 12 Sept 2026) ─────────────── */
+  'stats-board-no-pan': (dir) => {
+    /* touch-action none back on the whole SVG: the polish cut as he met it on
+       his iPhone - no swipe could move the board, (25, 100) out of reach */
+    edit(dir, 'statchart.js', "svg.style.touchAction = 'pan-x pan-y';", "svg.style.touchAction = 'none';   /* planted: the whole board refuses the pan */");
+    return { env: { MS_BOOK: 'stats-quartiles', MS_WIDTHS: '375' } };
+  },
+  'stats-axis-number-on-the-line': (dir) => {
+    /* the x numbers seated by the old constant - 16 user units below the axis
+       whatever the counter-scaled font - so at phone scale the digits' tops
+       stand on the line */
+    edit(dir, 'statchart.js',
+      "for (k = 0; k < xs.length; k++) xs[k].setAttribute('y', (Number(xs[k].getAttribute('data-line')) + f + css(4)).toFixed(2));",
+      "for (k = 0; k < xs.length; k++) xs[k].setAttribute('y', (Number(xs[k].getAttribute('data-line')) + 16).toFixed(2));   /* planted: the +16 constant */");
+    return { env: { MS_BOOK: 'stats-quartiles', MS_WIDTHS: '375' } };
+  },
+
+  'stats-stage-line-replaced': (dir) => {
+    /* the old single-slot say(): a passing note written over the stage line */
+    edit(dir, 'jotter-stats.js', "note: function (text) { note.textContent = text || ''; },", "note: function (text) { msg.textContent = text || ''; },   /* planted: one slot */");
+    return { env: BOOK_C };
+  },
+
   /* ── a film that does not draw what its caption says (ruling 39) ──────── */
   'film-ring-draws-nothing': (dir) => {
     edit(dir, 'player.js', "if (op.ring && movie.mode === 'paper') return paperRing(op, instant);", '/* planted: the ring op draws nothing again */');
@@ -793,6 +828,18 @@ const PLANTS = {
     edit(dir, 'staff.js',
       "          cb.addEventListener('change', function () {\n            /* the box has already flipped",
       "          cb.addEventListener('change', function () {\n            cb.checked = !cb.checked;   /* planted: undo the flip until the server answers */\n            /* the box has already flipped");
+  },
+  /* ruling 46, 12 Sept 2026: the passcode line stops breathing - same fault
+     as fixture-wait-card-still, aimed at the pupil's own is-waiting line the
+     staff cover now wears instead of the gold card. */
+  'fixture-passcode-line-still': (dir) => {
+    fs.appendFileSync(path.join(dir, 'style.css'), '\n#st-msg.is-waiting, #st-msg.is-waiting::before { animation: none !important; }\n');
+  },
+  /* ruling 48, 12 Sept 2026: the old eight-second clock, replanted, so the
+     gate can prove it condemns a card that comes back too soon on a save that
+     is genuinely just live. */
+  'fixture-outbox-warns-at-eight': (dir) => {
+    edit(dir, 'script.js', 'var OUTBOX_WARN = 30000;', 'var OUTBOX_WARN = 8000;   /* planted: the 8 s card */');
   },
 
   /* ── a cold-read verdict filed against text that has since changed ── */

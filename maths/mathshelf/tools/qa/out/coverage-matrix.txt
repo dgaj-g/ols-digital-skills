@@ -1,5 +1,5 @@
 
-  COVERAGE MATRIX (content hash cd31e63f7362, tier fast)
+  COVERAGE MATRIX (content hash a6de681c841f, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  222
@@ -39,9 +39,6 @@
   question:checked-wrong-1 @1280 × readability             next harness session: the sampler and the protractor's halo                                                                                    (any)               WAIVED
   question:checked-right @1280 × readability               next cut (Book A's): nothing that carries words is dimmed after Check — the chosen state is shown by fill or a mark, never by fading the rest  (any)               WAIVED
   question:checked-wrong-1 @375 × readability              next cut (Book A's): the ghost never carries words                                                                                             (any)               WAIVED
-  stats-quartiles > s4 > q17 (cfread) @375 × walk-right    the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
-  stats-quartiles > s4 > q17 (cfread) @768 × walk-right    the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
-  stats-quartiles > s4 > q17 (cfread) @1280 × walk-right   the next Book C fix session — Book A's opening list, P0                                                                                        (any)               WAIVED
   stats-quartiles > s4 > q18 (cfread) @375 × walk-right    next harness session                                                                                                                           (any)               WAIVED
   stats-quartiles > s4 > q18 (cfread) @768 × walk-right    next harness session                                                                                                                           (any)               WAIVED
   stats-quartiles > s4 > q18 (cfread) @1280 × walk-right   next harness session                                                                                                                           (any)               WAIVED

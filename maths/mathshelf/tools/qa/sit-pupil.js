@@ -99,6 +99,11 @@ const CONTROLS = [
   { id: 'film-box-on-the-glyphs', kind: 'fixture', plant: 'film-box-on-the-glyphs', mustFail: /px from the text it boxes/ },
   { id: 'table-between-board-and-dock', kind: 'fixture', plant: 'stats-table-between', mustFail: /the control for the current stage is directly under the board, never a screen away/ },
   { id: 'board-squeezed-beside-the-table', kind: 'fixture', plant: 'stats-board-squeezed', mustFail: /the chart gets the whole body before anything sits beside it/ },
+  /* his second live test (12 Sept 2026, an iPhone): the board could not be
+     moved sideways by touch at all, and the axis numbers sat on the line */
+  { id: 'stats-board-no-pan', kind: 'fixture', plant: 'stats-board-no-pan', mustFail: /the board cannot be moved sideways by touch/ },
+  { id: 'stats-axis-number-on-the-line', kind: 'fixture', plant: 'stats-axis-number-on-the-line', mustFail: /an axis number never crosses its axis line/ },
+  { id: 'stage-line-replaced', kind: 'fixture', plant: 'stats-stage-line-replaced', mustFail: /a passing note never replaces the stage line/ },
   { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
@@ -459,6 +464,47 @@ async function walkBook(page, book, width, sidecar, transcript) {
              a frame that hides grid while its BODY had the room is not. */
           if (b && b.kind === 'cfplot' && b.boardHidden > 0 && b.boardSqueeze !== null && b.boardSqueeze > 8)
             g.fail('question > ' + qid + ' @' + width, 'reach', 'the board hides ' + b.boardHidden + ' px of its grid behind a sideways scroll while its body is ' + b.bodyWidth + ' px wide and the frame ' + b.boardFrame + ' on ' + qid + ' — the chart gets the whole body before anything sits beside it');
+          /* THE BOARD ON A PHONE (rulings 43 and 44, his second live test,
+             12 Sept 2026). (i) The SVG's computed touch-action permits the
+             frame's sideways pan and every draggable target's is none, so a
+             swipe on empty grid scrolls and a drag on a point moves it; where
+             the frame hides width its scroll really reaches the far edge and
+             the last target on it, and the swipe note and the track are showing
+             - in their own line, never the stage instruction. (ii) Every axis
+             number's rendered box sits at least 3 CSS px clear of its axis
+             line, at every width. */
+          if (b && b.touch) {
+            const t = b.touch;
+            if (!/pan-x|auto|manipulation/.test(t.svg))
+              g.fail('question > ' + qid + ' @' + width, 'reach', 'the board\'s SVG has touch-action "' + t.svg + '" on ' + qid + ' — the board cannot be moved sideways by touch: a swipe on empty grid pans the frame, and touch-action none sits on the draggable targets only');
+            if (t.hitCount && (t.hits.length !== 1 || t.hits[0] !== 'none'))
+              g.fail('question > ' + qid + ' @' + width, 'reach', t.hitCount + ' draggable targets on ' + qid + ' have touch-action ' + JSON.stringify(t.hits) + ' — a drag that starts on a point, a rule handle or a marker must move it, so their touch-action is none');
+            if (t.hidden > 1) {
+              if (!t.reachedEnd || !t.lastReachable)
+                g.fail('question > ' + qid + ' @' + width, 'reach', 'the board hides ' + t.hidden + ' px and its frame\'s scroll ' + (t.reachedEnd ? 'does not reach the last target (right edge ' + t.lastRight + ' of ' + t.scrollWidth + ')' : 'does not reach its far edge') + ' on ' + qid + ' — the last point of the graph must be reachable on a phone');
+              if (!t.noteShown || !t.trackShown)
+                g.fail('question > ' + qid + ' @' + width, 'reach', 'the board hides ' + t.hidden + ' px on ' + qid + ' and ' + (!t.noteShown ? 'nothing says to swipe the graph sideways' : 'no scroll track shows where she is') + ' — a hidden width is said, under the grid, in its own line');
+            } else if (t.noteShown) {
+              g.fail('question > ' + qid + ' @' + width, 'reach', 'the board hides nothing on ' + qid + ' and still says to swipe it — a note that is not true is a note she stops reading');
+            }
+            if (t.noteInStageLine)
+              g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the swipe note sits in the stage instruction on ' + qid + ' — a passing note never replaces the stage line');
+            if (t.axisClear !== null && t.axisClear < 3)
+              g.fail('question > ' + qid + ' @' + width, 'geometry', 'the axis number ' + t.axisWorst + ' on ' + qid + ' sits ' + t.axisClear + ' px clear of its axis line — an axis number never crosses its axis line (at least 3 CSS px of clear paper, measured from the rendered box)');
+          }
+          /* THE STAGE LINE STAYS; A NOTE HAS ITS OWN LINE (ruling 45). With
+             every point placed the walker taps once more: the enough-points
+             note must be in .stat-note and the stage instruction untouched.
+             While points are still wanted the instruction names the next one. */
+          if (b && b.lines && b.kind === 'cfplot') {
+            const L = b.lines;
+            if (L.enoughText && L.stageText === L.enoughText)
+              g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the stage line on ' + qid + ' reads "' + L.stageText + '" — a passing note never replaces the stage line; it has its own line under it');
+            if (L.boardFull && !L.joined && L.enoughText && L.noteText !== L.enoughText)
+              g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'every point is placed on ' + qid + ' and one more tap earned no note — "' + L.enoughText + '" belongs in its own line under the instruction (got "' + L.noteText + '")');
+            if (!L.boardFull && !L.joined && L.stageText && !L.nextNamed)
+              g.fail('question > ' + qid + ' @' + width, 'stage-strip', 'the plotting instruction on ' + qid + ' does not name the next point ("' + L.stageText.slice(0, 80) + '") — "Next: across {hi}, up {cf}."');
+          }
           await W.settle(page);
           const now = await page.evaluate((s2, id) => eval(s2)(id), W.STAGES_OF, qid);
           if (now.stage && visited.indexOf(now.stage) === -1) visited.push(now.stage);

@@ -985,6 +985,16 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
   50% { opacity: .45; transform: scale(1.015); }
 }
 @media (prefers-reduced-motion: reduce) { .panel-loading, .panel-spinner, .spinner, .is-waiting, .is-waiting::before { animation: none; } }
+/* the pupil's own quiet "Saving…" line while a call is in flight (ruling 48,
+   12 Sept 2026): sits in flow under the exercise title, never over it, and
+   carries .is-waiting itself for the breath and the turning mark above. */
+.act-saving { font: 500 13px/1.3 var(--f-stationery); color: var(--pencil); margin: 0; }
+/* a "Try again" that is disabled while a save is already in flight must not
+   fade its own words: the disabled-control law (ruling 41/the btn-stamp note
+   above) wants full ink so she can still read what pressing it would do -
+   .toolbtn[disabled] alone fades to 55%, which is the fault this undoes for
+   this one button. */
+.gj-save-trouble button[disabled] { opacity: 1; cursor: default; }
 .act-load-error { text-align: center; color: var(--support-rose); font-weight: 700; margin: 28px auto; max-width: 480px; line-height: 1.4; }
 
 /* selection lock while dragging (protractor drag etc.) */
@@ -1019,6 +1029,12 @@ body.dragging-active, body.dragging-active * {
      figure ran 13px off the left edge of the page. Part of a diagram a pupil
      cannot see is worse than a smaller one. */
   .jq-diagram, .prot-wrap { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* a stat board reclaims the same gutter (ruling 43, 12 Sept 2026): a 349px
+     Exercise 3 grid then hides as little as a phone allows; what it still hides
+     is said under the grid, in its own line, with the scroll track */
+  .stat-q .stat-boards > .stat-board-host, .stat-q .stat-stage > .stat-board-host, .stat-q .stat-plot > div.stat-board { margin-left: calc(var(--sq) * -1.6); margin-right: calc(var(--sq) * -0.6); }
+  /* the words stay in the text column; only the grid takes the gutter */
+  .stat-q .stat-swipe-note { margin-left: calc(var(--sq) * 1.6 + 2px); }
   /* inside a film the diagram has no margin column to reclaim: the film IS the
      card, and a figure hanging off its edge is a figure with a piece missing */
   .movie .jq-diagram, .movie .prot-wrap { margin-left: 0; margin-right: 0; }
@@ -1281,6 +1297,13 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* the board itself is paper, whatever the shell does */
 .stat-board-frame { background: var(--panel); border: 1px solid var(--hairline); border-radius: 8px; }
+/* WHERE SHE IS IN A BOARD WIDER THAN HER SCREEN (ruling 43): the track under
+   the grid is the board's width, the thumb the share of it she can see; the
+   note is its own line in the pencil face - never the stage instruction */
+.stat-scroll-track { position: relative; height: 6px; margin: 6px 2px 0; border-radius: 3px; background: var(--hairline); overflow: hidden; }
+.stat-scroll-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; border-radius: 3px; background: var(--copper); }
+.stat-swipe-note { margin: 6px 2px 0; color: var(--pencil); font: 500 14px/1.35 var(--f-stationery, var(--f-ui)); }
+.stat-swipe-note[hidden], .stat-scroll-track[hidden] { display: none; }
 .stat-board { display: block; width: 100%; height: auto; background: var(--panel); color: var(--ink); }
 .stat-board text, .stat-svg-label { fill: currentColor; }
 .stat-svg-label { font-family: var(--f-maths); color: var(--ink); user-select: none; }
@@ -1357,6 +1380,20 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   font: 600 14px var(--f-stationery, var(--f-ui)); cursor: pointer;
 }
 .btn-quiet:disabled { background: var(--pencil); color: var(--cream); border-color: var(--pencil); cursor: default; opacity: 1; }
+/* THE STAGE'S CONTROL LOOKS LIKE A BUTTON (ruling 45; ruling 41's "should be
+   more pronounced"). The control that ends the current stage - "✓ Join the
+   points", "✓ Draw the box plot", "✓ That's my median", "Next: draw the box
+   plot" - is filled copper with white ink at the Check's height; secondary
+   acts (Remove the last one, next ↓) stay quiet. White on --copper: 5.4:1.
+   Disabled: the same grey ground and full ink as every other button here. */
+.btn-stage {
+  min-height: 44px; padding: 10px 18px; margin: 6px 8px 6px 0; border: 1.5px solid var(--copper);
+  border-radius: 8px; background: var(--copper); color: #fff;
+  font: 700 14.5px var(--f-stationery, var(--f-ui)); cursor: pointer;
+  box-shadow: 0 2px 0 var(--copper-ink);
+}
+.btn-stage:active { transform: translateY(1px); box-shadow: none; }
+.btn-stage:disabled { background: var(--pencil); color: var(--cream); border-color: var(--pencil); box-shadow: none; cursor: default; opacity: 1; }
 .stat-answer { display: inline-block; vertical-align: top; }
 
 /* claims, chips and sentences */
@@ -1411,6 +1448,9 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   color: var(--ink); font-size: 15.5px; line-height: 1.45;
 }
 .stat-q .stat-msg.stage-now:empty { display: none; }
+/* the passing note: its own line under the stage instruction, pencil face */
+.stat-q .stat-note { margin: -4px 0 10px 16px; color: var(--pencil); font-size: 14.5px; line-height: 1.4; }
+.stat-q .stat-note:empty { display: none; }
 @keyframes gj-stage-beat { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
 .stage-pill.is-beat, .stat-msg.stage-now.is-beat { animation: gj-stage-beat 1.2s ease-in-out 2; }
 /* the glow is a halo whose OPACITY animates (the compositor law: never a
