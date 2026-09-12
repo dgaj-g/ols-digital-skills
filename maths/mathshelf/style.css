@@ -359,6 +359,36 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 }
 .movie-grid th { background: rgba(26, 58, 107, 0.06); font-weight: 400; }
 
+/* ══ ruling 50: the paper's own furniture in a film ══════════════════════
+   A table written on the paper with a cell filled per step, a number line
+   with markers and the box plot they make, and the chart block (grid, points,
+   curve, rule, drop). Every one of these is drawn by player.js from the op's
+   own numbers; nothing here sets a size the film depends on. */
+.ml-table {
+  border-collapse: collapse;
+  margin: calc(var(--sq) * 0.5) auto;
+  font-family: var(--f-maths);
+  font-size: 17px;
+  max-width: 100%;
+}
+.ml-table th, .ml-table td {
+  border: 1.5px solid var(--navy);
+  min-width: calc(var(--sq) * 2.5);
+  height: calc(var(--sq) * 1.6);
+  text-align: center;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.ml-table th { background: rgba(26, 58, 107, 0.06); font-weight: 400; font-family: var(--f-hand); font-size: 14px; }
+.ml-table td.ml-tlabel { text-align: left; }
+.ml-table td.ml-tcell { color: var(--copper-ink); }
+.ml-table .ml-blank { width: 46px; height: 10px; display: block; margin: 0 auto; }
+.movie-stage .ml-chart { max-width: 400px; width: 100%; }
+.movie-stage .ml-scale { max-width: 400px; width: 100%; }
+.movie-stage .ml-axis-num { font-family: var(--f-maths); font-size: 11px; fill: var(--pencil); }
+.movie-stage .ml-axis-label { font-family: var(--f-hand); font-size: 12px; fill: var(--navy); }
+.movie-stage .ml-read { font-family: var(--f-maths); font-size: 13px; fill: var(--copper-ink); }
+
 /* substitution glow sweep */
 .glow-sweep {
   background: linear-gradient(90deg, transparent, rgba(228, 184, 36, 0.45), transparent);
@@ -407,9 +437,16 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
    permanently at nine tenths and measured 4.3:1 against a 4.5 floor, where the
    two colours give 5.92:1. Nobody would catch a ten per cent fade by eye; that
    is the entire reason the law is measured in pixels. It lands at 1 now. */
+/* AND THE ENTRANCE NO LONGER CARRIES THE STAMP'S VISIBILITY AT ALL (12 Sept
+   2026). With `fill: both` and opacity in the keyframe, a stamp whose entrance
+   does not get to run is held at ZERO — the element the right size, in the
+   right place, with the right words, and nothing on the paper. That is the
+   third contrast fault this one keyframe has caused (0.9, then the base rule,
+   now 0), and the pattern is the lesson: an entrance may move a thing, it may
+   not be the only reason a thing is visible. It pops in at full strength. */
 @keyframes stamp-in {
-  0% { transform: rotate(-3deg) scale(1.5); opacity: 0; }
-  100% { transform: rotate(-3deg) scale(1); opacity: 1; }
+  0% { transform: rotate(-3deg) scale(1.5); }
+  100% { transform: rotate(-3deg) scale(1); }
 }
 
 /* ═══ THE JOTTER PAGE (working pane) ═══════════════════════════════ */

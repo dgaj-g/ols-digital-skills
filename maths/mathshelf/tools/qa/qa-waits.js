@@ -26,6 +26,17 @@
  * it); and a pupil's own save gets the identical treatment on her side of
  * the app — quiet while it runs, honest only once it is genuinely late
  * (ruling 48: a save that takes 12-40 s and completes is not trouble at 8 s).
+ *
+ * RULING 51 (12 Sept 2026, the store and the films cut): apiCall itself runs
+ * 3-68 s against a 1-7 s Sheet write. Ruling 48's card already waits for the
+ * genuine 30 s; what was still missing is what happens AFTER it appears - it
+ * used to just sit there until tapped. Now it re-sends by itself every 20 s
+ * and clears itself the moment a retry lands, and a call the store outright
+ * REFUSES (bad-secret/not-configured/no-secret-configured) is named at once
+ * instead, because retrying that one would never help. Both measured at the
+ * app's own real clocks, with the store stubbed to answer only after real
+ * wall-clock time has passed - a control that faked the delay would prove
+ * nothing about the 30 s and 20 s the pupil's own device actually waits on.
  */
 'use strict';
 const A = require('./lib/app.js');
@@ -47,6 +58,10 @@ const CONTROLS = [
   { id: 'wait-card-still', kind: 'fixture', plant: 'fixture-passcode-line-still', mustFail: /does not breathe in rendered frames/ },
   { id: 'tick-waits', kind: 'fixture', plant: 'fixture-tick-waits', mustFail: /waits for the server before it moves/ },
   { id: 'outbox-warns-at-eight', kind: 'fixture', plant: 'fixture-outbox-warns-at-eight', mustFail: /a trouble card before 30 s/ },
+  /* ruling 51, 12 Sept 2026: the card the pupil's own device raises must heal
+     itself - re-sending by itself and clearing itself once a retry lands.
+     This plants back the OLD card, which only ever came down on a tap. */
+  { id: 'outbox-card-tap-only', kind: 'fixture', plant: 'fixture-outbox-card-tap-only', mustFail: /never re-sent by itself/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -57,7 +72,11 @@ const g = new Gate('qa-waits');
   const src = stripComments(A.read(A.app('script.js')));
   g.check(/outbox:/.test(src), 'script.js', 'waits',
     'there is no outbox — a save that fails would take her attempt with it, and the screen would say nothing');
-  g.check(/outboxReplay/.test(src) && /call\('load'/.test(src), 'script.js', 'waits',
+  /* a bare /outboxReplay/ still matched a renamed outboxReplayDISABLED - the
+     substring survives a rename that removes the actual call. Requiring the
+     opening paren is what tells "this function is invoked" from "this
+     function's old name is still in here somewhere" apart. */
+  g.check(/\boutboxReplay\s*\(/.test(src) && /call\('load'/.test(src), 'script.js', 'waits',
     'nothing replays an unsent attempt when the book opens — her work would be gone the next time she looked, and she would have no way to know why');
   g.check(/saveTrouble/.test(src), 'script.js', 'waits',
     'a save that has not landed says nothing on screen — a screen must never claim saving that is not happening');
@@ -83,6 +102,20 @@ const g = new Gate('qa-waits');
     g.check(declared.length > 0, 'the app', 'waits',
       'no control anywhere declares data-busy-for — nothing can be held to owning its waiting state');
     g.note(declared.length + ' controls declare what they are waiting for: ' + declared.map(d => d.action).join(', '));
+
+    /* THIS GATE'S OWN CORNER OF THE SHARED fixture-renderers PLANT (control
+       control-with-no-busy-state): its injected Check button is exactly a
+       control that can fire and has nothing on screen to say it is busy.
+       fixtureBusy is null on the shipped app - nothing named fixture-q exists
+       there - so this never runs outside that one sandbox. */
+    const fixtureBusy = await page.evaluate(() => {
+      const b = document.querySelector('[data-qid="fixture-q"] button');
+      return b ? b.hasAttribute('data-busy-for') : null;
+    });
+    if (fixtureBusy !== null) {
+      g.check(fixtureBusy, 'fixture-renderers.js :: Check button', 'waits',
+        'a control with nothing on screen to say it is busy — every control that can fire a call declares data-busy-for, and this one does not');
+    }
 
     /* the outbox really holds an attempt while a save is in flight */
     const held = await page.evaluate(async () => {
@@ -241,6 +274,125 @@ const g = new Gate('qa-waits');
       }
     }
     await pupilPage.close();
+
+    /* ═══ THE OUTBOX HEALS ITSELF (ruling 51, 12 Sept 2026) ══════════════
+       apiCall runs 3-68 s against a 1-7 s Sheet write, and a card that only
+       ever comes down on a tap leaves her stranded for however long that
+       gap actually is. Two more truths beyond ruling 48's own, both timed at
+       the real 30 s / 20 s the app itself uses, not a friendlier stand-in:
+       a card that is up because the store is genuinely LATE must clear
+       itself the moment the store answers, with no tap anywhere, and it
+       must have kept asking the store on her behalf while she waited - not
+       merely be declared to; and a call the store REFUSES outright (not
+       merely late) is named at once, whatever the clock says, because
+       retrying it on her behalf would never help. */
+    const healPage = await S.openApp(browser, { width: 1280 });
+    const healBook = A.books()[0];
+    const healIn = await S.openExercise(healPage, healBook, 0);
+    g.check(!!healIn, 'lib/stage.js :: openExercise', 'waits',
+      'could not open a book to test the self-healing outbox (' + healBook + ') — nothing below this was checked');
+    if (healIn) {
+      /* THE STUB IS GATED ON WALL-CLOCK TIME, not a fixed per-call delay: the
+         store only starts saying ok once 45 real seconds have passed since
+         the first save, exactly the scenario named in the brief, and every
+         call (there or not) answers quickly - the only way a re-send the
+         outbox sends while the first is already failing is a call this stub
+         can actually see and count, rather than one the guard silently ate. */
+      await healPage.evaluate(() => {
+        window.__saveCalls = 0;
+        window.__t0 = Date.now();
+        window.OLS_TRANSPORT = {
+          call: function (p) {
+            if (p.action !== 'save') return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 300); });
+            window.__saveCalls++;
+            var late = (Date.now() - window.__t0) >= 45000;
+            return new Promise(function (resolve) { setTimeout(function () { resolve({ ok: !!late }); }, 400); });
+          }
+        };
+      });
+      await healPage.evaluate(() => { window.GJ.app.save(); });
+
+      /* NOT BEFORE 30 s - ruling 48's own law, still true for a failure that
+         is merely late rather than refused (ruling 51 does not loosen it). */
+      await new Promise(r => setTimeout(r, 24000));
+      const early = await healPage.evaluate(() => !!document.getElementById('gj-save-trouble'));
+      g.check(!early, 'script.js :: armSlowTimer', 'waits',
+        'the outbox card appeared before 30 s for a save that was only late, not refused — a trouble card before 30 s');
+
+      /* AT 30 s the card is up, and it names what it is doing rather than
+         just repeating "still saving" with nothing said about the retry. */
+      await new Promise(r => setTimeout(r, 11000));   // t ≈ 35 s since the save was asked for
+      const atThirty = await healPage.evaluate(() => {
+        const el = document.getElementById('gj-save-trouble');
+        return { up: !!el, text: el ? el.textContent : null };
+      });
+      g.note('outbox card at t≈35s: ' + JSON.stringify(atThirty));
+      g.check(atThirty.up, 'script.js :: armSlowTimer', 'waits',
+        'the outbox card never appeared at all — a save that is genuinely late must say so by 30 s');
+
+      /* THE SELF RE-SEND, PROVED BY COUNTING, not assumed from the card's
+         own words: by now the loop has had one immediate tick at ~30 s on
+         top of the original call, so the store must already have seen more
+         than the one. */
+      const midCalls = await healPage.evaluate(() => window.__saveCalls);
+      g.check(midCalls > 1, 'script.js :: startOutboxRetry', 'waits',
+        'the store had seen only ' + midCalls + ' save call 35 s in — the outbox never re-sent by itself');
+
+      /* THE SELF CLEAR. Once wall-clock reaches 45 s the next tick the loop
+         was already going to make answers ok, and the card must be gone by
+         itself within moments of that - no tap anywhere. */
+      await healPage.waitForFunction(() => !document.getElementById('gj-save-trouble'), { timeout: 25000 }).catch(() => {});
+      const settled = await healPage.evaluate(() => ({
+        cardGone: !document.getElementById('gj-save-trouble'), calls: window.__saveCalls, elapsed: Date.now() - window.__t0
+      }));
+      g.note('self re-send settle: ' + settled.calls + ' save call(s) seen by the stub, card gone=' + settled.cardGone + ' at t=' + settled.elapsed + 'ms');
+      g.check(settled.cardGone, 'script.js :: saveTrouble', 'waits',
+        'the trouble card did not clear itself once the store answered ok — it must go the moment a retry lands, with no tap anywhere');
+      g.check(settled.calls > midCalls, 'script.js :: outboxRetryTick', 'waits',
+        'the outbox stopped re-sending before the store ever answered ok (stuck at ' + settled.calls + ' calls) — a self re-send that gives up is not the law ruling 51 asked for');
+    }
+    await healPage.close();
+
+    /* ═══ A REFUSAL IS NAMED AT ONCE (ruling 51) ══════════════════════════
+       bad-secret / not-configured / no-secret-configured mean the store said
+       no, not that it is slow - retrying will not fix it, so she is not made
+       to wait thirty seconds, or watch a loop keep asking, to be told. */
+    const refusedPage = await S.openApp(browser, { width: 1280 });
+    const refusedIn = await S.openExercise(refusedPage, healBook, 0);
+    g.check(!!refusedIn, 'lib/stage.js :: openExercise', 'waits',
+      'could not open a book to test a refused save — nothing below this was checked');
+    if (refusedIn) {
+      await refusedPage.evaluate(() => {
+        window.__saveCalls = 0;
+        window.OLS_TRANSPORT = {
+          call: function (p) {
+            if (p.action !== 'save') return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 300); });
+            window.__saveCalls++;
+            return new Promise(function (r) { setTimeout(function () { r({ ok: false, error: 'bad-secret' }); }, 500); });
+          }
+        };
+      });
+      await refusedPage.evaluate(() => { window.GJ.app.save(); });
+      await refusedPage.waitForFunction(() => !!document.getElementById('gj-save-trouble'), { timeout: 8000 }).catch(() => {});
+      const refused = await refusedPage.evaluate(() => {
+        const el = document.getElementById('gj-save-trouble');
+        return { up: !!el, text: el ? el.textContent : null, elapsed: Date.now() };
+      });
+      g.note('refused card inside 8s: ' + JSON.stringify(refused));
+      g.check(refused.up, 'script.js :: flushSave', 'waits',
+        'a refused save (bad-secret) raised no card at all — she is left with no honest word for a call the store outright refused, and ruling 51 says that one is named at once, not after 30 s');
+      if (refused.up) {
+        g.check(!/still saving/i.test(refused.text || ''), 'strings.js :: saveRefused', 'waits',
+          'a refused save still shows the generic "still saving" wording — a refusal needs its own honest sentence, not the one that means "wait, it is trying again on its own"');
+      }
+      /* AND IT DOES NOT QUIETLY KEEP GOING: a further wait well past the 30 s
+         mark, and the store must still have seen exactly the one call. */
+      await new Promise(r => setTimeout(r, 30000));
+      const refusedCalls = await refusedPage.evaluate(() => window.__saveCalls);
+      g.check(refusedCalls === 1, 'script.js :: SAVE_REFUSED', 'waits',
+        'a refused save was sent again on its own (' + refusedCalls + ' calls seen) — a refusal will not heal by retrying, so nothing should retry it for her');
+    }
+    await refusedPage.close();
   } finally { await browser.close(); }
   g.done();
 })().catch(e => { console.log('  FAIL  qa-waits x crash: ' + (e && e.stack ? e.stack : e)); process.exit(1); });

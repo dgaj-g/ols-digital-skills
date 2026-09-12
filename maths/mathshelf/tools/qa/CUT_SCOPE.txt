@@ -3,18 +3,28 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# HOTFIX, 12 Sept 2026 15:xx (Fable): a slow store is not a broken one — the
-# 'relay-failed' sentence, one quiet retry on the passcode check, the staff
-# waiting line at a size he can see; then the same for the teacher's LANDING
-# (script.js staffCover) — the screen he was looking at. 60-minute clock. Client only.
-strings.js
-staff.js
+# THE STORE AND THE FILMS CUT, 12 Sept 2026 evening (Opus 5). Rulings 50 and 51:
+# every op a film names is DRAWN (player.js paper mode gains table/tcell/stamp/
+# scale/marker and the chart block chart/plot/curve/rule/drop), and the pupil's
+# "Still saving your work…" card re-sends by itself and clears itself when the
+# store answers. Package A (measure the hop) reads only. Package B (the hop fix)
+# is DESIGNED, not applied: server/Code.gs.template and server/Code.gs are NOT
+# touched this cut, so the deploy is front door only. 120-minute clock.
+player.js
+statchart.js
 script.js
+strings.js
 style.css
+content-stats-quartiles.js
+tools/qa/*.js
+tools/qa/lib/*
+tools/qa/fixtures/*
 tools/qa/CUT_SCOPE.txt
 tools/qa/MATHS_*.md
+tools/qa/vocab/*
 tools/qa/out/*
 server/Index.html
 server/DEPLOY_LOG.md
+server/DEPLOY.md
 HANDOVER.md
 PROGRESS.md

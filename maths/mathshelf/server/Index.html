@@ -570,6 +570,36 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 }
 .movie-grid th { background: rgba(26, 58, 107, 0.06); font-weight: 400; }
 
+/* \2550 \2550  ruling 50: the paper's own furniture in a film \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
+   A table written on the paper with a cell filled per step, a number line
+   with markers and the box plot they make, and the chart block (grid, points,
+   curve, rule, drop). Every one of these is drawn by player.js from the op's
+   own numbers; nothing here sets a size the film depends on. */
+.ml-table {
+  border-collapse: collapse;
+  margin: calc(var(--sq) * 0.5) auto;
+  font-family: var(--f-maths);
+  font-size: 17px;
+  max-width: 100%;
+}
+.ml-table th, .ml-table td {
+  border: 1.5px solid var(--navy);
+  min-width: calc(var(--sq) * 2.5);
+  height: calc(var(--sq) * 1.6);
+  text-align: center;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.ml-table th { background: rgba(26, 58, 107, 0.06); font-weight: 400; font-family: var(--f-hand); font-size: 14px; }
+.ml-table td.ml-tlabel { text-align: left; }
+.ml-table td.ml-tcell { color: var(--copper-ink); }
+.ml-table .ml-blank { width: 46px; height: 10px; display: block; margin: 0 auto; }
+.movie-stage .ml-chart { max-width: 400px; width: 100%; }
+.movie-stage .ml-scale { max-width: 400px; width: 100%; }
+.movie-stage .ml-axis-num { font-family: var(--f-maths); font-size: 11px; fill: var(--pencil); }
+.movie-stage .ml-axis-label { font-family: var(--f-hand); font-size: 12px; fill: var(--navy); }
+.movie-stage .ml-read { font-family: var(--f-maths); font-size: 13px; fill: var(--copper-ink); }
+
 /* substitution glow sweep */
 .glow-sweep {
   background: linear-gradient(90deg, transparent, rgba(228, 184, 36, 0.45), transparent);
@@ -618,9 +648,16 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
    permanently at nine tenths and measured 4.3:1 against a 4.5 floor, where the
    two colours give 5.92:1. Nobody would catch a ten per cent fade by eye; that
    is the entire reason the law is measured in pixels. It lands at 1 now. */
+/* AND THE ENTRANCE NO LONGER CARRIES THE STAMP'S VISIBILITY AT ALL (12 Sept
+   2026). With `fill: both` and opacity in the keyframe, a stamp whose entrance
+   does not get to run is held at ZERO \2014  the element the right size, in the
+   right place, with the right words, and nothing on the paper. That is the
+   third contrast fault this one keyframe has caused (0.9, then the base rule,
+   now 0), and the pattern is the lesson: an entrance may move a thing, it may
+   not be the only reason a thing is visible. It pops in at full strength. */
 @keyframes stamp-in {
-  0% { transform: rotate(-3deg) scale(1.5); opacity: 0; }
-  100% { transform: rotate(-3deg) scale(1); opacity: 1; }
+  0% { transform: rotate(-3deg) scale(1.5); }
+  100% { transform: rotate(-3deg) scale(1); }
 }
 
 /* \2550 \2550 \2550  THE JOTTER PAGE (working pane) \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  */
@@ -2407,6 +2444,11 @@ window.OLS_TRANSPORT = {
       saveInFlight: 'Saving\u2026',
       saveRetry: 'Try again',
       saveHeldLocal: 'Your work is safe on this device and will be sent as soon as the page can reach the server.',
+      /* RULING 51 (12 Sept 2026): the store can take a while, and that is not
+         the same as the store saying no. This is the one sentence for when
+         it genuinely refuses a save, so trying again on her own is not the
+         only thing she is told to do. */
+      saveRefused: 'The server will not accept your save right now. Nothing you wrote is lost \u2014 try again in a moment, or tell your teacher.',
 
       /* the jotter: the composer and number-pad widgets (default labels \u2014 most
          callers pass their own, but these are the ones actually reached) */
@@ -2709,9 +2751,9 @@ window.OLS_TRANSPORT = {
       serverNotYourClass: 'That class was made by another teacher, so it is not yours to change.',
       serverExists: 'There is already a class with that name.',
       serverNotFound: 'That could not be found. Reload the page and try again.',
-      serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
-      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien.',
-      serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
+      serverUnreachableStore: 'The app cannot reach its store, so nothing was saved and nothing was lost. Tell the ICT office.',
+      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell the ICT office.',
+      serverTooBig: 'There is more working in this book than one save can carry. Tell the ICT office before the class writes any more.',
       serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
       loadingClass: 'Loading {class}\u2026',
@@ -7398,7 +7440,10 @@ function statsBoard(q, wrong) {
           mode: 'paper',
           steps: [
             { say: 'Cumulative frequency is the number of times a value, or something less than it, occurs \u2014 a running total.',
-              do: [{ table: { head: ['Height, h (cm)', 'Frequency'],
+              /* the third column is headed and EMPTY: the film is here to fill
+                 it, one cell a step (ruling 50 \u2014 a blank-headed column of
+                 numbers teaches nothing) */
+              do: [{ table: { head: ['Height, h (cm)', 'Frequency', 'Cumulative frequency'],
                               rows: [['130 \u2264 h < 140', '5'], ['140 \u2264 h < 150', '13'],
                                      ['150 \u2264 h < 160', '19'], ['160 \u2264 h < 170', '10'], ['170 \u2264 h < 180', '3']] } }] },
             { say: 'The first row\u2019s running total is just its own frequency: 5.',
@@ -9413,6 +9458,7 @@ function statsBoard(q, wrong) {
     function resetStage() {
       stage.innerHTML = '';
       paperLines = []; balanceEl = null; dgm = null;
+      chart = null; scaleBd = null; tableEl = null;
       if (movie.mode === 'diagram' && movie.diagram) {
         var dwrap = el('div', 'jq-diagram');
         stage.appendChild(dwrap);
@@ -9552,6 +9598,310 @@ function statsBoard(q, wrong) {
       return pr;
     }
 
+    /* \u2550\u2550\u2550\u2550\u2550 RULING 50: A FILM DRAWS EVERY STEP IT SAYS \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+       (12 Sept 2026 \u2014 "the video in exercise 4 moves through the steps but
+       doesn't actually show anything on the squared grid until step 8.")
+       PAPER mode knew write / ring / box / tick / note. The six Book C films
+       between them also ask for `table`, `tcell`, `stamp`, `scale`, `marker`
+       and a whole chart block \u2014 `chart`, `plot`, `curve`, `rule`, `drop` \u2014
+       and every one of those fell through applyOp to the diagram-only branch
+       and drew NOTHING. Exercise 3's film drew nothing at all from first step
+       to last.
+
+       EVERY NUMBER BELOW IS MEASURED FROM THE OP. The chart's scales come from
+       the op's own min/max/step, a point sits where its own x and y put it, the
+       curve runs through its own listed points, and the drop reads the x where
+       the CURVE's own points cross the rule's height \u2014 never a guessed offset,
+       the same law the paper ring was rebuilt under (ruling 39). `sit-pupil`'s
+       film-draws law counts a drawn element of EVERY op kind the film names,
+       at every walked width, with a plant per kind. */
+    var CH = { W: 400, H: 268, L: 54, R: 16, T: 14, B: 50 };   /* chart canvas, user units */
+    var SCL = { W: 400, H: 132, L: 30, R: 30, AXIS: 98 };      /* number-line canvas */
+    var chart = null, scaleBd = null, tableEl = null;
+
+    function tidy(v) {
+      var r = Math.round(v * 100) / 100;
+      return String(r);
+    }
+    /* a smooth line through the points (Catmull-Rom \u2192 cubic), so a cumulative
+       frequency curve is a CURVE \u2014 "never straight lines", which is what the
+       film's own caption tells her to draw */
+    function smoothPath(pts) {
+      if (pts.length < 2) return '';
+      if (pts.length === 2) return 'M ' + pts[0][0] + ' ' + pts[0][1] + ' L ' + pts[1][0] + ' ' + pts[1][1];
+      var d = 'M ' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || pts[i + 1];
+        var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += ' C ' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) +
+             ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+      }
+      return d;
+    }
+    function fadeIn(node, instant, ms) {
+      if (instant || REDUCED) { node.style.opacity = 1; return Promise.resolve(); }
+      node.style.opacity = 0; node.getBoundingClientRect();
+      node.style.transition = 'opacity ' + (ms || 260) + 'ms';
+      node.style.opacity = 1;
+      return new Promise(function (r) { setTimeout(r, (ms || 260) + 30); });
+    }
+
+    /* A CELL THE FILM HAS NOT FILLED YET IS NOT EMPTY: it carries the faint
+       rule a printed table carries, so she can see WHERE the number is going
+       before it arrives \u2014 and so the empty-container law (J13c) is answered by
+       drawing something rather than by an exemption. `tcell` writes over it. */
+    function blankCell(td) {
+      var r = sv('svg', { class: 'ml-blank', viewBox: '0 0 60 12', 'aria-hidden': 'true' });
+      r.appendChild(sv('line', { x1: 6, y1: 9, x2: 54, y2: 9, stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1.4, 'stroke-linecap': 'round' }));
+      td.appendChild(r);
+    }
+
+    /* \u2500\u2500 a small table written on the paper, and a cell filled per step \u2500\u2500 */
+    function paperTable(op, instant) {
+      var t = op.table || {};
+      var head = t.head || [], rows = t.rows || [];
+      var cols = head.length;
+      rows.forEach(function (r) { cols = Math.max(cols, r.length); });
+      var tb = el('table', 'ml-table');
+      var thead = document.createElement('thead');
+      var htr = document.createElement('tr');
+      for (var c = 0; c < cols; c++) {
+        var th = document.createElement('th');
+        th.textContent = head[c] == null ? '' : head[c];
+        th.setAttribute('data-c', c);
+        htr.appendChild(th);
+      }
+      thead.appendChild(htr); tb.appendChild(thead);
+      var tbody = document.createElement('tbody');
+      rows.forEach(function (row, r) {
+        var tr = document.createElement('tr');
+        for (var c = 0; c < cols; c++) {
+          var td = document.createElement('td');
+          td.setAttribute('data-r', r); td.setAttribute('data-c', c);
+          if (c === 0) td.className = 'ml-tlabel';
+          if (row[c] == null || row[c] === '') blankCell(td); else td.textContent = row[c];
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+      tb.appendChild(tbody);
+      stage.appendChild(tb);
+      tableEl = tb;
+      if (instant || REDUCED) return Promise.resolve();
+      var trs = [].slice.call(tb.querySelectorAll('tbody tr'));
+      var pr = Promise.resolve();
+      trs.forEach(function (tr) {
+        tr.style.opacity = 0; tr.style.transition = 'opacity 150ms';
+        pr = pr.then(function () {
+          tr.style.opacity = 1;
+          return new Promise(function (r) { setTimeout(r, 130); });
+        });
+      });
+      return pr;
+    }
+    /* A TCELL MAY NAME A COLUMN THE TABLE DOES NOT HAVE YET \u2014 the cumulative
+       frequency column is the one the film is there to build. The table grows
+       to hold it rather than dropping the number on the floor. */
+    function paperTcell(op, instant) {
+      if (!tableEl) return Promise.resolve();
+      var q = op.tcell;
+      var head = tableEl.querySelector('thead tr');
+      while (head.children.length <= q.c) {
+        var th = document.createElement('th');
+        th.setAttribute('data-c', head.children.length);
+        th.textContent = (q.head && head.children.length === q.c) ? q.head : '';
+        head.appendChild(th);
+        [].forEach.call(tableEl.querySelectorAll('tbody tr'), function (tr, r) {
+          var td = document.createElement('td');
+          td.setAttribute('data-r', r); td.setAttribute('data-c', tr.children.length);
+          blankCell(td);
+          tr.appendChild(td);
+        });
+      }
+      var cell = tableEl.querySelector('tbody td[data-r="' + q.r + '"][data-c="' + q.c + '"]');
+      if (!cell) return Promise.resolve();
+      cell.textContent = q.text == null ? '' : q.text;   /* the rule goes with it */
+      cell.classList.add('ml-tcell');
+      return fadeIn(cell, instant, 280);
+    }
+
+    /* \u2500\u2500 the chart block: a grid with axes, points, a curve, a rule, a drop \u2500\u2500 */
+    function paperChart(op, instant) {
+      var spec = op.chart || {};
+      var xs = spec.x || { min: 0, max: 10, step: 1 }, ys = spec.y || { min: 0, max: 10, step: 1 };
+      var svg = sv('svg', { viewBox: '0 0 ' + CH.W + ' ' + CH.H, class: 'ml-chart', role: 'img' });
+      svg.setAttribute('aria-label', (xs.label || 'x') + ' against ' + (ys.label || 'y'));
+      var px = function (v) { return CH.L + (v - xs.min) / (xs.max - xs.min) * (CH.W - CH.L - CH.R); };
+      var py = function (v) { return (CH.H - CH.B) - (v - ys.min) / (ys.max - ys.min) * (CH.H - CH.B - CH.T); };
+      var gGrid = sv('g', { class: 'ml-chart-grid' }), gInk = sv('g', {});
+      svg.appendChild(gGrid); svg.appendChild(gInk);
+      var v;
+      for (v = xs.min; v <= xs.max + 1e-9; v += xs.step) {
+        gGrid.appendChild(sv('line', { x1: px(v), y1: CH.T, x2: px(v), y2: CH.H - CH.B, stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1 }));
+        var tx = sv('text', { x: px(v), y: CH.H - CH.B + 15, 'text-anchor': 'middle', class: 'ml-axis-num' });
+        tx.textContent = tidy(v); gGrid.appendChild(tx);
+      }
+      for (v = ys.min; v <= ys.max + 1e-9; v += ys.step) {
+        gGrid.appendChild(sv('line', { x1: CH.L, y1: py(v), x2: CH.W - CH.R, y2: py(v), stroke: 'var(--grid-line, #C9D4E4)', 'stroke-width': 1 }));
+        var ty = sv('text', { x: CH.L - 7, y: py(v) + 4, 'text-anchor': 'end', class: 'ml-axis-num' });
+        ty.textContent = tidy(v); gGrid.appendChild(ty);
+      }
+      gGrid.appendChild(sv('path', {
+        d: 'M ' + CH.L + ' ' + CH.T + ' V ' + (CH.H - CH.B) + ' H ' + (CH.W - CH.R),
+        fill: 'none', stroke: '#14213A', 'stroke-width': 2
+      }));
+      var xl = sv('text', { x: (CH.L + CH.W - CH.R) / 2, y: CH.H - 8, 'text-anchor': 'middle', class: 'ml-axis-label' });
+      xl.textContent = xs.label || ''; gGrid.appendChild(xl);
+      var yl = sv('text', { x: 0, y: 0, 'text-anchor': 'middle', class: 'ml-axis-label',
+        transform: 'translate(13,' + ((CH.T + CH.H - CH.B) / 2) + ') rotate(-90)' });
+      yl.textContent = ys.label || ''; gGrid.appendChild(yl);
+      stage.appendChild(svg);
+      chart = { svg: svg, ink: gInk, px: px, py: py, xs: xs, ys: ys, pts: [], curve: null, ruleH: null };
+      return fadeIn(svg, instant, 300);
+    }
+    function paperPlot(op, instant) {
+      if (!chart) return Promise.resolve();
+      var p = op.plot;
+      chart.pts.push([p.x, p.y]);
+      var c = sv('circle', { cx: chart.px(p.x), cy: chart.py(p.y), r: 3.6, class: 'ml-plot',
+        fill: 'var(--copper, #A8572A)', stroke: 'none' });
+      chart.ink.appendChild(c);
+      return fadeIn(c, instant, 220);
+    }
+    function paperCurve(op, instant) {
+      if (!chart) return Promise.resolve();
+      var through = op.curve && op.curve.through;
+      var src = (!through || through === 'all') ? chart.pts.slice() : through;
+      if (src.length < 2) return Promise.resolve();
+      chart.curve = src.slice().sort(function (a, b) { return a[0] - b[0]; });
+      var scr = chart.curve.map(function (p) { return [chart.px(p[0]), chart.py(p[1])]; });
+      var path = sv('path', { d: smoothPath(scr), class: 'ml-curve', fill: 'none',
+        stroke: 'var(--navy, #1A3A6B)', 'stroke-width': 2.2, 'stroke-linecap': 'round' });
+      chart.ink.appendChild(path);
+      return drawStroke(path, instant);
+    }
+    /* THE RULE LANDS IN ITS OWN COORDINATES, AND ONLY THE TRAVEL IS A
+       TRANSFORM. Drawing the line at y = 0 and living permanently on a CSS
+       transform would leave the whole picture resting on transform support for
+       an SVG child; the `d` carries the real height, and the slide is a
+       transform that starts at the offset from the last height and ends at
+       identity, so a browser that ignores it still shows the rule in the right
+       place \u2014 it simply appears there instead of travelling. */
+    function paperRule(op, instant) {
+      if (!chart) return Promise.resolve();
+      var h = op.rule.h;
+      var yTo = chart.py(h);
+      var yFrom = chart.ruleH == null ? (CH.H - CH.B) : chart.py(chart.ruleH);
+      var r = chart.svg.querySelector('.ml-rule');
+      if (!r) {
+        r = sv('path', { class: 'ml-rule', fill: 'none',
+          stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.8, 'stroke-dasharray': '6 4' });
+        chart.ink.appendChild(r);
+      }
+      r.setAttribute('d', 'M ' + CH.L + ' ' + yTo.toFixed(1) + ' H ' + (CH.W - CH.R));
+      chart.ruleH = h;
+      if (instant || REDUCED) { r.style.transition = 'none'; r.style.transform = 'none'; return Promise.resolve(); }
+      r.style.transition = 'none';
+      r.style.transform = 'translateY(' + (yFrom - yTo).toFixed(1) + 'px)';
+      r.getBoundingClientRect();
+      r.style.transition = 'transform 520ms ease-in-out';
+      r.style.transform = 'translateY(0px)';
+      return new Promise(function (res) { setTimeout(res, 560); });
+    }
+    /* where the CURVE'S OWN POINTS cross the rule's height \u2014 interpolated
+       between the two points that bracket it, never read off the picture */
+    function xAtHeight(pts, h) {
+      for (var i = 0; i < pts.length - 1; i++) {
+        var a = pts[i], b = pts[i + 1];
+        if ((h >= a[1] && h <= b[1]) || (h <= a[1] && h >= b[1])) {
+          if (b[1] === a[1]) return a[0];
+          return a[0] + (h - a[1]) * (b[0] - a[0]) / (b[1] - a[1]);
+        }
+      }
+      return null;
+    }
+    function paperDrop(op, instant) {
+      if (!chart || chart.ruleH == null || !chart.curve) return Promise.resolve();
+      var h = chart.ruleH;
+      var x = xAtHeight(chart.curve, h);
+      if (x == null) return Promise.resolve();
+      var g = sv('g', { class: 'ml-drop' });
+      var across = sv('path', { d: 'M ' + CH.L + ' ' + chart.py(h).toFixed(1) + ' H ' + chart.px(x).toFixed(1),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.7, 'stroke-linecap': 'round' });
+      var down = sv('path', { d: 'M ' + chart.px(x).toFixed(1) + ' ' + chart.py(h).toFixed(1) + ' V ' + (CH.H - CH.B),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 1.7, 'stroke-linecap': 'round' });
+      g.appendChild(across); g.appendChild(down);
+      var lbl = sv('text', { x: chart.px(x).toFixed(1), y: CH.H - CH.B + 30, 'text-anchor': 'middle', class: 'ml-read' });
+      lbl.textContent = tidy(x);
+      g.appendChild(lbl);
+      chart.ink.appendChild(g);
+      return drawStroke(across, instant)
+        .then(function () { return drawStroke(down, instant); })
+        .then(function () { return fadeIn(lbl, instant, 200); });
+    }
+
+    /* \u2500\u2500 the number line, its markers, and the box plot they make \u2500\u2500 */
+    function paperScale(op, instant) {
+      var s = op.scale || {};
+      var min = s.min, max = s.max, step = s.step || (max - min) / 5;
+      var svg = sv('svg', { viewBox: '0 0 ' + SCL.W + ' ' + SCL.H, class: 'ml-scale', role: 'img' });
+      svg.setAttribute('aria-label', s.label || 'number line');
+      var px = function (v) { return SCL.L + (v - min) / (max - min) * (SCL.W - SCL.L - SCL.R); };
+      svg.appendChild(sv('path', { d: 'M ' + SCL.L + ' ' + SCL.AXIS + ' H ' + (SCL.W - SCL.R),
+        fill: 'none', stroke: '#14213A', 'stroke-width': 2 }));
+      for (var v = min; v <= max + 1e-9; v += step) {
+        svg.appendChild(sv('line', { x1: px(v), y1: SCL.AXIS - 5, x2: px(v), y2: SCL.AXIS + 5, stroke: '#14213A', 'stroke-width': 1.4 }));
+        var t = sv('text', { x: px(v), y: SCL.AXIS + 20, 'text-anchor': 'middle', class: 'ml-axis-num' });
+        t.textContent = tidy(v); svg.appendChild(t);
+      }
+      var lb = sv('text', { x: (SCL.L + SCL.W - SCL.R) / 2, y: SCL.H - 4, 'text-anchor': 'middle', class: 'ml-axis-label' });
+      lb.textContent = s.label || ''; svg.appendChild(lb);
+      stage.appendChild(svg);
+      scaleBd = { svg: svg, px: px, marks: {} };
+      return fadeIn(svg, instant, 260);
+    }
+    function paperMarker(op, instant) {
+      if (!scaleBd) return Promise.resolve();
+      var m = op.marker;
+      scaleBd.marks[m.role] = m.at;
+      var x = scaleBd.px(m.at);
+      var g = sv('g', { class: 'ml-marker', 'data-role': String(m.role) });
+      var p = sv('path', { d: 'M ' + x.toFixed(1) + ' ' + (SCL.AXIS - 44) + ' V ' + (SCL.AXIS - 2),
+        fill: 'none', stroke: 'var(--copper, #A8572A)', 'stroke-width': 2, 'stroke-linecap': 'round' });
+      g.appendChild(p);
+      var t = sv('text', { x: x.toFixed(1), y: SCL.AXIS - 50, 'text-anchor': 'middle', class: 'ml-read' });
+      t.textContent = tidy(m.at);
+      g.appendChild(t);
+      scaleBd.svg.appendChild(g);
+      return drawStroke(p, instant).then(function () { return fadeIn(t, instant, 180); });
+    }
+    /* A BARE `box` IS THE BOX PLOT, not the gold frame round a written line.
+       It is built from the markers already placed on this scale \u2014 their own
+       recorded values \u2014 so it can never disagree with what she just watched
+       being put there. */
+    function paperBoxPlot(op, instant) {
+      if (!scaleBd) return Promise.resolve();
+      var m = scaleBd.marks;
+      if (m.Q1 == null || m.Q2 == null || m.Q3 == null) return Promise.resolve();
+      var top = SCL.AXIS - 44, bot = SCL.AXIS - 12, mid = (top + bot) / 2;
+      var g = sv('g', { class: 'ml-boxplot' });
+      var x1 = scaleBd.px(m.Q1), x2 = scaleBd.px(m.Q3), xm = scaleBd.px(m.Q2);
+      var strokes = [];
+      if (m.min != null) strokes.push('M ' + scaleBd.px(m.min).toFixed(1) + ' ' + mid + ' H ' + x1.toFixed(1));
+      if (m.max != null) strokes.push('M ' + x2.toFixed(1) + ' ' + mid + ' H ' + scaleBd.px(m.max).toFixed(1));
+      strokes.push('M ' + x1.toFixed(1) + ' ' + top + ' H ' + x2.toFixed(1) + ' V ' + bot + ' H ' + x1.toFixed(1) + ' Z');
+      strokes.push('M ' + xm.toFixed(1) + ' ' + top + ' V ' + bot);
+      var pr = Promise.resolve();
+      strokes.forEach(function (d) {
+        var p = sv('path', { d: d, fill: 'none', stroke: 'var(--navy, #1A3A6B)', 'stroke-width': 2, 'stroke-linejoin': 'round' });
+        g.appendChild(p);
+        pr = pr.then(function () { return drawStroke(p, instant); });
+      });
+      scaleBd.svg.appendChild(g);
+      return pr;
+    }
+
     function paperBalance(op, instant) {
       if (!balanceEl) {
         balanceEl = el('div', 'movie-balance');
@@ -9594,11 +9944,34 @@ function statsBoard(q, wrong) {
           return false;
         });
       }
-      var st = el('div', 'theorem-stamp' + (instant || REDUCED ? '' : ' stamp-in'), text || '');
+      var st = el('div', 'theorem-stamp ml-stamp' + (instant || REDUCED ? '' : ' stamp-in'), text || '');
       var holder = el('div', '');
       holder.style.cssText = 'text-align:center;margin:8px 0';
       holder.appendChild(st);
       stage.appendChild(holder);
+      /* A ROTATED BOX IS TALLER THAN ITS LAYOUT BOX, and layout does not know
+         it. At -3 degrees a 253 px stamp reaches about 13 px past the line it
+         sits on at each end, so two stamps in a row \u2014 and a stamp under a red
+         note \u2014 sat ON each other's words (the overlap law, 12 Sept 2026; it
+         could not see them before, because they were at opacity 0). The room
+         they need is MEASURED from the rendered box, never guessed. */
+      var lay = st.offsetHeight || 0, rot = st.getBoundingClientRect().height || 0;
+      var over = Math.max(0, Math.ceil((rot - lay) / 2));
+      /* PADDING, NOT MARGIN: two adjacent margins COLLAPSE to the larger of the
+         two, so asking each stamp for its own clearance in margin gave the pair
+         one clearance between them and they still touched by 7 px. Padding is
+         each holder's own and never collapses. */
+      holder.style.margin = '0';
+      holder.style.padding = (8 + over) + 'px 0';
+      /* AND THE STAMP IS NEVER LEFT INVISIBLE. `stamp-in` carries opacity 0 \u2192 1
+         with `fill: both`, so a keyframe that does not get to run holds the
+         stamp at ZERO and the sentence the beat exists to leave her with is
+         simply not on the paper \u2014 measured in the walk on 12 Sept 2026, Book C
+         s2 and s6, where the element was the right size with the right words
+         and opacity 0 at every width. An animation that is running still wins
+         the cascade over this, so the entrance is untouched; this is only what
+         the stamp falls back to. */
+      st.style.opacity = '1';
       return new Promise(function (r) { setTimeout(r, instant ? 0 : 240); });
     }
 
@@ -9618,8 +9991,20 @@ function statsBoard(q, wrong) {
     function applyOp(op, instant) {
       if (op.write) return paperWrite(op, instant);
       if (op.tick) return paperTick(op, instant);
-      if (op.box) return paperBox(op, instant);
+      /* a `box` WITH a line is the gold frame round written working; a BARE
+         `box` is the box plot assembling on the scale above it (ruling 50) */
+      if (op.box && op.box.line != null) return paperBox(op, instant);
+      if (op.box) return paperBoxPlot(op, instant);
       if (op.ring && movie.mode === 'paper') return paperRing(op, instant);
+      if (op.table) return paperTable(op, instant);
+      if (op.tcell) return paperTcell(op, instant);
+      if (op.chart) return paperChart(op, instant);
+      if (op.plot) return paperPlot(op, instant);
+      if (op.curve) return paperCurve(op, instant);
+      if (op.rule) return paperRule(op, instant);
+      if (op.drop) return paperDrop(op, instant);
+      if (op.scale) return paperScale(op, instant);
+      if (op.marker) return paperMarker(op, instant);
       if (op.grid) return paperGrid(op, instant);
       if (op.balance) return paperBalance(op, instant);
       if (op.stamp) return doStamp(op, instant);
@@ -16502,6 +16887,10 @@ function statsBoard(q, wrong) {
 
   /* \u2014 activity \u2014 */
   function openActivity(a) {
+    /* the same leaving-the-book stop as act-back, below, kept here too so no
+       route into a new book can leave the old one's self re-send running
+       against a screen she is no longer looking at (ruling 51) */
+    stopOutboxRetry(); clearSlowTimer(); saveTrouble(false);
     var pack = window.GJ_CONTENT[a.id];
     current.act = a; current.section = 0; current.state = null;
     document.documentElement.style.setProperty('--act-accent', a.accent);
@@ -17030,6 +17419,20 @@ function statsBoard(q, wrong) {
      error (unchanged, below). While a save is actually running, a quiet
      moving line says so, and "Try again" cannot fire a second call on top of
      the first. */
+  /* THE STORE AND THE FILMS CUT (ruling 51, 12 Sept 2026): apiCall runs 3-68 s
+     against a 1-7 s Sheet write, and she must never be stranded by the gap.
+     A REFUSAL - the store saying no - is named at once, below; retrying it is
+     pointless. Everything else, 'relay-failed' included, is the store being
+     LATE rather than wrong: the card still waits for the same thirty seconds,
+     and once it is up the outbox keeps asking by itself every twenty, until
+     the store answers ok, refuses outright, or she leaves the book. */
+  /* How often the outbox asks the store again, by itself, once a save has
+     gone past OUTBOX_WARN. It is its own pacing decision and it is written as
+     its own number with its own inventory row: a clock expressed as arithmetic
+     on another clock is a clock the scanner cannot see, and the rule is that no
+     clock ships unexplained, not that no clock ships unnoticed. */
+  var OUTBOX_RETRY_MS = 20000;
+  var SAVE_REFUSED = { 'bad-secret': 1, 'not-configured': 1, 'no-secret-configured': 1 };
   var saveInFlight = false;
   function outboxKey(actId) {
     return 'outbox:' + BOOT.classCode + ':' + (me.email || 'anon') + ':' + actId;
@@ -17043,15 +17446,32 @@ function statsBoard(q, wrong) {
   function outboxRead(actId) {
     try { return JSON.parse(localStorage.getItem(outboxKey(actId)) || 'null'); } catch (e) { return null; }
   }
-  function saveTrouble(on, retry) {
+  /* THE HONEST DEFAULT (ruling 51): saveHeldLocal already said exactly this -
+     nothing is lost, and it goes the moment the page can reach the store -
+     and had no caller yet (rule 23: one home for every sentence, even one
+     still waiting for a screen). Pairing it with saveWaiting is what stops
+     "Try again" reading as the only way out: the card says out loud that it
+     is trying again on its own. */
+  function troubleMessage() { return (T.saveWaiting || '') + ' ' + (T.saveHeldLocal || ''); }
+  function saveTrouble(on, retry, msg) {
     var el = document.getElementById('gj-save-trouble');
     if (!on) { if (el) el.remove(); return; }
-    if (el) return;
+    var text = msg || troubleMessage();
+    if (el) {
+      /* UPDATE, NEVER RE-BUILD, A CARD ALREADY UP. Its own message can still
+         change under her - a save that was only late turns out refused, or
+         the other way round on the next try - and a card that no-ops once
+         born could never say so. */
+      var line = el.firstChild;
+      if (line && line.nodeValue !== text) line.nodeValue = text;
+      syncRetry();
+      return;
+    }
     el = document.createElement('div');
     el.id = 'gj-save-trouble';
     el.className = 'gj-save-trouble';
     el.setAttribute('role', 'status');
-    el.appendChild(document.createTextNode(T.saveWaiting || ''));
+    el.appendChild(document.createTextNode(text));
     var b = document.createElement('button');
     b.className = 'toolbtn';
     b.textContent = T.saveRetry || '';
@@ -17088,6 +17508,46 @@ function statsBoard(q, wrong) {
     host.appendChild(line);
   }
 
+  /* ONE CLOCK PER TROUBLE EPISODE (ruling 51). A retry that fires while the
+     card is already up - or already waited for - must not push its 30 s mark
+     further out, or a save that keeps failing would never actually be named.
+     Every attempt after the first shares the one clock the first attempt
+     set; only a settle (below) ever clears it. */
+  var slow = null;
+  function armSlowTimer() {
+    if (slow || document.getElementById('gj-save-trouble')) return;
+    slow = setTimeout(function () {
+      slow = null;
+      saveTrouble(true, flushSave);
+      startOutboxRetry();
+    }, OUTBOX_WARN);
+  }
+  function clearSlowTimer() { if (slow) { clearTimeout(slow); slow = null; } }
+
+  /* THE SELF RE-SEND (ruling 51). Once the card is up, the outbox asks the
+     store again every twenty seconds without her - "Try again" stays hers to
+     press, but pressing it is never the only way this ends. A tick never
+     stacks on a call already running (saveInFlight - the same guard flushSave
+     itself keeps a line above); it fires again once the previous attempt has
+     settled, one way or the other. The loop stops the moment there is
+     nothing left to send, the store refuses outright, or she leaves the book
+     (openActivity and the back button, below) - no timer here outlives any
+     of those three. */
+  var outboxRetryTimer = null;
+  function outboxRetryTick() {
+    if (saveInFlight) return;
+    if (!current.dirty || !current.act) { stopOutboxRetry(); return; }
+    flushSave();
+  }
+  function startOutboxRetry() {
+    if (outboxRetryTimer) return;
+    outboxRetryTimer = setInterval(outboxRetryTick, OUTBOX_RETRY_MS);
+    outboxRetryTick();
+  }
+  function stopOutboxRetry() {
+    if (outboxRetryTimer) { clearInterval(outboxRetryTimer); outboxRetryTimer = null; }
+  }
+
   function flushSave() {
     saveTimer = null;
     if (!current.dirty || !current.act) return;
@@ -17104,20 +17564,42 @@ function statsBoard(q, wrong) {
     me.summaries[actId] = sum;
     var sumStr = JSON.stringify(sum);
     outboxPut(actId, stateStr, sumStr);
-    var slow = setTimeout(function () { saveTrouble(true, flushSave); }, OUTBOX_WARN);
+    armSlowTimer();
     saveInFlight = true;
     saveLine(true);
     call('save', { act: actId, state: stateStr, summary: sumStr })
       .then(function (r) {
-        clearTimeout(slow);
         saveInFlight = false; saveLine(false); syncRetry();
-        if (r && r.ok) { outboxClear(actId); saveTrouble(false); if (current.dirty) scheduleSave(); }
-        else { current.dirty = true; saveTrouble(true, flushSave); }
+        if (r && r.ok) {
+          clearSlowTimer(); stopOutboxRetry();
+          outboxClear(actId); saveTrouble(false);
+          if (current.dirty) scheduleSave();
+        } else if (r && SAVE_REFUSED[r.error]) {
+          /* A REFUSAL WILL NOT HEAL BY RETRYING (ruling 51): say so at once,
+             whatever the clock says, and stop asking on her behalf - "Try
+             again" (already on the card) stays hers to press. */
+          clearSlowTimer(); stopOutboxRetry();
+          current.dirty = true;
+          saveTrouble(true, flushSave, T.saveRefused);
+        } else {
+          /* LATE IS NOT REFUSED (ruling 51). relay-failed, and anything else
+             the store did not actually turn down, waits for the SAME 30 s
+             clock as a save that is merely slow - armSlowTimer already has
+             it running, and its own callback both raises the card and starts
+             the self re-send. Showing anything here would put the card up
+             before 30 s for a fault ruling 48 already settled. The one
+             exception is a card already up on an older refusal: if the store
+             no longer refuses it, the card must stop saying it does. */
+          current.dirty = true;
+          if (document.getElementById('gj-save-trouble')) saveTrouble(true, flushSave);
+        }
       })
       .catch(function () {
-        clearTimeout(slow);
+        /* a thrown/network error carries no code at all, so it is late, not
+           refused, exactly as above */
         saveInFlight = false; saveLine(false); syncRetry();
-        current.dirty = true; saveTrouble(true, flushSave);
+        current.dirty = true;
+        if (document.getElementById('gj-save-trouble')) saveTrouble(true, flushSave);
       });
   }
 
@@ -17138,6 +17620,11 @@ function statsBoard(q, wrong) {
 
   document.getElementById('act-back').addEventListener('click', function () {
     if (current.dirty) flushSave();
+    /* LEAVING THE BOOK STOPS THE SELF RE-SEND (ruling 51). The unsent attempt
+       stays safe under its own outbox key and outboxReplay picks it up next
+       time this book opens; what must not survive is a card, or a twenty-
+       second loop, still asking on behalf of a book she is no longer on. */
+    stopOutboxRetry(); clearSlowTimer(); saveTrouble(false);
     renderShelf(); show('shelf');
   });
 

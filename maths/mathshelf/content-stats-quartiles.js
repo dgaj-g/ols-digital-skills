@@ -152,7 +152,10 @@
           mode: 'paper',
           steps: [
             { say: 'Cumulative frequency is the number of times a value, or something less than it, occurs — a running total.',
-              do: [{ table: { head: ['Height, h (cm)', 'Frequency'],
+              /* the third column is headed and EMPTY: the film is here to fill
+                 it, one cell a step (ruling 50 — a blank-headed column of
+                 numbers teaches nothing) */
+              do: [{ table: { head: ['Height, h (cm)', 'Frequency', 'Cumulative frequency'],
                               rows: [['130 ≤ h < 140', '5'], ['140 ≤ h < 150', '13'],
                                      ['150 ≤ h < 160', '19'], ['160 ≤ h < 170', '10'], ['170 ≤ h < 180', '3']] } }] },
             { say: 'The first row’s running total is just its own frequency: 5.',

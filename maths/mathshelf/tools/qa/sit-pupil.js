@@ -97,6 +97,20 @@ const CONTROLS = [
   { id: 'check-without-a-glow', kind: 'fixture', plant: 'stats-no-glow', mustFail: /without its one gold glow/ },
   { id: 'film-ring-draws-nothing', kind: 'fixture', plant: 'film-ring-draws-nothing', mustFail: /ring\(s\) drawn — a film draws what its caption says/ },
   { id: 'film-box-on-the-glyphs', kind: 'fixture', plant: 'film-box-on-the-glyphs', mustFail: /px from the text it boxes/ },
+  /* RULING 50 (12 Sept 2026): every op kind a film names is drawn, and every
+     kind has a plant that makes this gate say no by name. Book C's six films
+     between them name all eleven. */
+  { id: 'film-no-table', kind: 'fixture', plant: 'film-no-table', mustFail: /`table` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-tcell', kind: 'fixture', plant: 'film-no-tcell', mustFail: /`tcell` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-chart', kind: 'fixture', plant: 'film-no-chart', mustFail: /`chart` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-plot', kind: 'fixture', plant: 'film-no-plot', mustFail: /`plot` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-curve', kind: 'fixture', plant: 'film-no-curve', mustFail: /`curve` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-rule', kind: 'fixture', plant: 'film-no-rule', mustFail: /`rule` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-drop', kind: 'fixture', plant: 'film-no-drop', mustFail: /`drop` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-scale', kind: 'fixture', plant: 'film-no-scale', mustFail: /`scale` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-marker', kind: 'fixture', plant: 'film-no-marker', mustFail: /`marker` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-stamp', kind: 'fixture', plant: 'film-no-stamp', mustFail: /`stamp` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-boxplot', kind: 'fixture', plant: 'film-no-boxplot', mustFail: /`boxplot` op\(s\) and nothing of that kind is drawn/ },
   { id: 'table-between-board-and-dock', kind: 'fixture', plant: 'stats-table-between', mustFail: /the control for the current stage is directly under the board, never a screen away/ },
   { id: 'board-squeezed-beside-the-table', kind: 'fixture', plant: 'stats-board-squeezed', mustFail: /the chart gets the whole body before anything sits beside it/ },
   /* his second live test (12 Sept 2026, an iPhone): the board could not be
@@ -283,7 +297,16 @@ async function walkBook(page, book, width, sidecar, transcript) {
             const cp = getComputedStyle(e).clipPath; return cp && cp !== 'none' && !/inset\(0px(?: 0px){0,3}\)/.test(cp) && !/inset\(0(?: 0){0,3}\)/.test(cp);
           });
           const stroke = [...m.querySelectorAll('.movie-stage path, .movie-stage ellipse')].some(p => parseFloat(getComputedStyle(p).strokeDashoffset) > 0.5);
-          return mid || stroke;
+          /* AND THE THINGS THAT ARE NOT STROKE-DRAWN. A stamp lands on a CSS
+             keyframe and a chart, a point or a filled cell on an opacity
+             transition; neither shows up as a clipped .ml-eq or a dashed path,
+             so the wait ended while they were still at opacity 0 and the film
+             was read one beat too early (Book C s2 and s6 at 768, 12 Sept
+             2026 — the stamps were there and the walk did not see them). */
+          const anim = (document.getAnimations ? document.getAnimations() : [])
+            .some(a => a.playState === 'running' && a.effect && a.effect.target &&
+                       m.contains(a.effect.target));
+          return mid || stroke || anim;
         });
         quiet = drawing ? 0 : quiet + 1;
         await new Promise(r => setTimeout(r, 250));
@@ -318,6 +341,47 @@ async function walkBook(page, book, width, sidecar, transcript) {
           const enclosed = vals.some(v => { const vr = r(v); return vr.w > 0 && rr.l <= vr.l + 1 && rr.r >= vr.r - 1 && rr.t <= vr.t + 1 && rr.b >= vr.b - 1; });
           if (!enclosed) problems.push('ring ' + (k + 1) + ' encloses no value of its line');
         });
+        /* ═══ RULING 50: EVERY OP KIND A FILM NAMES IS DRAWN ═══════════════
+           The law counted `ring` and `box` and nothing else, so five of Book
+           C's six films could name `table`, `tcell`, `stamp`, `chart`, `plot`,
+           `curve`, `rule`, `drop`, `scale` and `marker`, draw NOTHING for any
+           of them, and pass. Every op kind that survives the last `clear` must
+           have left at least one element of its own kind on the stage, and that
+           element must have RENDERED PIXELS — a node with no box has not been
+           drawn. Measured at every walked width. */
+        const KIND = {
+          write: '.movie-line .ml-eq', ring: '.ml-ring', tick: '.mark-tick', note: '.ml-note, .ui-msg',
+          stamp: '.ml-stamp', table: '.ml-table', tcell: '.ml-tcell', chart: '.ml-chart',
+          plot: '.ml-plot', curve: '.ml-curve', rule: '.ml-rule', drop: '.ml-drop',
+          scale: '.ml-scale', marker: '.ml-marker', grid: '.movie-grid', balance: '.movie-balance',
+          sub: '.movie-line .ml-eq'
+        };
+        const kinds = {};
+        live.forEach(op => {
+          const k = Object.keys(op)[0];
+          if (!k || k === 'clear') return;
+          /* a `box` op is two different pictures: with a line it is the gold
+             frame round written working, bare it is the box plot on the scale */
+          const key = k === 'box' ? (op.box && op.box.line != null ? 'boxframe' : 'boxplot') : k;
+          kinds[key] = (kinds[key] || 0) + 1;
+        });
+        KIND.boxframe = '.box-draw'; KIND.boxplot = '.ml-boxplot';
+        Object.keys(kinds).forEach(k => {
+          const sel = KIND[k];
+          if (!sel) { problems.push('the film names a `' + k + '` op and the law knows no picture for it — every op kind is drawn and counted'); return; }
+          /* RENDERED PIXELS, and line art counts. A ring or a table has a box
+             in both directions; a rule, a whisker or a drop is a stroke that is
+             one hair thick in one of them, and Chrome reports an SVG path's box
+             WITHOUT its stroke - so the test is real extent on screen plus a
+             style that is actually showing, never area alone. */
+          const found = [...stage.querySelectorAll(sel)].filter(n => {
+            const cs = getComputedStyle(n);
+            if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity || '1') < 0.05) return false;
+            const b = n.getBoundingClientRect();
+            return Math.max(b.width, b.height) > 2;
+          });
+          if (!found.length) problems.push('the film has ' + kinds[k] + ' `' + k + '` op(s) and nothing of that kind is drawn on the stage — a film draws every step it says');
+        });
         const drawnBoxes = [...stage.querySelectorAll('.box-draw')];
         if (drawnBoxes.length < boxes.length) problems.push('the film has ' + boxes.length + ' box op(s) and ' + drawnBoxes.length + ' box(es) drawn');
         drawnBoxes.forEach((el, k) => {
@@ -329,12 +393,14 @@ async function walkBook(page, book, width, sidecar, transcript) {
           const clear = Math.min(tr.l - br.l, br.r - tr.r, tr.t - br.t, br.b - tr.b);
           if (clear < 7) problems.push('the gold box sits ' + Math.round(clear) + ' px from the text it boxes — it is measured from the text and pads 8 px on every side');
         });
-        return { rings: rings.length, boxes: boxes.length, drawn: drawnRings.length, problems };
+        return { rings: rings.length, boxes: boxes.length, drawn: drawnRings.length, kinds: kinds, problems };
       }, book, si);
       if (film) {
         if (film.problems.length) film.problems.forEach(pr => g.fail('movie:end > ' + book + ' s' + (si + 1) + ' @' + width, 'film-draws',
           pr + ' — a film draws what its caption says'));
-        else g.note('film s' + (si + 1) + ': ' + film.rings + ' ring(s) and ' + film.boxes + ' box(es) drawn where the captions say');
+        else g.note('film s' + (si + 1) + ': every op kind drawn — ' +
+          Object.keys(film.kinds || {}).map(k => k + '\u00d7' + film.kinds[k]).join(', ') +
+          ' (' + film.rings + ' ring(s), ' + film.boxes + ' gold box(es)) where the captions say');
       }
       const caps = await page.evaluate(() => [...document.querySelectorAll('.movie .ml-say, .movie .caption, .movie figcaption')]
         .map(e => (e.textContent || '').trim()).filter(Boolean));

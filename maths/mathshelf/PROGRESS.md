@@ -5,6 +5,184 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 12 SEPT 2026, evening — THE STORE AND THE FILMS CUT (clock stamped 17:39, budget 120 min)
+
+### PACKAGE A — THE HOP, MEASURED. RULING 51 NOW HAS NUMBERS.
+
+`timingCheck_()` went into the LIVE project's `Code.gs` in the Chrome editor and
+was run from the function selector. **The desktop app's safety layer did NOT
+refuse the edit** (it had refused the steward twice earlier the same day), so the
+brief's fallback — handing the probe to Damien as a paste-and-Run — was not
+needed. `Code.gs` was put back byte-identical afterwards: 38,166 characters,
+rolling hash 3094648586, the same as `server/Code.gs` in the repo, verified in
+the editor before and after. Two things worth keeping:
+
+- **A function whose name ends in `_` is PRIVATE in Apps Script** and never
+  appears in the editor's Run selector. The probe needed a public
+  `timingCheck()` wrapper before it could be run at all.
+- **The Run button and the selector's label can disagree.** Two runs went to
+  `initJotter` (17:46:38, 17:50:03) while the selector read `timingCheck`; the
+  Executions log is the only honest record of what ran. `initJotter` is
+  idempotent — it creates the tabs and header rows only when they are absent and
+  re-applies the plain-text number format — so nothing in the Sheet changed.
+
+**The Execution log, verbatim (17:52:44 → 17:55:37, all three rounds):**
+
+    ROUND 1 | userEmail_=1ms (filled) | autoName_=110ms (filled) | fetchWITHbearer=4873ms  (code 200) | fetchNObearer=15355ms (code 200) | apiCallProbe=37564ms (relay-failed)
+    ROUND 2 | userEmail_=1ms (filled) | autoName_=123ms (filled) | fetchWITHbearer=18427ms (code 404) | fetchNObearer=13605ms (code 200) | apiCallProbe=21756ms (relay-failed)
+    ROUND 3 | userEmail_=1ms (filled) | autoName_=90ms  (filled) | fetchWITHbearer=19389ms (code 404) | fetchNObearer=37772ms (code 200) | apiCallProbe=3513ms  (unknown-action)
+
+**The same POST timed from OUTSIDE Google** (this Mac, curl, 17:41, deliberately
+wrong secret so the guard rejects it at the door and only the transport is
+timed): 2.94 / 3.00 / 3.38 s end to end, of which the POST itself (answered 302)
+was 1.40 / 1.80 / 1.93 s and the googleusercontent body 0.21 / 0.48 s. The DATA
+side's own executions for those same calls, from the Executions log: **0.831 to
+2.048 s, every one Completed.**
+
+**What the numbers settle:**
+
+1. **B1 is dead. `userEmail_()` is 1 ms.** The shipped `userEmail_()` is a pure
+   `Session.getActiveUser().getEmail()` with no network call in it at all. The
+   userinfo fetch is `autoName_()`, and `autoName_()` runs ONCE in `doGet`
+   (90–123 ms), never on an `apiCall`. Ruling 51's first suspect was a misreading
+   of the code; caching the email would save nothing at all.
+2. **B2 stands, but for RELIABILITY, not speed.** Without the Authorization
+   header every fetch reached DATA and came back 200 (3 of 3). With it, two of
+   three came back **404** — and a non-200 is exactly what `apiCall` turns into
+   `relay-failed`. Some of the `relay-failed` answers Damien has been meeting are
+   not a slow store at all: they are the bearer being refused at the door. Timing
+   was no better with it (4.9 / 18.4 / 19.4 s) than without (15.4 / 13.6 / 37.8 s).
+3. **The hop itself is the cost.** A call the DATA guard REJECTS — no Sheet
+   touched, its own execution 0.8–2.0 s — costs the front door 4.9 to 37.8 s. The
+   identical request from a home broadband line is 2.9–3.4 s. `UrlFetchApp` from
+   inside Apps Script to another Apps Script web app is between 2× and 20× slower
+   than the open internet reaching the same URL, and wildly variable.
+4. **A good round trip is 3.5 s** (round 3's `apiCall`, which reached DATA and got
+   a real answer back). The 21.8 s and 37.6 s round trips did the same work. The
+   variance, not the work, is the fault.
+5. **B3 would not help.** Splitting DATA into its own standalone project leaves
+   the relay a `UrlFetchApp` call from one Apps Script project to another Apps
+   Script web app — which is the hop just measured. Nothing points at the
+   redirect (0.2–0.5 s) or at the Sheet (0.8–2.0 s). **Do not cut the DATA
+   deployment for this.**
+
+Caveat, stated: n = 3, a round's four fetches run back to back, and the later
+fetch in a round is usually the slower one — Apps Script may be queueing
+successive UrlFetch calls to the same host. The 200-versus-404 split is the solid
+result; the absolute times are indicative. Raw record:
+`tools/qa/out/storefilms/A_NUMBERS.md`; the probe itself
+`tools/qa/out/storefilms/timingCheck.gs.txt`.
+
+### PACKAGE D — THE FILMS. RULING 50 CLOSED.
+
+`player.js`'s paper mode knew `write`, `ring`, `box`, `tick` and `note`. Book C's
+six films between them also name `table`, `tcell`, `stamp`, `scale`, `marker` and
+a whole chart block — `chart`, `plot`, `curve`, `rule`, `drop` — and a BARE `box`,
+which is the box plot, not the gold frame. Every one of those fell through
+`applyOp` to the diagram-only tail and drew nothing; Exercise 3's film drew
+nothing at all from first step to last. All eleven are drawn now, and **every
+number is measured from the op**:
+
+- `table` writes the film's own head and rows on the paper, a row at a time;
+  `tcell` fills one cell, and GROWS a column the table does not have yet — which
+  is what the cumulative-frequency column is. (`content-stats-quartiles.js`: s2's
+  film table now declares that third column and leaves it empty for the film to
+  fill. A blank-headed column of numbers teaches nothing.)
+- `chart` draws the grid, both axes, every tick number and both axis titles from
+  the op's own `min`/`max`/`step`/`label`; `plot` puts a point at its own x and y;
+  `curve` runs a smooth Catmull-Rom through its own listed points (or through
+  every point plotted so far, for `through: 'all'`) at pen speed — a CURVE, which
+  is what the caption tells her to draw.
+- `rule` moves the reading rule to its height (the `d` carries the real height and
+  only the travel is a transform, so a browser that ignores the transform still
+  shows the rule in the right place); `drop` reads the x where the CURVE'S OWN
+  POINTS cross that height, draws across and down at pen speed, and writes the
+  reading on the axis. **Exercise 4's three drops read 9, 6 and 13** — exactly the
+  median, lower quartile and upper quartile its captions say.
+- `scale` draws the number line from its own spec; `marker` places one at its own
+  value with the number above it; a bare `box` assembles the box plot from the
+  markers already on that scale — their own recorded values, so the picture can
+  never disagree with what she just watched being put there.
+- `stamp` now carries `ml-stamp` so it can be counted.
+
+**THE LAW** (`sit-pupil`, film-draws): for EVERY op kind in a film, at least one
+element of that kind is on the stage at the film's end, at every walked width,
+with real extent in RENDERED PIXELS and a computed style that is actually showing
+— `Math.max(width, height) > 2`, because a rule, a whisker or a drop is a stroke
+one hair thick in one direction and Chrome reports an SVG path's box without its
+stroke. **ELEVEN PLANTS, one per kind** (`film-no-table`, `-tcell`, `-chart`,
+`-plot`, `-curve`, `-rule`, `-drop`, `-scale`, `-marker`, `-stamp`, `-boxplot`):
+each removes that kind's branch from `applyOp` — the exact fault of 12 September —
+and each must make the gate say no by name.
+
+### PACKAGE C — THE CARD THAT CLEARS ITSELF. RULING 51'S PUPIL HALF.
+
+Built by a sonnet subagent (`tools/qa/out/storefilms/C_NOTES.md`). While a save is
+in flight the quiet `is-waiting` "Saving…" line stays. At 30 s the card appears —
+and the outbox now **re-sends by itself every 20 s** (`OUTBOX_RETRY_MS`) until the
+store answers, and the card **clears itself** when it does. "Try again" stays on
+the card and stays disabled while a call is in flight; it is no longer the only
+way out. A REFUSED call — `bad-secret`, `not-configured`, `no-secret-configured` —
+shows its own honest pupil sentence AT ONCE and is never retried, because a
+refusal will not heal by retrying; `relay-failed` is late, not refused, so it
+keeps re-sending. The loop is stopped on success, on refusal, and on leaving the
+book. Law in `qa-waits`: under a stub that answers only after 45 s, no card at
+24 s, card at 35 s, the stub has already seen more than one save call by then, and
+the card is gone by itself with no tap when the answer lands.
+
+**And three teacher sentences stopped naming a person.** The separated reader's
+re-file (`2d0342e`) FAILED `serverUnreachableStore` and `serverStoreSlow` for
+naming a real developer and internal build jargon on a live error screen. Both
+rewritten, and `serverTooBig` with them — it carried the identical fault one line
+below and leaving it would have been half a fix. Nothing pupil- or teacher-facing
+names a person or an internal part now: "Tell the ICT office."
+
+### PACKAGE B — DESIGNED, NOT APPLIED. THE NEXT SESSION'S FIRST STEP.
+
+Under instruction, `server/Code.gs.template` and `server/Code.gs` were NOT touched
+this cut, no DATA deployment was cut and the manifest was not gone near — so this
+cut is FRONT DOOR ONLY and needs nobody's hands. **Apply this first thing next
+session, then re-run `timingCheck` and compare against the three rounds above.**
+
+B2, the whole change, in `apiCall` in `server/Code.gs.template` — delete the
+`headers` line and replace the paragraph of the comment that defends it:
+
+```js
+    /* NO BEARER. Measured on 12 Sept 2026 (timingCheck_, three rounds): with
+       ScriptApp.getOAuthToken() on the request, two of three POSTs to the DATA
+       /exec came back 404; without it, three of three came back 200. A 404 is
+       what apiCall turns into `relay-failed`, so the header was MAKING some of
+       the failures Damien has been meeting. It bought nothing: Google answers a
+       bearer of these scopes with 401, DATA is published to Anyone, and the
+       shared secret is the lock (see THE GUARD). It cost no time either — 4.9 /
+       18.4 / 19.4 s with it against 15.4 / 13.6 / 37.8 s without. The day DATA is
+       domain-restricted again, this comes back WITH a re-measurement.
+       Redirects stay followed: a web app answers a POST with a 302 to
+       googleusercontent and turning that off would break the good path too. */
+    var resp = UrlFetchApp.fetch(url, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true,
+      followRedirects: true
+    });
+```
+
+That is a SERVER change: `server/DEPLOY.md`'s two-deployment checklist applies
+(DATA first, then the front door), the manifest is READ before and after each
+version cut, and `qa-manifest`'s `front-door-without-its-data` control means the
+front door's row must carry the `Code.gs` md5 the DATA row was cut with. The
+eight-item smoke list applies. Also worth doing in the same cut: have `apiCall`
+log the response code it got on a non-200 (`Logger.log`), so the next
+`relay-failed` says in the Executions log whether it was a 404 or a timeout.
+
+NOT recommended, and the reason is in the numbers: B1 (caching the email —
+there is nothing to cache) and B3 (the DATA split — it does not touch the hop).
+What WOULD move the 3–68 s spread, if he wants it pursued, is fewer hops per
+screen rather than a faster hop: a `load` that returns the class's books and her
+state in one call, and a save that coalesces. That is a design question for a cut
+of its own, not a hotfix.
+
 ## 12 SEPT 2026, 16:02 → 16:35 — THREE HOTFIXES LIVE, FRONT DOOR Versions 28, 29, 30 / DATA Version 25 (unchanged), last commit `611a688`
 
 **16:35 — Version 30, a tick the store answered late is re-read (`611a688`).** His 16:28 untick: `doPost` Completed in 5.7 s, the front door's `apiCall` 36 s later as `relay-failed`; the screen put the tick back on while the pupils' shelf had lost the book. `runTickSync` now answers a relay failure by asking the store (`classes`) and showing what it holds — the outcome line if the change landed, the slow-store sentence if not; seen in the preview with a stub that saves and then answers relay-failed (box shows the server's state, "Handling Data removed from demo’s shelf."). Ruling 49 recorded; F row in the audit for the control still to write. Proof rows in DEPLOY_LOG; manifest untouched.
