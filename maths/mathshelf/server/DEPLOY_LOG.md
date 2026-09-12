@@ -35,6 +35,7 @@ log showing the deployment actually ran.
 | 2026-09-11 18:49 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 13:45 | FRONT DOOR | Version 27 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — the manifest RESTS there now, so no edit was needed by anyone (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 6263421 | a1b79b5f3b7c065add76a79d8c0f0c2a | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:02 | FRONT DOOR | Version 28 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there | 4199ee4 | 46f5f0ec563f96a66617eb5c9d3af04b | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 16:14 | FRONT DOOR | Version 29 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | d8dcef5 | f1108d9c5d675f15ac693987c99e1f71 | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -223,7 +224,7 @@ two-homes mock (the exact exception, as a pupil) and by his next pupil login.
 
 ### What is live, in one line each
 
-- **Live since 12 Sept 2026 16:02, from commit `4199ee4`: FRONT DOOR Version 28, DATA Version 25 (unchanged since `f2a5f7b`; `Code.gs` byte-identical) — the hotfix of 12 Sept (a slow store is not a broken one) on top of POLISH CUT 2 and the 11 Sept re-cut.**
+- **Live since 12 Sept 2026 16:14, from commit `d8dcef5`: FRONT DOOR Version 29, DATA Version 25 (unchanged since `f2a5f7b`; `Code.gs` byte-identical) — the hotfix of 12 Sept on BOTH passcode screens (the markbook's cover and the teacher's landing) on top of POLISH CUT 2 and the 11 Sept re-cut.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
@@ -318,6 +319,25 @@ Now `relay-failed` reads "The store did not answer in time, so that did not
 go through. Nothing was lost. Try again in a moment. If it keeps happening,
 tell Damien."; the passcode check retries once, silently, 1.5 s after a first
 `relay-failed`; "Checking the passcode…" is navy at 16 px with an 18 px mark.
+
+**FRONT DOOR Version 29 — the hotfix's second screen, 12 Sept 2026 16:14, from `d8dcef5`.**
+His fourth look (16:08, a screenshot): "Checking the passcode…" still flat —
+on the TEACHER'S LANDING (the staff link with no class code: `script.js`
+`staffCover`, the cover with a passcode where the name goes), a different
+screen from the markbook's own cover (`staff.js`) that Version 28 fixed. The
+preview's Staff oval opens the markbook cover, so no walk and no eyes had
+stood on the landing; `index.html?nointro` (no class) is where it lives in
+the preview. Same fix on that screen: the `is-waiting` line at 16 px navy
+with an 18 px mark, and one quiet retry on `relay-failed`. `Code.gs`
+unchanged; front door only; manifest `USER_ACCESSING` + `DOMAIN` before and
+after. Index.html from the pushed branch, 1,163,199 bytes. The deployer's
+visit (the landing itself):
+
+```
+Version 29  doGet    Web app  12 Sept 2026, 16:15:04  1.865 s  Completed
+Version 29  apiCall  Web app  12 Sept 2026, 16:15:08  5.883 s  Completed
+Version 25  doPost   Web app  12 Sept 2026, 16:15:10  1.983 s  Completed
+```
 
 ## The live smoke list — his eyes, after any server change (DFM 234b)
 
