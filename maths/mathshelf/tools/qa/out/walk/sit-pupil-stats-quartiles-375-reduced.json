@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "4ae3730c98b2",
- "when": "2026-09-12T15:31:40.252Z",
+ "when": "2026-09-12T15:48:59.729Z",
  "states": [
   {
    "surface": "cover",
@@ -3725,7 +3725,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 19
+    "readability": 18
    }
   },
   {
@@ -7777,7 +7777,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "PASS",
+    "overlap": "FAIL",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
