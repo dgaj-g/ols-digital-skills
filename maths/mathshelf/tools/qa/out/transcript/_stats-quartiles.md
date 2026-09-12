@@ -1,8 +1,8 @@
 # MathShelf — the stats-quartiles transcript
 
-TRANSCRIPT HASH: 3893784d9537f964
-sentences: 108
-taken: 2026-09-11 20:20:40
+TRANSCRIPT HASH: 2948e55f2149278c
+sentences: 109
+taken: 2026-09-12 12:40:32
 
 This is every sentence a pupil reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -63,8 +63,9 @@ Readings 2 of 2 · Values 3 of 3Clean read-off.
 The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks]
 Readings 1 of 1 · Values 2 of 2You put the rule at the right height and read it carefully.
 The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks]
-Readings 0 of 1 · Values 2 of 2
+Readings 1 of 1 · Values 2 of 2Read exactly where it should be.
 The cumulative frequency graph shows the heights of 50 boys. Use the graph to estimate how many boys are taller than 167 cm. [3 marks]
+Readings 0 of 1 · Values 2 of 2
 Ex.5 Box plots — drawing and comparing
 WALT · Draw and compare box plots
 Exercise 5 · Box plots — drawing and comparing
@@ -115,4 +116,4 @@ Charlie’s survey gives him a rough idea of what Year 7 pupils think about scho
 Charlie’s survey proves exactly what all students in the school think about school.
 My marks
 Handling Data · marks so far
-Handling Data · marks so far86 / 94Nearly there — look back at the crosses.30 of 33 questions checked · your whole book is on your teacher’s copy
+Handling Data · marks so far89 / 94Nearly there — look back at the crosses.31 of 33 questions checked · your whole book is on your teacher’s copy

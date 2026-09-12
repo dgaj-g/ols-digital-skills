@@ -77,7 +77,10 @@ const SAMPLE = {
   x: '30', y: '18',
   /* the stage instructions' live counts (11 Sept 2026): "3 still to place",
      "2 of 5 placed" */
-  n: '3', m: '5'
+  n: '3', m: '5',
+  /* the plotting instruction names the next point (12 Sept 2026): "Next:
+     across 15, up 18" - the first row of the table not yet plotted */
+  hi: '15', cf: '18'
 };
 /* ONE HOLE, THREE DIFFERENT WORDS. `{name}` is a pupil's own name on the cover,
    the name of a CUT on a Handling Data screen ("That's my median"), and the

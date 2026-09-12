@@ -1541,10 +1541,18 @@
   /* ═════════ THE OUTBOX ══════════════════════════════════════════
      A screen never claims saving that is not happening. Her attempt is kept on
      this device under outbox:<class>:<email>:<book> until the server says it
-     has it; if a save has not landed after eight seconds she is told, with a
+     has it; if a save has not landed after thirty seconds she is told, with a
      way to try again; and on the next load an unsent attempt newer than the
      server's copy is put back before the book opens. Client only. */
-  var OUTBOX_WARN = 8000;
+  var OUTBOX_WARN = 30000;
+  /* A LIVE SAVE IS NOT TROUBLE (ruling 48, 12 Sept 2026): his 19:05 Executions
+     log showed every save taking 12-40 s and completing, while the old 8 s
+     clock told her it had failed mid-flight. The card now waits for thirty -
+     comfortably past a slow live save - or fires at once on a real refusal or
+     error (unchanged, below). While a save is actually running, a quiet
+     moving line says so, and "Try again" cannot fire a second call on top of
+     the first. */
+  var saveInFlight = false;
   function outboxKey(actId) {
     return 'outbox:' + BOOT.classCode + ':' + (me.email || 'anon') + ':' + actId;
   }
@@ -1570,14 +1578,45 @@
     b.className = 'toolbtn';
     b.textContent = T.saveRetry || '';
     b.setAttribute('data-busy-for', 'save');
+    b.disabled = saveInFlight;   /* a card raised mid-flight is born disabled */
     b.addEventListener('click', function () { saveTrouble(false); retry(); });
     el.appendChild(b);
     document.body.appendChild(el);
+  }
+  /* "Try again" tracks the flight, not just the card's own birth: a card
+     raised BEFORE a retry started must still disable itself once that retry
+     is under way, and re-enable when it settles. */
+  function syncRetry() {
+    var b = document.querySelector('#gj-save-trouble button');
+    if (b) b.disabled = saveInFlight;
+  }
+  /* the quiet moving line a save-in-flight owns (ruling 48): the pupil's own
+     is-waiting breath, pencil-ink, never gold - the gold card stays a staff
+     thing. Lives inside .act-bar-titles, in flow under the exercise title, so
+     it is never asked to overlap it. index.html is not touched: this element
+     exists only while a save is running. */
+  function saveLine(on) {
+    var line = document.getElementById('act-saving');
+    if (!on) { if (line) line.remove(); return; }
+    if (line) return;
+    var host = document.querySelector('.act-bar-titles') ||
+      (document.getElementById('act-back') && document.getElementById('act-back').parentNode);
+    if (!host) return;
+    line = document.createElement('p');
+    line.id = 'act-saving';
+    line.className = 'act-saving is-waiting';
+    line.setAttribute('role', 'status');
+    line.textContent = T.saveInFlight || '';
+    host.appendChild(line);
   }
 
   function flushSave() {
     saveTimer = null;
     if (!current.dirty || !current.act) return;
+    /* NEVER TWO CALLS AT ONCE. A retry pressed - or a timer firing - while one
+       is already running used to send the same save twice; this keeps the
+       newer state queued instead, and the settle path below re-sends it. */
+    if (saveInFlight) { current.dirty = true; return; }
     current.dirty = false;
     current.lastSave = Date.now();
     var actId = current.act.id;
@@ -1588,13 +1627,20 @@
     var sumStr = JSON.stringify(sum);
     outboxPut(actId, stateStr, sumStr);
     var slow = setTimeout(function () { saveTrouble(true, flushSave); }, OUTBOX_WARN);
+    saveInFlight = true;
+    saveLine(true);
     call('save', { act: actId, state: stateStr, summary: sumStr })
       .then(function (r) {
         clearTimeout(slow);
-        if (r && r.ok) { outboxClear(actId); saveTrouble(false); }
+        saveInFlight = false; saveLine(false); syncRetry();
+        if (r && r.ok) { outboxClear(actId); saveTrouble(false); if (current.dirty) scheduleSave(); }
         else { current.dirty = true; saveTrouble(true, flushSave); }
       })
-      .catch(function () { clearTimeout(slow); current.dirty = true; saveTrouble(true, flushSave); });
+      .catch(function () {
+        clearTimeout(slow);
+        saveInFlight = false; saveLine(false); syncRetry();
+        current.dirty = true; saveTrouble(true, flushSave);
+      });
   }
 
   /* put an unsent attempt back before the book opens */

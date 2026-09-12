@@ -103,8 +103,70 @@ const BEAT_OF = `((qid) => {
   const frameW = frame ? Math.round(frame.getBoundingClientRect().width) : null;
   const bcs = body ? getComputedStyle(body) : null;
   const bodyW = body ? Math.round(body.clientWidth - parseFloat(bcs.paddingLeft || 0) - parseFloat(bcs.paddingRight || 0)) : null;
+  /* THE BOARD ON A PHONE (rulings 43/44, 12 Sept 2026): what the SVG and its
+     draggable targets tell the browser about touch, whether the frame's scroll
+     really reaches the far edge and the last target on it, whether the swipe
+     note and the track are showing exactly when width is hidden, and how clear
+     every axis number sits of its axis line - in CSS px, from the rendered
+     boxes, against the line's own screen position. */
+  const svg = root.querySelector('svg.stat-board');
+  let touch = null, lines = null;
+  if (svg && frame) {
+    const ctm = svg.getScreenCTM();
+    const toScreen = (x, y) => { const pt = svg.createSVGPoint(); pt.x = x; pt.y = y; return pt.matrixTransform(ctm); };
+    const hits = [...svg.querySelectorAll('[data-hit]')];
+    const hidden = frame.scrollWidth - frame.clientWidth;
+    const was = frame.scrollLeft;
+    frame.scrollLeft = frame.scrollWidth;
+    const reachedEnd = hidden <= 1 || frame.scrollLeft >= hidden - 1;
+    const fr = frame.getBoundingClientRect();
+    let lastReachable = true, lastRight = null;
+    /* the target's CENTRE - the point itself - has to be inside the scroll range; its 44px hit halo may hang past the board's edge */
+    hits.forEach(h => { const r = h.getBoundingClientRect(); const centre = (r.left + r.right) / 2 - fr.left + frame.scrollLeft; if (lastRight === null || centre > lastRight) lastRight = centre; if (centre > frame.scrollWidth + 1) lastReachable = false; });
+    frame.scrollLeft = was;
+    let axisClear = null, axisWorst = null;
+    svg.querySelectorAll('[data-axis="x"]').forEach(t => {
+      const r = t.getBoundingClientRect(); const line = toScreen(0, Number(t.getAttribute('data-line'))).y;
+      const clear = r.top - line;
+      if (axisClear === null || clear < axisClear) { axisClear = clear; axisWorst = t.textContent + ' (x)'; }
+    });
+    svg.querySelectorAll('[data-axis="y"]').forEach(t => {
+      const r = t.getBoundingClientRect(); const line = toScreen(Number(t.getAttribute('data-line')), 0).x;
+      const clear = line - r.right;
+      if (axisClear === null || clear < axisClear) { axisClear = clear; axisWorst = t.textContent + ' (y)'; }
+    });
+    const note = root.querySelector('.stat-swipe-note'), track = root.querySelector('.stat-scroll-track');
+    const stageLine = root.querySelector('.stat-msg.stage-now');
+    /* the two lines under the strip (ruling 45): the stage instruction and the
+       passing note, read separately, with the note the board earns when every
+       point is placed and she taps once more */
+    const noteLine = root.querySelector('.stat-note');
+    const join = root.querySelector('.stat-join');
+    const P = (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {};
+    lines = {
+      stageText: stageLine ? stageLine.textContent.trim() : null,
+      noteText: noteLine ? noteLine.textContent.trim() : null,
+      enoughText: P.statPlotEnough || null,
+      boardFull: !!(join && !join.disabled),
+      joined: !!(join && join.disabled && root.getAttribute('data-stage') === 'joined'),
+      nextNamed: /Next: across \\S+, up \\S+\\./.test(stageLine ? stageLine.textContent : '')
+    };
+    touch = {
+      svg: getComputedStyle(svg).touchAction,
+      hits: [...new Set(hits.map(h => getComputedStyle(h).touchAction))],
+      hitCount: hits.length,
+      hidden, reachedEnd, lastReachable, lastRight: lastRight === null ? null : Math.round(lastRight), scrollWidth: frame.scrollWidth,
+      noteShown: !!(note && !note.hidden && note.getBoundingClientRect().height > 0),
+      trackShown: !!(track && !track.hidden && track.getBoundingClientRect().height > 0),
+      noteInStageLine: !!(note && stageLine && note.textContent && stageLine.textContent.indexOf(note.textContent) >= 0),
+      axisClear: axisClear === null ? null : +axisClear.toFixed(1),
+      axisWorst
+    };
+  }
   return {
     kind: root.getAttribute('data-kind') || null,
+    touch,
+    lines,
     dockGap: gap,
     boardFrame: frameW,
     bodyWidth: bodyW,

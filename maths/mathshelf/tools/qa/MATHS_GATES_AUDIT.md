@@ -14,7 +14,7 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 | dev/test-anglecore.js | 72 | 45b03ed, 5 Sept 2026 |
 | dev/validate-all.js | 81 | 45b03ed, 5 Sept 2026 |
 | dev/test-server-scoping.js | 20 | 45b03ed, 5 Sept 2026 |
-| dev/test-statcore.js | 156 | Handling Data C, 8 Sept 2026 (design floor 80; rises to 120+ with books A and B) |
+| dev/test-statcore.js | 160 | Handling Data C, 8 Sept 2026 (design floor 80; rises to 120+ with books A and B); +4 grid-resolution rows RD31–RD34, POLISH CUT 2, 12 Sept 2026 |
 
 ## PINNED REFS — the pre-fix states the controls are served from
 
@@ -110,6 +110,17 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 41 (the sentences, mechanically) | qa-language | must-fail-exhibits, must-pass-exemplars |
 | 42 | sit-pupil | table-between-board-and-dock, board-squeezed-beside-the-table |
 
+| 43 | sit-pupil | stats-board-no-pan |
+| 44 | sit-pupil | stats-axis-number-on-the-line |
+| 45 (the stage line and the note, mechanically) | sit-pupil | stage-line-replaced |
+| 45 (the sentences, mechanically) | qa-language | must-fail-exhibits, must-pass-exemplars |
+| 46 | qa-waits | wait-card-still |
+| 47 (the string, mechanically) | qa-strings-ledger | literal-on-a-render-path |
+| 48 | qa-waits | outbox-warns-at-eight |
+
+_What those controls hold (12 Sept 2026): 43 — the SVG's computed touch-action permits the pan, every draggable target's is none, the frame's scroll reaches the last target, the swipe note and the track show exactly while width is hidden; 44 — every axis number's rendered box sits ≥ 3 CSS px clear of its axis line at every width; 45 — the enough-points note lands in its own line with the stage line untouched, and the plotting instruction names the next point; 46 — the passcode line carries `is-waiting`, breathes in rendered frames and spins its `::before`; 48 — under a simulated 20 s save the quiet `is-waiting` line is present and no trouble card comes before 30 s._
+| the front-door-only release rule (12 Sept 2026) | qa-manifest | front-door-without-its-data |
+
 ## B. JUDGED — the rule is a judgement, and the judgement is machine-gated
 
 | rule | where the judgement is filed |
@@ -118,6 +129,8 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 18 (the reading itself) | `MATHS_COLD_READ_VERDICTS_*.md`, gated by `qa-cold-read.js` |
 | 9 (does the feedback fit what she did) | the per-item block, section 5 of `COLD_READ_CHECKLIST.md` |
 | 41 (the reading: does the instruction name the whole act before the control) | `MATHS_COLD_READ_VERDICTS_stats-quartiles.md`, re-filed on the polish cut of 11 Sept 2026, gated by `qa-cold-read.js` |
+| 45 (the reading: does the plotting instruction name the next point plainly) | `MATHS_COLD_READ_VERDICTS_stats-quartiles.md`, re-filed on POLISH CUT 2, 12 Sept 2026 |
+| 47 (the reading: "Saving changes…" on the teacher's screen) | `MATHS_COLD_READ_VERDICTS_TEACHER.md`, re-filed on POLISH CUT 2, 12 Sept 2026 |
 
 ## C. THE COLD-READ CHECKLIST
 
@@ -311,13 +324,8 @@ checked against that sentence first.
 
 ## F. GAPS — each with an owner and a phase
 
-_Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut, 11 Sept 2026 — each with the control that proves it._
+_Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut, 11 Sept 2026 — each with the control that proves it. Rulings 43–48 (his of 12 Sept 2026) moved to A and B on POLISH CUT 2, 12 Sept 2026 — each with the control that proves it (see the control matrix of that cut in `PROGRESS.md`)._
 
 | rule | gap | owner / phase |
 |---|---|---|
-| 43 | a phone cannot pan a wide board (touch-action none on the whole SVG); no gate reads the computed touch-action or asks whether the last point is reachable | POLISH CUT 2 (`Maths/MATHS_BOOKC_POLISH2_PROMPT.txt`), package A: sit-pupil computed-style check at 375 with a plant |
-| 44 | axis numbers sit on the axis line at phone scale (Safari) and 2 px over it in Chrome; no law measures a number's box against its axis | POLISH CUT 2, package A: a geometry check on getBBox with the old constant as its plant |
-| 45 | a passing note replaces the stage line; the plotting instruction does not name the next point; the stage's control is an underlined link | POLISH CUT 2, package B: sit-pupil `stage-line-replaced` control; qa-language on the new sentences |
-| 46 | the passcode wait is a gold card he cannot see move; the pupil's is-waiting line is the pattern he can | POLISH CUT 2, package C: qa-waits wait-card-still re-aimed at the is-waiting line |
-| 47 | the tick's card says "Saving Handling Data for …"; he wants "Saving changes…" | POLISH CUT 2, package C: strings ledger + the teacher cold read |
-| 48 | the pupil's save-trouble card comes at 8 s while the round trip is 12–40 s, and Try again duplicates a save in flight | POLISH CUT 2, package D: qa-waits under a 20 s simulated latency, with the 8 s constant as its plant |
+| (none open) | | |

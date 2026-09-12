@@ -41,6 +41,17 @@
     elm.className = (base !== null) ? base : elm.className.replace(/\bpanel-loading\b/g, '').trim();
     elm.textContent = text || '';
   }
+  /* the PUPIL's own waiting line (ruling 46, 12 Sept 2026): "I want it to
+     flash like the 'getting your details' message with the animated circle
+     to the left on the student side, not gold." Same is-waiting class the
+     pupil side already breathes with; clearBusy (above) already knows how to
+     restore data-base, so it undoes this too. */
+  function waitingLine(elm, text) {
+    if (!elm) return;
+    if (elm.getAttribute('data-base') === null) elm.setAttribute('data-base', elm.className);
+    elm.className = (elm.getAttribute('data-base') || 'ui-msg') + ' is-waiting';
+    elm.textContent = text || '';
+  }
   /* Two-tap confirm dialog (mirrors showQr): a gj-modal above the panel.
      Never native confirm() - it is unreliable in the sandboxed iframe. */
   function openConfirm(title, bodyText, okLabel, cb) {
@@ -211,7 +222,7 @@
     function unlock() {
       if (go.disabled) return;
       go.disabled = true;
-      busyCard(body.querySelector('#st-msg'), 'Checking the passcode&hellip; this can take a moment');
+      waitingLine(body.querySelector('#st-msg'), TT('passcodeChecking'));
       /* THE WAIT IS ITS OWN SCREEN, AND IT WAS NEVER NAMED. The cover declared
          `busy` and `open` in the registry and no code ever set either, so the
          only states it could ever be in were "empty" and "wrong" - a teacher
@@ -365,7 +376,7 @@
             /* busyCard takes html, and a class name is the teacher's own free
                text - escape it, the way every other html-taking call site
                in this file already does */
-            busyCard(cmsg, TT('tickSaving', { book: esc(a.title), 'class': esc(c.name) }));
+            busyCard(cmsg, TT('tickSaving'));
             runTickSync(c);
           });
           lab.appendChild(cb);
