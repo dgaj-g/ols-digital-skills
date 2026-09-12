@@ -976,6 +976,10 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
    with an 18 px mark, so the motion is where the eye already is. */
 #st-msg.is-waiting { font-size: 16px; color: var(--navy); margin-top: 10px; }
 #st-msg.is-waiting::before { width: 18px; height: 18px; border-width: 2.5px; }
+/* and the teacher's LANDING - the cover with a passcode where the name goes
+   (script.js staffCover) - the screen he was actually looking at */
+.cover-msg.is-waiting { font-size: 16px; color: var(--navy); }
+.cover-msg.is-waiting::before { width: 18px; height: 18px; border-width: 2.5px; }
 @keyframes gj-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
 /* the gold wait-card's own, deeper breath (ruling 35, 11 Sept 2026): opacity
    swings further than the shared gj-breathe (.45 rather than .58) AND the
