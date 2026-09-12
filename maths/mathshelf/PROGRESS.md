@@ -7,6 +7,8 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ## 12 SEPT 2026, evening — THE STORE AND THE FILMS CUT (clock stamped 17:39, budget 120 min)
 
+_Steward's note, 20:05: the session that made this cut was stopped by the steward after its deploy (Version 31, 19:27) while its background `control.js --only sit-pupil` battery was still walking; it had begun an unproven style.css edit for a readability finding the battery raised (11 px ink on q31/q32's checked-right state at 375 — its words: "the ink loses to its own antialiased edges at 11px"), which was NOT kept. That finding is open: a dated row for the next cut, or the class fix Book A's opening list already names (small labels checked at their rendered size). The battery's own logs were discarded with it; run it again after the store cut._
+
 **STORE AND FILMS CUT LIVE, FRONT DOOR Version 31 / DATA Version 25 (unchanged), `85a5660`.**
 Deployed 19:27 (`server/DEPLOY_LOG.md` carries the manifest reads, the exact byte
 count and the Executions proof rows). `Code.gs` byte-identical, md5
