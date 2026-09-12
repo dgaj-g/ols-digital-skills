@@ -179,4 +179,11 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     12–40 s and every one completing; "Try again" during a save in flight
     sends it twice. A quiet moving "Saving…" line while in flight; the card
     after 30 s or a refused call; Try again only when nothing is in flight.
+49. **A tick the store answered late is re-read, never reverted by guess.**
+    (12 Sept 2026) "tried unticking algebra … saw the saving pulsing gold
+    message, but it went on for ages and then I saw [the slow-store
+    sentence]." The Executions log: his untick's doPost Completed in 5.7 s;
+    the front door's answer came back 36 s later as relay-failed; the screen
+    put the tick back on while the pupils' shelf had lost the book. After a
+    relay failure the row asks the store what it holds and shows that.
 

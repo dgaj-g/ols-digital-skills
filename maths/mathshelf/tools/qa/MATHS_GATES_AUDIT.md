@@ -328,4 +328,5 @@ _Rulings 34–42 (his of 11 Sept 2026) moved to A and B on the Book C polish cut
 
 | rule | gap | owner / phase |
 |---|---|---|
+| 49 | a tick's row was reverted by guess after a slow relay answer while the store had saved (fixed 12 Sept 16:3x, front door only: the row re-reads the store); no control yet proves the re-read | next harness session: qa-waits control `tick-reverted-by-guess` under a stub whose setActs answers relay-failed after saving |
 | (none open) | | |

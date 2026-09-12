@@ -14170,31 +14170,59 @@ function statsBoard(q, wrong) {
       var acts = sync.queued, pending = sync.pending, tw = sync.tickWrap;
       sync.queued = null;
       sync.busy = true;
+      var showBoxes = function (state) {
+        Object.keys(acts).forEach(function (id) {
+          var box = tw.querySelector('input[data-act-id="' + id + '"]');
+          if (box) box.checked = !!(state && state[id]);
+        });
+      };
+      var settle = function () { sync.busy = false; if (sync.queued) runTickSync(c); };
+      var outcome = function () { clearBusy(cmsg, TT(pending.on ? 'tickOn' : 'tickOff', { book: pending.title, 'class': c.name })); };
       call('setActs', { className: c.name, acts: acts }).then(function (r) {
-        sync.busy = false;
         if (r && r.ok) {
           c.acts = acts;
           SURF('set-up', 'tickboxes');
-          clearBusy(cmsg, TT(pending.on ? 'tickOn' : 'tickOff', { book: pending.title, 'class': c.name }));
-        } else {
-          /* revert every box in this row to the last state the server actually
-             confirmed - simpler and safer than guessing which one failed when
-             a second click queued a different book while this call was out */
-          Object.keys(acts).forEach(function (id) {
-            var box = tw.querySelector('input[data-act-id="' + id + '"]');
-            if (box) box.checked = !!(c.acts && c.acts[id]);
-          });
-          clearBusy(cmsg, SAYS(r && r.error, TT('couldNotSave')));
+          outcome();
+          settle();
+          return;
         }
-        if (sync.queued) runTickSync(c);
+        /* THE STORE OFTEN SAVES AND THEN LOSES THE ANSWER ON THE WAY BACK
+           (12 Sept 2026, 16:28: his untick's doPost Completed in 5.7 s and the
+           front door's apiCall came back 36 s later as relay-failed). A box
+           put back on screen after that showed him the opposite of what his
+           pupils see. So a relay failure is never answered by guessing: the
+           store is asked what it holds, and the boxes show THAT - the outcome
+           line if the change landed, the slow-store sentence if it did not. */
+        if (r && r.error === 'relay-failed') {
+          call('classes').then(function (r2) {
+            var mine = (r2 && r2.ok ? (r2.classes || []) : []).filter(function (x) { return x.name === c.name; })[0];
+            if (mine) {
+              c.acts = mine.acts || {};
+              showBoxes(c.acts);
+              SURF('set-up', 'tickboxes');
+              if (!!c.acts[pending.id] === !!pending.on) outcome();
+              else clearBusy(cmsg, SAYS('relay-failed', TT('couldNotSave')));
+            } else {
+              showBoxes(c.acts);
+              clearBusy(cmsg, SAYS('relay-failed', TT('couldNotSave')));
+            }
+            settle();
+          }).catch(function () {
+            showBoxes(c.acts);
+            clearBusy(cmsg, SAYS('relay-failed', TT('couldNotSave')));
+            settle();
+          });
+          return;
+        }
+        /* any other refusal: the row goes back to the last state the server
+           confirmed, and the server's own word is shown */
+        showBoxes(c.acts);
+        clearBusy(cmsg, SAYS(r && r.error, TT('couldNotSave')));
+        settle();
       }).catch(function () {
-        sync.busy = false;
-        Object.keys(acts).forEach(function (id) {
-          var box = tw.querySelector('input[data-act-id="' + id + '"]');
-          if (box) box.checked = !!(c.acts && c.acts[id]);
-        });
+        showBoxes(c.acts);
         clearBusy(cmsg, TT('couldNotSave'));
-        if (sync.queued) runTickSync(c);
+        settle();
       });
     }
 
@@ -14239,7 +14267,7 @@ function statsBoard(q, wrong) {
             c._tickSync = c._tickSync || { busy: false, queued: null, pending: null, tickWrap: tickWrap };
             c._tickSync.tickWrap = tickWrap;
             c._tickSync.queued = acts;
-            c._tickSync.pending = { title: a.title, on: cb.checked };
+            c._tickSync.pending = { id: a.id, title: a.title, on: cb.checked };
             /* A SAVING MESSAGE IS PRONOUNCED, NOT A WHISPER (ruling 35). The
                class line used to breathe quietly with .is-waiting; it now
                becomes the same gold wait-card the passcode screen uses, in the
