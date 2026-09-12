@@ -1,4 +1,4 @@
-TRANSCRIPT HASH: 323340a2178e2369
+TRANSCRIPT HASH: f687cdb7f9e4b5be
 
 I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pupil- and teacher-facing lines the cover, shelf, Angles, Algebra and Handling Data screens draw on, plus the read-first candidates carried at its tail. For the "strings.js > pupil" and "stats-quartiles" lines I read from Aoife's seat (eleven or twelve, whatever book she's in, mouse or finger, possibly nobody in the room). For the "strings.js > teacher" lines I read from a maths colleague's seat at a laptop between two lessons, per checklist §6, since a pupil never sees these.
 
@@ -181,6 +181,7 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > algebraLinePlaceholder | your next line, then "add line" | Placeholder fragment, fine convention. |
 | PASS | strings.js > pupil > addLineBtn | add line | Plain button. |
 | PASS | strings.js > pupil > moveAnnotationEquation | What are you doing to both sides? — tag the move (optional) | Correctly scoped to an equation question — "both sides" applies here, unlike the banned substitution-question case. |
+| PASS | strings.js > pupil > moveAnnotationGeneric | What's your next step? — tag the move (optional) | Correctly scoped to a non-equation move; optional tag, no leak. |
 | PASS | strings.js > pupil > chipCollectTerms | Collect terms | Plain chip. |
 | PASS | strings.js > pupil > chipJustRewrite | Just rewrite | Plain chip. |
 | PASS | strings.js > pupil > moveOperandLabel | How much? | Plain. |
@@ -223,6 +224,7 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > teacher > serverExists | There is already a class with that name. | Clear. |
 | PASS | strings.js > teacher > serverNotFound | That could not be found. Reload the page and try again. | Clear. |
 | FAIL | strings.js > teacher > serverUnreachableStore | The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment. | Names a real developer and internal build jargon ("the front door", "the data deployment") on a live error screen — a teacher has no way to act on this. → "The app cannot reach its own store, so nothing was saved and nothing was lost. Contact IT support — the app's connection to its data needs attention." |
+| FAIL | strings.js > teacher > serverStoreSlow | The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien. | Names Damien directly on a live screen, same fault as its sibling errors. → "The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, contact IT support." |
 | FAIL | strings.js > teacher > serverTooBig | There is more working in this book than one save can carry. Tell Damien before the class writes any more. | Same fault — names a developer directly by name on a production screen. → "There is more working in this book than one save can carry. Contact IT support before the class writes any more." |
 | PASS | strings.js > teacher > serverUnknownAction | The app asked for something this server does not know about. Reload the page. | Acceptable for a rare fallback; honest, actionable. |
 | PASS | strings.js > teacher > signedInAs | Signed in as aoife.gartland@c2ken.net | Plain, clear pattern; the demo email shown is a data question, not a wording fault. |
