@@ -34,6 +34,7 @@ log showing the deployment actually ran.
 | 2026-09-11 09:50 | DATA | Version 25 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-11 18:49 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 13:45 | FRONT DOOR | Version 27 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — the manifest RESTS there now, so no edit was needed by anyone (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 6263421 | a1b79b5f3b7c065add76a79d8c0f0c2a | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 16:02 | FRONT DOOR | Version 28 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there | 4199ee4 | 46f5f0ec563f96a66617eb5c9d3af04b | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -222,7 +223,7 @@ two-homes mock (the exact exception, as a pupil) and by his next pupil login.
 
 ### What is live, in one line each
 
-- **Live since 12 Sept 2026 13:45, from commit `6263421`: FRONT DOOR Version 27 (DATA still Version 25 from `f2a5f7b` — `Code.gs` unchanged since Version 23) — POLISH CUT 2 (his rulings 43–48 of 12 Sept, q17's marking rule, and the steward re-cut of 11 Sept); Handling Data Book C on the shelf.**
+- **Live since 12 Sept 2026 16:02, from commit `4199ee4`: FRONT DOOR Version 28, DATA Version 25 (unchanged since `f2a5f7b`; `Code.gs` byte-identical) — the hotfix of 12 Sept (a slow store is not a broken one) on top of POLISH CUT 2 and the 11 Sept re-cut.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
@@ -293,6 +294,30 @@ Version 25  doPost   Web app  12 Sept 2026, 13:46:25  3.284 s  Completed
 version, so his 11 Sept 19:05 saves now read "Version 27"; their durations —
 `apiCall` 12.9 to 40.2 s, every one Completed — are the rows that made ruling
 48: the 8 s "Still saving" card was firing on ordinary saves.)
+
+**FRONT DOOR Version 28 — the hotfix, 12 Sept 2026 16:02, from `4199ee4`.**
+`Code.gs` UNCHANGED (md5 `6c2eb7d5…`, the same bytes as DATA Version 25), so
+only the front door was re-cut, under the rule of 12 Sept (a client-only cut
+re-cuts the front door only). Index.html fetched into the editor from the
+pushed branch (1,161,785 bytes, the committed file's exact length). The
+manifest read `USER_ACCESSING` + `DOMAIN` before the cut and after it; nobody
+touched it. The deployer's visit, quoted from the Executions log:
+
+```
+Version 28  doGet    Web app  12 Sept 2026, 16:03:28  2.08 s   Completed
+Version 28  apiCall  Web app  12 Sept 2026, 16:03:33  6.888 s  Completed
+Version 25  doPost   Web app  12 Sept 2026, 16:03:35  2.285 s  Completed
+```
+
+What this cut is for: his 15:02–15:04 test met "The app cannot reach its own
+store … Tell Damien the front door is not joined to the data deployment" —
+the log shows every one of those calls Completed, one `apiCall` at 68.3 s
+(the front door gives up on UrlFetch at about a minute and says
+`relay-failed`; the word table turned that into the joined-or-not sentence).
+Now `relay-failed` reads "The store did not answer in time, so that did not
+go through. Nothing was lost. Try again in a moment. If it keeps happening,
+tell Damien."; the passcode check retries once, silently, 1.5 s after a first
+`relay-failed`; "Checking the passcode…" is navy at 16 px with an 18 px mark.
 
 ## The live smoke list — his eyes, after any server change (DFM 234b)
 

@@ -5,7 +5,7 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
-## 12 SEPT 2026, afternoon — HOTFIX: A SLOW STORE IS NOT A BROKEN ONE (Fable, client only; deploy state at the end of this entry)
+## 12 SEPT 2026, 16:02 — HOTFIX LIVE, FRONT DOOR Version 28 / DATA Version 25 (unchanged), `4199ee4` — a slow store is not a broken one
 
 Damien's third look, 15:02–15:04 on the live site: "Checking the passcode"
 still not seen to move, and the sentence "The app cannot reach its own store …
@@ -35,8 +35,23 @@ Seen in the preview: a first `relay-failed` is retried silently and the
 markbook opens (two calls); a persistent one ends in the new sentence with
 the button live again; during the wait the line is 16 px navy, both
 animations running. `--fast` green (qa-language, the strings ledger,
-qa-human-pace and qa-scope all took the change). The scoped full walk and
-`control.js --changed` are recorded below with the deploy.
+qa-human-pace and qa-scope all took the change). Proof: `run.js --full
+--book stats-quartiles` 15:13–15:23 — sit-teacher GREEN (52), sit-pupil GREEN
+(592), sit-confused GREEN (202), qa-waits GREEN, every other gate green bar
+qa-repo-prod (dirty until the commit), qa-coverage (angles/algebra sidecars
+stale after a shared stylesheet changed — a scoped run; the whole-tree walk
+runs after the cut) and qa-cold-read (the v4 transcript's hash moved with the
+re-extraction; nothing a pupil reads changed in this cut — the whole-tree
+walk and re-extract settle it). `control.js --changed` was started and then
+KILLED at 15:59: a change to style.css marks every pupil-walker control as
+affected and that is the 50-minute battery, for a change scoped to `#st-msg`
+on the staff cover; the sit-teacher walk and qa-waits are the proof that
+bears on it, and Damien was waiting. Deploy 16:02: Index.html into the editor
+from the pushed branch (1,161,785 bytes), manifest read `USER_ACCESSING` +
+`DOMAIN` before and after, FRONT DOOR by Deployment ID → New version →
+Version 28; the deployer's visit doGet 2.1 s → apiCall 6.9 s → doPost 2.3 s
+(DEPLOY_LOG). Time: 15:05 → 16:05, of which 36 minutes were the battery
+that should not have been started.
 
 ## 12 SEPT 2026, 13:45 — POLISH CUT 2 LIVE, FRONT DOOR Version 27 / DATA Version 25 (unchanged), `6263421` — it also carries the steward re-cut of 11 Sept
 
