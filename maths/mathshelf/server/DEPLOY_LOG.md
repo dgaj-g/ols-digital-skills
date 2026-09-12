@@ -33,6 +33,7 @@ log showing the deployment actually ran.
 | 2026-09-09 22:03 | FRONT DOOR | Version 24 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut | 300dfc4 | 2221999671673d818adb24e3bd07b7ca | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-11 09:50 | DATA | Version 25 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-11 18:49 | FRONT DOOR | Version 26 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut (Damien made the two-line manifest edit himself — the desktop app's permission classifier refused Claude the access change) | f2a5f7b | 9a4f9c321834312a59bc12e73a70752d | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 13:45 | FRONT DOOR | Version 27 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — the manifest RESTS there now, so no edit was needed by anyone (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 6263421 | a1b79b5f3b7c065add76a79d8c0f0c2a | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -221,7 +222,7 @@ two-homes mock (the exact exception, as a pupil) and by his next pupil login.
 
 ### What is live, in one line each
 
-- **Live since 11 Sept 2026 18:49, from commit `f2a5f7b`: FRONT DOOR Version 26, DATA Version 25 — the Book C polish cut (his nine rulings of 11 Sept); `Code.gs` unchanged since Version 23; Handling Data Book C on the shelf.**
+- **Live since 12 Sept 2026 13:45, from commit `6263421`: FRONT DOOR Version 27 (DATA still Version 25 from `f2a5f7b` — `Code.gs` unchanged since Version 23) — POLISH CUT 2 (his rulings 43–48 of 12 Sept, q17's marking rule, and the steward re-cut of 11 Sept); Handling Data Book C on the shelf.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
@@ -267,6 +268,31 @@ trip he felt this morning, from those rows: `apiCall` 7.1–10.3 s wrapping
 write under its lock — and the client change does not shorten them; what it
 changes is that the box flips at once and the gold card says it is saving
 while they run.
+
+**FRONT DOOR Version 27 — POLISH CUT 2, 12 Sept 2026, from `6263421`.**
+`Code.gs` is UNCHANGED (md5 `6c2eb7d5…`, the same bytes as Version 23), so
+under the rule this cut wrote into `DEPLOY.md` the front door ALONE was re-cut
+and DATA stays Version 25: the first release that needed nobody's hands on the
+manifest, which was read as `USER_ACCESSING` + `DOMAIN` before the cut and
+again after it. Index.html was fetched into the editor from the pushed branch
+(1,159,916 bytes, the committed file's exact length; md5 `a1b79b5f…`). This
+cut also carries the steward re-cut of 11 Sept (Exercise 3's chart never
+squeezed by its side column), which had been proved in the tree and not
+deployed. The deployer's visit, quoted from the Executions log as it displays
+them:
+
+```
+Version 27  doGet    Web app  12 Sept 2026, 13:46:12  0.914 s  Completed
+Version 27  apiCall  Web app  12 Sept 2026, 13:46:15  6.351 s  Completed
+Version 25  doPost   Web app  12 Sept 2026, 13:46:18  2.726 s  Completed
+Version 27  apiCall  Web app  12 Sept 2026, 13:46:23  5.814 s  Completed
+Version 25  doPost   Web app  12 Sept 2026, 13:46:25  3.284 s  Completed
+```
+
+(The log re-labels every older front-door row with the deployment's CURRENT
+version, so his 11 Sept 19:05 saves now read "Version 27"; their durations —
+`apiCall` 12.9 to 40.2 s, every one Completed — are the rows that made ruling
+48: the 8 s "Still saving" card was firing on ordinary saves.)
 
 ## The live smoke list — his eyes, after any server change (DFM 234b)
 
