@@ -132,6 +132,15 @@ GJ_STATS.check(q, att, rules)         -> {perLine:[{unit,label,band,w,ok,dx,note
 GJ_STATS.modelBoard(q, wrong, rules)  -> the S a right (or classically wrong) attempt leaves
 GJ_STATS.gist(q)                      -> <= 28 chars for the exercise grid
 GJ_STATS.DX_NAMES / REASONS / MK_LABELS / DEFAULT_RULES / FT_RULE_IDS
+GJ_STATS.KINDS                        -> [13 kind ids]   isStatKind(k) covers all thirteen
+GJ_STATS.stemLeafOf(value, decimals)     -> {stem,leaf}         numbers; decimals 0: 36->{3,6}; decimals 1: 3.6->{3,6}
+                                                                  (one rule: scale to an integer, split at the last digit)
+GJ_STATS.stemleafRows(values, decimals)  -> {'<stem>':[leaf digits ascending as numbers]}   only stems that hold a
+                                                                  value; the renderer unions the result with q.stems
+GJ_STATS.pieAngles(cats, total)          -> {catId:{n,d}}       f * 360 / total; total defaults to the sum of f
+GJ_STATS.leastSquares(points)            -> {m,c,meanX,meanY,n} rationals; m/c null when every x is equal
+GJ_STATS.lineY(line, x) / lineX(line, y) -> {n,d}|null          line is {m,c} or two points [[x1,y1],[x2,y2]];
+                                                                  null for a vertical/undrawn line, lineX null for a flat one
 GJ_STATS.selfTest()                   -> {pass, count, failures}
 ```
 
@@ -139,6 +148,26 @@ GJ_STATS.selfTest()                   -> {pass, count, failures}
 which mark it can pay for (`band`), and whether a follow-through tick earns it
 (`ftEarns`). The pupil's tally, the teacher's rows and the lint's
 reachable-marks rule all read it, and the selfTest pins every flag.
+
+### Units per kind (Book A: order, pick, stemleaf, pie, scatter)
+- `order` — cyclic: `PAIR_0…PAIR_{n-1}` (method w1 for the first n−1, accuracy w1 for the closing
+  pair; no ft — a rotation of the answer cycle still marks full). Not cyclic: one `SEQ` unit, accuracy w1, exact.
+- `pick` — `PICK` accuracy w1 (exact option index) · `WHY` method w1 (ok:1 iff `S.why` is the `flaw`
+  of ANY rejected option, whichever she picked; else 0, dx `JUDGE_WRONG_REASON`).
+- `stemleaf` — `LEAVES` method w1 (every non-prefilled value present exactly once on its true stem;
+  dx `SL_WRONG_STEM`/`SL_MISSED_LEAF`) · `ORDERED` method w1 (each row non-decreasing outward; dx
+  `SL_UNORDERED`) · `KEY` accuracy w1, **only present when `key.ask`** — a no-key stemleaf has no
+  accuracy unit, so its pack `marks` must read `[m, 0]`.
+- `pie` — `ANG_<id>` per category, method w1, **ftEarns** (ok:1 exact f·360/total; ok:2 follows their
+  own first angle; a whole column read as a percentage earns nothing and carries `PIE_PCT_NOT_DEG` —
+  percentages are not treated as a follow-through) · `SUM` method w1 (their angles sum to 360) ·
+  `SECTORS` accuracy w1, **ftEarns** (each placed boundary within ±2° of the running total, hers or
+  the true one; dx `PIE_SECTOR_OFF`) · `LABELS` accuracy w1 (sector i carries `cats[i]`).
+- `scatter` — `POINTS` method, `w = q.pointsW || 1` (set equality with `toPlot`; dx `SC_XY_SWAPPED`
+  when the swapped set is the one that fits inside the axes) · then only the units the question's
+  `asks` name: `LOBF` method w1 (dx `SC_LINE_OFF_TREND`) · `ESTIMATE` accuracy w1, **ftEarns** (ok:1
+  off the true least-squares line, ok:2 off THEIR line; dx `SC_READ_WRONG_AXIS`) · `CORR` accuracy w1
+  (dx `SC_CORR_SIGN`) · `OUTLIER` accuracy w1, exact index into `given.concat(toPlot)`.
 
 ## Stats content pack — `window.GJ_CONTENT['stats-quartiles']` (and -collect, -averages)
 
@@ -157,8 +186,85 @@ cfread   {reads:{median:{h,x}, 'atX@36':{x,cf}…}, answers:{'atX@36':'32'}, iqr
 boxplot  {pos:{min,Q1,Q2,Q3,max}, drawn, stage?}  from:'qlist'|'values'|'curve'
 compare  {s1:{who,who2,ctx,v:[a,b]}, s2:{who,size,cons,meas,v:[a,b]}}
 judge    {j:[{fair,why} | {v}]}                   claims may carry their own options
-values   {v:{slotId:'84'}}                        slots may carry a closed ft.rule id
+values   {v:{slotId:'84'}}                        slots may carry a closed ft.rule id; `q.fig` may draw the
+                                                    question's own figure (venn2/venn3/stemleaf/list — see below)
+
+-- Book A (12 Sept 2026) --
+order    {seq:[tileIndex…]}                       indices of q.tiles in the order placed; cyclic marks pairwise
+pick     {pick:optionIndex, why:'Q_…'}            why = the Q_* flaw id of ANY rejected option, not just hers
+stemleaf {rows:{'<stem>':['<leafDigit>'…] in placed order}, key?:{stem:'<stem>', leaf:'<digit>'}}
+                                                    rows hold ONLY the pupil's leaves — prefilled stems and the
+                                                    `back` side are given and never marked; key present only when `key.ask`
+pie      {angles:{catId:'156',…}, bounds:[b1,…,b(n-1),360], labels:{sectorIndex:catId}}
+                                                    bounds are cumulative degrees clockwise from 12 o'clock; last is fixed 360
+scatter  {pts:[[x,y]…], line:[[x1,y1],[x2,y2]], est:'70', corr:'positive', outlier:6}
+                                                    only the keys the question's `asks` name exist (pts always)
 ```
+Leaves, indices and points may arrive as strings or numbers (the walker and the renderer differ); every
+value is normalised through `R()` before comparison.
+
+### `values` with a figure — `q.fig` (§17.1, Book A)
+`q` carries `fig` alongside the existing `slots`:
+```
+{ type:'venn2', n, circles:[{id:'A',label:'Milk'},{id:'B',label:'Sugar'}], totals:{A:81,B:48} }
+    // each slot carries region:'A'|'B'|'AB'|'out'
+{ type:'venn3', n, circles:[{id:'A',…},{id:'B',…},{id:'C',…}], totals:{A,B,C} }
+    // regions 'A'|'B'|'C'|'AB'|'AC'|'BC'|'ABC'|'out'
+{ type:'stemleaf', stems:[…], rows:{'2':[4,6,8,8],…}, key:{stem,leaf,means}, decimals, unit }
+    // drawn read-only via GJ_STATCHART or slTable(); the pupil's slots are listed under it
+{ type:'list', values:[…] }   // plain printed list, no figure interaction
+```
+`S` is unchanged: `{v:{slotId:'59',…}}`. FT rules already in `FT_RULES` cover the venn figure:
+`venn.only` (`ft:{rule:'venn.only', of:'A', from:['both']}`), `venn.outside`, `venn.both.fromTotals`;
+a read-off from a given stemleaf figure uses `sl.read`. Venn dx fire only when the pack has not
+authored `slot.dx`: `VENN_TOTAL_AS_ONLY` (an "only" slot equals that circle's total),
+`VENN_OUTSIDE_LOST` (the `region:'out'` slot blank/zero, or a `fromTotals` slot equals A+B−N).
+
+DOM (jotter-stats.js): host `.stat-fig.stat-fig-<type>` holds the drawing — `GJ_STATCHART.venn(host, fig, {})`
+for venn2/venn3, `slTable(…)` for stemleaf, a plain `<p class="stat-list">` for list. **Only venn2** moves
+its slots onto the figure: each such slot renders as an HTML overlay `div.stat-fig-box[data-region="AB"]`
+(positioned at `venn.regionCenter(region)`, clamped inside the frame) containing a label
+`span.stat-fig-box-label` and the pressable `button.stat-cell[aria-label="<slot label>"][data-placed?]`
+(the actual pressed/typed cell — `aria-label` always = the slot's label, so drive.js opens boxes by label).
+venn3 has eight regions and collided at 375, so its slots (and every non-`region` slot on any fig) stay
+listed under the drawing in `.stat-slots` as `.stat-slot` rows, same `.stat-cell` button. Stages unchanged:
+`empty · filling · ready`.
+
+### DOM contract — trays for the new kinds (jotter-stats.js)
+Every tray is `[data-tray="<name>-<qid>"]` holding `button[data-tray-item]` items, same convention as
+every existing kind's tray:
+- `order-tiles-<qid>` — the tiles, deranged from the answer order; placed tiles sit in a `.stat-row` of
+  `.stat-tile[data-placed]` (two-press returns one to the tray).
+- `pick-options-<qid>` — the options (`.stat-option`, `aria-pressed`); `pick-why-<qid>` — the reason bank,
+  shown only once an option is pressed.
+- `stemleaf-leaves-<qid>` — the values as full text ("3.6"), deranged from ascending; a pressed leaf
+  selects (stage `leaf-selected`) then lands in a stem zone (`button.stat-sl-zone[data-stem="N"]`).
+  When a key is asked: `stemleaf-keystem-<qid>` (the stems) and `stemleaf-keyleaf-<qid>` (digits 0–9).
+- `pie-labels-<qid>` — the category labels, landing as HTML overlays `.stat-pie-label[data-placed]` on
+  the drawn sectors.
+- `scatter-corr-<qid>` — Positive · Negative · No correlation.
+The venn2 figure's own overlay is `.stat-fig-box` (documented above) — not a tray; it has no derangement,
+each box sits fixed over its region.
+
+### MOVIE ops for stats packs — `player.js` `applyOp` (CHART family)
+Existing (unchanged): `write ring box tick note stamp table tcell chart plot curve rule drop scale
+marker bracket`. Book A adds, drawn on the film's own canvas at the film-draws law's pace:
+```
+{venn:{circles:[{id,label}…], n?}}     lays the circles (GJ_STATCHART.venn, {append:true})
+{vfill:{region:'AB', text:'22'}}       writes a value into a region (vennBd.fill() write-on)
+{pie:{}}                               draws the disc + radius; the running angle starts at 0
+{sector:{deg, label?}}                 sweeps the NEXT sector clockwise from the running angle at pen
+                                         speed, then a plain radius at its end and the label at the mid-angle
+{stemleaf:{stems:[…], decimals, unit, back?, sides?, title?}}   lays the stems (stemleafFilm)
+{leaf:{stem, leaf, side?}}             one leaf lands (180 ms)
+{key:{stem, leaf, means}}              writes the key line
+{lobf:{through:[[x,y],[x,y]]}}         draws a line at pen speed through the two points, extended to the
+                                         plot edges, on the current chart (the film's own .ml-chart)
+```
+`rule` gains a vertical form `{rule:{x}}` (existing `{rule:{h}}` unchanged); `{drop:{}}` after either
+reads the lobf when no curve is joined. Every op kind drawn at the film's end is the film-draws law
+(`tools/qa/sit-pupil.js` `KIND` map); the eight new ops are `.ml-venn .ml-vfill .ml-pie .ml-sector
+.ml-stemleaf .ml-leaf .ml-key .ml-lobf`.
 
 ## window.GJ_STATCHART (statchart.js)
 - `render(host, chart|scale, opts)` → handle `{svg, toPx, toAxis, snap, addPoint, movePoint,
@@ -166,10 +272,45 @@ values   {v:{slotId:'84'}}                        slots may carry a closed ft.ru
   scale, marker, moveMarker, removeMarker, markers, box, clearBox, ring, bracket, annotate,
   selectPoint, selectMarker, needsScroll, relayout, destroy}`.
   `opts`: `readOnly`, `snapDivisor`, `onChange(evt)`, `onGridTap(x, y)`.
+  **Book A scatter additions to the handle:** `addPoint(x, y, {given:true})` → board index (draws
+  `g.stat-pt.is-given[data-index]`, never selectable — `points()` now excludes given points, so it
+  is exactly `S.pts`); `allPoints()` → `[{i,x,y,given}…]` every point in draw order (given first,
+  so it indexes `given.concat(toPlot)` for the outlier ask); `line(p1, p2, {cls, animate?, instant?})`
+  → `{el, update(p1,p2), remove(), yAt(x), ends()}` draws `line.stat-lobf` extended to the plot rect;
+  `handleAt(x, y, i)` → the 48 px drag handle `circle.stat-lobf-handle[data-handle=i][data-placed]`
+  (real pointer drag moves it, snapped to the grid; fires `opts.onChange({type:'lobf-move', i, x, y})`);
+  `moveHandle(i, x, y)`, `handles()` → `[[x,y],[x,y]]` sorted by i, `removeHandles()`; `markOutlier(i)`
+  → the ring element (`.is-outlier` on the point), `clearOutlier()`; `enablePress(fn)` adds a 44 px
+  press target over every point and calls `fn(boardIndex)` on click (`enablePress(null)` removes it);
+  `clearDrop()` clears the rule's drop drawing with no new draw. `ruleX(x)` (pre-existing) + `drop()`
+  now fall back to reading the lobf line when no curve is joined.
   Labels that MOVE are HTML over the board (`.stat-label[data-board-label]`) so the overlap
   law can judge them; SVG text is inked by `fill: currentColor`; every label renders at
   13 CSS px or more after the counter-scale, and a board scrolls sideways rather than let a
   small square fall under 12 px.
+- `chart.snap` (scatter charts only): an integer divisor on the placed-point grid — the board snaps to
+  `sq / snap`, so `snap: 2` lets a plotted point sit on a HALF small square (`sq` stays the labelled
+  square size). Defaults to 1. Read by both the renderer's grid and `dev/lint-content-stats.js`.
+- `venn(host, spec, opts)` → handle. `spec:{circles:[{id,label}] (2 or 3), n?}`; `opts:{append?, cls?}`.
+  Draws `.stat-board-frame > svg.stat-board.stat-venn` (circles `circle.stat-venn-circle[data-circle=id]`,
+  labels, `text.stat-venn-n` "n = 130"). Handle: `regionCenter(region)` → `{x,y}` CSS px relative to the
+  frame (regions venn2 `A B AB out`, venn3 `A B C AB AC BC ABC out`), `regionCenterUser`, `contains`,
+  `geometry()`, `regions()`, `fill(region, text, {instant?, cls?})` → `{el, done}` write-on (320 ms),
+  `clearFill(region?)`, `svg`, `frame`, `layer`, `relayout()`, `destroy()`.
+- `pie(host, opts)` → handle. `opts:{readOnly?, append?, cls?, onRimTap(deg), onBoundaryMove(i,deg),
+  onBoundaryPress(i), onSectorPress(i)}`. Degrees are integers 0–360 clockwise from 12 o'clock. Handle:
+  `rimPoint(deg)` → `[px,py]`, `degAt(px,py)` → integer deg, `rimUser`, `degAtUser`, `centre()`,
+  `centreUser()`, `snap(deg)`, `boundary(deg, {placed?, i?, plain?, animate?})` → index (real drag moves
+  it; a press with no movement fires `onBoundaryPress`), `removeBoundary(i)`, `boundaries()` → `[deg…]`,
+  `sector(fromDeg, toDeg, i, {instant?})` → `{el, done, from, to}` sweeps clockwise at pen speed,
+  `clearSectors()`, `labelPoint(fromDeg, toDeg)` → `{x,y}` for an HTML `.stat-pie-label` overlay,
+  `sectorLabel(from, to, text, opts)` → `{el, done}`, `readout(text, deg?)`, `clearReadout()`, `svg`,
+  `frame`, `layer`, `R`, `relayout()`, `destroy()`.
+- `stemleafFilm(host, spec, opts)` → handle (FILM only — the jotter's own pupil-facing stemleaf is
+  the `.stat-sl` table in jotter-stats.js, not this). `spec:{stems:[…], decimals, unit, back?, sides?,
+  title?}`. Handle: `addLeaf(stem, digit, side, {instant?, cls?, ms?, ink?})` → `{el, done}` appends
+  outward, `key(stem, leaf, means, opts)` → `{el, done}` writes "2 | 1  means  2.1 cm", `ringLeaf(stem,
+  k, side)` (the median beat), `leaves(stem, side)`, `svg`, `frame`, `relayout()`, `destroy()`.
 
 ## window.GJ_JOTTER_STATS (jotter-stats.js)
 - `handles(kind)`, `mount(host, q, savedRec, hooks)` — the same contract as `GJ_JOTTER.mount`;
@@ -177,6 +318,8 @@ values   {v:{slotId:'84'}}                        slots may carry a closed ft.ru
 - `renderReadOnly(host, q, att, verdict)` — the teacher's copy of a pupil's board.
 - `STAGES` / `stagesFor(q)` — the named in-between boards; every question root carries
   `data-stage` and `data-stages`, and the walk stands on every one.
+- `KINDS` — all thirteen kind ids: the eight pre-Book-A kinds (`qlist cftable cfplot cfread boxplot
+  compare judge values`) plus Book A's five (`order pick stemleaf pie scatter`).
 
 ## window.GJ_PLAYER (player.js)
 - `mount(el, movie)` → controller `{play, pause, step(+1|-1), goto(n), destroy, onend(cb)}`.

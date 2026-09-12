@@ -7,7 +7,7 @@ WALT · Calculate the quartiles and interquartile range of a list of values, and
 Exercise 1 · Quartiles and the interquartile range from a list
 Seven students sat a test. Here are their results: 58%, 61%, 64%, 66%, 67%, 68%, 70%. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks]
 Quartiles 3 of 3 · Interquartile range 1 of 1You put them in order, then found the cuts.
-The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks]
+Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks]
 Quartiles 3 of 3 · Interquartile range 1 of 1Every value in the right place.
 11 people took part in a puzzle. The times they took, in minutes, are shown below: 8, 3, 7, 8, 9, 13, 4, 9, 9, 10, 9. Find the lower quartile and the upper quartile. [2 marks]
 Quartiles 1 of 1 · Upper quartile 1 of 1Counted to the right positions.
@@ -21,10 +21,10 @@ Seven judges scored a joke out of 10. The scores, from lowest to highest, are sh
 Answers 2 of 2Worked out and written in.
 Decide whether the statement about spread is fair. These wages were listed: £202, £212, £221, £242, £250, £250, £260, £284. A wage of £110 was left off. Say what happens to each average and to the range when it is added. [5 marks]
 The range is a better measure of spread than the interquartile range.
-The mean wage will
-The modal wage will
-The median wage will
-The range of the wages will
+When the £110 wage is added, the mean wage will…
+Add the £110 wage to the list, and the modal wage will…
+Once the £110 wage joins the list, the median wage will…
+With the £110 wage added to the list, the range of the wages will…
 Reasons 1 of 1 · Judgements 4 of 4Fair reading of what the figures can say.
 Exercise finished — how did that go? optional
 Ex.2 Cumulative frequency tables
@@ -42,14 +42,14 @@ The times that 100 students spent doing homework during one week are shown in th
 Points 2 of 2 · Curve 1 of 1You plotted the points, then drew the curve through them.
 The marks in an examination, out of 80, are shown in the table below for 112 candidates. Draw the cumulative frequency graph for this information. [2 marks]
 Points 1 of 1 · Curve 1 of 1Every point where it belongs.
-In a survey, 184 people stated their weekly wage, grouped below. Draw the cumulative frequency graph for this information. [3 marks]
+In a survey, 184 people stated their weekly wage. The results are shown in the table below. Draw the cumulative frequency graph for this information. [3 marks]
 Points 2 of 2 · Curve 1 of 1A smooth curve through every point.
 Ex.4 Reading the curve: median, quartiles, IQR
 WALT · Estimate the median, quartiles and interquartile range from a cumulative frequency curve
 Exercise 4 · Reading the curve: median, quartiles, IQR
 The cumulative frequency graph shows the marks of 112 candidates in an examination. Use the graph to estimate the median and the interquartile range. The pass mark is 36. What percentage of candidates passed? [5 marks]
 The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve.
-Readings 2 of 2 · Values 3 of 3Clean read-off.
+Readings 2 of 2 · Values 3 of 3You read it off exactly right.
 The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks]
 Readings 1 of 1 · Values 2 of 2You put the rule at the right height and read it carefully.
 The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks]
@@ -60,12 +60,12 @@ Ex.5 Box plots — drawing and comparing
 WALT · Draw and compare box plots
 Exercise 5 · Box plots — drawing and comparing
 The table shows some information about the heights, in cm, of some plants. Draw a box plot for this information. [2 marks]
-Five markers — put each one on the scale where it belongs.
+The tray is the row of markers waiting to be used. A marker leaves the tray when it goes on the scale.
 Box 1 of 1 · Whiskers 1 of 1All five markers are where they belong.
 The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. Work out the lowest weight, then draw a box plot for this information. [2 marks]
 Box 1 of 1 · Whiskers 1 of 1Neat, and the box says what it should.
 The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. Draw a box plot for this information. [2 marks]
-Box 1 of 1 · Whiskers 1 of 1A tidy box plot — every mark earned.
+Box 1 of 1 · Whiskers 1 of 1A tidy box plot, and every part of it is right.
 Some girls did a sponsored swim to raise money for charity. The table shows the amounts of money they raised: least £10, lower quartile £16, median £25, upper quartile £42, greatest £45. Draw a box plot for this information. [2 marks]
 Compare the amounts of money the girls raised with the amounts of money the boys raised in the sponsored swim. [2 marks]
 Girls

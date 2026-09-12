@@ -1642,7 +1642,7 @@
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
     var hand = pct === 100 ? 'Full marks — the gold star is yours.'
       : pct >= 80 ? 'Nearly there — look back at the crosses.'
-      : pct >= 50 ? 'Good — go back over the questions the red pen marked.'
+      : pct >= 50 ? 'Good — go back over the questions marked wrong.'
       : 'Plenty to talk about in class — your teacher can see exactly where.';
     /* the end of the book: the tally and, when it is all right, the gold star */
     surface(main, 'book-end', (sum.marks[1] && sum.marks[0] === sum.marks[1]) ? 'complete' : 'partial');

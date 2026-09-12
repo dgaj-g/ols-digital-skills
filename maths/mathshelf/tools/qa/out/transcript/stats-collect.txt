@@ -61,17 +61,17 @@ The table shows the number of dogs in an animal shelter: Terrier 12, Collie 9, L
 Ex.4 Stem-and-leaf diagrams
 WALT · Build and read a stem-and-leaf diagram, including back-to-back
 Exercise 4 · Stem-and-leaf diagrams
-The lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths. [3 marks]
+Here are the lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths. [3 marks]
 The tray is the row of values waiting to be used. A value leaves the tray when its leaf goes on a stem.
 The stem-and-leaf diagram shows the lengths of 15 twigs. Find the range and the median length. [2 marks]
 Answers 2 of 2Worked out and written in.
 The stem-and-leaf diagram shows the weights, in kg, of some babies. Key: 2 | 4 means 2.4 kg. Find the range, the mode and the median weight. [3 marks]
 Answers 3 of 3You filled in every box, and got them all right.
 A mistake was made: the weight of 4.6 kg should have been 4.5 kg. Decide which of the following will change. [1 mark]
-The range will
-The median will
-The mean will
-The mode will
+When 4.6 kg is corrected to 4.5 kg, the range of the weights will…
+After the correction, the median weight will…
+With 4.5 kg in place of 4.6 kg, the mean weight will…
+Once the weight is corrected, the modal weight will…
 Judgements 1 of 1Good — you said why.
 27 boys did the same test as the girls. Their marks are shown, with the rows up to stem 3 already entered for you. Complete the diagram for the boys. [2 marks]
 Using the stem-and-leaf diagram, decide whether the boys or the girls did better in the test, and how you can tell. [2 marks]
@@ -84,16 +84,16 @@ Using the back-to-back stem-and-leaf diagram, decide whether the boys or the gir
 Who did more press-ups?
 Judgements 1 of 1Fair reading of what the figures can say.
 Ex.5 Scatter graphs
-WALT · Plot a scatter graph, draw a line of best fit and use it to estimate
+WALT · Plot a scatter graph, draw a line of best fit, and use it to estimate a value
 Exercise 5 · Scatter graphs
 The table shows the engine size (litres) of different cars and the distance (km) they can travel on one litre of petrol. Draw a scatter graph, a line of best fit, and use it to estimate the engine size of a car that travels 7 km on one litre. [5 marks]
 The heights and weights of 7 people are given. Draw a scatter diagram, a line of best fit, and use it to estimate the weight of a person whose height is 185 cm. [4 marks]
 Points and line 3 of 3 · Readings 1 of 1Every point plotted, and the line follows them.
 Nine science students each measured the current (in amps) that flowed through a circuit at various voltages. The first three points have already been plotted. Complete the scatter graph, find the student who took an incorrect reading, draw a line of best fit, and use it to estimate the correct current. [5 marks]
 Complete the sentences about family cars. [2 marks]
-As the age of a family car increases, its value
-So the correlation between age and value is
+As the age of a family car increases, its value…
+So the correlation between age and value is…
 Judgements 2 of 2Good — you said why.
 My marks
 Handling Data · marks so far
-Handling Data · marks so far52 / 87Good — go back over the questions the red pen marked.21 of 32 questions checked · your whole book is on your teacher’s copy
+Handling Data · marks so far52 / 87Good — go back over the questions marked wrong.21 of 32 questions checked · your whole book is on your teacher’s copy

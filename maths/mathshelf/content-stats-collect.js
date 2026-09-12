@@ -372,7 +372,7 @@
         },
         questions: [
           { id: 'q20', kind: 'stemleaf', marks: [2, 1],
-            prompt: 'The lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths.',
+            prompt: 'Here are the lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths.',
             values: [4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8],
             stems: [1, 2, 3, 4, 5], unit: 'cm', decimals: 1,
             key: { ask: true },
@@ -403,10 +403,10 @@
           { id: 'q23', kind: 'judge', marks: [0, 1],
             prompt: 'A mistake was made: the weight of 4.6 kg should have been 4.5 kg. Decide which of the following will change.',
             claims: [
-              { text: 'The range will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
-              { text: 'The median will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
-              { text: 'The mean will', options: ['Change', 'Stay the same'], verdict: 'Change' },
-              { text: 'The mode will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' }
+              { text: 'When 4.6 kg is corrected to 4.5 kg, the range of the weights will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
+              { text: 'After the correction, the median weight will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
+              { text: 'With 4.5 kg in place of 4.6 kg, the mean weight will…', options: ['Change', 'Stay the same'], verdict: 'Change' },
+              { text: 'Once the weight is corrected, the modal weight will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same' }
             ],
             src: 'Statistics M7 (1).pdf Q30(b)' },
           { id: 'q24', kind: 'stemleaf', marks: [2, 0],
@@ -453,7 +453,7 @@
       {
         id: 's5',
         title: 'Scatter graphs',
-        walt: 'Plot a scatter graph, draw a line of best fit and use it to estimate',
+        walt: 'Plot a scatter graph, draw a line of best fit, and use it to estimate a value',
         movie: {
           title: 'The line through the cloud',
           src: 'Statistics M7 (1).pdf Q4 (Tim and June); method narration authored',
@@ -516,8 +516,8 @@
           { id: 'q32', kind: 'judge', marks: [0, 2],
             prompt: 'Complete the sentences about family cars.',
             claims: [
-              { text: 'As the age of a family car increases, its value', options: ['Increases', 'Decreases', 'Stays the same'], verdict: 'Decreases' },
-              { text: 'So the correlation between age and value is', options: ['Positive', 'Negative', 'No correlation'], verdict: 'Negative' }
+              { text: 'As the age of a family car increases, its value…', options: ['Increases', 'Decreases', 'Stays the same'], verdict: 'Decreases' },
+              { text: 'So the correlation between age and value is…', options: ['Positive', 'Negative', 'No correlation'], verdict: 'Negative' }
             ],
             src: 'Statistics M7 (1).pdf Q27(a)' }
         ]

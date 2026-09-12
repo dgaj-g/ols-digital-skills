@@ -141,12 +141,20 @@ class re-seeds, and always use `?nointro`.
 
 | | /exec | version | executeAs | who can reach it |
 |---|---|---|---|---|
-| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | Version 33, 12 Sept 20:30 | USER_ACCESSING | anyone in `c2ken.net` |
-| DATA (the page, with its token; the relay as fallback) | `https://script.google.com/macros/s/AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo/exec` | Version 32, 12 Sept 20:27 | USER_DEPLOYING | anyone who holds the shared secret OR a store token doGet signed — see `server/DEPLOY.md` |
+| FRONT DOOR (everybody) | `https://script.google.com/a/macros/c2ken.net/s/AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP/exec` | __FD_VERSION__ | USER_ACCESSING | anyone in `c2ken.net` |
+| DATA (the page, with its token; the relay as fallback) — **the NEW standalone project since 12 Sept 22:5x** | `https://script.google.com/macros/s/AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA/exec` | Version 1, 12 Sept 22:31 | USER_DEPLOYING | anyone who holds the shared secret OR a store token doGet signed — see `server/DEPLOY.md` "TWO PROJECTS" |
 
-Apps Script project `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`,
-Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`, both titled
-"OLS — MathShelf". Staff passcode `0lsMaths26*`.
+**TWO PROJECTS (the DATA split, 12 Sept 2026).** FRONT DOOR = the bound project
+`1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX` ("OLS — MathShelf"),
+whose manifest RESTS at `USER_ACCESSING` + `DOMAIN` and is never edited again. DATA =
+the standalone project `14j0H7VGmJreENIQYSLfepXXVfU5F7QGhVv45TwSstXwEhm5eP7m7jn3h`
+("OLS — MathShelf DATA"), script properties `sheetId` + `relaySecret`, manifest
+`USER_DEPLOYING` + `ANYONE_ANONYMOUS` set once in its New-deployment dialog. The old
+DATA deployment on the bound project (`AKfycbyO6pQn…LEDn2f4wo`, Version 32) is
+superseded: nothing points at it once `dataUrl` moved. A book is client-only plus
+the Sheet's Config row `acts` (`qa-tickbox` prints the exact row). The same
+`server/Code.gs` runs in both projects (`ss_()` chooses the Sheet by id or by binding).
+Sheet `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` ("OLS — MathShelf"). Staff passcode `0lsMaths26*`.
 
 **The project that was left behind.** `OLS Maths — Glass Jotter`
 (script `1otJG5454zR6a0WKZW23czKnehxtQ3Oj6CrrRWYys1H4bPxZOoaZ3qPmC`, Sheet

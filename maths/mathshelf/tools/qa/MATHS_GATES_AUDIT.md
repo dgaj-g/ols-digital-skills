@@ -14,7 +14,7 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 | dev/test-anglecore.js | 72 | 45b03ed, 5 Sept 2026 |
 | dev/validate-all.js | 81 | 45b03ed, 5 Sept 2026 |
 | dev/test-server-scoping.js | 20 | 45b03ed, 5 Sept 2026 |
-| dev/test-statcore.js | 160 | Handling Data C, 8 Sept 2026 (design floor 80; rises to 120+ with books A and B); +4 grid-resolution rows RD31–RD34, POLISH CUT 2, 12 Sept 2026 |
+| dev/test-statcore.js | 270 | Handling Data A, 12 Sept 2026 (+110 named cases: order, pick, stemleaf, pie, scatter, the Venn slips, least squares; the design's 120+ passed); was 160 (Book C, 8 Sept; +4 RD31–RD34, POLISH CUT 2) |
 
 ## PINNED REFS — the pre-fix states the controls are served from
 
@@ -60,7 +60,8 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | Algebra (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | v4 MathShelf (the shell, the markbook, the login) | PENDING | — |
 | Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE — hotfixes live 12 Sept 2026 16:35 (FRONT DOOR V30 from `611a688`, DATA V25 from `f2a5f7b`, Code.gs unchanged), on top of POLISH CUT 2 (V27, `6263421`) | 8 Sept 2026 |
-| Handling Data A / B | PENDING (not built) | — |
+| Handling Data A (Collecting and displaying) | PENDING HIS SMOKE — built 12 Sept 2026 (five kinds: order, pick, stemleaf, pie, scatter; values on a figure); its own walk green at 375/768/1280; deploy recorded in DEPLOY_LOG when cut | 12 Sept 2026 |
+| Handling Data B (Averages) | PENDING (not built) | — |
 
 ---
 
@@ -177,6 +178,9 @@ weakened, hidden, or marked green.
 | qa-click-safety | single-press-lift | same plant, same symptom |
 | qa-waits | control-with-no-busy-state, outbox-dropped-on-reload | not yet investigated |
 | qa-fonts | face-removed | the plant removes a face file; with the gate now asking the face to LOAD rather than whether it was painted, the control needs re-aiming at that question |
+
+### Book A's controls — 12 Sept 2026 (declared; the battery runs after the deploy, in the background)
+New single-fault controls, each quoting the sentence its gate prints: `sit-pupil` `stats-a-truth-before-lock`, `stats-a-signature-leak`, `stats-a-stage-skipped`, `film-no-venn` … `film-no-lobf` (eight, the Book A ops); `sit-confused` `stats-a-snap-back`; `qa-tray-order` `stats-a-sorted-tray`; `qa-click-safety` `stats-a-single-press-lift` (a REAL plant in today's jotter-stats.js — the `fixture-renderers` one above stays listed as unproved); `qa-two-homes` `fixture-acts-hardcoded`, `fixture-acts-any-string`, `fixture-active-spreadsheet` (15 of 15 FIRED, 21:16, `tools/qa/out/bookA/control-two-homes.log`); `qa-colour-law` `amber-outside-a-mark` now HAS its plant (`fixture-css-amber`: the shelf's series line in `--amber-flag`); `qa-language` gained a MUST_FAIL probe (three clause dashes) and a MUST_PASS exemplar (response boxes with number ranges) for the narrowed dash-chain rule; the lint's Book A stems are proved on the fixture questions in `FIXTURE_BOOK` (29 sentences, `tools/qa/out/bookA/FIXTURE_A.txt`). Every one is `controls: pending the post-deploy battery` until that run's FIRED lines are pasted here.
 
 ### After the steward re-cut of Exercise 3's chart — 11 Sept 2026, 19:47–20:40 (sit-pupil only)
 

@@ -285,6 +285,22 @@ async function walkBook(page, book, width, sidecar, transcript) {
       return true;
     });
     if (jumped) { await W.settle(page); await record('movie', 'instant', { section: si }); }
+    /* A FILM MID-WAY IS A SCREEN OF ITS OWN ("step-n"). It used to be recorded
+       by accident - a walk that read the film's state before its last step had
+       finished drawing, or that gave up on a long step - and once the walker
+       waited properly for the end (12 Sept 2026) the state was never stood on.
+       So the walk stands on it on purpose: one forward press after the jump,
+       and a record before the film is played through. */
+    const stepped = await page.evaluate(() => {
+      const m = document.querySelector('[data-surface="movie"], .movie');
+      if (!m) return false;
+      const b = m.querySelector('.mc-fwd') ||
+        [...m.querySelectorAll('button')].filter(x => /next step/i.test(x.getAttribute('aria-label') || ''))[0];
+      if (!b || b.disabled) return false;
+      b.click();
+      return true;
+    });
+    if (stepped) { await W.settle(page); await new Promise(r => setTimeout(r, 900)); await record('movie', 'step-n', { section: si }); }
 
     const movie = await page.evaluate(async (s) => await eval(s)(), W.ACTIONS.playMovieToEnd);
     if (movie.steps) {

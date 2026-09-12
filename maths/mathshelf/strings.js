@@ -122,7 +122,7 @@
       statLinePair: '{name} = ({a} + {b}) ÷ 2 = {value}',
       /* the cumulative frequency column */
       statCftableRow: 'Cumulative frequency up to {value} {unit}',
-      statCftableWhy: 'Put a running total in at least one row first.',
+      statCftableWhy: 'Fill in at least one row of running totals before you check.',
       statCftableTruth: 'Running totals: {list}',
       /* plotting and joining */
       statPlotPlaceWhy: 'Place every point first.',
@@ -177,7 +177,7 @@
       statJudgeReasonWhy: 'Give a reason for each one you called not fair.',
       /* number-pad answers */
       statValuesStart: 'Choose a box and put your answer in.',
-      statValuesWhy: 'Put a number in at least one box first.',
+      statValuesWhy: 'Put a number in one box before you check.',
 
       /* THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, Correction
          11 Sept 2026 — his first live test of Book C). A pill is two or three
@@ -250,7 +250,7 @@
       statPillScLine: 'Draw the line',
       statPillScEst: 'Estimate at {at}',
       statPillScCorr: 'Name the correlation',
-      statPillScOutlier: 'Find the odd one out',
+      statPillScOutlier: 'Find the reading that looks wrong',
       statStageOrder: 'Put the cards in the order the cycle happens. Choose the card that comes first, then the next, until every card is in the row. ({n} still to place.)',
       statStageOrderDone: 'Every card is in the row. If one is out of place, press it to send it back. Then press Mark my order.',
       statStagePick: 'Read the three questions. Choose the one that would work best on a questionnaire.',
@@ -273,7 +273,7 @@
       statScThatsMyLine: '✓ That’s my line',
       statScNextEst: 'Next: read the estimate',
       statScNextCorr: 'Next: name the correlation',
-      statScNextOutlier: 'Next: find the odd one out',
+      statScNextOutlier: 'Next: find the reading that looks wrong',
       statScPositive: 'Positive',
       statScNegative: 'Negative',
       statScNone: 'No correlation',
