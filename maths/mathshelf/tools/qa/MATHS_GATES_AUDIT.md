@@ -60,7 +60,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | Algebra (content + v3 renderers) | APPROVED — live as MAIN Version 25 | 28 Jun 2026 |
 | v4 MathShelf (the shell, the markbook, the login) | PENDING | — |
 | Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE — hotfixes live 12 Sept 2026 16:35 (FRONT DOOR V30 from `611a688`, DATA V25 from `f2a5f7b`, Code.gs unchanged), on top of POLISH CUT 2 (V27, `6263421`) | 8 Sept 2026 |
-| Handling Data A (Collecting and displaying) | PENDING HIS SMOKE — built 12 Sept 2026 (five kinds: order, pick, stemleaf, pie, scatter; values on a figure); its own walk green at 375/768/1280; deploy recorded in DEPLOY_LOG when cut | 12 Sept 2026 |
+| Handling Data A (Collecting and displaying) | PENDING HIS SMOKE — LIVE 13 Sept 2026 00:27 (FRONT DOOR V34 from `3e16a9c`; the store = the standalone project's V1); whole-tree `--full` green, every cell closed; cold read 101/0/0 | 13 Sept 2026 |
 | Handling Data B (Averages) | PENDING (not built) | — |
 
 ---
