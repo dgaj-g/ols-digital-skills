@@ -7,6 +7,23 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ## 12 SEPT 2026, night — THE STORE CUT (clock stamped 20:11, budget 120 min; ruling 51, the hop itself)
 
+**STORE CUT LIVE — DATA Version 32 (20:27), FRONT DOOR Version 33 (20:30), `913e0f8`.**
+Both files pasted from the pushed branch (exact byte counts verified), the
+manifest read before each cut and after the last (Damien's two edits; it rests
+at `USER_ACCESSING` + `DOMAIN`), proof rows and the timed live save in
+`server/DEPLOY_LOG.md`. **Before: `apiCall` 3–68 s (his own use at 19:56–20:04
+on V31: 3.3 / 5.9 / 6.7 / 7.1 / 8.1 / 21.6 / 24.0 / 30.7 / 40.0 s). After: a
+real save from the live page 3.98 / 3.78 / 3.67 s, whoami 3.11 s, load 3.18 s,
+every one 200 and `ok`; the Executions log shows NO `apiCall` row for anything
+the page did after the cut — every call went straight to `doPost`.** The
+timed save used the real token read out of the served page's own `OLS_BOOT`
+scriptlet (the sandbox iframe cannot be scripted from outside, but the wrapper
+page carries the served HTML, so the token came from the page and not from the
+code); it created a fresh deployer row in test12 · angles (load answered
+`none`) and overwrote nothing. `controls: green 2026-09-12 913e0f8` for
+qa-two-homes (12 FIRED); qa-waits' battery re-fired after one gate fix (a
+rejected call is recorded, not a crash): all 11 FIRED, over-tightening passes.
+
 **What changed, in one line: the page talks to the DATA web app itself, with a
 signed store token, and the relay is the road home when that road is closed.**
 

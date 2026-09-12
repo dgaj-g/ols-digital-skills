@@ -446,7 +446,11 @@ const g = new Gate('qa-waits');
         return Promise.race([
           window.GJ.app.call('save', { act: 'angles', state: '{"v":1}', summary: '{}' }),
           new Promise(function (r) { setTimeout(function () { r({ testDeadline: true }); }, 40000); })
-        ]).then(function (r) { return { r: r, fetches: window.__fetches.slice(), relay: window.__relayCalls.slice(), ms: Date.now() - t0, sig: window.GJ.app.boot.store.sig }; });
+        ]).then(function (r) { return { r: r, fetches: window.__fetches.slice(), relay: window.__relayCalls.slice(), ms: Date.now() - t0, sig: window.GJ.app.boot.store.sig }; },
+          /* a call that REJECTS is the worst answer of all - nothing came
+             back, no road was taken - and it is recorded as such rather than
+             crashing the gate, so the law below can say why by name */
+          function (e) { return { r: { rejected: String(e && e.message || e) }, fetches: window.__fetches.slice(), relay: window.__relayCalls.slice(), ms: Date.now() - t0, sig: window.GJ.app.boot.store.sig }; });
       }, mode);
 
       /* 1. the direct road, taken, as a simple request */

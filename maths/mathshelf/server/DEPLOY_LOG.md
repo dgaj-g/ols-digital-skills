@@ -1,5 +1,72 @@
 # MathShelf — the deploy log
 
+## 12 September 2026, 20:27 / 20:30 — DATA Version 32, FRONT DOOR Version 33 — THE STORE CUT
+
+From commit `913e0f8`. **A server change: both deployments cut, DATA first**
+(`Code.gs` md5 `85f8d63c60440ded9e954cc5ac4ffec0`, 42,953 characters; `Index.html`
+md5 `831c8f4b7336c11f51448269204bc1ca`, 1,197,243 characters — both fetched into
+the editor from the pushed branch with `cache: no-store`, the active model
+verified by name before each `setValue`, the exact committed byte counts read
+back). Before the paste the editor's `Code.gs` held 40,209 characters — the
+19:27 record's 38,166 PLUS `timingCheck_`/`timingCheck` (the PACKAGE A probe
+had been put back, or never left HEAD after the 19:27 read); the paste replaced
+the file whole, so the probe is gone from HEAD and from both versions below.
+
+**The manifest, READ in the editor each time (Damien's two edits, his hands):**
+- before the DATA cut: `"executeAs": "USER_DEPLOYING"`, `"access": "ANYONE_ANONYMOUS"`;
+- before the FRONT DOOR cut, and again after it: `"executeAs": "USER_ACCESSING"`,
+  `"access": "DOMAIN"` — where it RESTS.
+
+Deploy → Manage deployments → DATA by Deployment ID
+`AKfycbyO6pQnLHujpost5Otxe9oJB2iFdbno3Kxxw5RU51A9prKiqDMrIm__UWuLEDn2f4wo` → Edit
+→ New version → Deploy: "Version 32 on 12 Sept 2026, 20:27". Then the FRONT DOOR
+by Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP`
+→ Edit → New version → Deploy: "Version 33 on 12 Sept 2026, 20:30". Neither
+`/exec` changed.
+
+**The deployer's visits, from the Executions log (the proof rows). Note what is
+NOT there: no `apiCall` row after the cut — every call the page made went
+straight to DATA's `doPost` with its token.**
+
+| deployment | function | start | duration | status |
+|---|---|---|---|---|
+| Version 33 | doGet | 12 Sept 2026, 20:31:00 | 2.028 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:31:03 | 2.044 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:31:07 | 3.302 s | Completed |
+| Version 33 | doGet | 12 Sept 2026, 20:32:12 | 1.929 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:32:16 | 2.107 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:32:19 | 4.868 s | Completed |
+| Version 33 | doGet | 12 Sept 2026, 20:32:43 | 2.034 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:32:46 | 2.453 s | Completed |
+| Version 32 | doPost | 12 Sept 2026, 20:32:49 | 4.716 s | Completed |
+
+(20:31 was `?class=demo` — the cover drew with his verified name and "That class
+link is not active", the truthful answer for a code that is not a class; 20:32
+was `?class=test12` twice — the cover, then "First time here? Google will ask your
+permission once" from `hello`, which is the store answering on the direct path.)
+
+**THE TIMED LIVE SAVE, three rounds — the same fetch as the 20:08 probe, with
+the real token the served page carries** (read out of the served page's own
+`OLS_BOOT` scriptlet in the browser, never computed from the code; the first two
+calls were `whoami` and a `load` that answered `none`, so the saves wrote a fresh
+row for the deployer in test12 · angles and overwrote nothing):
+
+| call | browser round trip | DATA's own execution (Executions log) |
+|---|---|---|
+| whoami | 3.110 s | doPost 20:34:08, 1.701 s |
+| load | 3.175 s | doPost 20:34:12, 1.590 s |
+| save 1 | 3.983 s | doPost 20:34:15, 2.966 s |
+| save 2 | 3.778 s | doPost 20:34:18, 2.820 s |
+| save 3 | 3.670 s | doPost 20:34:22, 2.955 s |
+
+Every one status 200, `ok: true`, the JSON readable in the page. **Beside the
+20:08 probe** (a call DATA refused at the door, so transport only: 2.5 / 2.3 /
+2.1 s) **and beside the relay it replaces** — the same evening, his own use on
+Version 31 before the cut, 19:56–20:04: `apiCall` 3.3 / 5.9 / 6.7 / 7.1 / 8.1 /
+21.6 / 24.0 / 30.7 / 40.0 s wrapping `doPost` rows of 1.0–6.3 s. A real save now
+costs the Sheet write plus about one second of transport, and the spread is
+gone.
+
 ## 12 September 2026, 19:27 — FRONT DOOR Version 31 (DATA Version 25, unchanged)
 
 THE STORE AND THE FILMS CUT, from commit `85a5660`. **Client only: `Code.gs` is
@@ -78,6 +145,8 @@ log showing the deployment actually ran.
 | 2026-09-12 16:14 | FRONT DOOR | Version 29 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | d8dcef5 | f1108d9c5d675f15ac693987c99e1f71 | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:35 | FRONT DOOR | Version 30 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | 611a688 | 835eb4f78cca9321119f5da8d72650dd | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 19:27 | FRONT DOOR | Version 31 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 85a5660 | 8530a932d9a3a2478a645f1111ecee47 | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 20:27 | DATA | Version 32 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut (Damien's two-line edit) — THE STORE CUT: doPost accepts the secret OR a signed store token | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
+| 2026-09-12 20:30 | FRONT DOOR | Version 33 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it (Damien's two-line edit back; the manifest rests there) — doGet mints the store token and the page calls DATA itself | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
 
 ## Proof rows
 
