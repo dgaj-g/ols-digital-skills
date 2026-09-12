@@ -3,8 +3,8 @@
  "scope": "stats-collect",
  "width": 768,
  "tier": "preview",
- "contentHash": "1f57400f239c",
- "when": "2026-09-12T21:27:15.232Z",
+ "contentHash": "49eb2fd52f42",
+ "when": "2026-09-12T21:44:54.903Z",
  "states": [
   {
    "surface": "cover",
@@ -131,7 +131,7 @@
    "qid": "q1",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -158,7 +158,7 @@
    "qid": "q1",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -285,58 +285,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q1",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 17,
-    "readability": 33
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "chips",
-   "width": 768,
-   "qid": "q1",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -479,7 +427,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -530,7 +478,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -604,7 +552,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -639,7 +587,7 @@
    "qid": "q3",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -656,7 +604,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -666,7 +614,7 @@
    "qid": "q3",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -730,7 +678,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -782,7 +730,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -834,59 +782,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q3",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q3",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -937,7 +833,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -1147,7 +1043,7 @@
    "qid": "q5",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1174,7 +1070,7 @@
    "qid": "q5",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1301,58 +1197,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q5",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 15,
-    "readability": 26
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q5",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1529,7 +1373,7 @@
    "qid": "q6",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1556,7 +1400,7 @@
    "qid": "q6",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1683,58 +1527,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q6",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 14,
-    "readability": 24
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q6",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1911,7 +1703,7 @@
    "qid": "q7",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -1938,7 +1730,7 @@
    "qid": "q7",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2065,58 +1857,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q7",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 13,
-    "readability": 24
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q7",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2675,7 +2415,7 @@
    "qid": "q9",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2702,7 +2442,7 @@
    "qid": "q9",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -2829,58 +2569,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q9",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 12,
-    "readability": 32
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q9",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3057,7 +2745,7 @@
    "qid": "q10",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3084,7 +2772,7 @@
    "qid": "q10",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3211,58 +2899,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q10",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 11,
-    "readability": 27
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q10",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3439,7 +3075,7 @@
    "qid": "q11",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3466,7 +3102,7 @@
    "qid": "q11",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3593,58 +3229,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q11",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 10,
-    "readability": 26
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q11",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3821,7 +3405,7 @@
    "qid": "q12",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3848,7 +3432,7 @@
    "qid": "q12",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -3975,58 +3559,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q12",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 9,
-    "readability": 26
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q12",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -4203,7 +3735,7 @@
    "qid": "q13",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -4230,7 +3762,7 @@
    "qid": "q13",
    "section": 0,
    "book": "stats-collect",
-   "stages": "empty reason-open judging ready",
+   "stages": "empty reason-open ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -4357,58 +3889,6 @@
    "section": 0,
    "book": "stats-collect",
    "stage": "reason-open",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "mid-attempt",
-   "expected": "mid-attempt",
-   "stood": true,
-   "width": 768,
-   "qid": "q13",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 8,
-    "readability": 26
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "disabled-explained",
-   "width": 768,
-   "qid": "q13",
-   "section": 0,
-   "book": "stats-collect",
-   "stage": "ready",
    "audits": {
     "empty": "PASS",
     "nested": "PASS",
@@ -5792,7 +5272,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 28
+    "readability": 32
    }
   },
   {
@@ -6409,9 +5889,9 @@
   },
   {
    "surface": "movie",
-   "state": "step-n",
+   "state": "end",
    "expected": "end",
-   "stood": false,
+   "stood": true,
    "width": 768,
    "section": 3,
    "audits": {
@@ -6430,7 +5910,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 86
+    "readability": 101
    }
   },
   {
@@ -6459,7 +5939,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 91
+    "readability": 101
    }
   },
   {
@@ -6533,7 +6013,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 96
+    "readability": 101
    }
   },
   {
@@ -6585,7 +6065,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 100
+    "readability": 101
    }
   },
   {
@@ -6968,7 +6448,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 44
+    "readability": 46
    }
   },
   {
@@ -7019,7 +6499,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 42
+    "readability": 46
    }
   },
   {
@@ -7093,7 +6573,7 @@
    },
    "measured": {
     "said-twice": 13,
-    "readability": 42
+    "readability": 46
    }
   },
   {
@@ -7145,7 +6625,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 42
+    "readability": 46
    }
   },
   {
@@ -7197,7 +6677,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 42
+    "readability": 46
    }
   },
   {
@@ -7248,7 +6728,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 42
+    "readability": 46
    }
   },
   {
@@ -7298,7 +6778,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -7349,7 +6829,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -7423,7 +6903,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -7475,7 +6955,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -7527,7 +7007,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -7578,7 +7058,7 @@
    },
    "measured": {
     "said-twice": 12,
-    "readability": 47
+    "readability": 48
    }
   },
   {
@@ -9720,7 +9200,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 28
+    "readability": 35
    }
   },
   {
@@ -10384,7 +9864,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 50
+    "readability": 51
    }
   },
   {
