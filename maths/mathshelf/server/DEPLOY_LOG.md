@@ -1,5 +1,18 @@
 # MathShelf — the deploy log
 
+## 13 September 2026, 00:27 — FRONT DOOR Version 34 (BOOK A + THE DATA SPLIT); DATA = the standalone project's Version 1 (22:31)
+
+From commit `3e16a9c`. `Code.gs` md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) and `Index.html` md5 `fffd4d1a4d7cb57a503404d0c7927d53` (1,424,611 chars), both fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), set into `file_1.js` / `file_2.html` by name, saved, the editor reloaded and both lengths and rolling hashes read back equal to the repo's before the cut. Manifest read before the cut: `USER_ACCESSING` + `DOMAIN` — nobody's hands on it, and it never needs hands again (server/DEPLOY.md "TWO PROJECTS"). Manage deployments → the FRONT DOOR selected by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → New version → **Version 34 on 13 Sept 2026, 00:27**. The DATA side is the standalone project **OLS — MathShelf DATA** at Version 1 (its row below; `dataUrl` on the front door points at it since 22:5x).
+
+**Proof rows, 00:27–00:28 (the deployer's own visit to `…?class=10E-Maths`):**
+
+    FRONT DOOR (bound project)   Version 34 | doGet   | 13 Sept 2026, 00:27:39 | 1.972 s | Completed
+    DATA (standalone project)    Version 1  | doPost  | 13 Sept 2026, 00:27:44 | 1.935 s | Completed   ← the page's own direct store call
+    FRONT DOOR                   Version 34 | apiCall | 13 Sept 2026, 00:28:07 | 6.428 s | Completed   ← a relayed call (the page fell back to the relay for one call — see the note)
+    DATA                         Version 1  | doPost  | 13 Sept 2026, 00:28:09 | 1.346 s | Completed
+
+The served page (read out of the top frame's `OLS_BOOT` scriptlet) carries `stats-collect` and `BOOT.store.url` = the standalone `/exec`. The direct path was then timed from outside Google with the page's own token: `hello` → 302 → `{"ok":true, …, "acts":{"angles":true,"algebra":true,"stats-quartiles":false,"stats-collect":false}}` — the Config row `acts` is read and Book A arrives UNTICKED, as designed; `whoami` against the old and the new store endpoints, same token: 2.65/3.12/2.81 s vs 3.29/2.27/2.52 s — no difference from the split. **Note, stated plainly:** twice tonight (23:42:51 and 00:28:07) a page call went through the RELAY (`apiCall` + `doPost` pairs) when the page should have reached the store directly; the direct path is proven from outside and the page reached the store directly at 00:27:44, so this is the designed fallback firing, not a closed road — the reason is in the live page's console (`[MathShelf] store: direct path … using the relay`), which no session can read inside the sandbox. If the cover waits ~25 s before the shelf, that is this, and the console line names the cause.
+
 ## 12 September 2026, 20:27 / 20:30 — DATA Version 32, FRONT DOOR Version 33 — THE STORE CUT
 
 From commit `913e0f8`. **A server change: both deployments cut, DATA first**
@@ -148,6 +161,7 @@ log showing the deployment actually ran.
 | 2026-09-12 20:27 | DATA | Version 32 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut (Damien's two-line edit) — THE STORE CUT: doPost accepts the secret OR a signed store token | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
 | 2026-09-12 20:30 | FRONT DOOR | Version 33 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it (Damien's two-line edit back; the manifest rests there) — doGet mints the store token and the page calls DATA itself | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
 | 2026-09-12 22:31 | DATA (new standalone project `14j0H7VG…jn3h`, deployment `AKfycbzjSy3t…yRkiA`) | Version 1 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the NEW project's manifest after the cut — set once in the New deployment dialog, never edited; the bound project's manifest untouched (rests at `USER_ACCESSING` + `DOMAIN`) | 8891d90 | (no Index in this project) | 3e3f4819fa809c04cc2af310c3faabcd |
+| 2026-09-13 00:27 | FRONT DOOR | Version 34 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK A (Collecting and displaying) + the split's Code.gs (`acts_()` from the Config row, `ss_()` by id); the bound project's OLD DATA deployment (Version 32) is superseded by the standalone project's Version 1 above | 3e16a9c | fffd4d1a4d7cb57a503404d0c7927d53 | 3e3f4819fa809c04cc2af310c3faabcd |
 
 ## Proof rows
 
