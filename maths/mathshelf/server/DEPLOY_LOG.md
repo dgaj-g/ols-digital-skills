@@ -36,6 +36,7 @@ log showing the deployment actually ran.
 | 2026-09-12 13:45 | FRONT DOOR | Version 27 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — the manifest RESTS there now, so no edit was needed by anyone (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 6263421 | a1b79b5f3b7c065add76a79d8c0f0c2a | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:02 | FRONT DOOR | Version 28 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there | 4199ee4 | 46f5f0ec563f96a66617eb5c9d3af04b | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 16:14 | FRONT DOOR | Version 29 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | d8dcef5 | f1108d9c5d675f15ac693987c99e1f71 | 6c2eb7d561a77ab149f8f1163c885abc |
+| 2026-09-12 16:35 | FRONT DOOR | Version 30 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit | 611a688 | 835eb4f78cca9321119f5da8d72650dd | 6c2eb7d561a77ab149f8f1163c885abc |
 
 ## Proof rows
 
@@ -224,7 +225,7 @@ two-homes mock (the exact exception, as a pupil) and by his next pupil login.
 
 ### What is live, in one line each
 
-- **Live since 12 Sept 2026 16:14, from commit `d8dcef5`: FRONT DOOR Version 29, DATA Version 25 (unchanged since `f2a5f7b`; `Code.gs` byte-identical) — the hotfix of 12 Sept on BOTH passcode screens (the markbook's cover and the teacher's landing) on top of POLISH CUT 2 and the 11 Sept re-cut.**
+- **Live since 12 Sept 2026 16:35, from commit `611a688`: FRONT DOOR Version 30, DATA Version 25 (unchanged since `f2a5f7b`; `Code.gs` byte-identical) — the three hotfixes of 12 Sept (a slow store is not a broken one; the teacher's landing waits like the markbook's cover; a tick the store answered late is re-read, never reverted by guess) on top of POLISH CUT 2 and the 11 Sept re-cut.**
 - **Project** `OLS - MathShelf`, script id `1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`
 - **Sheet** `OLS - MathShelf`, id `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y` (bound)
 - **FRONT DOOR** (the only link anybody opens)
@@ -338,6 +339,30 @@ Version 29  doGet    Web app  12 Sept 2026, 16:15:04  1.865 s  Completed
 Version 29  apiCall  Web app  12 Sept 2026, 16:15:08  5.883 s  Completed
 Version 25  doPost   Web app  12 Sept 2026, 16:15:10  1.983 s  Completed
 ```
+
+**FRONT DOOR Version 30 — the hotfix's third screen, 12 Sept 2026 16:35, from `611a688`.**
+His untick of Algebra for test12 at 16:28: `doPost` Completed in 5.7 s (the
+store saved it), the front door's `apiCall` came back 36 s later as
+`relay-failed`, and the screen put the tick back on while the pupils' shelf
+had lost the book. Now a relay failure on a tick is never answered by guess:
+the row asks the store what it holds (`classes`) and shows that — the outcome
+line if the change landed, the slow-store sentence if it did not (ruling 49).
+`Code.gs` unchanged; front door only; manifest `USER_ACCESSING` + `DOMAIN`
+before and after. Index.html from the pushed branch, 1,164,468 bytes. The
+deployer's visit:
+
+```
+Version 30  doGet    Web app  12 Sept 2026, 16:36:20  1.199 s  Completed
+Version 30  apiCall  Web app  12 Sept 2026, 16:36:22  5.205 s  Completed
+Version 25  doPost   Web app  12 Sept 2026, 16:36:24  2.812 s  Completed
+```
+
+What the day's log says about the hop itself: `doPost` 1.4–6.7 s every time;
+`apiCall` 3–68 s — the time between DATA finishing and the front door
+receiving its reply is Google's, and at about a minute the front door gives
+up. The client now tells the truth about it and keeps or re-reads the work;
+it cannot shorten it. That is the first job of the next cut (the DATA split,
+RESUME_AB).
 
 ## The live smoke list — his eyes, after any server change (DFM 234b)
 

@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "4ae3730c98b2",
- "when": "2026-09-12T15:14:31.115Z",
+ "when": "2026-09-12T15:31:40.252Z",
  "states": [
   {
    "surface": "cover",
@@ -7777,7 +7777,7 @@
     "mute-locks": "PASS",
     "consequence": "PASS",
     "waits": "PASS",
-    "overlap": "FAIL",
+    "overlap": "PASS",
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"

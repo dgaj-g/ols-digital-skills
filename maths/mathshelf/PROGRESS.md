@@ -5,7 +5,9 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
-## 12 SEPT 2026, 16:02 — HOTFIX LIVE, FRONT DOOR Version 28 / DATA Version 25 (unchanged), `4199ee4` — a slow store is not a broken one
+## 12 SEPT 2026, 16:02 → 16:35 — THREE HOTFIXES LIVE, FRONT DOOR Versions 28, 29, 30 / DATA Version 25 (unchanged), last commit `611a688`
+
+**16:35 — Version 30, a tick the store answered late is re-read (`611a688`).** His 16:28 untick: `doPost` Completed in 5.7 s, the front door's `apiCall` 36 s later as `relay-failed`; the screen put the tick back on while the pupils' shelf had lost the book. `runTickSync` now answers a relay failure by asking the store (`classes`) and showing what it holds — the outcome line if the change landed, the slow-store sentence if not; seen in the preview with a stub that saves and then answers relay-failed (box shows the server's state, "Handling Data removed from demo’s shelf."). Ruling 49 recorded; F row in the audit for the control still to write. Proof rows in DEPLOY_LOG; manifest untouched.
 
 **16:14 — Version 29, the SECOND passcode screen (`d8dcef5`).** His screenshot
 at 16:08 showed the line still flat: it was the TEACHER'S LANDING — the staff
