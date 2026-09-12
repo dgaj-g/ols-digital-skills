@@ -39,7 +39,18 @@ deployment dialog, and RESTS there for good.
   throws) and runs the whole DATA matrix in each; controls
   `acts-hardcoded`, `acts-any-string`, `active-spreadsheet-call-site`.
 
-### One-time steps (Damien's hands, once; the secret is a value no session may type)
+### AS DONE, 12 Sept 2026, 22:0x–22:3x (the session in Chrome; Damien's clicks named)
+
+- DATA project **OLS — MathShelf DATA**, script id `14j0H7VGmJreENIQYSLfepXXVfU5F7QGhVv45TwSstXwEhm5eP7m7jn3h`, created and named by the session; `Code.gs` pasted from the tree (46,004 chars, byte-identical to `server/Code.gs` at `8891d90`); `sheetId` typed by the session; `relaySecret` copied from the bound project's Script Properties and pasted by **Damien** (a value no session types or records).
+- Deployment: New deployment → Web app → Execute as Me → Who has access **Anyone** → Deploy (the dropdown and Deploy driven by the session once Damien allowed the action in the desktop app; the OAuth **Authorise access → Allow** was his click). **Version 1, 12 Sept 2026, 22:31**, Deployment ID `AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA`,
+  `/exec`: `https://script.google.com/macros/s/AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA/exec`.
+- Its manifest, READ in the editor after the cut (Project Settings → Show manifest): `"webapp": { "executeAs": "USER_DEPLOYING", "access": "ANYONE_ANONYMOUS" }`, no `oauthScopes` block (auto-detected).
+- Proved from outside Google, 22:47: a POST with a wrong secret → 302 → `{"ok":false,"error":"bad-secret"}`; a forged token → `{"ok":false,"error":"token-bad"}` — the endpoint answers anonymously and the secret IS configured (an unset one answers `no-secret-configured`).
+- `initJotter` was NOT run: the Sheet already carries its tabs, and the consent was granted by the deploy's own authorisation. The first real call through the front door is what proves `openById` (Executions → `doPost` Completed).
+- Config row `acts` = `["stats-collect"]` typed into the Sheet's Config tab (row 10) by the session, 22:45. Built-ins stay in the code, so the row lists only the books the code does not.
+- Steps still to complete at Book A's deploy: `dataUrl` on the bound project → the new `/exec` (Damien's paste — the desktop app refused the session that edit); `Code.gs` + `Index.html` into the bound project and a new FRONT DOOR version; the old DATA deployment archived once a `doPost` row shows on the new project.
+
+### One-time steps (as planned; the secret is a value no session may type)
 
 1. **Create the DATA project.** script.google.com → New project (standalone —
    NOT from the Sheet's Extensions menu). Name it **OLS — MathShelf DATA**.

@@ -17228,8 +17228,12 @@ function statsBoard(q, wrong) {
         var truth = {};
         mine.forEach(function (i) { var sl = stemLeafOf(values[i], decimals); (truth[String(sl.stem)] = truth[String(sl.stem)] || []).push(sl.leaf); });
         Object.keys(truth).forEach(function (k) { truth[k].sort(function (a, b) { return a - b; }); });
-        box.appendChild(slTable({ stems: stems, given: given, rows: truth, readOnly: true,
+        /* the same scrolling host as the board's own diagram: at 375 a
+           back-to-back table is wider than the paper (the walk, 12 Sept 2026) */
+        var truthHost = el('div', 'stat-sl-host');
+        truthHost.appendChild(slTable({ stems: stems, given: given, rows: truth, readOnly: true,
           back: backRows ? { label: q.back.label, rows: backRows } : null, mine: q.back ? (q.back.mine || '') : '' }));
+        box.appendChild(truthHost);
         ctx.boardHost.appendChild(box);
       },
       ghost: function (holder, att) {

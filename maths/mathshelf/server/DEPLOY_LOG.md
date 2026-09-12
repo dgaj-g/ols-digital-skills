@@ -147,6 +147,7 @@ log showing the deployment actually ran.
 | 2026-09-12 19:27 | FRONT DOOR | Version 31 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it — no edit, the manifest rests there (a front-door-only cut: `Code.gs` unchanged, DATA stays Version 25) | 85a5660 | 8530a932d9a3a2478a645f1111ecee47 | 6c2eb7d561a77ab149f8f1163c885abc |
 | 2026-09-12 20:27 | DATA | Version 32 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor before the cut (Damien's two-line edit) — THE STORE CUT: doPost accepts the secret OR a signed store token | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
 | 2026-09-12 20:30 | FRONT DOOR | Version 33 | `USER_ACCESSING` (and `DOMAIN`), read in the editor before the cut and again after it (Damien's two-line edit back; the manifest rests there) — doGet mints the store token and the page calls DATA itself | 913e0f8 | 831c8f4b7336c11f51448269204bc1ca | 85f8d63c60440ded9e954cc5ac4ffec0 |
+| 2026-09-12 22:31 | DATA (new standalone project `14j0H7VG…jn3h`, deployment `AKfycbzjSy3t…yRkiA`) | Version 1 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the NEW project's manifest after the cut — set once in the New deployment dialog, never edited; the bound project's manifest untouched (rests at `USER_ACCESSING` + `DOMAIN`) | 8891d90 | (no Index in this project) | 3e3f4819fa809c04cc2af310c3faabcd |
 
 ## Proof rows
 
