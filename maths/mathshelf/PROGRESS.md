@@ -7,6 +7,21 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ## 12 SEPT 2026, 16:02 — HOTFIX LIVE, FRONT DOOR Version 28 / DATA Version 25 (unchanged), `4199ee4` — a slow store is not a broken one
 
+**16:14 — Version 29, the SECOND passcode screen (`d8dcef5`).** His screenshot
+at 16:08 showed the line still flat: it was the TEACHER'S LANDING — the staff
+link with no class code, `script.js` `staffCover()`, "the cover with a
+passcode where the name goes" — not the markbook's own cover (`staff.js`)
+that Version 28 (and the two polish cuts before it) had fixed. Same words,
+two screens; the preview's Staff oval opens the markbook cover, so no walk and
+nobody's eyes had stood on the landing, which lives at `index.html?nointro`
+with no class. Fixed the same way (`is-waiting` line, 16 px navy, 18 px
+mark, one quiet retry; inventory row `script.js :: askStore :: 1500`), seen
+in the preview (both animations running, the markbook opening after), `--fast`
+green, front door re-cut with no manifest edit, proof rows in DEPLOY_LOG.
+Lesson for the record: a screen the preview cannot reach the way the live
+site reaches it is a screen nobody has looked at; the teacher landing needs
+its own walk state and its own smoke line.
+
 Damien's third look, 15:02–15:04 on the live site: "Checking the passcode"
 still not seen to move, and the sentence "The app cannot reach its own store …
 Tell Damien the front door is not joined to the data deployment." What the
