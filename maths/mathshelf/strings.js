@@ -366,6 +366,7 @@
       serverExists: 'There is already a class with that name.',
       serverNotFound: 'That could not be found. Reload the page and try again.',
       serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
+      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien.',
       serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
       serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
@@ -458,7 +459,13 @@
     'bad-secret': 'serverUnreachableStore',
     'no-secret-configured': 'serverUnreachableStore',
     'not-configured': 'serverUnreachableStore',
-    'relay-failed': 'serverUnreachableStore',
+    /* A SLOW STORE IS NOT A BROKEN ONE (12 Sept 2026). 'relay-failed' is what
+       the front door says when the data deployment's answer did not arrive
+       in time - his 15:03 passcode check took 68 s on Google's side and every
+       call that day completed - and the old row read that as "not joined to
+       the data deployment", a sentence that names a fault nobody had. The
+       joined-or-not sentence is kept for the codes that actually mean it. */
+    'relay-failed': 'serverStoreSlow',
     'state-too-big': 'serverTooBig',
     'summary-too-big': 'serverTooBig',
     'unknown-action': 'serverUnknownAction',

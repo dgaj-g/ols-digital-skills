@@ -5,6 +5,39 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 12 SEPT 2026, afternoon — HOTFIX: A SLOW STORE IS NOT A BROKEN ONE (Fable, client only; deploy state at the end of this entry)
+
+Damien's third look, 15:02–15:04 on the live site: "Checking the passcode"
+still not seen to move, and the sentence "The app cannot reach its own store …
+Tell Damien the front door is not joined to the data deployment." What the
+Executions log says: every call of his reached DATA and Completed — `apiCall`
+6.7, 9.0, 3.1, 13.9, 16.0 and **68.3 s**, `doPost` 1.4–4.8 s beside each. The
+front door's `apiCall` gives up on `UrlFetchApp` at about a minute and answers
+`relay-failed`; `SERVER_SAYS` mapped `relay-failed` to `serverUnreachableStore`,
+the joined-or-not sentence — a fault nobody had. The passcode line: the built
+page (served at 8100) runs both its animations in Chrome (`gj-breathe`,
+`gj-spin`), 14 px of pencil under the input box; the pupil's "Getting your
+details…" is the same class, chalk on an empty navy cover. Two proved motions
+he could not see were a matter of size and ink, not of motion.
+
+The fix, inside a 60-minute clock (`cut-start.json` re-stamped at `1e7222b`;
+CUT_SCOPE names strings.js, staff.js, style.css and the records):
+- `strings.js`: `serverStoreSlow` — "The store did not answer in time, so
+  that did not go through. Nothing was lost. Try again in a moment. If it
+  keeps happening, tell Damien." — and `relay-failed` points at it; the
+  "not joined" sentence is kept for `not-configured` / `bad-secret` /
+  `no-secret-configured`, the codes that mean it.
+- `staff.js` `askClasses`: the passcode check retries ONCE, 1.5 s after a
+  `relay-failed`, with the waiting line still up; only a second failure
+  becomes a sentence (inventory row `staff.js :: askClasses :: 1500`).
+- `style.css`: `#st-msg.is-waiting` at 16 px navy with an 18 px mark.
+Seen in the preview: a first `relay-failed` is retried silently and the
+markbook opens (two calls); a persistent one ends in the new sentence with
+the button live again; during the wait the line is 16 px navy, both
+animations running. `--fast` green (qa-language, the strings ledger,
+qa-human-pace and qa-scope all took the change). The scoped full walk and
+`control.js --changed` are recorded below with the deploy.
+
 ## 12 SEPT 2026, 13:45 — POLISH CUT 2 LIVE, FRONT DOOR Version 27 / DATA Version 25 (unchanged), `6263421` — it also carries the steward re-cut of 11 Sept
 
 His second live test (12 Sept, an iPhone and a laptop) gave rulings 43–48

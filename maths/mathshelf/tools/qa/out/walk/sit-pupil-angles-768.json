@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 768,
  "tier": "preview",
- "contentHash": "44c0c1958db0",
- "when": "2026-09-12T13:08:28.296Z",
+ "contentHash": "ed65c0e1a48f",
+ "when": "2026-09-12T14:58:16.088Z",
  "states": [
   {
    "surface": "cover",
@@ -3110,133 +3110,6 @@
     "said-twice": "PASS",
     "click-safety": "PASS",
     "readability": "PASS"
-   }
-  },
-  {
-   "surface": "question",
-   "state": "checked-right",
-   "expected": "checked-right",
-   "stood": true,
-   "width": 768,
-   "qid": "q22",
-   "section": 5,
-   "book": "angles",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 30
-   }
-  },
-  {
-   "surface": "dock",
-   "state": "keyboard-hidden",
-   "width": 768,
-   "qid": "q22",
-   "section": 5,
-   "book": "angles",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   }
-  },
-  {
-   "surface": "book-contents",
-   "state": "mid-book",
-   "expected": "mid-book",
-   "stood": true,
-   "width": 768,
-   "section": 6,
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 14
-   }
-  },
-  {
-   "surface": "book-end",
-   "state": "partial",
-   "expected": "partial",
-   "stood": true,
-   "width": 768,
-   "book": "angles",
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 1,
-    "readability": 14
-   }
-  },
-  {
-   "surface": "shelf",
-   "state": "in-progress",
-   "expected": "in-progress",
-   "stood": true,
-   "width": 768,
-   "audits": {
-    "empty": "PASS",
-    "nested": "PASS",
-    "geometry": "PASS",
-    "steps": "PASS",
-    "colour": "PASS",
-    "mute-locks": "PASS",
-    "consequence": "PASS",
-    "waits": "PASS",
-    "overlap": "PASS",
-    "said-twice": "PASS",
-    "click-safety": "PASS",
-    "readability": "PASS"
-   },
-   "measured": {
-    "said-twice": 0,
-    "readability": 20
    }
   }
  ],

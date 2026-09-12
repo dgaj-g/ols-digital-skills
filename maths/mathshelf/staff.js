@@ -231,7 +231,22 @@
       SURF('staff-cover', 'busy');
       var tryPass = body.querySelector('#st-pass').value;
       passcode = tryPass;
-      call('classes').then(function (r) {
+      /* ONE QUIET RETRY BEFORE A WORD IS SAID (12 Sept 2026). The data
+         deployment's answer sometimes takes longer than the front door will
+         wait - 68 s at 15:03 that day, and it did arrive - so the first
+         'relay-failed' is tried once more, 1.5 s later, with the waiting line
+         still up; only a second failure reaches her as a sentence. */
+      var retried = false;
+      function askClasses() {
+        return call('classes').then(function (r) {
+          if (r && !r.ok && r.error === 'relay-failed' && !retried) {
+            retried = true;
+            return new Promise(function (res) { setTimeout(res, 1500); }).then(askClasses);
+          }
+          return r;
+        });
+      }
+      askClasses().then(function (r) {
         go.disabled = false;
         if (!r || !r.ok) {
           passcode = null;

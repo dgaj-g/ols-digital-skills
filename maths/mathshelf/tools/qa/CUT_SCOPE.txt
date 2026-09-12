@@ -3,38 +3,16 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# POLISH CUT 2, 12 Sept 2026 (Opus 5): his rulings 43–48 of the second live
-# test (the board pans by touch on a phone, axis numbers clear of the line, the
-# stage line never replaced and the next point named, the passcode wait as the
-# pupil's own line, "Saving changes…", the pupil's save quiet until late) plus
-# q17's marking rule (a reading judged to the grid's resolution). Two-hour clock.
-jotter-stats.js
-statchart.js
-statcore.js
+# HOTFIX, 12 Sept 2026 15:xx (Fable): a slow store is not a broken one — the
+# 'relay-failed' sentence, one quiet retry on the passcode check, the staff
+# waiting line at a size he can see. 60-minute clock. Client only.
 strings.js
-style.css
-script.js
 staff.js
-content-stats-quartiles.js
-dev/test-statcore.js
-dev/model-attempts.js
-tools/qa/lib/*
-tools/qa/fixtures/plants.js
-tools/qa/sit-pupil.js
-tools/qa/sit-confused.js
-tools/qa/sit-teacher.js
-tools/qa/qa-waits.js
-tools/qa/qa-language.js
-tools/qa/qa-human-pace.js
-tools/qa/qa-manifest.js
-tools/qa/extract-transcript.js
+style.css
 tools/qa/CUT_SCOPE.txt
 tools/qa/MATHS_*.md
-tools/qa/vocab/*
 tools/qa/out/*
 server/Index.html
-server/Code.gs
-server/DEPLOY.md
 server/DEPLOY_LOG.md
 HANDOVER.md
 PROGRESS.md
