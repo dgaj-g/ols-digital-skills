@@ -5,9 +5,11 @@
 #
 # HOTFIX, 12 Sept 2026 15:xx (Fable): a slow store is not a broken one — the
 # 'relay-failed' sentence, one quiet retry on the passcode check, the staff
-# waiting line at a size he can see. 60-minute clock. Client only.
+# waiting line at a size he can see; then the same for the teacher's LANDING
+# (script.js staffCover) — the screen he was looking at. 60-minute clock. Client only.
 strings.js
 staff.js
+script.js
 style.css
 tools/qa/CUT_SCOPE.txt
 tools/qa/MATHS_*.md

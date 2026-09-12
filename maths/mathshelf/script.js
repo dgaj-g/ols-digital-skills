@@ -873,19 +873,39 @@
 
     var go = function () {
       var v = (pass.value || '').trim();
-      if (!v) { msg.textContent = TT.passcodeEmpty || ''; pass.focus(); return; }
+      if (!v) { msg.classList.remove('is-waiting'); msg.textContent = TT.passcodeEmpty || ''; pass.focus(); return; }
       if (openBtn.disabled) return;
       openBtn.disabled = true;
-      msg.textContent = TT.passcodeChecking || '';
-      call('admin', { passcode: v, sub: 'classes' }).then(function (r) {
+      /* THIS IS THE SCREEN HE WAS LOOKING AT (12 Sept 2026, his fourth look).
+         The teacher's landing is the cover with a passcode where the name
+         goes - THIS function - and its "Checking the passcode…" was flat text
+         while the markbook's own cover (staff.js) was given a breath, then a
+         spinner, and proved twice; the preview's Staff oval opens staff.js's
+         cover, so nobody walking the preview ever stood here. The same
+         waiting line as the pupil's "Getting your details…", and the same
+         one quiet retry as staff.js when the store is slow (relay-failed). */
+      msg.classList.add('is-waiting'); msg.textContent = TT.passcodeChecking || '';
+      var retried = false;
+      function askStore() {
+        return call('admin', { passcode: v, sub: 'classes' }).then(function (r) {
+          if (r && !r.ok && r.error === 'relay-failed' && !retried) {
+            retried = true;
+            return new Promise(function (res) { setTimeout(res, 1500); }).then(askStore);
+          }
+          return r;
+        });
+      }
+      askStore().then(function (r) {
         if (r && r.ok) { window.GJ_STAFF.enterWith(v, r); return; }
         openBtn.disabled = false;
+        msg.classList.remove('is-waiting');
         msg.textContent = (window.GJ_STRINGS && window.GJ_STRINGS.serverSays)
           ? window.GJ_STRINGS.serverSays(r && r.error, TT.passcodeWrong || '')
           : (TT.passcodeWrong || '');
         pass.focus(); pass.select();
       }).catch(function () {
         openBtn.disabled = false;
+        msg.classList.remove('is-waiting');
         msg.textContent = TT.noServer || '';
       });
     };
