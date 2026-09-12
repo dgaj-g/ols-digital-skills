@@ -66,8 +66,13 @@ coverage cell closed (the nine 11 Sept debt rows now six, all q18/q23) bar
 `qa-cold-read`, re-filed by the separated judge on the re-extracted
 transcripts after the walkers (see the record commit); `qa-manifest` and
 `qa-waits` controls FIRED (see above); `control.js --only sit-pupil` ran in
-the background after the deploy — its matrix is in
-`tools/qa/out/polish2/controls-sit-pupil.log` and the done message. Deploy:
+the background after the deploy (13:41–14:38): **17 controls FIRED —
+including the three new ones, `stats-board-no-pan`, `stats-axis-number-on-
+the-line` (the planted +16 constant put the "0" 2 px OVER the line at 375,
+exactly his Safari screenshot) and `stage-line-replaced` — and the shipped
+tree PASSES over-tightening** (`tools/qa/out/polish2/controls-sit-pupil.log`).
+controls: green 2026-09-12 6263421 (sit-pupil, qa-waits, qa-manifest; the
+rest of the battery was not re-run this cut — the clock). Deploy:
 Index.html fetched into the editor from the pushed branch (1,159,916 bytes,
 exact), FRONT DOOR Version 27 at 13:45 by deployment id, proof rows doGet →
 apiCall → doPost at 13:46 in `server/DEPLOY_LOG.md`; `MS_POST_DEPLOY=1`
