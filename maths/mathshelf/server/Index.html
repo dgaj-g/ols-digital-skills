@@ -625,8 +625,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 .theorem-stamp {
   display: inline-block;
   font-family: var(--f-stationery);
-  font-size: 11px;
-  font-weight: 600;
+  /* 13px, 700: an 11px tracked capital renders a whole ratio point lighter
+     than its declared ink (F40), and Book C's "How many were asked?" stamp
+     measured 4.45:1 against a 4.5 floor on the whole-tree walk of 12 Sept
+     2026 - every label that is read renders at 13px or more */
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--act-accent-deep, var(--act-accent, var(--teal)));
@@ -2606,7 +2610,7 @@ window.OLS_TRANSPORT = {
       statLinePair: '{name} = ({a} + {b}) \u00f7 2 = {value}',
       /* the cumulative frequency column */
       statCftableRow: 'Cumulative frequency up to {value} {unit}',
-      statCftableWhy: 'Put a running total in at least one row first.',
+      statCftableWhy: 'Fill in at least one row of running totals before you check.',
       statCftableTruth: 'Running totals: {list}',
       /* plotting and joining */
       statPlotPlaceWhy: 'Place every point first.',
@@ -2661,7 +2665,7 @@ window.OLS_TRANSPORT = {
       statJudgeReasonWhy: 'Give a reason for each one you called not fair.',
       /* number-pad answers */
       statValuesStart: 'Choose a box and put your answer in.',
-      statValuesWhy: 'Put a number in at least one box first.',
+      statValuesWhy: 'Put a number in one box before you check.',
 
       /* THE STAGE STRIP AND THE CURRENT INSTRUCTION (DESIGN 4.0, Correction
          11 Sept 2026 \u2014 his first live test of Book C). A pill is two or three
@@ -2734,7 +2738,7 @@ window.OLS_TRANSPORT = {
       statPillScLine: 'Draw the line',
       statPillScEst: 'Estimate at {at}',
       statPillScCorr: 'Name the correlation',
-      statPillScOutlier: 'Find the odd one out',
+      statPillScOutlier: 'Find the reading that looks wrong',
       statStageOrder: 'Put the cards in the order the cycle happens. Choose the card that comes first, then the next, until every card is in the row. ({n} still to place.)',
       statStageOrderDone: 'Every card is in the row. If one is out of place, press it to send it back. Then press Mark my order.',
       statStagePick: 'Read the three questions. Choose the one that would work best on a questionnaire.',
@@ -2757,7 +2761,7 @@ window.OLS_TRANSPORT = {
       statScThatsMyLine: '\u2713 That\u2019s my line',
       statScNextEst: 'Next: read the estimate',
       statScNextCorr: 'Next: name the correlation',
-      statScNextOutlier: 'Next: find the odd one out',
+      statScNextOutlier: 'Next: find the reading that looks wrong',
       statScPositive: 'Positive',
       statScNegative: 'Negative',
       statScNone: 'No correlation',
@@ -8699,7 +8703,7 @@ function statsBoard(q, wrong) {
         },
         questions: [
           { id: 'q20', kind: 'stemleaf', marks: [2, 1],
-            prompt: 'The lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths.',
+            prompt: 'Here are the lengths of twigs, measured to the nearest tenth of a centimetre: 4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8. Draw a stem-and-leaf diagram for these lengths.',
             values: [4.3, 4.7, 2.9, 1.0, 5.8, 4.2, 3.6, 1.9, 2.7, 3.0, 2.6, 3.7, 4.3, 2.7, 2.8],
             stems: [1, 2, 3, 4, 5], unit: 'cm', decimals: 1,
             key: { ask: true },
@@ -8730,10 +8734,10 @@ function statsBoard(q, wrong) {
           { id: 'q23', kind: 'judge', marks: [0, 1],
             prompt: 'A mistake was made: the weight of 4.6 kg should have been 4.5 kg. Decide which of the following will change.',
             claims: [
-              { text: 'The range will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
-              { text: 'The median will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
-              { text: 'The mean will', options: ['Change', 'Stay the same'], verdict: 'Change' },
-              { text: 'The mode will', options: ['Change', 'Stay the same'], verdict: 'Stay the same' }
+              { text: 'When 4.6 kg is corrected to 4.5 kg, the range of the weights will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
+              { text: 'After the correction, the median weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same' },
+              { text: 'With 4.5 kg in place of 4.6 kg, the mean weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Change' },
+              { text: 'Once the weight is corrected, the modal weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same' }
             ],
             src: 'Statistics M7 (1).pdf Q30(b)' },
           { id: 'q24', kind: 'stemleaf', marks: [2, 0],
@@ -8780,7 +8784,7 @@ function statsBoard(q, wrong) {
       {
         id: 's5',
         title: 'Scatter graphs',
-        walt: 'Plot a scatter graph, draw a line of best fit and use it to estimate',
+        walt: 'Plot a scatter graph, draw a line of best fit, and use it to estimate a value',
         movie: {
           title: 'The line through the cloud',
           src: 'Statistics M7 (1).pdf Q4 (Tim and June); method narration authored',
@@ -8843,8 +8847,8 @@ function statsBoard(q, wrong) {
           { id: 'q32', kind: 'judge', marks: [0, 2],
             prompt: 'Complete the sentences about family cars.',
             claims: [
-              { text: 'As the age of a family car increases, its value', options: ['Increases', 'Decreases', 'Stays the same'], verdict: 'Decreases' },
-              { text: 'So the correlation between age and value is', options: ['Positive', 'Negative', 'No correlation'], verdict: 'Negative' }
+              { text: 'As the age of a family car increases, its value\u2026', options: ['Increases', 'Decreases', 'Stays the same'], verdict: 'Decreases' },
+              { text: 'So the correlation between age and value is\u2026', options: ['Positive', 'Negative', 'No correlation'], verdict: 'Negative' }
             ],
             src: 'Statistics M7 (1).pdf Q27(a)' }
         ]
@@ -10828,9 +10832,18 @@ function statsBoard(q, wrong) {
         if (!anc) return;
         var room = host.getBoundingClientRect().left - anc.getBoundingClientRect().left - 8;
         if (deficit > room) return;
+        /* two px of slack: a reclaim of exactly the deficit left one or two
+           px hidden on the walk of 12 Sept 2026 (the border and a rounding)
+           and the swipe note showed for them */
+        deficit = Math.min(room, deficit + 2);
         host.style.marginLeft = (-deficit) + 'px';
         host.setAttribute('data-reclaimed', deficit);
       } catch (e) {}
+      /* THE WORDS STAY IN THE TEXT COLUMN (the polish cut's rule): a gutter
+         the board reclaims is never reclaimed by its note or its track */
+      var rec = parseFloat(host.getAttribute('data-reclaimed') || '0') || 0;
+      if (swipeNote) swipeNote.style.marginLeft = rec ? rec + 'px' : '';
+      if (track) track.style.marginLeft = rec ? rec + 'px' : '';
     }
     function relayout() {
       if (!HAS_DOM || !svg.getScreenCTM) return;
@@ -21286,7 +21299,7 @@ function statsBoard(q, wrong) {
     var pct = sum.marks[1] ? Math.round(100 * sum.marks[0] / sum.marks[1]) : 0;
     var hand = pct === 100 ? 'Full marks \u2014 the gold star is yours.'
       : pct >= 80 ? 'Nearly there \u2014 look back at the crosses.'
-      : pct >= 50 ? 'Good \u2014 go back over the questions the red pen marked.'
+      : pct >= 50 ? 'Good \u2014 go back over the questions marked wrong.'
       : 'Plenty to talk about in class \u2014 your teacher can see exactly where.';
     /* the end of the book: the tally and, when it is all right, the gold star */
     surface(main, 'book-end', (sum.marks[1] && sum.marks[0] === sum.marks[1]) ? 'complete' : 'partial');

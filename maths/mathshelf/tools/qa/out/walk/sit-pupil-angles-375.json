@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 375,
  "tier": "preview",
- "contentHash": "270ba9ffb4c4",
- "when": "2026-09-12T15:40:46.761Z",
+ "contentHash": "7fef149360a6",
+ "when": "2026-09-12T23:00:10.381Z",
  "states": [
   {
    "surface": "cover",
@@ -98,6 +98,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 375,
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
+    "readability": 21
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -119,7 +145,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 19
+    "readability": 17
    }
   },
   {
@@ -148,7 +174,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 19
+    "readability": 17
    }
   },
   {
@@ -176,7 +202,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 19
+    "readability": 17
    }
   },
   {
@@ -787,6 +813,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 375,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 19
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -808,7 +860,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 18
+    "readability": 17
    }
   },
   {
@@ -837,7 +889,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 18
+    "readability": 17
    }
   },
   {
@@ -1143,7 +1195,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 16
+    "readability": 17
    }
   },
   {
@@ -1171,7 +1223,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 16
+    "readability": 17
    }
   },
   {
@@ -1282,6 +1334,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 375,
+   "section": 2,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 16
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -1303,7 +1381,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 15
+    "readability": 16
    }
   },
   {
@@ -1332,7 +1410,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 15
+    "readability": 16
    }
   },
   {
@@ -1693,8 +1771,8 @@
   {
    "surface": "movie",
    "state": "step-n",
-   "expected": "end",
-   "stood": false,
+   "expected": "step-n",
+   "stood": true,
    "width": 375,
    "section": 3,
    "audits": {
@@ -1713,7 +1791,33 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 22
+    "readability": 21
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "end",
+   "expected": "end",
+   "stood": true,
+   "width": 375,
+   "section": 3,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 19
    }
   },
   {
@@ -1742,7 +1846,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 22
+    "readability": 19
    }
   },
   {
@@ -2187,6 +2291,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 375,
+   "section": 4,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 18
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -2208,7 +2338,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 15
+    "readability": 17
    }
   },
   {
@@ -2237,7 +2367,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 15
+    "readability": 17
    }
   },
   {
@@ -2682,6 +2812,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 375,
+   "section": 5,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 14
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -2703,7 +2859,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 14
+    "readability": 16
    }
   },
   {
@@ -2732,7 +2888,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 14
+    "readability": 16
    }
   },
   {
@@ -2935,7 +3091,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 21
    }
   },
   {
@@ -2985,7 +3141,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 21
    }
   },
   {
@@ -3036,7 +3192,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 22
+    "readability": 21
    }
   },
   {
@@ -3087,7 +3243,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -3137,7 +3293,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 22
+    "readability": 23
    }
   },
   {

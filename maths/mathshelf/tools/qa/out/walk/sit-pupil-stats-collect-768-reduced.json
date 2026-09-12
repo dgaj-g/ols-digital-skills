@@ -3,8 +3,8 @@
  "scope": "stats-collect",
  "width": 768,
  "tier": "preview",
- "contentHash": "49eb2fd52f42",
- "when": "2026-09-12T21:47:58.983Z",
+ "contentHash": "32702b8e1b56",
+ "when": "2026-09-12T23:08:42.228Z",
  "states": [
   {
    "surface": "cover",
@@ -94,6 +94,32 @@
    "measured": {
     "said-twice": 15,
     "readability": 25
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "reduced-motion",
+   "expected": "step-n",
+   "stood": false,
+   "width": 768,
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 15,
+    "readability": 26
    }
   },
   {
@@ -427,7 +453,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -478,7 +504,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -552,7 +578,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -604,7 +630,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -678,7 +704,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -730,7 +756,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -782,7 +808,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -833,7 +859,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 27
+    "readability": 24
    }
   },
   {
@@ -4284,6 +4310,32 @@
   {
    "surface": "movie",
    "state": "reduced-motion",
+   "expected": "step-n",
+   "stood": false,
+   "width": 768,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 25
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "reduced-motion",
    "expected": "end",
    "stood": false,
    "width": 768,
@@ -5352,6 +5404,32 @@
   {
    "surface": "movie",
    "state": "reduced-motion",
+   "expected": "step-n",
+   "stood": false,
+   "width": 768,
+   "section": 2,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
+    "readability": 49
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "reduced-motion",
    "expected": "end",
    "stood": false,
    "width": 768,
@@ -5885,6 +5963,32 @@
    "measured": {
     "said-twice": 13,
     "readability": 52
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "reduced-motion",
+   "expected": "step-n",
+   "stood": false,
+   "width": 768,
+   "section": 3,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 13,
+    "readability": 66
    }
   },
   {
@@ -8462,6 +8566,32 @@
    "state": "instant",
    "expected": "instant",
    "stood": true,
+   "width": 768,
+   "section": 4,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 53
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "reduced-motion",
+   "expected": "step-n",
+   "stood": false,
    "width": 768,
    "section": 4,
    "audits": {

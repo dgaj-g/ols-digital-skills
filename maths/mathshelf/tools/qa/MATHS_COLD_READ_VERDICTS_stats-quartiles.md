@@ -1,6 +1,6 @@
-TRANSCRIPT HASH: 2948e55f2149278c
+TRANSCRIPT HASH: 5c4d719fa46b34bd
 
-I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the checklist, and the read-first candidates whose sentences land in this transcript. I read from Aoife's seat: fifteen or sixteen, on a Chromebook or her phone, working through the Handling Data book with nobody standing over her, reading every sentence aloud cold and asking the checklist's five questions of it.
+I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the checklist, and the read-first candidates whose sentences land in this transcript. I read from Aoife's seat: fifteen or sixteen, on a Chromebook or her phone, working through the Handling Data book with nobody standing over her, reading every sentence aloud cold and asking the checklist's five questions of it. Most of the 109 sentences are unchanged since the transcript I last read and carry their verdict forward; six spots were rewritten since and I judged those fresh — q2's stem, the four fill-ins in q8, q14's stem, q15's feedback, q19's tray instruction, and q21's feedback.
 
 ## The sentence table
 
@@ -15,7 +15,7 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 | PASS | Ex 1 › heading | Exercise 1 · Quartiles and the interquartile range from a list | Clear heading, matches the WALT. |
 | PASS | Ex 1 › q1 › stem | Seven students sat a test. Here are their results: 58%, 61%, 64%, 66%, 67%, 68%, 70%. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks] | Anchored, every noun picturable, doesn't say how to find the quartiles. |
 | PASS | Ex 1 › q1 › feedback | You put them in order, then found the cuts. | Fits what she did — ordering, then cutting the list into quarters. |
-| FAIL | Ex 1 › q2 › stem | The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks] | No verb before the colon — "The speeds... in mph:" is not a sentence, unlike q1's "Here are their results:". → "Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks]" |
+| PASS | Ex 1 › q2 › stem | Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range. [4 marks] | Fixed since the last read — now opens "Here are the speeds…", the same construction as q1's "Here are their results:"; has its verb, reads clean. |
 | PASS | Ex 1 › q2 › feedback | Every value in the right place. | Fits an ordering task. |
 | PASS | Ex 1 › q3 › stem | 11 people took part in a puzzle. The times they took, in minutes, are shown below: 8, 3, 7, 8, 9, 13, 4, 9, 9, 10, 9. Find the lower quartile and the upper quartile. [2 marks] | Clean, anchored, one answer. |
 | PASS | Ex 1 › q3 › feedback | Counted to the right positions. | Fits — she counted along the ordered list to the quartile positions. |
@@ -29,10 +29,10 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 | PASS | Ex 1 › q7 › feedback | Worked out and written in. | Fits pad entry. |
 | PASS | Ex 1 › q8 › stem | Decide whether the statement about spread is fair. These wages were listed: £202, £212, £221, £242, £250, £250, £260, £284. A wage of £110 was left off. Say what happens to each average and to the range when it is added. [5 marks] | Anchored, clear, doesn't leak which way any average moves. |
 | PASS | Ex 1 › q8 › claim | The range is a better measure of spread than the interquartile range. | A plain claim to weigh — she can picture it and judge it. |
-| REWRITE | Ex 1 › q8 › fill-in (mean) | The mean wage will | Trails off with no marked blank, unlike the "___" used later in this same book (q25) — she can't tell where the words stop and her choice starts. → "The mean wage will ___" |
-| REWRITE | Ex 1 › q8 › fill-in (mode) | The modal wage will | Same missing blank as the mean line. → "The modal wage will ___" |
-| REWRITE | Ex 1 › q8 › fill-in (median) | The median wage will | Same missing blank. → "The median wage will ___" |
-| REWRITE | Ex 1 › q8 › fill-in (range) | The range of the wages will | Same missing blank. → "The range of the wages will ___" |
+| PASS | Ex 1 › q8 › fill-in (mean) | When the £110 wage is added, the mean wage will… | Fixed since the last read — the sentence now carries its own anchor ("the mean wage") and ends in the ellipsis that hands off to the chips, which the checklist allows as a marked blank. |
+| PASS | Ex 1 › q8 › fill-in (mode) | Add the £110 wage to the list, and the modal wage will… | Same fix — anchored noun, chip-completed ellipsis. |
+| PASS | Ex 1 › q8 › fill-in (median) | Once the £110 wage joins the list, the median wage will… | Same fix. |
+| PASS | Ex 1 › q8 › fill-in (range) | With the £110 wage added to the list, the range of the wages will… | Same fix. |
 | PASS | Ex 1 › q8 › feedback | Fair reading of what the figures can say. | Fits a judgement question; plain enough in context. |
 | PASS | Ex 1 › self-eval prompt | Exercise finished — how did that go? optional | House pattern, clearly marked optional. |
 | PASS | contents strip › Ex 2 label | Ex.2 Cumulative frequency tables | Contents-strip label, consistent with Ex 1's. |
@@ -50,14 +50,14 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 | PASS | Ex 3 › q12 › feedback | You plotted the points, then drew the curve through them. | Fits a points-then-curve task, in the right order. |
 | PASS | Ex 3 › q13 › stem | The marks in an examination, out of 80, are shown in the table below for 112 candidates. Draw the cumulative frequency graph for this information. [2 marks] | Clean, has its verb. |
 | PASS | Ex 3 › q13 › feedback | Every point where it belongs. | Fits a plot. |
-| REWRITE | Ex 3 › q14 › stem | In a survey, 184 people stated their weekly wage, grouped below. Draw the cumulative frequency graph for this information. [3 marks] | "Stated their weekly wage, grouped below" leaves it unclear whether the wage or the results are what's grouped — q11 says this more clearly. → "In a survey, 184 people stated their weekly wage. The results are grouped below. Draw the cumulative frequency graph for this information. [3 marks]" |
+| PASS | Ex 3 › q14 › stem | In a survey, 184 people stated their weekly wage. The results are shown in the table below. Draw the cumulative frequency graph for this information. [3 marks] | Fixed since the last read — the ambiguous "grouped below" tail is gone; "the results" now has its own plain sentence with its own verb ("are shown"). |
 | PASS | Ex 3 › q14 › feedback | A smooth curve through every point. | Fits a curve-drawing task. |
 | PASS | contents strip › Ex 4 label | Ex.4 Reading the curve: median, quartiles, IQR | Consistent style. |
 | PASS | Ex 4 › WALT | WALT · Estimate the median, quartiles and interquartile range from a cumulative frequency curve | Clear. |
 | PASS | Ex 4 › heading | Exercise 4 · Reading the curve: median, quartiles, IQR | Clear. |
 | PASS | Ex 4 › q15 › stem | The cumulative frequency graph shows the marks of 112 candidates in an examination. Use the graph to estimate the median and the interquartile range. The pass mark is 36. What percentage of candidates passed? [5 marks] | Anchored, clear, doesn't say how to read the curve. |
 | PASS | Ex 4 › q15 › rule instruction | The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve. | Names the rule plainly, says where it goes, before she is asked to use it — matches the approved fiction. |
-| REWRITE | Ex 4 › q15 › feedback | Clean read-off. | "Read-off" is not a term she has met defined anywhere, and Ex 4's other feedback lines say the same thing more plainly. → "You read it off exactly right." |
+| PASS | Ex 4 › q15 › feedback | You read it off exactly right. | Fixed since the last read — "Clean read-off" used a term she has never met defined anywhere; this says the same thing in plain words. |
 | PASS | Ex 4 › q16 › stem | The cumulative frequency graph shows the weekly wage of 184 people. Use the graph to estimate the median. Then estimate the percentage of people who earn more than £640 per week. [3 marks] | Clean, anchored, clear. |
 | PASS | Ex 4 › q16 › feedback | You put the rule at the right height and read it carefully. | Fits, plain. |
 | PASS | Ex 4 › q17 › stem | The cumulative frequency graph shows the distances thrown by 50 competitors in a javelin competition. Use the graph to estimate the median distance thrown and the interquartile range. [3 marks] | Clean, anchored. |
@@ -68,12 +68,12 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 | PASS | Ex 5 › WALT | WALT · Draw and compare box plots | Clear. |
 | PASS | Ex 5 › heading | Exercise 5 · Box plots — drawing and comparing | Clear. |
 | PASS | Ex 5 › q19 › stem | The table shows some information about the heights, in cm, of some plants. Draw a box plot for this information. [2 marks] | Anchored (plant heights), clear ask. |
-| PASS | Ex 5 › q19 › tray instruction | Five markers — put each one on the scale where it belongs. | Approved fiction, verbatim. |
+| PASS | Ex 5 › q19 › tray instruction | The tray is the row of markers waiting to be used. A marker leaves the tray when it goes on the scale. | Content has changed since the last read — was "Five markers — put each one on the scale where it belongs."; now uses the same named-fiction template as the cards (ordering) and values (stem-and-leaf) tray instructions elsewhere on the shelf, and still names the fiction plainly before she uses it. |
 | PASS | Ex 5 › q19 › feedback | All five markers are where they belong. | Fits a marker-placing task. |
 | PASS | Ex 5 › q20 › stem | The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. Work out the lowest weight, then draw a box plot for this information. [2 marks] | Anchored, gives everything needed, one defensible answer (84 g). |
 | PASS | Ex 5 › q20 › feedback | Neat, and the box says what it should. | Fits a drawn box plot. |
 | PASS | Ex 5 › q21 › stem | The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. Draw a box plot for this information. [2 marks] | Clean, anchored, one answer. |
-| FAIL | Ex 5 › q21 › feedback | A tidy box plot — every mark earned. | "Every mark earned" is examiner-marking language on a pupil screen — the same fault as the banned "Every line earns its mark." → "A tidy box plot, and every part of it is right." |
+| PASS | Ex 5 › q21 › feedback | A tidy box plot, and every part of it is right. | Fixed since the last read — "every mark earned" was examiner-marking language on a pupil screen, the same fault as the banned "Every line earns its mark."; this says the same true thing in plain words. |
 | PASS | Ex 5 › q22 › stem | Some girls did a sponsored swim to raise money for charity. The table shows the amounts of money they raised: least £10, lower quartile £16, median £25, upper quartile £42, greatest £45. Draw a box plot for this information. [2 marks] | Approved opening sentence; anchored, clear. |
 | PASS | Ex 5 › q23 › stem | Compare the amounts of money the girls raised with the amounts of money the boys raised in the sponsored swim. [2 marks] | Clear, refers back to a scenario already given. |
 | PASS | Ex 5 › q23 › label (Girls) | Girls | A plain column label. |
@@ -83,7 +83,7 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 | PASS | Ex 5 › q24 › sub-prompt a | Which city has the greater interquartile range? | Clear, direct question. |
 | PASS | Ex 5 › q24 › sub-prompt b | In which city are people generally older? | Clear, direct question. |
 | PASS | Ex 5 › q24 › feedback | You weighed the evidence, not the claim. | A common, transparent phrase in context — no clearer than the approved "Bang on". |
-| PASS | Ex 5 › q25 › stem | The box plots show the age distributions of two cities, A and B. Complete the sentence: 75% of the people in city A are aged over ___. [1 mark] | Clean, and the blank is marked properly with "___" — the pattern q8's fill-ins should have followed. |
+| PASS | Ex 5 › q25 › stem | The box plots show the age distributions of two cities, A and B. Complete the sentence: 75% of the people in city A are aged over ___. [1 mark] | Clean, and the blank is marked properly with "___" — the pattern q8's fill-ins now also satisfy, in their own way, with the chip-completing ellipsis. |
 | PASS | Ex 5 › q25 › feedback | You filled in every box, and got them all right. | Fits pad entry. |
 | PASS | Ex 5 › q26 › stem | The cumulative frequency graph shows the time that 100 students spent doing homework during one week. Use the graph to estimate the median. The least time was 2 hours and the greatest time was 24 hours — draw a box plot for this information. [4 marks] | Clean, anchored, a fair combined task. |
 | PASS | Ex 5 › q26 › feedback | Neat, and the box says what it should. | Fits. |
@@ -120,13 +120,13 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 | verdict | path | the sentence | why |
 |---|---|---|---|
-| FAIL | stats-quartiles > s1 > q2 > prompt | The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. | No verb before the colon — a real fragment. → "Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36." |
+| PASS | stats-quartiles > s1 > q2 > prompt | Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. | Fixed since the last read — now has its own verb ("Here are…"), the same fix already applied to q1's stem. |
 | PASS | stats-quartiles > s1 > q6 > prompt | The ages of 11 trees, from youngest to oldest, are shown below. | Has its verb ("are shown"); reads clean. |
 | PASS | stats-quartiles > s1 > q7 > prompt | The scores, from lowest to highest, are shown below. | Has its verb; reads clean in context. |
 | PASS | stats-quartiles > s1 > q8 > prompt | Say what happens to each average and to the range when it is added. | One clear instruction, not confusingly stacked. |
 | PASS | stats-quartiles > s2 > q10 > prompt | The marks in an examination, out of 80, are grouped below for 112 candidates. | Has its verb ("are grouped"); reads clean. |
 | PASS | stats-quartiles > s3 > q13 > prompt | The marks in an examination, out of 80, are shown in the table below for 112 candidates. | Has its verb; reads clean. |
-| REWRITE | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage, grouped below. | Ambiguous attachment of "grouped below". → "In a survey, 184 people stated their weekly wage. The results are grouped below." |
+| PASS | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage. | Fixed since the last read — the ambiguous "grouped below" tail is gone; what remains has its own verb and reads clean on its own. |
 | PASS | stats-quartiles > s4 > q15 > prompt | The cumulative frequency graph shows the marks of 112 candidates in an examination. / What percentage of candidates passed? | Both parts clean, anchored, and neither leaks the method. |
 | PASS | stats-quartiles > s5 > q19 > prompt | The table shows some information about the heights, in cm, of some plants. | Concrete (heights of plants), clear. |
 | PASS | stats-quartiles > s5 > q20 > prompt | The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. | Clear, gives what is needed for one defensible answer. |
@@ -143,7 +143,7 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 **q1 — test scores (median, LQ, UQ, IQR).** One defensible answer (median 66, LQ 61, UQ 68, IQR 7); anchored, doesn't leak method; a fair opener.
 
-**q2 — car speeds.** Same as q1 in design; the stem itself needs its verb fixed (see above). Feedback fits.
+**q2 — car speeds.** Same as q1 in design; the stem is fixed to open with its own verb ("Here are the speeds…"), matching q1's pattern. Feedback fits.
 
 **q3 — puzzle times, LQ and UQ only.** One answer (LQ 7, UQ 9); anchored, appropriately smaller ask than q1–q2.
 
@@ -155,7 +155,7 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 **q7 — missing joke scores.** Solves to one defensible pair (1.5, 1.8); anchored and a little playful without being silly.
 
-**q8 — wages, judge the claim, four fill-ins.** The claim and the maths are sound (adding a low wage lowers the mean and median, leaves the mode alone, and enlarges the range far more than it would the IQR — so "Not fair" is the defensible call); the four fill-in lines need the "___" fix noted above.
+**q8 — wages, judge the claim, four fill-ins.** The claim and the maths are sound (adding a low wage lowers the mean and median, leaves the mode alone, and enlarges the range far more than it would the IQR — so "Not fair" is the defensible call); the four fill-in lines now carry their own anchors ("the mean wage", "the modal wage", "the median wage", "the range of the wages") and end in the chip-completing ellipsis, which the checklist allows in place of a marked blank.
 
 **q9 — homework times, cumulative frequency table.** One answer; feedback checks a real, checkable property (the running total should match the number of people).
 
@@ -167,9 +167,9 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 **q13 — exam marks, draw the curve.** As q12.
 
-**q14 — wages, draw the curve.** Stem's "grouped below" needs the small fix noted above; otherwise sound.
+**q14 — wages, draw the curve.** Stem now reads clean — "the results" has its own sentence and its own verb ("are shown"); otherwise sound.
 
-**q15 — exam marks, read median/IQR/pass rate.** A fair three-part ask; doesn't leak how to use the rule; the rule instruction that precedes it is plain and names where the next point goes before the control.
+**q15 — exam marks, read median/IQR/pass rate.** A fair three-part ask; doesn't leak how to use the rule; the rule instruction that precedes it is plain and names where the next point goes before the control; the feedback now says plainly "You read it off exactly right." instead of the undefined "read-off".
 
 **q16 — wages, read median and a percentage.** One clear ask; feedback fits.
 
@@ -177,11 +177,11 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 **q18 — boys' heights, read a count above a value.** One clear ask; only partly answered in this transcript, which is a pupil-performance fact, not a wording fault.
 
-**q19 — plant heights, box plot.** One answer; the tray instruction is the approved fiction, named plainly before use.
+**q19 — plant heights, box plot.** One answer; the tray instruction now uses the shelf's standard named-fiction template ("The tray is the row of markers waiting to be used. A marker leaves the tray when it goes on the scale.") in place of the earlier one-line version, and still names the fiction plainly before use.
 
 **q20 — potato weights, box plot plus find the minimum.** One defensible answer (84 g); a good change of scenario.
 
-**q21 — race times, box plot.** One answer; feedback needs the "every mark earned" fix noted above.
+**q21 — race times, box plot.** One answer; feedback now reads "A tidy box plot, and every part of it is right." instead of the examiner-language "every mark earned".
 
 **q22 — sponsored swim (girls), box plot.** Five-figure summary given directly; a fair, lighter step before the comparison question.
 
@@ -189,7 +189,7 @@ I read only the Handling Data pupil transcript (`_stats-quartiles.md`), the chec
 
 **q24 — two cities, compare IQR and typical age.** Two clean sub-questions; a fair comparison task.
 
-**q25 — two cities, 75% aged over ___.** Uses the lower quartile correctly (75% lie above it); the one fill-in in this book with its blank properly marked.
+**q25 — two cities, 75% aged over ___.** Uses the lower quartile correctly (75% lie above it); the one fill-in in this book with its blank marked by "___" rather than the ellipsis.
 
 **q26 — homework times, median then a box plot.** A fair combined task, drawing on the reading skill from Exercise 4 and the drawing skill from Exercise 5.
 

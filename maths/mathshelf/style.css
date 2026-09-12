@@ -414,8 +414,12 @@ body.gj .act-bar-title { color: var(--chalk); font-size: 22px; line-height: calc
 .theorem-stamp {
   display: inline-block;
   font-family: var(--f-stationery);
-  font-size: 11px;
-  font-weight: 600;
+  /* 13px, 700: an 11px tracked capital renders a whole ratio point lighter
+     than its declared ink (F40), and Book C's "How many were asked?" stamp
+     measured 4.45:1 against a 4.5 floor on the whole-tree walk of 12 Sept
+     2026 - every label that is read renders at 13px or more */
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--act-accent-deep, var(--act-accent, var(--teal)));

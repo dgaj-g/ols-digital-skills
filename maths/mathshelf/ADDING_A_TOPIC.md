@@ -33,10 +33,26 @@ A pack says which engine it wants with `engine: 'math'|'angles'|'stats'`, and
 `GJ.app.engineFor(actId, q)` is the ONE place that reads it - the summary, the
 markbook and the slip card all go through it.
 
-**A book is not quite client-only.** `server/Code.gs.template` keeps
-`var ACTS = [...]`, and the server refuses any act id that is not in it, so a
-new book cannot save a mark until its id is added there. That one line is the
-whole server change; everything else in the server derives from it.
+**A new book is CLIENT-ONLY, plus one Config row edit on the live Sheet — no
+server cut required.** Since the 12 Sept 2026 two-projects split (see
+`server/DEPLOY.md` "TWO PROJECTS"), the server's act whitelist is
+`acts_()` = the built-in `var ACTS = [...]` in `server/Code.gs.template`
+UNIONED with the Config tab row whose Key is `acts` and whose Value is a JSON
+array of ids (e.g. `["angles","algebra","stats-quartiles","stats-collect"]`).
+So shipping a new book normally means: **add the Config row on the live
+Sheet** (Config tab, a row with A = `acts`, B = the JSON array of every id the
+built-in list doesn't already name) — no `Code.gs` paste, no new deployment
+version, nothing server-side at all. A book still arrives UNTICKED for every
+class either way (an absent key reads false); the teacher ticks it on per
+class in the markbook. `node tools/qa/qa-tickbox.js` prints the exact row to
+type, e.g. `THE LIVE SHEET'S CONFIG ROW: Key acts, Value ["angles","algebra",
+"stats-quartiles","stats-collect"] — every shelf book the built-in list
+[angles, algebra, stats-quartiles] does not name` — run it and copy its line
+rather than typing the array by hand. Only add the id to the built-in `ACTS`
+array in `server/Code.gs.template` if you are cutting a new server version
+for some other reason anyway (it then needs pasting into BOTH the DATA and
+FRONT DOOR projects and a new version of each — see `server/DEPLOY.md`);
+otherwise leave the server code untouched.
 
 If a topic needs a genuinely new interaction (e.g. a number line, a probability
 tree), that's a bigger job — a new `kind` and a new branch in `jotter.js` +
@@ -82,6 +98,13 @@ Add one entry to the `ACTIVITIES` array near the top of `script.js`:
 `id` **must** match the `GJ_CONTENT.<id>` key. The tile, progress ticks, gold
 star, and the teacher tickbox all appear automatically.
 
+Also in `script.js`: `SELF_EVAL_TRIPS` (the "what tripped you up?" tap-chips
+on the end-of-exercise self-eval card) is keyed by activity id then section
+id, with a generic `_` fallback — a new topic works with no edit here, but
+add a `'<topic>': { s1:[...], s2:[...], _:[...] }` entry (four chips per
+section, written to fit each exercise, ending `'something else'`) so the
+chips name the topic's actual sticking points rather than the generic ones.
+
 ### 4. Load the file — `index.html`
 Add a `<script src="content-<topic>.js"></script>` line, **after the engine it
 uses** (`mathcore.js`/`anglecore.js`) and before `player.js`. Match the existing
@@ -99,6 +122,13 @@ it at your pack. The angles lint re-measures every diagram angle from its
 coordinates and re-proves every derivation; the algebra lint re-derives every
 answer with `mathcore` + an independent mini-evaluator. This is what catches a
 wrong answer before a pupil sees it.
+
+If your topic introduces technical vocabulary (angles/algebra don't have one
+of these yet — stats-collect and stats-quartiles do), add
+`tools/qa/vocab/<topic>.json`: `{ "<term>": { "phrase": "<the exact substring
+of a movie's 'say' text that first explains it>", "definedIn": "<sectionId>" } }`.
+`tools/qa/qa-language.js`'s define-before-use check reads it so a later
+question or movie step can't use the word before that phrase has been said.
 
 ### 7. Verify (do not skip — it's maths)
 ```bash

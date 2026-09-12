@@ -3,8 +3,8 @@
  "scope": "stats-collect",
  "width": 1280,
  "tier": "preview",
- "contentHash": "49eb2fd52f42",
- "when": "2026-09-12T21:44:58.819Z",
+ "contentHash": "32702b8e1b56",
+ "when": "2026-09-12T23:05:47.926Z",
  "states": [
   {
    "surface": "cover",
@@ -98,6 +98,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 1280,
+   "section": 0,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 15,
+    "readability": 25
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -119,7 +145,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -148,7 +174,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -222,7 +248,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -274,7 +300,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -326,7 +352,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -377,7 +403,7 @@
    },
    "measured": {
     "said-twice": 17,
-    "readability": 33
+    "readability": 30
    }
   },
   {
@@ -427,7 +453,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -478,7 +504,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -552,7 +578,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -604,7 +630,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -678,7 +704,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -730,7 +756,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -782,7 +808,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -833,7 +859,7 @@
    },
    "measured": {
     "said-twice": 16,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1339,7 +1365,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1390,7 +1416,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1464,7 +1490,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1516,7 +1542,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1568,7 +1594,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -1619,7 +1645,7 @@
    },
    "measured": {
     "said-twice": 14,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -4283,6 +4309,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 1280,
+   "section": 1,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 3,
+    "readability": 25
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -5351,6 +5403,32 @@
   },
   {
    "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 1280,
+   "section": 2,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 2,
+    "readability": 46
+   }
+  },
+  {
+   "surface": "movie",
    "state": "end",
    "expected": "end",
    "stood": true,
@@ -5885,6 +5963,32 @@
    "measured": {
     "said-twice": 13,
     "readability": 43
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
+   "stood": true,
+   "width": 1280,
+   "section": 3,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 13,
+    "readability": 57
    }
   },
   {
@@ -8461,6 +8565,32 @@
    "surface": "movie",
    "state": "instant",
    "expected": "instant",
+   "stood": true,
+   "width": 1280,
+   "section": 4,
+   "audits": {
+    "empty": "PASS",
+    "nested": "PASS",
+    "geometry": "PASS",
+    "steps": "PASS",
+    "colour": "PASS",
+    "mute-locks": "PASS",
+    "consequence": "PASS",
+    "waits": "PASS",
+    "overlap": "PASS",
+    "said-twice": "PASS",
+    "click-safety": "PASS",
+    "readability": "PASS"
+   },
+   "measured": {
+    "said-twice": 4,
+    "readability": 47
+   }
+  },
+  {
+   "surface": "movie",
+   "state": "step-n",
+   "expected": "step-n",
    "stood": true,
    "width": 1280,
    "section": 4,

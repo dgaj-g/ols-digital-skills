@@ -1382,9 +1382,18 @@
         if (!anc) return;
         var room = host.getBoundingClientRect().left - anc.getBoundingClientRect().left - 8;
         if (deficit > room) return;
+        /* two px of slack: a reclaim of exactly the deficit left one or two
+           px hidden on the walk of 12 Sept 2026 (the border and a rounding)
+           and the swipe note showed for them */
+        deficit = Math.min(room, deficit + 2);
         host.style.marginLeft = (-deficit) + 'px';
         host.setAttribute('data-reclaimed', deficit);
       } catch (e) {}
+      /* THE WORDS STAY IN THE TEXT COLUMN (the polish cut's rule): a gutter
+         the board reclaims is never reclaimed by its note or its track */
+      var rec = parseFloat(host.getAttribute('data-reclaimed') || '0') || 0;
+      if (swipeNote) swipeNote.style.marginLeft = rec ? rec + 'px' : '';
+      if (track) track.style.marginLeft = rec ? rec + 'px' : '';
     }
     function relayout() {
       if (!HAS_DOM || !svg.getScreenCTM) return;

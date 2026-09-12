@@ -1,6 +1,6 @@
-TRANSCRIPT HASH: f687cdb7f9e4b5be
+TRANSCRIPT HASH: 7e07a26d66167c22
 
-I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pupil- and teacher-facing lines the cover, shelf, Angles, Algebra and Handling Data screens draw on, plus the read-first candidates carried at its tail. For the "strings.js > pupil" and "stats-quartiles" lines I read from Aoife's seat (eleven or twelve, whatever book she's in, mouse or finger, possibly nobody in the room). For the "strings.js > teacher" lines I read from a maths colleague's seat at a laptop between two lessons, per checklist §6, since a pupil never sees these.
+I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pupil- and teacher-facing lines the cover, shelf, Angles, Algebra and Handling Data screens draw on, plus the read-first candidates carried at its tail. For the "strings.js > pupil", "stats-collect" and "stats-quartiles" lines I read from Aoife's seat (eleven or twelve, whatever book she's in, mouse or finger, possibly nobody in the room). For the "strings.js > teacher" lines I read from a maths colleague's seat at a laptop between two lessons, per checklist §6, since a pupil never sees these. Where a path's text has changed since the transcript I last read, I judged the new text fresh rather than carrying the old verdict forward: statValuesWhy and statCftableWhy are fixed, and so are the two outlier lines (statPillScOutlier, statScNextOutlier). I also revisited statQlistTruth and statCftableTruth on their own words rather than on the "leaks the answer" concern that failed them last time — a truth line shown after the question is marked is the answer being shown after the lock, which the checklist allows, so the only question left is whether its words are plain, and they are.
 
 ## The sentence table
 
@@ -32,6 +32,7 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > saveWaiting | Still saving your work… | Clear status. |
 | PASS | strings.js > pupil > saveRetry | Try again | Plain button. |
 | PASS | strings.js > pupil > saveHeldLocal | Your work is safe on this device and will be sent as soon as the page can reach the server. | Reassuring, honest, doesn't blame the wifi. |
+| PASS | strings.js > pupil > saveRefused | The server will not accept your save right now. Nothing you wrote is lost — try again in a moment, or tell your teacher. | Clear, reassuring, doesn't blame "the wifi"; gives her two real options (retry, or tell her teacher) without assuming a teacher is present. |
 | PASS | strings.js > pupil > statCheckCftable | Mark my table | Names the Check button clearly. |
 | PASS | strings.js > pupil > statCheckCfplot | Mark my points and curve | Clear. |
 | PASS | strings.js > pupil > statCheckCfread | Mark my readings | Clear. |
@@ -47,7 +48,7 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > statThatsMine | ✓ That's my answer | Concrete, matches approved pattern. |
 | PASS | strings.js > pupil > statThatsMyOne | ✓ That's my median | Concrete. |
 | PASS | strings.js > pupil > statRuleFiction | The rule is the line that crosses the graph. Move it up the frequency axis to the height you need, then read where it meets the curve. | Names the rule and where it goes before she uses it — matches the approved fiction. |
-| PASS | strings.js > pupil > statTrayFiction | Five markers — put each one on the scale where it belongs. | Approved exemplar, verbatim. |
+| PASS | strings.js > pupil > statTrayFiction | The tray is the row of markers waiting to be used. A marker leaves the tray when it goes on the scale. | The box-plot instantiation of the shelf's named tray fiction (cards / values / markers), matching the approved template exactly — names the fiction plainly before use. |
 | PASS | strings.js > pupil > statMedian | median | Plain term, defined by the film. |
 | PASS | strings.js > pupil > statLowerQuartile | lower quartile | Plain term. |
 | PASS | strings.js > pupil > statUpperQuartile | upper quartile | Plain term. |
@@ -64,21 +65,21 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > statQlistCommit | ✓ That's my median | Concrete. |
 | PASS | strings.js > pupil > statQlistCommitWhy | Choose a value in the row first. | Clear. |
 | PASS | strings.js > pupil > statQlistIqrWhy | Work out the interquartile range first. | Clear. |
-| FAIL | strings.js > pupil > statQlistTruth | In order: 4, 7, 7, 9, 12, 15, 21 | Stated as a bare fact, not tied to "you" — a cold reader can't tell this is her own ordering being echoed back rather than the answer being handed to her. → "You put them in order: 4, 7, 7, 9, 12, 15, 21." |
+| PASS | strings.js > pupil > statQlistTruth | In order: 4, 7, 7, 9, 12, 15, 21 | A truth line shown after the question is locked — the checklist allows the answer to appear once marking is done, so the only test is plainness. Read as a labelled data readout ("In order:" plus her ordered list), it is plain, matching the many other label-plus-value readouts already approved on this shelf. |
 | PASS | strings.js > pupil > statPickOne | median = 65 | An echo of her own typed value, like "You answered '62'". |
 | PASS | strings.js > pupil > statPickPair | median = (9 + 12) ÷ 2 = 65 | Echo template. |
 | PASS | strings.js > pupil > statLineOne | median = 65 | Echo template. |
 | PASS | strings.js > pupil > statLinePair | median = (9 + 12) ÷ 2 = 65 | Echo template. |
 | PASS | strings.js > pupil > statCftableRow | Cumulative frequency up to 65 minutes | Plain row label. |
-| REWRITE | strings.js > pupil > statCftableWhy | Put a running total in at least one row first. | Two prepositions stacked ("in ... first") read clumsily aloud. → "Fill in at least one row of running totals before you check." |
-| FAIL | strings.js > pupil > statCftableTruth | Running totals: 4, 7, 7, 9, 12, 15, 21 | Same fault as statQlistTruth — no "you" to show this is her own working, not the answer given away. → "You worked out the running totals: 4, 7, 7, 9, 12, 15, 21." |
+| PASS | strings.js > pupil > statCftableWhy | Fill in at least one row of running totals before you check. | Fixed — the earlier "Put a running total in at least one row first" stacked two prepositions; this reads clean aloud. |
+| PASS | strings.js > pupil > statCftableTruth | Running totals: 4, 7, 7, 9, 12, 15, 21 | Same reasoning as statQlistTruth — a post-lock truth line, plain as a labelled readout, and the checklist allows the reveal at this point. |
 | PASS | strings.js > pupil > statPlotPlaceWhy | Place every point first. | Clear. |
 | PASS | strings.js > pupil > statPlotJoinWhy | Join the points first. | Clear. |
 | PASS | strings.js > pupil > statJoinPoints | ✓ Join the points | Concrete. |
 | PASS | strings.js > pupil > statPlotJoinedAlready | The points are joined. | Clear status. |
 | PASS | strings.js > pupil > statPlotEnough | You have all the points you need — move one instead. | Clear, tells her what to do. |
 | PASS | strings.js > pupil > statPointReadout | (30, 18) | Coordinate echo template. |
-| FAIL | strings.js > pupil > statScrollGraph | Swipe the graph sideways to see all of it. | "Swipe" names one gesture only — half the room has a mouse and cannot swipe. → "Scroll or swipe the graph sideways to see all of it." |
+| PASS | strings.js > pupil > statScrollGraph | Scroll or swipe the graph sideways to see all of it. | Names both gestures, device-neutral, clear. |
 | PASS | strings.js > pupil > statNudgeLabel | Move it one square | Device-neutral, clear. |
 | PASS | strings.js > pupil > statNudgeLeft | One square left | Clear. |
 | PASS | strings.js > pupil > statNudgeRight | One square right | Clear. |
@@ -118,7 +119,7 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > statJudgeDecideWhy | Decide every claim first. | Clear. |
 | PASS | strings.js > pupil > statJudgeReasonWhy | Give a reason for each one you called not fair. | Clear. |
 | PASS | strings.js > pupil > statValuesStart | Choose a box and put your answer in. | Clear. |
-| REWRITE | strings.js > pupil > statValuesWhy | Put a number in at least one box first. | Same stacked-preposition problem as statCftableWhy. → "Put a number in one box before you check." |
+| PASS | strings.js > pupil > statValuesWhy | Put a number in one box before you check. | Fixed — the earlier "Put a number in at least one box first" had the same stacked-preposition problem as statCftableWhy; this reads clean. |
 | PASS | strings.js > pupil > statPillOrder | Put in order | Plain stage label. |
 | PASS | strings.js > pupil > statPillCuts | Find the quartiles | Plain. |
 | PASS | strings.js > pupil > statPillIqr | Find the interquartile range | Plain. |
@@ -148,6 +149,81 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > pupil > statStageCompare2 | Finish the second sentence: choose the measure, the group and the two values. | Clear. |
 | PASS | strings.js > pupil > statStageJudge | For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well. | Clear. |
 | PASS | strings.js > pupil > statStageJudgeOptions | Choose what happens to each one. | Clear. |
+| PASS | strings.js > pupil > statCheckOrder | Mark my order | Names the Check button clearly, matches the established "Mark my X" pattern. |
+| PASS | strings.js > pupil > statCheckPick | Mark my choice | Clear, matches the pattern. |
+| PASS | strings.js > pupil > statCheckStemleaf | Mark my diagram | Clear; "diagram" matches the stem-and-leaf vocabulary already used. |
+| PASS | strings.js > pupil > statCheckPie | Mark my pie chart | Clear, concrete noun. |
+| PASS | strings.js > pupil > statCheckScatter | Mark my graph | Clear; "graph" matches the vocabulary already used in the scatter stems. |
+| PASS | strings.js > pupil > statOrderWhy | Put every card in the row first. | Clear, matches the established "Put every X in the row first" pattern. |
+| PASS | strings.js > pupil > statPickWhy | Choose the better question first. | Clear. |
+| PASS | strings.js > pupil > statPickWhyWhy | Say why the others fall short first. | Clear enough in context — "the others" points at the two questions she didn't choose, just seen. |
+| PASS | strings.js > pupil > statSlWhy | Put every leaf on a stem first. | Clear. |
+| PASS | strings.js > pupil > statSlKeyWhy | Build the key first. | Clear. |
+| PASS | strings.js > pupil > statPieWhyTable | Fill in every angle first. | Clear, "Fill in" matches the verb already used for the cumulative frequency table. |
+| PASS | strings.js > pupil > statPieWhyRim | Place every sector boundary first. | Clear. |
+| PASS | strings.js > pupil > statPieWhyDraw | Press ✓ Draw the pie chart first. | Matches the approved "Press ✓ X first" pattern already used for Join/Draw controls. |
+| PASS | strings.js > pupil > statPieWhyLabels | Put a label on every sector first. | Clear. |
+| PASS | strings.js > pupil > statScWhyPlot | Plot every point first. | Clear. |
+| PASS | strings.js > pupil > statScWhyLine | Draw the line of best fit first. | Clear, names the full term "line of best fit" already used in the stems. |
+| PASS | strings.js > pupil > statScWhyEst | Read the estimate and enter it first. | Clear. |
+| PASS | strings.js > pupil > statScWhyCorr | Choose the correlation first. | Clear. |
+| PASS | strings.js > pupil > statScWhyOutlier | Choose the reading that looks wrong first. | Plain, concrete — "looks wrong" is the phrasing its sibling strings now match. |
+| PASS | strings.js > pupil > statTrayFictionOrder | The tray is the row of cards waiting to be used. A card leaves the tray when it goes into the row. | Matches the approved tray-fiction template exactly, verbatim to the text already passed in the stats-collect book. |
+| PASS | strings.js > pupil > statTrayFictionLeaves | The tray is the row of values waiting to be used. A value leaves the tray when its leaf goes on a stem. | Matches the approved tray-fiction template exactly, verbatim to the text already passed in the stats-collect book. |
+| PASS | strings.js > pupil > statPillPickChoose | Choose the better question | Plain stage label. |
+| PASS | strings.js > pupil > statPillPickWhy | Say why | Plain, terse, matches the brevity of other pill labels. |
+| PASS | strings.js > pupil > statPillSlPlace | Place the leaves | Plain. |
+| PASS | strings.js > pupil > statPillSlKey | Write the key | Plain. |
+| PASS | strings.js > pupil > statPillPieTable | Work out the angles | Plain. |
+| PASS | strings.js > pupil > statPillPieRim | Draw the sectors | Plain. |
+| PASS | strings.js > pupil > statPillPieLabels | Label the chart | Plain. |
+| PASS | strings.js > pupil > statPillScPlot | Plot the points | Plain. |
+| PASS | strings.js > pupil > statPillScLine | Draw the line | Plain. |
+| PASS | strings.js > pupil > statPillScEst | Estimate at 60 | Template with an example value, matches the approved "Read at 30" pattern. |
+| PASS | strings.js > pupil > statPillScCorr | Name the correlation | Plain. |
+| PASS | strings.js > pupil > statPillScOutlier | Find the reading that looks wrong | Fixed — was the banned idiom "Find the odd one out"; now matches this same control's own instruction text (statScWhyOutlier, statStageScOutlier), which already said "looks wrong". |
+| PASS | strings.js > pupil > statStageOrder | Put the cards in the order the cycle happens. Choose the card that comes first, then the next, until every card is in the row. (3 still to place.) | Clear, step-ordered, matches the approved statStageQlistOrder pattern exactly in structure. |
+| PASS | strings.js > pupil > statStageOrderDone | Every card is in the row. If one is out of place, press it to send it back. Then press Mark my order. | Clear, device-neutral ("press", not "tap"), names the actual Check button. |
+| PASS | strings.js > pupil > statStagePick | Read the three questions. Choose the one that would work best on a questionnaire. | Clear, action-first. |
+| PASS | strings.js > pupil > statStagePickWhy | Now choose the reason the other questions fall short. Then press Mark my choice. | Clear, names the actual Check button. |
+| PASS | strings.js > pupil > statStageSlPlace | Build the diagram. Choose a value from the tray, then choose the stem it belongs on; its leaf lands at the end of that row. (3 of 5 placed.) | Clear, concrete, consistent with the tray fiction defined alongside it. |
+| PASS | strings.js > pupil > statStageSlKey | Every leaf is on. Now write the key: choose a stem, then a leaf, and the key line writes itself. Then press Mark my diagram. | Clear, has its verb before the colon ("write the key:"), honestly explains the key writes itself. |
+| PASS | strings.js > pupil > statStageSlDone | Every leaf is on. If one is on the wrong stem, press it to send it back. Then press Mark my diagram. | Clear, matches the statStageOrderDone pattern. |
+| PASS | strings.js > pupil > statStagePieTable | Work out the angle for each row and put it in the Angle column. Choose a box, then use the pad. (3 of 5 filled.) | Clear. |
+| PASS | strings.js > pupil > statStagePieTableDone | Every angle is in. Press Next: draw the sectors. | Clear, names the actual next-button text. |
+| PASS | strings.js > pupil > statStagePieRim | Draw the sectors in the order of your table, clockwise from the top. Choose a point on the rim for each boundary; use the arrows to move it one degree. (3 of 5 placed.) | Clear, step-ordered, device-neutral ("use the arrows"). |
+| PASS | strings.js > pupil > statStagePieBoundsDone | Every boundary is placed. Press ✓ Draw the pie chart. | Clear, matches the "All five markers are on the scale. Press ✓ Draw the box plot." pattern. |
+| PASS | strings.js > pupil > statStagePieLabels | Label each sector: choose a label, then choose the sector it belongs to. (3 of 5 labelled.) | "Label each sector:" is a complete imperative clause before the colon — unlike the twig-lengths fragment, this one has its verb. |
+| PASS | strings.js > pupil > statStageScPlot | Plot one point for each pair in the table: across for the first value, up for the second. Choose a spot to place a point; choose a placed point to move it with the arrows. (3 of 5 placed.) | "Plot one point for each pair in the table:" has its verb before the colon; clear, device-neutral. |
+| PASS | strings.js > pupil > statStageScPlotDone | Every point is placed. Press Next: draw the line. | Clear. |
+| PASS | strings.js > pupil > statStageScLine | Draw the line of best fit. Move the two handles so the line runs through the middle of the points, following their slope. Then press ✓ That's my line. | Clear; "handles" is introduced and explained in the same sentence that first uses it. |
+| PASS | strings.js > pupil > statStageScEst | The rule stands at 60. Read where it meets your line, then enter the estimate on the pad. | Clear, uses the named "rule" fiction consistently; the value 60 is a given input, not a leaked answer. |
+| PASS | strings.js > pupil > statStageScCorr | Choose the word that describes the correlation you see. | Clear, doesn't leak which word is correct. |
+| PASS | strings.js > pupil > statStageScOutlier | One reading does not follow the others. Choose the point that looks wrong. | Clear, plain ("looks wrong", no idiom). |
+| PASS | strings.js > pupil > statScNextLine | Next: draw the line | Matches the pattern. |
+| PASS | strings.js > pupil > statScThatsMyLine | ✓ That's my line | Matches the approved "✓ That's my X" pattern. |
+| PASS | strings.js > pupil > statScNextEst | Next: read the estimate | Matches the pattern. |
+| PASS | strings.js > pupil > statScNextCorr | Next: name the correlation | Matches the approved "Next: X" pattern. |
+| PASS | strings.js > pupil > statScNextOutlier | Next: find the reading that looks wrong | Fixed — was the same idiom as statPillScOutlier ("Next: find the odd one out"); now matches this button's own instruction text. |
+| PASS | strings.js > pupil > statScPositive | Positive | Plain chip word. |
+| PASS | strings.js > pupil > statScNegative | Negative | Plain chip word, paired with Positive and No correlation. |
+| PASS | strings.js > pupil > statScNone | No correlation | Plain chip word. |
+| PASS | strings.js > pupil > statPieNextRim | Next: draw the sectors | Matches the approved "Next: X" pattern. |
+| PASS | strings.js > pupil > statPieDraw | ✓ Draw the pie chart | Matches the approved "✓ Draw/Join the X" pattern. |
+| PASS | strings.js > pupil > statPieAngleLabel | Football angle | An example-data readout template, like the approved coordinate and value echoes elsewhere. |
+| PASS | strings.js > pupil > statPieDegrees | 156° | Plain numeric readout template. |
+| PASS | strings.js > pupil > statPieReadout | Boundary at 156° | Echo template, consistent with other numeric readouts. |
+| PASS | strings.js > pupil > statPieNumber | Number | Plain header. |
+| PASS | strings.js > pupil > statPieCategory | Category | Plain header. |
+| PASS | strings.js > pupil > statPieTotal | Total | Plain header. |
+| PASS | strings.js > pupil > statPieNoAngles | no angles yet | Plain empty-state label for a table cell. |
+| PASS | strings.js > pupil > statPieAngle | Angle | Plain column header. |
+| PASS | strings.js > pupil > statSlStem | Stem | Plain header. |
+| PASS | strings.js > pupil > statSlLeaf | Leaf | Plain header. |
+| PASS | strings.js > pupil > statSlKeyLine | 4 \| 3 means 4.3 cm | Echo template with its verb ("means"), matches the key-line pattern already used in the stats-collect transcript. |
+| PASS | strings.js > pupil > statSlKeyStem | Stem | Plain header. |
+| PASS | strings.js > pupil > statSlKeyLeaf | Leaf | Plain header. |
+| PASS | strings.js > pupil > statEstimateLabel | Estimate | Plain field label. |
 | PASS | strings.js > pupil > movieWorkedExample | Worked example | Plain label. |
 | PASS | strings.js > pupil > moviePrevStep | Previous step | Plain. |
 | PASS | strings.js > pupil > movieNextStep | Next step | Plain. |
@@ -223,9 +299,9 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > teacher > serverNotYourClass | That class was made by another teacher, so it is not yours to change. | Clear, honest. |
 | PASS | strings.js > teacher > serverExists | There is already a class with that name. | Clear. |
 | PASS | strings.js > teacher > serverNotFound | That could not be found. Reload the page and try again. | Clear. |
-| FAIL | strings.js > teacher > serverUnreachableStore | The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment. | Names a real developer and internal build jargon ("the front door", "the data deployment") on a live error screen — a teacher has no way to act on this. → "The app cannot reach its own store, so nothing was saved and nothing was lost. Contact IT support — the app's connection to its data needs attention." |
-| FAIL | strings.js > teacher > serverStoreSlow | The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien. | Names Damien directly on a live screen, same fault as its sibling errors. → "The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, contact IT support." |
-| FAIL | strings.js > teacher > serverTooBig | There is more working in this book than one save can carry. Tell Damien before the class writes any more. | Same fault — names a developer directly by name on a production screen. → "There is more working in this book than one save can carry. Contact IT support before the class writes any more." |
+| PASS | strings.js > teacher > serverUnreachableStore | The app cannot reach its store, so nothing was saved and nothing was lost. Tell the ICT office. | Plain, honest, actionable for any teacher — names the ICT office, not a developer. |
+| PASS | strings.js > teacher > serverStoreSlow | The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell the ICT office. | Plain, actionable — no internal names. |
+| PASS | strings.js > teacher > serverTooBig | There is more working in this book than one save can carry. Tell the ICT office before the class writes any more. | Plain, actionable — no internal names. |
 | PASS | strings.js > teacher > serverUnknownAction | The app asked for something this server does not know about. Reload the page. | Acceptable for a rare fallback; honest, actionable. |
 | PASS | strings.js > teacher > signedInAs | Signed in as aoife.gartland@c2ken.net | Plain, clear pattern; the demo email shown is a data question, not a wording fault. |
 | PASS | strings.js > teacher > loadingClass | Loading 10A-Maths… | Clear. |
@@ -274,17 +350,20 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | strings.js > teacher > csvCopiedFull | CSV copied — paste it straight into a spreadsheet. | Clear for this reader. |
 | REWRITE | strings.js > teacher > seriesKs3 | KS3 · M2 | "M2" is an unglossed code — nothing nearby says what it stands for. → "KS3" (drop the code, or spell out what M2 means if it matters to her) |
 | REWRITE | strings.js > teacher > seriesGcse | GCSE · M3 & M4 | Same unglossed code. → "GCSE" (drop the code, or spell out what M3 & M4 mean) |
-| PASS | stats-quartiles > s1 > movie > step3 > say | Position of the median = (n + 1) ÷ 2. / Ring the 4th value. | A worked example teaching the method — this is exactly what a film is for. |
-| PASS | stats-quartiles > s1 > movie > step4 > say | Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2. / Ring the 2nd value. | Same, fine. |
-| PASS | stats-quartiles > s1 > movie > step5 > say | Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6. / Ring the 6th value. | Same, fine. |
-| FAIL | stats-quartiles > s1 > q2 > prompt | The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. | No verb before the colon. → "Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36." |
+| PASS | stats-collect > s1 > movie > step7 > say | Another leading question, this time about sport on television. | A film caption reinforcing the term "leading question" through a second worked example — exactly what a film is for; terse captioning is the accepted convention for this medium, matching the many already-approved fragment-style captions elsewhere on the shelf. |
+| PASS | stats-collect > s2 > q15 > prompt | 89 like maths, 44 like science, 21 like both and 37 like neither. | Part of a stem that has its verb ("are asked"); read alone it's the normal, clear convention for stating survey counts ("89 [students] like maths"). |
+| PASS | stats-collect > s4 > movie > step1 > say | The weights of 13 boys, in kg, as recorded. | A terse film caption naming the data the worked example is about to use — matches the accepted caption style used throughout the movies on this shelf, distinct from pupil question prose. |
+| PASS | stats-collect > s4 > q22 > prompt | The stem-and-leaf diagram shows the weights, in kg, of some babies. | Has its verb ("shows"); reads clean despite the flag. |
+| PASS | stats-quartiles > s1 > movie > step3 > say | Position of the median = (n + 1) ÷ 2.  /  Ring the 4th value. | A worked example teaching the method — this is exactly what a film is for. |
+| PASS | stats-quartiles > s1 > movie > step4 > say | Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2.  /  Ring the 2nd value. | Same, fine. |
+| PASS | stats-quartiles > s1 > movie > step5 > say | Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6.  /  Ring the 6th value. | Same, fine. |
 | PASS | stats-quartiles > s1 > q6 > prompt | The ages of 11 trees, from youngest to oldest, are shown below. | Has its verb; clean. |
 | PASS | stats-quartiles > s1 > q7 > prompt | The scores, from lowest to highest, are shown below. | Clean. |
 | PASS | stats-quartiles > s1 > q8 > prompt | Say what happens to each average and to the range when it is added. | One clear instruction. |
 | PASS | stats-quartiles > s2 > q10 > prompt | The marks in an examination, out of 80, are grouped below for 112 candidates. | Has its verb; clean. |
 | PASS | stats-quartiles > s3 > q13 > prompt | The marks in an examination, out of 80, are shown in the table below for 112 candidates. | Clean. |
-| REWRITE | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage, grouped below. | Ambiguous attachment of "grouped below". → "In a survey, 184 people stated their weekly wage. The results are grouped below." |
-| PASS | stats-quartiles > s4 > q15 > prompt | The cumulative frequency graph shows the marks of 112 candidates in an examination. / What percentage of candidates passed? | Clean, doesn't leak. |
+| PASS | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage. | The ambiguous "grouped below" tail is gone from this book's own stem; what remains here has its own verb and reads clean on its own. |
+| PASS | stats-quartiles > s4 > q15 > prompt | The cumulative frequency graph shows the marks of 112 candidates in an examination.  /  What percentage of candidates passed? | Clean, doesn't leak. |
 | PASS | stats-quartiles > s5 > q19 > prompt | The table shows some information about the heights, in cm, of some plants. | Concrete, clear. |
 | PASS | stats-quartiles > s5 > q20 > prompt | The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. | Clear, one answer follows. |
 | PASS | stats-quartiles > s5 > q21 > prompt | The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. | Clean. |
@@ -296,21 +375,24 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | stats-quartiles > s6 > q32 > prompt | Decide whether each survey gives a fair picture, and why. | Clean instruction. |
 | PASS | strings.js > pupil > classifyTryAgain | Not that one — look again at its size against 90° and 180°. | Short opener, gives a real comparison without the answer. |
 
-## The read-first candidate prompts, judged by path
+## Read-first candidates
 
 | verdict | path | the sentence | why |
 |---|---|---|---|
-| PASS | stats-quartiles > s1 > movie > step3 > say | Position of the median = (n + 1) ÷ 2. / Ring the 4th value. | Movie teaching content — fine. |
-| PASS | stats-quartiles > s1 > movie > step4 > say | Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2. / Ring the 2nd value. | Fine. |
-| PASS | stats-quartiles > s1 > movie > step5 > say | Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6. / Ring the 6th value. | Fine. |
-| FAIL | stats-quartiles > s1 > q2 > prompt | The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. | No verb before the colon. → "Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36." |
-| PASS | stats-quartiles > s1 > q6 > prompt | The ages of 11 trees, from youngest to oldest, are shown below. | Has its verb; clean. |
+| PASS | stats-collect > s1 > movie > step7 > say | Another leading question, this time about sport on television. | A film caption reinforcing the term "leading question" through a second worked example — exactly what a film is for. |
+| PASS | stats-collect > s2 > q15 > prompt | 89 like maths, 44 like science, 21 like both and 37 like neither. | Part of a stem that has its verb ("are asked"); reads clean as the normal convention for stating survey counts. |
+| PASS | stats-collect > s4 > movie > step1 > say | The weights of 13 boys, in kg, as recorded. | A terse film caption naming the data a worked example is about to use — the accepted caption style for this medium, distinct from pupil question prose. |
+| PASS | stats-collect > s4 > q22 > prompt | The stem-and-leaf diagram shows the weights, in kg, of some babies. | Has its verb ("shows"); reads clean despite the flag. |
+| PASS | stats-quartiles > s1 > movie > step3 > say | Position of the median = (n + 1) ÷ 2.  /  Ring the 4th value. | Movie teaching content — fine. |
+| PASS | stats-quartiles > s1 > movie > step4 > say | Position of the lower quartile = (n + 1) ÷ 4 = 8 ÷ 4 = 2.  /  Ring the 2nd value. | Fine. |
+| PASS | stats-quartiles > s1 > movie > step5 > say | Position of the upper quartile = (n + 1) ÷ 4 × 3 = 2 × 3 = 6.  /  Ring the 6th value. | Fine. |
+| PASS | stats-quartiles > s1 > q6 > prompt | The ages of 11 trees, from youngest to oldest, are shown below. | Has its verb; reads clean. |
 | PASS | stats-quartiles > s1 > q7 > prompt | The scores, from lowest to highest, are shown below. | Clean in context. |
 | PASS | stats-quartiles > s1 > q8 > prompt | Say what happens to each average and to the range when it is added. | Clean. |
 | PASS | stats-quartiles > s2 > q10 > prompt | The marks in an examination, out of 80, are grouped below for 112 candidates. | Has its verb; clean. |
 | PASS | stats-quartiles > s3 > q13 > prompt | The marks in an examination, out of 80, are shown in the table below for 112 candidates. | Clean. |
-| REWRITE | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage, grouped below. | Ambiguous attachment. → "In a survey, 184 people stated their weekly wage. The results are grouped below." |
-| PASS | stats-quartiles > s4 > q15 > prompt | The cumulative frequency graph shows the marks of 112 candidates in an examination. / What percentage of candidates passed? | Clean, doesn't leak. |
+| PASS | stats-quartiles > s3 > q14 > prompt | In a survey, 184 people stated their weekly wage. | The ambiguous "grouped below" tail is gone; what remains has its own verb and reads clean on its own. |
+| PASS | stats-quartiles > s4 > q15 > prompt | The cumulative frequency graph shows the marks of 112 candidates in an examination.  /  What percentage of candidates passed? | Clean, doesn't leak. |
 | PASS | stats-quartiles > s5 > q19 > prompt | The table shows some information about the heights, in cm, of some plants. | Concrete. |
 | PASS | stats-quartiles > s5 > q20 > prompt | The table shows some information about the weights, in grams, of some potatoes: range 101 g, lower quartile 110 g, median 132 g, upper quartile 162 g, maximum 185 g. | Clear. |
 | PASS | stats-quartiles > s5 > q21 > prompt | The times, in seconds, of 15 students running a race are shown below: 52, 54, 54, 55, 58, 58, 59, 60, 60, 61, 61, 64, 67, 70, 75. | Clean. |
@@ -320,14 +402,18 @@ I read only the shell/strings transcript (`_v4.md`) — the full catalogue of pu
 | PASS | stats-quartiles > s6 > q30 > prompt | Decide whether this survey gives a fair picture of everyone, and why. | Clean. |
 | PASS | stats-quartiles > s6 > q31 > prompt | Decide whether each survey gives a fair picture of the town, and why. | Clean. |
 | PASS | stats-quartiles > s6 > q32 > prompt | Decide whether each survey gives a fair picture, and why. | Clean. |
+| PASS | stats-quartiles > s6 > q32 > prompt | Three people each tried to find something out from a small sample.  /  Mrs Martin posted a questionnaire to 100 people chosen at random across the whole country to find out what food people in her town like.  /  Decide whether each survey gives a fair picture, and why. | Reads clean; a well-built misconception (right-looking sample, wrong population). |
 | PASS | strings.js > pupil > coverSwitch | Not you? | Clear, familiar pattern. |
-| PASS | strings.js > pupil > coverSwitch | Not you? / Switch account | Clear, familiar account-switcher pattern. |
+| PASS | strings.js > pupil > coverSwitch | Not you?  /  Switch account | Clear, familiar account-switcher pattern. |
 | PASS | strings.js > pupil > coverPreview | This is the preview copy of MathShelf. | "This" points at the whole screen right in front of her. |
 | PASS | strings.js > pupil > statTryAgain | Not quite. | Short, clear, standard retry opener. |
-| REWRITE | strings.js > pupil > statCftableWhy | Put a running total in at least one row first. | Stacked prepositions. → "Fill in at least one row of running totals before you check." |
+| PASS | strings.js > pupil > statCftableWhy | Fill in at least one row of running totals before you check. | Fixed — no longer stacks two prepositions; reads clean aloud. |
 | PASS | strings.js > pupil > statNotFair | Not fair | Clear binary chip, paired with "Fair to say". |
-| REWRITE | strings.js > pupil > statValuesWhy | Put a number in at least one box first. | Same stacked-preposition fault. → "Put a number in one box before you check." |
+| PASS | strings.js > pupil > statValuesWhy | Put a number in one box before you check. | Fixed — same preposition fault as statCftableWhy, now resolved. |
+| PASS | strings.js > pupil > statScNone | No correlation | Plain chip word, paired with Positive and Negative. |
+| PASS | strings.js > pupil > statPieNoAngles | no angles yet | Plain empty-state label for a table cell. |
 | PASS | strings.js > pupil > classifyTryAgain | Not that one — look again at its size against 90° and 180°. | Clear, gives a real comparison, no answer given away. |
+| PASS | strings.js > pupil > classifyTryAgain | Not that one — look again at its size against 90° and 180°. | Same line, rendered a second time in the transcript; same verdict. |
 | PASS | strings.js > pupil > protractorReadTrueGeneric | Not quite — line the centre on the corner and 0 along an arm, then read again. | Clear, standard retry opener. |
 | PASS | strings.js > pupil > protractorMeasurePlaceholder | the size you measure, in degrees | Placeholder fragment, fine convention. |
 | PASS | strings.js > pupil > moveAnnotationGeneric | What's your next step? — tag the move (optional) | Correctly used for a non-equation move. |

@@ -151,6 +151,16 @@ log showing the deployment actually ran.
 
 ## Proof rows
 
+### 12 Sept 2026, 22:58 — the new standalone DATA project answers the live front door
+`dataUrl` on the bound project was set to the new `/exec` at 22:5x (Damien's paste; the desktop app refused the session that edit). The session then opened the live FRONT DOOR (`…?class=10E-Maths`, as dgartland021) and read the NEW project's Executions log (`14j0H7VG…jn3h`):
+
+    Version 1 | doPost | Web app | 12 Sept 2026, 22:58:06 | 8.071 s | Completed
+    Version 1 | doPost | Web app | 12 Sept 2026, 22:58:03 | 1.704 s | Completed
+
+— the page's own store calls, landing on the standalone project and reading the Sheet by id (an uncaught Sheet-permission error would read Failed). Earlier rows on the same log: 22:47:45–22:48:26, six `doPost` Completed — the session's probes from outside Google (`bad-secret`, `token-bad`); 22:31:31, two `doGet` Failed — the New-deployment dialog's own test visits (this project has no `Index` file and nobody visits its `doGet`).
+
+
+
 _(one per version cut, quoted from the Executions log)_
 
 **DATA, Version 3.** Quoted from the Executions log: the `doPost` row is the
