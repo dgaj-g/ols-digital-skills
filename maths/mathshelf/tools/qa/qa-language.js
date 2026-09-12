@@ -139,7 +139,13 @@ function checkRow(row, emit) {
       emit('length', row, 'a ' + wordCount(s) + '-word sentence - the ceiling for this reader is ' +
         MAX_WORDS + '  ["' + s.slice(0, 90) + '"]');
     }
-    if ((s.match(/[—–]|--/g) || []).length >= 2) {
+    /* A RANGE IS NOT A CLAUSE (12 Sept 2026, Book A). "£5–£10 / £10–£30 /
+       Over £50" is a questionnaire's response boxes as the paper prints them
+       - three number ranges, no clause chained to anything. An en-dash with a
+       digit or a £ on both sides is a range and is not counted; a dash with a
+       space beside it, or an em-dash, still is (the probe below proves the
+       law still bites after this narrowing). */
+    if ((s.replace(/(?<=[\d£])–(?=[\d£])/g, '').match(/[—–]|--/g) || []).length >= 2) {
       emit('dash-chain', row, 'three clauses strung together on dashes - one idea per sentence  ["' + s.slice(0, 90) + '"]');
     }
     if (/\b(first|firstly)\b[^.]*\b(then|next|after that)\b[^.]*\b(finally|lastly|last of all)\b/i.test(s) ||
@@ -177,6 +183,7 @@ function candidates(row) {
 
 /* ========================================== THE CONTROLS, FIRST ========= */
 const MUST_FAIL = [
+  { text: 'Put the values in order – smallest first – then find the middle one – that is the median.', register: 'pupil' },
   { text: 'A fair copy. Lovely clear working.', register: 'pupil' },
   { text: 'Every line earns its mark.', register: 'pupil' },
   { text: 'This is what the mark scheme wants.', register: 'pupil' },
@@ -188,6 +195,7 @@ const MUST_FAIL = [
   { text: 'The system will mark your working and then it will show you the colors it chose for each of the lines you wrote out in the box below the page.', register: 'pupil' }
 ];
 const MUST_PASS = [
+  { text: 'Response boxes: £5–£10 / £10–£30 / £30–£50 / Over £50.', register: 'pupil' },
   { text: 'WALT - Find angles on a straight line', register: 'pupil' },
   { text: 'Answer only - no working shown.', register: 'pupil', label: true },
   { text: 'Bang on - careful measuring.', register: 'pupil', label: true },

@@ -1,0 +1,319 @@
+FIXTURE_A.txt — DRAFT fixture questions for Book A's new lint rules
+====================================================================
+LINT-A package, 12 Sept 2026. This is a DRAFT ONLY — I do not edit
+tools/qa/fixtures/plants.js; another package folds these into
+FIXTURE_BOOK's own section (in the same style as the existing s2
+"Ten single-fault stats questions (DESIGN §11.1)" section, which
+already covers the ORIGINAL Book C rules — q101-q108 there are
+untouched). Each item below is one question (or one movie), in
+FIXTURE_BOOK's exact JS object shape, with a comment naming the rule
+it breaks and the EXACT sentence dev/lint-content-stats.js prints for
+it. Every sentence below was pasted verbatim from a real run:
+
+  node dev/lint-content-stats.js --pack tools/qa/out/bookA/_dev_test_bookA.js
+
+(that proof pack is a throwaway under this same directory, built only
+to generate these sentences — it is not itself part of the fold-in).
+
+All marks/units below are chosen so `checkReachableMarks` does not add
+an incidental extra failure — the ONLY failure(s) listed per item are
+the ones the comment names, except where noted as "co-occurring".
+
+────────────────────────────────────────────────────────────────────
+1. order — answer is not a permutation of the tiles
+────────────────────────────────────────────────────────────────────
+{ id: 'qA1', kind: 'order', marks: [0, 1], src: 'fixture',
+  prompt: 'Put the data-handling cycle in order.',
+  tiles: ['Collect', 'Display', 'Analyse', 'Interpret'],
+  answer: [0, 1, 1, 3] }                 /* 1 repeated, 2 missing */
+
+FAIL sentence:
+  order: answer is not a permutation of the 4 tiles
+
+────────────────────────────────────────────────────────────────────
+2. order — cyclic:true with fewer than 3 tiles
+────────────────────────────────────────────────────────────────────
+{ id: 'qA2', kind: 'order', marks: [1, 1], src: 'fixture',
+  prompt: 'Put the two cards in order.',
+  tiles: ['First', 'Second'], answer: [0, 1], cyclic: true }
+
+FAIL sentence:
+  order: cyclic:true needs at least 3 tiles (got 2)
+
+────────────────────────────────────────────────────────────────────
+3. pick — no option marked best:true (must be exactly one)
+────────────────────────────────────────────────────────────────────
+{ id: 'qA3', kind: 'pick', marks: [1, 1], src: 'fixture',
+  prompt: 'Choose the better question.',
+  options: [
+    { text: 'How much do you spend? £0-5 / £5-10 / £10+', best: false, flaw: 'Q_OVERLAP' },
+    { text: 'How much do you spend a week? Under £5 / £5-£9.99 / £10 or more', best: false, flaw: 'Q_GAP' }
+  ] }
+
+FAIL sentence:
+  pick: exactly one option must be best:true (found 0)
+
+────────────────────────────────────────────────────────────────────
+4. pick — a non-best option carries no flaw id from the Q_* bank
+────────────────────────────────────────────────────────────────────
+{ id: 'qA4', kind: 'pick', marks: [1, 1], src: 'fixture',
+  prompt: 'Choose the better question.',
+  options: [
+    { text: 'How much do you spend a week? Under £5 / £5-£9.99 / £10 or more', best: true },
+    { text: 'How much do you spend? £0-5 / £5-10', best: false }
+  ] }
+
+FAIL sentence:
+  pick: option 2 is not best but has no flaw id from the Q_* bank
+
+────────────────────────────────────────────────────────────────────
+5. pick — two options with identical text
+────────────────────────────────────────────────────────────────────
+{ id: 'qA5', kind: 'pick', marks: [1, 1], src: 'fixture',
+  prompt: 'Choose the better question.',
+  options: [
+    { text: 'How much do you spend a week?', best: true },
+    { text: 'How much do you spend a week?', best: false, flaw: 'Q_GAP' }
+  ] }
+
+FAIL sentence:
+  pick: options 1 and 2 have identical text
+
+────────────────────────────────────────────────────────────────────
+6. values on venn2 — the regions do not add up (own total AND circle
+   totals both re-derived from the slot answers)
+────────────────────────────────────────────────────────────────────
+{ id: 'qA6', kind: 'values', marks: [2, 2], src: 'fixture',
+  prompt: 'Complete the Venn diagram.',
+  fig: { type: 'venn2', n: 100,
+    circles: [{ id: 'A', label: 'Milk' }, { id: 'B', label: 'Sugar' }],
+    totals: { A: 60, B: 50 } },
+  slots: [
+    { id: 'aOnly', label: 'Milk only', region: 'A', answer: { n: 40, d: 1 }, earns: 'method' },
+    { id: 'bOnly', label: 'Sugar only', region: 'B', answer: { n: 30, d: 1 }, earns: 'method' },
+    { id: 'both', label: 'Both', region: 'AB', answer: { n: 5, d: 1 }, earns: 'accuracy' },
+    { id: 'out', label: 'Neither', region: 'out', answer: { n: 10, d: 1 }, earns: 'accuracy' }
+  ] }                                     /* 40+30+5+10=85≠100; 40+5=45≠60; 30+5=35≠50 */
+
+FAIL sentences (three, from the same one planted inconsistency):
+  venn: the regions do not add up — the 4 regions sum to 85, not n = 100
+  venn: the regions do not add up — circle A's regions sum to 45, not totals.A = 60
+  venn: the regions do not add up — circle B's regions sum to 35, not totals.B = 50
+
+(venn3 shares the identical `checkValuesVenn(book, secId, q, true)` code
+path, parameterised on 8 regions and 3 circle totals instead of 4/2 — not
+separately fixtured here for time, but exercised by the same function.)
+
+────────────────────────────────────────────────────────────────────
+7. values on a stemleaf fig — a read-off slot (range/mode/median)
+   re-derived from the drawn diagram's own rows
+────────────────────────────────────────────────────────────────────
+{ id: 'qA7', kind: 'values', marks: [0, 1], src: 'fixture',
+  prompt: 'Read the range from the diagram.',
+  fig: { type: 'stemleaf', decimals: 0, unit: 'cm', rows: { '2': [1, 4], '3': [0, 2] } },
+  slots: [{ id: 'a', label: 'Range', answer: { n: 5, d: 1 }, earns: 'accuracy' }] }
+                                          /* true range = 32-21 = 11, authored 5 */
+
+FAIL sentence:
+  stemleaf: slot "a" (range) authored 5 but re-derived from the diagram 11
+
+────────────────────────────────────────────────────────────────────
+8. stemleaf (build kind) — a value's stem is not in `stems`
+────────────────────────────────────────────────────────────────────
+{ id: 'qA8', kind: 'stemleaf', marks: [2, 0], src: 'fixture',
+  prompt: 'Build the stem-and-leaf diagram.',
+  values: [21, 24, 47], stems: [2, 3], decimals: 0, unit: 'cm' }
+                                          /* 47's stem (4) is not in [2,3] */
+
+FAIL sentence:
+  stemleaf: value 47's stem 4 is not in stems
+
+────────────────────────────────────────────────────────────────────
+9. stemleaf (build kind) — key.ask and a given key both present
+────────────────────────────────────────────────────────────────────
+{ id: 'qA9', kind: 'stemleaf', marks: [2, 1], src: 'fixture',
+  prompt: 'Build the stem-and-leaf diagram.',
+  values: [21, 24, 30], stems: [2, 3], decimals: 0, unit: 'cm',
+  key: { ask: true, stem: 2, leaf: 1, means: '21 cm' } }
+
+FAIL sentence:
+  stemleaf: key.ask and a given key cannot both be present
+
+────────────────────────────────────────────────────────────────────
+10. pie — an angle is not a whole number of degrees
+────────────────────────────────────────────────────────────────────
+{ id: 'qA10', kind: 'pie', marks: [2, 2], src: 'fixture',
+  prompt: 'Work out the angles.',
+  cats: [{ id: 'a', label: 'Football', f: 1 }, { id: 'b', label: 'Hockey', f: 6 }],
+  total: 7 }                             /* 360×1/7 = 51.43°, 360×6/7 = 308.57° */
+
+FAIL sentences (both categories are non-integer under this total):
+  pie: angle for "Football" is not a whole number of degrees
+  pie: angle for "Hockey" is not a whole number of degrees
+
+────────────────────────────────────────────────────────────────────
+11. pie — total ≠ Σf (and, downstream, angles don't sum to 360)
+────────────────────────────────────────────────────────────────────
+{ id: 'qA11', kind: 'pie', marks: [2, 2], src: 'fixture',
+  prompt: 'Work out the angles.',
+  cats: [{ id: 'a', label: 'Football', f: 3 }, { id: 'b', label: 'Hockey', f: 3 }],
+  total: 10 }                            /* Σf = 6, authored total = 10 */
+
+FAIL sentences:
+  pie: total = 10 does not equal Σf = 6
+  pie: angles sum to 216, not 360
+
+────────────────────────────────────────────────────────────────────
+12. pie — dx "PIE_PCT_NOT_DEG" equals the truth (distinguishability)
+────────────────────────────────────────────────────────────────────
+LEFT NOTE (read before using this one — see LINT_NOTES.md "left"
+section): the percentage column (f×100/total) and the degree column
+(f×360/total) use the SAME total, so for any category with f > 0 they
+can only coincide if 100 = 360 — never. This distinguishability test
+is therefore mathematically unreachable on any real (f > 0) pie
+question; the fixture below proves the CODE PATH only, via a
+degenerate all-zero-frequency, internally-inconsistent pack (which
+also fires the two rules above on the same question — expected).
+{ id: 'qA12', kind: 'pie', marks: [2, 2], src: 'fixture',
+  prompt: 'Work out the angles.',
+  cats: [{ id: 'a', label: 'Football', f: 0 }, { id: 'b', label: 'Hockey', f: 0 }],
+  total: 10 }
+
+FAIL sentences:
+  pie: total = 10 does not equal Σf = 0
+  pie: angles sum to 0, not 360
+  dx: "PIE_PCT_NOT_DEG" equals the truth
+
+────────────────────────────────────────────────────────────────────
+13. scatter — dx "SC_XY_SWAPPED" equals the truth (distinguishability)
+────────────────────────────────────────────────────────────────────
+{ id: 'qA13', kind: 'scatter', marks: [1, 1], src: 'fixture',
+  prompt: 'Plot the points.',
+  chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+  given: [[1, 1], [2, 2]],
+  toPlot: [[3, 3], [4, 4]],
+  asks: [{ type: 'corr', answer: 'negative' }] }
+                                          /* swapping (y,x) on toPlot gives back
+                                             the identical set {[3,3],[4,4]} */
+
+FAIL sentences (the corr fault is incidental — the trend here is
+actually positive, kept so the fixture also proves the corr-sign rule):
+  scatter: corr answer "negative" disagrees with the least-squares slope's sign (positive)
+  dx: "SC_XY_SWAPPED" equals the truth
+
+────────────────────────────────────────────────────────────────────
+14. scatter — a plotted point is off the grid
+────────────────────────────────────────────────────────────────────
+{ id: 'qA14', kind: 'scatter', marks: [1, 0], src: 'fixture',
+  prompt: 'Plot the points.',
+  chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+  given: [[1, 2], [2, 4]],
+  toPlot: [[3.5, 6]],                    /* 3.5 is not a multiple of sq.x = 1 */
+  asks: [] }
+
+FAIL sentence:
+  scatter: (3.5, 6) is off the grid
+
+────────────────────────────────────────────────────────────────────
+15. scatter — corr answer's sign disagrees with the least-squares slope
+────────────────────────────────────────────────────────────────────
+{ id: 'qA15', kind: 'scatter', marks: [1, 1], src: 'fixture',
+  prompt: 'Name the correlation.',
+  chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+  given: [[1, 8], [2, 6]],
+  toPlot: [[3, 4], [4, 2]],
+  asks: [{ type: 'corr', answer: 'positive' }] }   /* the trend is negative */
+
+FAIL sentence:
+  scatter: corr answer "positive" disagrees with the least-squares slope's sign (negative)
+
+────────────────────────────────────────────────────────────────────
+16. scatter — outlier index is not the point furthest from the line
+    fitted without it
+────────────────────────────────────────────────────────────────────
+{ id: 'qA16', kind: 'scatter', marks: [1, 1], src: 'fixture',
+  prompt: 'Find the odd one out.',
+  chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+  given: [[1, 1], [2, 2], [3, 3]],
+  toPlot: [[4, 9]],
+  asks: [{ type: 'outlier', answer: 1 }] }  /* index 1 = [2,2], an ordinary
+    on-trend point; the true outlier [4,9] (index 3) stays in the
+    "without" set and sits further from the refitted line than [2,2] does */
+
+FAIL sentence:
+  scatter: outlier at index 1 is not the point furthest from the line fitted without it
+
+────────────────────────────────────────────────────────────────────
+17. prompt telegraph — general Book A phrases
+────────────────────────────────────────────────────────────────────
+{ id: 'qA17', kind: 'pie', marks: [2, 2], src: 'fixture',
+  prompt: 'Work out the angles — divide by the total and multiply by 360.',
+  cats: [{ id: 'a', label: 'Football', f: 3 }, { id: 'b', label: 'Hockey', f: 3 }],
+  total: 6 }
+
+FAIL sentences:
+  prompt: telegraphs "divide by the total"
+  prompt: telegraphs "multiply by 360"
+
+(the other two general phrases, "× 360" and "360 ÷", use the identical
+TELEGRAPH_PHRASES mechanism and are not separately fixtured.)
+
+────────────────────────────────────────────────────────────────────
+18. prompt telegraph — "(n + 1) ÷ 2" inside a stem-and-leaf read prompt
+────────────────────────────────────────────────────────────────────
+{ id: 'qA18', kind: 'stemleaf', marks: [2, 0], src: 'fixture',
+  prompt: 'Find the median — use (n + 1) ÷ 2 to find its position.',
+  values: [21, 24, 30], stems: [2, 3], decimals: 0, unit: 'cm' }
+
+FAIL sentence:
+  prompt: telegraphs "(n + 1) ÷ 2"
+
+Note: "start in the middle" is deliberately NOT banned — it is
+Colette's own hint, quoted verbatim in the A·s2 movie caption (design
+§19) — so it is absent from every telegraph list above.
+
+────────────────────────────────────────────────────────────────────
+19. movie — vfill.region not one of the film's own venn regions
+────────────────────────────────────────────────────────────────────
+movie: { title: 'Start in the middle', steps: [
+  { say: 'Two circles.', do: [{ venn: { circles: [{ id: 'A', label: 'Milk' }, { id: 'B', label: 'Sugar' }] } }] },
+  { say: 'Fill a region that does not exist.', do: [{ vfill: { region: 'C', text: '22' } }] },
+  { say: 'Step three.' }, { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+] }
+
+FAIL sentence:
+  movie: vfill.region "C" is not one of the film's venn regions at step 2
+
+────────────────────────────────────────────────────────────────────
+20. movie — sector degrees do not sum to 360
+────────────────────────────────────────────────────────────────────
+movie: { title: 'Turning counts into angles', steps: [
+  { say: 'Draw the pie.', do: [{ pie: {} }] },
+  { say: 'First sector.', do: [{ sector: { deg: 100, label: 'A' } }] },
+  { say: 'Second sector.', do: [{ sector: { deg: 100, label: 'B' } }] },
+  { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+] }
+
+FAIL sentence:
+  movie: sector degrees sum to 200, not 360
+
+────────────────────────────────────────────────────────────────────
+21. movie — leaf.stem not among the film's own laid stems
+────────────────────────────────────────────────────────────────────
+movie: { title: 'Stems and leaves', steps: [
+  { say: 'Lay the stems.', do: [{ stemleaf: { stems: [2, 3], decimals: 0, unit: 'cm' } }] },
+  { say: 'Land a leaf on a stem that was never laid.', do: [{ leaf: { stem: 9, leaf: 1 } }] },
+  { say: 'Step three.' }, { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+] }
+
+FAIL sentence:
+  movie: leaf.stem 9 is not among the film's stems at step 2
+
+────────────────────────────────────────────────────────────────────
+Not separately fixtured for time (same mechanism, lower risk; see
+LINT_NOTES.md "left" list): key op / film-leaves cross-check ("key
+stem/leaf is not a value of the film's leaves"); lobf.through outside
+the film's chart; stemleaf back.values stem check; a given stemleaf
+key not reproducing a data value; judge/reasons naming an id outside
+BOTH banks (the bank union itself IS proven — q3-q5's pick options
+above all use valid Q_* ids and pass that half of the check cleanly).

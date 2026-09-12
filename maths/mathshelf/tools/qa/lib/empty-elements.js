@@ -46,7 +46,8 @@ const EXEMPTIONS = [
   'not rendered (hidden / display:none / visibility:hidden / opacity ~0 / smaller than 8x6px)',
   'a live region ([role=status] or [aria-live]) — it is meant to start empty',
   'holds a picture, video, canvas, SVG or a control',
-  'painted with a background image'
+  'painted with a background image',
+  'a stem-and-leaf row (.stat-sl td): an empty row is the diagram saying no value has that stem (Book A, 12 Sept 2026)'
 ];
 
 const QUERY = `(function () {
@@ -61,6 +62,10 @@ const QUERY = `(function () {
        empty and fill when something happens. Naming only role="status" made
        the audit report every message slot in the markbook as "nothing". */
     if (el.closest('[role="status"], [role="alert"], [aria-live]')) return;
+    /* ADAPTER (maths, Book A): a stem-and-leaf diagram is a table whose rows
+       ARE its stems; a row with no leaves is the diagram's own statement that
+       no value has that stem, not a container holding nothing. */
+    if (el.tagName.toLowerCase() === 'td' && el.closest('table.stat-sl')) return;
     if ((el.textContent || '').trim() !== '') return;
     if (el.querySelector('img, svg, video, canvas, input, button, select, textarea, a[href]')) return;
     var r = el.getBoundingClientRect();

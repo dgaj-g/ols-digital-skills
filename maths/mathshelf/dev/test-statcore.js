@@ -25,8 +25,12 @@ X('check is a function', !!S && typeof S.check === 'function');
 X('selfTest is a function', !!S && typeof S.selfTest === 'function');
 X('gist is a function', !!S && typeof S.gist === 'function');
 X('DX_NAMES is a table', !!S && S.DX_NAMES && typeof S.DX_NAMES.QL_UNORDERED === 'string');
-X('MK_LABELS covers every kind', !!S && ['qlist','cftable','cfplot','cfread','boxplot','compare','judge','values']
+X('MK_LABELS covers every kind', !!S && ['qlist','cftable','cfplot','cfread','boxplot','compare','judge','values',
+  'order','pick','stemleaf','pie','scatter']
   .every(function (k) { return Array.isArray(S.MK_LABELS[k]) && S.MK_LABELS[k].length === 2; }));
+X('KINDS lists the thirteen kinds', !!S && Array.isArray(S.KINDS) && S.KINDS.length === 13 && S.KINDS.indexOf('scatter') > -1);
+X('Book A helpers are exported', !!S && ['stemLeafOf','stemleafRows','pieAngles','leastSquares','lineY','lineX']
+  .every(function (k) { return typeof S[k] === 'function'; }));
 X('the follow-through rule table is closed', !!S && S.FT_RULE_IDS.length === 10);
 
 var result = S ? S.selfTest() : { pass: false, failures: ['GJ_STATS missing'], count: 0 };

@@ -77,7 +77,8 @@ const ANSWER = `((args) => {
        question can sit at any of its declared stages, so every kind's press
        loop checks after each atomic press whether the walker only asked to be
        driven up to a named stage, and stops there. ───────────────────────── */
-  const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+  const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
   if (STAT_KINDS.indexOf(kind) > -1) {
     const curStage = () => root.getAttribute('data-stage');
     const stagesOfRoot = () => (root.getAttribute('data-stages') || '').split(' ').filter(Boolean);
@@ -157,6 +158,27 @@ const ANSWER = `((args) => {
     };
     const thatsMine = () => all('.btn-stage, .btn-quiet').filter((b) => /that.?s my/i.test(txt(b)))[0];
 
+    /* a real pointer DRAG on the board (Book A's scatter line-of-best-fit
+       handles): down on the handle itself, so its own pointerdown listener
+       fires and, typically, calls setPointerCapture; the moves and the up are
+       dispatched on the SVG, mirroring pressGrid's own tap, because once a
+       drag is under way the board is what is usually listening, not the
+       handle a second time. Two moves, not one - a drop with no travel
+       between is indistinguishable from a tap the same handlers may also
+       bind. */
+    const dragTo = (svg, handleEl, fromXY, toXY) => {
+      const c0 = svgPointToClient(svg, fromXY[0], fromXY[1]);
+      const c1 = svgPointToClient(svg, toXY[0], toXY[1]);
+      if (!c0 || !c1) return false;
+      const mid = { x: (c0.x + c1.x) / 2, y: (c0.y + c1.y) / 2 };
+      const base = { bubbles: true, pointerId: 7, isPrimary: true, button: 0 };
+      handleEl.dispatchEvent(new PointerEvent('pointerdown', Object.assign({}, base, { clientX: c0.x, clientY: c0.y })));
+      svg.dispatchEvent(new PointerEvent('pointermove', Object.assign({}, base, { clientX: mid.x, clientY: mid.y })));
+      svg.dispatchEvent(new PointerEvent('pointermove', Object.assign({}, base, { clientX: c1.x, clientY: c1.y })));
+      svg.dispatchEvent(new PointerEvent('pointerup', Object.assign({}, base, { clientX: c1.x, clientY: c1.y })));
+      return true;
+    };
+
     /* ── qlist: tray tiles smallest first, then the cuts, then the IQR ──── */
     /* THE DRIVE IS RESUMABLE. It is called once per declared stage on the SAME
        board, so every press is "do what is not yet done": a tile already in the
@@ -235,17 +257,74 @@ const ANSWER = `((args) => {
     /* ── values: open each labelled box and key its value ───────────────── */
     function pressValues(S, pq) {
       const v = S.v || {};
-      const order = (pq && (pq.order || (pq.slots || []).map((s2) => s2.id))) || Object.keys(v);
+      const slots = (pq && pq.slots) || [];
+      const order = (pq && pq.order) || slots.map((s2) => s2.id) || Object.keys(v);
+      const labelOf = (id) => { const s2 = slots.filter((x) => x.id === id)[0]; return s2 ? s2.label : null; };
       for (let i = 0; i < order.length; i++) {
         const id = order[i];
         if (v[id] == null || v[id] === '') continue;
-        const btn = all('.stat-slots .stat-cell')[i];
+        /* A FIGURE'S OVERLAY BOXES LIVE IN .stat-fig, NOT .stat-slots
+           (CONTRACT §"values with a figure"): every .stat-cell carries
+           aria-label = the slot's own label, so opening it BY LABEL reaches
+           the box wherever it actually sits, instead of assuming every slot
+           is the i-th child of one .stat-slots list - which stopped being
+           true the day a venn/stem-and-leaf figure could hold some of them.
+           A slot with no authored label falls back to the old positional
+           read, so Book C's boxes (none of which carry pq.slots[].label
+           today) are untouched. */
+        const label = labelOf(id);
+        const btn = label
+          ? all('.stat-cell[aria-label="' + label + '"]')[0]
+          : all('.stat-slots .stat-cell')[i];
         if (!btn) return { ok: false, why: 'no slot for "' + id + '" on ' + qid };
         if (txt(btn) === String(v[id])) continue;                  /* already keyed */
         btn.click();
         const pad = one('.numpad');
         if (!pad || !padType(pad, v[id])) return { ok: false, why: 'could not key "' + id + '" on ' + qid };
         const s = maybeStop('filled "' + id + '"'); if (s) return s;
+      }
+      return null;
+    }
+
+    /* ── order: press the tray tiles into the row, in the wanted order ───── */
+    function pressOrder(S, pq) {
+      const tiles = (pq && pq.tiles) || [];
+      const seq = S.seq || [];
+      for (let oi = 0; oi < seq.length; oi++) {
+        if (all('.stat-row .stat-tile[data-placed]').length > oi) continue;  /* already placed */
+        const want = String(tiles[seq[oi]]);
+        const tile = all('[data-tray="order-tiles-' + qid + '"] [data-tray-item]').filter((b) => txt(b) === want)[0];
+        if (!tile) return { ok: false, why: 'no tray tile reads "' + want + '" on ' + qid };
+        tile.click();
+        /* "selected" (a placed tile pressed once, before its second press
+           returns it) is not driven here - it is the generic two-press
+           branch above (wantsSelection), asked of any [data-placed] BUTTON,
+           and order's tiles qualify the moment the first one lands. */
+        const s1 = maybeStop('placed the tile "' + want + '" in the row'); if (s1) return s1;
+      }
+      return null;
+    }
+
+    /* ── pick: choose the better question, then say why the other falls short ── */
+    function pressPick(S, pq) {
+      const opts = (pq && pq.options) || [];
+      const want = opts[S.pick];
+      if (!want) return { ok: false, why: 'S.pick ' + S.pick + ' is out of range for ' + qid };
+      const optBtns = all('[data-tray="pick-options-' + qid + '"] button.stat-option[data-tray-item]');
+      const picked = optBtns.filter((b) => b.getAttribute('aria-pressed') === 'true')[0];
+      let optBtn = picked;
+      if (!optBtn) {
+        optBtn = optBtns.filter((b) => same(txt(b), want.text))[0];
+        if (!optBtn) return { ok: false, why: 'no option reads "' + want.text + '" on ' + qid };
+        optBtn.click();
+      }
+      const s1 = maybeStop('chose the option'); if (s1) return s1;
+      const reasonBtns = all('[data-tray="pick-why-' + qid + '"] [data-tray-item]');
+      const reasonDone = reasonBtns.filter((b) => b.getAttribute('aria-pressed') === 'true').length > 0;
+      if (!reasonDone) {
+        const rbtn = reasonBtns.filter((b) => b.getAttribute('data-reason') === S.why)[0];
+        if (!rbtn) return { ok: false, why: 'no reason chip for "' + S.why + '" on ' + qid };
+        rbtn.click();
       }
       return null;
     }
@@ -355,6 +434,157 @@ const ANSWER = `((args) => {
           if (bad) return { ok: false, why: bad };
         }
         const s = maybeStop('committed the "' + (typeof a === 'string' ? a : a.type) + '" ask'); if (s) return s;
+      }
+      return null;
+    }
+
+    /* ── stemleaf: press a tray leaf (selects it), then the stem it lands on ── */
+    function pressStemleaf(S, pq) {
+      const decimals = (pq && pq.decimals != null) ? pq.decimals : 0;
+      const rows = S.rows || {};
+      /* the tray prints the FULL value ("3.6"), never the bare leaf digit, so
+         the leaf has to be reconstructed from its stem before it can be found
+         by text - matched by NUMBER, not string, because "3.60" and "3.6" are
+         the same value and a string compare would miss it */
+      const fullVal = (stem, leaf) => {
+        const s = Number(stem), l = Number(leaf);
+        return decimals === 1 ? Number((s + l / 10).toFixed(1)) : (s * 10 + l);
+      };
+      const stems = Object.keys(rows);
+      for (let si = 0; si < stems.length; si++) {
+        const stem = stems[si];
+        const leaves = rows[stem] || [];
+        if (!leaves.length) continue;
+        const zone = all('.stat-sl-zone[data-stem="' + stem + '"]')[0];
+        if (!zone) return { ok: false, why: 'no stem zone "' + stem + '" on ' + qid };
+        for (let li = 0; li < leaves.length; li++) {
+          if (zone.querySelectorAll('.stat-sl-leaf[data-placed]').length > li) continue;  /* already placed */
+          const want = fullVal(stem, leaves[li]);
+          const item = all('[data-tray="stemleaf-leaves-' + qid + '"] [data-tray-item]')
+            .filter((b) => Number(txt(b)) === want)[0];
+          if (!item) return { ok: false, why: 'no tray leaf reads "' + want + '" on ' + qid };
+          item.click();
+          /* "leaf-selected" - one leaf chosen out of the tray, no stem chosen
+             yet - is a board of its own and lives only between these presses */
+          const s1 = maybeStop('selected the leaf ' + want); if (s1) return s1;
+          zone.click();
+          const s2 = maybeStop('landed the leaf on stem ' + stem); if (s2) return s2;
+        }
+      }
+      if (S.key) {
+        const stemBtn = all('[data-tray="stemleaf-keystem-' + qid + '"] [data-tray-item]').filter((b) => txt(b) === String(S.key.stem))[0];
+        if (!stemBtn) return { ok: false, why: 'no keystem item reads "' + S.key.stem + '" on ' + qid };
+        stemBtn.click();
+        const leafBtn = all('[data-tray="stemleaf-keyleaf-' + qid + '"] [data-tray-item]').filter((b) => txt(b) === String(S.key.leaf))[0];
+        if (!leafBtn) return { ok: false, why: 'no keyleaf item reads "' + S.key.leaf + '" on ' + qid };
+        leafBtn.click();
+        const s3 = maybeStop('built the key'); if (s3) return s3;
+      }
+      return null;
+    }
+
+    /* ── pie: key every angle, draw the sectors, then label each one ─────── */
+    function pressPie(S, pq) {
+      const cats = (pq && pq.cats) || [];
+      const angles = S.angles || {};
+      for (let ci = 0; ci < cats.length; ci++) {
+        const cat = cats[ci];
+        if (angles[cat.id] == null) continue;
+        const cell = all('.stat-cell[aria-label="' + cat.label + ' angle"]')[0];
+        if (!cell) return { ok: false, why: 'no angle cell for "' + cat.label + '" on ' + qid };
+        if (txt(cell) === String(angles[cat.id])) continue;         /* already keyed */
+        cell.click();
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, angles[cat.id])) return { ok: false, why: 'could not key the angle for "' + cat.label + '" on ' + qid };
+        const s0 = maybeStop('keyed the angle for "' + cat.label + '"'); if (s0) return s0;
+      }
+      const next1 = all('.stat-next').filter((b) => !b.disabled)[0];
+      if (next1) {
+        next1.click();
+        const sN = maybeStop('moved on to draw the sectors'); if (sN) return sN;
+      }
+      const svg = one('svg.stat-board');
+      const bd = root.__statBoard;
+      if (svg && bd && bd.toPx) {
+        const bounds = S.bounds || [];
+        for (let bi = 0; bi < bounds.length - 1; bi++) {
+          if (all('.stat-pie-bound[data-placed]').length > bi) continue;  /* already placed */
+          const px = bd.toPx(Number(bounds[bi]));
+          if (!pressGrid(svg, px[0], px[1])) return { ok: false, why: 'the pie board has no screen transform yet for ' + qid };
+          const s1 = maybeStop('placed the boundary at ' + bounds[bi] + '\\u00b0'); if (s1) return s1;
+        }
+        const draw = one('.stat-draw');
+        if (draw && !draw.disabled) {
+          draw.click();
+          const s2 = maybeStop('drew the pie chart'); if (s2) return s2;
+        }
+      }
+      const labels = S.labels || {};
+      const secIdx = Object.keys(labels);
+      for (let li = 0; li < secIdx.length; li++) {
+        const i = secIdx[li];
+        const sector = all('path.stat-sector[data-sector="' + i + '"]')[0];
+        if (sector && sector.hasAttribute('data-placed')) continue;  /* already labelled */
+        const cat = cats.filter((c) => c.id === labels[i])[0];
+        if (!cat) return { ok: false, why: 'no category "' + labels[i] + '" for sector ' + i + ' on ' + qid };
+        const chip = all('[data-tray="pie-labels-' + qid + '"] [data-tray-item]').filter((b) => txt(b) === cat.label)[0];
+        if (!chip) return { ok: false, why: 'no label tray item reads "' + cat.label + '" on ' + qid };
+        chip.click();
+        if (!sector) return { ok: false, why: 'no sector ' + i + ' to land the label on ' + qid };
+        sector.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        const s3 = maybeStop('labelled sector ' + i); if (s3) return s3;
+      }
+      return null;
+    }
+
+    /* ── scatter: plot, draw the line, then answer whatever this item asks ── */
+    function pressScatter(S, pq) {
+      const bd = root.__statBoard;
+      if (!bd || !bd.toPx || !bd.svg) return { ok: false, why: 'no board handle for ' + qid };
+      const svg = bd.svg;
+      const pts = S.pts || [];
+      for (let i = 0; i < pts.length; i++) {
+        if (all('.stat-pt[data-placed]').length > i) continue;      /* already placed */
+        const px = bd.toPx(Number(pts[i][0]), Number(pts[i][1]));
+        if (!pressGrid(svg, px[0], px[1])) return { ok: false, why: 'the scatter board has no screen transform yet for ' + qid };
+        const s0 = maybeStop('plotted point ' + i); if (s0) return s0;
+      }
+      const asks = (pq && pq.asks) || [];
+      for (let ai = 0; ai < asks.length; ai++) {
+        const ask = asks[ai];
+        const next = all('.stat-next').filter((b) => !b.disabled)[0];
+        if (next) { next.click(); const sN = maybeStop('moved on to the next stage'); if (sN) return sN; }
+        if (ask.type === 'lobf') {
+          const handles = all('.stat-lobf-handle');
+          if (handles.length < 2) return { ok: false, why: 'no line-of-best-fit handles on ' + qid };
+          for (let hi = 0; hi < 2; hi++) {
+            const h = handles.filter((x) => Number(x.getAttribute('data-handle')) === hi)[0];
+            if (!h) return { ok: false, why: 'no line handle ' + hi + ' on ' + qid };
+            const r = h.getBoundingClientRect();
+            const fromPx = bd.toAxis ? bd.toPx.apply(null, bd.toAxis(r.left + r.width / 2, r.top + r.height / 2)) : [r.left + r.width / 2, r.top + r.height / 2];
+            const toPx = bd.toPx(Number(S.line[hi][0]), Number(S.line[hi][1]));
+            if (!dragTo(svg, h, fromPx, toPx)) return { ok: false, why: 'could not drag line handle ' + hi + ' on ' + qid };
+          }
+          const sL = maybeStop('drew the line of best fit'); if (sL) return sL;
+        } else if (ask.type === 'estimate') {
+          const pad = one('.stat-answer .numpad') || one('.numpad');
+          if (!pad || !padType(pad, S.est)) return { ok: false, why: 'could not key the estimate on ' + qid };
+          const sE = maybeStop('keyed the estimate'); if (sE) return sE;
+        } else if (ask.type === 'corr') {
+          const P = { positive: T.statScPositive || 'Positive correlation', negative: T.statScNegative || 'Negative correlation', none: T.statScNone || 'No correlation' };
+          const want = P[String(S.corr).toLowerCase()] || S.corr;
+          const chip = all('[data-tray="scatter-corr-' + qid + '"] [data-tray-item]').filter((b) => txt(b) === want)[0];
+          if (!chip) return { ok: false, why: 'no correlation chip reads "' + want + '" on ' + qid };
+          chip.click();
+          const sC = maybeStop('chose the correlation'); if (sC) return sC;
+        } else if (ask.type === 'outlier') {
+          const given = (pq && pq.given) || [], toPlot = (pq && pq.toPlot) || [];
+          const target = given.concat(toPlot)[S.outlier];
+          if (!target) return { ok: false, why: 'S.outlier ' + S.outlier + ' is out of range for ' + qid };
+          const px = bd.toPx(Number(target[0]), Number(target[1]));
+          if (!pressGrid(svg, px[0], px[1])) return { ok: false, why: 'could not press the outlier point on ' + qid };
+          const sO = maybeStop('marked the outlier'); if (sO) return sO;
+        }
       }
       return null;
     }
@@ -529,6 +759,31 @@ const ANSWER = `((args) => {
         const s6 = maybeStop('judged claim ' + ci); if (s6) return s6;
       }
       return { ok: true, how: 'judged every claim, and gave a reason where it was called not fair', stage: curStage() };
+    }
+    if (kind === 'order') {
+      const r = pressOrder(attempt.S || {}, packQ);
+      if (r) return r;
+      return { ok: true, how: 'placed every tile in the row, in order', stage: curStage() };
+    }
+    if (kind === 'pick') {
+      const r = pressPick(attempt.S || {}, packQ);
+      if (r) return r;
+      return { ok: true, how: 'chose the better question, then said why the other falls short', stage: curStage() };
+    }
+    if (kind === 'stemleaf') {
+      const r = pressStemleaf(attempt.S || {}, packQ);
+      if (r) return r;
+      return { ok: true, how: 'placed every leaf on its stem' + (attempt.S && attempt.S.key ? ', then built the key' : ''), stage: curStage() };
+    }
+    if (kind === 'pie') {
+      const r = pressPie(attempt.S || {}, packQ);
+      if (r) return r;
+      return { ok: true, how: 'keyed every angle, drew the sectors, then labelled each one', stage: curStage() };
+    }
+    if (kind === 'scatter') {
+      const r = pressScatter(attempt.S || {}, packQ);
+      if (r) return r;
+      return { ok: true, how: 'plotted every point, then answered what the item asked', stage: curStage() };
     }
   }
 

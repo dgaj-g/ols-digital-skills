@@ -101,6 +101,14 @@ const CONTROLS = [
      kind has a plant that makes this gate say no by name. Book C's six films
      between them name all eleven. */
   { id: 'film-no-table', kind: 'fixture', plant: 'film-no-table', mustFail: /`table` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-venn', kind: 'fixture', plant: 'film-no-venn', mustFail: /`venn` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-vfill', kind: 'fixture', plant: 'film-no-vfill', mustFail: /`vfill` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-pie', kind: 'fixture', plant: 'film-no-pie', mustFail: /`pie` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-sector', kind: 'fixture', plant: 'film-no-sector', mustFail: /`sector` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-stemleaf', kind: 'fixture', plant: 'film-no-stemleaf', mustFail: /`stemleaf` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-leaf', kind: 'fixture', plant: 'film-no-leaf', mustFail: /`leaf` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-key', kind: 'fixture', plant: 'film-no-key', mustFail: /`key` op\(s\) and nothing of that kind is drawn/ },
+  { id: 'film-no-lobf', kind: 'fixture', plant: 'film-no-lobf', mustFail: /`lobf` op\(s\) and nothing of that kind is drawn/ },
   { id: 'film-no-tcell', kind: 'fixture', plant: 'film-no-tcell', mustFail: /`tcell` op\(s\) and nothing of that kind is drawn/ },
   { id: 'film-no-chart', kind: 'fixture', plant: 'film-no-chart', mustFail: /`chart` op\(s\) and nothing of that kind is drawn/ },
   { id: 'film-no-plot', kind: 'fixture', plant: 'film-no-plot', mustFail: /`plot` op\(s\) and nothing of that kind is drawn/ },
@@ -118,6 +126,10 @@ const CONTROLS = [
   { id: 'stats-board-no-pan', kind: 'fixture', plant: 'stats-board-no-pan', mustFail: /the board cannot be moved sideways by touch/ },
   { id: 'stats-axis-number-on-the-line', kind: 'fixture', plant: 'stats-axis-number-on-the-line', mustFail: /an axis number never crosses its axis line/ },
   { id: 'stage-line-replaced', kind: 'fixture', plant: 'stats-stage-line-replaced', mustFail: /a passing note never replaces the stage line/ },
+  /* Book A's single-fault plants (12 Sept 2026), each in today's jotter-stats.js */
+  { id: 'stats-a-truth-before-lock', kind: 'fixture', plant: 'stats-a-truth-before-lock', mustFail: /truth-before-lock/ },
+  { id: 'stats-a-signature-leak', kind: 'fixture', plant: 'stats-a-signature-leak', mustFail: /an answer value is on the page before Check/ },
+  { id: 'stats-a-stage-skipped', kind: 'fixture', plant: 'stats-a-stage-skipped', mustFail: /never stood on stage/ },
   { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
@@ -354,7 +366,10 @@ async function walkBook(page, book, width, sidecar, transcript) {
           stamp: '.ml-stamp', table: '.ml-table', tcell: '.ml-tcell', chart: '.ml-chart',
           plot: '.ml-plot', curve: '.ml-curve', rule: '.ml-rule', drop: '.ml-drop',
           scale: '.ml-scale', marker: '.ml-marker', grid: '.movie-grid', balance: '.movie-balance',
-          sub: '.movie-line .ml-eq'
+          sub: '.movie-line .ml-eq',
+          /* Book A's ops (12 Sept 2026) */
+          venn: '.ml-venn', vfill: '.ml-vfill', pie: '.ml-pie', sector: '.ml-sector',
+          stemleaf: '.ml-stemleaf', leaf: '.ml-leaf', key: '.ml-key', lobf: '.ml-lobf'
         };
         const kinds = {};
         live.forEach(op => {

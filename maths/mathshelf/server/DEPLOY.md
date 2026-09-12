@@ -1,5 +1,89 @@
 # MathShelf — the deploy checklist
 
+## TWO PROJECTS, from Book A's cut (12 Sept 2026)
+
+**One `Code.gs`, two Apps Script projects, no manifest ever touched again.**
+Damien's ruling of 12 Sept: "I want you to do all of this via the session." What
+stopped that was ONE project carrying BOTH deployments and therefore ONE
+`appsscript.json`: a DATA cut meant flipping `executeAs`/`access` and flipping
+it back for the front door — the two-line edit the desktop app refuses every
+Claude session. Two projects means each manifest is set ONCE, in the New
+deployment dialog, and RESTS there for good.
+
+| project | what it is | bound to the Sheet? | manifest webapp (set once, never edited) | script properties | its `/exec` |
+|---|---|---|---|---|---|
+| **DATA** | the store: `doPost` → `apiRelay` → `api*`. Owns the Sheet, the marking store, the class registry, the per-teacher scoping. | **No — STANDALONE.** It opens the Sheet by id: `ss_()` reads the `sheetId` script property and calls `SpreadsheetApp.openById`. | `executeAs: USER_DEPLOYING`, `access: ANYONE_ANONYMOUS` | `sheetId` = the Sheet's id (`1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`), `relaySecret` = the same 256-bit secret the front door holds | visited by nobody — the page POSTs to it with a store token; the relay POSTs to it with the secret |
+| **FRONT DOOR** | serves the page (`doGet`), reads her name from her own token, mints her store token, relays when the page's own road is closed (`apiCall`). | Yes — the existing bound project (`1oW-8eFK4DUvTZaB56jg_rYd7l_L_zPY-5Um16v0gtq_dlbThvbLczhOX`). It never opens the Sheet: `sheetId` is UNSET here and `doGet` runs as the pupil. | `executeAs: USER_ACCESSING`, `access: DOMAIN` — **rests here forever** | `relaySecret` (unchanged), `dataUrl` = the NEW DATA project's `/exec` | every pupil and every teacher; every class link |
+
+**What this changes about a cut:**
+
+- **A new book is CLIENT-ONLY plus ONE Config row edit.** The server's act
+  whitelist is `acts_()` = the built-ins (`angles`, `algebra`,
+  `stats-quartiles`) UNIONED with the Config tab row whose Key is `acts` and
+  whose Value is a JSON array of ids, e.g.
+  `["angles","algebra","stats-quartiles","stats-collect"]`. Ids must match
+  `^[a-z][a-z0-9-]{1,40}$`; a malformed row or a junk id is ignored and the
+  built-ins stand, so nothing live can be switched off by a typo. A book still
+  arrives UNTICKED for every class (an absent key reads false). Book A =
+  add `"stats-collect"`; Book B = add `"stats-averages"`. No server cut.
+- **A `Code.gs` change = paste the built `server/Code.gs` into BOTH projects
+  and cut a new version of each** (Manage deployments → edit → New version).
+  No manifest is read for a flip because no flip happens; read it anyway
+  (the dialog lies — see below) and write down what it said. The
+  `Index.html` file lives only in the front-door project.
+- **A client-only change = paste `Index.html` into the front-door project and
+  cut a new version there.** Exactly as before.
+- **The same file runs in both homes** — proved, not assumed: `qa-two-homes`
+  loads the template into a bound world (no `sheetId`, the active
+  spreadsheet) AND a standalone world (`sheetId` set, `getActiveSpreadsheet`
+  throws) and runs the whole DATA matrix in each; controls
+  `acts-hardcoded`, `acts-any-string`, `active-spreadsheet-call-site`.
+
+### One-time steps (Damien's hands, once; the secret is a value no session may type)
+
+1. **Create the DATA project.** script.google.com → New project (standalone —
+   NOT from the Sheet's Extensions menu). Name it **OLS — MathShelf DATA**.
+2. **Paste the built `server/Code.gs`** into its `Code.gs`. No `Index` file is
+   needed in this project.
+3. **Script properties** (Project Settings → Script Properties → Add):
+   `sheetId` = `1xVDBKmPP83MMZPqpPJr0GQRR0N9estf9ebhKyhGQd0Y`;
+   `relaySecret` = **the same value the front-door project already holds**
+   (copy it out of the bound project's Script Properties and paste it in —
+   it never goes through a chat window, a commit or this file).
+4. **Run `initJotter` once** from the editor (Run → initJotter) and accept the
+   consent screen — this is the OAuth moment for the Sheet and it proves
+   `openById` works from this project.
+5. **Deploy → New deployment → Web app → Execute as: Me → Who has access:
+   Anyone → Deploy.** Then open `appsscript.json` (Project Settings → Show
+   manifest) and READ it: `"executeAs": "USER_DEPLOYING"`,
+   `"access": "ANYONE_ANONYMOUS"`. Write down what it said. Copy the new
+   `/exec` URL.
+6. **Point the front door at it.** In the BOUND project's Script Properties set
+   `dataUrl` = the new DATA `/exec`. Paste the same built `server/Code.gs`
+   into the bound project's `Code.gs` too (one file, two homes), and cut a new
+   FRONT DOOR version: Manage deployments → the FRONT DOOR → edit → New
+   version → Deploy. Its manifest should read `USER_ACCESSING` + `DOMAIN` —
+   read it, write it down, and never edit it again.
+7. **Add the Config row.** In the Sheet's Config tab, a new row: A = `acts`,
+   B = `["angles","algebra","stats-quartiles","stats-collect"]`.
+8. **Prove it**: open a class link, save one line in Angles, then in the DATA
+   project's Executions confirm a `doPost` row completed. Record both rows in
+   `DEPLOY_LOG.md` (a `DATA` row naming the new project, a `FRONT DOOR` row).
+9. **Retire the old DATA deployment** on the bound project (Manage deployments
+   → the old MAIN/DATA deployment → archive) once the new one is proved. Its
+   `/exec` is in no page any more: `dataUrl` is the only place it was named.
+
+From then on every server change is steps 2 + 6 (paste into both, cut a version
+of each) and every book is step 7 — none of it touches a manifest.
+
+---
+
+## The single-project era (kept as history)
+
+> Everything below describes the ONE-PROJECT, TWO-DEPLOYMENTS model that ran
+> from the store cut (12 Sept 2026, DATA V32 / FRONT DOOR V33) until the split
+> above. Its flip-and-flip-back is exactly what the two-project model removes.
+
 **One project, two deployments.** Do them in this order, and read the manifest
 before each version cut.
 

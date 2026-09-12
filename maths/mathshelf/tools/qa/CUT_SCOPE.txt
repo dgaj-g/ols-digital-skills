@@ -3,30 +3,45 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# THE STORE CUT, 12 Sept 2026, 20:07 (Opus 5). Ruling 51, the hop itself: the
-# page talks to the DATA web app DIRECTLY with a signed store token (S1–S3),
-# the relay stays as the fallback and loses its bearer (S4). A SERVER change:
-# both deployments are cut, DATA first (server/DEPLOY.md). 120-minute clock.
+# BOOK A — Handling Data · Collecting and displaying (12 Sept 2026, 21:1x,
+# Opus 5, RESUME_AB). ONE clock of 270 minutes = the three named caps summed:
+# the class fixes that open the cut (45), Book A itself (180), the DATA split
+# that must land before Book A's deploy (45). Each is reported against its own
+# line in the done message. Book A's packages (engine, chart, lint, content,
+# walk) run in parallel from the first minute (TIME c), so their files are in
+# scope from the start.
+content-stats-collect.js
+content-stats-quartiles.js
+statcore.js
+statchart.js
+jotter-stats.js
+jotter.js
+player.js
+strings.js
+style.css
+shell.css
+script.js
+staff.js
+index.html
+dev/test-statcore.js
+dev/lint-content-stats.js
+dev/validate-all.js
+dev/model-attempts.js
 server/Code.gs.template
 server/Code.gs
 server/Index.html
-server/appsscript.json
 server/build-pathb.js
-script.js
-staff.js
-strings.js
-style.css
-tools/qa/qa-two-homes.js
-tools/qa/qa-waits.js
+server/DEPLOY.md
+server/DEPLOY_LOG.md
 tools/qa/*.js
 tools/qa/lib/*
-tools/qa/fixtures/plants.js
+tools/qa/fixtures/*
 tools/qa/MATHS_*.md
 tools/qa/vocab/*
 tools/qa/out/*
 tools/qa/CUT_SCOPE.txt
 HANDOVER.md
+INTERFACES.md
+ADDING_A_TOPIC.md
 PROGRESS.md
-server/DEPLOY_LOG.md
-server/DEPLOY.md
 dev/test-server-scoping.js

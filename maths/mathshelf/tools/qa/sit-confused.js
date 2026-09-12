@@ -64,6 +64,8 @@ const CONTROLS = [
      hung on it, which is why this battery had never finished. The fault is
      planted in today's code instead. */
   { id: 'always-on-help-strip', kind: 'fixture', plant: 'fixture-help-always-on', mustFail: /after ONE wrong attempt/ },
+  /* Book A (12 Sept 2026): a scatter point snapped to the nearest GIVEN point on placement */
+  { id: 'stats-a-snap-back', kind: 'fixture', plant: 'stats-a-snap-back', mustFail: /did not persist/ },
   /* THE ATTEMPT MODEL IS NOT THIS GATE'S TO PROVE. This control duplicated
      qa-two-attempts, which owns the two-attempt law and now carries the
      single-fault plant for it. Keeping a second copy here meant a plant that

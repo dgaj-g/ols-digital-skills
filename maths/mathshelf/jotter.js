@@ -126,11 +126,11 @@
       fail: ['We’ll plot one of these together in class.', 'Watch the worked example again, then try the idea in class.']
     },
     read: {
-      perfect: ['Clean read-off.', 'You put the rule at the right height and read it carefully.', 'Read exactly where it should be.'],
+      perfect: ['You read it off exactly right.', 'You put the rule at the right height and read it carefully.', 'Read exactly where it should be.'],
       fail: ['We’ll read one of these off together in class.', 'Watch the worked example again — it is the height that decides it.']
     },
     box: {
-      perfect: ['A tidy box plot — every mark earned.', 'All five markers are where they belong.', 'Neat, and the box says what it should.'],
+      perfect: ['A tidy box plot, and every part of it is right.', 'All five markers are where they belong.', 'Neat, and the box says what it should.'],
       fail: ['We’ll build one of these together in class.', 'Watch the worked example again, then try it in class.']
     },
     judge: {
@@ -151,6 +151,29 @@
                 'Your last total matched the number of people.'],
       fail: ['We’ll fill one of these in together in class.',
              'Watch the worked example again — each row adds the next frequency.']
+    },
+    /* Book A's kinds (12 Sept 2026): each bank names what SHE did on that
+       board and nothing else - a card put in order is not a diagram, a pie
+       chart is not a line of best fit */
+    cycle: {
+      perfect: ['Every stage in the order it happens.', 'The cycle runs the right way round.', 'You put the stages in order.'],
+      fail: ['We’ll walk the cycle together in class.', 'Watch the worked example again — each stage leads to the next.']
+    },
+    pick: {
+      perfect: ['You chose the question that works, and you said why.', 'Right choice, right reason.', 'You spotted what lets the others down.'],
+      fail: ['We’ll look at these questions together in class.', 'Watch the worked example again — think about the boxes people have to choose from.']
+    },
+    stemleaf: {
+      perfect: ['Every leaf on its stem, in order.', 'A tidy diagram, and the key says what it should.', 'Every value is on the diagram once.'],
+      fail: ['We’ll build one of these together in class.', 'Watch the worked example again — order the list first.']
+    },
+    pie: {
+      perfect: ['The angles add to 360°, and the sectors match them.', 'Every sector drawn to its angle and labelled.', 'Worked out, drawn and labelled.'],
+      fail: ['We’ll draw one of these together in class.', 'Watch the worked example again — the angles must add to 360°.']
+    },
+    scatter: {
+      perfect: ['Every point plotted, and the line follows them.', 'Plotted, drawn and read off.', 'Your line runs through the middle of the cloud.'],
+      fail: ['We’ll plot one of these together in class.', 'Watch the worked example again — the line follows the slope of the points.']
     },
     values: {
       perfect: ['Worked out and written in.', 'You filled in every box, and got them all right.',

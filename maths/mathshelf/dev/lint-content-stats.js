@@ -47,7 +47,8 @@ var DEFAULT_PACK_PATHS = [
    tools/qa/lib/decl.js) can prove that every authored question of every kind
    this book uses is re-derived by something. A kind added to a pack and not
    added here fails coverage by name. */
-const KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'];
+const KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
+  /* Book A (CONTRACT_A.md, 12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter'];
 
 /* ──────────────────────────────── failures / report shape ──────────────── */
 
@@ -346,8 +347,30 @@ var FT_RULE_NAMES = ['venn.only', 'venn.outside', 'venn.both.fromTotals', 'pie.a
 var REASON_IDS = ['SMALL', 'BIASED', 'WRONG_POP', 'ESTIMATE', 'TIME_PLACE',
   'USE_IQR_OUTLIERS', 'USE_RANGE_ALL', 'USE_MIDDLE_HALF'];
 
+/* ──────────────────────────────── §17.8 questionnaire bank (own copy) ───── */
+/* Book A's ten Q_* ids (design §17.8) — a `judge` claim's `why`/`alsoWhy` and
+   a question's `reasons` may name these as well as the §6.6 bank above; a
+   `pick` option's `flaw` is drawn from THIS bank only (CONTRACT_A §pick). */
+var Q_IDS = ['Q_OVERLAP', 'Q_GAP', 'Q_NO_ZERO', 'Q_NO_TIME', 'Q_LEADING',
+  'Q_VAGUE', 'Q_NO_OTHER', 'Q_ONLY_POSITIVE', 'Q_PERSONAL', 'Q_OPEN'];
+
 /* ──────────────────────────────── telegraph phrases (§11.1, extendable) ── */
-var TELEGRAPH_PHRASES = ['upper class boundar', 'Q3 − Q1', 'Q3-Q1', 'n/2', 'half of'];
+var TELEGRAPH_PHRASES = ['upper class boundar', 'Q3 − Q1', 'Q3-Q1', 'n/2', 'half of',
+  /* Book A additions (this package) */ '× 360', '360 ÷', 'divide by the total', 'multiply by 360'];
+/* "start in the middle" is deliberately NOT in this list — it is Colette's
+   own hint, quoted verbatim in the A·s2 movie caption (design §19), not a
+   telegraph of the method inside a QUESTION prompt. */
+
+/* "(n + 1) ÷ 2" is banned only inside a stem-and-leaf READ prompt (a `values`
+   question reading range/mode/median off a stem-and-leaf `fig`, or a
+   `stemleaf` kind's own prompt) — checked separately from the general list
+   above because the phrase is legitimate maths-register elsewhere (e.g. it is
+   exactly how a qlist median position is described in the movie). */
+function checkStemleafTelegraph(book, secId, qid, prompt) {
+  if (typeof prompt !== 'string') return;
+  if (prompt.replace(/−/g, '-').indexOf('(n + 1) ÷ 2') !== -1 || prompt.replace(/−/g, '-').indexOf('(n+1) ÷ 2') !== -1)
+    fail(book, secId, qid, 'prompt', 'telegraphs "(n + 1) ÷ 2"');
+}
 
 function checkTelegraph(book, secId, qid, prompt) {
   if (typeof prompt !== 'string') return;
@@ -405,7 +428,11 @@ var report = [];
 
 var CHART_OPS = ['table', 'tcell', 'chart', 'plot', 'curve', 'rule', 'drop', 'scale', 'marker', 'box', 'ring', 'bracket'];
 var PAPER_OPS = ['write', 'sub', 'tick', 'note', 'stamp', 'clear'];
-var MOVIE_OPS = CHART_OPS.concat(PAPER_OPS);
+/* Book A ops (CONTRACT_A.md "Player ops Book A adds", §19) */
+var BOOKA_OPS = ['venn', 'vfill', 'pie', 'sector', 'stemleaf', 'leaf', 'key', 'lobf'];
+var MOVIE_OPS = CHART_OPS.concat(PAPER_OPS).concat(BOOKA_OPS);
+var VENN_REGIONS_2 = ['A', 'B', 'AB', 'out'];
+var VENN_REGIONS_3 = ['A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC', 'out'];
 
 function checkMovie(book, secId, movie, rules) {
   var w = secId;
@@ -419,6 +446,12 @@ function checkMovie(book, secId, movie, rules) {
   var lines = 0, redNotes = 0, lastListLen = 0, markersPlaced = 0;
   var tableFreq = null; /* the movie's own frequency column, once a `table` op sets it */
   var movieN = null;
+  /* Book A movie state (this package) */
+  var vennRegions = null;      /* set once a `venn` op lays circles */
+  var stemleafStems = null;    /* set once a `stemleaf` op lays stems */
+  var filmLeaves = [];         /* {stem,leaf} pairs placed by `leaf` ops so far */
+  var sectorSum = 0, sectorCount = 0;
+  var lastChart = null;        /* {x:{min,max}, y:{min,max}} of the last `chart` op */
 
   movie.steps.forEach(function (step, si) {
     if (typeof step.say !== 'string' || !step.say.trim()) fail(book, secId, 'movie', 'structure', 'step ' + (si + 1) + ' missing caption');
@@ -457,6 +490,7 @@ function checkMovie(book, secId, movie, rules) {
           break;
         case 'chart':
           if (!v.x || !v.y) fail(book, secId, 'movie', 'structure', 'chart op needs x/y axes at step ' + (si + 1));
+          else lastChart = { x: v.x, y: v.y };
           break;
         case 'plot':
           if (v.x === undefined || v.y === undefined) { fail(book, secId, 'movie', 'structure', 'plot op needs x,y at step ' + (si + 1)); break; }
@@ -515,10 +549,68 @@ function checkMovie(book, secId, movie, rules) {
         case 'clear':
           lines = 0;
           break;
+        /* ── Book A ops (CONTRACT_A.md §19) ────────────────────────────── */
+        case 'venn':
+          if (!Array.isArray(v.circles) || (v.circles.length !== 2 && v.circles.length !== 3))
+            fail(book, secId, 'movie', 'structure', 'venn op needs 2 or 3 circles at step ' + (si + 1));
+          else {
+            var badCircle = v.circles.some(function (c) { return !c || !c.id || typeof c.label !== 'string'; });
+            if (badCircle) fail(book, secId, 'movie', 'structure', 'venn op circle missing id/label at step ' + (si + 1));
+            else vennRegions = v.circles.length === 3 ? VENN_REGIONS_3 : VENN_REGIONS_2;
+          }
+          break;
+        case 'vfill':
+          if (!v.region || v.text === undefined) fail(book, secId, 'movie', 'structure', 'vfill op needs region/text at step ' + (si + 1));
+          else if (vennRegions && vennRegions.indexOf(v.region) === -1)
+            fail(book, secId, 'movie', 'movie', 'vfill.region "' + v.region + '" is not one of the film\'s venn regions at step ' + (si + 1));
+          break;
+        case 'pie':
+          break; /* draws the circle + radius; nothing to validate positionally */
+        case 'sector':
+          if (typeof v.deg !== 'number' || v.deg <= 0)
+            fail(book, secId, 'movie', 'structure', 'sector.deg must be positive at step ' + (si + 1));
+          else { sectorSum += v.deg; sectorCount++; }
+          break;
+        case 'stemleaf':
+          if (!Array.isArray(v.stems) || !v.stems.length)
+            fail(book, secId, 'movie', 'structure', 'stemleaf op needs stems[] at step ' + (si + 1));
+          else stemleafStems = v.stems;
+          filmLeaves = [];
+          break;
+        case 'leaf':
+          if (v.stem === undefined || v.leaf === undefined)
+            fail(book, secId, 'movie', 'structure', 'leaf op needs stem/leaf at step ' + (si + 1));
+          else {
+            if (stemleafStems && stemleafStems.indexOf(v.stem) === -1)
+              fail(book, secId, 'movie', 'movie', 'leaf.stem ' + v.stem + ' is not among the film\'s stems at step ' + (si + 1));
+            filmLeaves.push({ stem: v.stem, leaf: v.leaf });
+          }
+          break;
+        case 'key':
+          if (v.stem === undefined || v.leaf === undefined || typeof v.means !== 'string' || !v.means)
+            fail(book, secId, 'movie', 'structure', 'key op needs stem/leaf/means at step ' + (si + 1));
+          else {
+            var isFilmValue = filmLeaves.some(function (l) { return l.stem === v.stem && l.leaf === v.leaf; });
+            if (filmLeaves.length && !isFilmValue)
+              fail(book, secId, 'movie', 'movie', 'key stem/leaf is not a value of the film\'s leaves at step ' + (si + 1));
+          }
+          break;
+        case 'lobf':
+          if (!Array.isArray(v.through) || v.through.length !== 2)
+            fail(book, secId, 'movie', 'structure', 'lobf.through needs two points at step ' + (si + 1));
+          else if (lastChart) {
+            var outside = v.through.some(function (p) {
+              return p[0] < lastChart.x.min || p[0] > lastChart.x.max || p[1] < lastChart.y.min || p[1] > lastChart.y.max;
+            });
+            if (outside) fail(book, secId, 'movie', 'movie', 'lobf.through has a point outside the film\'s chart at step ' + (si + 1));
+          }
+          break;
       }
     });
   });
   if (redNotes > 1) fail(book, secId, 'movie', 'structure', 'kitsch ration: at most one red note per movie, got ' + redNotes);
+  if (sectorCount && Math.abs(sectorSum - 360) > 1e-9)
+    fail(book, secId, 'movie', 'movie', 'sector degrees sum to ' + sectorSum + ', not 360');
   return movie.steps.length;
 }
 
@@ -537,8 +629,45 @@ function myUnitsOf(q, rules) {
     case 'compare': return [{ band: 'method', w: 1 }, { band: 'accuracy', w: 1 }];
     case 'judge': return judgeUnits(q);
     case 'values': return valuesUnits(q);
+    case 'order': return orderUnits(q);
+    case 'pick': return [{ band: 'accuracy', w: 1 }, { band: 'method', w: 1 }]; /* PICK, WHY */
+    case 'stemleaf': return stemleafKindUnits(q);
+    case 'pie': return pieKindUnits(q);
+    case 'scatter': return scatterKindUnits(q);
     default: return [];
   }
+}
+function orderUnits(q) {
+  var n = (q.tiles || []).length;
+  if (q.cyclic) {
+    var out = [];
+    for (var i = 0; i < n - 1; i++) out.push({ band: 'method', w: 1 });
+    out.push({ band: 'accuracy', w: 1 });
+    return out;
+  }
+  return [{ band: 'accuracy', w: 1 }]; /* SEQ */
+}
+function stemleafKindUnits(q) {
+  var out = [{ band: 'method', w: 1 }, { band: 'method', w: 1 }]; /* LEAVES, ORDERED */
+  if (q.key && q.key.ask) out.push({ band: 'accuracy', w: 1 }); /* KEY */
+  return out;
+}
+function pieKindUnits(q) {
+  var out = (q.cats || []).map(function () { return { band: 'method', w: 1 }; }); /* ANG_<id> */
+  out.push({ band: 'method', w: 1 }); /* SUM */
+  out.push({ band: 'accuracy', w: 1 }); /* SECTORS */
+  out.push({ band: 'accuracy', w: 1 }); /* LABELS */
+  return out;
+}
+function scatterKindUnits(q) {
+  var out = [{ band: 'method', w: q.pointsW || 1 }]; /* POINTS */
+  (q.asks || []).forEach(function (a) {
+    if (a.type === 'lobf') out.push({ band: 'method', w: 1 });
+    else if (a.type === 'estimate') out.push({ band: 'accuracy', w: 1 });
+    else if (a.type === 'corr') out.push({ band: 'accuracy', w: 1 });
+    else if (a.type === 'outlier') out.push({ band: 'accuracy', w: 1 });
+  });
+  return out;
 }
 function qlistUnits(q) {
   var out = [{ band: 'method', w: 1 }]; /* ORDER */
@@ -828,7 +957,9 @@ function checkCompare(book, secId, q) {
 }
 
 function checkJudge(book, secId, q) {
-  var bank = GJ_STATS ? Object.keys(GJ_STATS.REASONS || {}) : REASON_IDS;
+  /* Book A: a judge claim's why/alsoWhy, and a question's `reasons` filter,
+     may name the §6.6 sampling bank OR the §17.8 Q_* questionnaire bank. */
+  var bank = (GJ_STATS ? Object.keys(GJ_STATS.REASONS || {}) : REASON_IDS).concat(Q_IDS);
   (q.claims || []).forEach(function (c, i) {
     if (c.options) return; /* verdict/options checked separately */
     if (c.fair === false) {
@@ -840,6 +971,9 @@ function checkJudge(book, secId, q) {
     } else if (c.why) {
       fail(book, secId, q.id, 'src', 'claim ' + (i + 1) + ' is fair:true but carries a why');
     }
+  });
+  (q.reasons || []).forEach(function (rid) {
+    if (bank.indexOf(rid) === -1) fail(book, secId, q.id, 'src', 'reasons names "' + rid + '" which is not in the reason bank');
   });
   checkJudgeOptions(book, secId, q);
 }
@@ -854,6 +988,298 @@ function checkValues(book, secId, q) {
     if (slot.ft && slot.ft.rule && FT_RULE_IDS.indexOf(slot.ft.rule) === -1)
       fail(book, secId, q.id, 'src', 'slot "' + slot.id + '" ft.rule "' + slot.ft.rule + '" not in the closed table');
   });
+  checkValuesFig(book, secId, q);
+}
+
+/* ──────────────────────────────── §17.3 order — permutation re-check ────── */
+function checkOrder(book, secId, q) {
+  var tiles = q.tiles || [], answer = q.answer;
+  if (!Array.isArray(answer) || answer.length !== tiles.length) {
+    fail(book, secId, q.id, 'order', 'answer is not a permutation of the ' + tiles.length + ' tiles');
+    return;
+  }
+  var seen = {}, ok = true;
+  answer.forEach(function (i) {
+    if (!Number.isInteger(i) || i < 0 || i >= tiles.length || seen[i]) ok = false;
+    seen[i] = true;
+  });
+  if (!ok) fail(book, secId, q.id, 'order', 'answer is not a permutation of the ' + tiles.length + ' tiles');
+  if (q.cyclic && tiles.length < 3)
+    fail(book, secId, q.id, 'order', 'cyclic:true needs at least 3 tiles (got ' + tiles.length + ')');
+}
+
+/* ──────────────────────────────── §17.4 pick — one best, every other flawed */
+function checkPick(book, secId, q) {
+  var options = q.options || [];
+  var bestCount = options.filter(function (o) { return o.best === true; }).length;
+  if (bestCount !== 1)
+    fail(book, secId, q.id, 'pick', 'exactly one option must be best:true (found ' + bestCount + ')');
+  options.forEach(function (o, i) {
+    if (o.best) return;
+    if (!o.flaw || Q_IDS.indexOf(o.flaw) === -1)
+      fail(book, secId, q.id, 'pick', 'option ' + (i + 1) + ' is not best but has no flaw id from the Q_* bank');
+  });
+  for (var i = 0; i < options.length; i++) {
+    for (var j = i + 1; j < options.length; j++) {
+      if (options[i].text !== undefined && options[i].text === options[j].text)
+        fail(book, secId, q.id, 'pick', 'options ' + (i + 1) + ' and ' + (j + 1) + ' have identical text');
+    }
+  }
+}
+
+/* ──────────────────────────────── §17.1 values figures — venn2/venn3/stemleaf */
+function slotAnswerNum(slot) {
+  if (!slot || slot.answer === undefined || slot.answer === null || (slot.answer && slot.answer.constraints)) return null;
+  return R(slot.answer);
+}
+function checkValuesVenn(book, secId, q, is3) {
+  var fig = q.fig, slots = q.slots || [];
+  var n = R(fig.n);
+  var regionIds = is3 ? VENN_REGIONS_3 : VENN_REGIONS_2;
+  var sums = {};
+  regionIds.forEach(function (r) { sums[r] = R0; });
+  var anyMissing = false;
+  slots.forEach(function (s) {
+    if (!s.region) { fail(book, secId, q.id, 'venn', 'slot "' + s.id + '" has no region'); return; }
+    if (regionIds.indexOf(s.region) === -1) {
+      fail(book, secId, q.id, 'venn', 'slot "' + s.id + '" region "' + s.region + '" is not one of ' + regionIds.join('/'));
+      return;
+    }
+    var v = slotAnswerNum(s);
+    if (!v) { anyMissing = true; return; }
+    sums[s.region] = radd(sums[s.region], v);
+  });
+  if (anyMissing) return; /* can't re-derive totals with an unauthored slot answer */
+  var totalAll = regionIds.reduce(function (acc, r) { return radd(acc, sums[r]); }, R0);
+  if (n && !req(totalAll, n))
+    fail(book, secId, q.id, 'venn', 'the regions do not add up — the ' + regionIds.length + ' regions sum to ' + rstr(totalAll) + ', not n = ' + rstr(n));
+  var totals = fig.totals || {};
+  var circleIds = is3 ? ['A', 'B', 'C'] : ['A', 'B'];
+  circleIds.forEach(function (c) {
+    if (totals[c] === undefined) return;
+    var t = R(totals[c]);
+    var inCircle = regionIds.filter(function (r) { return r !== 'out' && r.indexOf(c) !== -1; });
+    var circleSum = inCircle.reduce(function (acc, r) { return radd(acc, sums[r]); }, R0);
+    if (t && !req(circleSum, t))
+      fail(book, secId, q.id, 'venn', 'the regions do not add up — circle ' + c + '\'s regions sum to ' + rstr(circleSum) + ', not totals.' + c + ' = ' + rstr(t));
+  });
+}
+/* decimals 0 -> stem=floor(v/10), leaf=v mod 10; decimals 1 -> stem=floor(v), leaf=round(10*frac) */
+function splitStemLeaf(v, decimals) {
+  var num = rnum(v);
+  if (decimals === 1) {
+    var stem = Math.floor(num + 1e-9);
+    var leaf = Math.round((num - stem) * 10);
+    return { stem: stem, leaf: leaf };
+  }
+  var stem2 = Math.floor(num / 10 + 1e-9);
+  var leaf2 = Math.round(num - stem2 * 10);
+  return { stem: stem2, leaf: leaf2 };
+}
+function checkValuesStemleafFig(book, secId, q) {
+  var fig = q.fig, slots = q.slots || [];
+  var rows = fig.rows || {};
+  var list = [];
+  Object.keys(rows).forEach(function (stem) {
+    (rows[stem] || []).forEach(function (leaf) {
+      var num = fig.decimals === 1 ? (Number(stem) + Number(leaf) / 10) : (Number(stem) * 10 + Number(leaf));
+      list.push(num);
+    });
+  });
+  list.sort(function (a, b) { return a - b; });
+  if (!list.length) return;
+  var min = list[0], max = list[list.length - 1];
+  var freq = {}; list.forEach(function (v) { freq[v] = (freq[v] || 0) + 1; });
+  var modeVal = null, modeCount = -1;
+  list.forEach(function (v) { if (freq[v] > modeCount) { modeCount = freq[v]; modeVal = v; } });
+  var mid = Math.floor(list.length / 2);
+  var medianVal = list.length % 2 ? list[mid] : (list[mid - 1] + list[mid]) / 2;
+  var truthByName = { range: max - min, mode: modeVal, median: medianVal };
+  slots.forEach(function (s) {
+    var name = /range/i.test(s.label || s.id || '') ? 'range' : /mode/i.test(s.label || s.id || '') ? 'mode' : /median/i.test(s.label || s.id || '') ? 'median' : null;
+    if (!name) return;
+    var authored = slotAnswerNum(s);
+    if (!authored) return;
+    var truth = R(truthByName[name]);
+    if (truth && !req(authored, truth))
+      fail(book, secId, q.id, 'stemleaf', 'slot "' + s.id + '" (' + name + ') authored ' + rstr(authored) + ' but re-derived from the diagram ' + rstr(truth));
+  });
+  if (fig.key && fig.key.stem !== undefined && fig.key.leaf !== undefined) {
+    var kv = fig.decimals === 1 ? (Number(fig.key.stem) + Number(fig.key.leaf) / 10) : (Number(fig.key.stem) * 10 + Number(fig.key.leaf));
+    var kstem = String(fig.key.stem);
+    var rowHasLeaf = (rows[kstem] || rows[Number(kstem)] || []).some(function (l) { return Number(l) === Number(fig.key.leaf); });
+    if (!rowHasLeaf)
+      fail(book, secId, q.id, 'stemleaf', 'key stem/leaf does not reproduce a value on the diagram');
+    if (typeof fig.key.means !== 'string' || fig.key.means.indexOf(String(kv)) === -1)
+      fail(book, secId, q.id, 'stemleaf', 'key.means does not carry the value ' + kv);
+  }
+}
+function checkValuesFig(book, secId, q) {
+  if (!q.fig || !q.fig.type) return;
+  if (q.fig.type === 'venn2') checkValuesVenn(book, secId, q, false);
+  else if (q.fig.type === 'venn3') checkValuesVenn(book, secId, q, true);
+  else if (q.fig.type === 'stemleaf') { checkValuesStemleafFig(book, secId, q); checkStemleafTelegraph(book, secId, q.id, q.prompt); }
+}
+
+/* ──────────────────────────────── §17.5 stemleaf kind — build the diagram ── */
+function checkStemleafKind(book, secId, q) {
+  checkStemleafTelegraph(book, secId, q.id, q.prompt);
+  var decimals = q.decimals, stems = q.stems || [];
+  var values = q.values || [];
+  var seenPairs = {};
+  values.forEach(function (v) {
+    var sl = splitStemLeaf(R(v), decimals);
+    if (stems.indexOf(sl.stem) === -1)
+      fail(book, secId, q.id, 'stemleaf', 'value ' + v + '\'s stem ' + sl.stem + ' is not in stems');
+    seenPairs[sl.stem + '|' + sl.leaf] = (seenPairs[sl.stem + '|' + sl.leaf] || 0) + 1;
+  });
+  if (q.prefill && Array.isArray(q.prefill.stemsDone)) {
+    q.prefill.stemsDone.forEach(function (s) {
+      if (stems.indexOf(s) === -1)
+        fail(book, secId, q.id, 'stemleaf', 'prefill.stemsDone names stem ' + s + ' which is not in stems');
+    });
+  }
+  if (q.back && Array.isArray(q.back.values)) {
+    q.back.values.forEach(function (v) {
+      var sl = splitStemLeaf(R(v), decimals);
+      if (stems.indexOf(sl.stem) === -1)
+        fail(book, secId, q.id, 'stemleaf', 'back value ' + v + '\'s stem ' + sl.stem + ' is not in stems');
+    });
+  }
+  var keyGiven = q.key && q.key.stem !== undefined && q.key.leaf !== undefined;
+  var keyAsked = q.key && q.key.ask === true;
+  if (keyGiven && keyAsked)
+    fail(book, secId, q.id, 'stemleaf', 'key.ask and a given key cannot both be present');
+  if (keyGiven) {
+    var pairKey = q.key.stem + '|' + q.key.leaf;
+    if (!seenPairs[pairKey])
+      fail(book, secId, q.id, 'stemleaf', 'given key stem/leaf does not reproduce a value of the data');
+    if (typeof q.key.means !== 'string' || !q.key.means)
+      fail(book, secId, q.id, 'stemleaf', 'given key has no means text');
+  }
+}
+
+/* ──────────────────────────────── §17.6 pie kind ─────────────────────────── */
+function checkPieKind(book, secId, q) {
+  var cats = q.cats || [];
+  var total = R(q.total);
+  var sumF = cats.reduce(function (a, c) { return a + (Number(c.f) || 0); }, 0);
+  if (total && Math.abs(rnum(total) - sumF) > 1e-9)
+    fail(book, secId, q.id, 'pie', 'total = ' + rstr(total) + ' does not equal Σf = ' + sumF);
+  if (!total || !rnum(total)) return;
+  var angleSum = 0, pctColumn = [], degColumn = [];
+  cats.forEach(function (c) {
+    var f = Number(c.f) || 0;
+    var angle = f * 360 / rnum(total);
+    var pct = f * 100 / rnum(total);
+    degColumn.push(angle); pctColumn.push(pct);
+    if (Math.abs(angle - Math.round(angle)) > 1e-9)
+      fail(book, secId, q.id, 'pie', 'angle for "' + c.label + '" is not a whole number of degrees');
+    angleSum += Math.round(angle);
+  });
+  if (angleSum !== 360)
+    fail(book, secId, q.id, 'pie', 'angles sum to ' + angleSum + ', not 360');
+  var indistinguishable = pctColumn.every(function (p, i) { return Math.abs(p - degColumn[i]) < 1e-9; });
+  if (indistinguishable)
+    fail(book, secId, q.id, 'dx', '"PIE_PCT_NOT_DEG" equals the truth');
+}
+
+/* ──────────────────────────────── §17.7 scatter kind ─────────────────────── */
+function pointKey(p) { return rnum(R(p[0])) + ',' + rnum(R(p[1])); }
+function leastSquares(points) {
+  var n = points.length;
+  var sx = 0, sy = 0;
+  points.forEach(function (p) { sx += p[0]; sy += p[1]; });
+  var mx = sx / n, my = sy / n;
+  var num = 0, den = 0;
+  points.forEach(function (p) { num += (p[0] - mx) * (p[1] - my); den += (p[0] - mx) * (p[0] - mx); });
+  var m = den ? num / den : 0;
+  return { m: m, c: my - m * mx, meanX: mx, meanY: my };
+}
+function pearsonR(points) {
+  var n = points.length, sx = 0, sy = 0;
+  points.forEach(function (p) { sx += p[0]; sy += p[1]; });
+  var mx = sx / n, my = sy / n;
+  var num = 0, dx = 0, dy = 0;
+  points.forEach(function (p) { num += (p[0] - mx) * (p[1] - my); dx += (p[0] - mx) * (p[0] - mx); dy += (p[1] - my) * (p[1] - my); });
+  return (dx && dy) ? num / Math.sqrt(dx * dy) : 0;
+}
+function checkScatterKind(book, secId, q) {
+  var given = q.given || [], toPlot = q.toPlot || [];
+  var all = given.concat(toPlot);
+  var chart = q.chart || {};
+  var sqx = (chart.sq && (chart.sq.x !== undefined ? chart.sq.x : chart.sq)) || 1;
+  var sqy = (chart.sq && (chart.sq.y !== undefined ? chart.sq.y : chart.sq)) || sqx;
+  var xr = chart.x || {}, yr = chart.y || {};
+
+  /* given/toPlot disjoint */
+  var givenKeys = {}; given.forEach(function (p) { givenKeys[pointKey(p)] = true; });
+  var overlap = toPlot.some(function (p) { return givenKeys[pointKey(p)]; });
+  if (overlap) fail(book, secId, q.id, 'scatter', 'given and toPlot share a point');
+
+  /* on-grid + inside axes with >=2 squares headroom */
+  all.forEach(function (p) {
+    var offGridX = Math.abs(p[0] / sqx - Math.round(p[0] / sqx)) > 1e-9;
+    var offGridY = Math.abs(p[1] / sqy - Math.round(p[1] / sqy)) > 1e-9;
+    var outOfAxes = (xr.min !== undefined && p[0] < xr.min) || (xr.max !== undefined && p[0] > xr.max) ||
+      (yr.min !== undefined && p[1] < yr.min) || (yr.max !== undefined && p[1] > yr.max);
+    var headroomX = xr.max !== undefined && (xr.max - p[0]) < 2 * sqx && (p[0] - (xr.min || 0)) < 2 * sqx ? false : true;
+    if (offGridX || offGridY || outOfAxes)
+      fail(book, secId, q.id, 'scatter', '(' + p[0] + ', ' + p[1] + ') is off the grid');
+  });
+  if (xr.max !== undefined && xr.min !== undefined) {
+    var xHeadroom = (xr.max - xr.min) - (Math.max.apply(null, all.map(function (p) { return p[0]; })) - Math.min.apply(null, all.map(function (p) { return p[0]; })));
+    if (xHeadroom < 2 * sqx - 1e-9) fail(book, secId, q.id, 'scatter', 'x axis has less than 2 squares of headroom around the plotted points');
+  }
+  if (yr.max !== undefined && yr.min !== undefined) {
+    var yHeadroom = (yr.max - yr.min) - (Math.max.apply(null, all.map(function (p) { return p[1]; })) - Math.min.apply(null, all.map(function (p) { return p[1]; })));
+    if (yHeadroom < 2 * sqy - 1e-9) fail(book, secId, q.id, 'scatter', 'y axis has less than 2 squares of headroom around the plotted points');
+  }
+
+  if (all.length < 2) return;
+  var ls = leastSquares(all);
+  var r = pearsonR(all);
+  var asks = q.asks || [];
+
+  asks.forEach(function (a) {
+    if (a.type === 'corr' && q.answer) { /* no per-question authored answer field in the schema for corr at author time beyond asks[].answer */
+    }
+    if (a.type === 'corr' && a.answer) {
+      var sign = ls.m > 1e-9 ? 'positive' : ls.m < -1e-9 ? 'negative' : 'none';
+      if (a.answer === 'none' && Math.abs(r) >= 0.3)
+        fail(book, secId, q.id, 'scatter', 'corr answer "none" but |r| = ' + Math.abs(r).toFixed(2) + ' >= 0.3');
+      else if (a.answer !== 'none' && a.answer !== sign)
+        fail(book, secId, q.id, 'scatter', 'corr answer "' + a.answer + '" disagrees with the least-squares slope\'s sign (' + sign + ')');
+    }
+    if (a.type === 'estimate') {
+      var axisRange = a.from === 'y' ? { min: Math.min.apply(null, all.map(function (p) { return p[1]; })), max: Math.max.apply(null, all.map(function (p) { return p[1]; })) }
+        : { min: Math.min.apply(null, all.map(function (p) { return p[0]; })), max: Math.max.apply(null, all.map(function (p) { return p[0]; })) };
+      if (a.at < axisRange.min || a.at > axisRange.max)
+        fail(book, secId, q.id, 'scatter', 'estimate at ' + a.at + ' lies outside the plotted range');
+    }
+    if (a.type === 'outlier') {
+      var idx = a.answer;
+      if (!Number.isInteger(idx) || idx < 0 || idx >= all.length) {
+        fail(book, secId, q.id, 'scatter', 'outlier answer index ' + idx + ' does not exist in given.concat(toPlot)');
+      } else {
+        var without = all.filter(function (_, i) { return i !== idx; });
+        var lsWithout = leastSquares(without);
+        var distOf = function (p) { return Math.abs(p[1] - (lsWithout.m * p[0] + lsWithout.c)); };
+        var outlierDist = distOf(all[idx]);
+        var maxOther = Math.max.apply(null, without.map(distOf));
+        if (outlierDist <= maxOther)
+          fail(book, secId, q.id, 'scatter', 'outlier at index ' + idx + ' is not the point furthest from the line fitted without it');
+      }
+    }
+  });
+
+  /* distinguishability: swapped (y,x) set must differ from the true toPlot set */
+  var swapped = toPlot.map(function (p) { return [p[1], p[0]]; });
+  var trueKeys = {}; toPlot.forEach(function (p) { trueKeys[pointKey(p)] = (trueKeys[pointKey(p)] || 0) + 1; });
+  var swapKeys = {}; swapped.forEach(function (p) { swapKeys[pointKey(p)] = (swapKeys[pointKey(p)] || 0) + 1; });
+  var sameSet = Object.keys(trueKeys).length === Object.keys(swapKeys).length &&
+    Object.keys(trueKeys).every(function (k) { return trueKeys[k] === swapKeys[k]; });
+  if (sameSet) fail(book, secId, q.id, 'dx', '"SC_XY_SWAPPED" equals the truth');
 }
 
 /* ──────────────────────────────── shared dataset (movie vs question) ────── */
@@ -926,6 +1352,11 @@ packs.forEach(function (pack) {
         case 'compare': checkCompare(bookName, sec.id, q); break;
         case 'judge': checkJudge(bookName, sec.id, q); break;
         case 'values': checkValues(bookName, sec.id, q); break;
+        case 'order': checkOrder(bookName, sec.id, q); break;
+        case 'pick': checkPick(bookName, sec.id, q); break;
+        case 'stemleaf': checkStemleafKind(bookName, sec.id, q); break;
+        case 'pie': checkPieKind(bookName, sec.id, q); break;
+        case 'scatter': checkScatterKind(bookName, sec.id, q); break;
       }
       checkReachableMarks(bookName, sec.id, q, rulesForQ);
 

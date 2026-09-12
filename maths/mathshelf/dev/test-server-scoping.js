@@ -61,6 +61,9 @@ const sandbox = {
     flush: function () {}
   },
   LockService: { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } },
+  /* the BOUND home: no sheetId property, so ss_() falls back to the active
+     spreadsheet above (Book A's cut, 12 Sept 2026) */
+  PropertiesService: { getScriptProperties: function () { return { getProperty: function () { return null; } }; } },
   console: console
 };
 vm.createContext(sandbox);

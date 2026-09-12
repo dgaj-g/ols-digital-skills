@@ -50,6 +50,14 @@ const DETECT_KIND = `(() => {
   if (root.querySelector('.stat-claim')) return 'judge';
   if (root.querySelector('.stat-slots')) return 'values';
   if (root.querySelector('.stat-table')) return 'cftable';
+  /* Book A's five kinds (jotter-stats.js's tagQuestionRoot stamps data-kind
+     for these too, in the ordinary case - these are the same fallback,
+     asked of the screen's own furniture) */
+  if (root.querySelector('.stat-order')) return 'order';
+  if (root.querySelector('.stat-pick')) return 'pick';
+  if (root.querySelector('.stat-stemleaf')) return 'stemleaf';
+  if (root.querySelector('.stat-pie')) return 'pie';
+  if (root.querySelector('.stat-scatter')) return 'scatter';
   return 'unknown';
 })`;
 
@@ -202,7 +210,12 @@ const MOVES = {
   boxplot: 'press a tray marker then the scale, five times, then draw the box plot',
   compare: 'press one chip per bracket and key both values in each sentence',
   judge: 'press the true verdict chip per claim, and the authored reason where it is not fair',
-  values: 'open every labelled box and key its true value'
+  values: 'open every labelled box and key its true value',
+  order: 'press the tray tiles into the row in the true order',
+  pick: 'choose the better question, then say why the other falls short',
+  stemleaf: 'place every leaf on its true stem, ascending outward, then build the key',
+  pie: 'work out each true angle, draw the sectors from them, then label every sector',
+  scatter: 'plot every point, draw the least-squares line, then answer what is asked'
 };
 const WRONG_MOVES = {
   /* the pattern dev/model-attempts.js's own corrupt() plays for that kind -
@@ -214,7 +227,12 @@ const WRONG_MOVES = {
   boxplot: 'the whiskers and the quartiles confused (min/Q1 and Q3/max swapped)',
   compare: 'the right numbers, the context word flipped (higher median called the wrong way)',
   judge: 'the first authored not-fair claim accepted as fair (or its options flipped to a wrong one)',
-  values: 'the first slot keyed one out from its true value'
+  values: 'the first slot keyed one out from its true value',
+  order: 'the middle two tiles swapped',
+  pick: 'the first wrong option, with its own authored flaw given back as the reason',
+  stemleaf: 'the leaves placed in the order they were printed, unordered outward on the stem',
+  pie: 'the angles worked as percentages of the total, not degrees',
+  scatter: 'x and y swapped on every point (or, where that would fall off the axes, the first point one square out)'
 };
 
 /* SETTLE — a chart-based board (cfplot/cfread/boxplot) assembles its curve
@@ -231,7 +249,13 @@ async function settleChart(page, tries) {
 }
 const SETTLE = {
   qlist: settle, cftable: settle, values: settle, compare: settle, judge: settle,
-  cfplot: settleChart, cfread: settleChart, boxplot: settleChart
+  cfplot: settleChart, cfread: settleChart, boxplot: settleChart,
+  /* Book A: order/pick/stemleaf are trays and tables, not a drawn curve -
+     the ordinary settle; pie and scatter draw on the same SVG board as
+     cfplot/cfread/boxplot (sectors swept, a line-of-best-fit drawn) so they
+     take the same fixed further wait for the slowest stroke-dashoffset */
+  order: settle, pick: settle, stemleaf: settle,
+  pie: settleChart, scatter: settleChart
 };
 
 /* the question root's own identity, for the sidecar */

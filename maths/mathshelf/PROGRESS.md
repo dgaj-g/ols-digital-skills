@@ -5,6 +5,12 @@ the resume point. Nothing in a chat window is needed to continue.
 
 ---
 
+## 12 SEPT 2026, 21:00 → — BOOK A, Handling Data · Collecting and displaying (clock stamped 21:00 BST at `1bb9ea8`, budget 270 min = class fixes 45 + Book A 180 + the DATA split 45; RESUME_AB, Opus 5)
+
+**IN PROGRESS — this entry is the checkpoint; the done message is written when the book is live.**
+Packages ran in parallel by file ownership from 21:04 (TIME c): SERVER-SPLIT (opus, 13 min — `acts_()` from the Config row `acts` unioned with the built-in list, `ss_()` by `sheetId`; qa-two-homes 62 → 107 checks, 15 of 15 controls FIRED; `server/DEPLOY.md` "TWO PROJECTS" on top), ENGINE-A (opus — order/pick/stemleaf/pie/scatter units, dx, model boards, gist; selfTest 160 → 270; notes `tools/qa/out/bookA/ENGINE_NOTES.md`), CHART-A (opus — venn/pie/stemleafFilm boards, scatter line/handles/outlier, y-axis break, the laptop margin reclaim (54 px → 0 hidden at 1280), `clearDrop()`, eight player ops; scratch proof ALL PASS at 375/1280), LINT-A (sonnet — the five kinds' re-derivations, 29 fixed FAIL stems proved on a throwaway fixture, `FIXTURE_A.txt`), CONTENT-A (sonnet — `tools/qa/out/bookA/content-stats-collect.js`, five sections, 32 questions, page reads under `tools/qa/out/bookA/pages/`), WALK-A (sonnet — drive.js routes for the five kinds, walk-moves, six `stats-a-*` plants), WORDS-C (sonnet — 6 of the 8 REWRITE/FAIL rows in the pack; 2 in jotter.js's banks applied by hand). The session's usage limit cut three packages off at ~21:25 (reset 21:50); each was resumed from its own notes.
+Class fixes done by hand (21:05–21:35): `.jq-margin` 13 px at ≤640 (the 11 px ink of q31/q32 at 375), the hollow FT tick at full green, the struck ghost keeps ink (line-through in pencil), "Scroll or swipe the graph sideways…" (the statScrollGraph FAIL honoured), the tray fiction now DEFINES the tray (the said-twice pair on Ex 5 dissolved), the parked rule reads nothing (the stray "0" on Ex 4 at 375), the `fixture-css-amber` plant written (COLOUR-TOKENS: `--gold-ink` was already `#6F6108`, COLOUR_LAW already reads its tokens; only the plant was missing). Renderers (order, pick, stemleaf, values-on-a-figure, pie, scatter) in jotter-stats.js by 21:25; strings, CSS, comment banks, the shelf entry/motif/trips, index.html and build-pathb wired by 21:55.
+
 ## 12 SEPT 2026, night — THE STORE CUT (clock stamped 20:11, budget 120 min; ruling 51, the hop itself)
 
 **STORE CUT LIVE — DATA Version 32 (20:27), FRONT DOOR Version 33 (20:30), `913e0f8`.**

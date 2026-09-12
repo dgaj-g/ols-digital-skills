@@ -148,7 +148,9 @@ g.note('largest plausible SUMMARY per book (chars, JSON, real summarise()): ' + 
   ' — built from synthetic attempt text, so a marking engine that resolves a real verdict on real pupil writing may size slightly differently; the bound above is what this gate can actually exercise');
 
 /* ═══════════════════ 30 pupils × every book, through the mocked server ═ */
-const data = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW });
+/* every book on the shelf must fit at class scale, so the mock carries the
+   Config row `acts` the live Sheet carries (mockenv.shelfActsRow, derived) */
+const data = makeEnv({ active: TEACHER, effective: TEACHER, passcode: PW, actsRow: 'shelf' });
 loadTemplate(data, TPL);
 data.call('initJotter')();
 data.as(TEACHER);

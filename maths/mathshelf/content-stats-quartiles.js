@@ -86,7 +86,7 @@
             answer: { Q1: { n: 61, d: 1 }, Q2: { n: 66, d: 1 }, Q3: { n: 68, d: 1 }, IQR: { n: 7, d: 1 } },
             src: 'Quartiles and Box Plots booklet MMcK.pdf p2 Q1' },
           { id: 'q2', kind: 'qlist', marks: [3, 1],
-            prompt: 'The speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range.',
+            prompt: 'Here are the speeds of 11 cars passing a speed camera, in mph: 19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36. Find the median, the lower quartile, the upper quartile and the interquartile range.',
             values: [19, 22, 26, 28, 28, 29, 29, 30, 30, 31, 36],
             ask: ['Q1', 'Q2', 'Q3', 'IQR'],
             answer: { Q1: { n: 26, d: 1 }, Q2: { n: 29, d: 1 }, Q3: { n: 30, d: 1 }, IQR: { n: 4, d: 1 } },
@@ -130,10 +130,10 @@
             claims: [
               { text: 'The range is a better measure of spread than the interquartile range.', fair: false,
                 why: 'USE_IQR_OUTLIERS', alsoWhy: ['USE_RANGE_ALL', 'USE_MIDDLE_HALF'] },
-              { text: 'The mean wage will', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Decrease' },
-              { text: 'The modal wage will', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Stay the same' },
-              { text: 'The median wage will', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Decrease' },
-              { text: 'The range of the wages will', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Increase' }
+              { text: 'When the £110 wage is added, the mean wage will…', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Decrease' },
+              { text: 'Add the £110 wage to the list, and the modal wage will…', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Stay the same' },
+              { text: 'Once the £110 wage joins the list, the median wage will…', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Decrease' },
+              { text: 'With the £110 wage added to the list, the range of the wages will…', options: ['Increase', 'Decrease', 'Stay the same'], verdict: 'Increase' }
             ],
             src: 'Quartiles and Box Plots booklet MMcK.pdf p8 Q12(e); Statistics M7 (1).pdf Q5' }
         ]
@@ -261,7 +261,7 @@
                      sq: { x: 2, y: 2 } },
             src: 'Statistics M7 (1).pdf Q21(b)' },
           { id: 'q14', kind: 'cfplot', marks: [2, 1], reserve: true,
-            prompt: 'In a survey, 184 people stated their weekly wage, grouped below. Draw the cumulative frequency graph for this information.',
+            prompt: 'In a survey, 184 people stated their weekly wage. The results are shown in the table below. Draw the cumulative frequency graph for this information.',
             classes: [{ lo: 0, hi: 100, f: 4 }, { lo: 100, hi: 200, f: 16 }, { lo: 200, hi: 300, f: 25 }, { lo: 300, hi: 400, f: 32 },
                       { lo: 400, hi: 500, f: 54 }, { lo: 500, hi: 600, f: 25 }, { lo: 600, hi: 700, f: 20 }, { lo: 700, hi: 800, f: 6 },
                       { lo: 800, hi: 900, f: 2 }],

@@ -55,6 +55,26 @@ function makeSheet(width, name) {
 }
 
 /* one Apps Script world. `role` decides who Session says is here. */
+/* THE CONFIG ROW `acts`, DERIVED (the DATA split, 12 Sept 2026). The server's
+   whitelist is its built-in ACTS unioned with the Config row `acts`; a book
+   on the shelf that the built-in list does not name lives in that row on the
+   live Sheet. The row the deploy must carry is derived here, one home, from
+   script.js's ACTIVITIES minus the template's literal - never typed. Returns
+   { builtIn, extra, value } (value = the JSON the cell holds, or null). */
+function shelfActsRow() {
+  const fs2 = require('fs'), path2 = require('path');
+  const APP = path2.resolve(__dirname, '..', '..', '..');
+  const tpl = fs2.readFileSync(path2.join(APP, 'server', 'Code.gs.template'), 'utf8');
+  const lit = /var\s+ACTS\s*=\s*\[([^\]]*)\]/.exec(tpl);
+  const builtIn = lit ? lit[1].split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean) : [];
+  const src = fs2.readFileSync(path2.join(APP, 'script.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const m = /var\s+ACTIVITIES\s*=\s*\[([\s\S]*?)\n\s*\];/.exec(src);
+  const ids = [];
+  if (m) { const re = /id\s*:\s*'([^']+)'/g; let g; while ((g = re.exec(m[1]))) ids.push(g[1]); }
+  const extra = ids.filter(id => builtIn.indexOf(id) < 0);
+  return { builtIn, extra, value: extra.length ? JSON.stringify(extra) : null };
+}
+
 function makeEnv(opts) {
   opts = opts || {};
   const configSheet = opts.configSheet || makeSheet(2, 'Config');
@@ -63,6 +83,8 @@ function makeEnv(opts) {
     configSheet.appendRow(['Key', 'Value']);
     configSheet.appendRow(['staffPasscode', opts.passcode || '0lsMaths26*']);
     configSheet.appendRow(['classes', '[]']);
+    /* a gate that must see the shelf's every book asks for the live row */
+    if (opts.actsRow === 'shelf') { const r = shelfActsRow(); if (r.value) configSheet.appendRow(['acts', r.value]); }
   }
   if (!dataSheet._rows.length) dataSheet.appendRow(['Class', 'Email', 'Name', 'Act', 'Summary', 'State', 'Updated']);
 
@@ -174,4 +196,4 @@ function makeEnv(opts) {
 
 function loadTemplate(env, file) { env.run(fs.readFileSync(file, 'utf8'), file); return env; }
 
-module.exports = { makeEnv, makeSheet, loadTemplate, CELL_MAX };
+module.exports = { makeEnv, makeSheet, loadTemplate, shelfActsRow, CELL_MAX };

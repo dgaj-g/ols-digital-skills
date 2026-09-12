@@ -1,5 +1,5 @@
 
-  COVERAGE MATRIX (content hash b6cfc7b1ffa4, tier fast)
+  COVERAGE MATRIX (content hash d135b9ca65b4, tier fast)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
   click-safety  222
@@ -8,23 +8,26 @@
   deploy        3
   empty         222
   geometry      222
-  human-pace    42
-  movie         54
+  human-pace    47
+  movie         69
   mute-locks    222
   nested        222
   overlap       222
   readability   222
   said-twice    222
   steps         222
-  truth         81
+  truth         113
   two-homes     13
-  verdict       2
+  verdict       2       1
   waits         222
-  walk-right    243
-  walk-stage    1047
-  walk-wrong    243
+  walk-right    339
+  walk-stage    1500
+  walk-wrong    339
 
-  every cell is closed.
+  CELLS NOTHING CLOSES (1)
+  family   cell                              why
+  -------  -----------------------  -------  ---
+  verdict  stats-collect × verdict  MISSING
 
   DEBT LEDGER (printed every run)
   cell                                                     owner / phase                                                                                                                                  file                state

@@ -766,7 +766,7 @@ body.gj .jq-feedback { margin-top: calc(var(--sq) * 0.9); }
 .mark-tick path { stroke: var(--marking-green); }               /* correct = green tick */
 .mark-cross path { stroke: var(--marking-red); }                /* wrong = red cross */
 .box-draw rect, .box-draw path { stroke: var(--foil); stroke-width: 3; }  /* correct answer = GOLD celebration box, never red */
-.mark-tick.hollow path { stroke: var(--marking-green); stroke-width: 1.6; opacity: 0.7; }  /* follow-through credit = faded green */
+.mark-tick.hollow path { stroke: var(--marking-green); stroke-width: 1.6; opacity: 1; }  /* follow-through credit = an OUTLINE at full green, never a faded one (DESIGN 4.0: 60% green on white is 2.5:1 against a 3:1 mark floor) */
 .mark-tick.amber path { stroke: var(--amber-flag); }            /* right value, missing/!wrong reason = amber */
 
 /* progress instruments */
@@ -1061,7 +1061,10 @@ body.dragging-active, body.dragging-active * {
   .act-bar-title { font-size: 18px; line-height: calc(var(--sq) * 1.2); }
   .btn-back { padding: 6px 8px; font-size: 12px; }
   .jotter::before { left: calc(var(--sq) * 2.2); }
-  .jq-margin { width: calc(var(--sq) * 2.2); font-size: 11px; }
+  /* 13px, never 11: the margin's "Q31" is read, and at 11px its ink loses to
+     its own antialiased edges (the sit-pupil battery of 12 Sept 2026 at 375,
+     q31/q32 checked-right). Every label that is read renders at 13px or more. */
+  .jq-margin { width: calc(var(--sq) * 2.4); font-size: 13px; }
   .want-how { margin-left: calc(var(--sq) * 3.2); }   /* match the narrower mobile margin column */
   .wline { font-size: 19px; }
   .movie-line { font-size: 18px; }
@@ -1338,7 +1341,7 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
    ═══════════════════════════════════════════════════════════════════════ */
 
 .stat-q .stat-msg { margin: 6px 0 8px; color: var(--pencil); font-size: 14.5px; }
-.stat-fiction { margin: 4px 0 10px; color: var(--pencil); font-size: 14.5px; }
+.stat-fiction { margin: 4px 0 10px; color: var(--ink); font-size: 15px; }   /* read, so ink: the pencil face measured 2.18:1 over the board's paper at 375 (12 Sept 2026) */
 .stat-boards { margin: 6px 0 10px; }
 .stat-board-host { margin: 6px 0 10px; }
 .stat-given { margin: 8px 0 6px; }
@@ -1459,7 +1462,11 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 
 /* the struck first attempt — the ONE thing that fades, and it carries no words */
 .stat-ghost { margin: 4px 0; }
-.stat-ghost .struck { text-decoration: line-through; color: var(--pencil); }
+/* THE GHOST IS STRUCK, NOT FADED. Attempt 1's numbers are still read (a pupil
+   compares her second go against them), so they keep the ink; the state is
+   the line through them, in pencil. 12 Sept 2026 - nothing that carries words
+   is ever dimmed. */
+.stat-ghost .struck { text-decoration: line-through; text-decoration-color: var(--pencil); color: var(--ink); }
 
 /* the teacher's read-only copy of one pupil's artefact */
 .stat-readonly { margin: 6px 0; }
@@ -1535,3 +1542,99 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
   .stat-q-cfplot > .jq-body > .stat-given .stat-table th, .stat-q-cfplot > .jq-body > .stat-given .stat-table td { padding: 6px 8px; }
   .stat-q-cfplot > .jq-body > .stat-given .stat-table td:first-child { white-space: nowrap; }   /* a class interval is printed whole, as the paper prints it */
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   BOOK A — Collecting and displaying (12 Sept 2026). The same laws as the
+   Book C classes above: copper is the books' ink, never a status; nothing
+   read is faded; every target ≥ 44 px; text that moves is HTML so the
+   overlap law judges it; every label read at 13 px or more.
+   ══════════════════════════════════════════════════════════════════════ */
+/* order — the cycle's cards */
+.stat-order { margin: 6px 0; }
+.stat-card { font-family: var(--f-stationery, var(--f-ui)); font-size: 15px; font-weight: 600; text-align: left; max-width: 100%; white-space: normal; line-height: 1.3; }
+.stat-order-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; }
+.stat-order-arrow { color: var(--copper-ink); font-size: 18px; padding: 0 2px; }
+.stat-order-back { color: var(--pencil); font-size: 14px; font-style: italic; }
+
+/* pick — three questions, one of them sound */
+.stat-options { display: grid; gap: 10px; margin: 6px 0; }
+.stat-option {
+  display: block; width: 100%; text-align: left; padding: 12px 14px; min-height: 44px;
+  border: 1.5px solid var(--copper); border-radius: 10px; background: var(--panel); color: var(--ink);
+  font: 500 15px/1.4 var(--f-stationery, var(--f-ui)); cursor: pointer;
+}
+.stat-option[aria-pressed="true"] { border-width: 3px; border-color: var(--copper-ink); background: rgba(166, 82, 43, .08); }
+.stat-option:disabled { opacity: 1; cursor: default; }
+.stat-option-text { display: block; }
+.stat-option-boxes { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; }
+.stat-option-box { font-family: var(--f-maths); font-size: 14px; color: var(--ink); white-space: nowrap; }
+
+/* a figure a values question sits on (Venn boxes over the regions) */
+.stat-fig { margin: 6px 0 10px; }
+.stat-fig-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.stat-fig-box { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: auto; }
+/* THE REGION IS THE LABEL. A written label beside every box collided with its
+   neighbours at 375 (the walk, 12 Sept 2026); the box sits ON its region, the
+   dock names the region while she fills it, and aria-label carries the name. */
+.stat-fig-box-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.stat-fig-box-label { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--ink); background: var(--paper); padding: 0 4px; border-radius: 3px; white-space: nowrap; }
+.stat-fig-box .stat-cell { min-width: 44px; min-height: 44px; font-size: 16px; padding: 0 4px; }
+.stat-list { font-family: var(--f-maths); font-size: 17px; color: var(--ink); margin: 4px 0 8px; }
+
+/* stemleaf — the diagram is a table she reads */
+.stat-stemleaf { margin: 6px 0; }
+.stat-sl-host { margin: 8px 0; }
+.stat-sl { border-collapse: collapse; font-family: var(--f-maths); font-size: 17px; color: var(--ink); }
+.stat-sl th, .stat-sl td { padding: 4px 8px; vertical-align: middle; }
+.stat-sl-stem { border-right: 2px solid var(--ink); border-left: 2px solid var(--ink); text-align: center; font-weight: 700; min-width: 34px; }
+.stat-sl th.stat-sl-stem-head, .stat-sl th.stat-sl-side { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--pencil); border: 0; text-align: center; }
+.stat-sl-back { text-align: right; min-width: 40px; }
+.stat-sl-cell { text-align: left; min-height: 44px; }
+.stat-sl-cell, .stat-sl-back { line-height: 44px; }
+.stat-sl-leaf { display: inline-block; min-width: 24px; text-align: center; margin: 0 2px; color: var(--ink); font-family: var(--f-maths); font-size: 17px; }
+button.stat-sl-leaf { min-width: 44px; min-height: 44px; border: 1.5px solid var(--copper); border-radius: 8px; background: var(--panel); cursor: pointer; padding: 0 6px; }
+button.stat-sl-leaf.is-selected { box-shadow: 0 0 0 3px var(--copper); }
+button.stat-sl-leaf:disabled { opacity: 1; cursor: default; }
+.stat-sl-given { color: var(--ink); }
+.stat-sl-zone {
+  display: inline-block; min-width: 44px; min-height: 44px; margin-left: 6px; border: 1.5px dashed var(--copper); border-radius: 8px;
+  background: var(--panel); color: var(--copper-ink); font: 700 20px var(--f-stationery, var(--f-ui)); cursor: pointer; vertical-align: middle;
+}
+.stat-sl-zone:disabled { opacity: 1; color: var(--pencil); border-color: var(--hairline); cursor: default; }
+.stat-sl-keywrap { margin: 8px 0; }
+.stat-sl-keytray { align-items: center; margin: 6px 0; }
+.stat-sl-keylabel { font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--ink); margin-right: 6px; }
+.stat-sl-key { font-family: var(--f-maths); font-size: 16px; color: var(--ink); margin: 6px 0 0; }
+.stat-truth .stat-sl { margin-top: 6px; }
+
+/* pie — the table, then the circle */
+.stat-pie { margin: 6px 0; }
+.stat-pie .stat-table td.stat-pie-angle { padding: 4px 8px; }
+.stat-pie-labelwrap { margin: 8px 0; }
+.stat-pie-label { position: absolute; transform: translate(-50%, -50%); font: 600 13px var(--f-stationery, var(--f-ui)); color: var(--ink); background: var(--paper); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--copper); white-space: nowrap; }
+.stat-pie-label[data-placed] { border-style: solid; }
+.stat-sector { cursor: pointer; }
+.stat-sector.is-target { stroke: var(--copper-ink); stroke-width: 3; }
+
+/* scatter */
+.stat-scatter { margin: 6px 0; }
+.stat-pt.is-given { fill: var(--ink); }
+.stat-pt.is-outlier { stroke: var(--copper-ink); stroke-width: 3; }
+.stat-lobf { stroke: var(--copper); stroke-width: 2.5; }
+.stat-lobf-handle { fill: var(--panel); stroke: var(--copper); stroke-width: 2.5; cursor: grab; }
+.stat-est-line { font-family: var(--f-maths); font-size: 16px; color: var(--ink); margin: 6px 0; }
+
+/* ═══ Book A boards (CHART-A, 12 Sept 2026) — venn · pie · scatter on the shared SVG ═══ */
+.stat-venn-val { font-family: var(--f-maths); font-weight: 600; }
+.stat-venn-label, .stat-sector-label { font-family: var(--f-maths); }
+.stat-sl-key-text { font-family: var(--f-maths); }
+.stat-pt.is-given circle { fill: var(--ink); }
+.stat-pt.is-outlier circle { stroke: var(--copper); stroke-width: 2; }
+.stat-lobf-handle:active { cursor: grabbing; }
+.stat-sector { fill: rgba(166, 82, 43, 0.16); stroke: var(--copper); }
+.stat-sector:focus-visible, .stat-pie-bound:focus-visible, .stat-lobf-handle:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+.stat-pie-rim { cursor: crosshair; }
+.stat-pie-bound-line, .stat-pie-radius { stroke: var(--copper); }
+.stat-pie-disc { stroke: var(--ink); }
+.movie-stage .ml-board { margin: 8px auto; }
+.movie-stage .ml-board .stat-board-frame { margin: 0 auto; }

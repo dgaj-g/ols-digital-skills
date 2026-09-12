@@ -32,6 +32,7 @@
        displays, B summarises with averages, C compares whole distributions.
        They read in that order on the shelf; C is built first because it is what
        was asked for, so A and B slot in ABOVE this line as they are built. */
+    { id: 'stats-collect', title: 'Handling Data', sub: 'Collecting and displaying', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'stemscatter' },
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
@@ -1028,6 +1029,18 @@
         '<line x1="50" y1="50" x2="78" y2="24" stroke="#E4B824" stroke-width="2"/>' +
         '<circle cx="50" cy="50" r="2.4" fill="#E4B824"/></svg>';
     }
+    /* Book A: a stem-and-leaf beside a scatter cloud, in gold line (DESIGN 20.1) */
+    if (kind === 'stemscatter') {
+      return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
+        '<path d="M22 8 V50" fill="none" stroke="#E4B824" stroke-width="2"/>' +
+        '<path d="M8 16 H18 M8 28 H18 M8 40 H18" fill="none" stroke="#E4B824" stroke-width="1.4" opacity="0.8"/>' +
+        '<path d="M26 16 H36 M26 28 H44 M26 40 H40" fill="none" stroke="#E4B824" stroke-width="1.4" opacity="0.8"/>' +
+        '<path d="M56 50 H94 M56 50 V8" fill="none" stroke="#E4B824" stroke-width="1" opacity="0.6"/>' +
+        '<circle cx="64" cy="42" r="2.2" fill="#E4B824"/><circle cx="70" cy="34" r="2.2" fill="#E4B824"/>' +
+        '<circle cx="77" cy="30" r="2.2" fill="#E4B824"/><circle cx="82" cy="20" r="2.2" fill="#E4B824"/>' +
+        '<circle cx="89" cy="16" r="2.2" fill="#E4B824"/><circle cx="74" cy="22" r="2.2" fill="#E4B824" opacity="0.7"/>' +
+        '<path d="M58 46 L92 12" fill="none" stroke="#E4B824" stroke-width="1.4" opacity="0.7"/></svg>';
+    }
     if (kind === 'curve') {
       return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
         '<path d="M8 50 C 40 50, 56 30, 92 8" fill="none" stroke="#E4B824" stroke-width="2.5" stroke-linecap="round"/>' +
@@ -1502,6 +1515,14 @@
       s5: ['gathering the letters', 'the signs when moving a term', 'the arithmetic', 'something else'],
       s6: ['expanding the brackets first', 'doing the same to both sides', 'the signs', 'something else'],
       _: ['the method', 'the signs', 'the arithmetic', 'something else']
+    },
+    'stats-collect': {
+      s1: ['spotting what is wrong with a question', 'choosing the better question', 'the order of the cycle', 'something else'],
+      s2: ['starting in the middle', 'taking away the overlap', 'the people outside both circles', 'something else'],
+      s3: ['working out the angles', 'drawing the sectors', 'labelling the chart', 'something else'],
+      s4: ['putting the leaves in order', 'which stem a value goes on', 'the key', 'something else'],
+      s5: ['plotting the points', 'drawing the line of best fit', 'reading off the line', 'something else'],
+      _: ['the method', 'reading the scale', 'the arithmetic', 'something else']
     },
     'stats-quartiles': {
       s1: ['putting the list in order', 'finding the right position', 'taking one away from the other', 'something else'],

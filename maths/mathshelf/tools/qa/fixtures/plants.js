@@ -60,6 +60,9 @@ function fromRef(dir, repoRoot, ref, repoPath, rel) {
 
 /* the stats controls walk Book C, not the battery's default first book */
 const BOOK_C = { MS_BOOK: 'stats-quartiles' };
+/* Book A's own controls (WALK-A package, 12 Sept 2026) walk Book A instead -
+   Book C has none of order/pick/stemleaf/pie/scatter to stand a fault on */
+const BOOK_A = { MS_BOOK: 'stats-collect' };
 
 const PLANTS = {
 
@@ -148,6 +151,15 @@ const PLANTS = {
 
   'fixture-css': (dir) => {
     fs.appendFileSync(path.join(dir, 'shell.css'), FIXTURE_CSS);
+  },
+  /* ── the answer-only amber worn by a shelf label (task COLOUR-TOKENS,
+     declared on 7 Sept 2026, plant written 12 Sept 2026): the colour law reads
+     its marking set off the running tokens, so a label painted with the
+     --amber-flag token outside [data-mark] must be named. The shelf's series
+     line is text every pupil reads on the first screen after the cover. */
+  'fixture-css-amber': (dir) => {
+    fs.appendFileSync(path.join(dir, 'shell.css'),
+      '\n/* planted by a control, never shipped */\n.bcover .series { color: var(--amber-flag) !important; }\n');
   },
 
   /* ── a sentence no gate reads, and a dead name split in two ──────── */
@@ -299,6 +311,28 @@ const PLANTS = {
     edit(dir, 'script.js',
       "      case 'save':    return { classCode: cls, act: p.act, state: p.state, summary: p.summary };",
       "      case 'save':    return { classCode: cls, act: p.act, state: p.state };   /* planted: one road drops the summary */");
+  },
+
+  /* ── TWO PROJECTS (Book A's cut, 12 Sept 2026): three ways the split could
+     be wrong, each planted back into the template ─────────────────────── */
+  /* the act list ignores the Config row: a new book is a server change again */
+  'fixture-acts-hardcoded': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  var row = getConfig_('acts');",
+      "  var row = '';   /* planted: the Config row is never read */");
+  },
+  /* the row is trusted as typed: any string becomes an act id */
+  'fixture-acts-any-string': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "      if (typeof id !== 'string' || !ACT_ID_RE.test(id)) continue;",
+      "      if (typeof id !== 'string') continue;   /* planted: any string will do */");
+  },
+  /* one call site still asks for the ACTIVE spreadsheet: fine in the bound
+     project, a throw in the standalone one */
+  'fixture-active-spreadsheet': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "function dataSheet_() { return ss_().getSheetByName(DATA_TAB); }",
+      "function dataSheet_() { return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(DATA_TAB); }   /* planted: bypasses ss_() */");
   },
 
   /* ── a data deployment that serves a book the class does not have ── */
@@ -832,6 +866,48 @@ const PLANTS = {
       '      /* planted: the `table` op draws nothing again */');
     return { env: BOOK_C };
   },
+  /* Book A's eight ops (12 Sept 2026), the same single fault each: the branch
+     removed, the op falls through and draws nothing. Book A's films carry them. */
+  'film-no-venn': (dir) => {
+    edit(dir, 'player.js', "      if (op.venn) return paperVenn(op, instant);",
+      '      /* planted: the `venn` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-vfill': (dir) => {
+    edit(dir, 'player.js', "      if (op.vfill) return paperVfill(op, instant);",
+      '      /* planted: the `vfill` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-pie': (dir) => {
+    edit(dir, 'player.js', "      if (op.pie) return paperPie(op, instant);",
+      '      /* planted: the `pie` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-sector': (dir) => {
+    edit(dir, 'player.js', "      if (op.sector) return paperSector(op, instant);",
+      '      /* planted: the `sector` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-stemleaf': (dir) => {
+    edit(dir, 'player.js', "      if (op.stemleaf) return paperStemleaf(op, instant);",
+      '      /* planted: the `stemleaf` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-leaf': (dir) => {
+    edit(dir, 'player.js', "      if (op.leaf) return paperLeaf(op, instant);",
+      '      /* planted: the `leaf` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-key': (dir) => {
+    edit(dir, 'player.js', "      if (op.key) return paperKey(op, instant);",
+      '      /* planted: the `key` op draws nothing again */');
+    return { env: BOOK_A };
+  },
+  'film-no-lobf': (dir) => {
+    edit(dir, 'player.js', "      if (op.lobf) return paperLobf(op, instant);",
+      '      /* planted: the `lobf` op draws nothing again */');
+    return { env: BOOK_A };
+  },
   'film-no-tcell': (dir) => {
     edit(dir, 'player.js', "      if (op.tcell) return paperTcell(op, instant);",
       '      /* planted: the `tcell` op draws nothing again */');
@@ -990,6 +1066,111 @@ const PLANTS = {
       '# the teacher transcript (control)\n\nTRANSCRIPT HASH: abc123abc123abc1\n\nThe markbook opens on the class page.\n');
     write(dir, 'tools/qa/MATHS_COLD_READ_VERDICTS_TEACHER.md',
       '# control\n\nTRANSCRIPT HASH: 0000000000000000\n\n| VERDICT | where | the sentence | why |\n|---|---|---|---|\n');
+  },
+
+  /* ══ BOOK A CONTROLS (WALK-A package, 12 Sept 2026, DESIGN §11.3's table
+     extended for the five kinds Book A adds). Each forces the walk onto
+     Book A (`stats-collect`), never Book C, because Book C has none of
+     order/pick/stemleaf/pie/scatter to stand the fault on. Ready-to-paste
+     CONTROLS-table entries (with each control's `mustFail`, quoting the
+     owning gate's own sentence per rule E.1) are in
+     tools/qa/out/bookA/WALK_NOTES.md for sit-pupil / sit-confused /
+     qa-tray-order / qa-click-safety to paste in themselves - this file only
+     ever plants the fault, never the assertion (E.4: a control lives in the
+     gate that owns the law). ────────────────────────────────────────────── */
+
+  /* ── the stemleaf leaf tray, not deranged: its own derange() call skipped ──
+     BUILD.stemleaf landed 12 Sept 2026 (checkpoint 3): renderTray()'s own
+     call is `derange(left, answerKeys, function (o) { return o.v; },
+     q.id).forEach(...)` - this plant collapses that call to `left` itself
+     (the un-deranged, ascending list), a targeted single-fault edit scoped
+     to stemleaf's own tray rather than the shared derange() function every
+     other tray also calls. mustFail (qa-tray-order): "came out in the
+     answer order". */
+  'stats-a-sorted-tray': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      var answerKeys = ascendingKeys(left.map(function (o) { return o.v; }));\n      derange(left, answerKeys, function (o) { return o.v; }, q.id).forEach(function (o) {",
+      "      var answerKeys = ascendingKeys(left.map(function (o) { return o.v; }));\n      left.forEach(function (o) {   /* planted: derange() skipped, the tray comes out ascending (Book A) */");
+    return { env: BOOK_A };
+  },
+
+  /* ── the pie's true angles written into the cells at mount ──────────────
+     BUILD.pie landed 12 Sept 2026 (checkpoint 3): renderTable()'s cell text
+     is `angles[c.id] ? angles[c.id] + '°' : ''` - empty until she keys one.
+     This plant fills the empty case with the true angle
+     (Math.round(c.f * 360 / q.total)) instead of nothing. mustFail
+     (sit-pupil, CONSEQUENCE): "truth-before-lock". */
+  'stats-a-truth-before-lock': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        b.textContent = angles[c.id] ? angles[c.id] + '°' : '';",
+      "        b.textContent = angles[c.id] ? angles[c.id] + '°' : (Math.round(Number(c.f) * 360 / Number(q.total)) + '°');   /* planted: the true angle shown before she has tried (Book A) */");
+    return { env: BOOK_A };
+  },
+
+  /* ── a wrong scatter point that quietly snaps to the nearest GIVEN point ──
+     BUILD.scatter landed 12 Sept 2026 (checkpoint 3): its onGridTap places
+     exactly where she pressed (`sel = bd.addPoint(x, y, ...)`). This plant
+     snaps (x,y) to the nearest element of `given` first, so a genuinely
+     wrong placement quietly becomes a right one a moment later. mustFail
+     (sit-confused, CONSEQUENCE): "did not persist". */
+  'stats-a-snap-back': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        onGridTap: function (x, y) {\n          if (ctx.locked() || cur() !== 'plotting') return;\n          if (allPlotted()) { ctx.note(T().statPlotEnough); return; }\n          sel = bd.addPoint(x, y, { select: true });\n          after();\n        },",
+      "        onGridTap: function (x, y) {\n          if (ctx.locked() || cur() !== 'plotting') return;\n          if (allPlotted()) { ctx.note(T().statPlotEnough); return; }\n          if (given.length) {   /* planted: snaps to the nearest given point (Book A) */\n            var nearest = given[0], bestD = Infinity;\n            given.forEach(function (g) { var d = Math.pow(Number(g[0]) - x, 2) + Math.pow(Number(g[1]) - y, 2); if (d < bestD) { bestD = d; nearest = g; } });\n            x = Number(nearest[0]); y = Number(nearest[1]);\n          }\n          sel = bd.addPoint(x, y, { select: true });\n          after();\n        },");
+    return { env: BOOK_A };
+  },
+
+  /* ── a placed stem-and-leaf leaf returned to the tray on its FIRST press ──
+     Reuses the EXACT shared twoPress() mutation `stats-single-press-lift`
+     already proves against Book C: BUILD.stemleaf's own onLeaf handler
+     places every leaf through this one shared function
+     (`twoPress(ctx, b, function () { rows[...].splice(idx, 1); ... })`,
+     confirmed in the landed code, checkpoint 3), so patching the shared
+     definition - proven identical to how the Book C control already does
+     it - reaches stemleaf's leaves too; forced onto Book A so a stemleaf
+     question's leaf is what qa-click-safety actually presses. mustFail
+     (qa-click-safety): "A SINGLE PRESS DESTROYED PLACED WORK". */
+  'stats-a-single-press-lift': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "    node.addEventListener('click', function (e) {\n      if (ctx.locked()) return;\n      e.stopPropagation();\n      if (ctx.selected === node) {\n        ctx.clearSelection();\n        onReturn();\n        return;\n      }",
+      "    node.addEventListener('click', function (e) {\n      if (ctx.locked()) return;\n      e.stopPropagation();\n      onReturn();   /* planted: a single press destroys placed work (Book A) */\n      return;\n      if (ctx.selected === node) {\n        ctx.clearSelection();\n        onReturn();\n        return;\n      }");
+    return { env: BOOK_A };
+  },
+
+  /* ── scatter's own `line` stage never set ────────────────────────────────
+     BUILD.scatter landed 12 Sept 2026 (checkpoint 3): stage()'s own
+     `else if (c === 'line') ctx.setStage('line');` is the ONLY place the
+     app ever declares that stage. This plant removes it, so the board
+     silently falls through to the catch-all `ctx.setStage('ready')` while
+     still on the line-drawing step - a renderer bug, not a walker one (the
+     Book C sibling `stats-stage-skipped` plants a walker-side miss in
+     lib/drive.js instead; this is the same LAW - "every stage stood on" -
+     caught from the other side, since a stage the app itself never
+     declares is equally never stood on). mustFail (walker settle-up):
+     "never stood on stage". */
+  'stats-a-stage-skipped': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      else if (c === 'line') ctx.setStage('line');",
+      "      /* planted: the \"line\" stage is never declared (Book A) */");
+    return { env: BOOK_A };
+  },
+
+  /* ── the order kind's row printing the answer order as placeholder text ──
+     BUILD.order landed 12 Sept 2026 (checkpoint 2) with no such leak in its
+     own renderRow() - this plant ADDS one, the same way Book C's
+     `stats-signature-leak` adds a whole new branch to scatter's readout
+     rather than toggling an existing one off: renderRow()'s own closing
+     brace gains an unconditional line printing the WHOLE true order
+     (`tiles[i]` for every `i` in `q.answer`, joined exactly as showTruth()
+     itself joins them) as a placeholder underneath the row, present from
+     the first mount - not only once the row is part-built. mustFail
+     (sit-pupil, the answer-signature law): "an answer value is on the page
+     before Check". */
+  'stats-a-signature-leak': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      if (q.cyclic && seq.length === tiles.length) {\n        var back = el('span', 'stat-order-back', esc(String(tiles[seq[0]])));\n        rowWrap.appendChild(back);\n      }\n    }",
+      "      if (q.cyclic && seq.length === tiles.length) {\n        var back = el('span', 'stat-order-back', esc(String(tiles[seq[0]])));\n        rowWrap.appendChild(back);\n      }\n      var ph = el('p', 'stat-order-placeholder', esc((q.answer || []).map(function (i) { return tiles[i]; }).join(' \\u2192 ')));   /* planted: the row prints the answer order as placeholder text (Book A) */\n      rowWrap.appendChild(ph);\n    }");
+    return { env: BOOK_A };
   }
 };
 
@@ -1154,6 +1335,220 @@ const FIXTURE_BOOK = `/* content-fixture.js — THE BOOK NOBODY WALKS.
         { id: 'q108', kind: 'values', marks: [0, 3], src: 'fixture',
           prompt: 'Work out the total.',
           slots: [{ id: 'a', label: 'Total', answer: { n: 5, d: 1 } }] }
+      ]
+    }, {
+      /* ── LINT-A's FIXTURE_A.txt fold-in (WALK-A, 12 Sept 2026): eighteen
+         single-fault questions for Book A's five new kinds' own lint rules
+         (order, pick, values-on-a-figure, stemleaf-build, pie, scatter) plus
+         the two general prompt-telegraph phrases. Every FAIL sentence noted
+         here was pasted verbatim, by LINT-A, from a real
+         dev/lint-content-stats.js run against a throwaway proof pack
+         (tools/qa/out/bookA/FIXTURE_A.txt's own header) - folded in unedited
+         except for wrapping into this section; that proof is LINT-A's, not
+         re-run here. */
+      id: 's3',
+      title: 'Book A single-fault questions (LINT-A fold-in)',
+      questions: [
+        /* order: answer is not a permutation of the tiles (1 repeated, 2 missing) ->
+           "order: answer is not a permutation of the 4 tiles" */
+        { id: 'qA1', kind: 'order', marks: [0, 1], src: 'fixture',
+          prompt: 'Put the data-handling cycle in order.',
+          tiles: ['Collect', 'Display', 'Analyse', 'Interpret'],
+          answer: [0, 1, 1, 3] },
+        /* order: cyclic:true with fewer than 3 tiles ->
+           "order: cyclic:true needs at least 3 tiles (got 2)" */
+        { id: 'qA2', kind: 'order', marks: [1, 1], src: 'fixture',
+          prompt: 'Put the two cards in order.',
+          tiles: ['First', 'Second'], answer: [0, 1], cyclic: true },
+        /* pick: no option marked best:true ->
+           "pick: exactly one option must be best:true (found 0)" */
+        { id: 'qA3', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'How much do you spend? £0-5 / £5-10 / £10+', best: false, flaw: 'Q_OVERLAP' },
+            { text: 'How much do you spend a week? Under £5 / £5-£9.99 / £10 or more', best: false, flaw: 'Q_GAP' }
+          ] },
+        /* pick: a non-best option carries no flaw id from the Q_* bank ->
+           "pick: option 2 is not best but has no flaw id from the Q_* bank" */
+        { id: 'qA4', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'How much do you spend a week? Under £5 / £5-£9.99 / £10 or more', best: true },
+            { text: 'How much do you spend? £0-5 / £5-10', best: false }
+          ] },
+        /* pick: two options with identical text ->
+           "pick: options 1 and 2 have identical text" */
+        { id: 'qA5', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'How much do you spend a week?', best: true },
+            { text: 'How much do you spend a week?', best: false, flaw: 'Q_GAP' }
+          ] },
+        /* values on venn2: the regions do not add up (own total AND circle totals) ->
+           three FAIL sentences from one planted inconsistency: 40+30+5+10=85≠100;
+           circle A 40+5=45≠60; circle B 30+5=35≠50. venn3 shares the identical
+           checkValuesVenn() path (8 regions, 3 totals) and is exercised by this
+           same function - not separately fixtured (LINT-A, time). */
+        { id: 'qA6', kind: 'values', marks: [2, 2], src: 'fixture',
+          prompt: 'Complete the Venn diagram.',
+          fig: { type: 'venn2', n: 100,
+            circles: [{ id: 'A', label: 'Milk' }, { id: 'B', label: 'Sugar' }],
+            totals: { A: 60, B: 50 } },
+          slots: [
+            { id: 'aOnly', label: 'Milk only', region: 'A', answer: { n: 40, d: 1 }, earns: 'method' },
+            { id: 'bOnly', label: 'Sugar only', region: 'B', answer: { n: 30, d: 1 }, earns: 'method' },
+            { id: 'both', label: 'Both', region: 'AB', answer: { n: 5, d: 1 }, earns: 'accuracy' },
+            { id: 'out', label: 'Neither', region: 'out', answer: { n: 10, d: 1 }, earns: 'accuracy' }
+          ] },
+        /* values on a stemleaf fig: a read-off slot re-derived from the drawn
+           diagram's own rows (true range 32-21=11, authored 5) ->
+           "stemleaf: slot \"a\" (range) authored 5 but re-derived from the diagram 11" */
+        { id: 'qA7', kind: 'values', marks: [0, 1], src: 'fixture',
+          prompt: 'Read the range from the diagram.',
+          fig: { type: 'stemleaf', decimals: 0, unit: 'cm', rows: { '2': [1, 4], '3': [0, 2] } },
+          slots: [{ id: 'a', label: 'Range', answer: { n: 5, d: 1 }, earns: 'accuracy' }] },
+        /* stemleaf (build kind): a value's stem (47's stem 4) is not in stems ->
+           "stemleaf: value 47's stem 4 is not in stems" */
+        { id: 'qA8', kind: 'stemleaf', marks: [2, 0], src: 'fixture',
+          prompt: 'Build the stem-and-leaf diagram.',
+          values: [21, 24, 47], stems: [2, 3], decimals: 0, unit: 'cm' },
+        /* stemleaf (build kind): key.ask and a given key both present ->
+           "stemleaf: key.ask and a given key cannot both be present" */
+        { id: 'qA9', kind: 'stemleaf', marks: [2, 1], src: 'fixture',
+          prompt: 'Build the stem-and-leaf diagram.',
+          values: [21, 24, 30], stems: [2, 3], decimals: 0, unit: 'cm',
+          key: { ask: true, stem: 2, leaf: 1, means: '21 cm' } },
+        /* pie: an angle is not a whole number of degrees (360×1/7, 360×6/7) ->
+           two FAIL sentences, one per category */
+        { id: 'qA10', kind: 'pie', marks: [2, 2], src: 'fixture',
+          prompt: 'Work out the angles.',
+          cats: [{ id: 'a', label: 'Football', f: 1 }, { id: 'b', label: 'Hockey', f: 6 }],
+          total: 7 },
+        /* pie: total ≠ Σf (and, downstream, angles don't sum to 360) ->
+           "pie: total = 10 does not equal Σf = 6"; "pie: angles sum to 216, not 360" */
+        { id: 'qA11', kind: 'pie', marks: [2, 2], src: 'fixture',
+          prompt: 'Work out the angles.',
+          cats: [{ id: 'a', label: 'Football', f: 3 }, { id: 'b', label: 'Hockey', f: 3 }],
+          total: 10 },
+        /* pie: dx "PIE_PCT_NOT_DEG" equals the truth (distinguishability). LINT-A's
+           own note: this is mathematically unreachable on any real (f>0) pie - the
+           pct and degree columns share one total and can only coincide if
+           100=360 - so this degenerate all-zero-frequency pack proves the CODE
+           PATH only, and fires the two rules above on the same question too
+           (expected, not a second fault). */
+        { id: 'qA12', kind: 'pie', marks: [2, 2], src: 'fixture',
+          prompt: 'Work out the angles.',
+          cats: [{ id: 'a', label: 'Football', f: 0 }, { id: 'b', label: 'Hockey', f: 0 }],
+          total: 10 },
+        /* scatter: dx "SC_XY_SWAPPED" equals the truth (distinguishability) - the
+           corr fault is incidental (kept so this also proves the corr-sign rule):
+           swapping (y,x) on toPlot gives back the identical set {[3,3],[4,4]} */
+        { id: 'qA13', kind: 'scatter', marks: [1, 1], src: 'fixture',
+          prompt: 'Plot the points.',
+          chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+          given: [[1, 1], [2, 2]],
+          toPlot: [[3, 3], [4, 4]],
+          asks: [{ type: 'corr', answer: 'negative' }] },
+        /* scatter: a plotted point is off the grid (3.5 is not a multiple of sq.x=1) ->
+           "scatter: (3.5, 6) is off the grid" */
+        { id: 'qA14', kind: 'scatter', marks: [1, 0], src: 'fixture',
+          prompt: 'Plot the points.',
+          chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+          given: [[1, 2], [2, 4]],
+          toPlot: [[3.5, 6]],
+          asks: [] },
+        /* scatter: corr answer's sign disagrees with the least-squares slope
+           (the trend here is negative, authored "positive") */
+        { id: 'qA15', kind: 'scatter', marks: [1, 1], src: 'fixture',
+          prompt: 'Name the correlation.',
+          chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+          given: [[1, 8], [2, 6]],
+          toPlot: [[3, 4], [4, 2]],
+          asks: [{ type: 'corr', answer: 'positive' }] },
+        /* scatter: outlier index is not the point furthest from the line fitted
+           without it (index 1 = [2,2], an ordinary on-trend point; the true
+           outlier [4,9] at index 3 sits further from the refitted line) */
+        { id: 'qA16', kind: 'scatter', marks: [1, 1], src: 'fixture',
+          prompt: 'Find the odd one out.',
+          chart: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 }, sq: { x: 1, y: 1 } },
+          given: [[1, 1], [2, 2], [3, 3]],
+          toPlot: [[4, 9]],
+          asks: [{ type: 'outlier', answer: 1 }] },
+        /* prompt telegraph - general Book A phrases ("÷ the total", "× 360" family);
+           "start in the middle" is deliberately NOT banned (Colette's own hint,
+           quoted verbatim in the A·s2 movie caption, DESIGN §19) */
+        { id: 'qA17', kind: 'pie', marks: [2, 2], src: 'fixture',
+          prompt: 'Work out the angles — divide by the total and multiply by 360.',
+          cats: [{ id: 'a', label: 'Football', f: 3 }, { id: 'b', label: 'Hockey', f: 3 }],
+          total: 6 },
+        /* prompt telegraph: "(n + 1) ÷ 2" inside a stem-and-leaf read prompt */
+        { id: 'qA18', kind: 'stemleaf', marks: [2, 0], src: 'fixture',
+          prompt: 'Find the median — use (n + 1) ÷ 2 to find its position.',
+          values: [21, 24, 30], stems: [2, 3], decimals: 0, unit: 'cm' }
+      ]
+    }, {
+      /* movie: vfill.region not one of the film's own venn regions ->
+         "movie: vfill.region \\"C\\" is not one of the film's venn regions at step 2".
+         qA19pad is a clean pick question so this section's own faults stay
+         exactly the one the movie plants (LINT-A's own "checkReachableMarks
+         must add no incidental failure" rule). */
+      id: 's4',
+      title: 'Book A single-fault movie (venn region)',
+      movie: { title: 'Start in the middle', steps: [
+        { say: 'Two circles.', do: [{ venn: { circles: [{ id: 'A', label: 'Milk' }, { id: 'B', label: 'Sugar' }] } }] },
+        { say: 'Fill a region that does not exist.', do: [{ vfill: { region: 'C', text: '22' } }] },
+        { say: 'Step three.' }, { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+      ] },
+      questions: [
+        { id: 'qA19pad', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'A well-designed question.', best: true },
+            { text: 'A badly-designed question.', best: false, flaw: 'Q_OVERLAP' }
+          ] }
+      ]
+    }, {
+      /* movie: sector degrees do not sum to 360 ->
+         "movie: sector degrees sum to 200, not 360" */
+      id: 's5',
+      title: 'Book A single-fault movie (pie sectors)',
+      movie: { title: 'Turning counts into angles', steps: [
+        { say: 'Draw the pie.', do: [{ pie: {} }] },
+        { say: 'First sector.', do: [{ sector: { deg: 100, label: 'A' } }] },
+        { say: 'Second sector.', do: [{ sector: { deg: 100, label: 'B' } }] },
+        { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+      ] },
+      questions: [
+        { id: 'qA20pad', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'A well-designed question.', best: true },
+            { text: 'A badly-designed question.', best: false, flaw: 'Q_OVERLAP' }
+          ] }
+      ]
+    }, {
+      /* movie: leaf.stem not among the film's own laid stems ->
+         "movie: leaf.stem 9 is not among the film's stems at step 2".
+         LINT-A's "not separately fixtured for time" list (same mechanism,
+         lower risk, see LINT_NOTES.md "left"): key op / film-leaves
+         cross-check; lobf.through outside the film's chart; stemleaf
+         back.values stem check; a given stemleaf key not reproducing a data
+         value; judge/reasons naming an id outside both banks (the bank
+         UNION is proven cleanly by qA3-qA5's own valid Q_* ids above). */
+      id: 's6',
+      title: 'Book A single-fault movie (stemleaf stem)',
+      movie: { title: 'Stems and leaves', steps: [
+        { say: 'Lay the stems.', do: [{ stemleaf: { stems: [2, 3], decimals: 0, unit: 'cm' } }] },
+        { say: 'Land a leaf on a stem that was never laid.', do: [{ leaf: { stem: 9, leaf: 1 } }] },
+        { say: 'Step three.' }, { say: 'Step four.' }, { say: 'Step five.' }, { say: 'Step six.' }
+      ] },
+      questions: [
+        { id: 'qA21pad', kind: 'pick', marks: [1, 1], src: 'fixture',
+          prompt: 'Choose the better question.',
+          options: [
+            { text: 'A well-designed question.', best: true },
+            { text: 'A badly-designed question.', best: false, flaw: 'Q_OVERLAP' }
+          ] }
       ]
     }]
   };
