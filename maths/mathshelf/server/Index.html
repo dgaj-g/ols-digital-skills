@@ -1180,6 +1180,13 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 /* the cover's message is a block in its own right - inline-flex would pull it
    up beside the Staff link underneath it */
 .cover-msg.is-waiting { display: flex; justify-content: center; }
+/* THE STAFF COVER'S WAIT IS AS PLAIN AS THE PUPIL'S (his rulings 34 and 46,
+   and 12 Sept 2026: two proved animations he still could not see). The
+   pupil's "Getting your details" is chalk on an empty navy cover; this one
+   was 14 px of pencil under an input box. Same motion, now in navy at 16 px
+   with an 18 px mark, so the motion is where the eye already is. */
+#st-msg.is-waiting { font-size: 16px; color: var(--navy); margin-top: 10px; }
+#st-msg.is-waiting::before { width: 18px; height: 18px; border-width: 2.5px; }
 @keyframes gj-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
 /* the gold wait-card's own, deeper breath (ruling 35, 11 Sept 2026): opacity
    swings further than the shared gj-breathe (.45 rather than .58) AND the
@@ -2699,6 +2706,7 @@ window.OLS_TRANSPORT = {
       serverExists: 'There is already a class with that name.',
       serverNotFound: 'That could not be found. Reload the page and try again.',
       serverUnreachableStore: 'The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.',
+      serverStoreSlow: 'The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien.',
       serverTooBig: 'There is more working in this book than one save can carry. Tell Damien before the class writes any more.',
       serverUnknownAction: 'The app asked for something this server does not know about. Reload the page.',
       signedInAs: 'Signed in as {email}',
@@ -2791,7 +2799,13 @@ window.OLS_TRANSPORT = {
     'bad-secret': 'serverUnreachableStore',
     'no-secret-configured': 'serverUnreachableStore',
     'not-configured': 'serverUnreachableStore',
-    'relay-failed': 'serverUnreachableStore',
+    /* A SLOW STORE IS NOT A BROKEN ONE (12 Sept 2026). 'relay-failed' is what
+       the front door says when the data deployment's answer did not arrive
+       in time - his 15:03 passcode check took 68 s on Google's side and every
+       call that day completed - and the old row read that as "not joined to
+       the data deployment", a sentence that names a fault nobody had. The
+       joined-or-not sentence is kept for the codes that actually mean it. */
+    'relay-failed': 'serverStoreSlow',
     'state-too-big': 'serverTooBig',
     'summary-too-big': 'serverTooBig',
     'unknown-action': 'serverUnknownAction',
@@ -14069,7 +14083,22 @@ function statsBoard(q, wrong) {
       SURF('staff-cover', 'busy');
       var tryPass = body.querySelector('#st-pass').value;
       passcode = tryPass;
-      call('classes').then(function (r) {
+      /* ONE QUIET RETRY BEFORE A WORD IS SAID (12 Sept 2026). The data
+         deployment's answer sometimes takes longer than the front door will
+         wait - 68 s at 15:03 that day, and it did arrive - so the first
+         'relay-failed' is tried once more, 1.5 s later, with the waiting line
+         still up; only a second failure reaches her as a sentence. */
+      var retried = false;
+      function askClasses() {
+        return call('classes').then(function (r) {
+          if (r && !r.ok && r.error === 'relay-failed' && !retried) {
+            retried = true;
+            return new Promise(function (res) { setTimeout(res, 1500); }).then(askClasses);
+          }
+          return r;
+        });
+      }
+      askClasses().then(function (r) {
         go.disabled = false;
         if (!r || !r.ok) {
           passcode = null;

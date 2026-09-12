@@ -216,6 +216,7 @@ strings.js > teacher > serverNotYourClass  ::  That class was made by another te
 strings.js > teacher > serverExists  ::  There is already a class with that name.
 strings.js > teacher > serverNotFound  ::  That could not be found. Reload the page and try again.
 strings.js > teacher > serverUnreachableStore  ::  The app cannot reach its own store, so nothing was saved and nothing was lost. Tell Damien the front door is not joined to the data deployment.
+strings.js > teacher > serverStoreSlow  ::  The store did not answer in time, so that did not go through. Nothing was lost. Try again in a moment. If it keeps happening, tell Damien.
 strings.js > teacher > serverTooBig  ::  There is more working in this book than one save can carry. Tell Damien before the class writes any more.
 strings.js > teacher > serverUnknownAction  ::  The app asked for something this server does not know about. Reload the page.
 strings.js > teacher > signedInAs  ::  Signed in as aoife.gartland@c2ken.net
