@@ -8,7 +8,7 @@
   deploy        3
   empty         222
   geometry      222
-  human-pace    41      1
+  human-pace    42
   movie         54
   mute-locks    222
   nested        222
@@ -24,10 +24,7 @@
   walk-stage    1047
   walk-wrong    243
 
-  CELLS NOTHING CLOSES (1)
-  family      cell                                              why
-  ----------  ---------------------------------------  -------  ---
-  human-pace  script.js :: call :: 25000 × human-pace  MISSING
+  every cell is closed.
 
   DEBT LEDGER (printed every run)
   cell                                                     owner / phase                                                                                                                                  file                state
