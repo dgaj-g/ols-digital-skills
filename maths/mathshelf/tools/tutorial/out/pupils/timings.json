@@ -4,119 +4,119 @@
   "marks": [
    {
     "name": "lift",
-    "ms": 1502
+    "ms": 1506
    },
    {
     "name": "down",
-    "ms": 6104
+    "ms": 6108
    }
   ],
   "tailMs": 200,
-  "recordedAt": "2026-09-13T15:31:20.862Z"
+  "recordedAt": "2026-09-13T16:29:37.488Z"
  },
  "p-shelf": {
   "file": "p-shelf.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 7872
+    "ms": 7927
    },
    {
     "name": "down",
-    "ms": 113129
+    "ms": 113200
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:33:15.047Z"
+  "recordedAt": "2026-09-13T16:31:31.753Z"
  },
  "p-pad": {
   "file": "p-pad.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11680
+    "ms": 11695
    },
    {
     "name": "down",
-    "ms": 250192
+    "ms": 250368
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:37:26.332Z"
+  "recordedAt": "2026-09-13T16:35:43.230Z"
  },
  "p-table": {
   "file": "p-table.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11698
+    "ms": 11712
    },
    {
     "name": "down",
-    "ms": 170959
+    "ms": 170916
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:40:18.375Z"
+  "recordedAt": "2026-09-13T16:38:35.267Z"
  },
  "p-choose": {
   "file": "p-choose.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11686
+    "ms": 11692
    },
    {
     "name": "down",
-    "ms": 190450
+    "ms": 190251
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:43:29.915Z"
+  "recordedAt": "2026-09-13T16:41:46.613Z"
  },
  "p-graph": {
   "file": "p-graph.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11687
+    "ms": 11709
    },
    {
     "name": "down",
-    "ms": 236393
+    "ms": 236354
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:47:27.397Z"
+  "recordedAt": "2026-09-13T16:45:44.039Z"
  },
  "p-saving": {
   "file": "p-saving.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11679
+    "ms": 11688
    },
    {
     "name": "down",
-    "ms": 118002
+    "ms": 118034
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:49:26.487Z"
+  "recordedAt": "2026-09-13T16:47:43.163Z"
  },
  "p-end": {
   "file": "p-end.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 1473
+    "ms": 1469
    },
    {
     "name": "down",
-    "ms": 6475
+    "ms": 6471
    }
   ],
   "tailMs": 200,
-  "recordedAt": "2026-09-13T15:49:33.735Z"
+  "recordedAt": "2026-09-13T16:47:50.403Z"
  }
 }

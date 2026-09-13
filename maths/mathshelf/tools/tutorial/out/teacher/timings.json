@@ -34,134 +34,134 @@
   "marks": [
    {
     "name": "lift",
-    "ms": 11000
+    "ms": 10650
    },
    {
     "name": "down",
-    "ms": 211383
+    "ms": 211038
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T14:43:14.059Z"
+  "recordedAt": "2026-09-13T16:05:48.574Z"
  },
  "p-shelf": {
   "file": "p-shelf.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 7908
+    "ms": 7536
    },
    {
     "name": "down",
-    "ms": 113102
+    "ms": 112774
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T14:32:06.303Z"
+  "recordedAt": "2026-09-13T16:07:42.415Z"
  },
  "p-pad": {
   "file": "p-pad.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11684
+    "ms": 11703
    },
    {
     "name": "down",
-    "ms": 250114
+    "ms": 250173
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T14:47:25.230Z"
+  "recordedAt": "2026-09-13T16:11:53.715Z"
  },
  "p-table": {
   "file": "p-table.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11716
+    "ms": 11703
    },
    {
     "name": "down",
-    "ms": 170985
+    "ms": 170797
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:20:01.682Z"
+  "recordedAt": "2026-09-13T16:14:45.619Z"
  },
  "p-choose": {
   "file": "p-choose.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11685
+    "ms": 11690
    },
    {
     "name": "down",
-    "ms": 190466
+    "ms": 190399
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:05:33.897Z"
+  "recordedAt": "2026-09-13T16:17:57.190Z"
  },
  "p-graph": {
   "file": "p-graph.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11705
+    "ms": 11706
    },
    {
     "name": "down",
-    "ms": 236438
+    "ms": 236500
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:09:31.454Z"
+  "recordedAt": "2026-09-13T16:21:54.795Z"
  },
  "p-saving": {
   "file": "p-saving.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 11688
+    "ms": 11677
    },
    {
     "name": "down",
-    "ms": 119440
+    "ms": 118052
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:13:12.543Z"
+  "recordedAt": "2026-09-13T16:23:53.923Z"
  },
  "ch9": {
   "file": "ch9.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 9717
+    "ms": 9692
    },
    {
     "name": "down",
-    "ms": 245334
+    "ms": 243254
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T15:29:54.003Z"
+  "recordedAt": "2026-09-13T16:27:58.295Z"
  },
  "chEnd": {
   "file": "chEnd.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 1478
+    "ms": 1473
    },
    {
     "name": "down",
-    "ms": 6481
+    "ms": 6473
    }
   ],
   "tailMs": 200,
-  "recordedAt": "2026-09-13T15:30:01.267Z"
+  "recordedAt": "2026-09-13T16:28:05.597Z"
  }
 }
