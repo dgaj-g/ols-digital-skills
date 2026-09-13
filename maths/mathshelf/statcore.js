@@ -109,8 +109,7 @@
     TFN_ESTIMATE_AS_FALSE: 'Called a sound estimate false because it was not exact',
     /* Books A and B (DESIGN §7). SL_BACK_DIRECTION is deliberately absent: the
        tap-first stem zone grows the pupil's side outward by construction, so
-       the slip cannot be made. The AV_* and RM_* ids are Book B's and arrive
-       with their detections. */
+       the slip cannot be made. */
     SL_UNORDERED: 'Leaves not in order along the stem',
     SL_WRONG_STEM: 'A leaf on the wrong stem',
     SL_MISSED_LEAF: 'A value left out (or entered twice)',
@@ -123,7 +122,17 @@
     SC_XY_SWAPPED: 'Plotted the two values the wrong way round',
     SC_LINE_OFF_TREND: 'Line of best fit does not follow the points',
     SC_READ_WRONG_AXIS: 'Read the estimate from the wrong axis',
-    SC_CORR_SIGN: 'Correlation named the wrong way (positive/negative)'
+    SC_CORR_SIGN: 'Correlation named the wrong way (positive/negative)',
+    /* Book B (CONTRACT_B.md): averages from lists and tables, reverse mean */
+    AV_DIV_ROWS: 'Divided by the number of rows, not the number of values',
+    AV_MEDIAN_UNORDERED: 'Median taken from the unordered list',
+    AV_MODE_AS_FREQ: 'Gave the highest frequency, not the value with it',
+    AV_RANGE_NOT_DIFF: 'Range not taken as highest minus lowest',
+    AV_NO_MIDPOINT: 'Used the class boundary, not the midpoint',
+    AV_FX_NOT_SUMMED: 'Averaged the midpoints, ignoring the frequencies',
+    AV_MEDIAN_CLASS_OFF: 'Median class off by one row',
+    RM_AVERAGED_MEANS: 'Averaged the means instead of the totals',
+    RM_WRONG_N: 'Divided by the old count, not the new one'
   };
 
   /* The reason bank for `judge`. Ids are fixed; the sentence a pupil reads is
@@ -345,6 +354,7 @@
       case 'stemleaf': return stemleafUnits(q);
       case 'pie': return pieUnits(q);
       case 'scatter': return scatterUnits(q);
+      case 'table': return tableUnits(q);
       default: return [];
     }
   }
@@ -515,6 +525,100 @@
     });
     return out;
   }
+  /* ---- Book B's table (CONTRACT_B.md §table; DESIGN §17.2) ----
+     Units in table order then ask order: C_<col>_<i> per derived cell (method,
+     ft earns), T_<col> per total (method, ft earns), A_<id> per ask (accuracy;
+     a value ask with an `ft` earns on follow-through - the CCEA "M1 for ÷
+     their total" pattern; a row ask is exact). */
+  function tableUnits(q) {
+    var units = [], rows = tableRows(q);
+    derivedCols(q).forEach(function (c) {
+      var i;
+      for (i = 0; i < rows; i++) units.push(U('C_' + c.id + '_' + i, (c.head || c.id) + ', row ' + (i + 1), 'method', 1, true));
+    });
+    (q.totals || []).forEach(function (id) {
+      var c = colById(q, id) || { id: id };
+      units.push(U('T_' + id, 'Total ' + lower(c.head || id), 'method', 1, true));
+    });
+    (q.asks || []).forEach(function (a) {
+      units.push(U('A_' + a.id, a.label || a.id, 'accuracy', 1, a.type === 'value' && !!a.ft));
+    });
+    return units;
+  }
+  function colById(q, id) {
+    var i, c = q.cols || [];
+    for (i = 0; i < c.length; i++) if (c[i].id === id) return c[i];
+    return null;
+  }
+  function derivedCols(q) { return (q.cols || []).filter(function (c) { return !!c.derive; }); }
+  function tableRows(q) {
+    var n = 0;
+    (q.cols || []).forEach(function (c) { if (c.given && c.given.length > n) n = c.given.length; });
+    return n;
+  }
+  function classCol(q) { return (q.cols || []).filter(function (c) { return c.given && c.given.length && c.given[0] && typeof c.given[0] === 'object' && c.given[0].lo !== undefined; })[0] || null; }
+  function colByRole(q, role) {
+    /* the frequency column is `f`; the value column is `x` or, failing that, the first numeric given column that is not f */
+    if (role === 'f') return colById(q, 'f') || (q.cols || []).filter(function (c) { return c.given && /freq/i.test(c.head || ''); })[0] || null;
+    if (role === 'x') return colById(q, 'x') || (q.cols || []).filter(function (c) { return c.given && c.id !== 'f' && typeof c.given[0] !== 'object'; })[0] || null;
+    if (role === 'mid') return (q.cols || []).filter(function (c) { return c.derive === 'mid'; })[0] || null;
+    return null;
+  }
+
+  /* The truth of a table: every numeric column as rationals (given columns
+     read, derived columns computed), the total of each, the mean, the modal
+     row and the median row. `derive:'f*x'` multiplies f by mid when the table
+     has a mid column, else by x; `derive:'mid'` = (lo + hi) ÷ 2 of the class
+     column; `derive:'cum'` = the running total of f.
+     Median row: the ((n + 1) ÷ 2)th value's row - the first row whose
+     cumulative frequency reaches (n + 1) ÷ 2. */
+  function tableDerive(q) {
+    var rows = tableRows(q), cells = {}, totals = {}, i;
+    var cls = classCol(q), fCol = colByRole(q, 'f'), xCol = colByRole(q, 'x');
+    (q.cols || []).forEach(function (c) {
+      if (c.given && c !== cls) cells[c.id] = Rs(c.given);
+    });
+    var midCol = colByRole(q, 'mid');
+    var mid = null;
+    if (cls) {
+      mid = cls.given.map(function (g) { var lo = R(g.lo), hi = R(g.hi); return (lo && hi) ? rdiv(radd(lo, hi), rint(2)) : null; });
+    }
+    if (midCol) cells[midCol.id] = mid || [];
+    var f = fCol ? cells[fCol.id] : null;
+    var value = mid || (xCol ? cells[xCol.id] : null);
+    (q.cols || []).forEach(function (c) {
+      if (c.derive === 'f*x') {
+        cells[c.id] = [];
+        for (i = 0; i < rows; i++) cells[c.id].push((f && f[i] && value && value[i]) ? rmul(f[i], value[i]) : null);
+      } else if (c.derive === 'cum') {
+        cells[c.id] = [];
+        var run = rint(0);
+        for (i = 0; i < rows; i++) { run = radd(run, (f && f[i]) || rint(0)); cells[c.id].push(run); }
+      }
+    });
+    Object.keys(cells).forEach(function (id) {
+      totals[id] = cells[id].reduce(function (a, b) { return b ? radd(a, b) : a; }, rint(0));
+    });
+    var n = f ? totals[fCol.id] : null, sumFx = null, mean = null;
+    if (f && value) {
+      sumFx = rint(0);
+      for (i = 0; i < rows; i++) if (f[i] && value[i]) sumFx = radd(sumFx, rmul(f[i], value[i]));
+      mean = (n && n.n !== 0) ? rdiv(sumFx, n) : null;
+    }
+    var modalRow = -1, medianRow = -1;
+    if (f) {
+      for (i = 0; i < rows; i++) if (f[i] && (modalRow === -1 || rlt(f[modalRow], f[i]))) modalRow = i;
+      var half = rdiv(radd(n, rint(1)), rint(2)), run2 = rint(0);
+      for (i = 0; i < rows && medianRow === -1; i++) {
+        run2 = radd(run2, f[i] || rint(0));
+        if (rle(half, run2)) medianRow = i;
+      }
+    }
+    return { rows: rows, cells: cells, totals: totals, n: n, sumFx: sumFx, mean: mean,
+             modalRow: modalRow, medianRow: medianRow, mid: mid,
+             fId: fCol ? fCol.id : null, xId: xCol ? xCol.id : null, midId: midCol ? midCol.id : null };
+  }
+
   function askOf(q, type) {
     var i, a = q.asks || [];
     for (i = 0; i < a.length; i++) if (a[i] && a[i].type === type) return a[i];
@@ -549,7 +653,8 @@
     pick: ['Reason', 'Choice'],
     stemleaf: ['Leaves', 'Key'],
     pie: ['Angles', 'Chart'],
-    scatter: ['Points and line', 'Readings']
+    scatter: ['Points and line', 'Readings'],
+    table: ['Table', 'Answers']
   };
 
   /* ---------- follow-through rules for `values` slots (a CLOSED table) ---- */
@@ -590,8 +695,12 @@
       var mean = R(slot.ft.mean), n = R(slot.ft.n);
       return (mean && n) ? rmul(mean, n) : null;
     },
+    /* (their total ± x) ÷ the new n. `xFrom` names a slot whose own value
+       stands in for the constant x (the laps chain: their 10-lap total minus
+       their 8-lap total, over the two extra laps). */
     'rm.newMean': function (slot, q, got) {
-      var total = got[slot.ft.from[0]], x = R(slot.ft.x), n = R(slot.ft.n);
+      var total = got[slot.ft.from[0]], n = R(slot.ft.n);
+      var x = slot.ft.xFrom ? got[slot.ft.xFrom] : R(slot.ft.x);
       if (!total || !x || !n || n.n === 0) return null;
       return rdiv(slot.ft.minus ? rsub(total, x) : radd(total, x), n);
     },
@@ -654,6 +763,7 @@
       case 'stemleaf': per = markStemleaf(q, S, r, units); break;
       case 'pie': per = markPie(q, S, r, units); break;
       case 'scatter': per = markScatter(q, S, r, units); break;
+      case 'table': per = markTable(q, S, r, units); break;
       default: per = units.map(function (u) { return row(u, 0, null, 'not marked'); });
     }
     return settle(q, per, units);
@@ -1318,16 +1428,20 @@
     order.forEach(function (id, i) {
       var u = units[i], slot = slotById(q, id) || {};
       var mine = got[id];
+      /* a constraint slot ("write five numbers so that…") lives in
+         S.v[id + '_set'], five pad entries; S.v[id] itself is not written */
+      if (slot.answer && slot.answer.constraints) {
+        var set = setOf(slot, S);
+        if (!set.length) per.push(row(u, 0, null, 'left blank'));
+        else per.push(row(u, constraintsHold(slot, S) ? 1 : 0, null, null));
+        return;
+      }
       if (!mine) {
         /* a blank OUTSIDE region is the classic Venn slip, not an unfinished board */
         per.push(row(u, 0, slot.region === 'out' ? 'VENN_OUTSIDE_LOST' : null, 'left blank'));
         return;
       }
-      var want = R(slot.answer && slot.answer.constraints ? null : slot.answer);
-      if (slot.answer && slot.answer.constraints) {
-        per.push(row(u, constraintsHold(slot, S) ? 1 : 0, null, null));
-        return;
-      }
+      var want = R(slot.answer);
       var tol = R(slot.tol || 0) || rint(0);
       if (want && within(mine, want, tol)) { per.push(row(u, 1, null, null)); return; }
       var ftv = slot.ft && FT_RULES[slot.ft.rule] ? FT_RULES[slot.ft.rule](slot, q, got, S.stage) : null;
@@ -1335,31 +1449,68 @@
         per.push(row(u, 2, null, 'from your own earlier answer'));
         return;
       }
-      per.push(row(u, 0, slot.dx || valuesDx(slot, q, mine), null));
+      per.push(row(u, 0, slot.dx || valuesDx(slot, q, mine, got), null));
     });
     return per;
   }
+  function setOf(slot, S) {
+    var raw = (S.v && S.v[slot.id + '_set']) || [];
+    return Rs(raw).filter(function (x) { return !!x; });
+  }
+  /* every constraint the pack names must hold on the pupil's own set:
+     n (how many), mean, median, mode (the set's ONE mode is that value), range */
   function constraintsHold(slot, S) {
-    var set = Rs((S.v && S.v[slot.id + '_set']) || []);
+    var set = setOf(slot, S);
     var cons = slot.answer.constraints || {}, ok = true;
     if (!set.length) return false;
+    var st = listStats(set);
     if (cons.n !== undefined && set.length !== cons.n) ok = false;
-    if (cons.mean !== undefined) {
-      var s = set.reduce(function (a, b) { return radd(a, b); }, rint(0));
-      if (!eqR(rdiv(s, rint(set.length)), R(cons.mean))) ok = false;
-    }
-    if (cons.median !== undefined && !eqR(medianOf(sortR(set)), R(cons.median))) ok = false;
-    if (cons.range !== undefined) {
-      var srt = sortR(set);
-      if (!eqR(rsub(srt[srt.length - 1], srt[0]), R(cons.range))) ok = false;
-    }
+    if (cons.mean !== undefined && !eqR(st.mean, R(cons.mean))) ok = false;
+    if (cons.median !== undefined && !eqR(st.median, R(cons.median))) ok = false;
+    if (cons.mode !== undefined && !(st.mode.length === 1 && eqR(st.mode[0], R(cons.mode)))) ok = false;
+    if (cons.range !== undefined && !eqR(st.range, R(cons.range))) ok = false;
     return ok;
   }
 
-  /* The Venn slips (DESIGN §17.1): an "only" region holding the circle's
-     whole total; the outside forgotten - the outside slot at 0, or `both`
-     computed as A + B - N. Only when the pack has not named a dx itself. */
-  function valuesDx(slot, q, mine) {
+  /* The four averages of a list, exact. `mode` is an array: the values that
+     share the highest frequency; EMPTY when every value appears equally often
+     (no mode) unless the list holds one value only. */
+  function listStats(values) {
+    var vals = Rs(values || []).filter(function (x) { return !!x; });
+    if (!vals.length) return { mean: null, median: null, mode: [], range: null, n: 0 };
+    var srt = sortR(vals);
+    var sum = vals.reduce(function (a, b) { return radd(a, b); }, rint(0));
+    var freq = {}, keys = [], i, k;
+    for (i = 0; i < srt.length; i++) {
+      k = rtostr(srt[i]);
+      if (freq[k] === undefined) { freq[k] = 0; keys.push(k); }
+      freq[k]++;
+    }
+    var maxF = 0;
+    keys.forEach(function (kk) { if (freq[kk] > maxF) maxF = freq[kk]; });
+    var allSame = keys.every(function (kk) { return freq[kk] === maxF; });
+    var mode = (allSame && keys.length > 1) ? [] :
+      keys.filter(function (kk) { return freq[kk] === maxF; }).map(function (kk) { return R(kk); });
+    return {
+      mean: rdiv(sum, rint(vals.length)),
+      median: medianOf(srt),
+      mode: mode,
+      range: rsub(srt[srt.length - 1], srt[0]),
+      n: vals.length,
+      sum: sum,
+      maxFreq: maxF,
+      distinct: keys.length
+    };
+  }
+
+  /* The `values` slips (DESIGN §17.1), only when the pack has not named a dx
+     itself. Venn: an "only" region holding the circle's whole total; the
+     outside forgotten - the outside slot at 0, or `both` computed as
+     A + B - N. Averages (slot.stat against fig.values): the median read from
+     the list as PRINTED; the mode given as its frequency; the range given as
+     the max, the min or max + min; the mean divided by the number of DISTINCT
+     values. Reverse mean (stat newMean): the two means averaged; the old n. */
+  function valuesDx(slot, q, mine, got) {
     var ft = slot.ft || {}, fig = q.fig || {}, totals = fig.totals || {};
     var circle = ft.rule === 'venn.only' ? ft.of : (slot.region && totals[slot.region] !== undefined ? slot.region : null);
     if (circle !== null && circle !== undefined) {
@@ -1371,6 +1522,54 @@
       var a = R(figTotal(q, ft.of[0])), b = R(figTotal(q, ft.of[1])), n = R(fig.n);
       if (a && b && n && eqR(mine, rsub(radd(a, b), n))) return 'VENN_OUTSIDE_LOST';
     }
+    return averageDx(slot, q, mine, got || {});
+  }
+  function averageDx(slot, q, mine, got) {
+    var stat = slot.stat, vals = Rs((q.fig && q.fig.values) || []).filter(function (x) { return !!x; });
+    if (stat === 'newMean') return reverseMeanDx(slot, q, mine, got);
+    if (!vals.length || !stat) return null;
+    var st = listStats(vals), slipV = slipValue(stat, vals, st);
+    if (slipV && eqR(mine, slipV)) {
+      return { median: 'AV_MEDIAN_UNORDERED', mode: 'AV_MODE_AS_FREQ', range: 'AV_RANGE_NOT_DIFF', mean: 'AV_DIV_ROWS' }[stat] || null;
+    }
+    if (stat === 'range') {
+      var srt = sortR(vals), mx = srt[srt.length - 1], mn = srt[0];
+      if (eqR(mine, mn) || eqR(mine, radd(mx, mn))) return 'AV_RANGE_NOT_DIFF';
+    }
+    return null;
+  }
+  /* the classic wrong value for each stat on a printed list - or null when the
+     list makes the slip invisible (its value equals the truth); the wrong
+     model board and the dx share this one function */
+  function slipValue(stat, vals, st) {
+    st = st || listStats(vals);
+    var v = null;
+    if (stat === 'median') v = medianOf(vals);                          /* printed order, unsorted */
+    else if (stat === 'mode') v = rint(st.maxFreq);
+    else if (stat === 'range') v = sortR(vals)[vals.length - 1];         /* the maximum */
+    else if (stat === 'mean') v = rdiv(st.sum, rint(st.distinct));
+    if (!v) return null;
+    var truth = stat === 'mode' ? (st.mode.length === 1 ? st.mode[0] : null) : st[stat];
+    if (truth && eqR(v, truth)) return null;
+    return v;
+  }
+  /* the old mean and n live on the total slot's `rm.total` rule (or on this
+     slot's ft as oldMean / oldN); x is the joining value (or their xFrom slot) */
+  function reverseMeanCtx(slot, q, got) {
+    var ft = slot.ft || {}, totalSlot = ft.from ? slotById(q, ft.from[0]) : null;
+    var tft = (totalSlot && totalSlot.ft) || {};
+    var oldMean = R(ft.oldMean !== undefined ? ft.oldMean : tft.mean);
+    var oldN = R(ft.oldN !== undefined ? ft.oldN : tft.n);
+    var x = ft.xFrom ? got[ft.xFrom] : R(ft.x);
+    var total = ft.from ? (got[ft.from[0]] || R(totalSlot && totalSlot.answer)) : null;
+    return { oldMean: oldMean, oldN: oldN, x: x, total: total, minus: !!ft.minus, mean2: R(ft.mean2) };
+  }
+  function reverseMeanDx(slot, q, mine, got) {
+    var c = reverseMeanCtx(slot, q, got);
+    if (c.oldMean && c.x && eqR(mine, rdiv(radd(c.oldMean, c.x), rint(2)))) return 'RM_AVERAGED_MEANS';
+    if (c.oldMean && c.mean2 && eqR(mine, rdiv(radd(c.oldMean, c.mean2), rint(2)))) return 'RM_AVERAGED_MEANS';
+    if (c.total && c.x && c.oldN && c.oldN.n !== 0 &&
+        eqR(mine, rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.oldN))) return 'RM_WRONG_N';
     return null;
   }
 
@@ -1725,6 +1924,122 @@
 
   /* ---------- gist: the exercise grid's one-line header (<= 28 chars) ----- */
 
+  /* ---------- table ---------- */
+
+  function markTable(q, S, r, units) {
+    var D = tableDerive(q), cells = S.cells || {}, totals = S.totals || {}, asks = S.asks || {};
+    var per = [], ui = 0, rows = D.rows, i;
+    var theirs = {};                                   /* their cells as rationals, by column */
+    (q.cols || []).forEach(function (c) {
+      if (c.derive) theirs[c.id] = Rs(cells[c.id] || []).concat([]);
+      else if (c.given && D.cells[c.id]) theirs[c.id] = D.cells[c.id];   /* given: theirs = the truth */
+    });
+    var f = D.fId ? D.cells[D.fId] : null;
+
+    derivedCols(q).forEach(function (c) {
+      var truth = D.cells[c.id] || [], mine = theirs[c.id] || [];
+      for (i = 0; i < rows; i++) {
+        var u = units[ui++], m = mine[i], t = truth[i];
+        if (!m) { per.push(row(u, 0, null, 'left blank')); continue; }
+        if (t && eqR(m, t)) { per.push(row(u, 1, null, null)); continue; }
+        var ftv = cellFt(q, D, c, i, theirs, f);
+        if (ftv && eqR(m, ftv) && !(t && eqR(ftv, t))) { per.push(row(u, 2, null, 'from your own earlier answer')); continue; }
+        per.push(row(u, 0, cellDx(q, D, c, i, m), null));
+      }
+    });
+
+    (q.totals || []).forEach(function (id) {
+      var u = units[ui++], m = R(totals[id]), t = D.totals[id];
+      if (!m) { per.push(row(u, 0, null, 'left blank')); return; }
+      if (t && eqR(m, t)) { per.push(row(u, 1, null, null)); return; }
+      var col = theirs[id] || [], full = col.length === rows && col.every(function (x) { return !!x; });
+      var sum = full ? col.reduce(function (a, b) { return radd(a, b); }, rint(0)) : null;
+      if (sum && eqR(m, sum) && !(t && eqR(sum, t))) { per.push(row(u, 2, null, 'the total of your own column')); return; }
+      per.push(row(u, 0, null, null));
+    });
+
+    (q.asks || []).forEach(function (a) {
+      var u = units[ui++];
+      if (a.type === 'row') {
+        var got = asks[a.id];
+        if (got === undefined || got === null || got === '') { per.push(row(u, 0, null, 'no row chosen')); return; }
+        var gi = Number(got), want = Number(a.answer);
+        if (gi === want) { per.push(row(u, 1, null, null)); return; }
+        var median = /median/i.test(a.id || '') || /median/i.test(a.label || '');
+        per.push(row(u, 0, (median && Math.abs(gi - want) === 1) ? 'AV_MEDIAN_CLASS_OFF' : null, null));
+        return;
+      }
+      var mine = R(asks[a.id]);
+      if (!mine) { per.push(row(u, 0, null, 'left blank')); return; }
+      var want2 = R(a.answer), tol = dpTol(a.dp);
+      if (want2 && within(mine, want2, tol)) { per.push(row(u, 1, null, null)); return; }
+      var ftv = askFt(a, q, D, theirs, totals);
+      if (ftv && within(mine, ftv, tol) && !(want2 && eqR(ftv, want2))) { per.push(row(u, 2, null, 'from your own table')); return; }
+      per.push(row(u, 0, askDx(a, q, D, mine, tol), null));
+    });
+    return per;
+  }
+  /* "within the dp rounding": half a unit in the dp-th place; exact when no dp */
+  function dpTol(dp) {
+    if (dp === undefined || dp === null) return rint(0);
+    return rat(5, Math.pow(10, Number(dp) + 1));
+  }
+  /* a derived cell consistent with THEIR inputs in that row */
+  function cellFt(q, D, c, i, theirs, f) {
+    if (c.derive === 'f*x' && D.midId && f && f[i]) {
+      var m = (theirs[D.midId] || [])[i];
+      return m ? rmul(f[i], m) : null;
+    }
+    if (c.derive === 'cum' && i > 0 && f) {
+      var prev = (theirs[c.id] || [])[i - 1];
+      return prev ? radd(prev, f[i] || rint(0)) : null;
+    }
+    return null;                                        /* mid, and row 0 of cf, follow nothing */
+  }
+  function cellDx(q, D, c, i, mine) {
+    if (c.derive === 'mid') {
+      var cls = classCol(q), g = cls && cls.given[i];
+      if (g && (eqR(mine, R(g.hi)) || eqR(mine, R(g.lo)))) return 'AV_NO_MIDPOINT';
+    }
+    return null;
+  }
+  /* the value ask's follow-through: sum(<a>)/sum(<b>) over THEIR cells - their
+     total of a column when they wrote one, else the sum of their cells (every
+     cell filled); a given column's sum is the truth */
+  var ASK_FT = /^sum\((\w+)\)\/sum\((\w+)\)$/;
+  function askFt(a, q, D, theirs, totals) {
+    var m = ASK_FT.exec(a.ft || '');
+    if (!m) return null;
+    var num = theirSum(m[1], q, D, theirs, totals), den = theirSum(m[2], q, D, theirs, totals);
+    return (num && den && den.n !== 0) ? rdiv(num, den) : null;
+  }
+  function theirSum(id, q, D, theirs, totals) {
+    if ((q.totals || []).indexOf(id) > -1 && R(totals[id])) return R(totals[id]);
+    var col = theirs[id];
+    if (!col || col.length !== D.rows || !col.every(function (x) { return !!x; })) return null;
+    return col.reduce(function (x, y) { return radd(x, y); }, rint(0));
+  }
+  /* the mean divided by the number of rows; the midpoints (or x values)
+     averaged with the frequencies ignored */
+  function askDx(a, q, D, mine, tol) {
+    if (!D.rows) return null;
+    var rowsR = rint(D.rows);
+    if (D.sumFx && within(mine, rdiv(D.sumFx, rowsR), tol)) return 'AV_DIV_ROWS';
+    var vals = D.mid || (D.xId ? D.cells[D.xId] : null);
+    if (vals && vals.every(function (x) { return !!x; })) {
+      var s = vals.reduce(function (x, y) { return radd(x, y); }, rint(0));
+      if (within(mine, rdiv(s, rowsR), tol)) return 'AV_FX_NOT_SUMMED';
+    }
+    return null;
+  }
+  function tableGist(q) {
+    var rows = tableRows(q);
+    var hasMean = (q.asks || []).some(function (a) { return a.type === 'value'; });
+    if (hasMean) return 'Mean from a table · ' + rows + ' rows';
+    if (classCol(q)) return 'Grouped table · ' + rows + ' classes';
+    return 'Frequency table · ' + rows + ' rows';
+  }
+
   function gist(q) {
     var s;
     switch (q.kind) {
@@ -1745,6 +2060,7 @@
       case 'stemleaf': s = 'Stem-and-leaf · n = ' + (q.values || []).length; break;
       case 'pie': s = 'Pie chart · ' + (q.cats || []).length + ' sectors'; break;
       case 'scatter': s = 'Scatter graph · n = ' + ((q.given || []).length + (q.toPlot || []).length); break;
+      case 'table': s = tableGist(q); break;
       default: s = q.kind;
     }
     return s.length > 28 ? s.slice(0, 27) + '…' : s;
@@ -1779,7 +2095,7 @@
   }
   function isStatKind(k) { return KINDS_LIST.indexOf(k) > -1; }
   var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
-                    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+                    'order', 'pick', 'stemleaf', 'pie', 'scatter', 'table'];
   function modelBoard(q, wrong, rules) {
     RULES = rules || null;
     return statsBoard(q, !!wrong);
@@ -1999,18 +2315,71 @@ function judgeBoard(q, wrong) {
   }
   return { j: bad };
 }
+/* right = every slot's answer (a constraint slot gets a set that satisfies
+   it). wrong = the first slot that HAS a classic slip makes it (CONTRACT_B):
+   the median from the printed order, the mode as its frequency, the range as
+   the maximum, the mean ÷ the distinct values, a reverse mean over the OLD n;
+   when no slot can slip visibly, the first slot is one more than the truth. */
 function valuesBoard(q, wrong) {
   var order = q.order || (q.slots || []).map(function (s) { return s.id; });
   var v = {};
   order.forEach(function (id) {
     var slot = (q.slots || []).filter(function (s) { return s.id === id; })[0] || {};
+    if (slot.answer && slot.answer.constraints) { v[id + '_set'] = constraintSet(slot.answer.constraints); return; }
     v[id] = rstr2(slot.answer);
   });
   if (!wrong) return { v: v };
   var bad = JSON.parse(JSON.stringify(v));
+  var vals = Rs((q.fig && q.fig.values) || []).filter(function (x) { return !!x; });
+  var i, slot, slip = null;
+  for (i = 0; i < order.length && !slip; i++) {
+    slot = (q.slots || []).filter(function (s) { return s.id === order[i]; })[0] || {};
+    if (slot.stat === 'newMean') {
+      var got = {}; order.forEach(function (id) { got[id] = R(v[id]); });
+      var c = reverseMeanCtx(slot, q, got);
+      if (c.total && c.x && c.oldN && c.oldN.n !== 0) {
+        var wrongN = rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.oldN);
+        if (!eqR(wrongN, R(slot.answer))) slip = { id: slot.id, value: wrongN };
+      }
+    } else if (vals.length && slot.stat) {
+      var sv = slipValue(slot.stat, vals);
+      if (sv) slip = { id: slot.id, value: sv };
+    }
+  }
+  if (slip) { bad[slip.id] = rstr2(slip.value); return { v: bad }; }
   var first = order[0];
+  if (Array.isArray(bad[first + '_set']) && bad[first + '_set'].length) {
+    /* a constraint set with its last value one more: the mean slips */
+    var last = bad[first + '_set'].length - 1;
+    bad[first + '_set'][last] = String(Number(bad[first + '_set'][last]) + 1);
+    return { v: bad };
+  }
   bad[first] = String(Number(bad[first] || 0) + 1);
   return { v: bad };
+}
+/* one set that meets n / mean / median / mode (/ range): the design's example
+   (n 5, mean 6, median 5, mode 4) -> [4, 4, 5, 8, 9]. A small search over
+   whole numbers; the lint proves a solution exists for every pack item. */
+function constraintSet(cons) {
+  var n = cons.n || 5, target = { mean: cons.mean, median: cons.median, mode: cons.mode, range: cons.range };
+  var best = null;
+  function holds(set) {
+    var st = listStats(set);
+    if (target.mean !== undefined && !req(st.mean, R(target.mean))) return false;
+    if (target.median !== undefined && !req(st.median, R(target.median))) return false;
+    if (target.mode !== undefined && !(st.mode.length === 1 && req(st.mode[0], R(target.mode)))) return false;
+    if (target.range !== undefined && !req(st.range, R(target.range))) return false;
+    return true;
+  }
+  var hi = Math.max(20, Math.ceil(rnum2(R(target.mean) || rint(10)) * 2) + 2);
+  function rec(set, min) {
+    if (best) return;
+    if (set.length === n) { if (holds(set)) best = set.slice(); return; }
+    var k;
+    for (k = min; k <= hi && !best; k++) { set.push(k); rec(set, k); set.pop(); }
+  }
+  rec([], 0);
+  return (best || []).map(String);
 }
 /* ---- Book A's boards (CONTRACT_A.md) ---- */
 function orderBoard(q, wrong) {
@@ -2119,6 +2488,45 @@ function scatterBoard(q, wrong) {
   else if (out.pts.length) out.pts[0] = [out.pts[0][0] + sqx, out.pts[0][1]];
   return out;
 }
+/* ---- Book B's table board (CONTRACT_B.md) ----
+   right: every derived cell, total and ask true (a value ask with `dp` is
+   written rounded to dp - a non-terminating mean with no dp cannot be typed).
+   wrong: the mean divided by the number of rows (AV_DIV_ROWS) with every cell
+   right; a table with no value ask has its median row one off (or, failing
+   that, its first row ask one off). */
+function tableBoard(q, wrong) {
+  var D = tableDerive(q), cells = {}, totals = {}, asks = {};
+  (q.cols || []).forEach(function (c) {
+    if (c.derive) cells[c.id] = (D.cells[c.id] || []).map(function (r) { return rstr2(r); });
+  });
+  (q.totals || []).forEach(function (id) { totals[id] = rstr2(D.totals[id]); });
+  function dpStr(r, dp) {
+    if (dp === undefined || dp === null || !r) return rstr2(r);
+    return String(Math.round(rnum2(r) * Math.pow(10, dp)) / Math.pow(10, dp));
+  }
+  (q.asks || []).forEach(function (a) {
+    asks[a.id] = a.type === 'row' ? Number(a.answer) : dpStr(a.answer, a.dp);
+  });
+  if (!wrong) return { cells: cells, totals: totals, asks: asks };
+  var valueAsk = (q.asks || []).filter(function (a) { return a.type === 'value'; })[0];
+  if (valueAsk && D.sumFx && D.rows) {
+    asks[valueAsk.id] = dpStr(rdiv(D.sumFx, rint(D.rows)), valueAsk.dp);
+    return { cells: cells, totals: totals, asks: asks };
+  }
+  var rowAsk = (q.asks || []).filter(function (a) { return a.type === 'row' && /median/i.test(a.id + ' ' + (a.label || '')); })[0] ||
+               (q.asks || []).filter(function (a) { return a.type === 'row'; })[0];
+  if (rowAsk) {
+    var w = Number(rowAsk.answer);
+    asks[rowAsk.id] = w + 1 < D.rows ? w + 1 : w - 1;
+    return { cells: cells, totals: totals, asks: asks };
+  }
+  var firstDerived = (q.cols || []).filter(function (c) { return !!c.derive; })[0];
+  if (firstDerived && cells[firstDerived.id] && cells[firstDerived.id].length) {
+    cells[firstDerived.id][0] = String(Number(cells[firstDerived.id][0]) + 1);
+  }
+  return { cells: cells, totals: totals, asks: asks };
+}
+
 function statsBoard(q, wrong) {
   switch (q.kind) {
     case 'qlist': return qlistBoard(q, wrong);
@@ -2134,6 +2542,7 @@ function statsBoard(q, wrong) {
     case 'stemleaf': return stemleafBoard(q, wrong);
     case 'pie': return pieBoard(q, wrong);
     case 'scatter': return scatterBoard(q, wrong);
+    case 'table': return tableBoard(q, wrong);
     default: return null;
   }
 }
@@ -2741,18 +3150,239 @@ function statsBoard(q, wrong) {
               fig: { type: 'venn2', n: 10, totals: { A: 7 } } }, { S: { v: { a: '7' } } }).dx === 'CF_SKIPPED_ROW');
 
     /* ---- the kinds list, the labels, the names ---- */
-    T('KA1 the five Book A kinds are stat kinds', ['order', 'pick', 'stemleaf', 'pie', 'scatter'].every(isStatKind) && !isStatKind('table'));
+    T('KA1 the five Book A kinds are stat kinds', ['order', 'pick', 'stemleaf', 'pie', 'scatter'].every(isStatKind) && !isStatKind('histogram'));
     T('KA2 every kind has a two-word tally', KINDS_LIST.every(function (k) { return MK_LABELS[k] && MK_LABELS[k].length === 2; }));
     T('KA3 every Book A dx has a plain-English name',
       ['SL_UNORDERED', 'SL_WRONG_STEM', 'SL_MISSED_LEAF', 'SL_KEY_WRONG', 'VENN_TOTAL_AS_ONLY', 'VENN_OUTSIDE_LOST',
        'PIE_PCT_NOT_DEG', 'PIE_TOTAL_WRONG', 'PIE_SECTOR_OFF', 'SC_XY_SWAPPED', 'SC_LINE_OFF_TREND', 'SC_READ_WRONG_AXIS', 'SC_CORR_SIGN']
         .every(function (k) { return typeof DX_NAMES[k] === 'string' && DX_NAMES[k].split(' ').length >= 3; }));
-    T('KA4 SL_BACK_DIRECTION is a stated omission', DX_NAMES.SL_BACK_DIRECTION === undefined && DX_NAMES.AV_DIV_ROWS === undefined);
+    T('KA4 SL_BACK_DIRECTION is a stated omission', DX_NAMES.SL_BACK_DIRECTION === undefined);
     T('KA5 every Book A gist is at most 28 characters', [OR, ORs, PK, SLq, PI, SC].every(function (qq) { return gist(qq).length <= 28; }));
     T('KA6 every wrong model board fails at least one unit',
       [OR, ORs, PK, SLq, SLd, PI, SC].every(function (qq) { return check(qq, { S: statsBoard(qq, true) }).res !== 'OK'; }));
     T('KA7 every right model board marks full',
       [OR, ORs, PK, SLq, SLd, SLp, PI, SC, SCy].every(function (qq) { var vv = check(qq, { S: statsBoard(qq, false) }); return vv.res === 'OK' && vv.mk[0] === vv.mkMax[0] && vv.mk[1] === vv.mkMax[1]; }));
+
+    /* ================= Book B (CONTRACT_B.md, 13 Sept 2026) ================= */
+
+    /* ---- table: the sweets (20 bags; 23..27 × 1,4,9,3,3) ---- */
+    var SW = { id: 'sw', kind: 'table', marks: [2, 3], prompt: 'p',
+               cols: [{ id: 'x', head: 'Number of sweets', given: [23, 24, 25, 26, 27] },
+                      { id: 'f', head: 'Frequency', given: [1, 4, 9, 3, 3] },
+                      { id: 'fx', head: 'f × x', derive: 'f*x' }],
+               totals: ['f', 'fx'],
+               asks: [{ type: 'value', id: 'mean', label: 'Mean =', answer: { n: 503, d: 20 }, ft: 'sum(fx)/sum(f)' },
+                      { type: 'row', id: 'modal', label: 'Modal number of sweets', answer: 2 },
+                      { type: 'row', id: 'medianClass', label: 'Number containing the median', answer: 2 }] };
+    var Dsw = tableDerive(SW);
+    T('TB1 f × x cells derive', Dsw.cells.fx.map(rnum).join(',') === '23,96,225,78,81');
+    T('TB2 totals derive', req(Dsw.totals.f, n(20)) && req(Dsw.totals.fx, n(503)));
+    T('TB3 the mean is Σfx ÷ Σf exactly', req(Dsw.mean, { n: 503, d: 20 }));
+    T('TB4 modal row = the largest frequency', Dsw.modalRow === 2);
+    T('TB5 median row: 20 bags, the 10.5th value → cf first ≥ 10.5 → row 2', Dsw.medianRow === 2);
+    T('TB6 units in table order then ask order',
+      unitsOf(SW).map(function (u) { return u.id; }).join(' ') === 'C_fx_0 C_fx_1 C_fx_2 C_fx_3 C_fx_4 T_f T_fx A_mean A_modal A_medianClass');
+    T('TB7 bands: cells and totals method (ft earns), asks accuracy; the value ask earns ft, a row ask does not',
+      unitsOf(SW).slice(0, 7).every(function (u) { return u.band === 'method' && u.ftEarns; }) &&
+      unitsOf(SW).slice(7).every(function (u) { return u.band === 'accuracy'; }) &&
+      unitsOf(SW)[7].ftEarns === true && unitsOf(SW)[8].ftEarns === false);
+    var swRight = { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 2, medianClass: 2 } };
+    v = check(SW, { S: swRight });
+    T('TB8 the sweets table right', v.res === 'OK' && mk(v, 2, 3) && v.mkLabels[0] === 'Table' && v.mkLabels[1] === 'Answers');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '80'] }, totals: { f: '20', fx: '502' }, asks: { mean: '25.1', modal: 2, medianClass: 2 } } });
+    T('TB9 one cell wrong; the total of THEIR column follows through', okAt(v, 4, 0) && okAt(v, 6, 2) && unit(v, 6).earned === 1);
+    T('TB10 the mean through their own Σfx follows through and earns', okAt(v, 7, 2) && unit(v, 7).earned === 1);
+    T('TB11 res points at the first wrong unit', v.res === 'X@5');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '100.6', modal: 2, medianClass: 2 } } });
+    T('TB12 Σfx ÷ the number of rows is AV_DIV_ROWS', dxAt(v, 7, 'AV_DIV_ROWS') && v.dx === 'AV_DIV_ROWS');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25', modal: 2, medianClass: 2 } } });
+    T('TB13 Σx ÷ rows (frequencies ignored) is AV_FX_NOT_SUMMED', dxAt(v, 7, 'AV_FX_NOT_SUMMED'));
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 2, medianClass: 3 } } });
+    T('TB14 the median row one off is AV_MEDIAN_CLASS_OFF', dxAt(v, 9, 'AV_MEDIAN_CLASS_OFF') && v.mk[1] === 2);
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 1, medianClass: 0 } } });
+    T('TB15 the modal row one off has no name; two rows off is plain wrong', okAt(v, 8, 0) && !unit(v, 8).dx && okAt(v, 9, 0) && !unit(v, 9).dx);
+    v = check(SW, { S: { cells: { fx: ['23', '', '225', '78', '81'] }, totals: { f: '20' }, asks: { mean: '', modal: null, medianClass: 2 } } });
+    T('TB16 blanks are fail states with notes, never a crash',
+      unit(v, 1).note === 'left blank' && unit(v, 6).note === 'left blank' && unit(v, 7).note === 'left blank' && unit(v, 8).note === 'no row chosen');
+    T('TB17 a partial column cannot follow through into the mean', okAt(v, 7, 0));
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: '2', medianClass: '2' } } });
+    T('TB18 row indices arrive as strings from the walker and still mark', v.res === 'OK');
+    T('TB19 sweets gist', gist(SW) === 'Mean from a table · 5 rows');
+    T('TB20 the right board marks full', check(SW, { S: statsBoard(SW, false) }).res === 'OK' && mk(check(SW, { S: statsBoard(SW, false) }), 2, 3));
+    v = check(SW, { S: statsBoard(SW, true) });
+    T('TB21 the wrong board is the mean ÷ rows with every cell right', v.res === 'X@8' && v.dx === 'AV_DIV_ROWS' && v.mk[0] === 2);
+    T('TB22 the board’s S shape is the contract’s',
+      JSON.stringify(statsBoard(SW, false)) === JSON.stringify(swRight));
+
+    /* ---- table: the cats (0..4 × 6,13,7,3,1 → 40/30) ---- */
+    var CATq = { id: 'cat', kind: 'table', marks: [2, 1], prompt: 'p',
+                 cols: [{ id: 'x', head: 'Number of cats', given: [0, 1, 2, 3, 4] },
+                        { id: 'f', head: 'Frequency', given: [6, 13, 7, 3, 1] },
+                        { id: 'fx', head: 'f × x', derive: 'f*x' }],
+                 totals: ['fx'],
+                 asks: [{ type: 'value', id: 'mean', label: 'Mean =', answer: { n: 4, d: 3 }, ft: 'sum(fx)/sum(f)', dp: 2 }] };
+    var Dcat = tableDerive(CATq);
+    T('TB23 cats: mean 40/30, modal row 1, median row 1 (n = 30, the 15.5th value)',
+      req(Dcat.mean, { n: 4, d: 3 }) && Dcat.modalRow === 1 && Dcat.medianRow === 1 && req(Dcat.totals.fx, n(40)));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '1.33' } } });
+    T('TB24 dp rounding: 1.33 is within the 2 dp rounding of 4/3', v.res === 'OK' && mk(v, 2, 1));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '1.3' } } });
+    T('TB25 dp rounding: 1.3 is not within 2 dp', okAt(v, 6, 0));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '8' } } });
+    T('TB26 cats: 40 ÷ 5 rows is AV_DIV_ROWS', dxAt(v, 6, 'AV_DIV_ROWS'));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '2' } } });
+    T('TB27 cats: (0+1+2+3+4) ÷ 5 is AV_FX_NOT_SUMMED', dxAt(v, 6, 'AV_FX_NOT_SUMMED'));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '5'] }, totals: { fx: '41' }, asks: { mean: '1.37' } } });
+    T('TB28 the mean follows through their Σfx over the given Σf (41/30 → 1.37)', okAt(v, 4, 0) && okAt(v, 5, 2) && okAt(v, 6, 2));
+    T('TB29 the wrong board of the cats is written to dp and still fires',
+      statsBoard(CATq, true).asks.mean === '8' && check(CATq, { S: statsBoard(CATq, true) }).dx === 'AV_DIV_ROWS');
+
+    /* ---- table: Heathrow delays (six classes 0-10 … 50-60 × 27,10,7,5,4,2) ---- */
+    var HR = { id: 'hr', kind: 'table', marks: [3, 3], prompt: 'p',
+               cols: [{ id: 'cls', head: 'Delay (minutes)', given: [{ lo: 0, hi: 10, text: '0-10' }, { lo: 10, hi: 20, text: '10-20' }, { lo: 20, hi: 30, text: '20-30' },
+                                                                    { lo: 30, hi: 40, text: '30-40' }, { lo: 40, hi: 50, text: '40-50' }, { lo: 50, hi: 60, text: '50-60' }] },
+                      { id: 'f', head: 'Frequency', given: [27, 10, 7, 5, 4, 2] },
+                      { id: 'mid', head: 'Midpoint', derive: 'mid' },
+                      { id: 'fx', head: 'f × x', derive: 'f*x' }],
+               totals: ['f', 'fx'],
+               asks: [{ type: 'value', id: 'mean', label: 'Estimated mean =', answer: { n: 925, d: 55 }, ft: 'sum(fx)/sum(f)', dp: 2 },
+                      { type: 'row', id: 'modal', label: 'Modal class', answer: 0 },
+                      { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }] };
+    var Dhr = tableDerive(HR);
+    T('TB30 midpoints derive from lo/hi', Dhr.cells.mid.map(rnum).join(',') === '5,15,25,35,45,55');
+    T('TB31 f × x uses the midpoint when the table has one', Dhr.cells.fx.map(rnum).join(',') === '135,150,175,175,180,110' && req(Dhr.totals.fx, n(925)));
+    T('TB32 Heathrow: mean 925/55, modal 0-10, median 10-20 (n = 55, the 28th value: cf 27 then 37)',
+      req(Dhr.mean, { n: 185, d: 11 }) && Dhr.modalRow === 0 && Dhr.medianRow === 1);
+    T('TB33 Heathrow units: 12 cells, 2 totals, 3 asks', unitsOf(HR).length === 17 && unitsOf(HR)[6].id === 'C_fx_0' && unitsOf(HR)[12].id === 'T_f');
+    var hrCells = { mid: ['5', '15', '25', '35', '45', '55'], fx: ['135', '150', '175', '175', '180', '110'] };
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 1 } } });
+    T('TB34 Heathrow right, the mean to 2 dp', v.res === 'OK' && mk(v, 3, 3));
+    v = check(HR, { S: { cells: { mid: ['10', '20', '30', '40', '50', '60'], fx: ['270', '200', '210', '200', '200', '120'] }, totals: { f: '55', fx: '1200' }, asks: { mean: '21.82', modal: 0, medianClass: 1 } } });
+    T('TB35 upper bounds as midpoints: every mid cell AV_NO_MIDPOINT', [0, 1, 2, 3, 4, 5].every(function (i) { return dxAt(v, i, 'AV_NO_MIDPOINT'); }) && v.dx === 'AV_NO_MIDPOINT');
+    T('TB36 f × THEIR wrong midpoint still earns the multiplication', [6, 7, 8, 9, 10, 11].every(function (i) { return okAt(v, i, 2) && unit(v, i).earned === 1; }));
+    T('TB37 the total of their fx column and the mean through it follow through', okAt(v, 13, 2) && okAt(v, 14, 2) && mk(v, 3, 3));
+    v = check(HR, { S: { cells: { mid: ['0', '10', '20', '30', '40', '50'], fx: ['0', '100', '140', '150', '160', '100'] }, totals: { f: '55', fx: '650' }, asks: { mean: '11.82', modal: 0, medianClass: 1 } } });
+    T('TB38 lower bounds as midpoints are AV_NO_MIDPOINT too', dxAt(v, 0, 'AV_NO_MIDPOINT') && dxAt(v, 5, 'AV_NO_MIDPOINT'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '30', modal: 0, medianClass: 1 } } });
+    T('TB39 Σmid ÷ rows (180 ÷ 6 = 30) is AV_FX_NOT_SUMMED', dxAt(v, 14, 'AV_FX_NOT_SUMMED'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '154.17', modal: 0, medianClass: 1 } } });
+    T('TB40 Σfx ÷ rows to 2 dp (925 ÷ 6 = 154.17) is AV_DIV_ROWS', dxAt(v, 14, 'AV_DIV_ROWS'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 2 } } });
+    T('TB41 Heathrow median class one row off', dxAt(v, 16, 'AV_MEDIAN_CLASS_OFF'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 0 } } });
+    T('TB42 the median class one row BELOW is off by one too', dxAt(v, 16, 'AV_MEDIAN_CLASS_OFF'));
+    T('TB43 Heathrow gist and boards', gist(HR) === 'Mean from a table · 6 rows' &&
+      check(HR, { S: statsBoard(HR, false) }).res === 'OK' && check(HR, { S: statsBoard(HR, true) }).dx === 'AV_DIV_ROWS');
+
+    /* ---- table: a cumulative column, and a table with no value ask ---- */
+    var CFt = { id: 'cft', kind: 'table', marks: [3, 1], prompt: 'p',
+                cols: [{ id: 'cls', head: 'Time (s)', given: [{ lo: 0, hi: 10, text: '0 < t ≤ 10' }, { lo: 10, hi: 20, text: '10 < t ≤ 20' }, { lo: 20, hi: 30, text: '20 < t ≤ 30' }, { lo: 30, hi: 40, text: '30 < t ≤ 40' }] },
+                       { id: 'f', head: 'Frequency', given: [3, 8, 6, 3] },
+                       { id: 'cf', head: 'Cumulative frequency', derive: 'cum' }],
+                asks: [{ type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }] };
+    T('TB44 the cumulative column derives', tableDerive(CFt).cells.cf.map(rnum).join(',') === '3,11,17,20' && tableDerive(CFt).medianRow === 1);
+    v = check(CFt, { S: { cells: { cf: ['3', '10', '16', '19'] }, asks: { medianClass: 1 } } });
+    T('TB45 a cf slip carries: row 2 wrong, rows 3 and 4 = their previous + f follow through', okAt(v, 1, 0) && okAt(v, 2, 2) && okAt(v, 3, 2) && mk(v, 3, 1));
+    T('TB46 row 1 of a cf column follows nothing', okAt(check(CFt, { S: { cells: { cf: ['4', '12', '18', '21'] }, asks: { medianClass: 1 } } }), 0, 0));
+    T('TB47 no value ask: the wrong board is the median row one off',
+      statsBoard(CFt, true).asks.medianClass === 2 && check(CFt, { S: statsBoard(CFt, true) }).dx === 'AV_MEDIAN_CLASS_OFF');
+    T('TB48 a grouped table with no value ask says so in its gist', gist(CFt) === 'Grouped table · 4 classes');
+    T('TB49 table is a stat kind with a two-word tally', isStatKind('table') && MK_LABELS.table[0] === 'Table' && KINDS_LIST.length === 14);
+
+    /* ---- values: the four averages of a printed list (7, 3, 9, 3, 5, 8 → mean 35/6 is NOT used; 6, 3, 9, 3, 4 → 5) ---- */
+    var LS = listStats([6, 3, 9, 3, 4]);
+    T('LS1 listStats mean, median, mode, range', req(LS.mean, n(5)) && req(LS.median, n(4)) && LS.mode.length === 1 && req(LS.mode[0], n(3)) && req(LS.range, n(6)));
+    T('LS2 two modes come back as two', listStats([1, 1, 2, 2, 3]).mode.map(rnum).join(',') === '1,2');
+    T('LS3 every value once: no mode', listStats([1, 2, 3]).mode.length === 0);
+    T('LS4 one value repeated is the mode', listStats([4, 4, 4]).mode.length === 1 && req(listStats([4, 4, 4]).mode[0], n(4)));
+    T('LS5 decimals stay exact', req(listStats([1.5, 2.5]).mean, n(2)) && req(listStats([1.5, 2.5]).range, n(1)));
+    var LQ = { id: 'lq', kind: 'values', marks: [2, 2], prompt: 'p', fig: { type: 'list', values: [6, 3, 9, 3, 4] },
+               slots: [{ id: 'mean', stat: 'mean', label: 'Mean', answer: { n: 5, d: 1 }, earns: 'method', ft: { rule: 'avg.mean' } },
+                       { id: 'median', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' },
+                       { id: 'mode', stat: 'mode', label: 'Mode', answer: { n: 3, d: 1 }, earns: 'accuracy' },
+                       { id: 'range', stat: 'range', label: 'Range', answer: { n: 6, d: 1 }, earns: 'accuracy' }] };
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '3', range: '6' } } });
+    T('AV1 the four averages right: no slip fires on a right answer', v.res === 'OK' && mk(v, 2, 2) && v.perLine.every(function (u) { return !u.dx; }));
+    v = check(LQ, { S: { v: { mean: '5', median: '9', mode: '3', range: '6' } } });
+    T('AV2 the middle of the PRINTED list (9) is AV_MEDIAN_UNORDERED', dxAt(v, 1, 'AV_MEDIAN_UNORDERED'));
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '2', range: '6' } } });
+    T('AV3 the highest frequency (2) as the mode is AV_MODE_AS_FREQ', dxAt(v, 2, 'AV_MODE_AS_FREQ'));
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '3', range: '9' } } });
+    T('AV4 the maximum as the range is AV_RANGE_NOT_DIFF', dxAt(v, 3, 'AV_RANGE_NOT_DIFF'));
+    T('AV5 the minimum, and max + min, are AV_RANGE_NOT_DIFF too',
+      check(LQ, { S: { v: { range: '3' } } }).perLine[3].dx === 'AV_RANGE_NOT_DIFF' && check(LQ, { S: { v: { range: '12' } } }).perLine[3].dx === 'AV_RANGE_NOT_DIFF');
+    v = check(LQ, { S: { v: { mean: '6.25', median: '4', mode: '3', range: '6' } } });
+    T('AV6 the sum ÷ the DISTINCT values (25 ÷ 4) is AV_DIV_ROWS', dxAt(v, 0, 'AV_DIV_ROWS'));
+    v = check(LQ, { S: { v: { mean: '7', median: '5', mode: '4', range: '5' } } });
+    T('AV7 a plain wrong answer carries no slip name', v.res === 'X@1' && v.perLine.every(function (u) { return !u.dx; }));
+    T('AV8 a slot with no stat never names an averages slip',
+      check({ kind: 'values', marks: [1, 0], fig: { type: 'list', values: [6, 3, 9, 3, 4] }, slots: [{ id: 'a', label: 'A', answer: { n: 4, d: 1 }, earns: 'method' }] }, { S: { v: { a: '9' } } }).dx === null);
+    T('AV9 a list already in order makes the median slip invisible (no false name)',
+      check({ kind: 'values', marks: [1, 0], fig: { type: 'list', values: [3, 3, 4, 6, 9] }, slots: [{ id: 'm', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' }] }, { S: { v: { m: '5' } } }).dx === null);
+    v = check(LQ, { S: statsBoard(LQ, true) });
+    T('AV10 the wrong list board is the first slot’s own slip (mean ÷ distinct) and fails it with the name',
+      statsBoard(LQ, true).v.mean === '6.25' && v.res === 'X@1' && v.dx === 'AV_DIV_ROWS');
+    T('AV11 the right list board marks full', check(LQ, { S: statsBoard(LQ, false) }).res === 'OK');
+    var LQm = { id: 'lqm', kind: 'values', marks: [1, 1], fig: { type: 'list', values: [6, 3, 9, 3, 4] },
+                slots: [{ id: 'median', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' },
+                        { id: 'range', stat: 'range', label: 'Range', answer: { n: 6, d: 1 }, earns: 'accuracy' }] };
+    T('AV12 a median-first board slips the printed-order median', statsBoard(LQm, true).v.median === '9' && check(LQm, { S: statsBoard(LQm, true) }).dx === 'AV_MEDIAN_UNORDERED');
+    T('AV13 every AV_*/RM_* id has a plain-English name',
+      ['AV_DIV_ROWS', 'AV_MEDIAN_UNORDERED', 'AV_MODE_AS_FREQ', 'AV_RANGE_NOT_DIFF', 'AV_NO_MIDPOINT', 'AV_FX_NOT_SUMMED', 'AV_MEDIAN_CLASS_OFF', 'RM_AVERAGED_MEANS', 'RM_WRONG_N']
+        .every(function (k) { return typeof DX_NAMES[k] === 'string' && DX_NAMES[k].split(' ').length >= 3; }));
+    T('AV14 the list gist', gist(LQ) === '4 values to find');
+
+    /* ---- reverse mean: 4 girls mean 10, a fifth aged 5 joins → 9 ---- */
+    var RMq = { id: 'rm', kind: 'values', marks: [1, 1], prompt: 'p',
+                slots: [{ id: 'total', stat: 'total', label: 'Total of the 4 ages', answer: { n: 40, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 10, n: 4 } },
+                        { id: 'newMean', stat: 'newMean', label: 'New mean', answer: { n: 9, d: 1 }, earns: 'accuracy', ft: { rule: 'rm.newMean', from: ['total'], x: 5, n: 5 } }] };
+    v = check(RMq, { S: { v: { total: '40', newMean: '9' } } });
+    T('RM1 the reverse mean right, no slip named', v.res === 'OK' && mk(v, 1, 1) && !v.dx);
+    v = check(RMq, { S: { v: { total: '44', newMean: '9.8' } } });
+    T('RM2 a wrong total carried into (their 44 + 5) ÷ 5 follows through', okAt(v, 0, 0) && okAt(v, 1, 2) && v.res === 'X@1');
+    v = check(RMq, { S: { v: { total: '40', newMean: '7.5' } } });
+    T('RM3 (10 + 5) ÷ 2 is RM_AVERAGED_MEANS', dxAt(v, 1, 'RM_AVERAGED_MEANS'));
+    v = check(RMq, { S: { v: { total: '40', newMean: '11.25' } } });
+    T('RM4 (40 + 5) ÷ the OLD 4 is RM_WRONG_N', dxAt(v, 1, 'RM_WRONG_N'));
+    v = check(RMq, { S: { v: { total: '44', newMean: '12.25' } } });
+    T('RM5 RM_WRONG_N reads THEIR total ((44 + 5) ÷ 4)', dxAt(v, 1, 'RM_WRONG_N'));
+    T('RM6 the wrong reverse-mean board is RM_WRONG_N',
+      statsBoard(RMq, true).v.newMean === '11.25' && check(RMq, { S: statsBoard(RMq, true) }).dx === 'RM_WRONG_N');
+    var RMm = { id: 'rmm', kind: 'values', marks: [1, 1],
+                slots: [{ id: 'total', stat: 'total', label: 'Total', answer: { n: 40, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 10, n: 4 } },
+                        { id: 'newMean', stat: 'newMean', label: 'New mean', answer: { n: 11, d: 1 }, earns: 'accuracy', ft: { rule: 'rm.newMean', from: ['total'], x: 7, n: 3, minus: true } }] };
+    T('RM7 a value removed: (40 − 7) ÷ 3 = 11; (40 − 7) ÷ 4 is RM_WRONG_N',
+      check(RMm, { S: { v: { total: '40', newMean: '11' } } }).res === 'OK' && check(RMm, { S: { v: { total: '40', newMean: '8.25' } } }).dx === 'RM_WRONG_N');
+    /* the laps: 8 laps mean 48.2 s; after 2 more the mean is 49.4 s; the two laps' mean = (494 − 385.6) ÷ 2 = 54.2 */
+    var LAP = { id: 'lap', kind: 'values', marks: [2, 1], prompt: 'p',
+                slots: [{ id: 'total8', stat: 'total', label: 'Total of 8 laps', answer: { n: 1928, d: 5 }, earns: 'method', ft: { rule: 'rm.total', mean: 48.2, n: 8 } },
+                        { id: 'total10', stat: 'total', label: 'Total of 10 laps', answer: { n: 494, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 49.4, n: 10 } },
+                        { id: 'extra', stat: 'newMean', label: 'Mean of the two laps', answer: { n: 271, d: 5 }, earns: 'accuracy',
+                          ft: { rule: 'rm.newMean', from: ['total10'], xFrom: 'total8', minus: true, n: 2, oldN: 8, oldMean: 48.2 } }] };
+    v = check(LAP, { S: { v: { total8: '385.6', total10: '494', extra: '54.2' } } });
+    T('RM8 the laps chain right (385.6, 494, 54.2)', v.res === 'OK' && mk(v, 2, 1));
+    v = check(LAP, { S: { v: { total8: '385', total10: '494', extra: '54.5' } } });
+    T('RM9 the laps follow through BOTH their totals: (494 − their 385) ÷ 2', okAt(v, 0, 0) && okAt(v, 2, 2));
+    v = check(LAP, { S: { v: { total8: '385.6', total10: '494', extra: '13.55' } } });
+    T('RM10 the laps over the old 8 is RM_WRONG_N', dxAt(v, 2, 'RM_WRONG_N'));
+    T('RM11 the laps right board marks full', check(LAP, { S: statsBoard(LAP, false) }).res === 'OK');
+    T('RM12 the follow-through rule table is still ten ids', Object.keys(FT_RULES).length === 10);
+
+    /* ---- constraint sets: five numbers with mean 6, median 5, mode 4 ---- */
+    var CS = { id: 'cs', kind: 'values', marks: [1, 0], prompt: 'p',
+               slots: [{ id: 'set', label: 'Five numbers', set: 5, answer: { constraints: { n: 5, mean: 6, median: 5, mode: 4 } }, earns: 'method' }] };
+    T('CS1 [4, 4, 5, 8, 9] meets mean 6, median 5, mode 4', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '9'] } } }).res === 'OK');
+    T('CS2 [4, 4, 5, 7, 10] is a second solution', check(CS, { S: { v: { set_set: ['4', '4', '5', '7', '10'] } } }).res === 'OK');
+    T('CS3 near miss: [4, 5, 5, 8, 8] has two modes', check(CS, { S: { v: { set_set: ['4', '5', '5', '8', '8'] } } }).res === 'X@1');
+    T('CS4 near miss: [4, 4, 6, 8, 8] has median 6', check(CS, { S: { v: { set_set: ['4', '4', '6', '8', '8'] } } }).res === 'X@1');
+    T('CS5 near miss: [4, 4, 5, 8, 10] has mean 6.2', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '10'] } } }).res === 'X@1');
+    T('CS6 four numbers when five were asked', check(CS, { S: { v: { set_set: ['4', '4', '5', '11'] } } }).res === 'X@1');
+    T('CS7 an empty set is left blank, not a crash', check(CS, { S: { v: {} } }).perLine[0].note === 'left blank' && check(CS, { S: { v: { set_set: [] } } }).perLine[0].note === 'left blank');
+    T('CS8 the set is read from S.v[id + "_set"] even when S.v[id] is absent', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '9'] } } }).perLine[0].ok === 1);
+    T('CS9 the right board builds a satisfying set; the wrong board breaks it',
+      check(CS, { S: statsBoard(CS, false) }).res === 'OK' && statsBoard(CS, false).v.set_set.length === 5 && check(CS, { S: statsBoard(CS, true) }).res === 'X@1');
+    T('CS10 a range constraint holds too',
+      check({ kind: 'values', marks: [1, 0], slots: [{ id: 's', label: 'S', answer: { constraints: { n: 3, range: 4, median: 2 } }, earns: 'method' }] }, { S: { v: { s_set: ['1', '2', '5'] } } }).res === 'OK');
 
     /* ---- rationals and rounding ---- */
     T('RT1 a terminating decimal is recognised', terminates(rat(1, 4)) === true);
@@ -2791,6 +3421,9 @@ function statsBoard(q, wrong) {
     leastSquares: leastSquares,
     lineY: lineY,
     lineX: lineX,
+    /* Book B's helpers (the lint and the table renderer's truth) */
+    tableDerive: tableDerive,
+    listStats: listStats,
     KINDS: KINDS_LIST.slice(),
     DEFAULT_RULES: DEFAULT_RULES,
     FT_RULE_IDS: Object.keys(FT_RULES),

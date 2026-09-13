@@ -1,0 +1,19 @@
+# Book B — the renderer (the orchestrator's package, 13 Sept 2026)
+
+Files: jotter-stats.js (`BUILD.table`, `givenTable`, `BUILD.values` set-of-five, `BUILD.judge` figure/table + stage line, KINDS/STAGES/stagesFor/CHECK_LABEL/pillsFor/commentKind/summariseState), strings.js (Book B block), style.css (Book B block), jotter.js (`ftable` comment bank), script.js (ACTIVITIES `stats-averages`, `bookMotif('ftable')`, SELF_EVAL_TRIPS), index.html, server/build-pathb.js.
+
+## Decisions (each one a line the contract did not fix)
+1. **The pad's route** is one list: every derived column top to bottom, then the totals in `q.totals` order, then the value asks in `q.asks` order. `next ↓` walks it; a box pressed directly jumps to it.
+2. **The asks are always on the page** (value boxes and row-pick chips under the table), not revealed after the cells: a pupil may name the modal class before she multiplies, and marking does not care. The stage line names what is next; the strip lights `Fill the table` until every box is filled, then `The answers`.
+3. **Stages**: `empty` (nothing) · `filling` (some table box filled, or an ask answered with boxes still empty, not all boxes) · `asking` (every box filled, an ask still open) · `ready`. `stagesFor` drops `filling` when the table has fewer than two boxes and `asking` when there are no asks (or no boxes and one ask). A one-box table with an ask answered first stays `empty` (the declared list is honoured).
+4. **Check gate**: at least one table box filled (`statTableWhyCells`) AND every ask answered (`statTableWhyAsks`) — the asks are the accuracy marks and are never thrown away by an early press; the cells may be partial like Book C's running totals.
+5. **Row pick**: one chip per row, reading the row's class text (or value); pressing the chosen chip again clears it; chips carry `aria-pressed`, never `data-placed` (a pressed chip is a choice, not placed work).
+6. **The totals row**: a `th[scope=row]` "Total" spanning the columns before the first totalled column; a column with no total shows an em-dash with `aria-label` "No total is asked for this column." (the empty-elements law forbids a blank `td`).
+7. **Labels**: cells `"{head}, row {n}"`; totals `"Total {head}"` with the head's first letter lowered when it is a plain word ("Total frequency", "Total f × x"); value asks by the pack's label with a trailing "=" stripped in the stage line.
+8. **A wide table scrolls inside `.stat-table-host`** and says so (`statScrollTable`) only while it overflows (ResizeObserver). At ≤640 the cells tighten (44 × 44 px, 11.5 px heads, a 6 px bleed each side) so a four-column grouped table fits a 375 phone without scrolling — measured: q22 table 252 px in a 266 px host.
+9. **Truth after Check**: one `.stat-truth` line — each derived column's true values, each total, each ask (a row ask names the row).
+10. **Judge**: `q.fig {type:'list'}` and `q.data {cols}` are drawn above the claims (a claim about a table nobody can see is a guess); the stage line is `statStageJudgeChoose` ("Read each statement and choose one of the answers under it.") unless the options are about change (increase/decrease/stay/…, Book C's wages and Book A's sentence endings keep "Choose what happens to each one.").
+11. **Set of five** (values, reserve): a slot with `set:n` or `answer.constraints.n` opens n boxes labelled `"{label}, value k"`; `S.v[id+'_set']` holds them; `filling` counts once any box has a value; the truth line shows `slot.example` if the pack gives one, else the constraints in words.
+
+## Proof
+tools/qa/out/bookB/probe/run.js (a scratch pack served by request interception) drives q2 (sweets) to `checked-right` at 375 and 1280 with every unit ticked; probe/shots.js screenshots every real question at 375 (no horizontal overflow on any question after the ≤640 tightening).

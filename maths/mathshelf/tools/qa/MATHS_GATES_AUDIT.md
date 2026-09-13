@@ -14,7 +14,7 @@ section below (A–F). A rule with no home is a rule with no enforcement.
 | dev/test-anglecore.js | 72 | 45b03ed, 5 Sept 2026 |
 | dev/validate-all.js | 81 | 45b03ed, 5 Sept 2026 |
 | dev/test-server-scoping.js | 20 | 45b03ed, 5 Sept 2026 |
-| dev/test-statcore.js | 270 | Handling Data A, 12 Sept 2026 (+110 named cases: order, pick, stemleaf, pie, scatter, the Venn slips, least squares; the design's 120+ passed); was 160 (Book C, 8 Sept; +4 RD31–RD34, POLISH CUT 2) |
+| dev/test-statcore.js | 360 | Handling Data B, 13 Sept 2026 (+90 named cases: the `table` kind — cells, totals, asks, the four AV_* table slips, dp rounding, the model boards; the six list/reverse-mean slips; `set:5`); was 270 (Handling Data A, 12 Sept: +110 — order, pick, stemleaf, pie, scatter, the Venn slips, least squares); was 160 (Book C, 8 Sept) |
 
 ## PINNED REFS — the pre-fix states the controls are served from
 

@@ -83,7 +83,16 @@ const SAMPLE = {
   hi: '15', cf: '18',
   /* Book A (12 Sept 2026): the estimate's x, a pie category, a boundary's
      degrees, a stem-and-leaf key */
-  at: '60', label: 'Football', deg: '156', stem: '4', leaf: '3', means: '4.3 cm'
+  at: '60', label: 'Football', deg: '156', stem: '4', leaf: '3', means: '4.3 cm',
+  /* Book B (13 Sept 2026): the table kind's own stage instruction names its
+     column ("Fill in the {head} column from the top row down..."), so the
+     judge is shown a real derived-column head - one that stands in for the
+     three shapes the DOM contract actually prints in an aria-label: a
+     derived cell ("f × x, row 3"), a total ("Total Frequency") and a
+     row-pick ("Modal class") all read as sentences a pupil reads, and all
+     three are named FROM this one sample word wherever the strings table
+     builds a sentence around a column's own head */
+  head: 'f × x'
 };
 /* ONE HOLE, THREE DIFFERENT WORDS. `{name}` is a pupil's own name on the cover,
    the name of a CUT on a Handling Data screen ("That's my median"), and the

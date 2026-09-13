@@ -49,6 +49,12 @@ const DETECT_KIND = `(() => {
   if (root.querySelector('.stat-sentence')) return 'compare';
   if (root.querySelector('.stat-claim')) return 'judge';
   if (root.querySelector('.stat-slots')) return 'values';
+  /* Book B's own table kind (CONTRACT_B.md "table") checked BEFORE cftable:
+     its own <table> also carries the plain .stat-table class
+     (table.stat-table.stat-table-edit), so cftable's own fallback below would
+     otherwise claim it first. The host's own .stat-tablekind class is the
+     tell that this is the table kind, not the cumulative-frequency one. */
+  if (root.querySelector('.stat-tablekind')) return 'table';
   if (root.querySelector('.stat-table')) return 'cftable';
   /* Book A's five kinds (jotter-stats.js's tagQuestionRoot stamps data-kind
      for these too, in the ordinary case - these are the same fallback,
@@ -215,7 +221,9 @@ const MOVES = {
   pick: 'choose the better question, then say why the other falls short',
   stemleaf: 'place every leaf on its true stem, ascending outward, then build the key',
   pie: 'work out each true angle, draw the sectors from them, then label every sector',
-  scatter: 'plot every point, draw the least-squares line, then answer what is asked'
+  scatter: 'plot every point, draw the least-squares line, then answer what is asked',
+  /* Book B (CONTRACT_B.md "table") */
+  table: 'every derived cell and total filled from the given columns, then every question under the table answered'
 };
 const WRONG_MOVES = {
   /* the pattern dev/model-attempts.js's own corrupt() plays for that kind -
@@ -232,7 +240,9 @@ const WRONG_MOVES = {
   pick: 'the first wrong option, with its own authored flaw given back as the reason',
   stemleaf: 'the leaves placed in the order they were printed, unordered outward on the stem',
   pie: 'the angles worked as percentages of the total, not degrees',
-  scatter: 'x and y swapped on every point (or, where that would fall off the axes, the first point one square out)'
+  scatter: 'x and y swapped on every point (or, where that would fall off the axes, the first point one square out)',
+  /* Book B (CONTRACT_B.md "table"), quoted verbatim from its own model board */
+  table: 'the mean divided by the number of rows with every cell right — or, with no value ask, the median row one off'
 };
 
 /* SETTLE — a chart-based board (cfplot/cfread/boxplot) assembles its curve
@@ -255,7 +265,10 @@ const SETTLE = {
      cfplot/cfread/boxplot (sectors swept, a line-of-best-fit drawn) so they
      take the same fixed further wait for the slowest stroke-dashoffset */
   order: settle, pick: settle, stemleaf: settle,
-  pie: settleChart, scatter: settleChart
+  pie: settleChart, scatter: settleChart,
+  /* Book B: a table and its totals are plain DOM cells, never a drawn curve -
+     the ordinary settle (CONTRACT_B.md "table", "Drive channel: none") */
+  table: settle
 };
 
 /* the question root's own identity, for the sidecar */

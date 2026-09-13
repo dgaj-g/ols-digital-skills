@@ -27,7 +27,9 @@
 
   var KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
     /* Book A - Collecting and displaying (12 Sept 2026) */
-    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+    'order', 'pick', 'stemleaf', 'pie', 'scatter',
+    /* Book B - Averages (13 Sept 2026) */
+    'table'];
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function T() { return (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {}; }
@@ -68,7 +70,10 @@
        stem; "key" exists only when the question asks her to write one */
     stemleaf: ['tray', 'leaf-selected', 'placing', 'key', 'ready'],
     pie: ['table', 'table-done', 'rim', 'bounds-done', 'drawn', 'ready'],
-    scatter: ['plotting', 'plotted', 'line', 'estimate', 'corr', 'outlier', 'ready']
+    scatter: ['plotting', 'plotted', 'line', 'estimate', 'corr', 'outlier', 'ready'],
+    /* Book B (DESIGN 17.2; the contract in tools/qa/out/bookB/CONTRACT_B.md):
+       the boxes of the table, then the questions under it */
+    table: ['empty', 'filling', 'asking', 'ready']
   };
   /* WHAT THIS QUESTION CAN ACTUALLY SHOW. The kind's list above is every board
      the kind HAS; a particular question shows only the ones its own data
@@ -117,7 +122,10 @@
       own = out;
     }
     if (q.kind === 'values') {
-      var slotCount = (q.order || (q.slots || [])).length;
+      /* a set of five (Book B) is five boxes: part-way through it is a real board */
+      var slotCount = 0;
+      (q.slots || []).forEach(function (s2) { slotCount += s2.set ? Number(s2.set) : (s2.answer && s2.answer.constraints && s2.answer.constraints.n) ? Number(s2.answer.constraints.n) : 1; });
+      if (!(q.slots || []).length) slotCount = (q.order || []).length;
       if (slotCount < 2) drop('filling');
     }
     if (q.kind === 'judge') {
@@ -147,6 +155,17 @@
       }
     }
     if (q.kind === 'stemleaf' && !(q.key && q.key.ask)) drop('key');
+    if (q.kind === 'table') {
+      /* "filling" needs a second box to be part-way through; "asking" needs a
+         question under a table she has finished - with nothing to fill and
+         one question, the first press finishes it */
+      var tRows = 0;
+      (q.cols || []).forEach(function (c) { if (c.given && c.given.length > tRows) tRows = c.given.length; });
+      var boxes = (q.cols || []).filter(function (c) { return !!c.derive; }).length * tRows + (q.totals || []).length;
+      var asksN = (q.asks || []).length;
+      if (boxes < 2) drop('filling');
+      if (!asksN || (boxes === 0 && asksN < 2)) drop('asking');
+    }
     if (q.kind === 'scatter') {
       var asked = (q.asks || []).map(function (a) { return a && a.type; });
       if (asked.indexOf('lobf') === -1) drop('line');
@@ -174,7 +193,8 @@
     cfread: 'statCheckCfread', boxplot: 'statCheckBoxplot', compare: 'statCheckCompare',
     judge: 'statCheckJudge', values: 'statCheckValues',
     order: 'statCheckOrder', pick: 'statCheckPick', stemleaf: 'statCheckStemleaf',
-    pie: 'statCheckPie', scatter: 'statCheckScatter'
+    pie: 'statCheckPie', scatter: 'statCheckScatter',
+    table: 'statCheckTable'
   };
 
   /* ── THE STAGE STRIP: the stages, SHOWN (DESIGN 4.0, Correction 11 Sept
@@ -226,6 +246,12 @@
         else if (a.type === 'corr') pill(t.statPillScCorr, ['corr']);
         else if (a.type === 'outlier') pill(t.statPillScOutlier, ['outlier']);
       });
+    }
+    /* Book B: a table with nothing to fill (every column given) has only
+       its questions; one with nothing asked has only its boxes */
+    else if (kind === 'table') {
+      if (has('filling')) pill(t.statPillTableFill, ['empty', 'filling']);
+      if (has('asking')) pill(t.statPillTableAsks, has('filling') ? ['asking'] : ['empty', 'asking']);
     }
     /* the finished board belongs to the last act */
     if (out.length && has('ready')) out[out.length - 1].stages.push('ready');
@@ -676,6 +702,7 @@
     if (kind === 'stemleaf') return 'stemleaf';
     if (kind === 'pie') return 'pie';
     if (kind === 'scatter') return 'scatter';
+    if (kind === 'table') return 'ftable';
     return 'values';
   }
 
@@ -1072,7 +1099,15 @@
   BUILD.values = function (ctx) {
     var q = ctx.q;
     var order = q.order || (q.slots || []).map(function (s) { return s.id; });
-    var v = {}, open = -1, pad = null;
+    var v = {}, open = -1, openSet = 0, pad = null;
+    /* A SET OF FIVE (Book B, DESIGN 17.1, reserve): "write five numbers so
+       that the mean is 6 and the mode is 4" opens five boxes on one line; the
+       engine reads them from S.v[id + '_set'] and marks the constraints */
+    function setSize(id) { var s2 = slot(id); return s2.set ? Number(s2.set) : (s2.answer && s2.answer.constraints && s2.answer.constraints.n) ? Number(s2.answer.constraints.n) : 0; }
+    function setOf(id) { var a = v[id + '_set']; if (!Array.isArray(a)) { a = []; v[id + '_set'] = a; } while (a.length < setSize(id)) a.push(''); return a; }
+    function setLabel(id, k) { return fill(T().statValuesSetLabel, { label: slot(id).label, n: k + 1 }); }
+    function setFilled(id) { return setOf(id).every(function (x) { return !!x; }); }
+    function setAny(id) { return setOf(id).some(function (x) { return !!x; }); }
     /* THE FIGURE (Book A, DESIGN 17.1): a Venn diagram carries its boxes ON
        the regions - HTML buttons laid over the board at the region centres the
        chart reports, so the overlap and readability laws judge them as text;
@@ -1096,6 +1131,10 @@
         if (fig.key) { var kl = el('p', 'stat-sl-key'); kl.textContent = slKeyLine(fig.key, fig.decimals === 1 ? 1 : 0, fig.unit); figHost.appendChild(kl); }
       } else if (fig.type === 'list') {
         figHost.appendChild(el('p', 'stat-list', esc((fig.values || []).join(', '))));
+      } else if (fig.type === 'table') {
+        /* Book B: a grouped table she reads a value from (the interpolated median) */
+        figHost.classList.add('stat-table-host');
+        figHost.appendChild(givenTable(fig.cols));
       }
     }
     var host = el('div', 'stat-slots');
@@ -1104,7 +1143,25 @@
        and its boxes collided at 375 (the walk, 12 Sept 2026), so its slots
        stay in the list under the drawing, named in words */
     function onFig(id) { return !!(isVenn && venn && fig.type === 'venn2' && slot(id).region); }
+    function setCells(id, i) {
+      var wrap2 = el('div', 'stat-set');
+      setOf(id).forEach(function (val, k) {
+        var b = el('button', 'stat-cell' + (open === i && openSet === k ? ' is-open' : ''));
+        b.type = 'button';
+        b.textContent = val || '';
+        if (val) b.setAttribute('data-placed', '');
+        b.setAttribute('aria-label', setLabel(id, k));
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          open = i; openSet = k; render(); ctx.changed();
+        });
+        wrap2.appendChild(b);
+      });
+      return wrap2;
+    }
     function cellFor(id, i) {
+      if (setSize(id)) return setCells(id, i);
       var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
       b.type = 'button';
       b.textContent = v[id] || '';
@@ -1169,27 +1226,42 @@
         return;
       }
       var id = order[open];
+      var inSet = setSize(id) > 0;
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-      ctx.say(slot(id).label);
+      ctx.say(inSet ? setLabel(id, openSet) : slot(id).label);
       pad = makeNumPad(ctx.dock, {
-        label: slot(id).label, fraction: true, decimal: true,
-        onChange: function (val) { v[id] = val; paint(); ctx.changed(); }
+        label: inSet ? setLabel(id, openSet) : slot(id).label, fraction: true, decimal: true,
+        onChange: function (val) { if (inSet) setOf(id)[openSet] = val; else v[id] = val; paint(); ctx.changed(); }
       });
-      pad.set(v[id] || '');
-      if (open < order.length - 1) {
+      pad.set(inSet ? (setOf(id)[openSet] || '') : (v[id] || ''));
+      if (open < order.length - 1 || (inSet && openSet < setSize(id) - 1)) {
         var next = el('button', 'btn-quiet', T().statNextRow);
         next.type = 'button';
-        next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+        next.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (inSet && openSet < setSize(id) - 1) openSet++; else { open++; openSet = 0; }
+          render();
+        });
         ctx.dock.appendChild(next);
       }
     }
     function stage() {
-      var filled = order.filter(function (id) { return !!v[id]; }).length;
-      ctx.setStage(!filled ? 'empty' : (filled < order.length ? 'filling' : 'ready'));
+      var filled = order.filter(function (id) { return setSize(id) ? setFilled(id) : !!v[id]; }).length;
+      var started = order.some(function (id) { return setSize(id) ? setAny(id) : !!v[id]; });
+      ctx.setStage(!started ? 'empty' : (filled < order.length ? 'filling' : 'ready'));
     }
     function paint() {
       stage();
       order.forEach(function (id) {
+        if (setSize(id)) {
+          setOf(id).forEach(function (val, k) {
+            var sc = ctx.boardHost.querySelector('.stat-cell[aria-label="' + setLabel(id, k).replace(/"/g, '\\"') + '"]');
+            if (!sc) return;
+            sc.textContent = val || '';
+            if (val) sc.setAttribute('data-placed', ''); else sc.removeAttribute('data-placed');
+          });
+          return;
+        }
         var cell = ctx.boardHost.querySelector('.stat-cell[aria-label="' + String(slot(id).label).replace(/"/g, '\\"') + '"]');
         if (!cell) return;
         cell.textContent = v[id] || '';
@@ -1199,11 +1271,11 @@
 
     return {
       start: function () { render(); },
-      reset: function () { v = {}; open = -1; render(); },
-      restore: function (S) { v = (S && S.v) || {}; open = -1; render(); },
+      reset: function () { v = {}; open = -1; openSet = 0; render(); },
+      restore: function (S) { v = (S && S.v) || {}; open = -1; openSet = 0; render(); },
       state: function () { return { v: v }; },
       ready: function () {
-        var any = order.some(function (id) { return !!v[id]; });
+        var any = order.some(function (id) { return setSize(id) ? setAny(id) : !!v[id]; });
         return any ? { ok: true } : { ok: false, why: T().statValuesWhy };
       },
       lock: function () {
@@ -1215,6 +1287,10 @@
         box.setAttribute('data-truth', '');
         box.textContent = order.map(function (id) {
           var s = slot(id);
+          if (s.answer && s.answer.constraints) {
+            var ex = s.example ? s.example.join(', ') : Object.keys(s.answer.constraints).filter(function (k) { return k !== 'n'; }).map(function (k) { return k + ' ' + s.answer.constraints[k]; }).join(', ');
+            return s.label + ': ' + fill(T().statValuesSetTruth, { list: ex });
+          }
           var a = s.answer && s.answer.n !== undefined ? (s.answer.d === 1 ? s.answer.n : s.answer.n + '/' + s.answer.d) : '';
           return s.label + ' ' + a;
         }).join(' · ');
@@ -1225,7 +1301,8 @@
         var g = el('div', 'stat-row struck');
         order.forEach(function (id) {
           var t = el('span', 'stat-tile');
-          t.textContent = ((att.S || {}).v || {})[id] || '—';
+          var sv = (att.S || {}).v || {};
+          t.textContent = setSize(id) ? ((sv[id + '_set'] || []).filter(Boolean).join(', ') || '—') : (sv[id] || '—');
           g.appendChild(t);
         });
         holder.appendChild(g);
@@ -2098,6 +2175,19 @@
     var q = ctx.q;
     var claims = q.claims || [];
     var j = claims.map(function () { return {}; });
+    /* WHAT SHE JUDGES FROM (Book B): a printed list, or the table the
+       statements are about, sits above the claims - a claim about a table
+       nobody can see is a guess */
+    if (q.fig && q.fig.type === 'list') {
+      var figHostJ = el('div', 'stat-fig stat-fig-list');
+      figHostJ.appendChild(el('p', 'stat-list', esc((q.fig.values || []).join(', '))));
+      ctx.boardHost.appendChild(figHostJ);
+    }
+    if (q.data && q.data.cols) {
+      var dataHost = el('div', 'stat-fig stat-fig-table stat-table-host');
+      dataHost.appendChild(givenTable(q.data.cols));
+      ctx.boardHost.appendChild(dataHost);
+    }
     var host = el('div', 'stat-claims');
     ctx.boardHost.appendChild(host);
 
@@ -2185,7 +2275,12 @@
       start: function () {
         render();
         var allOptions = claims.length > 0 && claims.every(function (c) { return !!c.options; });
-        ctx.say(allOptions ? T().statStageJudgeOptions : T().statStageJudge);
+        /* "what happens to each one" is the line for options that ARE
+           changes (Book C's wages, Book A's sentence endings); a statement
+           judged True / False / Not enough information, or a choice between
+           two averages, is told to choose an answer */
+        var aboutChange = allOptions && claims.some(function (c) { return c.options.some(function (o) { return /increase|decrease|stay|change|more|fewer|higher|lower|…/i.test(String(o)); }); });
+        ctx.say(!allOptions ? T().statStageJudge : (aboutChange ? T().statStageJudgeOptions : T().statStageJudgeChoose));
       },
       reset: function () { j = claims.map(function () { return {}; }); render(); },
       restore: function (S) { j = (S && S.j) || claims.map(function () { return {}; }); render(); },
@@ -3289,6 +3384,355 @@
 
   /* ══ the teacher's read-only view of one pupil's artefact ════════════ */
 
+  /* ══ table — derived columns, the totals, then the reads (Book B, DESIGN 17.2) ══
+     The table is HER working: the given columns are printed, every derived
+     cell is a box the pad fills (top to bottom, one column after another),
+     the totals row comes after the cells, and the questions under the table
+     come last - a number box for a value (the mean), a row of pressable
+     class names for a "which row" question (the modal class, the class the
+     median is in). The engine (statcore.js markTable) marks a derived cell
+     right when it is consistent with HER OWN inputs in that row, and a value
+     ask right when it follows from HER table, so a slip is paid for once. */
+
+  /* A GIVEN TABLE, READ-ONLY: the columns a question prints for her to read
+     (a judge question about a grouped table carries it as q.data). The same
+     cell shapes as the table kind, with nothing to press. */
+  function givenTable(cols) {
+    var table = el('table', 'stat-table stat-table-given');
+    var rows = 0;
+    (cols || []).forEach(function (c) { if (c.given && c.given.length > rows) rows = c.given.length; });
+    var thead = el('thead'), hr = el('tr');
+    (cols || []).forEach(function (c) { hr.appendChild(el('th', null, esc(c.head || c.id))); });
+    thead.appendChild(hr); table.appendChild(thead);
+    var tb = el('tbody');
+    for (var i = 0; i < rows; i++) {
+      var tr = el('tr');
+      (cols || []).forEach(function (c) {
+        var g = (c.given || [])[i];
+        var text = (g && typeof g === 'object') ? (g.text || (g.lo + '–' + g.hi)) : ((g === undefined || g === null) ? '' : String(g));
+        tr.appendChild(el('td', null, esc(text)));
+      });
+      tb.appendChild(tr);
+    }
+    table.appendChild(tb);
+    return table;
+  }
+
+  BUILD.table = function (ctx) {
+    var q = ctx.q;
+    var cols = q.cols || [];
+    var totalsOf = q.totals || [];
+    var asks = q.asks || [];
+    var D = window.GJ_STATS.tableDerive(q);
+    var rows = D.rows;
+    var derived = cols.filter(function (c) { return !!c.derive; });
+    var nameCol = cols.filter(function (c) { return c.given && c.id !== 'f'; })[0] || cols[0] || null;
+    var cells = {}, totals = {}, ans = {};
+    function blankCells() { var o = {}; derived.forEach(function (c) { o[c.id] = []; for (var i = 0; i < rows; i++) o[c.id].push(''); }); return o; }
+    cells = blankCells();
+
+    function colById(id) { for (var i = 0; i < cols.length; i++) if (cols[i].id === id) return cols[i]; return { id: id, head: id }; }
+    function headText(c) { return c.head || c.id; }
+    function lowerHead(c) { var h = headText(c); return /^[A-Z][a-z]/.test(h) ? h.charAt(0).toLowerCase() + h.slice(1) : h; }
+    function givenText(c, i) {
+      var g = (c.given || [])[i];
+      if (g && typeof g === 'object') return g.text || (g.lo + '–' + g.hi);
+      return (g === undefined || g === null) ? '' : String(g);
+    }
+    function rowName(i) { return nameCol ? givenText(nameCol, i) : String(i + 1); }
+    function cellLabel(c, i) { return fill(T().statTableCellLabel, { head: headText(c), n: i + 1 }); }
+    function totalLabel(id) { return fill(T().statTableTotalLabel, { head: lowerHead(colById(id)) }); }
+
+    /* THE PAD'S ROUTE: every box the pad can open, in the order she meets them -
+       each derived column top to bottom, then the totals, then the questions
+       under the table that want a number. `open` is an index into it. */
+    var route = [];
+    derived.forEach(function (c) { for (var i = 0; i < rows; i++) route.push({ kind: 'cell', col: c.id, row: i, label: cellLabel(c, i) }); });
+    totalsOf.forEach(function (id) { route.push({ kind: 'total', col: id, label: totalLabel(id) }); });
+    asks.forEach(function (a) { if (a.type === 'value') route.push({ kind: 'ask', id: a.id, label: a.label, unit: a.unit }); });
+    var tableBoxes = route.filter(function (r) { return r.kind !== 'ask'; });
+    var open = -1, pad = null;
+
+    function routeIndex(kind, col, row, id) {
+      for (var k = 0; k < route.length; k++) {
+        var r = route[k];
+        if (r.kind !== kind) continue;
+        if (kind === 'ask' ? r.id === id : (r.col === col && (kind === 'total' || r.row === row))) return k;
+      }
+      return -1;
+    }
+    function valueOf(r) {
+      if (r.kind === 'cell') return cells[r.col][r.row] || '';
+      if (r.kind === 'total') return totals[r.col] || '';
+      return (ans[r.id] === undefined || ans[r.id] === null) ? '' : String(ans[r.id]);
+    }
+    function setValue(r, v) {
+      if (r.kind === 'cell') cells[r.col][r.row] = v;
+      else if (r.kind === 'total') totals[r.col] = v;
+      else ans[r.id] = v;
+    }
+    function askDone(a) {
+      var v = ans[a.id];
+      return a.type === 'row' ? (v !== undefined && v !== null && v !== '') : !!(v && String(v).length);
+    }
+    function nAsksDone() { return asks.filter(askDone).length; }
+
+    var host = el('div', 'stat-tablekind');
+    host.setAttribute('data-work', '');
+    ctx.boardHost.appendChild(host);
+    var tableHost = el('div', 'stat-table-host');          /* scrolls sideways at 375 rather than squeezing */
+    host.appendChild(tableHost);
+    var table = el('table', 'stat-table stat-table-edit');
+    tableHost.appendChild(table);
+    var askHost = el('div', 'stat-asks');
+    host.appendChild(askHost);
+    /* a table wider than a phone scrolls inside its own frame (law 6) and SAYS
+       so, the way a wide chart does; the note is there only while it is true */
+    var swipeNote = el('p', 'stat-table-note', esc(T().statScrollTable));
+    swipeNote.hidden = true;
+    host.appendChild(swipeNote);
+    function noteOverflow() { swipeNote.hidden = !(tableHost.scrollWidth > tableHost.clientWidth + 2); }
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(noteOverflow).observe(tableHost);
+
+    function boxFor(k) {
+      var r = route[k];
+      var b = el('button', 'stat-cell' + (open === k ? ' is-open' : ''));
+      b.type = 'button';
+      b.textContent = valueOf(r);
+      if (valueOf(r)) b.setAttribute('data-placed', '');
+      b.setAttribute('aria-label', r.label);
+      if (r.kind !== 'ask') { b.setAttribute('data-col', r.col); b.setAttribute('data-row', r.kind === 'total' ? 'total' : String(r.row)); }
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (ctx.locked()) return;
+        open = k; render(); ctx.changed();
+      });
+      return b;
+    }
+    function render() {
+      stage();
+      table.innerHTML = '';
+      var thead = el('thead'), hr = el('tr');
+      cols.forEach(function (c) { hr.appendChild(el('th', null, esc(headText(c)))); });
+      thead.appendChild(hr); table.appendChild(thead);
+      var tb = el('tbody');
+      for (var i = 0; i < rows; i++) {
+        var tr = el('tr');
+        cols.forEach(function (c) {
+          var td = el('td');
+          if (c.derive) td.appendChild(boxFor(routeIndex('cell', c.id, i)));
+          else td.textContent = givenText(c, i);
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      }
+      if (totalsOf.length) {
+        var tt = el('tr', 'stat-table-totals');
+        var firstTotal = -1;
+        cols.forEach(function (c, ci) { if (firstTotal < 0 && totalsOf.indexOf(c.id) > -1) firstTotal = ci; });
+        if (firstTotal > 0) {
+          var lab = el('th', null, esc(T().statTableTotal));
+          lab.setAttribute('scope', 'row');
+          if (firstTotal > 1) lab.colSpan = firstTotal;
+          tt.appendChild(lab);
+        }
+        cols.forEach(function (c, ci) {
+          if (ci < firstTotal) return;
+          var td = el('td');
+          if (totalsOf.indexOf(c.id) > -1) td.appendChild(boxFor(routeIndex('total', c.id)));
+          else {
+            /* a column with no total asked is SAID so, not left as a hole
+               the empty-elements law would rightly name */
+            td.className = 'stat-table-none';
+            td.textContent = '—';
+            td.setAttribute('aria-label', T().statTableNoTotal);
+          }
+          tt.appendChild(td);
+        });
+        tb.appendChild(tt);
+      }
+      table.appendChild(tb);
+      renderAsks();
+      renderDock();
+      noteOverflow();
+    }
+    function renderAsks() {
+      askHost.innerHTML = '';
+      asks.forEach(function (a) {
+        if (a.type === 'value') {
+          var slots = el('div', 'stat-slots');
+          var line = el('div', 'stat-slot');
+          line.appendChild(el('span', 'stat-slot-label', esc(a.label)));
+          line.appendChild(boxFor(routeIndex('ask', null, null, a.id)));
+          if (a.unit) line.appendChild(el('span', 'stat-slot-unit', esc(a.unit)));
+          slots.appendChild(line);
+          askHost.appendChild(slots);
+          return;
+        }
+        if (a.type !== 'row') return;
+        var grp = el('div', 'stat-rowpick-group');
+        grp.setAttribute('role', 'group');
+        grp.setAttribute('aria-label', a.label);
+        grp.appendChild(el('p', 'stat-slot-label', esc(a.label)));
+        var picks = el('div', 'stat-rowpicks');
+        for (var i = 0; i < rows; i++) {
+          (function (ri) {
+            var b = el('button', 'stat-rowpick');
+            b.type = 'button';
+            b.textContent = rowName(ri);
+            b.setAttribute('data-ask', a.id);
+            b.setAttribute('data-row', String(ri));
+            b.setAttribute('aria-pressed', ans[a.id] === ri ? 'true' : 'false');
+            b.addEventListener('click', function (e) {
+              e.stopPropagation();
+              if (ctx.locked()) return;
+              ans[a.id] = (ans[a.id] === ri) ? null : ri;          /* press again clears */
+              open = -1;
+              render(); ctx.changed();
+            });
+            picks.appendChild(b);
+          })(i);
+        }
+        grp.appendChild(picks);
+        askHost.appendChild(grp);
+      });
+    }
+    function renderDock() {
+      ctx.dock.innerHTML = '';
+      pad = null;
+      if (open < 0) { window.GJ.setState(ctx.dock, 'dock', 'chips'); return; }
+      var r = route[open];
+      window.GJ.setState(ctx.dock, 'dock', 'numpad');
+      pad = makeNumPad(ctx.dock, {
+        label: r.label, decimal: true,
+        onChange: function (v) { setValue(r, v); paint(); ctx.changed(); }
+      });
+      pad.set(valueOf(r));
+      if (open < route.length - 1) {
+        var next = el('button', 'btn-quiet', T().statNextRow);
+        next.type = 'button';
+        next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+        ctx.dock.appendChild(next);
+      }
+    }
+    function stage() {
+      var filled = tableBoxes.filter(function (r) { return !!valueOf(r); }).length;
+      var done = nAsksDone();
+      var declared = (ctx.wrap.getAttribute('data-stages') || '').split(' ');
+      var s = (!filled && !done) ? 'empty'
+        : (filled < tableBoxes.length) ? 'filling'
+        : (asks.length && done < asks.length) ? 'asking' : 'ready';
+      /* a one-box table has no "part-way" board: a question answered before
+         the box is still the empty table she is being asked to fill */
+      if (declared.length > 1 && declared.indexOf(s) === -1) s = s === 'filling' ? 'empty' : 'ready';
+      ctx.setStage(s);
+      say(s, filled);
+    }
+    function say(s, filled) {
+      var t = T();
+      if (s === 'ready') { ctx.say(t.statStageTableDone); return; }
+      if (s === 'empty' || s === 'filling') {
+        var nextCell = route.filter(function (r) { return r.kind === 'cell' && !valueOf(r); })[0];
+        if (nextCell) {
+          var c = colById(nextCell.col);
+          var inCol = route.filter(function (r) { return r.kind === 'cell' && r.col === c.id; });
+          var got = inCol.filter(function (r) { return !!valueOf(r); }).length;
+          ctx.say(fill(t.statStageTableFill, { head: headText(c), n: got, m: inCol.length }));
+          return;
+        }
+        var tots = route.filter(function (r) { return r.kind === 'total'; });
+        ctx.say(fill(t.statStageTableTotals, { n: tots.filter(function (r) { return !!valueOf(r); }).length, m: tots.length }));
+        return;
+      }
+      var a = asks.filter(function (x) { return !askDone(x); })[0];
+      if (!a) { ctx.say(t.statStageTableDone); return; }
+      ctx.say(fill(a.type === 'row' ? t.statStageTableRow : t.statStageTableAsks, { label: a.type === 'row' ? a.label : String(a.label).replace(/\s*=\s*$/, '') }));
+    }
+    function paint() {
+      stage();
+      route.forEach(function (r, k) {
+        var sel = r.kind === 'ask' ? '.stat-cell[aria-label="' + String(r.label).replace(/"/g, '\\"') + '"]'
+          : '.stat-cell[data-col="' + r.col + '"][data-row="' + (r.kind === 'total' ? 'total' : r.row) + '"]';
+        var b = host.querySelector(sel);
+        if (!b) return;
+        b.textContent = valueOf(r);
+        if (valueOf(r)) b.setAttribute('data-placed', ''); else b.removeAttribute('data-placed');
+      });
+    }
+    /* a rational as the pupil would write it */
+    function fmtR(x, dp) {
+      if (!x) return '';
+      if (x.d === 1) return String(x.n);
+      var v = x.n / x.d;
+      return (dp !== undefined && dp !== null) ? v.toFixed(dp) : String(Math.round(v * 100) / 100);
+    }
+    function copyState(S) {
+      var out = { cells: {}, totals: {}, asks: {} };
+      derived.forEach(function (c) {
+        var src = (S.cells && S.cells[c.id]) || [];
+        out.cells[c.id] = []; for (var i = 0; i < rows; i++) out.cells[c.id].push(src[i] === undefined || src[i] === null ? '' : String(src[i]));
+      });
+      totalsOf.forEach(function (id) { out.totals[id] = (S.totals && S.totals[id]) ? String(S.totals[id]) : ''; });
+      asks.forEach(function (a) {
+        var v = S.asks ? S.asks[a.id] : undefined;
+        if (v === undefined) return;
+        out.asks[a.id] = a.type === 'row' ? (v === null || v === '' ? null : Number(v)) : String(v);
+      });
+      return out;
+    }
+
+    return {
+      start: function () { render(); },
+      reset: function () { cells = blankCells(); totals = {}; ans = {}; open = -1; render(); },
+      restore: function (S) { var c = copyState(S || {}); cells = c.cells; totals = c.totals; ans = c.asks; open = -1; render(); },
+      state: function () { return copyState({ cells: cells, totals: totals, asks: ans }); },
+      ready: function () {
+        var any = tableBoxes.some(function (r) { return !!valueOf(r); });
+        if (tableBoxes.length && !any) return { ok: false, why: T().statTableWhyCells };
+        if (nAsksDone() < asks.length) return { ok: false, why: T().statTableWhyAsks };
+        return { ok: true };
+      },
+      lock: function () {
+        ctx.dock.innerHTML = '';
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var parts = [];
+        derived.forEach(function (c) {
+          parts.push(headText(c) + ': ' + (D.cells[c.id] || []).map(function (x) { return fmtR(x); }).join(', '));
+        });
+        totalsOf.forEach(function (id) { parts.push(totalLabel(id) + ' ' + fmtR(D.totals[id])); });
+        asks.forEach(function (a) {
+          if (a.type === 'row') parts.push(a.label + ': ' + rowName(Number(a.answer)));
+          else parts.push(a.label + ' ' + fmtR(a.answer, a.dp));
+        });
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        box.textContent = parts.join(' · ');
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var S = copyState((att && att.S) || {});
+        var g = el('div', 'stat-row struck');
+        route.forEach(function (r) {
+          var t = el('span', 'stat-tile');
+          var v = r.kind === 'cell' ? S.cells[r.col][r.row] : r.kind === 'total' ? S.totals[r.col] : S.asks[r.id];
+          t.textContent = v || '—';
+          g.appendChild(t);
+        });
+        asks.forEach(function (a) {
+          if (a.type !== 'row') return;
+          var t = el('span', 'stat-tile');
+          var v = S.asks[a.id];
+          t.textContent = (v === undefined || v === null) ? '—' : rowName(Number(v));
+          g.appendChild(t);
+        });
+        holder.appendChild(g);
+      }
+    };
+  };
+
   function renderReadOnly(host, q, att, verdict) {
     host.innerHTML = '';
     var wrap = el('div', 'stat-readonly');
@@ -3386,6 +3830,19 @@
     if (q.kind === 'pick') return ((q.options || [])[S.pick] || {}).text || '';
     if (q.kind === 'stemleaf') return Object.keys(S.rows || {}).map(function (k) { return k + ' | ' + (S.rows[k] || []).join(' '); }).join('   ');
     if (q.kind === 'pie') return (q.cats || []).map(function (c) { return c.label + ' ' + ((S.angles || {})[c.id] || '—') + '°'; }).join(' · ');
+    if (q.kind === 'table') {
+      var parts = [];
+      Object.keys(S.cells || {}).forEach(function (k) { parts.push(k + ': ' + (S.cells[k] || []).map(function (x) { return x || '—'; }).join(', ')); });
+      Object.keys(S.totals || {}).forEach(function (k) { parts.push('total ' + k + ' ' + (S.totals[k] || '—')); });
+      (q.asks || []).forEach(function (a) {
+        var v = (S.asks || {})[a.id];
+        if (v === undefined || v === null || v === '') return;
+        var nameCol = (q.cols || []).filter(function (c) { return c.given && c.id !== 'f'; })[0];
+        var g = nameCol && a.type === 'row' ? nameCol.given[Number(v)] : null;
+        parts.push(a.label + ' ' + (a.type === 'row' ? (g && typeof g === 'object' ? (g.text || (g.lo + '–' + g.hi)) : String(g === null || g === undefined ? v : g)) : v));
+      });
+      return parts.join(' · ');
+    }
     if (q.kind === 'scatter') return [(S.pts || []).length + ' points', S.est !== undefined && S.est !== '' ? 'estimate ' + S.est : null, S.corr || null].filter(Boolean).join(' · ');
     return '';
   }

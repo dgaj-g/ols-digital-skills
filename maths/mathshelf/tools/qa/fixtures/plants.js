@@ -63,6 +63,10 @@ const BOOK_C = { MS_BOOK: 'stats-quartiles' };
 /* Book A's own controls (WALK-A package, 12 Sept 2026) walk Book A instead -
    Book C has none of order/pick/stemleaf/pie/scatter to stand a fault on */
 const BOOK_A = { MS_BOOK: 'stats-collect' };
+/* Book B's own controls (WALK-B package, 13 Sept 2026) walk Book B instead -
+   neither C nor A carries the `table` kind or a `values` question with a
+   fig:{type:'list'} figure */
+const BOOK_B = { MS_BOOK: 'stats-averages' };
 
 const PLANTS = {
 
@@ -1171,6 +1175,54 @@ const PLANTS = {
       "      if (q.cyclic && seq.length === tiles.length) {\n        var back = el('span', 'stat-order-back', esc(String(tiles[seq[0]])));\n        rowWrap.appendChild(back);\n      }\n    }",
       "      if (q.cyclic && seq.length === tiles.length) {\n        var back = el('span', 'stat-order-back', esc(String(tiles[seq[0]])));\n        rowWrap.appendChild(back);\n      }\n      var ph = el('p', 'stat-order-placeholder', esc((q.answer || []).map(function (i) { return tiles[i]; }).join(' \\u2192 ')));   /* planted: the row prints the answer order as placeholder text (Book A) */\n      rowWrap.appendChild(ph);\n    }");
     return { env: BOOK_A };
+  },
+
+  /* ══════════════════════ BOOK B — Averages ════════════════════════════════
+     WALK-B package (13 Sept 2026). Only one of Book B's own faults has a real
+     anchor in today's jotter-stats.js: the `table` kind and its rowpick/total
+     consistency rules have not landed yet (RENDER's own package, still
+     building at checkpoint 1 of ENGINE-B's own notes) - `stats-b-cell-
+     inconsistent`, `stats-b-rowpick-two-pressed`, `stats-b-total-before-
+     cells`, `stats-b-tfn-leak` and `stats-b-stage-skipped` are drafted, with
+     their exact intended edit(), in tools/qa/out/bookB/WALK_NOTES.md for the
+     second pass once BUILD.table exists to anchor an edit() against - writing
+     them against code that is not in the tree yet would either throw at
+     control-run time (edit()'s own guard) or silently match the wrong thing,
+     and a control that cannot run is red, never a printed skip. ─────────── */
+
+  /* ── a values question's list figure never printed above its boxes ──────
+     BUILD.values already lands fig:{type:'list'} (today's jotter-stats.js,
+     confirmed by direct read before writing this plant): the figure host's
+     branch for it is exactly the line this collapses to a no-op, so the
+     boxes still render but the list they are about never appears. mustFail
+     (sit-pupil, consequence): "the list the question is about is not on the
+     page" (sit-pupil.js's own new check, right beside its SIGNATURE probe). */
+  'stats-b-list-fig-missing': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        figHost.appendChild(el('p', 'stat-list', esc((fig.values || []).join(', '))));",
+      "        /* planted: the list is never printed above the boxes (Book B) */");
+    return { env: BOOK_B };
+  },
+
+  /* ── the table kind's own stage() skips "filling" outright ──────────────
+     BUILD.table landed 13 Sept 2026 (RENDER's package, checkpoint reached
+     while WALK-B was mid-build - confirmed by direct read of today's
+     jotter-stats.js before writing this plant): `stage()`'s own ternary
+     chain is collapsed here so the `filled < tableBoxes.length` branch can
+     never be taken - the FIRST cell keyed already computes as done (whatever
+     the asks/ready branch below it decides), so a table with several boxes
+     jumps straight from "empty" to "asking"/"ready" on one press. Caught two
+     ways: STAGE_SETTLE (already generic - every stats kind's per-stage walk
+     already asserts this) reports "never stood on stage filling"; and
+     stat-probes.js's own new TABLE_ONE_CELL, called the instant the walker
+     drives to "filling", would also catch the narrower case of a table that
+     stalls on "empty" rather than skipping past it. mustFail (sit-pupil):
+     "never stood on stage". */
+  'stats-b-stage-skipped': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "      var s = (!filled && !done) ? 'empty'\n        : (filled < tableBoxes.length) ? 'filling'\n        : (asks.length && done < asks.length) ? 'asking' : 'ready';",
+      "      var s = (!filled && !done) ? 'empty'\n        : false ? 'filling'   /* planted: the table never stands on \"filling\" (Book B) */\n        : (asks.length && done < asks.length) ? 'asking' : 'ready';");
+    return { env: BOOK_B };
   }
 };
 

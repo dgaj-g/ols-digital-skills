@@ -26,11 +26,16 @@ X('selfTest is a function', !!S && typeof S.selfTest === 'function');
 X('gist is a function', !!S && typeof S.gist === 'function');
 X('DX_NAMES is a table', !!S && S.DX_NAMES && typeof S.DX_NAMES.QL_UNORDERED === 'string');
 X('MK_LABELS covers every kind', !!S && ['qlist','cftable','cfplot','cfread','boxplot','compare','judge','values',
-  'order','pick','stemleaf','pie','scatter']
+  'order','pick','stemleaf','pie','scatter','table']
   .every(function (k) { return Array.isArray(S.MK_LABELS[k]) && S.MK_LABELS[k].length === 2; }));
-X('KINDS lists the thirteen kinds', !!S && Array.isArray(S.KINDS) && S.KINDS.length === 13 && S.KINDS.indexOf('scatter') > -1);
+X('KINDS lists the fourteen kinds', !!S && Array.isArray(S.KINDS) && S.KINDS.length === 14 && S.KINDS.indexOf('table') > -1);
 X('Book A helpers are exported', !!S && ['stemLeafOf','stemleafRows','pieAngles','leastSquares','lineY','lineX']
   .every(function (k) { return typeof S[k] === 'function'; }));
+X('Book B helpers are exported', !!S && ['tableDerive','listStats']
+  .every(function (k) { return typeof S[k] === 'function'; }));
+X('every AV_*/RM_* id is named', !!S && ['AV_DIV_ROWS','AV_MEDIAN_UNORDERED','AV_MODE_AS_FREQ','AV_RANGE_NOT_DIFF','AV_NO_MIDPOINT',
+  'AV_FX_NOT_SUMMED','AV_MEDIAN_CLASS_OFF','RM_AVERAGED_MEANS','RM_WRONG_N']
+  .every(function (k) { return typeof S.DX_NAMES[k] === 'string'; }));
 X('the follow-through rule table is closed', !!S && S.FT_RULE_IDS.length === 10);
 
 var result = S ? S.selfTest() : { pass: false, failures: ['GJ_STATS missing'], count: 0 };

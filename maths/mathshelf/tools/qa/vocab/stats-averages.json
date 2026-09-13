@@ -1,0 +1,66 @@
+{
+ "mean": {
+  "phrase": "the mean is the total of all the values, divided by the number of values",
+  "definedIn": "s1"
+ },
+ "median": {
+  "phrase": "the median is the middle number once they are in order",
+  "definedIn": "s1"
+ },
+ "mode": {
+  "phrase": "the mode is the value that appears most often",
+  "definedIn": "s1"
+ },
+ "range": {
+  "phrase": "the range is the difference between the lowest value and the highest value",
+  "definedIn": "s1"
+ },
+ "average": {
+  "phrase": "mean, median and mode are all types of average — one number that sums up a whole list",
+  "definedIn": "s1"
+ },
+ "total": {
+  "phrase": "turn the mean back into a total first",
+  "definedIn": "s2"
+ },
+ "reverse mean": {
+  "phrase": "find the total first — that is the whole method, every time",
+  "definedIn": "s2"
+ },
+ "frequency": {
+  "phrase": "the table shows how many bags held each count",
+  "definedIn": "s3"
+ },
+ "frequency table": {
+  "phrase": "20 bags of sweets — the table shows how many bags held each count",
+  "definedIn": "s3"
+ },
+ "grouped": {
+  "phrase": "a grouped table gives an estimate, never an exact value",
+  "definedIn": "s4"
+ },
+ "class": {
+  "phrase": "the table groups them by minutes late",
+  "definedIn": "s4"
+ },
+ "midpoint": {
+  "phrase": "each class stands in for its midpoint — halfway between its two ends",
+  "definedIn": "s4"
+ },
+ "estimate of the mean": {
+  "phrase": "divide by 55 for an estimate of the mean",
+  "definedIn": "s4"
+ },
+ "modal class": {
+  "phrase": "the modal class is the tallest bar — the class with the most aircraft",
+  "definedIn": "s4"
+ },
+ "median class": {
+  "phrase": "27 are in the first class, so the 28th falls in the next one",
+  "definedIn": "s4"
+ },
+ "not enough information": {
+  "phrase": "a grouped table cannot say what one loaf cost — not enough information",
+  "definedIn": "s5"
+ }
+}

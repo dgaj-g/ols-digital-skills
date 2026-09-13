@@ -175,6 +175,11 @@
       perfect: ['Every point plotted, and the line follows them.', 'Plotted, drawn and read off.', 'Your line runs through the middle of the cloud.'],
       fail: ['We’ll plot one of these together in class.', 'Watch the worked example again — the line follows the slope of the points.']
     },
+    /* Book B (13 Sept 2026): a frequency table she filled, then read from */
+    ftable: {
+      perfect: ['Every column multiplied and totalled, and the answers read from your own table.', 'Frequency times value, row by row, then the totals.', 'You built the table and read the averages off it.'],
+      fail: ['We’ll fill one of these tables in together in class.', 'Watch the worked example again — multiply each value by its frequency, then add the column up.']
+    },
     values: {
       perfect: ['Worked out and written in.', 'You filled in every box, and got them all right.',
                 'Neatly done.'],

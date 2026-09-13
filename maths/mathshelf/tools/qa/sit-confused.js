@@ -36,6 +36,9 @@ const { bookHash } = require('./lib/hash.js');
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
    tells a reader what rule broke and nothing about where to look. */
 function describe(f) {
+  /* Book B: an empty derived table cell or an unnamed row-pick button name
+     themselves - see lib/empty-elements.js */
+  if (f.reason === 'stat-cell-no-name' || f.reason === 'stat-rowpick-no-name') return require('./lib/empty-elements.js').describe(f);
   const bits = [];
   if (f.law) bits.push(f.law);
   if (f.sel) bits.push(f.sel);
@@ -157,7 +160,9 @@ g.exempt(AUD.EXEMPTIONS.concat([
               const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
                 .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
               const k = r ? r.getAttribute('data-kind') : '';
-              return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values'].indexOf(k) > -1;
+              /* Book B's table kind (13 Sept 2026): a derived cell, a total
+                 and a row-pick are all boards a wrong placement can sit on */
+              return ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values', 'table'].indexOf(k) > -1;
             }, qid);
             if (isStats) {
               const per = await page.evaluate((s2, args) => eval(s2)(args), P.PERSISTS, [qid]);
