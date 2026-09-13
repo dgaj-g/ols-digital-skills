@@ -508,6 +508,13 @@ const PLANTS = {
     edit(dir, 'script.js', '  var STORE_RESENDS = 2;', '  var STORE_RESENDS = 0;   /* plant: no re-send, the relay at once */');
   },
 
+  /* ── EVERY BOOK BUT ANGLES CALLED "ALGEBRA" (13 Sept 2026): the v3 two-book
+     guess put back in the pupil's book header. ── */
+  'fixture-bookview-two-book-name': (dir) => {
+    edit(dir, 'staff.js', "clearBusy(msg, (r.name || email) + ' · ' + bookTitle(view.act) +",
+      "clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +   /* plant: the old guess */");
+  },
+
   'fixture-tickbox-same-name': (dir) => {
     edit(dir, 'script.js', '    if (!shared || !a.sub) return a.title;',
       '    return a.title;   /* plant: the volume dropped, so three books read the same */');

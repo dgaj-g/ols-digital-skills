@@ -86,6 +86,8 @@ const CONTROLS = [
   { id: 'tickbox-same-name', kind: 'fixture', plant: 'fixture-tickbox-same-name', mustFail: /two books on the shelf read the same/ },
   { id: 'row-control-wraps', kind: 'fixture', plant: 'fixture-row-controls-untidy', mustFail: /wraps onto/ },
   { id: 'ledger-pushes-the-page', kind: 'fixture', plant: 'fixture-ledger-no-host', mustFail: /pushes the whole page sideways/ },
+  /* the pupil's book named "Algebra" whatever it was (13 Sept 2026, the tutorial film) */
+  { id: 'bookview-wrong-book-name', kind: 'fixture', plant: 'fixture-bookview-two-book-name', mustFail: /names the wrong book/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -424,9 +426,22 @@ async function walk(page, width, projector, sidecar, transcript) {
   /* --- back, then a cell -> a pupil's book --- */
   await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Ex\s*\d/.test(b.textContent))[0]; if (c) c.click(); });
   await new Promise(r => setTimeout(r, 1200));
+  /* THE BOOK ON SCREEN, BY NAME, before a pupil's book is opened from it: the
+     exercise view's trail reads Set-up › class › book › Ex n, and the book
+     link is the name every staff page gives this book */
+  const crumbBook = await page.evaluate(() => { const c = [...document.querySelectorAll('.staff-crumb .crumb-link')]; return c[2] ? c[2].textContent.trim() : ''; });
   await page.evaluate(() => { const td = document.querySelector('.grid td.cell'); if (td) td.click(); });
   await new Promise(r => setTimeout(r, 1600));
   await record('book-view', 'pencil');
+  /* THE PUPIL'S BOOK NAMES THE BOOK IT SHOWS (13 Sept 2026, seen in the tutorial
+     film): the header under the flick bar called an Averages book "Algebra",
+     because a two-book guess from the v3 days named every book but Angles so.
+     The header must carry the same name the trail gave the book. */
+  const bookHead = await page.evaluate(() => { const m = [...document.querySelectorAll('#scr-staff .ui-msg')].find(e => /every committed line/.test(e.textContent || '')); return m ? m.textContent.trim() : ''; });
+  if (crumbBook && bookHead) {
+    g.check(bookHead.indexOf(crumbBook) > -1, 'book-view:pencil @' + width, 'labelled',
+      'the pupil\'s book names the wrong book — its header reads "' + bookHead.slice(0, 80) + '" while the trail was on "' + crumbBook + '"');
+  } else g.note('book-view:pencil @' + width + ': no header line or no book crumb to compare (' + JSON.stringify({ crumbBook, bookHead: bookHead.slice(0, 40) }) + ')');
   say(await page.evaluate(() => (document.querySelector('.jp-read, .readline') || {}).textContent || ''));
   say(await page.evaluate(() => (document.querySelector('.jp-posture, .posture') || {}).textContent || ''));
 

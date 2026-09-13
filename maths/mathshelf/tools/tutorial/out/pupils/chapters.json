@@ -1,0 +1,38 @@
+{
+ "file": "pupils.mp4",
+ "seconds": 1044,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Opening"
+  },
+  {
+   "t": 6,
+   "label": "Opening your books"
+  },
+  {
+   "t": 115,
+   "label": "The worked example and the number pad"
+  },
+  {
+   "t": 356,
+   "label": "Filling in a table"
+  },
+  {
+   "t": 519,
+   "label": "Choosing a row, deciding a statement"
+  },
+  {
+   "t": 700,
+   "label": "Graphs: plotting, scrolling and the rule"
+  },
+  {
+   "t": 928,
+   "label": "Your work is saved"
+  },
+  {
+   "t": 1038,
+   "label": "Closing"
+  }
+ ]
+}

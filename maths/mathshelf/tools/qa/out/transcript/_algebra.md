@@ -2,7 +2,7 @@
 
 TRANSCRIPT HASH: badca80ab7971a35
 sentences: 56
-taken: 2026-09-13 12:11:52
+taken: 2026-09-13 16:00:46
 
 This is every sentence a pupil reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.

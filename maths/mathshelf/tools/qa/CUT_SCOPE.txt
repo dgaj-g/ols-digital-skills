@@ -1,18 +1,18 @@
 # CUT_SCOPE.txt — what THIS cut may touch (leash L2; read by qa-scope.js).
-# One path or glob per line, relative to maths/mathshelf. `*` matches anything,
-# `/` included. A file changed since the cut's start commit (tools/qa/out/
-# cut-start.json) that matches no line here fails qa-scope by name.
+# One path or glob per line, relative to maths/mathshelf.
 #
-# SERVER CUT — the relay re-sends on the echo bounce, the store answers a stray
-# visit with JSON, one open and one read per call (13 Sept 2026, Fable steward,
-# 120-minute clock)
-server/Code.gs.template
-server/Code.gs
-server/Index.html
-tools/qa/qa-two-homes.js
-tools/qa/lib/mockenv.js
+# THE BOOK-VIEW NAME CUT — the pupil's book in the markbook names the book it
+# shows, not "Algebra" (13 Sept 2026, Fable steward, seen while filming the
+# tutorial; 120-minute clock). Plus the tutorial's own tooling.
+staff.js
+tools/qa/sit-teacher.js
 tools/qa/fixtures/plants.js
-dev/test-server-scoping.js
-tools/qa/MATHS_GATES_AUDIT.md
+tools/qa/MATHS_*.md
 tools/qa/out/*
 tools/qa/CUT_SCOPE.txt
+tools/tutorial/*
+server/Index.html
+server/Code.gs
+server/DEPLOY_LOG.md
+PROGRESS.md
+HANDOVER.md

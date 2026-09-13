@@ -1317,7 +1317,12 @@
       if (!r || !r.ok) { clearBusy(msg, SAYS(r && r.error, 'Could not load.')); return; }
       var state = null;
       try { state = JSON.parse(r.state); } catch (e) {}
-      clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +
+      /* THE BOOK IS NAMED BY THE BOOK (13 Sept 2026, seen in the tutorial film):
+         a two-book guess from the v3 days called every book but Angles
+         "Algebra", so a pupil's Averages book was headed "Algebra". The name
+         comes from the book on screen, the same way every other staff page
+         names it. */
+      clearBusy(msg, (r.name || email) + ' · ' + bookTitle(view.act) +
         ' · every committed line, attempt 1 struck through where it was retried.');
       if (!state) { page.innerHTML = '<div class="jotter-q"><div class="jq-margin"></div><div class="jq-body ui-msg">Nothing saved yet.</div></div>'; return; }
 

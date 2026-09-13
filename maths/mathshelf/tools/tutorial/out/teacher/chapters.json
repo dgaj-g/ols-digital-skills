@@ -1,0 +1,50 @@
+{
+ "file": "teacher.mp4",
+ "seconds": 1575,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Opening"
+  },
+  {
+   "t": 7,
+   "label": "Opening the markbook"
+  },
+  {
+   "t": 94,
+   "label": "Set-up: classes, links and books"
+  },
+  {
+   "t": 297,
+   "label": "Opening your books"
+  },
+  {
+   "t": 405,
+   "label": "The worked example and the number pad"
+  },
+  {
+   "t": 647,
+   "label": "Filling in a table"
+  },
+  {
+   "t": 809,
+   "label": "Choosing a row, deciding a statement"
+  },
+  {
+   "t": 991,
+   "label": "Graphs: plotting, scrolling and the rule"
+  },
+  {
+   "t": 1219,
+   "label": "Your work is saved"
+  },
+  {
+   "t": 1330,
+   "label": "Reading the class’s work"
+  },
+  {
+   "t": 1568,
+   "label": "Closing"
+  }
+ ]
+}
