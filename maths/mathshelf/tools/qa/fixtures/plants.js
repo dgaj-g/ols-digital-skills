@@ -515,6 +515,12 @@ const PLANTS = {
       "clearBusy(msg, (r.name || email) + ' · ' + (view.act === 'angles' ? 'Angles' : 'Algebra') +   /* plant: the old guess */");
   },
 
+  /* the restore rule taken away: .btn-quiet's display beats [hidden] again and
+     the Staff button stands on the staff door, as it did in Version 38 */
+  'fixture-staff-door-stray-button': (dir) => {
+    edit(dir, 'shell.css', '.btn-quiet[hidden] { display: none; }', '/* plant: the restore rule taken away */');
+  },
+
   'fixture-tickbox-same-name': (dir) => {
     edit(dir, 'script.js', '    if (!shared || !a.sub) return a.title;',
       '    return a.title;   /* plant: the volume dropped, so three books read the same */');
