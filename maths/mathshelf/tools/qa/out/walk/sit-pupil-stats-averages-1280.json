@@ -3,8 +3,8 @@
  "scope": "stats-averages",
  "width": 1280,
  "tier": "preview",
- "contentHash": "72648367c245",
- "when": "2026-09-13T00:45:33.648Z",
+ "contentHash": "db6520698a4a",
+ "when": "2026-09-13T01:18:33.475Z",
  "states": [
   {
    "surface": "cover",
@@ -5606,7 +5606,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5657,7 +5657,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5731,7 +5731,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5783,7 +5783,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5835,7 +5835,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5887,7 +5887,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -5938,7 +5938,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 30
+    "readability": 29
    }
   },
   {
@@ -6752,7 +6752,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 31
+    "readability": 28
    }
   },
   {

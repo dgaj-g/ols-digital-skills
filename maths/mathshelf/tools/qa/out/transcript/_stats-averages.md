@@ -1,8 +1,8 @@
 # MathShelf — the stats-averages transcript
 
-TRANSCRIPT HASH: 30d17bfc535aace9
+TRANSCRIPT HASH: 4d73fa2ad5160867
 sentences: 84
-taken: 2026-09-13 01:11:36
+taken: 2026-09-13 01:41:45
 
 This is every sentence a pupil reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -43,22 +43,22 @@ Ex.3 Averages from a frequency table
 WALT · Find the mean, median and mode from a frequency table
 Exercise 3 · Averages from a frequency table
 The table shows the ages of an under-21 rugby squad. Find the median age. [1 mark]
-Answers 1 of 1Frequency times value, row by row, then the totals.
+Answers 1 of 1You multiplied frequency by value, row by row, then added up the totals.
 Thirty students were asked how many cats they owned. Calculate the mean number of cats owned per student. [3 marks]
 Table 2 of 2 · Answers 1 of 1You built the table and read the averages off it.
 The table shows the number of days absent in a term. Calculate the mean number of days absent. [3 marks]
 Table 2 of 2 · Answers 1 of 1Every column multiplied and totalled, and the answers read from your own table.
 A shop sells 80 gift vouchers valued at £5, £10, £20, £50 or £100. Find the mode, the median and the mean value of a voucher sold. [5 marks]
-Table 2 of 2 · Answers 3 of 3Frequency times value, row by row, then the totals.
+Table 2 of 2 · Answers 3 of 3You multiplied frequency by value, row by row, then added up the totals.
 Ex.4 Grouped tables
 WALT · Estimate the mean, and find the modal class and the class containing the median, from a grouped table
 Exercise 4 · Grouped tables
-The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal group and the group containing the median. [5 marks]
+The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal class and the class containing the median. [5 marks]
 Table 2 of 2 · Answers 3 of 3You built the table and read the averages off it.
-The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal group and the group containing the median. [5 marks]
+The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal class and the class containing the median. [5 marks]
 Table 2 of 2 · Answers 3 of 3Every column multiplied and totalled, and the answers read from your own table.
-The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class interval containing the median. [5 marks]
-Table 4 of 4 · Answers 1 of 1Frequency times value, row by row, then the totals.
+The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class containing the median. [5 marks]
+Table 4 of 4 · Answers 1 of 1You multiplied frequency by value, row by row, then added up the totals.
 The number of hours of daily sunshine is recorded at a resort during four months. Calculate an estimate of the mean number of hours of daily sunshine. [4 marks]
 Table 3 of 3 · Answers 1 of 1You built the table and read the averages off it.
 The waiting times for patients at a surgery are recorded in the table. Find the modal class, and estimate the mean waiting time. [5 marks]
@@ -67,15 +67,15 @@ Ex.5 Which average, and what a table can't tell you
 WALT · Decide which average to use, predict what changes it, and judge a claim from a grouped table as true, false or not enough information
 Exercise 5 · Which average, and what a table can't tell you
 A mistake was made: a baby's weight of 4.6 kg should have been 4.5 kg. Decide whether each of the following changes or stays the same. [1 mark]
-The range of the weights
-The median weight
-The mean weight
-The modal weight
+When 4.6 kg is corrected to 4.5 kg, the range of the weights will…
+After the correction, the median weight will…
+With 4.5 kg in place of 4.6 kg, the mean weight will…
+Once the weight is corrected, the modal weight will…
 Judgements 1 of 1Fair reading of what the figures can say.
 A grouped frequency table shows the performance of 22 students in a test. The teacher then discovers he forgot to record two students, who scored 21 and 39, and amends the table. Decide the effect of amending the table. [3 marks]
-The range
-The mean
-The class interval containing the median
+Once the two missing scores are added, the range will…
+With 21 and 39 in the table, the mean will…
+After the table is amended, the class containing the median will be…
 Judgements 3 of 3Good — you said why.
 A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from £50,000 to £200,000). Decide which average better represents a typical salary here. [1 mark]
 Which average better represents a typical salary?

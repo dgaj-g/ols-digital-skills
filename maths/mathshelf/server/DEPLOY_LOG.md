@@ -1,5 +1,18 @@
 # MathShelf — the deploy log
 
+## 13 September 2026, 02:46 — FRONT DOOR Version 35 (BOOK B · Averages) — a CLIENT-ONLY cut; DATA stays the standalone project's Version 1
+
+From commit `7175f3d`. `Index.html` md5 `45b243fd92f738eb1ffb3dd1cf962c3d` (1,546,777 chars) fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), set into `file_2.html` by name, saved (Cmd+S on the open file — the toolbar save had not taken), the editor reloaded and the length and rolling hash read back equal to the repo's (1,546,777 / 2393194489); `Code.gs` NOT pasted — its md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) is byte-identical to Version 34's, and the editor's own copy read back at 46,004 / 3891900974 = the repo's. Manifest read in the editor before the cut: `USER_ACCESSING` + `DOMAIN`, untouched (the Book A cut and the split made every book a client-only cut plus one Sheet cell — this is the first one done that way). Manage deployments → the one active deployment, the FRONT DOOR by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → Version "New version" → **Version 35 on 13 Sept 2026, 02:46**. Same `/exec`. Then the Sheet's Config tab row 10: `acts` = `["stats-collect","stats-averages"]` (typed by the session, 02:48 — the line `qa-tickbox` prints).
+
+**Proof from outside Google, 02:50:** the served page (the top frame's `OLS_BOOT` scriptlet) carries `stats-averages` four times, the table kind's host and its Check label; the page's own store token, POSTed to the standalone store → 302 → `{"ok":true, …, "acts":{"angles":true,"algebra":true,"stats-quartiles":false,"stats-collect":false,"stats-averages":false}, "summaries":{…,"stats-averages":null}}` — the Config row is read and Book B arrives UNTICKED, as designed. (A note for the next reader: `curl -L` re-issues the 302 as a GET without the body and lands on "Page not found"; take the `Location` header and GET it.)
+
+**Proof rows, 02:47–02:50 (the deployer's own visit to `…?class=10E-Maths`, then four curls):**
+
+    FRONT DOOR (bound project)   Version 35 | doGet   | 13 Sept 2026, 02:47:56 | 2.282 s | Completed   ← no apiCall row follows it: every call the page made went straight to the store
+    DATA (standalone project)    Version 1  | doPost  | 13 Sept 2026, 02:48:01 | 1.381 s | Completed   ← the page's own direct store calls
+    DATA                         Version 1  | doPost  | 13 Sept 2026, 02:48:03 | 5.261 s | Completed
+    DATA                         Version 1  | doPost  | 13 Sept 2026, 02:49:34 … 02:50:25 | 5.3–7.2 s | Completed   ← the four hello probes from outside (the first-visit path each time)
+
 ## 13 September 2026, 00:27 — FRONT DOOR Version 34 (BOOK A + THE DATA SPLIT); DATA = the standalone project's Version 1 (22:31)
 
 From commit `3e16a9c`. `Code.gs` md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) and `Index.html` md5 `fffd4d1a4d7cb57a503404d0c7927d53` (1,424,611 chars), both fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), set into `file_1.js` / `file_2.html` by name, saved, the editor reloaded and both lengths and rolling hashes read back equal to the repo's before the cut. Manifest read before the cut: `USER_ACCESSING` + `DOMAIN` — nobody's hands on it, and it never needs hands again (server/DEPLOY.md "TWO PROJECTS"). Manage deployments → the FRONT DOOR selected by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → New version → **Version 34 on 13 Sept 2026, 00:27**. The DATA side is the standalone project **OLS — MathShelf DATA** at Version 1 (its row below; `dataUrl` on the front door points at it since 22:5x).
@@ -165,6 +178,7 @@ log showing the deployment actually ran.
 | 2026-09-12 22:31 | DATA (new standalone project `14j0H7VG…jn3h`, deployment `AKfycbzjSy3t…yRkiA`) | Version 1 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the NEW project's manifest after the cut — set once in the New deployment dialog, never edited; the bound project's manifest untouched (rests at `USER_ACCESSING` + `DOMAIN`) | 8891d90 | (no Index in this project) | 3e3f4819fa809c04cc2af310c3faabcd |
 | 2026-09-13 00:27 | FRONT DOOR | Version 34 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK A (Collecting and displaying) + the split's Code.gs (`acts_()` from the Config row, `ss_()` by id); the bound project's OLD DATA deployment (Version 32) is superseded by the standalone project's Version 1 above | 3e16a9c | fffd4d1a4d7cb57a503404d0c7927d53 | 3e3f4819fa809c04cc2af310c3faabcd |
 
+| 2026-09-13 02:46 | FRONT DOOR | Version 35 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK B (Averages), client-only: Index.html only, Code.gs unchanged from Version 34; the Config row `acts` gained `"stats-averages"` | 7175f3d | 45b243fd92f738eb1ffb3dd1cf962c3d | 3e3f4819fa809c04cc2af310c3faabcd |
 ## Proof rows
 
 ### 12 Sept 2026, 22:58 — the new standalone DATA project answers the live front door

@@ -1,6 +1,6 @@
-TRANSCRIPT HASH: 30d17bfc535aace9
+TRANSCRIPT HASH: 4d73fa2ad5160867
 
-I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.md`), the checklist, and the fifteen read-first candidates whose paths begin `stats-averages >`. This is the first read of this book, so nothing carries forward. I read from Aoife's seat: fifteen, in an S1 GCSE class, on a Chromebook or her phone, working alone with nobody standing over her, reading every one of the 84 sentences aloud cold, in the order she meets them, and asking the checklist's five questions of each one. The reading age stays eleven or twelve throughout, per the checklist's rule 0, even though the voice is a notch more grown-up for this shelf. Several of the transcript's lines are two separate on-screen elements (a progress badge and a feedback caption, or two banner lines) run together with no space by the capture tool — I read each such line as the two pieces the screen actually draws with a visible gap between them, matching how the same pattern was judged clean in the sister book's own read.
+This is a re-file: all thirteen REWRITEs from my first read of this book were built in, and the app was walked again. I read only the re-rendered Handling Data pupil transcript for "Averages" (`_stats-averages.md`), the checklist, and the fourteen read-first candidates whose paths begin `stats-averages >` (down from fifteen — see below). I read from Aoife's seat: fifteen, in an S1 GCSE class, on a Chromebook or her phone, working alone with nobody standing over her, reading every one of the 84 sentences aloud cold, in the order she meets them, and asking the checklist's five questions of each one. The reading age stays eleven or twelve throughout, per the checklist's rule 0, even though the voice is a notch more grown-up for this shelf. I diffed the new transcript against the one I judged before: exactly thirteen lines changed, and they are the thirteen I flagged — the frequency-table feedback line (now "You multiplied frequency by value, row by row, then added up the totals.", three places), the "group" vs "class" stems (q17, q18) and the "class interval" stem (q19), all now saying "class" throughout, and the seven bare-fragment options on q22 and q23, now full anchored sentences ending "…". Every other line is byte-identical to before and carries its verdict forward unchanged. Several of the transcript's lines are still two separate on-screen elements (a progress badge and a feedback caption, or two banner lines) run together with no space by the capture tool — I read each such line as the two pieces the screen actually draws with a visible gap between them, matching how the same pattern was judged clean in the sister book's own read. One more thing changed off-transcript: the build report says step 6 of the Ex 5 film, previously "That is exactly the method — true.", now reads "Dividing 1855 by 20 is exactly the method — the claim is true." That path no longer appears anywhere in either transcript I am allowed to read (the shell transcript's tail dropped it entirely, and film lines were never in this pupil transcript), so it gets no formal row — inventing one from a chat description rather than a transcript would be exactly the thing I am told not to do — but for the record, read as a sentence it now names the actual calculation instead of a bare "That", which resolves the fault I raised.
 
 ## The sentence table
 
@@ -41,22 +41,22 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 | PASS | Ex 3 › WALT | WALT · Find the mean, median and mode from a frequency table | Clear. |
 | PASS | Ex 3 › heading | Exercise 3 · Averages from a frequency table | Clear. |
 | PASS | Ex 3 › q13 › stem | The table shows the ages of an under-21 rugby squad. Find the median age. [1 mark] | Anchored, has its verb ("shows"), refers to a table she can see. |
-| REWRITE | Ex 3 › q13 › feedback | Answers 1 of 1Frequency times value, row by row, then the totals. | The feedback tail is a verbless chain of noun phrases joined by commas — the exact fragment-chain fault the checklist bans, even though the progress-badge run-together is fine on its own. → "Answers 1 of 1 You multiplied frequency by value, row by row, then added up the totals." |
+| PASS | Ex 3 › q13 › feedback | Answers 1 of 1You multiplied frequency by value, row by row, then added up the totals. | Fixed — the feedback now has its verbs ("multiplied", "added up") instead of the verbless noun-phrase chain flagged before. |
 | PASS | Ex 3 › q14 › stem | Thirty students were asked how many cats they owned. Calculate the mean number of cats owned per student. [3 marks] | Anchored, clear, every sentence has its verb. |
 | PASS | Ex 3 › q14 › feedback | Table 2 of 2 · Answers 1 of 1You built the table and read the averages off it. | Has its verbs ("built", "read"); fits a build-the-table task. |
 | PASS | Ex 3 › q15 › stem | The table shows the number of days absent in a term. Calculate the mean number of days absent. [3 marks] | Anchored, clear, every sentence has its verb. |
 | PASS | Ex 3 › q15 › feedback | Table 2 of 2 · Answers 1 of 1Every column multiplied and totalled, and the answers read from your own table. | A reduced-passive feedback line ("multiplied and totalled", "read"), matching the shelf's own short-affirmation register already approved elsewhere ("Neatly done.", "Worked out and written in."). |
 | PASS | Ex 3 › q16 › stem | A shop sells 80 gift vouchers valued at £5, £10, £20, £50 or £100. Find the mode, the median and the mean value of a voucher sold. [5 marks] | Anchored, action-first, clear. |
-| REWRITE | Ex 3 › q16 › feedback | Table 2 of 2 · Answers 3 of 3Frequency times value, row by row, then the totals. | Same fragment-chain fault as q13's feedback — no verb anywhere in the tail. → "Table 2 of 2 · Answers 3 of 3 You multiplied frequency by value, row by row, then added up the totals." |
+| PASS | Ex 3 › q16 › feedback | Table 2 of 2 · Answers 3 of 3You multiplied frequency by value, row by row, then added up the totals. | Fixed — same repair as q13's feedback. |
 | PASS | contents strip › Ex 4 label | Ex.4 Grouped tables | Plain. |
 | PASS | Ex 4 › WALT | WALT · Estimate the mean, and find the modal class and the class containing the median, from a grouped table | Clear; sets "class" as this exercise's own term for the grouped interval — a WALT may preview vocabulary the exercise's film will have defined. |
 | PASS | Ex 4 › heading | Exercise 4 · Grouped tables | Clear. |
-| REWRITE | Ex 4 › q17 › stem | The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal group and the group containing the median. [5 marks] | The WALT for this exercise, and q21 below, call this a "class"; this stem switches to "group" for the same idea, with nothing linking the two words — she would have to ask whether a group and a class are the same thing. → "The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal class and the class containing the median." |
+| PASS | Ex 4 › q17 › stem | The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal class and the class containing the median. [5 marks] | Fixed — now says "class" throughout, matching the WALT and q21; the "group" vs "class" slip is gone. |
 | PASS | Ex 4 › q17 › feedback | Table 2 of 2 · Answers 3 of 3You built the table and read the averages off it. | Fits. |
-| REWRITE | Ex 4 › q18 › stem | The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal group and the group containing the median. [5 marks] | Same "group" vs "class" slip as q17. → "The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal class and the class containing the median." |
+| PASS | Ex 4 › q18 › stem | The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal class and the class containing the median. [5 marks] | Fixed — same repair as q17, now says "class" throughout. |
 | PASS | Ex 4 › q18 › feedback | Table 2 of 2 · Answers 3 of 3Every column multiplied and totalled, and the answers read from your own table. | Fits, matches the shelf's short-affirmation register. |
-| REWRITE | Ex 4 › q19 › stem | The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class interval containing the median. [5 marks] | A third word ("class interval") for the same idea the WALT called a "class" — she now has three names in one exercise (class, group, class interval) for what should be one thing. → "The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class containing the median." |
-| REWRITE | Ex 4 › q19 › feedback | Table 4 of 4 · Answers 1 of 1Frequency times value, row by row, then the totals. | Same fragment-chain fault as q13's and q16's feedback. → "Table 4 of 4 · Answers 1 of 1 You multiplied frequency by value, row by row, then added up the totals." |
+| PASS | Ex 4 › q19 › stem | The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class containing the median. [5 marks] | Fixed — "class interval" is gone; now matches the exercise's own "class" throughout. The remaining "a group of students" describes the people being surveyed, not the statistical interval, so it is not the same word doing two jobs. |
+| PASS | Ex 4 › q19 › feedback | Table 4 of 4 · Answers 1 of 1You multiplied frequency by value, row by row, then added up the totals. | Fixed — same repair as q13's and q16's feedback. |
 | PASS | Ex 4 › q20 › stem | The number of hours of daily sunshine is recorded at a resort during four months. Calculate an estimate of the mean number of hours of daily sunshine. [4 marks] | Anchored, clear, every sentence has its verb. |
 | PASS | Ex 4 › q20 › feedback | Table 3 of 3 · Answers 1 of 1You built the table and read the averages off it. | Fits. |
 | PASS | Ex 4 › q21 › stem | The waiting times for patients at a surgery are recorded in the table. Find the modal class, and estimate the mean waiting time. [5 marks] | Anchored, clear, uses "modal class" — matches the WALT's own term. |
@@ -65,15 +65,15 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 | PASS | Ex 5 › WALT | WALT · Decide which average to use, predict what changes it, and judge a claim from a grouped table as true, false or not enough information | Clear, names all three skills the exercise covers. |
 | PASS | Ex 5 › heading | Exercise 5 · Which average, and what a table can't tell you | Clear. |
 | PASS | Ex 5 › q22 › stem | A mistake was made: a baby's weight of 4.6 kg should have been 4.5 kg. Decide whether each of the following changes or stays the same. [1 mark] | Has its verb before the colon ("was made"); anchored, clear ask; "the following" correctly points forward at the list shown directly under it. |
-| REWRITE | Ex 5 › q22 › option (range) | The range of the weights | An unanchored, verbless fragment — the exact fault the sister book fixed for this same weight-correction question. → "When 4.6 kg is corrected to 4.5 kg, the range of the weights will…" |
-| REWRITE | Ex 5 › q22 › option (median) | The median weight | Same fault. → "After the correction, the median weight will…" |
-| REWRITE | Ex 5 › q22 › option (mean) | The mean weight | Same fault. → "With 4.5 kg in place of 4.6 kg, the mean weight will…" |
-| REWRITE | Ex 5 › q22 › option (mode) | The modal weight | Same fault. → "Once the weight is corrected, the modal weight will…" |
+| PASS | Ex 5 › q22 › option (range) | When 4.6 kg is corrected to 4.5 kg, the range of the weights will… | Fixed — anchored, has its verb, ends in the chip-completing ellipsis the checklist allows in place of a marked blank; matches the sister book's own approved fix for this same question. |
+| PASS | Ex 5 › q22 › option (median) | After the correction, the median weight will… | Same fix, same reasoning. |
+| PASS | Ex 5 › q22 › option (mean) | With 4.5 kg in place of 4.6 kg, the mean weight will… | Same fix, same reasoning. |
+| PASS | Ex 5 › q22 › option (mode) | Once the weight is corrected, the modal weight will… | Same fix, same reasoning. |
 | PASS | Ex 5 › q22 › feedback | Judgements 1 of 1Fair reading of what the figures can say. | Approved judgement phrase. |
 | PASS | Ex 5 › q23 › stem | A grouped frequency table shows the performance of 22 students in a test. The teacher then discovers he forgot to record two students, who scored 21 and 39, and amends the table. Decide the effect of amending the table. [3 marks] | Anchored, clear, every sentence has its verb. |
-| REWRITE | Ex 5 › q23 › option (range) | The range | Bare, verbless fragment with nothing to anchor it back to the amended table. → "After the table is amended, the range will…" |
-| REWRITE | Ex 5 › q23 › option (mean) | The mean | Same fault. → "After the table is amended, the mean will…" |
-| REWRITE | Ex 5 › q23 › option (class) | The class interval containing the median | Same bare-fragment fault, plus the "class interval" wording pulls in the same third term flagged in Ex 4. → "After the table is amended, the class containing the median will…" |
+| PASS | Ex 5 › q23 › option (range) | Once the two missing scores are added, the range will… | Fixed — anchored to the specific correction just described (the two added scores), has its verb, ends in the chip-completing ellipsis. |
+| PASS | Ex 5 › q23 › option (mean) | With 21 and 39 in the table, the mean will… | Fixed — anchored to the two scores named in the stem, which is a nice concrete touch; has its verb, ends in the ellipsis. |
+| PASS | Ex 5 › q23 › option (class) | After the table is amended, the class containing the median will be… | Fixed — anchored, uses "class" (not "class interval"), consistent with the rest of the book; ends in "will be…", a sensible variant of the ellipsis-handoff for a category rather than a magnitude. |
 | PASS | Ex 5 › q23 › feedback | Judgements 3 of 3Good — you said why. | Approved judgement phrase. |
 | PASS | Ex 5 › q24 › stem | A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from £50,000 to £200,000). Decide which average better represents a typical salary here. [1 mark] | Anchored, clear, every sentence has its verb; the pound figures are content, not a prose fault. |
 | PASS | Ex 5 › q24 › sub-prompt | Which average better represents a typical salary? | Plain direct question, points back at the stem just given. |
@@ -242,11 +242,11 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 2. Yes.
 3. No.
 4. No.
-5. Yes in substance, though the feedback line itself needed a fix (flagged in the sentence table) to give it a verb.
+5. Yes — the feedback line's earlier fragment-chain fault is fixed, and now reads as a proper sentence.
 6. Yes.
 7. No.
 8. No.
-9. No — see the REWRITE above; the fragment-chain fault is a wording fault, not a fit-for-kind fault.
+9. Yes.
 10. No.
 
 **q14 — thirty students, cats owned, mean.**
@@ -278,16 +278,16 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 2. Yes.
 3. No.
 4. No.
-5. Yes in substance, though the feedback line needed the same fix as q13's.
+5. Yes — the feedback line's fragment-chain fault is fixed.
 6. Yes.
 7. No.
 8. No.
-9. No.
+9. Yes.
 10. No.
 
 **q17 — words per sentence, grouped table.**
 1. Estimate the mean words per sentence and find the modal class and the class containing the median.
-2. Yes, though the stem's own wording needed a fix (flagged above) to match the exercise's own "class" term.
+2. Yes — the stem now says "class" throughout, matching the WALT and q21.
 3. No.
 4. No.
 5. Yes — "you built the table and read the averages off it" fits.
@@ -299,7 +299,7 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 
 **q18 — test results, grouped table.**
 1. Estimate the mean mark and find the modal class and the class containing the median.
-2. Same fix needed as q17.
+2. Yes — same fix as q17, now consistent.
 3. No.
 4. No.
 5. Yes — "every column multiplied and totalled…" fits.
@@ -311,14 +311,14 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 
 **q19 — pocket money, grouped table.**
 1. Estimate the mean pocket money and find the class containing the median.
-2. Same "class" fix needed as q17/q18, and the feedback line needed the fragment-chain fix.
+2. Yes — "class interval" is gone, and the feedback line's fragment-chain fault is fixed.
 3. No.
 4. No.
-5. Yes in substance, once fixed.
+5. Yes — "you multiplied frequency by value…" fits.
 6. No.
 7. No.
 8. No.
-9. No.
+9. Yes.
 10. No.
 
 **q20 — daily sunshine hours, grouped table, mean only.**
@@ -347,26 +347,26 @@ I read only the Handling Data pupil transcript for "Averages" (`_stats-averages.
 
 **q22 — baby weight correction, which averages change.**
 1. Decide which of the range, median, mean and mode changes when 4.6 kg is corrected to 4.5 kg.
-2. The stem states the whole act first; the four option lines themselves needed the anchoring fix given above (flagged as REWRITE).
+2. Yes — the stem states the whole act first, and the four option lines are now anchored, verbed sentences ending in the chip-completing ellipsis, matching the sister book's fix for this same question.
 3. No.
 4. No — each of the four is asked once, evenly.
 5. Yes — "Fair reading of what the figures can say" fits a reasoned judgement.
 6. No.
 7. No.
 8. No.
-9. No.
+9. Yes.
 10. No.
 
 **q23 — amended frequency table, effect on range/mean/median class.**
 1. Decide the effect on the range, the mean and the class containing the median once two students' scores are added in.
-2. Same option-anchoring fix needed as q22.
+2. Yes — the three option lines are now anchored (two of them naming the actual scores, 21 and 39), verbed, and end in the ellipsis.
 3. No.
 4. No — each of the three is asked once.
 5. Yes — "Good — you said why" fits.
 6. No.
 7. No.
 8. No.
-9. No.
+9. Yes.
 10. No.
 
 **q24 — unequal-width salary table, which average is typical.**
@@ -428,7 +428,6 @@ Same position as q27 and q28: no stem is rendered in this transcript for this id
 | PASS | stats-averages > s4 > movie > step2 > say | Each class stands in for its midpoint — halfway between its two ends. | Has its verb ("stands"); this is exactly what a film caption is for — defining "midpoint" in plain words before the exercise leans on it. |
 | PASS | stats-averages > s4 > movie > step9 > say | A grouped table gives an estimate, never an exact value — the individual arrival times are gone once they are grouped. | Has its verb ("gives"); explains plainly why an estimate, not an exact value, is expected. |
 | PASS | stats-averages > s5 > walt | Decide which average to use, predict what changes it, and judge a claim from a grouped table as true, false or not enough information | Matches Ex 5's WALT exactly; clear, names all three skills. |
-| REWRITE | stats-averages > s5 > movie > step6 > say | That is exactly the method — true. | A bare "That", with no noun in the same line to point at — she would have to hold the previous film step in her head to know what "that" is. → "Judging it that way is exactly the method — the claim is true." |
 | PASS | stats-averages > s5 > movie > step8 > say | Claim: "3 loaves of bread cost 87p."  /  A grouped table cannot say what one loaf cost — not enough information. | Names the claim directly by quoting it, then explains the reasoning in full sentences with their own verbs — a clean worked example. |
 | PASS | stats-averages > s5 > q26 > prompt | A grouped frequency table shows the performance of 22 students in a test.  /  Decide the effect of amending the table. | Both halves have their verb; matches Ex 5 › q23's stem. |
 | PASS | stats-averages > s5 > q27 > prompt | A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from £50,000 to £200,000). | Has its verb ("shows"); anchored; matches Ex 5 › q24's opening sentence. |

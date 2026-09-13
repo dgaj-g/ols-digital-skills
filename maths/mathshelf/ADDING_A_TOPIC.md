@@ -48,7 +48,7 @@ class in the markbook. `node tools/qa/qa-tickbox.js` prints the exact row to
 type, e.g. `THE LIVE SHEET'S CONFIG ROW: Key acts, Value ["angles","algebra",
 "stats-quartiles","stats-collect"] — every shelf book the built-in list
 [angles, algebra, stats-quartiles] does not name` — run it and copy its line
-rather than typing the array by hand. Only add the id to the built-in `ACTS`
+rather than typing the array by hand. **Done exactly this way for Book B (Averages), 13 Sept 2026:** `content-stats-averages.js` + its ACTIVITIES line + index.html/build-pathb → one FRONT DOOR version (35) and the Config row `["stats-collect","stats-averages"]` — no server change, no manifest, ~5 minutes of Chrome. Only add the id to the built-in `ACTS`
 array in `server/Code.gs.template` if you are cutting a new server version
 for some other reason anyway (it then needs pasting into BOTH the DATA and
 FRONT DOOR projects and a new version of each — see `server/DEPLOY.md`);
@@ -124,7 +124,7 @@ answer with `mathcore` + an independent mini-evaluator. This is what catches a
 wrong answer before a pupil sees it.
 
 If your topic introduces technical vocabulary (angles/algebra don't have one
-of these yet — stats-collect and stats-quartiles do), add
+of these yet — stats-collect, stats-averages and stats-quartiles do), add
 `tools/qa/vocab/<topic>.json`: `{ "<term>": { "phrase": "<the exact substring
 of a movie's 'say' text that first explains it>", "definedIn": "<sectionId>" } }`.
 `tools/qa/qa-language.js`'s define-before-use check reads it so a later

@@ -61,7 +61,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | v4 MathShelf (the shell, the markbook, the login) | PENDING | — |
 | Handling Data C (Quartiles, curves and box plots) | PENDING HIS SMOKE — hotfixes live 12 Sept 2026 16:35 (FRONT DOOR V30 from `611a688`, DATA V25 from `f2a5f7b`, Code.gs unchanged), on top of POLISH CUT 2 (V27, `6263421`) | 8 Sept 2026 |
 | Handling Data A (Collecting and displaying) | PENDING HIS SMOKE — LIVE 13 Sept 2026 00:27 (FRONT DOOR V34 from `3e16a9c`; the store = the standalone project's V1); whole-tree `--full` green, every cell closed; cold read 101/0/0 | 13 Sept 2026 |
-| Handling Data B (Averages) | PENDING (not built) | — |
+| Handling Data B (Averages) | PENDING HIS SMOKE — LIVE 13 Sept 2026 02:46 (FRONT DOOR Version 35 from `7175f3d`, client-only; the store = the standalone project's V1; Config row `acts` = `["stats-collect","stats-averages"]`); `--full --book` and the whole-tree `--full` green, every cell closed; cold read 84 PASS / 0 / 0 after 13 REWRITEs honoured; controls: pending the post-deploy battery | 13 Sept 2026 |
 
 ---
 
