@@ -138,6 +138,9 @@ const CONTROLS = [
   /* Book B's single-fault plants (13 Sept 2026, WALK-B) */
   { id: 'stats-b-list-fig-missing', kind: 'fixture', plant: 'stats-b-list-fig-missing', mustFail: /the list the question is about is not on the page/ },
   { id: 'stats-b-stage-skipped', kind: 'fixture', plant: 'stats-b-stage-skipped', mustFail: /never stood on stage/ },
+  { id: 'stats-b-total-before-cells', kind: 'fixture', plant: 'stats-b-total-before-cells', mustFail: /never stood on stage/ },
+  { id: 'stats-b-rowpick-two-pressed', kind: 'fixture', plant: 'stats-b-rowpick-two-pressed', mustFail: /read aria-pressed/ },
+  { id: 'stats-b-tfn-leak', kind: 'fixture', plant: 'stats-b-tfn-leak', mustFail: /an answer value is on the page before Check/ },
   { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
@@ -679,6 +682,10 @@ async function walkBook(page, book, width, sidecar, transcript) {
         if (answered && answered.ok) {
           const settled = P.STAGE_SETTLE(qid, declared.stages, visited);
           if (!settled.ok) g.fail('question > ' + qid + ' @' + width, 'consequence', settled.why);
+          /* Book B: a table's row-pick group never shows two rows chosen
+             at once (stats-b-rowpick-two-pressed) */
+          const rp = await page.evaluate((s2, args) => eval(s2)(args), P.ROWPICK_SINGLE, [qid]);
+          if (!rp.ok) g.fail('question > ' + qid + ' @' + width, 'consequence', rp.why);
         }
       } else {
         answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false]);

@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 768,
  "tier": "preview",
- "contentHash": "7fef149360a6",
- "when": "2026-09-12T23:04:12.811Z",
+ "contentHash": "a950f483222a",
+ "when": "2026-09-13T00:43:54.109Z",
  "states": [
   {
    "surface": "cover",
@@ -756,7 +756,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 24
+    "readability": 26
    }
   },
   {
@@ -3392,7 +3392,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 24
+    "readability": 26
    }
   }
  ],

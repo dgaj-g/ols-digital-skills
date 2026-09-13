@@ -246,12 +246,6 @@
     "locked": false
   },
   {
-    "path": "stats-averages > s5 > movie > step6 > say",
-    "kind": "BARE-DEMONSTRATIVE",
-    "text": "That is exactly the method — true.",
-    "locked": false
-  },
-  {
     "path": "stats-averages > s5 > movie > step8 > say",
     "kind": "FRAGMENT-RUN",
     "text": "Claim: \"3 loaves of bread cost 87p.\"  /  A grouped table cannot say what one loaf cost — not enough information.",

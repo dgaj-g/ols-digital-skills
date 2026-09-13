@@ -177,7 +177,7 @@
     },
     /* Book B (13 Sept 2026): a frequency table she filled, then read from */
     ftable: {
-      perfect: ['Every column multiplied and totalled, and the answers read from your own table.', 'Frequency times value, row by row, then the totals.', 'You built the table and read the averages off it.'],
+      perfect: ['Every column multiplied and totalled, and the answers read from your own table.', 'You multiplied frequency by value, row by row, then added up the totals.', 'You built the table and read the averages off it.'],
       fail: ['We’ll fill one of these tables in together in class.', 'Watch the worked example again — multiply each value by its frequency, then add the column up.']
     },
     values: {

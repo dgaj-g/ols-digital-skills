@@ -321,71 +321,108 @@ remember to extend.
   same way. **This one COULD be live-control-run today** (q25-29 are real
   table questions) — flagged as the highest-value thing left to prove if
   the orchestrator's second pass has time before mine does.
-- **NOT WRITTEN** (LINT-B's own four, per the original brief): `stats-b-
-  cell-inconsistent`, `stats-b-rowpick-two-pressed`, `stats-b-total-before-
-  cells`, `stats-b-tfn-leak`. `tools/qa/out/bookB/FIXTURE_B.js` never
-  appeared during this window (checked repeatedly; the directory instead
-  grew `CONTENT_NOTES.md`, `build-table.js.part` and a `probe/` folder,
-  none of which are FIXTURE_B.js). Per the brief's own contingency I should
-  write them myself past the 45-minute mark — I chose instead to spend that
-  budget PROVING the six lines of drive.js/walk-moves.js/stat-probes.js
-  against the newly-landed real renderer (the live walk above), on the
-  judgement that an unverified guess at four marking-engine-shaped plants
-  (three of which — cell-inconsistent, total-before-cells, tfn-leak — are
-  about the OK:1/OK:2 marking rule in `statcore.js`'s `markTable`, not
-  about anything a walker presses or reads off the DOM) would be lower
-  value than a proven walker. Each is sketched below for whoever picks it
-  up next:
-  - **`stats-b-cell-inconsistent`** — CONTRACT_B.md: "ok:2 iff the cell is
-    consistent with the PUPIL's own inputs in that row (fx = f × their mid;
-    cf = their previous cf + f)". This is a `statcore.js`
-    (`markTable`) marking-correctness question, not a DOM/walker one — the
-    natural home is `dev/test-statcore.js` (ENGINE-B's own unit-test file),
-    not a `sit-*` walker. If it must be a walker control, it would need
-    `dev/model-attempts.js`'s `corrupt()` to author a specific "wrong f but
-    an fx consistent with THAT wrong f" attempt for a table question (today
-    it just calls the generic `modelBoard(q, true, rules)`), and the walker
-    would then read the marked units (`.stat-unit` rows, tick-hollow vs
-    cross) after Check and assert the fx row shows `ok:2` (a hollow tick),
-    never a cross. None of `dev/model-attempts.js`, `statcore.js` is mine.
-  - **`stats-b-rowpick-two-pressed`** — belongs on `qa-click-safety.js` or
-    a new sit-pupil DOM law ("at most one `.stat-rowpick[data-ask=X]` reads
-    `aria-pressed="true"` at once"). Confirmed by direct read that the
-    SHIPPED code is already correct (`ans[a.id] = (ans[a.id] === ri) ? null
-    : ri` — a single-valued store, so a second press always clears the
-    first on re-render) — a real single-fault mutation plant would need to
-    change BOTH the click handler (to accumulate rather than replace) AND
-    the `aria-pressed` computation (to check membership rather than
-    equality) together, since they are two different lines reading the same
-    state. I drafted this but did not commit to a mutation string without
-    a live control run to prove it fires the RIGHT way and nothing else
-    breaks first (a table question's `ready()`/`copyState()` both also read
-    `ans[a.id]` as a single value, so a careless multi-line plant could
-    just crash the render instead of demonstrating "two pressed"). Left for
-    whoever has room for the live-control cycle this needs.
-  - **`stats-b-total-before-cells`** — CONTRACT_B.md's model board: "wrong
-    = the mean divided by the number of rows with every cell right" reads
-    like an AV_DIV_ROWS content-authoring case (a `statcore.js`/lint
-    concern), but the NAME ("total before cells") suggests a different,
-    walker-visible fault: a total box that can be filled (or is marked
-    consistent) before any cell in its own column is. If that is the
-    intended meaning, the walker check is straightforward once `BUILD.table`
-    exists to plant against (assert `nAsksDone`/marking never credits a
-    total whose column has zero filled cells) — but I could not confirm
-    which of the two readings LINT-B intended without FIXTURE_B.js, and
-    guessing wrong would register a control with a `mustFail` regex that
-    never matches what the gate actually prints, which is worse than not
-    registering it at all.
-  - **`stats-b-tfn-leak`** — CONTRACT_B.md: "the existing options mechanism
-    — nothing new to drive" for True/False/Not-enough-information judge
-    claims. Confirmed by direct read that `BUILD.judge` already renders
-    `c.options` claims correctly (landed before this build, shared with
-    Book C) and its `showTruth()` only reveals `c.verdict` after lock — no
-    obvious premature leak in the shipped code today. Whether this plant
-    means "the verdict text leaks before Check" (a `showTruth`-shaped
-    mutation, easy) or a lint-side "TFN_* dx equals the truth" case (not a
-    walker's business at all) was, again, LINT-B's call to make in
-    FIXTURE_B.js and I did not want to invent the wrong one.
+- **`FIXTURE_B.js` landed** (LINT-B's package) partway through the second
+  half of this window, after the paragraph above was written and after the
+  live walk had already proven the table kind end to end. All four of
+  LINT-B's drafted plants were folded in, every anchor RE-VERIFIED against
+  the (by-then further-advanced) tree before writing, exactly as LINT-B's
+  own header asked ("re-check before folding in, in case another package
+  has since touched the same lines") — all four still matched, once each,
+  byte for byte:
+  - **`stats-b-rowpick-two-pressed`** — folded in verbatim (BUILD.table's
+    `aria-pressed` check loosened from "this exact row" to "any row at
+    all"). **Registered on sit-pupil.js**, backed by a NEW probe,
+    `stat-probes.js`'s `ROWPICK_SINGLE(qid)`: reads every
+    `.stat-rowpick[data-ask]` group on the question root once the table's
+    whole drive is done (called right beside `STAGE_SETTLE`, same moment),
+    and fails if more than one button in a group reads
+    `aria-pressed="true"`. `mustFail: /read aria-pressed/`. Statically
+    verified (anchor found, mutated file parses) — not yet live-control-run
+    (see "still owed" below).
+  - **`stats-b-tfn-leak`** — folded in verbatim (a claim card with
+    True/False/NEI `options` now prints its own `c.verdict` from first
+    mount, in a new `<p class="stat-verdict-leak">`). **Registered on
+    sit-pupil.js**, backed by extending the EXISTING `SIGNATURE` probe
+    rather than writing a new one: its `truthEls` query (originally
+    `[data-truth]` only — the chart kinds' "true positions drawn before
+    lock") now also matches `.stat-verdict-leak`, so the exact existing
+    message fires: "an answer value is on the page before Check: ...".
+    `mustFail: /an answer value is on the page before Check/`. Statically
+    verified the same way.
+  - **`stats-b-total-before-cells`** — folded in verbatim (`tableBoxes`, what
+    `stage()` compares "filled" against, narrowed from "every cell AND
+    total" to "cells only"). **Registered on sit-pupil.js**, `mustFail:
+    /never stood on stage/` — reasoned through by hand rather than proven
+    by a live control run (the one thing in this fold-in I did NOT confirm
+    end to end, flagged below): once every cell is filled with the totals
+    still blank, the buggy `stage()` already reports "asking"/"ready", so
+    the walker's own `reachedStage('filling')` check (drive.js's
+    `maybeStop`) reads "already there" the moment cells finish - the SAME
+    observable symptom as `stats-b-stage-skipped` (the drive is told it has
+    reached a stage the board never genuinely stood on), which
+    `STAGE_SETTLE` already reports generically as "never stood on stage
+    filling". I am confident in this reasoning (I traced both plants
+    through the identical code path by hand) but have not RUN it, which is
+    the bar this file's own "controls must fail" law sets — see "still
+    owed".
+  - **`stats-b-cell-inconsistent`** — folded in verbatim (statcore.js's
+    `markTable`: the ok:1/ok:2 branch collapsed so any non-blank cell marks
+    right regardless of correctness or consistency). **NOT registered** on
+    any walker gate. LINT-B's own comment already flagged the reason and I
+    confirmed it by hand: CONTRACT_B.md's own model board for a wrong table
+    attempt puts the slip in the value ASK (Σfx ÷ rows), "with every cell
+    right" — so neither the ordinary right-walk nor the ordinary
+    wrong-walk (`dev/model-attempts.js`'s generic `corrupt() ->
+    statcore.js modelBoard(q, true, rules)`) ever drives a cell that is
+    BOTH wrong and inconsistent, which is the one thing this plant breaks.
+    Proving it needs a bespoke wrong `S` authored specifically for this
+    (an fx that is wrong but consistent with a wrong f she typed, or vice
+    versa) - that is `dev/model-attempts.js`'s call, a file neither this
+    package nor LINT-B owns, or a `dev/test-statcore.js` unit test that
+    calls `markTable` directly with a hand-built `S` and needs no browser
+    at all - the more precise proof, and ENGINE-B's own file. Registering a
+    walker control here on a guessed attempt would very likely never
+    exercise the fault at all, which is worse than recording the gap
+    honestly.
+
+## Second live run, after the FIXTURE_B.js fold-in
+
+Re-ran the exact same command (`NODE_PATH="$(npm root -g)" MS_BASE=http://
+localhost:8421/... MS_BOOK=stats-averages MS_WIDTHS=1280 node tools/qa/
+sit-pupil.js`, a second throwaway preview server, stopped again after) once
+`ROWPICK_SINGLE` and the `SIGNATURE` `.stat-verdict-leak` extension were
+wired in, specifically to check they add no new failures on the CLEAN
+(unmutated) tree. **Result: `430 checks passed, 68 failed` — the identical
+count to the first run.** Nothing new failed and nothing new passed
+spuriously: `.stat-verdict-leak` does not exist anywhere in the shipped
+`jotter-stats.js` today (grepped, 0 occurrences) so `SIGNATURE`'s widened
+`truthEls` query cannot false-positive, and every `.stat-rowpick` group's
+`aria-pressed` really is computed by exact-row equality today (confirmed
+by the same read that found the anchor), so `ROWPICK_SINGLE` cannot
+false-positive either. This is the confirmation that folding in LINT-B's
+four plants and their two backing checks was safe, in place of a full
+`node tools/qa/control.js` run (still owed — see below).
+
+## Still owed (for the second pass, or whoever has room first)
+
+- Run the actual `node tools/qa/control.js --only sit-pupil` (or
+  `--changed`) for the five NEWLY REGISTERED controls
+  (`stats-b-list-fig-missing`, `stats-b-stage-skipped`, `stats-b-rowpick-
+  two-pressed`, `stats-b-total-before-cells`, `stats-b-tfn-leak`) to turn
+  the static anchor-and-reasoning proof in this file into the real thing —
+  a control that has been SEEN to say no, not just reasoned to. Each is a
+  single, isolated `edit()` mutation with no cross-dependency on the
+  others, so they can be run and fixed independently.
+- `stats-b-cell-inconsistent` needs a bespoke wrong `S` (from `dev/model-
+  attempts.js`, not mine) or an engine-level unit test (`dev/test-
+  statcore.js`, ENGINE-B's) before any control can exercise it at all — see
+  its own paragraph above.
+- The q1–q24 "never left `fresh`" finding (see "Live proof" above) is not
+  this package's fault and not yet triaged by anyone — reproduce with the
+  command in that section.
+- The `bracket`/`ring` film-drawing findings and the empty `<th>` findings
+  are real, RENDER/content-side faults this package's code correctly
+  surfaced — not walker bugs, not fixed by me, not mine to fix.
 
 ## Mistakes caught by the parse-proof discipline (worth naming so nobody
    repeats them)

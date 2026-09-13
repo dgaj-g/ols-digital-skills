@@ -1796,6 +1796,43 @@ body.gj .wh-nudge-note { font-family: var(--f-stationery); font-size: 0.86rem; f
 .stat-fig-box .stat-cell { min-width: 44px; min-height: 44px; font-size: 16px; padding: 0 4px; }
 .stat-list { font-family: var(--f-maths); font-size: 17px; color: var(--ink); margin: 4px 0 8px; }
 
+/* \2550 \2550 \2550  Book B \2014  Averages (13 Sept 2026): the table she fills, the questions under it \2550 \2550 \2550  */
+.stat-tablekind { margin: 6px 0; }
+.stat-table-host { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 0; }   /* a wide table scrolls sideways inside its own frame at 375 */
+.stat-table-edit { margin: 0; }
+.stat-table-edit td { white-space: nowrap; font-family: var(--f-maths); font-size: 17px; padding: 4px 8px; }
+.stat-table-edit th { white-space: normal; max-width: 9em; vertical-align: bottom; }   /* a long heading wraps; a value never does */
+.stat-table-edit .stat-cell { min-width: 64px; }
+.stat-table-note { margin: 2px 0 6px; color: var(--pencil); font-size: 14px; }
+/* A PHONE HOLDS FOUR COLUMNS. The jotter's own margin leaves about 280 px of
+   paper at 375; a grouped table (class \b7  frequency \b7  midpoint \b7  f \d7  x) fits it
+   only with tight cells - the touch target stays 44 px tall. */
+@media (max-width: 640px) {
+  .stat-table-edit th { font-size: 11.5px; padding: 3px 3px; max-width: 5.5em; }
+  .stat-table-host { margin-left: -6px; margin-right: -6px; }
+  .stat-table-edit td { padding: 3px 2px; font-size: 15px; }
+  .stat-table-edit .stat-cell { min-width: 44px; min-height: 44px; font-size: 16px; padding: 0 2px; }
+}
+.stat-table-totals th { text-align: right; vertical-align: middle; }
+.stat-table-none { color: var(--pencil); }
+.stat-table-given td { font-family: var(--f-maths); font-size: 16px; white-space: nowrap; padding: 4px 10px; }
+.stat-table-given th { white-space: normal; max-width: 9em; }
+.stat-fig-table { margin: 6px 0 10px; }
+.stat-asks { margin: 10px 0 4px; }
+.stat-asks .stat-slots { margin: 6px 0; }
+.stat-rowpick-group { margin: 8px 0; }
+.stat-rowpick-group .stat-slot-label { margin: 0 0 6px; }
+.stat-rowpicks { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat-rowpick {
+  min-height: 44px; min-width: 44px; padding: 8px 14px; border: 1.5px solid var(--copper); border-radius: 10px;
+  background: var(--panel); color: var(--ink); font-family: var(--f-maths); font-size: 16px; cursor: pointer; white-space: nowrap;
+}
+.stat-rowpick[aria-pressed="true"] { border-width: 3px; border-color: var(--copper-ink); background: rgba(166, 82, 43, .08); padding: 6.5px 12.5px; }
+.stat-rowpick:disabled { opacity: 1; cursor: default; }
+/* a set of five (a constraints slot): five boxes on one line, wrapping at 375 */
+.stat-set { display: flex; flex-wrap: wrap; gap: 6px; }
+.stat-set .stat-cell { min-width: 52px; }
+
 /* stemleaf \2014  the diagram is a table she reads */
 .stat-stemleaf { margin: 6px 0; }
 .stat-sl-host { margin: 8px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }   /* a wide diagram scrolls sideways inside its own frame, never wraps its leaves (my own eyes at 375, 12 Sept 2026) */
@@ -2701,6 +2738,7 @@ window.OLS_TRANSPORT = {
       statStageCompare2: 'Finish the second sentence: choose the measure, the group and the two values.',
       statStageJudge: 'For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.',
       statStageJudgeOptions: 'Choose what happens to each one.',
+      statStageJudgeChoose: 'Read each statement and choose one of the answers under it.',
 
       /* \u2500\u2500 BOOK A \u2014 Collecting and displaying (12 Sept 2026): the kinds order,
          pick, stemleaf, pie and scatter, and values on a figure. Same law as
@@ -2782,6 +2820,25 @@ window.OLS_TRANSPORT = {
       statSlKeyLeaf: 'Leaf',
       statEstimateLabel: 'Estimate',
       numpadDefaultLabel: 'Enter a number',
+
+      /* Book B - Averages (13 Sept 2026): the table kind, the list figure, a set of five */
+      statCheckTable: 'Mark my table and answers',
+      statTableWhyCells: 'Fill in at least one box of the table first.',
+      statTableWhyAsks: 'Answer every question under the table first.',
+      statPillTableFill: 'Fill the table',
+      statPillTableAsks: 'The answers',
+      statStageTableFill: 'Fill in the {head} column from the top row down. Choose a box, then use the pad. ({n} of {m} filled.)',
+      statStageTableTotals: 'Now the totals row. Add up each column and put its total in the box at the bottom. ({n} of {m} filled.)',
+      statStageTableAsks: 'Now the questions under the table. Choose the {label} box, then use the pad.',
+      statStageTableRow: 'Choose the row of the table that answers: {label}.',
+      statStageTableDone: 'Everything is in. If a box is wrong, choose it and change it. Then press Mark my table and answers.',
+      statTableTotal: 'Total',
+      statScrollTable: 'Scroll or swipe the table sideways to see all of it.',
+      statTableNoTotal: 'No total is asked for this column.',
+      statTableCellLabel: '{head}, row {n}',
+      statTableTotalLabel: 'Total {head}',
+      statValuesSetLabel: '{label}, value {n}',
+      statValuesSetTruth: 'One set that fits: {list}',
 
       /* the movie player */
       movieWorkedExample: 'Worked example',
@@ -4513,8 +4570,7 @@ window.OLS_TRANSPORT = {
     TFN_ESTIMATE_AS_FALSE: 'Called a sound estimate false because it was not exact',
     /* Books A and B (DESIGN \u00a77). SL_BACK_DIRECTION is deliberately absent: the
        tap-first stem zone grows the pupil's side outward by construction, so
-       the slip cannot be made. The AV_* and RM_* ids are Book B's and arrive
-       with their detections. */
+       the slip cannot be made. */
     SL_UNORDERED: 'Leaves not in order along the stem',
     SL_WRONG_STEM: 'A leaf on the wrong stem',
     SL_MISSED_LEAF: 'A value left out (or entered twice)',
@@ -4527,7 +4583,17 @@ window.OLS_TRANSPORT = {
     SC_XY_SWAPPED: 'Plotted the two values the wrong way round',
     SC_LINE_OFF_TREND: 'Line of best fit does not follow the points',
     SC_READ_WRONG_AXIS: 'Read the estimate from the wrong axis',
-    SC_CORR_SIGN: 'Correlation named the wrong way (positive/negative)'
+    SC_CORR_SIGN: 'Correlation named the wrong way (positive/negative)',
+    /* Book B (CONTRACT_B.md): averages from lists and tables, reverse mean */
+    AV_DIV_ROWS: 'Divided by the number of rows, not the number of values',
+    AV_MEDIAN_UNORDERED: 'Median taken from the unordered list',
+    AV_MODE_AS_FREQ: 'Gave the highest frequency, not the value with it',
+    AV_RANGE_NOT_DIFF: 'Range not taken as highest minus lowest',
+    AV_NO_MIDPOINT: 'Used the class boundary, not the midpoint',
+    AV_FX_NOT_SUMMED: 'Averaged the midpoints, ignoring the frequencies',
+    AV_MEDIAN_CLASS_OFF: 'Median class off by one row',
+    RM_AVERAGED_MEANS: 'Averaged the means instead of the totals',
+    RM_WRONG_N: 'Divided by the old count, not the new one'
   };
 
   /* The reason bank for `judge`. Ids are fixed; the sentence a pupil reads is
@@ -4749,6 +4815,7 @@ window.OLS_TRANSPORT = {
       case 'stemleaf': return stemleafUnits(q);
       case 'pie': return pieUnits(q);
       case 'scatter': return scatterUnits(q);
+      case 'table': return tableUnits(q);
       default: return [];
     }
   }
@@ -4919,6 +4986,100 @@ window.OLS_TRANSPORT = {
     });
     return out;
   }
+  /* ---- Book B's table (CONTRACT_B.md \u00a7table; DESIGN \u00a717.2) ----
+     Units in table order then ask order: C_<col>_<i> per derived cell (method,
+     ft earns), T_<col> per total (method, ft earns), A_<id> per ask (accuracy;
+     a value ask with an `ft` earns on follow-through - the CCEA "M1 for \u00f7
+     their total" pattern; a row ask is exact). */
+  function tableUnits(q) {
+    var units = [], rows = tableRows(q);
+    derivedCols(q).forEach(function (c) {
+      var i;
+      for (i = 0; i < rows; i++) units.push(U('C_' + c.id + '_' + i, (c.head || c.id) + ', row ' + (i + 1), 'method', 1, true));
+    });
+    (q.totals || []).forEach(function (id) {
+      var c = colById(q, id) || { id: id };
+      units.push(U('T_' + id, 'Total ' + lower(c.head || id), 'method', 1, true));
+    });
+    (q.asks || []).forEach(function (a) {
+      units.push(U('A_' + a.id, a.label || a.id, 'accuracy', 1, a.type === 'value' && !!a.ft));
+    });
+    return units;
+  }
+  function colById(q, id) {
+    var i, c = q.cols || [];
+    for (i = 0; i < c.length; i++) if (c[i].id === id) return c[i];
+    return null;
+  }
+  function derivedCols(q) { return (q.cols || []).filter(function (c) { return !!c.derive; }); }
+  function tableRows(q) {
+    var n = 0;
+    (q.cols || []).forEach(function (c) { if (c.given && c.given.length > n) n = c.given.length; });
+    return n;
+  }
+  function classCol(q) { return (q.cols || []).filter(function (c) { return c.given && c.given.length && c.given[0] && typeof c.given[0] === 'object' && c.given[0].lo !== undefined; })[0] || null; }
+  function colByRole(q, role) {
+    /* the frequency column is `f`; the value column is `x` or, failing that, the first numeric given column that is not f */
+    if (role === 'f') return colById(q, 'f') || (q.cols || []).filter(function (c) { return c.given && /freq/i.test(c.head || ''); })[0] || null;
+    if (role === 'x') return colById(q, 'x') || (q.cols || []).filter(function (c) { return c.given && c.id !== 'f' && typeof c.given[0] !== 'object'; })[0] || null;
+    if (role === 'mid') return (q.cols || []).filter(function (c) { return c.derive === 'mid'; })[0] || null;
+    return null;
+  }
+
+  /* The truth of a table: every numeric column as rationals (given columns
+     read, derived columns computed), the total of each, the mean, the modal
+     row and the median row. `derive:'f*x'` multiplies f by mid when the table
+     has a mid column, else by x; `derive:'mid'` = (lo + hi) \u00f7 2 of the class
+     column; `derive:'cum'` = the running total of f.
+     Median row: the ((n + 1) \u00f7 2)th value's row - the first row whose
+     cumulative frequency reaches (n + 1) \u00f7 2. */
+  function tableDerive(q) {
+    var rows = tableRows(q), cells = {}, totals = {}, i;
+    var cls = classCol(q), fCol = colByRole(q, 'f'), xCol = colByRole(q, 'x');
+    (q.cols || []).forEach(function (c) {
+      if (c.given && c !== cls) cells[c.id] = Rs(c.given);
+    });
+    var midCol = colByRole(q, 'mid');
+    var mid = null;
+    if (cls) {
+      mid = cls.given.map(function (g) { var lo = R(g.lo), hi = R(g.hi); return (lo && hi) ? rdiv(radd(lo, hi), rint(2)) : null; });
+    }
+    if (midCol) cells[midCol.id] = mid || [];
+    var f = fCol ? cells[fCol.id] : null;
+    var value = mid || (xCol ? cells[xCol.id] : null);
+    (q.cols || []).forEach(function (c) {
+      if (c.derive === 'f*x') {
+        cells[c.id] = [];
+        for (i = 0; i < rows; i++) cells[c.id].push((f && f[i] && value && value[i]) ? rmul(f[i], value[i]) : null);
+      } else if (c.derive === 'cum') {
+        cells[c.id] = [];
+        var run = rint(0);
+        for (i = 0; i < rows; i++) { run = radd(run, (f && f[i]) || rint(0)); cells[c.id].push(run); }
+      }
+    });
+    Object.keys(cells).forEach(function (id) {
+      totals[id] = cells[id].reduce(function (a, b) { return b ? radd(a, b) : a; }, rint(0));
+    });
+    var n = f ? totals[fCol.id] : null, sumFx = null, mean = null;
+    if (f && value) {
+      sumFx = rint(0);
+      for (i = 0; i < rows; i++) if (f[i] && value[i]) sumFx = radd(sumFx, rmul(f[i], value[i]));
+      mean = (n && n.n !== 0) ? rdiv(sumFx, n) : null;
+    }
+    var modalRow = -1, medianRow = -1;
+    if (f) {
+      for (i = 0; i < rows; i++) if (f[i] && (modalRow === -1 || rlt(f[modalRow], f[i]))) modalRow = i;
+      var half = rdiv(radd(n, rint(1)), rint(2)), run2 = rint(0);
+      for (i = 0; i < rows && medianRow === -1; i++) {
+        run2 = radd(run2, f[i] || rint(0));
+        if (rle(half, run2)) medianRow = i;
+      }
+    }
+    return { rows: rows, cells: cells, totals: totals, n: n, sumFx: sumFx, mean: mean,
+             modalRow: modalRow, medianRow: medianRow, mid: mid,
+             fId: fCol ? fCol.id : null, xId: xCol ? xCol.id : null, midId: midCol ? midCol.id : null };
+  }
+
   function askOf(q, type) {
     var i, a = q.asks || [];
     for (i = 0; i < a.length; i++) if (a[i] && a[i].type === type) return a[i];
@@ -4953,7 +5114,8 @@ window.OLS_TRANSPORT = {
     pick: ['Reason', 'Choice'],
     stemleaf: ['Leaves', 'Key'],
     pie: ['Angles', 'Chart'],
-    scatter: ['Points and line', 'Readings']
+    scatter: ['Points and line', 'Readings'],
+    table: ['Table', 'Answers']
   };
 
   /* ---------- follow-through rules for `values` slots (a CLOSED table) ---- */
@@ -4994,8 +5156,12 @@ window.OLS_TRANSPORT = {
       var mean = R(slot.ft.mean), n = R(slot.ft.n);
       return (mean && n) ? rmul(mean, n) : null;
     },
+    /* (their total \u00b1 x) \u00f7 the new n. `xFrom` names a slot whose own value
+       stands in for the constant x (the laps chain: their 10-lap total minus
+       their 8-lap total, over the two extra laps). */
     'rm.newMean': function (slot, q, got) {
-      var total = got[slot.ft.from[0]], x = R(slot.ft.x), n = R(slot.ft.n);
+      var total = got[slot.ft.from[0]], n = R(slot.ft.n);
+      var x = slot.ft.xFrom ? got[slot.ft.xFrom] : R(slot.ft.x);
       if (!total || !x || !n || n.n === 0) return null;
       return rdiv(slot.ft.minus ? rsub(total, x) : radd(total, x), n);
     },
@@ -5058,6 +5224,7 @@ window.OLS_TRANSPORT = {
       case 'stemleaf': per = markStemleaf(q, S, r, units); break;
       case 'pie': per = markPie(q, S, r, units); break;
       case 'scatter': per = markScatter(q, S, r, units); break;
+      case 'table': per = markTable(q, S, r, units); break;
       default: per = units.map(function (u) { return row(u, 0, null, 'not marked'); });
     }
     return settle(q, per, units);
@@ -5722,16 +5889,20 @@ window.OLS_TRANSPORT = {
     order.forEach(function (id, i) {
       var u = units[i], slot = slotById(q, id) || {};
       var mine = got[id];
+      /* a constraint slot ("write five numbers so that\u2026") lives in
+         S.v[id + '_set'], five pad entries; S.v[id] itself is not written */
+      if (slot.answer && slot.answer.constraints) {
+        var set = setOf(slot, S);
+        if (!set.length) per.push(row(u, 0, null, 'left blank'));
+        else per.push(row(u, constraintsHold(slot, S) ? 1 : 0, null, null));
+        return;
+      }
       if (!mine) {
         /* a blank OUTSIDE region is the classic Venn slip, not an unfinished board */
         per.push(row(u, 0, slot.region === 'out' ? 'VENN_OUTSIDE_LOST' : null, 'left blank'));
         return;
       }
-      var want = R(slot.answer && slot.answer.constraints ? null : slot.answer);
-      if (slot.answer && slot.answer.constraints) {
-        per.push(row(u, constraintsHold(slot, S) ? 1 : 0, null, null));
-        return;
-      }
+      var want = R(slot.answer);
       var tol = R(slot.tol || 0) || rint(0);
       if (want && within(mine, want, tol)) { per.push(row(u, 1, null, null)); return; }
       var ftv = slot.ft && FT_RULES[slot.ft.rule] ? FT_RULES[slot.ft.rule](slot, q, got, S.stage) : null;
@@ -5739,31 +5910,68 @@ window.OLS_TRANSPORT = {
         per.push(row(u, 2, null, 'from your own earlier answer'));
         return;
       }
-      per.push(row(u, 0, slot.dx || valuesDx(slot, q, mine), null));
+      per.push(row(u, 0, slot.dx || valuesDx(slot, q, mine, got), null));
     });
     return per;
   }
+  function setOf(slot, S) {
+    var raw = (S.v && S.v[slot.id + '_set']) || [];
+    return Rs(raw).filter(function (x) { return !!x; });
+  }
+  /* every constraint the pack names must hold on the pupil's own set:
+     n (how many), mean, median, mode (the set's ONE mode is that value), range */
   function constraintsHold(slot, S) {
-    var set = Rs((S.v && S.v[slot.id + '_set']) || []);
+    var set = setOf(slot, S);
     var cons = slot.answer.constraints || {}, ok = true;
     if (!set.length) return false;
+    var st = listStats(set);
     if (cons.n !== undefined && set.length !== cons.n) ok = false;
-    if (cons.mean !== undefined) {
-      var s = set.reduce(function (a, b) { return radd(a, b); }, rint(0));
-      if (!eqR(rdiv(s, rint(set.length)), R(cons.mean))) ok = false;
-    }
-    if (cons.median !== undefined && !eqR(medianOf(sortR(set)), R(cons.median))) ok = false;
-    if (cons.range !== undefined) {
-      var srt = sortR(set);
-      if (!eqR(rsub(srt[srt.length - 1], srt[0]), R(cons.range))) ok = false;
-    }
+    if (cons.mean !== undefined && !eqR(st.mean, R(cons.mean))) ok = false;
+    if (cons.median !== undefined && !eqR(st.median, R(cons.median))) ok = false;
+    if (cons.mode !== undefined && !(st.mode.length === 1 && eqR(st.mode[0], R(cons.mode)))) ok = false;
+    if (cons.range !== undefined && !eqR(st.range, R(cons.range))) ok = false;
     return ok;
   }
 
-  /* The Venn slips (DESIGN \u00a717.1): an "only" region holding the circle's
-     whole total; the outside forgotten - the outside slot at 0, or `both`
-     computed as A + B - N. Only when the pack has not named a dx itself. */
-  function valuesDx(slot, q, mine) {
+  /* The four averages of a list, exact. `mode` is an array: the values that
+     share the highest frequency; EMPTY when every value appears equally often
+     (no mode) unless the list holds one value only. */
+  function listStats(values) {
+    var vals = Rs(values || []).filter(function (x) { return !!x; });
+    if (!vals.length) return { mean: null, median: null, mode: [], range: null, n: 0 };
+    var srt = sortR(vals);
+    var sum = vals.reduce(function (a, b) { return radd(a, b); }, rint(0));
+    var freq = {}, keys = [], i, k;
+    for (i = 0; i < srt.length; i++) {
+      k = rtostr(srt[i]);
+      if (freq[k] === undefined) { freq[k] = 0; keys.push(k); }
+      freq[k]++;
+    }
+    var maxF = 0;
+    keys.forEach(function (kk) { if (freq[kk] > maxF) maxF = freq[kk]; });
+    var allSame = keys.every(function (kk) { return freq[kk] === maxF; });
+    var mode = (allSame && keys.length > 1) ? [] :
+      keys.filter(function (kk) { return freq[kk] === maxF; }).map(function (kk) { return R(kk); });
+    return {
+      mean: rdiv(sum, rint(vals.length)),
+      median: medianOf(srt),
+      mode: mode,
+      range: rsub(srt[srt.length - 1], srt[0]),
+      n: vals.length,
+      sum: sum,
+      maxFreq: maxF,
+      distinct: keys.length
+    };
+  }
+
+  /* The `values` slips (DESIGN \u00a717.1), only when the pack has not named a dx
+     itself. Venn: an "only" region holding the circle's whole total; the
+     outside forgotten - the outside slot at 0, or `both` computed as
+     A + B - N. Averages (slot.stat against fig.values): the median read from
+     the list as PRINTED; the mode given as its frequency; the range given as
+     the max, the min or max + min; the mean divided by the number of DISTINCT
+     values. Reverse mean (stat newMean): the two means averaged; the old n. */
+  function valuesDx(slot, q, mine, got) {
     var ft = slot.ft || {}, fig = q.fig || {}, totals = fig.totals || {};
     var circle = ft.rule === 'venn.only' ? ft.of : (slot.region && totals[slot.region] !== undefined ? slot.region : null);
     if (circle !== null && circle !== undefined) {
@@ -5775,6 +5983,54 @@ window.OLS_TRANSPORT = {
       var a = R(figTotal(q, ft.of[0])), b = R(figTotal(q, ft.of[1])), n = R(fig.n);
       if (a && b && n && eqR(mine, rsub(radd(a, b), n))) return 'VENN_OUTSIDE_LOST';
     }
+    return averageDx(slot, q, mine, got || {});
+  }
+  function averageDx(slot, q, mine, got) {
+    var stat = slot.stat, vals = Rs((q.fig && q.fig.values) || []).filter(function (x) { return !!x; });
+    if (stat === 'newMean') return reverseMeanDx(slot, q, mine, got);
+    if (!vals.length || !stat) return null;
+    var st = listStats(vals), slipV = slipValue(stat, vals, st);
+    if (slipV && eqR(mine, slipV)) {
+      return { median: 'AV_MEDIAN_UNORDERED', mode: 'AV_MODE_AS_FREQ', range: 'AV_RANGE_NOT_DIFF', mean: 'AV_DIV_ROWS' }[stat] || null;
+    }
+    if (stat === 'range') {
+      var srt = sortR(vals), mx = srt[srt.length - 1], mn = srt[0];
+      if (eqR(mine, mn) || eqR(mine, radd(mx, mn))) return 'AV_RANGE_NOT_DIFF';
+    }
+    return null;
+  }
+  /* the classic wrong value for each stat on a printed list - or null when the
+     list makes the slip invisible (its value equals the truth); the wrong
+     model board and the dx share this one function */
+  function slipValue(stat, vals, st) {
+    st = st || listStats(vals);
+    var v = null;
+    if (stat === 'median') v = medianOf(vals);                          /* printed order, unsorted */
+    else if (stat === 'mode') v = rint(st.maxFreq);
+    else if (stat === 'range') v = sortR(vals)[vals.length - 1];         /* the maximum */
+    else if (stat === 'mean') v = rdiv(st.sum, rint(st.distinct));
+    if (!v) return null;
+    var truth = stat === 'mode' ? (st.mode.length === 1 ? st.mode[0] : null) : st[stat];
+    if (truth && eqR(v, truth)) return null;
+    return v;
+  }
+  /* the old mean and n live on the total slot's `rm.total` rule (or on this
+     slot's ft as oldMean / oldN); x is the joining value (or their xFrom slot) */
+  function reverseMeanCtx(slot, q, got) {
+    var ft = slot.ft || {}, totalSlot = ft.from ? slotById(q, ft.from[0]) : null;
+    var tft = (totalSlot && totalSlot.ft) || {};
+    var oldMean = R(ft.oldMean !== undefined ? ft.oldMean : tft.mean);
+    var oldN = R(ft.oldN !== undefined ? ft.oldN : tft.n);
+    var x = ft.xFrom ? got[ft.xFrom] : R(ft.x);
+    var total = ft.from ? (got[ft.from[0]] || R(totalSlot && totalSlot.answer)) : null;
+    return { oldMean: oldMean, oldN: oldN, x: x, total: total, minus: !!ft.minus, mean2: R(ft.mean2) };
+  }
+  function reverseMeanDx(slot, q, mine, got) {
+    var c = reverseMeanCtx(slot, q, got);
+    if (c.oldMean && c.x && eqR(mine, rdiv(radd(c.oldMean, c.x), rint(2)))) return 'RM_AVERAGED_MEANS';
+    if (c.oldMean && c.mean2 && eqR(mine, rdiv(radd(c.oldMean, c.mean2), rint(2)))) return 'RM_AVERAGED_MEANS';
+    if (c.total && c.x && c.oldN && c.oldN.n !== 0 &&
+        eqR(mine, rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.oldN))) return 'RM_WRONG_N';
     return null;
   }
 
@@ -6129,6 +6385,122 @@ window.OLS_TRANSPORT = {
 
   /* ---------- gist: the exercise grid's one-line header (<= 28 chars) ----- */
 
+  /* ---------- table ---------- */
+
+  function markTable(q, S, r, units) {
+    var D = tableDerive(q), cells = S.cells || {}, totals = S.totals || {}, asks = S.asks || {};
+    var per = [], ui = 0, rows = D.rows, i;
+    var theirs = {};                                   /* their cells as rationals, by column */
+    (q.cols || []).forEach(function (c) {
+      if (c.derive) theirs[c.id] = Rs(cells[c.id] || []).concat([]);
+      else if (c.given && D.cells[c.id]) theirs[c.id] = D.cells[c.id];   /* given: theirs = the truth */
+    });
+    var f = D.fId ? D.cells[D.fId] : null;
+
+    derivedCols(q).forEach(function (c) {
+      var truth = D.cells[c.id] || [], mine = theirs[c.id] || [];
+      for (i = 0; i < rows; i++) {
+        var u = units[ui++], m = mine[i], t = truth[i];
+        if (!m) { per.push(row(u, 0, null, 'left blank')); continue; }
+        if (t && eqR(m, t)) { per.push(row(u, 1, null, null)); continue; }
+        var ftv = cellFt(q, D, c, i, theirs, f);
+        if (ftv && eqR(m, ftv) && !(t && eqR(ftv, t))) { per.push(row(u, 2, null, 'from your own earlier answer')); continue; }
+        per.push(row(u, 0, cellDx(q, D, c, i, m), null));
+      }
+    });
+
+    (q.totals || []).forEach(function (id) {
+      var u = units[ui++], m = R(totals[id]), t = D.totals[id];
+      if (!m) { per.push(row(u, 0, null, 'left blank')); return; }
+      if (t && eqR(m, t)) { per.push(row(u, 1, null, null)); return; }
+      var col = theirs[id] || [], full = col.length === rows && col.every(function (x) { return !!x; });
+      var sum = full ? col.reduce(function (a, b) { return radd(a, b); }, rint(0)) : null;
+      if (sum && eqR(m, sum) && !(t && eqR(sum, t))) { per.push(row(u, 2, null, 'the total of your own column')); return; }
+      per.push(row(u, 0, null, null));
+    });
+
+    (q.asks || []).forEach(function (a) {
+      var u = units[ui++];
+      if (a.type === 'row') {
+        var got = asks[a.id];
+        if (got === undefined || got === null || got === '') { per.push(row(u, 0, null, 'no row chosen')); return; }
+        var gi = Number(got), want = Number(a.answer);
+        if (gi === want) { per.push(row(u, 1, null, null)); return; }
+        var median = /median/i.test(a.id || '') || /median/i.test(a.label || '');
+        per.push(row(u, 0, (median && Math.abs(gi - want) === 1) ? 'AV_MEDIAN_CLASS_OFF' : null, null));
+        return;
+      }
+      var mine = R(asks[a.id]);
+      if (!mine) { per.push(row(u, 0, null, 'left blank')); return; }
+      var want2 = R(a.answer), tol = dpTol(a.dp);
+      if (want2 && within(mine, want2, tol)) { per.push(row(u, 1, null, null)); return; }
+      var ftv = askFt(a, q, D, theirs, totals);
+      if (ftv && within(mine, ftv, tol) && !(want2 && eqR(ftv, want2))) { per.push(row(u, 2, null, 'from your own table')); return; }
+      per.push(row(u, 0, askDx(a, q, D, mine, tol), null));
+    });
+    return per;
+  }
+  /* "within the dp rounding": half a unit in the dp-th place; exact when no dp */
+  function dpTol(dp) {
+    if (dp === undefined || dp === null) return rint(0);
+    return rat(5, Math.pow(10, Number(dp) + 1));
+  }
+  /* a derived cell consistent with THEIR inputs in that row */
+  function cellFt(q, D, c, i, theirs, f) {
+    if (c.derive === 'f*x' && D.midId && f && f[i]) {
+      var m = (theirs[D.midId] || [])[i];
+      return m ? rmul(f[i], m) : null;
+    }
+    if (c.derive === 'cum' && i > 0 && f) {
+      var prev = (theirs[c.id] || [])[i - 1];
+      return prev ? radd(prev, f[i] || rint(0)) : null;
+    }
+    return null;                                        /* mid, and row 0 of cf, follow nothing */
+  }
+  function cellDx(q, D, c, i, mine) {
+    if (c.derive === 'mid') {
+      var cls = classCol(q), g = cls && cls.given[i];
+      if (g && (eqR(mine, R(g.hi)) || eqR(mine, R(g.lo)))) return 'AV_NO_MIDPOINT';
+    }
+    return null;
+  }
+  /* the value ask's follow-through: sum(<a>)/sum(<b>) over THEIR cells - their
+     total of a column when they wrote one, else the sum of their cells (every
+     cell filled); a given column's sum is the truth */
+  var ASK_FT = /^sum\((\w+)\)\/sum\((\w+)\)$/;
+  function askFt(a, q, D, theirs, totals) {
+    var m = ASK_FT.exec(a.ft || '');
+    if (!m) return null;
+    var num = theirSum(m[1], q, D, theirs, totals), den = theirSum(m[2], q, D, theirs, totals);
+    return (num && den && den.n !== 0) ? rdiv(num, den) : null;
+  }
+  function theirSum(id, q, D, theirs, totals) {
+    if ((q.totals || []).indexOf(id) > -1 && R(totals[id])) return R(totals[id]);
+    var col = theirs[id];
+    if (!col || col.length !== D.rows || !col.every(function (x) { return !!x; })) return null;
+    return col.reduce(function (x, y) { return radd(x, y); }, rint(0));
+  }
+  /* the mean divided by the number of rows; the midpoints (or x values)
+     averaged with the frequencies ignored */
+  function askDx(a, q, D, mine, tol) {
+    if (!D.rows) return null;
+    var rowsR = rint(D.rows);
+    if (D.sumFx && within(mine, rdiv(D.sumFx, rowsR), tol)) return 'AV_DIV_ROWS';
+    var vals = D.mid || (D.xId ? D.cells[D.xId] : null);
+    if (vals && vals.every(function (x) { return !!x; })) {
+      var s = vals.reduce(function (x, y) { return radd(x, y); }, rint(0));
+      if (within(mine, rdiv(s, rowsR), tol)) return 'AV_FX_NOT_SUMMED';
+    }
+    return null;
+  }
+  function tableGist(q) {
+    var rows = tableRows(q);
+    var hasMean = (q.asks || []).some(function (a) { return a.type === 'value'; });
+    if (hasMean) return 'Mean from a table \u00b7 ' + rows + ' rows';
+    if (classCol(q)) return 'Grouped table \u00b7 ' + rows + ' classes';
+    return 'Frequency table \u00b7 ' + rows + ' rows';
+  }
+
   function gist(q) {
     var s;
     switch (q.kind) {
@@ -6149,6 +6521,7 @@ window.OLS_TRANSPORT = {
       case 'stemleaf': s = 'Stem-and-leaf \u00b7 n = ' + (q.values || []).length; break;
       case 'pie': s = 'Pie chart \u00b7 ' + (q.cats || []).length + ' sectors'; break;
       case 'scatter': s = 'Scatter graph \u00b7 n = ' + ((q.given || []).length + (q.toPlot || []).length); break;
+      case 'table': s = tableGist(q); break;
       default: s = q.kind;
     }
     return s.length > 28 ? s.slice(0, 27) + '\u2026' : s;
@@ -6183,7 +6556,7 @@ window.OLS_TRANSPORT = {
   }
   function isStatKind(k) { return KINDS_LIST.indexOf(k) > -1; }
   var KINDS_LIST = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
-                    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+                    'order', 'pick', 'stemleaf', 'pie', 'scatter', 'table'];
   function modelBoard(q, wrong, rules) {
     RULES = rules || null;
     return statsBoard(q, !!wrong);
@@ -6403,18 +6776,71 @@ function judgeBoard(q, wrong) {
   }
   return { j: bad };
 }
+/* right = every slot's answer (a constraint slot gets a set that satisfies
+   it). wrong = the first slot that HAS a classic slip makes it (CONTRACT_B):
+   the median from the printed order, the mode as its frequency, the range as
+   the maximum, the mean \u00f7 the distinct values, a reverse mean over the OLD n;
+   when no slot can slip visibly, the first slot is one more than the truth. */
 function valuesBoard(q, wrong) {
   var order = q.order || (q.slots || []).map(function (s) { return s.id; });
   var v = {};
   order.forEach(function (id) {
     var slot = (q.slots || []).filter(function (s) { return s.id === id; })[0] || {};
+    if (slot.answer && slot.answer.constraints) { v[id + '_set'] = constraintSet(slot.answer.constraints); return; }
     v[id] = rstr2(slot.answer);
   });
   if (!wrong) return { v: v };
   var bad = JSON.parse(JSON.stringify(v));
+  var vals = Rs((q.fig && q.fig.values) || []).filter(function (x) { return !!x; });
+  var i, slot, slip = null;
+  for (i = 0; i < order.length && !slip; i++) {
+    slot = (q.slots || []).filter(function (s) { return s.id === order[i]; })[0] || {};
+    if (slot.stat === 'newMean') {
+      var got = {}; order.forEach(function (id) { got[id] = R(v[id]); });
+      var c = reverseMeanCtx(slot, q, got);
+      if (c.total && c.x && c.oldN && c.oldN.n !== 0) {
+        var wrongN = rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.oldN);
+        if (!eqR(wrongN, R(slot.answer))) slip = { id: slot.id, value: wrongN };
+      }
+    } else if (vals.length && slot.stat) {
+      var sv = slipValue(slot.stat, vals);
+      if (sv) slip = { id: slot.id, value: sv };
+    }
+  }
+  if (slip) { bad[slip.id] = rstr2(slip.value); return { v: bad }; }
   var first = order[0];
+  if (Array.isArray(bad[first + '_set']) && bad[first + '_set'].length) {
+    /* a constraint set with its last value one more: the mean slips */
+    var last = bad[first + '_set'].length - 1;
+    bad[first + '_set'][last] = String(Number(bad[first + '_set'][last]) + 1);
+    return { v: bad };
+  }
   bad[first] = String(Number(bad[first] || 0) + 1);
   return { v: bad };
+}
+/* one set that meets n / mean / median / mode (/ range): the design's example
+   (n 5, mean 6, median 5, mode 4) -> [4, 4, 5, 8, 9]. A small search over
+   whole numbers; the lint proves a solution exists for every pack item. */
+function constraintSet(cons) {
+  var n = cons.n || 5, target = { mean: cons.mean, median: cons.median, mode: cons.mode, range: cons.range };
+  var best = null;
+  function holds(set) {
+    var st = listStats(set);
+    if (target.mean !== undefined && !req(st.mean, R(target.mean))) return false;
+    if (target.median !== undefined && !req(st.median, R(target.median))) return false;
+    if (target.mode !== undefined && !(st.mode.length === 1 && req(st.mode[0], R(target.mode)))) return false;
+    if (target.range !== undefined && !req(st.range, R(target.range))) return false;
+    return true;
+  }
+  var hi = Math.max(20, Math.ceil(rnum2(R(target.mean) || rint(10)) * 2) + 2);
+  function rec(set, min) {
+    if (best) return;
+    if (set.length === n) { if (holds(set)) best = set.slice(); return; }
+    var k;
+    for (k = min; k <= hi && !best; k++) { set.push(k); rec(set, k); set.pop(); }
+  }
+  rec([], 0);
+  return (best || []).map(String);
 }
 /* ---- Book A's boards (CONTRACT_A.md) ---- */
 function orderBoard(q, wrong) {
@@ -6523,6 +6949,45 @@ function scatterBoard(q, wrong) {
   else if (out.pts.length) out.pts[0] = [out.pts[0][0] + sqx, out.pts[0][1]];
   return out;
 }
+/* ---- Book B's table board (CONTRACT_B.md) ----
+   right: every derived cell, total and ask true (a value ask with `dp` is
+   written rounded to dp - a non-terminating mean with no dp cannot be typed).
+   wrong: the mean divided by the number of rows (AV_DIV_ROWS) with every cell
+   right; a table with no value ask has its median row one off (or, failing
+   that, its first row ask one off). */
+function tableBoard(q, wrong) {
+  var D = tableDerive(q), cells = {}, totals = {}, asks = {};
+  (q.cols || []).forEach(function (c) {
+    if (c.derive) cells[c.id] = (D.cells[c.id] || []).map(function (r) { return rstr2(r); });
+  });
+  (q.totals || []).forEach(function (id) { totals[id] = rstr2(D.totals[id]); });
+  function dpStr(r, dp) {
+    if (dp === undefined || dp === null || !r) return rstr2(r);
+    return String(Math.round(rnum2(r) * Math.pow(10, dp)) / Math.pow(10, dp));
+  }
+  (q.asks || []).forEach(function (a) {
+    asks[a.id] = a.type === 'row' ? Number(a.answer) : dpStr(a.answer, a.dp);
+  });
+  if (!wrong) return { cells: cells, totals: totals, asks: asks };
+  var valueAsk = (q.asks || []).filter(function (a) { return a.type === 'value'; })[0];
+  if (valueAsk && D.sumFx && D.rows) {
+    asks[valueAsk.id] = dpStr(rdiv(D.sumFx, rint(D.rows)), valueAsk.dp);
+    return { cells: cells, totals: totals, asks: asks };
+  }
+  var rowAsk = (q.asks || []).filter(function (a) { return a.type === 'row' && /median/i.test(a.id + ' ' + (a.label || '')); })[0] ||
+               (q.asks || []).filter(function (a) { return a.type === 'row'; })[0];
+  if (rowAsk) {
+    var w = Number(rowAsk.answer);
+    asks[rowAsk.id] = w + 1 < D.rows ? w + 1 : w - 1;
+    return { cells: cells, totals: totals, asks: asks };
+  }
+  var firstDerived = (q.cols || []).filter(function (c) { return !!c.derive; })[0];
+  if (firstDerived && cells[firstDerived.id] && cells[firstDerived.id].length) {
+    cells[firstDerived.id][0] = String(Number(cells[firstDerived.id][0]) + 1);
+  }
+  return { cells: cells, totals: totals, asks: asks };
+}
+
 function statsBoard(q, wrong) {
   switch (q.kind) {
     case 'qlist': return qlistBoard(q, wrong);
@@ -6538,6 +7003,7 @@ function statsBoard(q, wrong) {
     case 'stemleaf': return stemleafBoard(q, wrong);
     case 'pie': return pieBoard(q, wrong);
     case 'scatter': return scatterBoard(q, wrong);
+    case 'table': return tableBoard(q, wrong);
     default: return null;
   }
 }
@@ -7145,18 +7611,239 @@ function statsBoard(q, wrong) {
               fig: { type: 'venn2', n: 10, totals: { A: 7 } } }, { S: { v: { a: '7' } } }).dx === 'CF_SKIPPED_ROW');
 
     /* ---- the kinds list, the labels, the names ---- */
-    T('KA1 the five Book A kinds are stat kinds', ['order', 'pick', 'stemleaf', 'pie', 'scatter'].every(isStatKind) && !isStatKind('table'));
+    T('KA1 the five Book A kinds are stat kinds', ['order', 'pick', 'stemleaf', 'pie', 'scatter'].every(isStatKind) && !isStatKind('histogram'));
     T('KA2 every kind has a two-word tally', KINDS_LIST.every(function (k) { return MK_LABELS[k] && MK_LABELS[k].length === 2; }));
     T('KA3 every Book A dx has a plain-English name',
       ['SL_UNORDERED', 'SL_WRONG_STEM', 'SL_MISSED_LEAF', 'SL_KEY_WRONG', 'VENN_TOTAL_AS_ONLY', 'VENN_OUTSIDE_LOST',
        'PIE_PCT_NOT_DEG', 'PIE_TOTAL_WRONG', 'PIE_SECTOR_OFF', 'SC_XY_SWAPPED', 'SC_LINE_OFF_TREND', 'SC_READ_WRONG_AXIS', 'SC_CORR_SIGN']
         .every(function (k) { return typeof DX_NAMES[k] === 'string' && DX_NAMES[k].split(' ').length >= 3; }));
-    T('KA4 SL_BACK_DIRECTION is a stated omission', DX_NAMES.SL_BACK_DIRECTION === undefined && DX_NAMES.AV_DIV_ROWS === undefined);
+    T('KA4 SL_BACK_DIRECTION is a stated omission', DX_NAMES.SL_BACK_DIRECTION === undefined);
     T('KA5 every Book A gist is at most 28 characters', [OR, ORs, PK, SLq, PI, SC].every(function (qq) { return gist(qq).length <= 28; }));
     T('KA6 every wrong model board fails at least one unit',
       [OR, ORs, PK, SLq, SLd, PI, SC].every(function (qq) { return check(qq, { S: statsBoard(qq, true) }).res !== 'OK'; }));
     T('KA7 every right model board marks full',
       [OR, ORs, PK, SLq, SLd, SLp, PI, SC, SCy].every(function (qq) { var vv = check(qq, { S: statsBoard(qq, false) }); return vv.res === 'OK' && vv.mk[0] === vv.mkMax[0] && vv.mk[1] === vv.mkMax[1]; }));
+
+    /* ================= Book B (CONTRACT_B.md, 13 Sept 2026) ================= */
+
+    /* ---- table: the sweets (20 bags; 23..27 \u00d7 1,4,9,3,3) ---- */
+    var SW = { id: 'sw', kind: 'table', marks: [2, 3], prompt: 'p',
+               cols: [{ id: 'x', head: 'Number of sweets', given: [23, 24, 25, 26, 27] },
+                      { id: 'f', head: 'Frequency', given: [1, 4, 9, 3, 3] },
+                      { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }],
+               totals: ['f', 'fx'],
+               asks: [{ type: 'value', id: 'mean', label: 'Mean =', answer: { n: 503, d: 20 }, ft: 'sum(fx)/sum(f)' },
+                      { type: 'row', id: 'modal', label: 'Modal number of sweets', answer: 2 },
+                      { type: 'row', id: 'medianClass', label: 'Number containing the median', answer: 2 }] };
+    var Dsw = tableDerive(SW);
+    T('TB1 f \u00d7 x cells derive', Dsw.cells.fx.map(rnum).join(',') === '23,96,225,78,81');
+    T('TB2 totals derive', req(Dsw.totals.f, n(20)) && req(Dsw.totals.fx, n(503)));
+    T('TB3 the mean is \u03a3fx \u00f7 \u03a3f exactly', req(Dsw.mean, { n: 503, d: 20 }));
+    T('TB4 modal row = the largest frequency', Dsw.modalRow === 2);
+    T('TB5 median row: 20 bags, the 10.5th value \u2192 cf first \u2265 10.5 \u2192 row 2', Dsw.medianRow === 2);
+    T('TB6 units in table order then ask order',
+      unitsOf(SW).map(function (u) { return u.id; }).join(' ') === 'C_fx_0 C_fx_1 C_fx_2 C_fx_3 C_fx_4 T_f T_fx A_mean A_modal A_medianClass');
+    T('TB7 bands: cells and totals method (ft earns), asks accuracy; the value ask earns ft, a row ask does not',
+      unitsOf(SW).slice(0, 7).every(function (u) { return u.band === 'method' && u.ftEarns; }) &&
+      unitsOf(SW).slice(7).every(function (u) { return u.band === 'accuracy'; }) &&
+      unitsOf(SW)[7].ftEarns === true && unitsOf(SW)[8].ftEarns === false);
+    var swRight = { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 2, medianClass: 2 } };
+    v = check(SW, { S: swRight });
+    T('TB8 the sweets table right', v.res === 'OK' && mk(v, 2, 3) && v.mkLabels[0] === 'Table' && v.mkLabels[1] === 'Answers');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '80'] }, totals: { f: '20', fx: '502' }, asks: { mean: '25.1', modal: 2, medianClass: 2 } } });
+    T('TB9 one cell wrong; the total of THEIR column follows through', okAt(v, 4, 0) && okAt(v, 6, 2) && unit(v, 6).earned === 1);
+    T('TB10 the mean through their own \u03a3fx follows through and earns', okAt(v, 7, 2) && unit(v, 7).earned === 1);
+    T('TB11 res points at the first wrong unit', v.res === 'X@5');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '100.6', modal: 2, medianClass: 2 } } });
+    T('TB12 \u03a3fx \u00f7 the number of rows is AV_DIV_ROWS', dxAt(v, 7, 'AV_DIV_ROWS') && v.dx === 'AV_DIV_ROWS');
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25', modal: 2, medianClass: 2 } } });
+    T('TB13 \u03a3x \u00f7 rows (frequencies ignored) is AV_FX_NOT_SUMMED', dxAt(v, 7, 'AV_FX_NOT_SUMMED'));
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 2, medianClass: 3 } } });
+    T('TB14 the median row one off is AV_MEDIAN_CLASS_OFF', dxAt(v, 9, 'AV_MEDIAN_CLASS_OFF') && v.mk[1] === 2);
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: 1, medianClass: 0 } } });
+    T('TB15 the modal row one off has no name; two rows off is plain wrong', okAt(v, 8, 0) && !unit(v, 8).dx && okAt(v, 9, 0) && !unit(v, 9).dx);
+    v = check(SW, { S: { cells: { fx: ['23', '', '225', '78', '81'] }, totals: { f: '20' }, asks: { mean: '', modal: null, medianClass: 2 } } });
+    T('TB16 blanks are fail states with notes, never a crash',
+      unit(v, 1).note === 'left blank' && unit(v, 6).note === 'left blank' && unit(v, 7).note === 'left blank' && unit(v, 8).note === 'no row chosen');
+    T('TB17 a partial column cannot follow through into the mean', okAt(v, 7, 0));
+    v = check(SW, { S: { cells: { fx: ['23', '96', '225', '78', '81'] }, totals: { f: '20', fx: '503' }, asks: { mean: '25.15', modal: '2', medianClass: '2' } } });
+    T('TB18 row indices arrive as strings from the walker and still mark', v.res === 'OK');
+    T('TB19 sweets gist', gist(SW) === 'Mean from a table \u00b7 5 rows');
+    T('TB20 the right board marks full', check(SW, { S: statsBoard(SW, false) }).res === 'OK' && mk(check(SW, { S: statsBoard(SW, false) }), 2, 3));
+    v = check(SW, { S: statsBoard(SW, true) });
+    T('TB21 the wrong board is the mean \u00f7 rows with every cell right', v.res === 'X@8' && v.dx === 'AV_DIV_ROWS' && v.mk[0] === 2);
+    T('TB22 the board\u2019s S shape is the contract\u2019s',
+      JSON.stringify(statsBoard(SW, false)) === JSON.stringify(swRight));
+
+    /* ---- table: the cats (0..4 \u00d7 6,13,7,3,1 \u2192 40/30) ---- */
+    var CATq = { id: 'cat', kind: 'table', marks: [2, 1], prompt: 'p',
+                 cols: [{ id: 'x', head: 'Number of cats', given: [0, 1, 2, 3, 4] },
+                        { id: 'f', head: 'Frequency', given: [6, 13, 7, 3, 1] },
+                        { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }],
+                 totals: ['fx'],
+                 asks: [{ type: 'value', id: 'mean', label: 'Mean =', answer: { n: 4, d: 3 }, ft: 'sum(fx)/sum(f)', dp: 2 }] };
+    var Dcat = tableDerive(CATq);
+    T('TB23 cats: mean 40/30, modal row 1, median row 1 (n = 30, the 15.5th value)',
+      req(Dcat.mean, { n: 4, d: 3 }) && Dcat.modalRow === 1 && Dcat.medianRow === 1 && req(Dcat.totals.fx, n(40)));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '1.33' } } });
+    T('TB24 dp rounding: 1.33 is within the 2 dp rounding of 4/3', v.res === 'OK' && mk(v, 2, 1));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '1.3' } } });
+    T('TB25 dp rounding: 1.3 is not within 2 dp', okAt(v, 6, 0));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '8' } } });
+    T('TB26 cats: 40 \u00f7 5 rows is AV_DIV_ROWS', dxAt(v, 6, 'AV_DIV_ROWS'));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '4'] }, totals: { fx: '40' }, asks: { mean: '2' } } });
+    T('TB27 cats: (0+1+2+3+4) \u00f7 5 is AV_FX_NOT_SUMMED', dxAt(v, 6, 'AV_FX_NOT_SUMMED'));
+    v = check(CATq, { S: { cells: { fx: ['0', '13', '14', '9', '5'] }, totals: { fx: '41' }, asks: { mean: '1.37' } } });
+    T('TB28 the mean follows through their \u03a3fx over the given \u03a3f (41/30 \u2192 1.37)', okAt(v, 4, 0) && okAt(v, 5, 2) && okAt(v, 6, 2));
+    T('TB29 the wrong board of the cats is written to dp and still fires',
+      statsBoard(CATq, true).asks.mean === '8' && check(CATq, { S: statsBoard(CATq, true) }).dx === 'AV_DIV_ROWS');
+
+    /* ---- table: Heathrow delays (six classes 0-10 \u2026 50-60 \u00d7 27,10,7,5,4,2) ---- */
+    var HR = { id: 'hr', kind: 'table', marks: [3, 3], prompt: 'p',
+               cols: [{ id: 'cls', head: 'Delay (minutes)', given: [{ lo: 0, hi: 10, text: '0-10' }, { lo: 10, hi: 20, text: '10-20' }, { lo: 20, hi: 30, text: '20-30' },
+                                                                    { lo: 30, hi: 40, text: '30-40' }, { lo: 40, hi: 50, text: '40-50' }, { lo: 50, hi: 60, text: '50-60' }] },
+                      { id: 'f', head: 'Frequency', given: [27, 10, 7, 5, 4, 2] },
+                      { id: 'mid', head: 'Midpoint', derive: 'mid' },
+                      { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }],
+               totals: ['f', 'fx'],
+               asks: [{ type: 'value', id: 'mean', label: 'Estimated mean =', answer: { n: 925, d: 55 }, ft: 'sum(fx)/sum(f)', dp: 2 },
+                      { type: 'row', id: 'modal', label: 'Modal class', answer: 0 },
+                      { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }] };
+    var Dhr = tableDerive(HR);
+    T('TB30 midpoints derive from lo/hi', Dhr.cells.mid.map(rnum).join(',') === '5,15,25,35,45,55');
+    T('TB31 f \u00d7 x uses the midpoint when the table has one', Dhr.cells.fx.map(rnum).join(',') === '135,150,175,175,180,110' && req(Dhr.totals.fx, n(925)));
+    T('TB32 Heathrow: mean 925/55, modal 0-10, median 10-20 (n = 55, the 28th value: cf 27 then 37)',
+      req(Dhr.mean, { n: 185, d: 11 }) && Dhr.modalRow === 0 && Dhr.medianRow === 1);
+    T('TB33 Heathrow units: 12 cells, 2 totals, 3 asks', unitsOf(HR).length === 17 && unitsOf(HR)[6].id === 'C_fx_0' && unitsOf(HR)[12].id === 'T_f');
+    var hrCells = { mid: ['5', '15', '25', '35', '45', '55'], fx: ['135', '150', '175', '175', '180', '110'] };
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 1 } } });
+    T('TB34 Heathrow right, the mean to 2 dp', v.res === 'OK' && mk(v, 3, 3));
+    v = check(HR, { S: { cells: { mid: ['10', '20', '30', '40', '50', '60'], fx: ['270', '200', '210', '200', '200', '120'] }, totals: { f: '55', fx: '1200' }, asks: { mean: '21.82', modal: 0, medianClass: 1 } } });
+    T('TB35 upper bounds as midpoints: every mid cell AV_NO_MIDPOINT', [0, 1, 2, 3, 4, 5].every(function (i) { return dxAt(v, i, 'AV_NO_MIDPOINT'); }) && v.dx === 'AV_NO_MIDPOINT');
+    T('TB36 f \u00d7 THEIR wrong midpoint still earns the multiplication', [6, 7, 8, 9, 10, 11].every(function (i) { return okAt(v, i, 2) && unit(v, i).earned === 1; }));
+    T('TB37 the total of their fx column and the mean through it follow through', okAt(v, 13, 2) && okAt(v, 14, 2) && mk(v, 3, 3));
+    v = check(HR, { S: { cells: { mid: ['0', '10', '20', '30', '40', '50'], fx: ['0', '100', '140', '150', '160', '100'] }, totals: { f: '55', fx: '650' }, asks: { mean: '11.82', modal: 0, medianClass: 1 } } });
+    T('TB38 lower bounds as midpoints are AV_NO_MIDPOINT too', dxAt(v, 0, 'AV_NO_MIDPOINT') && dxAt(v, 5, 'AV_NO_MIDPOINT'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '30', modal: 0, medianClass: 1 } } });
+    T('TB39 \u03a3mid \u00f7 rows (180 \u00f7 6 = 30) is AV_FX_NOT_SUMMED', dxAt(v, 14, 'AV_FX_NOT_SUMMED'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '154.17', modal: 0, medianClass: 1 } } });
+    T('TB40 \u03a3fx \u00f7 rows to 2 dp (925 \u00f7 6 = 154.17) is AV_DIV_ROWS', dxAt(v, 14, 'AV_DIV_ROWS'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 2 } } });
+    T('TB41 Heathrow median class one row off', dxAt(v, 16, 'AV_MEDIAN_CLASS_OFF'));
+    v = check(HR, { S: { cells: hrCells, totals: { f: '55', fx: '925' }, asks: { mean: '16.82', modal: 0, medianClass: 0 } } });
+    T('TB42 the median class one row BELOW is off by one too', dxAt(v, 16, 'AV_MEDIAN_CLASS_OFF'));
+    T('TB43 Heathrow gist and boards', gist(HR) === 'Mean from a table \u00b7 6 rows' &&
+      check(HR, { S: statsBoard(HR, false) }).res === 'OK' && check(HR, { S: statsBoard(HR, true) }).dx === 'AV_DIV_ROWS');
+
+    /* ---- table: a cumulative column, and a table with no value ask ---- */
+    var CFt = { id: 'cft', kind: 'table', marks: [3, 1], prompt: 'p',
+                cols: [{ id: 'cls', head: 'Time (s)', given: [{ lo: 0, hi: 10, text: '0 < t \u2264 10' }, { lo: 10, hi: 20, text: '10 < t \u2264 20' }, { lo: 20, hi: 30, text: '20 < t \u2264 30' }, { lo: 30, hi: 40, text: '30 < t \u2264 40' }] },
+                       { id: 'f', head: 'Frequency', given: [3, 8, 6, 3] },
+                       { id: 'cf', head: 'Cumulative frequency', derive: 'cum' }],
+                asks: [{ type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }] };
+    T('TB44 the cumulative column derives', tableDerive(CFt).cells.cf.map(rnum).join(',') === '3,11,17,20' && tableDerive(CFt).medianRow === 1);
+    v = check(CFt, { S: { cells: { cf: ['3', '10', '16', '19'] }, asks: { medianClass: 1 } } });
+    T('TB45 a cf slip carries: row 2 wrong, rows 3 and 4 = their previous + f follow through', okAt(v, 1, 0) && okAt(v, 2, 2) && okAt(v, 3, 2) && mk(v, 3, 1));
+    T('TB46 row 1 of a cf column follows nothing', okAt(check(CFt, { S: { cells: { cf: ['4', '12', '18', '21'] }, asks: { medianClass: 1 } } }), 0, 0));
+    T('TB47 no value ask: the wrong board is the median row one off',
+      statsBoard(CFt, true).asks.medianClass === 2 && check(CFt, { S: statsBoard(CFt, true) }).dx === 'AV_MEDIAN_CLASS_OFF');
+    T('TB48 a grouped table with no value ask says so in its gist', gist(CFt) === 'Grouped table \u00b7 4 classes');
+    T('TB49 table is a stat kind with a two-word tally', isStatKind('table') && MK_LABELS.table[0] === 'Table' && KINDS_LIST.length === 14);
+
+    /* ---- values: the four averages of a printed list (7, 3, 9, 3, 5, 8 \u2192 mean 35/6 is NOT used; 6, 3, 9, 3, 4 \u2192 5) ---- */
+    var LS = listStats([6, 3, 9, 3, 4]);
+    T('LS1 listStats mean, median, mode, range', req(LS.mean, n(5)) && req(LS.median, n(4)) && LS.mode.length === 1 && req(LS.mode[0], n(3)) && req(LS.range, n(6)));
+    T('LS2 two modes come back as two', listStats([1, 1, 2, 2, 3]).mode.map(rnum).join(',') === '1,2');
+    T('LS3 every value once: no mode', listStats([1, 2, 3]).mode.length === 0);
+    T('LS4 one value repeated is the mode', listStats([4, 4, 4]).mode.length === 1 && req(listStats([4, 4, 4]).mode[0], n(4)));
+    T('LS5 decimals stay exact', req(listStats([1.5, 2.5]).mean, n(2)) && req(listStats([1.5, 2.5]).range, n(1)));
+    var LQ = { id: 'lq', kind: 'values', marks: [2, 2], prompt: 'p', fig: { type: 'list', values: [6, 3, 9, 3, 4] },
+               slots: [{ id: 'mean', stat: 'mean', label: 'Mean', answer: { n: 5, d: 1 }, earns: 'method', ft: { rule: 'avg.mean' } },
+                       { id: 'median', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' },
+                       { id: 'mode', stat: 'mode', label: 'Mode', answer: { n: 3, d: 1 }, earns: 'accuracy' },
+                       { id: 'range', stat: 'range', label: 'Range', answer: { n: 6, d: 1 }, earns: 'accuracy' }] };
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '3', range: '6' } } });
+    T('AV1 the four averages right: no slip fires on a right answer', v.res === 'OK' && mk(v, 2, 2) && v.perLine.every(function (u) { return !u.dx; }));
+    v = check(LQ, { S: { v: { mean: '5', median: '9', mode: '3', range: '6' } } });
+    T('AV2 the middle of the PRINTED list (9) is AV_MEDIAN_UNORDERED', dxAt(v, 1, 'AV_MEDIAN_UNORDERED'));
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '2', range: '6' } } });
+    T('AV3 the highest frequency (2) as the mode is AV_MODE_AS_FREQ', dxAt(v, 2, 'AV_MODE_AS_FREQ'));
+    v = check(LQ, { S: { v: { mean: '5', median: '4', mode: '3', range: '9' } } });
+    T('AV4 the maximum as the range is AV_RANGE_NOT_DIFF', dxAt(v, 3, 'AV_RANGE_NOT_DIFF'));
+    T('AV5 the minimum, and max + min, are AV_RANGE_NOT_DIFF too',
+      check(LQ, { S: { v: { range: '3' } } }).perLine[3].dx === 'AV_RANGE_NOT_DIFF' && check(LQ, { S: { v: { range: '12' } } }).perLine[3].dx === 'AV_RANGE_NOT_DIFF');
+    v = check(LQ, { S: { v: { mean: '6.25', median: '4', mode: '3', range: '6' } } });
+    T('AV6 the sum \u00f7 the DISTINCT values (25 \u00f7 4) is AV_DIV_ROWS', dxAt(v, 0, 'AV_DIV_ROWS'));
+    v = check(LQ, { S: { v: { mean: '7', median: '5', mode: '4', range: '5' } } });
+    T('AV7 a plain wrong answer carries no slip name', v.res === 'X@1' && v.perLine.every(function (u) { return !u.dx; }));
+    T('AV8 a slot with no stat never names an averages slip',
+      check({ kind: 'values', marks: [1, 0], fig: { type: 'list', values: [6, 3, 9, 3, 4] }, slots: [{ id: 'a', label: 'A', answer: { n: 4, d: 1 }, earns: 'method' }] }, { S: { v: { a: '9' } } }).dx === null);
+    T('AV9 a list already in order makes the median slip invisible (no false name)',
+      check({ kind: 'values', marks: [1, 0], fig: { type: 'list', values: [3, 3, 4, 6, 9] }, slots: [{ id: 'm', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' }] }, { S: { v: { m: '5' } } }).dx === null);
+    v = check(LQ, { S: statsBoard(LQ, true) });
+    T('AV10 the wrong list board is the first slot\u2019s own slip (mean \u00f7 distinct) and fails it with the name',
+      statsBoard(LQ, true).v.mean === '6.25' && v.res === 'X@1' && v.dx === 'AV_DIV_ROWS');
+    T('AV11 the right list board marks full', check(LQ, { S: statsBoard(LQ, false) }).res === 'OK');
+    var LQm = { id: 'lqm', kind: 'values', marks: [1, 1], fig: { type: 'list', values: [6, 3, 9, 3, 4] },
+                slots: [{ id: 'median', stat: 'median', label: 'Median', answer: { n: 4, d: 1 }, earns: 'method' },
+                        { id: 'range', stat: 'range', label: 'Range', answer: { n: 6, d: 1 }, earns: 'accuracy' }] };
+    T('AV12 a median-first board slips the printed-order median', statsBoard(LQm, true).v.median === '9' && check(LQm, { S: statsBoard(LQm, true) }).dx === 'AV_MEDIAN_UNORDERED');
+    T('AV13 every AV_*/RM_* id has a plain-English name',
+      ['AV_DIV_ROWS', 'AV_MEDIAN_UNORDERED', 'AV_MODE_AS_FREQ', 'AV_RANGE_NOT_DIFF', 'AV_NO_MIDPOINT', 'AV_FX_NOT_SUMMED', 'AV_MEDIAN_CLASS_OFF', 'RM_AVERAGED_MEANS', 'RM_WRONG_N']
+        .every(function (k) { return typeof DX_NAMES[k] === 'string' && DX_NAMES[k].split(' ').length >= 3; }));
+    T('AV14 the list gist', gist(LQ) === '4 values to find');
+
+    /* ---- reverse mean: 4 girls mean 10, a fifth aged 5 joins \u2192 9 ---- */
+    var RMq = { id: 'rm', kind: 'values', marks: [1, 1], prompt: 'p',
+                slots: [{ id: 'total', stat: 'total', label: 'Total of the 4 ages', answer: { n: 40, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 10, n: 4 } },
+                        { id: 'newMean', stat: 'newMean', label: 'New mean', answer: { n: 9, d: 1 }, earns: 'accuracy', ft: { rule: 'rm.newMean', from: ['total'], x: 5, n: 5 } }] };
+    v = check(RMq, { S: { v: { total: '40', newMean: '9' } } });
+    T('RM1 the reverse mean right, no slip named', v.res === 'OK' && mk(v, 1, 1) && !v.dx);
+    v = check(RMq, { S: { v: { total: '44', newMean: '9.8' } } });
+    T('RM2 a wrong total carried into (their 44 + 5) \u00f7 5 follows through', okAt(v, 0, 0) && okAt(v, 1, 2) && v.res === 'X@1');
+    v = check(RMq, { S: { v: { total: '40', newMean: '7.5' } } });
+    T('RM3 (10 + 5) \u00f7 2 is RM_AVERAGED_MEANS', dxAt(v, 1, 'RM_AVERAGED_MEANS'));
+    v = check(RMq, { S: { v: { total: '40', newMean: '11.25' } } });
+    T('RM4 (40 + 5) \u00f7 the OLD 4 is RM_WRONG_N', dxAt(v, 1, 'RM_WRONG_N'));
+    v = check(RMq, { S: { v: { total: '44', newMean: '12.25' } } });
+    T('RM5 RM_WRONG_N reads THEIR total ((44 + 5) \u00f7 4)', dxAt(v, 1, 'RM_WRONG_N'));
+    T('RM6 the wrong reverse-mean board is RM_WRONG_N',
+      statsBoard(RMq, true).v.newMean === '11.25' && check(RMq, { S: statsBoard(RMq, true) }).dx === 'RM_WRONG_N');
+    var RMm = { id: 'rmm', kind: 'values', marks: [1, 1],
+                slots: [{ id: 'total', stat: 'total', label: 'Total', answer: { n: 40, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 10, n: 4 } },
+                        { id: 'newMean', stat: 'newMean', label: 'New mean', answer: { n: 11, d: 1 }, earns: 'accuracy', ft: { rule: 'rm.newMean', from: ['total'], x: 7, n: 3, minus: true } }] };
+    T('RM7 a value removed: (40 \u2212 7) \u00f7 3 = 11; (40 \u2212 7) \u00f7 4 is RM_WRONG_N',
+      check(RMm, { S: { v: { total: '40', newMean: '11' } } }).res === 'OK' && check(RMm, { S: { v: { total: '40', newMean: '8.25' } } }).dx === 'RM_WRONG_N');
+    /* the laps: 8 laps mean 48.2 s; after 2 more the mean is 49.4 s; the two laps' mean = (494 \u2212 385.6) \u00f7 2 = 54.2 */
+    var LAP = { id: 'lap', kind: 'values', marks: [2, 1], prompt: 'p',
+                slots: [{ id: 'total8', stat: 'total', label: 'Total of 8 laps', answer: { n: 1928, d: 5 }, earns: 'method', ft: { rule: 'rm.total', mean: 48.2, n: 8 } },
+                        { id: 'total10', stat: 'total', label: 'Total of 10 laps', answer: { n: 494, d: 1 }, earns: 'method', ft: { rule: 'rm.total', mean: 49.4, n: 10 } },
+                        { id: 'extra', stat: 'newMean', label: 'Mean of the two laps', answer: { n: 271, d: 5 }, earns: 'accuracy',
+                          ft: { rule: 'rm.newMean', from: ['total10'], xFrom: 'total8', minus: true, n: 2, oldN: 8, oldMean: 48.2 } }] };
+    v = check(LAP, { S: { v: { total8: '385.6', total10: '494', extra: '54.2' } } });
+    T('RM8 the laps chain right (385.6, 494, 54.2)', v.res === 'OK' && mk(v, 2, 1));
+    v = check(LAP, { S: { v: { total8: '385', total10: '494', extra: '54.5' } } });
+    T('RM9 the laps follow through BOTH their totals: (494 \u2212 their 385) \u00f7 2', okAt(v, 0, 0) && okAt(v, 2, 2));
+    v = check(LAP, { S: { v: { total8: '385.6', total10: '494', extra: '13.55' } } });
+    T('RM10 the laps over the old 8 is RM_WRONG_N', dxAt(v, 2, 'RM_WRONG_N'));
+    T('RM11 the laps right board marks full', check(LAP, { S: statsBoard(LAP, false) }).res === 'OK');
+    T('RM12 the follow-through rule table is still ten ids', Object.keys(FT_RULES).length === 10);
+
+    /* ---- constraint sets: five numbers with mean 6, median 5, mode 4 ---- */
+    var CS = { id: 'cs', kind: 'values', marks: [1, 0], prompt: 'p',
+               slots: [{ id: 'set', label: 'Five numbers', set: 5, answer: { constraints: { n: 5, mean: 6, median: 5, mode: 4 } }, earns: 'method' }] };
+    T('CS1 [4, 4, 5, 8, 9] meets mean 6, median 5, mode 4', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '9'] } } }).res === 'OK');
+    T('CS2 [4, 4, 5, 7, 10] is a second solution', check(CS, { S: { v: { set_set: ['4', '4', '5', '7', '10'] } } }).res === 'OK');
+    T('CS3 near miss: [4, 5, 5, 8, 8] has two modes', check(CS, { S: { v: { set_set: ['4', '5', '5', '8', '8'] } } }).res === 'X@1');
+    T('CS4 near miss: [4, 4, 6, 8, 8] has median 6', check(CS, { S: { v: { set_set: ['4', '4', '6', '8', '8'] } } }).res === 'X@1');
+    T('CS5 near miss: [4, 4, 5, 8, 10] has mean 6.2', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '10'] } } }).res === 'X@1');
+    T('CS6 four numbers when five were asked', check(CS, { S: { v: { set_set: ['4', '4', '5', '11'] } } }).res === 'X@1');
+    T('CS7 an empty set is left blank, not a crash', check(CS, { S: { v: {} } }).perLine[0].note === 'left blank' && check(CS, { S: { v: { set_set: [] } } }).perLine[0].note === 'left blank');
+    T('CS8 the set is read from S.v[id + "_set"] even when S.v[id] is absent', check(CS, { S: { v: { set_set: ['4', '4', '5', '8', '9'] } } }).perLine[0].ok === 1);
+    T('CS9 the right board builds a satisfying set; the wrong board breaks it',
+      check(CS, { S: statsBoard(CS, false) }).res === 'OK' && statsBoard(CS, false).v.set_set.length === 5 && check(CS, { S: statsBoard(CS, true) }).res === 'X@1');
+    T('CS10 a range constraint holds too',
+      check({ kind: 'values', marks: [1, 0], slots: [{ id: 's', label: 'S', answer: { constraints: { n: 3, range: 4, median: 2 } }, earns: 'method' }] }, { S: { v: { s_set: ['1', '2', '5'] } } }).res === 'OK');
 
     /* ---- rationals and rounding ---- */
     T('RT1 a terminating decimal is recognised', terminates(rat(1, 4)) === true);
@@ -7195,6 +7882,9 @@ function statsBoard(q, wrong) {
     leastSquares: leastSquares,
     lineY: lineY,
     lineX: lineX,
+    /* Book B's helpers (the lint and the table renderer's truth) */
+    tableDerive: tableDerive,
+    listStats: listStats,
     KINDS: KINDS_LIST.slice(),
     DEFAULT_RULES: DEFAULT_RULES,
     FT_RULE_IDS: Object.keys(FT_RULES),
@@ -8851,6 +9541,616 @@ function statsBoard(q, wrong) {
               { text: 'So the correlation between age and value is\u2026', options: ['Positive', 'Negative', 'No correlation'], verdict: 'Negative' }
             ],
             src: 'Statistics M7 (1).pdf Q27(a)' }
+        ]
+      }
+    ]
+  };
+})();
+
+</script>
+<script>
+/* MathShelf \u2014 content pack: Handling Data \u00b7 Book B ("Averages").
+   Sources: stats_sources/ (Colette's files; transcriptions in SOURCE_INVENTORY.md
+   \u00a71.4 "Data Collection and analysis Booklet no answers.docx" and \u00a71.9
+   "Statistics M7 (1).pdf"). Every dataset below is copied from a named source
+   item; nothing is invented. Where the inventory's transcription needed
+   confirming, the booklet's own images were extracted (unzip -j 'word/media/*'
+   into tools/qa/out/bookB/pages/) and read directly \u2014 see CONTENT_NOTES.md for
+   the full evidence log (image3 definitions poster, image5 advantages/
+   disadvantages table, image25 the two T/F/NEI tables, all quoted verbatim
+   from the rendered PNGs).
+   Conventions: quartileRule 'n+1', curveRule 'split50' \u2014 inherited unused
+   defaults, deep-equal to Book A/C's rules object (this book adds no
+   qlist/cfplot content of its own).
+   Authoring note (13 Sept 2026, per the build coordinator, mid-session): the
+   engine (statcore.js) has landed the `table` kind and its FT rules; the
+   structural lint (dev/lint-content-stats.js) has not yet added `table` to
+   its KINDS whitelist nor a `proof` re-derivation checker for `judge`
+   claims \u2014 both are LINT-B's, landing in parallel. This pack is authored to
+   the CONTRACT_B.md / engine shape now, including the `proof` metadata each
+   judge claim will need once that checker lands (never consulted by the
+   pupil-facing engine itself \u2014 statcore.js grades a judge claim from
+   `options`/`verdict` alone, exactly as Books A/C do). Every `proof` here is
+   documented against its own hand-worked arithmetic in CONTENT_NOTES.md. */
+(function () {
+  'use strict';
+
+  window.GJ_CONTENT = window.GJ_CONTENT || {};
+  window.GJ_CONTENT['stats-averages'] = {
+    id: 'stats-averages',
+    title: 'Handling Data \u00b7 Averages',
+    cover: { accent: 'copper', motif: 'table-bar' },
+    engine: 'stats',
+    rules: {
+      quartileRule: 'n+1',
+      curveRule: 'split50',
+      startPoint: true,
+      curveStyle: 'smooth',
+      readTol: 1,
+      plotTol: 0
+    },
+
+    /* Places where the pack's own wording is authored narration rather than a
+       direct quote from a source \u2014 see CONTENT_NOTES.md for the full log. */
+    authoredNarration: [
+      's1 movie: the four definitions (image3, a screenshot poster) are quoted near-verbatim in her register ("The mode is the value that appears most often", "The range is the difference between the lowest value and the highest value", "The median is the middle number in a list of numbers ordered from lowest to highest", "The mean is the total of all the values, divided by the number of values") \u2014 read directly from tools/qa/out/bookB/pages/image3.png; the rhyme (image6) is quoted exactly as printed as the film\'s one red note',
+      's1 movie: the connective sentences walking through image4\'s list (13,18,13,14,13,16,14,21,13) are the pack\'s own phrasing; the data and every computed value (mode 13, median 14, mean 15, range 8) are the booklet\'s own',
+      's2 movie: "find the total first" is the pack\'s own naming of the booklet\'s reverse-mean method (image10); the arithmetic (4\u00d710=40, 40+5=45, 45\u00f75=9) is the booklet\'s own worked example',
+      's3 movie: the method narration (the f\u00d7x column filling, "add each column, then divide") is authored; the sweets data and its true mean (503\u00f720=25.15) are Corbett\'s own (image12)',
+      's4 movie: the method narration (midpoints, ringing the modal/median rows) is authored; the Heathrow data and its true mean/modal/median class (925\u00f755=16.8; 0\u201310; 10\u201320, "the 28th value") are the booklet\'s own (images 16\u201318)',
+      's5 movie: the advantages/disadvantages wording is read directly from image5 (tools/qa/out/bookB/pages/image5.png) and lightly condensed into her register; the \u00a3110 wage case and its four true effects (mean down, mode same, median down, range up) are M7 Q5\'s own; the bread-prices table and its three judged claims are image25\'s own (right-hand table), read directly from the rendered PNG',
+      's5 q1 (M7 Q30(b), 4.6\u21924.5): Book A already authored this exact item as its own q23 (the babies\' stem-and-leaf, "the mean only changes"); \u00a718.2 s5 q1 names it again for Book B, worded differently here as four Changes/Stays-the-same claims rather than Book A\'s four options-per-claim phrasing \u2014 same source, same re-derived truth, different question shape',
+      's5 q2 (M7 Q22): the range/mean "changes" claims are proved here from the grouped table\'s own ESTIMATION method (each class stands in for its midpoint, repeated by its frequency) \u2014 this is not an invented dataset, it is the standard grouped-mean method the section\'s own movie teaches, applied to prove a before/after change; the two added scores (21, 39) both fall inside the existing class 20\u2264x<40, so that class\'s frequency rises by 2, exactly as M7\'s own printed scenario describes',
+      's5 q3 (salaries extension, Mean/Median): the `proof:{kind:\'compareAverage\'}` shape names two positional slots \'A\'/\'B\'; for a single-dataset Mean-vs-Median claim (not a two-group comparison) this pack maps option order onto them positionally \u2014 options[0] (\'Mean\') = \'A\', options[1] (\'Median\') = \'B\' \u2014 documented here since the coordinator\'s shape was specified for A/B group comparisons and this is the nearest fit for a same-dataset either/or claim',
+      's5 q4 (Alma\'s seedlings) and its `data` table: read directly from image25 (left-hand table), tools/qa/out/bookB/pages/image25.png',
+      's2 reserve grid8/grid10: authored using the `rm.newMean` FT rule with a constant `x` standing in for a second known total (grid10\'s adults\' total, 140) \u2014 an honest reuse of the closed table\'s (total \u00b1 x) \u00f7 n shape, not a new rule'
+    ],
+
+    sections: [
+
+      /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 s1 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+      {
+        id: 's1',
+        title: 'Mean, median, mode and range',
+        /* No source states a WALT for this topic \u2014 authored in her register
+           from the section title (CONTENT_NOTES.md flags this). */
+        walt: 'Find the mean, median, mode and range of a list, and work back from a missing value',
+        movie: {
+          title: 'Four averages, one list',
+          src: 'Data Collection and analysis Booklet no answers.docx (1.4) images 3, 4, 6',
+          mode: 'paper',
+          steps: [
+            { say: 'Mean, median and mode are all types of average \u2014 one number that sums up a whole list.',
+              do: [{ stamp: { text: 'An average is one number that sums up a whole list.' } }] },
+            { say: 'Nine numbers, exactly as printed.',
+              do: [{ write: { text: '13, 18, 13, 14, 13, 16, 14, 21, 13' } }] },
+            { say: 'Put them in order, smallest to largest.',
+              do: [{ write: { text: '13, 13, 13, 13, 14, 14, 16, 18, 21' } }] },
+            { say: 'The mode is the value that appears most often \u2014 13, four times.',
+              do: [{ ring: { i: 0 } }] },
+            { say: 'The median is the middle number once they are in order.',
+              do: [{ ring: { i: 4 } }] },   /* one middle value on an odd count: the ring IS the bracket (player.js has no bracket op \u2014 orchestrator, 13 Sept) */
+            { say: 'The mean is the total of all the values, divided by the number of values.',
+              do: [{ write: { text: '13+13+13+13+14+14+16+18+21 = 135' } }] },
+            { say: 'Nine values, so divide the total by 9.',
+              do: [{ write: { text: '135 \u00f7 9 = 15' } }] },
+            { say: 'The range is the difference between the lowest value and the highest value.',
+              do: [{ write: { text: '21 \u2212 13 = 8' } }] },
+            { say: 'Her own rhyme for keeping the four apart.',
+              do: [{ note: { red: true, text: 'Mode, Mode, Mode the Most. Range is High to Low. Median\'s in the middle, of an Ordered Row.' } }] }
+          ]
+        },
+        questions: [
+          { id: 'q1', kind: 'values', marks: [1, 2],
+            prompt: 'Find the mean, median, mode and range of this list of values.',
+            fig: { type: 'list', values: [3, 12, 4, 6, 8, 5, 4] },
+            slots: [
+              { id: 'mean', label: 'Mean', stat: 'mean', answer: { n: 6, d: 1 }, earns: 'method' },
+              { id: 'median', label: 'Median', stat: 'median', answer: { n: 5, d: 1 }, earns: 'accuracy' },
+              { id: 'mode', label: 'Mode', stat: 'mode', answer: { n: 4, d: 1 }, earns: 'accuracy' },
+              { id: 'range', label: 'Range', stat: 'range', answer: { n: 9, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['mean', 'median', 'mode', 'range'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image6 worksheet (a)' },
+          { id: 'q2', kind: 'values', marks: [1, 2],
+            prompt: 'Find the mean, median, mode and range of this list of values.',
+            fig: { type: 'list', values: [7, 21, 2, 17, 3, 13, 7, 4, 9, 7, 9] },
+            slots: [
+              { id: 'mean', label: 'Mean', stat: 'mean', answer: { n: 9, d: 1 }, earns: 'method' },
+              { id: 'median', label: 'Median', stat: 'median', answer: { n: 7, d: 1 }, earns: 'accuracy' },
+              { id: 'mode', label: 'Mode', stat: 'mode', answer: { n: 7, d: 1 }, earns: 'accuracy' },
+              { id: 'range', label: 'Range', stat: 'range', answer: { n: 19, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['mean', 'median', 'mode', 'range'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image6 worksheet (b)' },
+          { id: 'q3', kind: 'values', marks: [1, 2],
+            prompt: 'Find the mean, median, mode and range of this list of values.',
+            fig: { type: 'list', values: [12, 1, 10, 1, 9, 3, 4, 9, 7, 9] },
+            slots: [
+              { id: 'mean', label: 'Mean', stat: 'mean', answer: { n: 13, d: 2 }, earns: 'method', decimal: true },
+              { id: 'median', label: 'Median', stat: 'median', answer: { n: 8, d: 1 }, earns: 'accuracy' },
+              { id: 'mode', label: 'Mode', stat: 'mode', answer: { n: 9, d: 1 }, earns: 'accuracy' },
+              { id: 'range', label: 'Range', stat: 'range', answer: { n: 11, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['mean', 'median', 'mode', 'range'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image6 worksheet (c)' },
+          { id: 'q4', kind: 'values', marks: [1, 2],
+            prompt: 'Find the mean, median, mode and range of this list of values.',
+            fig: { type: 'list', values: [8, 0, 3, 3, 1, 7, 4, 1, 4, 4] },
+            slots: [
+              { id: 'mean', label: 'Mean', stat: 'mean', answer: { n: 7, d: 2 }, earns: 'method', decimal: true },
+              { id: 'median', label: 'Median', stat: 'median', answer: { n: 7, d: 2 }, earns: 'accuracy', decimal: true },
+              { id: 'mode', label: 'Mode', stat: 'mode', answer: { n: 4, d: 1 }, earns: 'accuracy' },
+              { id: 'range', label: 'Range', stat: 'range', answer: { n: 8, d: 1 }, earns: 'accuracy', dx: false }
+            ],
+            order: ['mean', 'median', 'mode', 'range'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image6 worksheet (d); range slot carries dx:false \u2014 the printed list\'s minimum is 0, so the AV_RANGE_NOT_DIFF slip (max, min, or max+min) collides with the true range (8) on this exact list; a property of the source data, waived rather than forced' },
+          { id: 'q5', kind: 'values', marks: [1, 1],
+            prompt: 'Find the missing value in each list. The mean of 3, 5, 6 and ? is 6. The mean of 7, 8, 4 and ? is 8.',
+            slots: [
+              { id: 'missing1', label: 'First missing value', stat: 'missing', answer: { n: 10, d: 1 }, earns: 'method' },
+              { id: 'missing2', label: 'Second missing value', stat: 'missing', answer: { n: 13, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['missing1', 'missing2'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image6 (e) and (f)' },
+          { id: 'q6', kind: 'values', marks: [2, 2] /* range slot carries w:2, matching the source's [4] total */,
+            prompt: 'Alice has five cards, each with a number on them. Three of the numbers are shown: 3, 8, ?, 5, ?. The mode of the five numbers is 5. The mean of the five numbers is 6. Work out the range of the five numbers. You must show your working.',
+            slots: [
+              { id: 'missA', label: 'One missing card is', stat: 'missing', answer: { n: 5, d: 1 }, earns: 'method' },
+              { id: 'missB', label: 'The other missing card is', stat: 'missing', answer: { n: 9, d: 1 }, earns: 'method' },
+              { id: 'range', label: 'Range', stat: 'range', answer: { n: 6, d: 1 }, earns: 'accuracy', w: 2 }
+            ],
+            order: ['missA', 'missB', 'range'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image8' },
+
+          { id: 'q7', kind: 'values', marks: [0, 2], reserve: true,
+            prompt: 'Write five numbers so that the mean is 6, the median is 5 and the mode is 4. Then write five different numbers so that the mean, median, mode and range are all 4.',
+            slots: [
+              { id: 'setA', label: 'Five numbers: mean 6, median 5, mode 4', answer: { constraints: { n: 5, mean: 6, median: 5, mode: 4 } }, set: 5, earns: 'accuracy' },
+              { id: 'setB', label: 'Five numbers: mean, median, mode and range all 4', answer: { constraints: { n: 5, mean: 4, median: 4, mode: 4, range: 4 } }, set: 5, earns: 'accuracy' }
+            ],
+            order: ['setA', 'setB'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image7 (g) and (h, mislabelled "a")' }
+        ]
+      },
+
+      /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 s2 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+      {
+        id: 's2',
+        title: 'Reverse mean',
+        walt: 'Work backwards from a mean to find a total, and use it to find a new mean',
+        movie: {
+          title: 'Find the total first',
+          src: 'Data Collection and analysis Booklet no answers.docx (1.4) image10',
+          mode: 'paper',
+          steps: [
+            { say: 'Four girls have a mean age of 10.',
+              do: [{ write: { text: '4 girls, mean age 10' } }] },
+            { say: 'Turn the mean back into a total first: 4 girls times the mean age.',
+              do: [{ write: { text: '4 \u00d7 10 = 40' } }] },
+            { say: 'A fifth girl joins them, aged 5. Add her age to the total.',
+              do: [{ write: { text: '40 + 5 = 45' } }] },
+            { say: 'Now share the new total between the new number of girls.',
+              do: [{ write: { text: '45 \u00f7 5 = 9' } }] },
+            { say: 'Find the total first \u2014 that is the whole method, every time.',
+              do: [{ box: { line: 3 } }] },
+            { say: 'Every reverse-mean question follows the same three lines.',
+              do: [{ note: { red: true, text: 'Find the total first, then share it out again by the new number.' } }] }
+          ]
+        },
+        questions: [
+          { id: 'q8', kind: 'values', marks: [1, 1],
+            prompt: 'The mean age of 2 girls is 8. Another girl aged 5 joins them. Find the mean age of the 3 girls.',
+            slots: [
+              { id: 'total', label: 'Total age of the 2 girls', stat: 'total', answer: { n: 16, d: 1 }, earns: 'method' },
+              { id: 'newMean', label: 'New mean age of 3', stat: 'newMean', answer: { n: 7, d: 1 }, earns: 'accuracy',
+                ft: { rule: 'rm.newMean', from: ['total'], x: 5, n: 3 } }
+            ],
+            order: ['total', 'newMean'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 1' },
+          { id: 'q9', kind: 'values', marks: [1, 1],
+            prompt: 'The mean number of goals for 3 players is 18. A fourth player, who scored 6 goals, joins them. Find the new mean number of goals for the 4 players.',
+            slots: [
+              { id: 'total', label: 'Total goals of the 3 players', stat: 'total', answer: { n: 54, d: 1 }, earns: 'method' },
+              { id: 'newMean', label: 'New mean of 4', stat: 'newMean', answer: { n: 15, d: 1 }, earns: 'accuracy',
+                ft: { rule: 'rm.newMean', from: ['total'], x: 6, n: 4 } }
+            ],
+            order: ['total', 'newMean'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 2' },
+          { id: 'q10', kind: 'values', marks: [1, 1],
+            prompt: 'The mean of 3 numbers is 15. A number is added, and the new mean of the 4 numbers is 12. Find the number that was added.',
+            slots: [
+              { id: 'total', label: 'Total before the number is added', stat: 'total', answer: { n: 45, d: 1 }, earns: 'method' },
+              { id: 'added', label: 'The number added', stat: 'missing', answer: { n: 3, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['total', 'added'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 4' },
+          { id: 'q11', kind: 'values', marks: [1, 1],
+            prompt: 'The mean of 5 numbers is 30. A number is removed, and the mean of the remaining 4 numbers is 25. Find the number that was removed.',
+            slots: [
+              { id: 'total', label: 'Total of all five before one is removed', stat: 'total', answer: { n: 150, d: 1 }, earns: 'method' },
+              { id: 'removed', label: 'The number removed', stat: 'missing', answer: { n: 50, d: 1 }, earns: 'accuracy' }
+            ],
+            order: ['total', 'removed'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 7' },
+          { id: 'q12', kind: 'values', marks: [1, 1],
+            prompt: 'The mean age of 9 boys is 10. The mean age of 9 girls is 15. Find the mean age of all 18 boys and girls together.',
+            slots: [
+              { id: 'boysTotal', label: 'Total age of the 9 boys', stat: 'total', answer: { n: 90, d: 1 }, earns: 'method' },
+              { id: 'mean18', label: 'Mean age of all 18', stat: 'newMean', answer: { n: 25, d: 2 }, earns: 'accuracy', decimal: true,
+                ft: { rule: 'rm.newMean', from: ['boysTotal'], x: 135, n: 18 } }
+            ],
+            order: ['boysTotal', 'mean18'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 9' },
+          { id: 'q13', kind: 'values', marks: [2, 1],
+            prompt: 'A girl runs 8 laps of a track in an average time of 48.2 seconds per lap. After completing another 2 laps, her overall average time is 49.4 seconds per lap. Calculate her average time per lap for the last 2 laps.',
+            slots: [
+              { id: 'total10', label: 'Total time for all 10 laps', stat: 'total', answer: { n: 494, d: 1 }, earns: 'method', decimal: true },
+              { id: 'last2Total', label: 'Total time for the last 2 laps', stat: 'total', answer: { n: 542, d: 5 }, earns: 'method', decimal: true },
+              { id: 'perLap', label: 'Average time per lap for the last 2 laps', stat: 'newMean', answer: { n: 271, d: 5 }, earns: 'accuracy', decimal: true,
+                ft: { rule: 'rm.newMean', from: ['last2Total'], x: 0, n: 2 } }
+            ],
+            order: ['total10', 'last2Total', 'perLap'],
+            src: 'Statistics M7 (1).pdf Q6' },
+
+          { id: 'q14', kind: 'values', marks: [1, 1], reserve: true,
+            prompt: 'The mean age of a 25-player team is 26. A 20-year-old player is sold. Find the new mean age of the remaining 24 players.',
+            slots: [
+              { id: 'total', label: 'Total age of the 25 players', stat: 'total', answer: { n: 650, d: 1 }, earns: 'method' },
+              { id: 'newMean', label: 'New mean age of 24', stat: 'newMean', answer: { n: 105, d: 4 }, earns: 'accuracy', decimal: true,
+                ft: { rule: 'rm.newMean', from: ['total'], x: 20, n: 24, minus: true } }
+            ],
+            order: ['total', 'newMean'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 8' },
+          { id: 'q15', kind: 'values', marks: [1, 1], reserve: true,
+            prompt: '4 adults and 6 children have a mean age of 21.8. The adults\' mean age is 35. Find the children\'s mean age.',
+            slots: [
+              { id: 'combinedTotal', label: 'Total age of all 10', stat: 'total', answer: { n: 218, d: 1 }, earns: 'method', decimal: true },
+              { id: 'childrenMean', label: 'Mean age of the 6 children', stat: 'newMean', answer: { n: 13, d: 1 }, earns: 'accuracy',
+                ft: { rule: 'rm.newMean', from: ['combinedTotal'], x: 140, n: 6, minus: true } }
+            ],
+            order: ['combinedTotal', 'childrenMean'],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image11, grid 10' }
+        ]
+      },
+
+      /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 s3 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+      {
+        id: 's3',
+        title: 'Averages from a frequency table',
+        walt: 'Find the mean, median and mode from a frequency table',
+        movie: {
+          title: 'f times x',
+          src: 'Data Collection and analysis Booklet no answers.docx (1.4) image12 (Corbettmaths)',
+          mode: 'paper',
+          steps: [
+            { say: '20 bags of sweets \u2014 the table shows how many bags held each count.',
+              do: [{ table: { head: ['Number of sweets', 'Frequency', 'f \u00d7 x'],
+                               rows: [['23', '1', ''], ['24', '4', ''], ['25', '9', ''], ['26', '3', ''], ['27', '3', '']] } }] },
+            { say: 'Multiply each number of sweets by its frequency.',
+              do: [{ tcell: { r: 0, c: 2, text: '23' } }] },
+            { say: 'Keep going down the column.',
+              do: [{ tcell: { r: 1, c: 2, text: '96' } }] },
+            { say: 'Keep going.',
+              do: [{ tcell: { r: 2, c: 2, text: '225' } }] },
+            { say: 'Nearly there.',
+              do: [{ tcell: { r: 3, c: 2, text: '78' } }, { tcell: { r: 4, c: 2, text: '81' } }] },
+            { say: 'Add the frequency column, then add the f \u00d7 x column.',
+              do: [{ write: { text: '1+4+9+3+3 = 20' } }, { write: { text: '23+96+225+78+81 = 503' } }] },
+            { say: 'Divide the f \u00d7 x total by the frequency total for the mean.',
+              do: [{ write: { text: '503 \u00f7 20 = 25.15' } }] }
+          ]
+        },
+        questions: [
+          { id: 'q16', kind: 'table', marks: [0, 1],
+            prompt: 'The table shows the ages of an under-21 rugby squad. Find the median age.',
+            cols: [
+              { id: 'age', head: 'Age', given: ['18', '19', '20', '21'] },
+              { id: 'f', head: 'Frequency', given: ['5', '5', '9', '4'] }
+            ],
+            asks: [
+              { type: 'value', id: 'median', label: 'Median age =', answer: { n: 20, d: 1 } }
+            ],
+            src: 'Statistics M7 (1).pdf, "median-from-a-frequency-table" Q1 (image13, Corbettmaths)' },
+          { id: 'q17', kind: 'table', marks: [2, 1],
+            prompt: 'Thirty students were asked how many cats they owned. Calculate the mean number of cats owned per student.',
+            cols: [
+              { id: 'x', head: 'Number of cats', given: ['0', '1', '2', '3', '4'] },
+              { id: 'f', head: 'Frequency', given: ['6', '13', '7', '3', '1'] },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Mean =', answer: { n: 4, d: 3 }, ft: 'sum(fx)/sum(f)', dp: 2 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image15, Q4' },
+          { id: 'q18', kind: 'table', marks: [2, 1],
+            prompt: 'The table shows the number of days absent in a term. Calculate the mean number of days absent.',
+            cols: [
+              { id: 'x', head: 'Days absent', given: ['0', '1', '2', '3', '4', '5'] },
+              { id: 'f', head: 'Frequency', given: ['12', '8', '6', '7', '2', '1'] },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Mean =', answer: { n: 3, d: 2 }, ft: 'sum(fx)/sum(f)' }
+            ],
+            src: 'Statistics M7 (1).pdf Q18' },
+
+          { id: 'q19', kind: 'table', marks: [2, 3], reserve: true,
+            prompt: 'A shop sells 80 gift vouchers valued at \u00a35, \u00a310, \u00a320, \u00a350 or \u00a3100. Find the mode, the median and the mean value of a voucher sold.',
+            cols: [
+              { id: 'x', head: 'Value (\u00a3)', given: ['5', '10', '20', '50', '100'] },
+              { id: 'f', head: 'Frequency', given: ['34', '26', '9', '7', '4'] },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mode', label: 'Mode =', answer: { n: 5, d: 1 } },
+              { type: 'value', id: 'median', label: 'Median =', answer: { n: 10, d: 1 } },
+              { type: 'value', id: 'mean', label: 'Mean =', answer: { n: 17, d: 1 }, ft: 'sum(fx)/sum(f)' }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image14' }
+        ]
+      },
+
+      /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 s4 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+      {
+        id: 's4',
+        title: 'Grouped tables',
+        walt: 'Estimate the mean, and find the modal class and the class containing the median, from a grouped table',
+        movie: {
+          title: 'Midpoints stand in for the data',
+          src: 'Data Collection and analysis Booklet no answers.docx (1.4) images 16\u201318, Heathrow example',
+          mode: 'paper',
+          steps: [
+            { say: 'During 3 hours at Heathrow, 55 aircraft arrived late. The table groups them by minutes late.',
+              do: [{ table: { head: ['Minutes late', 'Frequency', 'Midpoint', 'f \u00d7 x'],
+                               rows: [['0-10', '27', '', ''], ['10-20', '10', '', ''], ['20-30', '7', '', ''],
+                                      ['30-40', '5', '', ''], ['40-50', '4', '', ''], ['50-60', '2', '', '']] } }] },
+            { say: 'Each class stands in for its midpoint \u2014 halfway between its two ends.',
+              do: [{ tcell: { r: 0, c: 2, text: '5' } }, { tcell: { r: 1, c: 2, text: '15' } }, { tcell: { r: 2, c: 2, text: '25' } },
+                   { tcell: { r: 3, c: 2, text: '35' } }, { tcell: { r: 4, c: 2, text: '45' } }, { tcell: { r: 5, c: 2, text: '55' } }] },
+            { say: 'Multiply each midpoint by its frequency.',
+              do: [{ tcell: { r: 0, c: 3, text: '135' } }, { tcell: { r: 1, c: 3, text: '150' } }, { tcell: { r: 2, c: 3, text: '175' } }] },
+            { say: 'Keep going down the column.',
+              do: [{ tcell: { r: 3, c: 3, text: '175' } }, { tcell: { r: 4, c: 3, text: '180' } }, { tcell: { r: 5, c: 3, text: '110' } }] },
+            { say: 'Total the frequencies: 55 aircraft altogether.',
+              do: [{ write: { text: '27+10+7+5+4+2 = 55' } }] },
+            { say: 'Total the f \u00d7 x column, then divide by 55 for an estimate of the mean.',
+              do: [{ write: { text: '135+150+175+175+180+110 = 925' } }, { write: { text: '925 \u00f7 55 = 16.8' } }] },
+            { say: 'The modal class is the one with the most aircraft: 27 of them, in the 0\u201310 class.',
+              do: [{ write: { text: 'Modal class: 27 aircraft in 0\u201310' } }, { ring: { i: 0 } }] },
+            { say: 'The median is the 28th aircraft of 55. The first class holds 27, so the 28th falls in the next class, 10\u201320.',
+              do: [{ write: { text: 'Median: the 28th of 55 is in 10\u201320' } }, { ring: { i: 0 } }] },
+            { say: 'A grouped table gives an estimate, never an exact value \u2014 the individual arrival times are gone once they are grouped.',
+              do: [{ note: { red: true, text: 'Grouped data gives an ESTIMATE of the mean, never the exact value.' } }] }
+          ]
+        },
+        questions: [
+          { id: 'q20', kind: 'table', marks: [2, 3],
+            prompt: 'The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal class and the class containing the median.',
+            cols: [
+              { id: 'cls', head: 'Number of words', given: [
+                { lo: 1, hi: 5, text: '1-5' }, { lo: 6, hi: 10, text: '6-10' }, { lo: 11, hi: 15, text: '11-15' },
+                { lo: 16, hi: 20, text: '16-20' }, { lo: 21, hi: 25, text: '21-25' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['6', '5', '4', '2', '3'] },
+              { id: 'mid', head: 'Midpoint', derive: 'mid' },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 43, d: 4 }, ft: 'sum(fx)/sum(f)', dp: 2 },
+              { type: 'row', id: 'modal', label: 'Modal class', answer: 0 },
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image19, Q1' },
+          { id: 'q21', kind: 'table', marks: [2, 3],
+            prompt: 'The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal class and the class containing the median.',
+            cols: [
+              { id: 'cls', head: 'Mark', given: [
+                { lo: 40, hi: 54, text: '40-54' }, { lo: 55, hi: 69, text: '55-69' },
+                { lo: 70, hi: 84, text: '70-84' }, { lo: 85, hi: 99, text: '85-99' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['5', '8', '7', '4'] },
+              { id: 'mid', head: 'Midpoint', derive: 'mid' },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 273, d: 4 }, ft: 'sum(fx)/sum(f)', dp: 2 },
+              { type: 'row', id: 'modal', label: 'Modal class', answer: 1 },
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image20, Q2' },
+          { id: 'q22', kind: 'table', marks: [4, 1],
+            prompt: 'The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class containing the median.',
+            cols: [
+              { id: 'cls', head: 'Pocket money (\u00a3)', given: [
+                { lo: 0, hi: 3, text: '0 < p \u2264 3' }, { lo: 3, hi: 6, text: '3 < p \u2264 6' }, { lo: 6, hi: 9, text: '6 < p \u2264 9' },
+                { lo: 9, hi: 12, text: '9 < p \u2264 12' }, { lo: 12, hi: 15, text: '12 < p \u2264 15' }, { lo: 15, hi: 18, text: '15 < p \u2264 18' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['6', '18', '16', '22', '13', '4'] },
+              { id: 'mid', head: 'Midpoint', derive: 'mid' },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 1365, d: 158 }, ft: 'sum(fx)/sum(f)', dp: 2 },
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 2 }
+            ],
+            src: 'Statistics M7 (1).pdf Q20' },
+
+          { id: 'q23', kind: 'table', marks: [3, 1], reserve: true,
+            prompt: 'The number of hours of daily sunshine is recorded at a resort during four months. Calculate an estimate of the mean number of hours of daily sunshine.',
+            cols: [
+              { id: 'cls', head: 'Hours of sunshine (h)', given: [
+                { lo: 0, hi: 3, text: '0 < h \u2264 3' }, { lo: 3, hi: 6, text: '3 < h \u2264 6' }, { lo: 6, hi: 9, text: '6 < h \u2264 9' },
+                { lo: 9, hi: 12, text: '9 < h \u2264 12' }, { lo: 12, hi: 15, text: '12 < h \u2264 15' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['18', '45', '37', '19', '4'] },
+              { id: 'mid', head: 'Midpoint', derive: 'mid' },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 507, d: 82 }, ft: 'sum(fx)/sum(f)', dp: 2 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image26' },
+          { id: 'q24', kind: 'table', marks: [3, 2], reserve: true,
+            prompt: 'The waiting times for patients at a surgery are recorded in the table. Find the modal class, and estimate the mean waiting time.',
+            cols: [
+              { id: 'cls', head: 'Waiting time (t, minutes)', given: [
+                { lo: 0, hi: 5, text: '0 < t \u2264 5' }, { lo: 5, hi: 10, text: '5 < t \u2264 10' }, { lo: 10, hi: 15, text: '10 < t \u2264 15' },
+                { lo: 15, hi: 20, text: '15 < t \u2264 20' }, { lo: 20, hi: 25, text: '20 < t \u2264 25' }, { lo: 25, hi: 30, text: '25 < t \u2264 30' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['7', '8', '5', '5', '4', '1'] },
+              { id: 'mid', head: 'Midpoint', derive: 'mid' },
+              { id: 'fx', head: 'f \u00d7 x', derive: 'f*x' }
+            ],
+            totals: ['f', 'fx'],
+            asks: [
+              { type: 'row', id: 'modal', label: 'Modal class', answer: 1 },
+              { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 23, d: 2 }, ft: 'sum(fx)/sum(f)', dp: 1 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image27' }
+        ]
+      },
+
+      /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 s5 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+      {
+        id: 's5',
+        title: 'Which average, and what a table can\'t tell you',
+        walt: 'Decide which average to use, predict what changes it, and judge a claim from a grouped table as true, false or not enough information',
+        movie: {
+          title: 'The \u00a3110 test',
+          src: 'Data Collection and analysis Booklet no answers.docx (1.4) image5; Statistics M7 (1).pdf Q5; image25 (right, bread prices)',
+          mode: 'paper',
+          steps: [
+            { say: 'Mode, median and mean each have their own advantages and disadvantages.',
+              do: [{ table: { head: ['Average', 'Mode', 'Median', 'Mean'],
+                               rows: [['Advantages', 'Very easy to find; not affected by extreme values', 'Easy to find; not affected by extreme values', 'Uses all the values'],
+                                      ['Disadvantages', "Doesn't use all the values; may not exist", "Doesn't use all the values", 'Extreme values can distort it'],
+                                      ['Used for', 'Non-numerical data', 'Data with extreme values', 'Data spread in a balanced way']] } }] },
+            { say: 'Eight office workers\' weekly wages.',
+              do: [{ write: { text: '\u00a3202, \u00a3212, \u00a3221, \u00a3242, \u00a3250, \u00a3250, \u00a3260, \u00a3284' } }] },
+            { say: 'A ninth wage of \u00a3110 was missed off the list. Add it in.',
+              do: [{ write: { text: '+ \u00a3110' } }] },
+            { say: 'Check each average in turn: the mean falls, the mode stays the same, the median falls, and the range rises.',
+              do: [{ write: { text: 'mean: \u00a3240.13 \u2192 \u00a3225.67' } }, { tick: { line: 2 } },
+                   { write: { text: 'mode: \u00a3250 \u2192 \u00a3250' } }, { tick: { line: 3 } },
+                   { write: { text: 'median: \u00a3246 \u2192 \u00a3242' } }, { tick: { line: 4 } },
+                   { write: { text: 'range: \u00a382 \u2192 \u00a3174' } }, { tick: { line: 5 } }] },
+            { say: 'A grouped table of bread prices in different shops.',
+              do: [{ table: { head: ['Price (p)', 'Frequency', 'Midpoint', 'f \u00d7 x'],
+                               rows: [['80-84', '2', '82', '164'], ['85-89', '3', '87', '261'],
+                                      ['90-94', '5', '92', '460'], ['95-99', '10', '97', '970']] } }] },
+            { say: 'Claim: "The estimated mean = 1855 \u00f7 20." Dividing 1855 by 20 is exactly the method \u2014 the claim is true.',
+              do: [{ write: { text: 'The estimated mean = 1855 \u00f7 20.' } }, { stamp: { text: 'TRUE' } }] },
+            { say: 'Claim: "The modal interval price of bread was 10." Ten is only the frequency; the modal interval is 95\u201399, so this is false.',
+              do: [{ write: { text: 'The modal interval price of bread was 10.' } }, { stamp: { text: 'FALSE' } }] },
+            { say: 'Claim: "3 loaves of bread cost 87p." A grouped table cannot say what one loaf cost \u2014 not enough information.',
+              do: [{ write: { text: '3 loaves of bread cost 87p.' } }, { stamp: { text: 'NOT ENOUGH INFORMATION' } }] },
+            { say: 'A grouped table can give you an estimate and a typical class \u2014 never one exact value hiding inside it.',
+              do: [{ note: { red: true, text: 'Grouped data can give an estimate, never one exact value inside a class.' } }] }
+          ]
+        },
+        questions: [
+          { id: 'q25', kind: 'judge', marks: [0, 1],
+            prompt: 'A mistake was made: a baby\'s weight of 4.6 kg should have been 4.5 kg. Decide whether each of the following changes or stays the same.',
+            fig: { type: 'list', values: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1] },
+            claims: [
+              { text: 'When 4.6 kg is corrected to 4.5 kg, the range of the weights will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
+                proof: { kind: 'changes', stat: 'range',
+                  before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
+                  after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
+              { text: 'After the correction, the median weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
+                proof: { kind: 'changes', stat: 'median',
+                  before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
+                  after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
+              { text: 'With 4.5 kg in place of 4.6 kg, the mean weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Change',
+                proof: { kind: 'changes', stat: 'mean',
+                  before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
+                  after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
+              { text: 'Once the weight is corrected, the modal weight will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
+                proof: { kind: 'changes', stat: 'mode',
+                  before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
+                  after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } }
+            ],
+            src: 'Statistics M7 (1).pdf Q30(b) (same source item as Book A\'s q23; worded here as four Changes/Stays-the-same claims per \u00a718.2 s5 q1)' },
+          { id: 'q26', kind: 'judge', marks: [0, 3],
+            prompt: 'A grouped frequency table shows the performance of 22 students in a test. The teacher then discovers he forgot to record two students, who scored 21 and 39, and amends the table. Decide the effect of amending the table.',
+            data: { cols: [
+              { id: 'cls', head: 'Score', given: [
+                { lo: 0, hi: 20, text: '0 \u2264 x < 20' }, { lo: 20, hi: 40, text: '20 \u2264 x < 40' }, { lo: 40, hi: 60, text: '40 \u2264 x < 60' },
+                { lo: 60, hi: 80, text: '60 \u2264 x < 80' }, { lo: 80, hi: 100, text: '80 \u2264 x < 100' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['7', '6', '4', '3', '4'] }
+            ] },
+            claims: [
+              { text: 'Once the two missing scores are added, the range will\u2026', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
+                proof: { kind: 'changes', stat: 'range',
+                  before: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90],
+                  after: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90] } },
+              { text: 'With 21 and 39 in the table, the mean will\u2026', options: ['Change', 'Stay the same'], verdict: 'Change',
+                proof: { kind: 'changes', stat: 'mean',
+                  before: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90],
+                  after: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90] } },
+              { text: 'After the table is amended, the class containing the median will be\u2026', options: ['0 \u2264 x < 20', '20 \u2264 x < 40', '40 \u2264 x < 60', '60 \u2264 x < 80', '80 \u2264 x < 100'], verdict: '20 \u2264 x < 40',
+                proof: { kind: 'medianInterval', row: 1 } }
+            ],
+            src: 'Statistics M7 (1).pdf Q22' },
+          { id: 'q27', kind: 'judge', marks: [0, 1],
+            prompt: 'A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from \u00a350,000 to \u00a3200,000). Decide which average better represents a typical salary here.',
+            data: { cols: [
+              { id: 'cls', head: 'Salary (\u00a31000s)', given: [
+                { lo: 0, hi: 10, text: '0 < s \u2264 10' }, { lo: 10, hi: 20, text: '10 < s \u2264 20' }, { lo: 20, hi: 30, text: '20 < s \u2264 30' },
+                { lo: 30, hi: 50, text: '30 < s \u2264 50' }, { lo: 50, hi: 200, text: '50 < s \u2264 200' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['8', '48', '50', '11', '3'] }
+            ] },
+            claims: [
+              { text: 'Which average better represents a typical salary?', options: ['Mean', 'Median'], verdict: 'Median',
+                proof: { kind: 'compareAverage', stat: 'typical salary', better: 'B' } }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image23, Extension Q1 (Corbett Maths); proof.better is positional over q.claims[0].options \u2014 A = options[0] \'Mean\', B = options[1] \'Median\' (see authoredNarration)' },
+          { id: 'q28', kind: 'judge', marks: [0, 5],
+            prompt: 'Alma planted some seeds to test different composts. After a week she measured the heights of thirty seedlings, in millimetres, and recorded her results in the table below. Decide if each statement is True, False, or Not enough information.',
+            data: { cols: [
+              { id: 'cls', head: 'Height of seedling (h)', given: [
+                { lo: 0, hi: 5, text: '0 < h \u2264 5' }, { lo: 5, hi: 10, text: '5 < h \u2264 10' }, { lo: 10, hi: 15, text: '10 < h \u2264 15' },
+                { lo: 15, hi: 20, text: '15 < h \u2264 20' }, { lo: 20, hi: 25, text: '20 < h \u2264 25' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['5', '5', '4', '9', '7'] }
+            ] },
+            claims: [
+              { text: 'The estimated mean = 415 \u00f7 5.', options: ['True', 'False', 'Not enough information'], verdict: 'False',
+                proof: { kind: 'estMeanDivisor', divisor: 5 } },
+              { text: 'The range of the heights was 25.', options: ['True', 'False', 'Not enough information'], verdict: 'Not enough information',
+                proof: { kind: 'exactFromGrouped', stat: 'range' } },
+              { text: 'There were 5 seeds with a height of 20mm or more.', options: ['True', 'False', 'Not enough information'], verdict: 'False',
+                proof: { kind: 'countAtLeast', lo: 20, says: 5 } },
+              { text: 'The median interval is 15 < h \u2264 20.', options: ['True', 'False', 'Not enough information'], verdict: 'True',
+                proof: { kind: 'medianInterval', row: 3 } },
+              { text: 'The modal interval of the heights was 5.', options: ['True', 'False', 'Not enough information'], verdict: 'False',
+                proof: { kind: 'modalInterval', row: 0 } }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image25 (left, Alma\'s seedlings)' },
+
+          { id: 'q29', kind: 'values', marks: [0, 1], reserve: true,
+            prompt: 'Bright Bulbs\' median lifetime is given as 30 months. Xtra Brite\'s lifetime is grouped, so its median must be estimated. Estimate Xtra Brite\'s median lifetime, in months, to 1 decimal place.',
+            fig: { type: 'table', cols: [
+              { id: 'cls', head: 'Lifetime (months)', given: [
+                { lo: 0, hi: 12, text: '0 < t \u2264 12' }, { lo: 12, hi: 24, text: '12 < t \u2264 24' }, { lo: 24, hi: 36, text: '24 < t \u2264 36' },
+                { lo: 36, hi: 48, text: '36 < t \u2264 48' }, { lo: 48, hi: 120, text: '48 < t \u2264 120' }
+              ] },
+              { id: 'f', head: 'Frequency', given: ['19', '53', '74', '42', '12'] }
+            ] },
+            slots: [
+              { id: 'medianEstimate', label: 'Estimated median lifetime (months)', stat: 'medianClass', answer: { n: 285, d: 10 }, earns: 'accuracy', decimal: true, dp: 1 }
+            ],
+            src: 'Data Collection and analysis Booklet no answers.docx (1.4) image24, Extension Q2 (Xtra Brite lifetimes, grouped: 0<t\u226412(19), 12<t\u226424(53), 24<t\u226436(74), 36<t\u226448(42), 48<t\u2264120(12), n=200 \u2014 interpolated median \u2248 28.5, distinct from Bright Bulbs\' given 30)' }
         ]
       }
     ]
@@ -12915,6 +14215,11 @@ function statsBoard(q, wrong) {
       perfect: ['Every point plotted, and the line follows them.', 'Plotted, drawn and read off.', 'Your line runs through the middle of the cloud.'],
       fail: ['We\u2019ll plot one of these together in class.', 'Watch the worked example again \u2014 the line follows the slope of the points.']
     },
+    /* Book B (13 Sept 2026): a frequency table she filled, then read from */
+    ftable: {
+      perfect: ['Every column multiplied and totalled, and the answers read from your own table.', 'You multiplied frequency by value, row by row, then added up the totals.', 'You built the table and read the averages off it.'],
+      fail: ['We\u2019ll fill one of these tables in together in class.', 'Watch the worked example again \u2014 multiply each value by its frequency, then add the column up.']
+    },
     values: {
       perfect: ['Worked out and written in.', 'You filled in every box, and got them all right.',
                 'Neatly done.'],
@@ -14564,7 +15869,9 @@ function statsBoard(q, wrong) {
 
   var KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
     /* Book A - Collecting and displaying (12 Sept 2026) */
-    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+    'order', 'pick', 'stemleaf', 'pie', 'scatter',
+    /* Book B - Averages (13 Sept 2026) */
+    'table'];
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function T() { return (window.GJ_STRINGS && window.GJ_STRINGS.pupil) || {}; }
@@ -14605,7 +15912,10 @@ function statsBoard(q, wrong) {
        stem; "key" exists only when the question asks her to write one */
     stemleaf: ['tray', 'leaf-selected', 'placing', 'key', 'ready'],
     pie: ['table', 'table-done', 'rim', 'bounds-done', 'drawn', 'ready'],
-    scatter: ['plotting', 'plotted', 'line', 'estimate', 'corr', 'outlier', 'ready']
+    scatter: ['plotting', 'plotted', 'line', 'estimate', 'corr', 'outlier', 'ready'],
+    /* Book B (DESIGN 17.2; the contract in tools/qa/out/bookB/CONTRACT_B.md):
+       the boxes of the table, then the questions under it */
+    table: ['empty', 'filling', 'asking', 'ready']
   };
   /* WHAT THIS QUESTION CAN ACTUALLY SHOW. The kind's list above is every board
      the kind HAS; a particular question shows only the ones its own data
@@ -14654,7 +15964,10 @@ function statsBoard(q, wrong) {
       own = out;
     }
     if (q.kind === 'values') {
-      var slotCount = (q.order || (q.slots || [])).length;
+      /* a set of five (Book B) is five boxes: part-way through it is a real board */
+      var slotCount = 0;
+      (q.slots || []).forEach(function (s2) { slotCount += s2.set ? Number(s2.set) : (s2.answer && s2.answer.constraints && s2.answer.constraints.n) ? Number(s2.answer.constraints.n) : 1; });
+      if (!(q.slots || []).length) slotCount = (q.order || []).length;
       if (slotCount < 2) drop('filling');
     }
     if (q.kind === 'judge') {
@@ -14684,6 +15997,17 @@ function statsBoard(q, wrong) {
       }
     }
     if (q.kind === 'stemleaf' && !(q.key && q.key.ask)) drop('key');
+    if (q.kind === 'table') {
+      /* "filling" needs a second box to be part-way through; "asking" needs a
+         question under a table she has finished - with nothing to fill and
+         one question, the first press finishes it */
+      var tRows = 0;
+      (q.cols || []).forEach(function (c) { if (c.given && c.given.length > tRows) tRows = c.given.length; });
+      var boxes = (q.cols || []).filter(function (c) { return !!c.derive; }).length * tRows + (q.totals || []).length;
+      var asksN = (q.asks || []).length;
+      if (boxes < 2) drop('filling');
+      if (!asksN || (boxes === 0 && asksN < 2)) drop('asking');
+    }
     if (q.kind === 'scatter') {
       var asked = (q.asks || []).map(function (a) { return a && a.type; });
       if (asked.indexOf('lobf') === -1) drop('line');
@@ -14711,7 +16035,8 @@ function statsBoard(q, wrong) {
     cfread: 'statCheckCfread', boxplot: 'statCheckBoxplot', compare: 'statCheckCompare',
     judge: 'statCheckJudge', values: 'statCheckValues',
     order: 'statCheckOrder', pick: 'statCheckPick', stemleaf: 'statCheckStemleaf',
-    pie: 'statCheckPie', scatter: 'statCheckScatter'
+    pie: 'statCheckPie', scatter: 'statCheckScatter',
+    table: 'statCheckTable'
   };
 
   /* \u2500\u2500 THE STAGE STRIP: the stages, SHOWN (DESIGN 4.0, Correction 11 Sept
@@ -14763,6 +16088,12 @@ function statsBoard(q, wrong) {
         else if (a.type === 'corr') pill(t.statPillScCorr, ['corr']);
         else if (a.type === 'outlier') pill(t.statPillScOutlier, ['outlier']);
       });
+    }
+    /* Book B: a table with nothing to fill (every column given) has only
+       its questions; one with nothing asked has only its boxes */
+    else if (kind === 'table') {
+      if (has('filling')) pill(t.statPillTableFill, ['empty', 'filling']);
+      if (has('asking')) pill(t.statPillTableAsks, has('filling') ? ['asking'] : ['empty', 'asking']);
     }
     /* the finished board belongs to the last act */
     if (out.length && has('ready')) out[out.length - 1].stages.push('ready');
@@ -15213,6 +16544,7 @@ function statsBoard(q, wrong) {
     if (kind === 'stemleaf') return 'stemleaf';
     if (kind === 'pie') return 'pie';
     if (kind === 'scatter') return 'scatter';
+    if (kind === 'table') return 'ftable';
     return 'values';
   }
 
@@ -15609,7 +16941,15 @@ function statsBoard(q, wrong) {
   BUILD.values = function (ctx) {
     var q = ctx.q;
     var order = q.order || (q.slots || []).map(function (s) { return s.id; });
-    var v = {}, open = -1, pad = null;
+    var v = {}, open = -1, openSet = 0, pad = null;
+    /* A SET OF FIVE (Book B, DESIGN 17.1, reserve): "write five numbers so
+       that the mean is 6 and the mode is 4" opens five boxes on one line; the
+       engine reads them from S.v[id + '_set'] and marks the constraints */
+    function setSize(id) { var s2 = slot(id); return s2.set ? Number(s2.set) : (s2.answer && s2.answer.constraints && s2.answer.constraints.n) ? Number(s2.answer.constraints.n) : 0; }
+    function setOf(id) { var a = v[id + '_set']; if (!Array.isArray(a)) { a = []; v[id + '_set'] = a; } while (a.length < setSize(id)) a.push(''); return a; }
+    function setLabel(id, k) { return fill(T().statValuesSetLabel, { label: slot(id).label, n: k + 1 }); }
+    function setFilled(id) { return setOf(id).every(function (x) { return !!x; }); }
+    function setAny(id) { return setOf(id).some(function (x) { return !!x; }); }
     /* THE FIGURE (Book A, DESIGN 17.1): a Venn diagram carries its boxes ON
        the regions - HTML buttons laid over the board at the region centres the
        chart reports, so the overlap and readability laws judge them as text;
@@ -15633,6 +16973,10 @@ function statsBoard(q, wrong) {
         if (fig.key) { var kl = el('p', 'stat-sl-key'); kl.textContent = slKeyLine(fig.key, fig.decimals === 1 ? 1 : 0, fig.unit); figHost.appendChild(kl); }
       } else if (fig.type === 'list') {
         figHost.appendChild(el('p', 'stat-list', esc((fig.values || []).join(', '))));
+      } else if (fig.type === 'table') {
+        /* Book B: a grouped table she reads a value from (the interpolated median) */
+        figHost.classList.add('stat-table-host');
+        figHost.appendChild(givenTable(fig.cols));
       }
     }
     var host = el('div', 'stat-slots');
@@ -15641,7 +16985,25 @@ function statsBoard(q, wrong) {
        and its boxes collided at 375 (the walk, 12 Sept 2026), so its slots
        stay in the list under the drawing, named in words */
     function onFig(id) { return !!(isVenn && venn && fig.type === 'venn2' && slot(id).region); }
+    function setCells(id, i) {
+      var wrap2 = el('div', 'stat-set');
+      setOf(id).forEach(function (val, k) {
+        var b = el('button', 'stat-cell' + (open === i && openSet === k ? ' is-open' : ''));
+        b.type = 'button';
+        b.textContent = val || '';
+        if (val) b.setAttribute('data-placed', '');
+        b.setAttribute('aria-label', setLabel(id, k));
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (ctx.locked()) return;
+          open = i; openSet = k; render(); ctx.changed();
+        });
+        wrap2.appendChild(b);
+      });
+      return wrap2;
+    }
     function cellFor(id, i) {
+      if (setSize(id)) return setCells(id, i);
       var b = el('button', 'stat-cell' + (open === i ? ' is-open' : ''));
       b.type = 'button';
       b.textContent = v[id] || '';
@@ -15706,27 +17068,42 @@ function statsBoard(q, wrong) {
         return;
       }
       var id = order[open];
+      var inSet = setSize(id) > 0;
       window.GJ.setState(ctx.dock, 'dock', 'numpad-fraction');
-      ctx.say(slot(id).label);
+      ctx.say(inSet ? setLabel(id, openSet) : slot(id).label);
       pad = makeNumPad(ctx.dock, {
-        label: slot(id).label, fraction: true, decimal: true,
-        onChange: function (val) { v[id] = val; paint(); ctx.changed(); }
+        label: inSet ? setLabel(id, openSet) : slot(id).label, fraction: true, decimal: true,
+        onChange: function (val) { if (inSet) setOf(id)[openSet] = val; else v[id] = val; paint(); ctx.changed(); }
       });
-      pad.set(v[id] || '');
-      if (open < order.length - 1) {
+      pad.set(inSet ? (setOf(id)[openSet] || '') : (v[id] || ''));
+      if (open < order.length - 1 || (inSet && openSet < setSize(id) - 1)) {
         var next = el('button', 'btn-quiet', T().statNextRow);
         next.type = 'button';
-        next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+        next.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (inSet && openSet < setSize(id) - 1) openSet++; else { open++; openSet = 0; }
+          render();
+        });
         ctx.dock.appendChild(next);
       }
     }
     function stage() {
-      var filled = order.filter(function (id) { return !!v[id]; }).length;
-      ctx.setStage(!filled ? 'empty' : (filled < order.length ? 'filling' : 'ready'));
+      var filled = order.filter(function (id) { return setSize(id) ? setFilled(id) : !!v[id]; }).length;
+      var started = order.some(function (id) { return setSize(id) ? setAny(id) : !!v[id]; });
+      ctx.setStage(!started ? 'empty' : (filled < order.length ? 'filling' : 'ready'));
     }
     function paint() {
       stage();
       order.forEach(function (id) {
+        if (setSize(id)) {
+          setOf(id).forEach(function (val, k) {
+            var sc = ctx.boardHost.querySelector('.stat-cell[aria-label="' + setLabel(id, k).replace(/"/g, '\\"') + '"]');
+            if (!sc) return;
+            sc.textContent = val || '';
+            if (val) sc.setAttribute('data-placed', ''); else sc.removeAttribute('data-placed');
+          });
+          return;
+        }
         var cell = ctx.boardHost.querySelector('.stat-cell[aria-label="' + String(slot(id).label).replace(/"/g, '\\"') + '"]');
         if (!cell) return;
         cell.textContent = v[id] || '';
@@ -15736,11 +17113,11 @@ function statsBoard(q, wrong) {
 
     return {
       start: function () { render(); },
-      reset: function () { v = {}; open = -1; render(); },
-      restore: function (S) { v = (S && S.v) || {}; open = -1; render(); },
+      reset: function () { v = {}; open = -1; openSet = 0; render(); },
+      restore: function (S) { v = (S && S.v) || {}; open = -1; openSet = 0; render(); },
       state: function () { return { v: v }; },
       ready: function () {
-        var any = order.some(function (id) { return !!v[id]; });
+        var any = order.some(function (id) { return setSize(id) ? setAny(id) : !!v[id]; });
         return any ? { ok: true } : { ok: false, why: T().statValuesWhy };
       },
       lock: function () {
@@ -15752,6 +17129,10 @@ function statsBoard(q, wrong) {
         box.setAttribute('data-truth', '');
         box.textContent = order.map(function (id) {
           var s = slot(id);
+          if (s.answer && s.answer.constraints) {
+            var ex = s.example ? s.example.join(', ') : Object.keys(s.answer.constraints).filter(function (k) { return k !== 'n'; }).map(function (k) { return k + ' ' + s.answer.constraints[k]; }).join(', ');
+            return s.label + ': ' + fill(T().statValuesSetTruth, { list: ex });
+          }
           var a = s.answer && s.answer.n !== undefined ? (s.answer.d === 1 ? s.answer.n : s.answer.n + '/' + s.answer.d) : '';
           return s.label + ' ' + a;
         }).join(' \u00b7 ');
@@ -15762,7 +17143,8 @@ function statsBoard(q, wrong) {
         var g = el('div', 'stat-row struck');
         order.forEach(function (id) {
           var t = el('span', 'stat-tile');
-          t.textContent = ((att.S || {}).v || {})[id] || '\u2014';
+          var sv = (att.S || {}).v || {};
+          t.textContent = setSize(id) ? ((sv[id + '_set'] || []).filter(Boolean).join(', ') || '\u2014') : (sv[id] || '\u2014');
           g.appendChild(t);
         });
         holder.appendChild(g);
@@ -16635,6 +18017,19 @@ function statsBoard(q, wrong) {
     var q = ctx.q;
     var claims = q.claims || [];
     var j = claims.map(function () { return {}; });
+    /* WHAT SHE JUDGES FROM (Book B): a printed list, or the table the
+       statements are about, sits above the claims - a claim about a table
+       nobody can see is a guess */
+    if (q.fig && q.fig.type === 'list') {
+      var figHostJ = el('div', 'stat-fig stat-fig-list');
+      figHostJ.appendChild(el('p', 'stat-list', esc((q.fig.values || []).join(', '))));
+      ctx.boardHost.appendChild(figHostJ);
+    }
+    if (q.data && q.data.cols) {
+      var dataHost = el('div', 'stat-fig stat-fig-table stat-table-host');
+      dataHost.appendChild(givenTable(q.data.cols));
+      ctx.boardHost.appendChild(dataHost);
+    }
     var host = el('div', 'stat-claims');
     ctx.boardHost.appendChild(host);
 
@@ -16722,7 +18117,12 @@ function statsBoard(q, wrong) {
       start: function () {
         render();
         var allOptions = claims.length > 0 && claims.every(function (c) { return !!c.options; });
-        ctx.say(allOptions ? T().statStageJudgeOptions : T().statStageJudge);
+        /* "what happens to each one" is the line for options that ARE
+           changes (Book C's wages, Book A's sentence endings); a statement
+           judged True / False / Not enough information, or a choice between
+           two averages, is told to choose an answer */
+        var aboutChange = allOptions && claims.some(function (c) { return c.options.some(function (o) { return /increase|decrease|stay|change|more|fewer|higher|lower|\u2026/i.test(String(o)); }); });
+        ctx.say(!allOptions ? T().statStageJudge : (aboutChange ? T().statStageJudgeOptions : T().statStageJudgeChoose));
       },
       reset: function () { j = claims.map(function () { return {}; }); render(); },
       restore: function (S) { j = (S && S.j) || claims.map(function () { return {}; }); render(); },
@@ -17826,6 +19226,355 @@ function statsBoard(q, wrong) {
 
   /* \u2550\u2550 the teacher's read-only view of one pupil's artefact \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
 
+  /* \u2550\u2550 table \u2014 derived columns, the totals, then the reads (Book B, DESIGN 17.2) \u2550\u2550
+     The table is HER working: the given columns are printed, every derived
+     cell is a box the pad fills (top to bottom, one column after another),
+     the totals row comes after the cells, and the questions under the table
+     come last - a number box for a value (the mean), a row of pressable
+     class names for a "which row" question (the modal class, the class the
+     median is in). The engine (statcore.js markTable) marks a derived cell
+     right when it is consistent with HER OWN inputs in that row, and a value
+     ask right when it follows from HER table, so a slip is paid for once. */
+
+  /* A GIVEN TABLE, READ-ONLY: the columns a question prints for her to read
+     (a judge question about a grouped table carries it as q.data). The same
+     cell shapes as the table kind, with nothing to press. */
+  function givenTable(cols) {
+    var table = el('table', 'stat-table stat-table-given');
+    var rows = 0;
+    (cols || []).forEach(function (c) { if (c.given && c.given.length > rows) rows = c.given.length; });
+    var thead = el('thead'), hr = el('tr');
+    (cols || []).forEach(function (c) { hr.appendChild(el('th', null, esc(c.head || c.id))); });
+    thead.appendChild(hr); table.appendChild(thead);
+    var tb = el('tbody');
+    for (var i = 0; i < rows; i++) {
+      var tr = el('tr');
+      (cols || []).forEach(function (c) {
+        var g = (c.given || [])[i];
+        var text = (g && typeof g === 'object') ? (g.text || (g.lo + '\u2013' + g.hi)) : ((g === undefined || g === null) ? '' : String(g));
+        tr.appendChild(el('td', null, esc(text)));
+      });
+      tb.appendChild(tr);
+    }
+    table.appendChild(tb);
+    return table;
+  }
+
+  BUILD.table = function (ctx) {
+    var q = ctx.q;
+    var cols = q.cols || [];
+    var totalsOf = q.totals || [];
+    var asks = q.asks || [];
+    var D = window.GJ_STATS.tableDerive(q);
+    var rows = D.rows;
+    var derived = cols.filter(function (c) { return !!c.derive; });
+    var nameCol = cols.filter(function (c) { return c.given && c.id !== 'f'; })[0] || cols[0] || null;
+    var cells = {}, totals = {}, ans = {};
+    function blankCells() { var o = {}; derived.forEach(function (c) { o[c.id] = []; for (var i = 0; i < rows; i++) o[c.id].push(''); }); return o; }
+    cells = blankCells();
+
+    function colById(id) { for (var i = 0; i < cols.length; i++) if (cols[i].id === id) return cols[i]; return { id: id, head: id }; }
+    function headText(c) { return c.head || c.id; }
+    function lowerHead(c) { var h = headText(c); return /^[A-Z][a-z]/.test(h) ? h.charAt(0).toLowerCase() + h.slice(1) : h; }
+    function givenText(c, i) {
+      var g = (c.given || [])[i];
+      if (g && typeof g === 'object') return g.text || (g.lo + '\u2013' + g.hi);
+      return (g === undefined || g === null) ? '' : String(g);
+    }
+    function rowName(i) { return nameCol ? givenText(nameCol, i) : String(i + 1); }
+    function cellLabel(c, i) { return fill(T().statTableCellLabel, { head: headText(c), n: i + 1 }); }
+    function totalLabel(id) { return fill(T().statTableTotalLabel, { head: lowerHead(colById(id)) }); }
+
+    /* THE PAD'S ROUTE: every box the pad can open, in the order she meets them -
+       each derived column top to bottom, then the totals, then the questions
+       under the table that want a number. `open` is an index into it. */
+    var route = [];
+    derived.forEach(function (c) { for (var i = 0; i < rows; i++) route.push({ kind: 'cell', col: c.id, row: i, label: cellLabel(c, i) }); });
+    totalsOf.forEach(function (id) { route.push({ kind: 'total', col: id, label: totalLabel(id) }); });
+    asks.forEach(function (a) { if (a.type === 'value') route.push({ kind: 'ask', id: a.id, label: a.label, unit: a.unit }); });
+    var tableBoxes = route.filter(function (r) { return r.kind !== 'ask'; });
+    var open = -1, pad = null;
+
+    function routeIndex(kind, col, row, id) {
+      for (var k = 0; k < route.length; k++) {
+        var r = route[k];
+        if (r.kind !== kind) continue;
+        if (kind === 'ask' ? r.id === id : (r.col === col && (kind === 'total' || r.row === row))) return k;
+      }
+      return -1;
+    }
+    function valueOf(r) {
+      if (r.kind === 'cell') return cells[r.col][r.row] || '';
+      if (r.kind === 'total') return totals[r.col] || '';
+      return (ans[r.id] === undefined || ans[r.id] === null) ? '' : String(ans[r.id]);
+    }
+    function setValue(r, v) {
+      if (r.kind === 'cell') cells[r.col][r.row] = v;
+      else if (r.kind === 'total') totals[r.col] = v;
+      else ans[r.id] = v;
+    }
+    function askDone(a) {
+      var v = ans[a.id];
+      return a.type === 'row' ? (v !== undefined && v !== null && v !== '') : !!(v && String(v).length);
+    }
+    function nAsksDone() { return asks.filter(askDone).length; }
+
+    var host = el('div', 'stat-tablekind');
+    host.setAttribute('data-work', '');
+    ctx.boardHost.appendChild(host);
+    var tableHost = el('div', 'stat-table-host');          /* scrolls sideways at 375 rather than squeezing */
+    host.appendChild(tableHost);
+    var table = el('table', 'stat-table stat-table-edit');
+    tableHost.appendChild(table);
+    var askHost = el('div', 'stat-asks');
+    host.appendChild(askHost);
+    /* a table wider than a phone scrolls inside its own frame (law 6) and SAYS
+       so, the way a wide chart does; the note is there only while it is true */
+    var swipeNote = el('p', 'stat-table-note', esc(T().statScrollTable));
+    swipeNote.hidden = true;
+    host.appendChild(swipeNote);
+    function noteOverflow() { swipeNote.hidden = !(tableHost.scrollWidth > tableHost.clientWidth + 2); }
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(noteOverflow).observe(tableHost);
+
+    function boxFor(k) {
+      var r = route[k];
+      var b = el('button', 'stat-cell' + (open === k ? ' is-open' : ''));
+      b.type = 'button';
+      b.textContent = valueOf(r);
+      if (valueOf(r)) b.setAttribute('data-placed', '');
+      b.setAttribute('aria-label', r.label);
+      if (r.kind !== 'ask') { b.setAttribute('data-col', r.col); b.setAttribute('data-row', r.kind === 'total' ? 'total' : String(r.row)); }
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (ctx.locked()) return;
+        open = k; render(); ctx.changed();
+      });
+      return b;
+    }
+    function render() {
+      stage();
+      table.innerHTML = '';
+      var thead = el('thead'), hr = el('tr');
+      cols.forEach(function (c) { hr.appendChild(el('th', null, esc(headText(c)))); });
+      thead.appendChild(hr); table.appendChild(thead);
+      var tb = el('tbody');
+      for (var i = 0; i < rows; i++) {
+        var tr = el('tr');
+        cols.forEach(function (c) {
+          var td = el('td');
+          if (c.derive) td.appendChild(boxFor(routeIndex('cell', c.id, i)));
+          else td.textContent = givenText(c, i);
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      }
+      if (totalsOf.length) {
+        var tt = el('tr', 'stat-table-totals');
+        var firstTotal = -1;
+        cols.forEach(function (c, ci) { if (firstTotal < 0 && totalsOf.indexOf(c.id) > -1) firstTotal = ci; });
+        if (firstTotal > 0) {
+          var lab = el('th', null, esc(T().statTableTotal));
+          lab.setAttribute('scope', 'row');
+          if (firstTotal > 1) lab.colSpan = firstTotal;
+          tt.appendChild(lab);
+        }
+        cols.forEach(function (c, ci) {
+          if (ci < firstTotal) return;
+          var td = el('td');
+          if (totalsOf.indexOf(c.id) > -1) td.appendChild(boxFor(routeIndex('total', c.id)));
+          else {
+            /* a column with no total asked is SAID so, not left as a hole
+               the empty-elements law would rightly name */
+            td.className = 'stat-table-none';
+            td.textContent = '\u2014';
+            td.setAttribute('aria-label', T().statTableNoTotal);
+          }
+          tt.appendChild(td);
+        });
+        tb.appendChild(tt);
+      }
+      table.appendChild(tb);
+      renderAsks();
+      renderDock();
+      noteOverflow();
+    }
+    function renderAsks() {
+      askHost.innerHTML = '';
+      asks.forEach(function (a) {
+        if (a.type === 'value') {
+          var slots = el('div', 'stat-slots');
+          var line = el('div', 'stat-slot');
+          line.appendChild(el('span', 'stat-slot-label', esc(a.label)));
+          line.appendChild(boxFor(routeIndex('ask', null, null, a.id)));
+          if (a.unit) line.appendChild(el('span', 'stat-slot-unit', esc(a.unit)));
+          slots.appendChild(line);
+          askHost.appendChild(slots);
+          return;
+        }
+        if (a.type !== 'row') return;
+        var grp = el('div', 'stat-rowpick-group');
+        grp.setAttribute('role', 'group');
+        grp.setAttribute('aria-label', a.label);
+        grp.appendChild(el('p', 'stat-slot-label', esc(a.label)));
+        var picks = el('div', 'stat-rowpicks');
+        for (var i = 0; i < rows; i++) {
+          (function (ri) {
+            var b = el('button', 'stat-rowpick');
+            b.type = 'button';
+            b.textContent = rowName(ri);
+            b.setAttribute('data-ask', a.id);
+            b.setAttribute('data-row', String(ri));
+            b.setAttribute('aria-pressed', ans[a.id] === ri ? 'true' : 'false');
+            b.addEventListener('click', function (e) {
+              e.stopPropagation();
+              if (ctx.locked()) return;
+              ans[a.id] = (ans[a.id] === ri) ? null : ri;          /* press again clears */
+              open = -1;
+              render(); ctx.changed();
+            });
+            picks.appendChild(b);
+          })(i);
+        }
+        grp.appendChild(picks);
+        askHost.appendChild(grp);
+      });
+    }
+    function renderDock() {
+      ctx.dock.innerHTML = '';
+      pad = null;
+      if (open < 0) { window.GJ.setState(ctx.dock, 'dock', 'chips'); return; }
+      var r = route[open];
+      window.GJ.setState(ctx.dock, 'dock', 'numpad');
+      pad = makeNumPad(ctx.dock, {
+        label: r.label, decimal: true,
+        onChange: function (v) { setValue(r, v); paint(); ctx.changed(); }
+      });
+      pad.set(valueOf(r));
+      if (open < route.length - 1) {
+        var next = el('button', 'btn-quiet', T().statNextRow);
+        next.type = 'button';
+        next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+        ctx.dock.appendChild(next);
+      }
+    }
+    function stage() {
+      var filled = tableBoxes.filter(function (r) { return !!valueOf(r); }).length;
+      var done = nAsksDone();
+      var declared = (ctx.wrap.getAttribute('data-stages') || '').split(' ');
+      var s = (!filled && !done) ? 'empty'
+        : (filled < tableBoxes.length) ? 'filling'
+        : (asks.length && done < asks.length) ? 'asking' : 'ready';
+      /* a one-box table has no "part-way" board: a question answered before
+         the box is still the empty table she is being asked to fill */
+      if (declared.length > 1 && declared.indexOf(s) === -1) s = s === 'filling' ? 'empty' : 'ready';
+      ctx.setStage(s);
+      say(s, filled);
+    }
+    function say(s, filled) {
+      var t = T();
+      if (s === 'ready') { ctx.say(t.statStageTableDone); return; }
+      if (s === 'empty' || s === 'filling') {
+        var nextCell = route.filter(function (r) { return r.kind === 'cell' && !valueOf(r); })[0];
+        if (nextCell) {
+          var c = colById(nextCell.col);
+          var inCol = route.filter(function (r) { return r.kind === 'cell' && r.col === c.id; });
+          var got = inCol.filter(function (r) { return !!valueOf(r); }).length;
+          ctx.say(fill(t.statStageTableFill, { head: headText(c), n: got, m: inCol.length }));
+          return;
+        }
+        var tots = route.filter(function (r) { return r.kind === 'total'; });
+        ctx.say(fill(t.statStageTableTotals, { n: tots.filter(function (r) { return !!valueOf(r); }).length, m: tots.length }));
+        return;
+      }
+      var a = asks.filter(function (x) { return !askDone(x); })[0];
+      if (!a) { ctx.say(t.statStageTableDone); return; }
+      ctx.say(fill(a.type === 'row' ? t.statStageTableRow : t.statStageTableAsks, { label: a.type === 'row' ? a.label : String(a.label).replace(/\s*=\s*$/, '') }));
+    }
+    function paint() {
+      stage();
+      route.forEach(function (r, k) {
+        var sel = r.kind === 'ask' ? '.stat-cell[aria-label="' + String(r.label).replace(/"/g, '\\"') + '"]'
+          : '.stat-cell[data-col="' + r.col + '"][data-row="' + (r.kind === 'total' ? 'total' : r.row) + '"]';
+        var b = host.querySelector(sel);
+        if (!b) return;
+        b.textContent = valueOf(r);
+        if (valueOf(r)) b.setAttribute('data-placed', ''); else b.removeAttribute('data-placed');
+      });
+    }
+    /* a rational as the pupil would write it */
+    function fmtR(x, dp) {
+      if (!x) return '';
+      if (x.d === 1) return String(x.n);
+      var v = x.n / x.d;
+      return (dp !== undefined && dp !== null) ? v.toFixed(dp) : String(Math.round(v * 100) / 100);
+    }
+    function copyState(S) {
+      var out = { cells: {}, totals: {}, asks: {} };
+      derived.forEach(function (c) {
+        var src = (S.cells && S.cells[c.id]) || [];
+        out.cells[c.id] = []; for (var i = 0; i < rows; i++) out.cells[c.id].push(src[i] === undefined || src[i] === null ? '' : String(src[i]));
+      });
+      totalsOf.forEach(function (id) { out.totals[id] = (S.totals && S.totals[id]) ? String(S.totals[id]) : ''; });
+      asks.forEach(function (a) {
+        var v = S.asks ? S.asks[a.id] : undefined;
+        if (v === undefined) return;
+        out.asks[a.id] = a.type === 'row' ? (v === null || v === '' ? null : Number(v)) : String(v);
+      });
+      return out;
+    }
+
+    return {
+      start: function () { render(); },
+      reset: function () { cells = blankCells(); totals = {}; ans = {}; open = -1; render(); },
+      restore: function (S) { var c = copyState(S || {}); cells = c.cells; totals = c.totals; ans = c.asks; open = -1; render(); },
+      state: function () { return copyState({ cells: cells, totals: totals, asks: ans }); },
+      ready: function () {
+        var any = tableBoxes.some(function (r) { return !!valueOf(r); });
+        if (tableBoxes.length && !any) return { ok: false, why: T().statTableWhyCells };
+        if (nAsksDone() < asks.length) return { ok: false, why: T().statTableWhyAsks };
+        return { ok: true };
+      },
+      lock: function () {
+        ctx.dock.innerHTML = '';
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var parts = [];
+        derived.forEach(function (c) {
+          parts.push(headText(c) + ': ' + (D.cells[c.id] || []).map(function (x) { return fmtR(x); }).join(', '));
+        });
+        totalsOf.forEach(function (id) { parts.push(totalLabel(id) + ' ' + fmtR(D.totals[id])); });
+        asks.forEach(function (a) {
+          if (a.type === 'row') parts.push(a.label + ': ' + rowName(Number(a.answer)));
+          else parts.push(a.label + ' ' + fmtR(a.answer, a.dp));
+        });
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        box.textContent = parts.join(' \u00b7 ');
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var S = copyState((att && att.S) || {});
+        var g = el('div', 'stat-row struck');
+        route.forEach(function (r) {
+          var t = el('span', 'stat-tile');
+          var v = r.kind === 'cell' ? S.cells[r.col][r.row] : r.kind === 'total' ? S.totals[r.col] : S.asks[r.id];
+          t.textContent = v || '\u2014';
+          g.appendChild(t);
+        });
+        asks.forEach(function (a) {
+          if (a.type !== 'row') return;
+          var t = el('span', 'stat-tile');
+          var v = S.asks[a.id];
+          t.textContent = (v === undefined || v === null) ? '\u2014' : rowName(Number(v));
+          g.appendChild(t);
+        });
+        holder.appendChild(g);
+      }
+    };
+  };
+
   function renderReadOnly(host, q, att, verdict) {
     host.innerHTML = '';
     var wrap = el('div', 'stat-readonly');
@@ -17923,6 +19672,19 @@ function statsBoard(q, wrong) {
     if (q.kind === 'pick') return ((q.options || [])[S.pick] || {}).text || '';
     if (q.kind === 'stemleaf') return Object.keys(S.rows || {}).map(function (k) { return k + ' | ' + (S.rows[k] || []).join(' '); }).join('   ');
     if (q.kind === 'pie') return (q.cats || []).map(function (c) { return c.label + ' ' + ((S.angles || {})[c.id] || '\u2014') + '\u00b0'; }).join(' \u00b7 ');
+    if (q.kind === 'table') {
+      var parts = [];
+      Object.keys(S.cells || {}).forEach(function (k) { parts.push(k + ': ' + (S.cells[k] || []).map(function (x) { return x || '\u2014'; }).join(', ')); });
+      Object.keys(S.totals || {}).forEach(function (k) { parts.push('total ' + k + ' ' + (S.totals[k] || '\u2014')); });
+      (q.asks || []).forEach(function (a) {
+        var v = (S.asks || {})[a.id];
+        if (v === undefined || v === null || v === '') return;
+        var nameCol = (q.cols || []).filter(function (c) { return c.given && c.id !== 'f'; })[0];
+        var g = nameCol && a.type === 'row' ? nameCol.given[Number(v)] : null;
+        parts.push(a.label + ' ' + (a.type === 'row' ? (g && typeof g === 'object' ? (g.text || (g.lo + '\u2013' + g.hi)) : String(g === null || g === undefined ? v : g)) : v));
+      });
+      return parts.join(' \u00b7 ');
+    }
     if (q.kind === 'scatter') return [(S.pts || []).length + ' points', S.est !== undefined && S.est !== '' ? 'estimate ' + S.est : null, S.corr || null].filter(Boolean).join(' \u00b7 ');
     return '';
   }
@@ -19690,6 +21452,7 @@ function statsBoard(q, wrong) {
        They read in that order on the shelf; C is built first because it is what
        was asked for, so A and B slot in ABOVE this line as they are built. */
     { id: 'stats-collect', title: 'Handling Data', sub: 'Collecting and displaying', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'stemscatter' },
+    { id: 'stats-averages', title: 'Handling Data', sub: 'Averages', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'ftable' },
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
@@ -20698,6 +22461,15 @@ function statsBoard(q, wrong) {
         '<circle cx="89" cy="16" r="2.2" fill="#E4B824"/><circle cx="74" cy="22" r="2.2" fill="#E4B824" opacity="0.7"/>' +
         '<path d="M58 46 L92 12" fill="none" stroke="#E4B824" stroke-width="1.4" opacity="0.7"/></svg>';
     }
+    /* Book B: a frequency table with its totals row, a mean line beneath (DESIGN 20.1) */
+    if (kind === 'ftable') {
+      return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
+        '<rect x="12" y="8" width="76" height="34" fill="none" stroke="#E4B824" stroke-width="1.6"/>' +
+        '<path d="M12 19 H88 M12 30 H88 M37 8 V42 M62 8 V42" fill="none" stroke="#E4B824" stroke-width="1" opacity="0.7"/>' +
+        '<path d="M12 42 H88" fill="none" stroke="#E4B824" stroke-width="2.4"/>' +
+        '<path d="M40 50 H60" fill="none" stroke="#E4B824" stroke-width="2" stroke-linecap="round"/>' +
+        '<circle cx="24" cy="36" r="2" fill="#E4B824"/><circle cx="49" cy="36" r="2" fill="#E4B824"/><circle cx="74" cy="36" r="2" fill="#E4B824"/></svg>';
+    }
     if (kind === 'curve') {
       return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
         '<path d="M8 50 C 40 50, 56 30, 92 8" fill="none" stroke="#E4B824" stroke-width="2.5" stroke-linecap="round"/>' +
@@ -21180,6 +22952,14 @@ function statsBoard(q, wrong) {
       s4: ['putting the leaves in order', 'which stem a value goes on', 'the key', 'something else'],
       s5: ['plotting the points', 'drawing the line of best fit', 'reading off the line', 'something else'],
       _: ['the method', 'reading the scale', 'the arithmetic', 'something else']
+    },
+    'stats-averages': {
+      s1: ['putting the list in order first', 'which average is which', 'the arithmetic', 'something else'],
+      s2: ['finding the total first', 'how many there are now', 'the arithmetic', 'something else'],
+      s3: ['multiplying each value by its frequency', 'the totals row', 'dividing by the total frequency', 'something else'],
+      s4: ['the midpoints', 'multiplying by the frequency', 'dividing by the total frequency', 'something else'],
+      s5: ['which average changes', 'what a table cannot tell you', 'true, false or not enough information', 'something else'],
+      _: ['the method', 'the totals', 'the arithmetic', 'something else']
     },
     'stats-quartiles': {
       s1: ['putting the list in order', 'finding the right position', 'taking one away from the other', 'something else'],
