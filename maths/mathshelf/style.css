@@ -863,7 +863,27 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx-slip { color: var(--marking-red); }
 
 /* tickboxes for activity visibility */
-.acts-ticks { display: flex; gap: var(--sq); align-items: center; }
+/* THE SERIES GROUPS STACK, AND EACH GROUP WRAPS (ruling 53, 13 Sept 2026).
+   This was ONE non-wrapping flex line, 966px of it, which is what pushed the
+   whole set-up page sideways at 768 and 375. Each series is a block of its
+   own now: its heading on its own line, its boxes flowing underneath and
+   wrapping when the cell makes them. No colour is stated here — the grounds
+   and the ink are already tokened above and by shell.css. */
+.acts-ticks { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.ticks-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.ticks-group .ticks-series { flex: 0 0 100%; margin: 0; }
+
+/* THE ROW'S CONTROLS: TWO LINES, THE SAME IN EVERY ROW, AND NONE OF THEM WRAPS.
+   The cell measured 113px and "Open the markbook" (93x64) and "Copy link"
+   (87x58) each broke onto two lines behind three inline margin offsets. */
+.ledger td.row-acts { white-space: nowrap; vertical-align: top; }
+.row-acts-main { margin-bottom: 6px; }
+.row-acts-more { display: flex; gap: 6px; align-items: center; }
+.row-acts button { white-space: nowrap; }
+
+/* AND THE TABLE SCROLLS INSIDE ITS OWN FRAME, NEVER THE PAGE. */
+.ledger-host { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ledger-scroll-hint { margin-top: 6px; }
 .tickbox {
   display: inline-flex;
   align-items: center;

@@ -91,6 +91,11 @@ This is a re-file: all thirteen REWRITEs from my first read of this book were bu
 | PASS | markbook link › book label | Handling Data · marks so far | Plain heading. |
 | PASS | markbook link › totals | Handling Data · marks so far84 / 84Full marks — the gold star is yours.29 of 29 questions checked · your whole book is on your teacher's copy | Four screen elements run together by the capture tool; read apart they are the book label, the score, the approved "gold star" line, and the honest "your whole book is on your teacher's copy" line already passed in the sister book. |
 
+_Added on the steward cut, 13 Sept 2026 — five sentences judged by path, outside the transcript._
+
+| REWRITE | Ex 1 (mean, median, mode and range) › worked-example film › last caption | "Your own rhyme for keeping the four apart." | No verb — a title, not a sentence she can act on. Coming straight after the film has written its own rhyme in red, it leaves her guessing whether she is meant to do something now, and what. "The four" is fine, pointing back at the mean, median, mode and range the film just worked through, but the fragment itself would trip her reading it aloud. → "Make up your own rhyme to keep the four apart." |
+| PASS | Ex 1 (mean, median, mode and range) › worked-example film › last caption (replacement wording) | "Here is a rhyme to help you keep the four apart." | Fixes the earlier fragment — now a full sentence with its verb ("is"), and it truthfully names what is happening on screen at that moment (a rhyme being written for her), rather than leaving her guessing whether she must invent one herself. "The four" still points back cleanly at the mean, median, mode and range the film just worked through. Reads clean aloud. |
+
 ## Per-item blocks
 
 **q1 — find the mean, median, mode and range of a list.**

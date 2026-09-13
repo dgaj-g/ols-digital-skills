@@ -3,34 +3,26 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# BOOK B — Handling Data · Averages (13 Sept 2026, 00:3x, Opus 5, RESUME_AB).
-# 180-minute clock. Client-only: the store is the standalone project and the
-# act whitelist is the Sheet's Config row `acts` (qa-tickbox prints the row).
-content-stats-averages.js
-statcore.js
-jotter-stats.js
-jotter.js
-strings.js
-style.css
+# STEWARD CUT — the set-up screen: book names, tidy row controls, Set-up named,
+# the class table in its own frame (13 Sept 2026, Fable steward, 120-minute clock)
 script.js
 staff.js
-index.html
-dev/test-statcore.js
-dev/lint-content-stats.js
-dev/validate-all.js
-server/build-pathb.js
-server/Index.html
-server/Code.gs
-server/DEPLOY.md
-server/DEPLOY_LOG.md
-tools/qa/*.js
-tools/qa/lib/*
-tools/qa/fixtures/*
+strings.js
+style.css
+tools/qa/sit-teacher.js
+tools/qa/fixtures/plants.js
 tools/qa/MATHS_*.md
-tools/qa/vocab/*
 tools/qa/out/*
 tools/qa/CUT_SCOPE.txt
-HANDOVER.md
-INTERFACES.md
-ADDING_A_TOPIC.md
 PROGRESS.md
+content-stats-averages.js
+tools/qa/qa-waits.js
+server/Index.html
+server/Code.gs
+server/DEPLOY_LOG.md
+HANDOVER.md
+tools/qa/MATHS_COLD_READ_VERDICTS_TEACHER.md
+tools/qa/MATHS_COLD_READ_VERDICTS_stats-averages.md
+tools/qa/MATHS_COLD_READ_VERDICTS_stats-collect.md
+tools/qa/MATHS_COLD_READ_VERDICTS_stats-quartiles.md
+tools/qa/MATHS_COLD_READ_VERDICTS_v4.md

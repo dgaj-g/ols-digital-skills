@@ -85,7 +85,7 @@
               do: [{ write: { text: '135 ÷ 9 = 15' } }] },
             { say: 'The range is the difference between the lowest value and the highest value.',
               do: [{ write: { text: '21 − 13 = 8' } }] },
-            { say: 'Her own rhyme for keeping the four apart.',
+            { say: 'Here is a rhyme to help you keep the four apart.',
               do: [{ note: { red: true, text: 'Mode, Mode, Mode the Most. Range is High to Low. Median\'s in the middle, of an Ordered Row.' } }] }
           ]
         },

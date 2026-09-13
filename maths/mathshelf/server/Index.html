@@ -1074,7 +1074,27 @@ body.gj .ov-why { max-width: 54ch; line-height: 1.45; margin: 4px 0 8px; }
 .wall .col-dx-slip { color: var(--marking-red); }
 
 /* tickboxes for activity visibility */
-.acts-ticks { display: flex; gap: var(--sq); align-items: center; }
+/* THE SERIES GROUPS STACK, AND EACH GROUP WRAPS (ruling 53, 13 Sept 2026).
+   This was ONE non-wrapping flex line, 966px of it, which is what pushed the
+   whole set-up page sideways at 768 and 375. Each series is a block of its
+   own now: its heading on its own line, its boxes flowing underneath and
+   wrapping when the cell makes them. No colour is stated here \2014  the grounds
+   and the ink are already tokened above and by shell.css. */
+.acts-ticks { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.ticks-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.ticks-group .ticks-series { flex: 0 0 100%; margin: 0; }
+
+/* THE ROW'S CONTROLS: TWO LINES, THE SAME IN EVERY ROW, AND NONE OF THEM WRAPS.
+   The cell measured 113px and "Open the markbook" (93x64) and "Copy link"
+   (87x58) each broke onto two lines behind three inline margin offsets. */
+.ledger td.row-acts { white-space: nowrap; vertical-align: top; }
+.row-acts-main { margin-bottom: 6px; }
+.row-acts-more { display: flex; gap: 6px; align-items: center; }
+.row-acts button { white-space: nowrap; }
+
+/* AND THE TABLE SCROLLS INSIDE ITS OWN FRAME, NEVER THE PAGE. */
+.ledger-host { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ledger-scroll-hint { margin-top: 6px; }
 .tickbox {
   display: inline-flex;
   align-items: center;
@@ -3014,7 +3034,13 @@ window.OLS_TRANSPORT = {
       needsYouStuck: 'Nothing saved for {minutes} minutes on {book}, {exercise}, {question}',
       csvCopied: 'Copied. Paste it into a spreadsheet.',
       csvFallback: 'Your browser would not let the page copy for you. Select the text below and copy it yourself.',
+      /* the screen's name, glossed where a colleague first meets it (the
+         separated reader, 13 Sept 2026: a bare "Set-up" asks "set up what?") */
+      setUpGloss: 'Set-up is where you add a class and choose the books it sees.',
       setUpHint: 'Tick the books this class should see.',
+      /* the class table scrolls inside its own frame on a small screen, and a
+         frame that clips silently loses half the table (ruling 53) */
+      scrollTable: 'Scroll or swipe the table sideways to see all of it.',
       setUpClosedHint: 'A book that is not ticked is closed for that class: it is not on the pupils\u2019 shelf at all.',
 
       /* the markbook's own words */
@@ -9636,7 +9662,7 @@ function statsBoard(q, wrong) {
               do: [{ write: { text: '135 \u00f7 9 = 15' } }] },
             { say: 'The range is the difference between the lowest value and the highest value.',
               do: [{ write: { text: '21 \u2212 13 = 8' } }] },
-            { say: 'Her own rhyme for keeping the four apart.',
+            { say: 'Here is a rhyme to help you keep the four apart.',
               do: [{ note: { red: true, text: 'Mode, Mode, Mode the Most. Range is High to Low. Median\'s in the middle, of an Ordered Row.' } }] }
           ]
         },
@@ -20094,9 +20120,9 @@ function statsBoard(q, wrong) {
 
   function showClasses() {
     var body = el('div', '');
-    var scopeNote = isAdmin
+    var scopeNote = esc(TT('setUpGloss')) + ' ' + (isAdmin
       ? 'You are the markbook owner &mdash; you can see and manage every class.'
-      : 'Showing the classes you created &mdash; each teacher sees only their own.';
+      : 'Showing the classes you created &mdash; each teacher sees only their own.');
     /* opacity .65 on an already-muted grey measured 3.4:1 - quiet is a smaller
        size and a lighter weight, never a colour faded until it cannot be read */
     if (meEmail) scopeNote += ' <span class="quiet-note">(' + esc(meEmail) + ')</span>';
@@ -20107,10 +20133,22 @@ function statsBoard(q, wrong) {
       'style="font-family:var(--f-stationery);font-size:15px;padding:10px;border:1.5px solid var(--navy);border-radius:4px;max-width:240px" aria-label="New class name" />' +
       '<button id="st-add" class="btn-stamp">Add a class</button>' +
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
+      /* THE TABLE SCROLLS INSIDE ITS OWN FRAME, NEVER THE PAGE (ruling 53).
+         At 768 and 375 the tickbox cell made this table 966px wide and the
+         WHOLE DOCUMENT went sideways with it \u2014 1242px of page on a 768px
+         screen, so every heading and every message slid off too. The frame
+         clips it; the hint under it says so when there is something hidden. */
+      '<div class="ledger-host">' +
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
+      '</div>' +
       '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' ' + esc(TT('setUpClosedHint')) + '</p>';
-    shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
+    /* THE SCREEN IS CALLED WHAT THE INSTRUCTIONS CALL IT (ruling 54). The class
+       page's own button, the crumb back from it and two server sentences all
+       said "Set-up"; this screen called itself "All classes" / "Your classes",
+       so there was nowhere on it that the word appeared. Who sees what is the
+       scope sentence's job, directly above the table, and it still says it. */
+    shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: 'Set-up' }] });
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
 
@@ -20206,11 +20244,17 @@ function statsBoard(q, wrong) {
           var key = a.series || 'Other';
           (groups[key] = groups[key] || []).push(a);
         });
+        /* EACH SERIES IS ONE GROUP, AND A GROUP WRAPS (ruling 53). The boxes
+           used to be one non-wrapping flex line 966px long with the series
+           headings strung along it; a group is a block of its own now, its
+           heading on its own line and its boxes flowing underneath. */
         Object.keys(groups).sort().forEach(function (key) {
-          tickWrap.appendChild(el('p', 'ticks-series', esc(key)));
-          groups[key].forEach(addTick);
+          var grp = el('div', 'ticks-group');
+          grp.appendChild(el('p', 'ticks-series', esc(key)));
+          groups[key].forEach(function (a) { addTick(a, grp); });
+          tickWrap.appendChild(grp);
         });
-        function addTick(a) {
+        function addTick(a, into) {
           var lab = el('label', 'tickbox');
           var cb = document.createElement('input');
           cb.type = 'checkbox';
@@ -20228,7 +20272,7 @@ function statsBoard(q, wrong) {
             c._tickSync = c._tickSync || { busy: false, queued: null, pending: null, tickWrap: tickWrap };
             c._tickSync.tickWrap = tickWrap;
             c._tickSync.queued = acts;
-            c._tickSync.pending = { id: a.id, title: a.title, on: cb.checked };
+            c._tickSync.pending = { id: a.id, title: window.GJ.app.bookName(a), on: cb.checked };
             /* A SAVING MESSAGE IS PRONOUNCED, NOT A WHISPER (ruling 35). The
                class line used to breathe quietly with .is-waiting; it now
                becomes the same gold wait-card the passcode screen uses, in the
@@ -20240,25 +20284,29 @@ function statsBoard(q, wrong) {
             runTickSync(c);
           });
           lab.appendChild(cb);
-          lab.appendChild(document.createTextNode(a.title));
+          lab.appendChild(document.createTextNode(window.GJ.app.bookName(a)));
           var band = el('span', 'tick-band', esc(a.band || ''));
           lab.appendChild(band);
-          tickWrap.appendChild(lab);
+          (into || tickWrap).appendChild(lab);
         }
         ticks.appendChild(tickWrap);
 
-        var actions = el('td', '');
+        /* TWO LINES, THE SAME IN EVERY ROW (ruling 53). The cell measured 113px
+           and the four buttons stacked raggedly behind three inline margins,
+           so "Open the markbook" and "Copy link" each broke in two and no two
+           rows looked alike. The markbook is the one she came for and it gets
+           its own line; the three small ones sit in a row under it. */
+        var actions = el('td', 'row-acts');
+        var actMain = el('div', 'row-acts-main');
+        var actMore = el('div', 'row-acts-more');
         var wallB = el('button', 'toolbtn', 'Open the markbook');
         wallB.addEventListener('click', function () { view.cls = c.name; showClassPage(); });
         var linkB = el('button', 'btn-pencil', esc(TT('copyLink')));
-        linkB.style.marginLeft = '6px';
         linkB.addEventListener('click', function () { copyText(classLink(c.name), cmsg, 'Link for ' + c.name + ' copied.'); });
         var qrB = el('button', 'btn-pencil', 'QR');
-        qrB.style.marginLeft = '6px';
         qrB.addEventListener('click', function () { showQr(c.name); });
         var delB = el('button', 'btn-pencil', '&times;');
         delB.setAttribute('aria-label', TT('deleteClassAria', { 'class': c.name }));
-        delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
           SURF('set-up', 'delete-armed');
           openConfirm('Delete ' + c.name + '?',
@@ -20273,7 +20321,9 @@ function statsBoard(q, wrong) {
               }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
-        actions.appendChild(wallB); actions.appendChild(linkB); actions.appendChild(qrB); actions.appendChild(delB);
+        actMain.appendChild(wallB);
+        actMore.appendChild(linkB); actMore.appendChild(qrB); actMore.appendChild(delB);
+        actions.appendChild(actMain); actions.appendChild(actMore);
 
         tr.appendChild(el('td', '', '<b>' + esc(c.name) + '</b>'));
         tr.appendChild(el('td', '', String(c.count || 0)));
@@ -20281,7 +20331,36 @@ function statsBoard(q, wrong) {
         tr.appendChild(actions);
         rows.appendChild(tr);
       });
+      sizeHint();
     }
+
+    /* THE HIDDEN PART OF THE TABLE SAYS IT IS THERE. A frame that clips
+       silently is a frame that loses half the table for anyone who does not
+       think to swipe it \u2014 so the hint appears only when there IS something
+       behind the edge, and goes again when there is not. Measured after every
+       render and on every resize; the listener lets go the moment this screen
+       is no longer the one on the page. */
+    /* THE HINT EXISTS ONLY WHILE IT IS TRUE. A hidden sentence is still a
+       sentence on the page - the transcript the separated reader is handed
+       read it as if it were always shown (13 Sept 2026) - so the line is
+       made when the frame hides width and removed when it does not. */
+    function sizeHint() {
+      var host = body.querySelector('.ledger-host');
+      if (!host) return;
+      var hint = body.querySelector('.ledger-scroll-hint');
+      var needed = host.scrollWidth > host.clientWidth;
+      if (needed && !hint) {
+        hint = el('p', 'ui-msg ledger-scroll-hint', esc(TT('scrollTable')));
+        host.parentNode.insertBefore(hint, host.nextSibling);
+      } else if (!needed && hint) {
+        hint.parentNode.removeChild(hint);
+      }
+    }
+    var onResize = function () {
+      if (!document.body.contains(body)) { window.removeEventListener('resize', onResize); return; }
+      sizeHint();
+    };
+    window.addEventListener('resize', onResize);
     render();
 
     var addB = body.querySelector('#st-add');
@@ -20369,9 +20448,14 @@ function statsBoard(q, wrong) {
     return String(q.prompt || '').slice(0, 46);
   }
 
+  /* A BOOK IS NAMED WITH ITS VOLUME, EVERYWHERE A TEACHER MEETS IT (ruling 52,
+     13 Sept 2026). Three copper books are titled "Handling Data" and this
+     returned that title for all three, so the tickboxes, the book tabs, the
+     crumb and the tick messages all said the same word three times. The name
+     is derived in script.js from ACTIVITIES itself \u2014 nothing per book to
+     remember, and nothing here to keep in step with it. */
   function bookTitle(actId) {
-    var a = window.GJ.app.activities.filter(function (x) { return x.id === actId; })[0];
-    return a ? a.title : actId;
+    return window.GJ.app.bookName(actId);
   }
   function markState(actId, state, q) {
     var rec = state && state.qs && state.qs[q.id];
@@ -20589,7 +20673,7 @@ function statsBoard(q, wrong) {
     sw.setAttribute('role', 'group');
     sw.setAttribute('aria-label', TT('whichBook'));
     acts.forEach(function (a) {
-      var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
+      var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(window.GJ.app.bookName(a)));
       b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
       b.addEventListener('click', function () { view.act = a.id; SURF('class-page', 'book-switch'); showClassPage(); });
       sw.appendChild(b);
@@ -20634,7 +20718,7 @@ function statsBoard(q, wrong) {
 
     shell({
       body: body, surface: 'class-page', state: 'loading-cold', live: true,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls }]
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls }]
     });
 
     /* the cold first switch says WHICH class it is loading, by name, before
@@ -20775,7 +20859,7 @@ function statsBoard(q, wrong) {
 
     shell({
       body: body, surface: 'exercise-view', state: 'loaded', live: true,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: showClassPage },
                { label: bookTitle(view.act), go: showClassPage },
                { label: 'Ex ' + (si + 1) + ' \u00b7 ' + sec.title }]
     });
@@ -20854,7 +20938,7 @@ function statsBoard(q, wrong) {
 
     shell({
       body: body, surface: 'question-view', state: 'loading-progressive',
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: showClassPage },
                { label: 'Ex ' + (item.secIdx + 1) + ' \u00b7 ' + item.secTitle, go: function () { showExercise(item.secIdx); } },
                { label: item.qLabel }]
     });
@@ -20897,7 +20981,7 @@ function statsBoard(q, wrong) {
     var body = el('div', '');
     var actTabs = el('div', 'check-row');
     window.GJ.app.activities.forEach(function (a) {
-      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
+      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', esc(window.GJ.app.bookName(a)));
       b.addEventListener('click', function () { view.act = a.id; showClassPage(); });
       actTabs.appendChild(b);
     });
@@ -20919,7 +21003,7 @@ function statsBoard(q, wrong) {
       '<span class="glyph-live">\u25cf</span> working now &middot; ' +
       '<span class="glyph-un">\u2014</span> not started';
     body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
-    shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
+    shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
     /* the grid is wider and taller than the screen; once she has scrolled it,
        the pupil column and the question row are stuck to the edges and that is
        a different screen to read */
@@ -21067,7 +21151,7 @@ function statsBoard(q, wrong) {
        chosen first and named in full on both sides. */
     var jv = sweep ? { surface: 'question-view', state: 'loaded' } : { surface: 'book-view', state: 'pencil' };
     shell({ body: body, surface: jv.surface, state: jv.state,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
         { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
@@ -21278,7 +21362,7 @@ function statsBoard(q, wrong) {
     body.appendChild(msg);
     var list = el('div', '');
     body.appendChild(list);
-    shell({ body: body, surface: 'slips', state: 'ranked', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Slips' }] });
+    shell({ body: body, surface: 'slips', state: 'ranked', crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Slips' }] });
 
     busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
     fullStates().then(function (all) {
@@ -21455,6 +21539,23 @@ function statsBoard(q, wrong) {
     { id: 'stats-averages', title: 'Handling Data', sub: 'Averages', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'ftable' },
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
+
+  /* A BOOK IS NAMED WITH ITS VOLUME WHEREVER ANOTHER BOOK SHARES ITS TITLE
+     (ruling 52, 13 Sept 2026). Three copper books are titled "Handling Data"
+     and told apart only by `sub`, so every screen that printed the title alone
+     printed the same name three times. A series is named with its volume \u2014
+     "Handling Data \u00b7 Averages" \u2014 and a book nothing else collides with keeps
+     its plain title. DERIVED FROM ACTIVITIES, never a flag on a book: a fourth
+     Handling Data volume names itself the day it is added, and the day Angles
+     ever gains a second volume, both of them start saying which they are.
+     Takes an id or an activity. */
+  function bookName(a) {
+    if (typeof a === 'string') a = ACTIVITIES.filter(function (x) { return x.id === a; })[0] || { title: a };
+    if (!a) return '';
+    var shared = ACTIVITIES.some(function (x) { return x.id !== a.id && x.title === a.title; });
+    if (!shared || !a.sub) return a.title;
+    return a.title + ' \u00b7 ' + a.sub;
+  }
 
   /* WHAT THE OFFLINE STUB THINKS A CLASS HAS, shaped exactly as the server
      shapes it (server/Code.gs.template: ACTS, LEGACY_ON, coerceActs_). The two
@@ -22043,6 +22144,19 @@ function statsBoard(q, wrong) {
      ever reaches her as a sentence: whatever comes back to the screen came
      from the store or the relay itself. */
   var STORE_TIMEOUT_MS = 25000;
+  /* THE ECHO BOUNCE (13 Sept 2026, the steward's probe). A web app answers a
+     POST with a 302 to script.googleusercontent.com, where the stored answer
+     is read back. About one time in eight (1 of 8 rounds at 12:1x; 2 of 3 at
+     12:0x) that host waits ~15 s and then answers with ANOTHER 302 - back to
+     the script's own /exec as a GET - and the browser lands on an HTML page
+     that is not the store's JSON. The store had already done the work (the
+     Executions log shows the doPost Completed, and a "doGet Failed" row for
+     the bounce), only the answer was lost. Treating that as a closed road cost
+     a whole relay round (4-23 s) and, for a save, the 20 s re-send loop that
+     Damien watched for twenty minutes on 13 Sept. So an answer that is not the
+     store's JSON is tried again on the direct road first, with a fresh
+     request, up to this many times, and only then handed to the relay. */
+  var STORE_RESENDS = 2;
   function hasStore() {
     var st = BOOT && BOOT.store;
     return !!(st && st.url && st.sig && typeof fetch === 'function');
@@ -22073,7 +22187,8 @@ function statsBoard(q, wrong) {
       return false;
     }, function () { return false; });
   }
-  function storeCall(p, retried) {
+  function storeCall(p, retried, resends) {
+    resends = resends || 0;
     var shaped = storePayload(p);
     if (!shaped) return storeFallback(p, 'has no shape');
     var st = BOOT.store;
@@ -22088,11 +22203,17 @@ function statsBoard(q, wrong) {
         clearTimeout(timer);
         var out = null;
         try { out = JSON.parse(text); } catch (e) { out = null; }
-        if (!out || typeof out !== 'object') return storeFallback(p, 'answered something that is not the store');
+        if (!out || typeof out !== 'object') {
+          if (resends < STORE_RESENDS) {
+            try { console.warn('[MathShelf] store: direct path answered something that is not the store for ' + p.action + '; sending it again (' + (resends + 1) + ' of ' + STORE_RESENDS + ')'); } catch (e) {}
+            return storeCall(p, retried, resends + 1);
+          }
+          return storeFallback(p, 'answered something that is not the store ' + (resends + 1) + ' times');
+        }
         if (out.error === 'token-expired' || out.error === 'token-bad') {
           if (retried) return storeFallback(p, 'was refused twice (' + out.error + ')');
           return storeRefresh().then(function (fresh) {
-            return fresh ? storeCall(p, true) : storeFallback(p, 'could not get a fresh token');
+            return fresh ? storeCall(p, true, resends) : storeFallback(p, 'could not get a fresh token');
           });
         }
         return out;
@@ -23358,6 +23479,7 @@ function statsBoard(q, wrong) {
     storePayload: storePayload,
     me: function () { return me; },
     activities: ACTIVITIES,
+    bookName: bookName,
     content: function (id) { return window.GJ_CONTENT[id]; },
     summarise: summarise,
     engineFor: engineFor,

@@ -1,4 +1,6 @@
-TRANSCRIPT HASH: d141eb38da65d7e3
+TRANSCRIPT HASH: eade7de9685d72e6
+
+_Re-filed on the steward cut, 13 Sept 2026, against this hash (was d141eb38da65d7e3): the transcript differs from the judged one in ONE sentence, the Set-up gloss at the top of the class table, judged by path in the rows added at the end of the table; every other row stands verbatim._
 
 I read only the teacher transcript (`_teacher.md`) and the checklist. I read from a maths colleague's seat: someone who has never opened this markbook, at a laptop or smartboard between two lessons, with time scarce and nobody to ask (checklist §6).
 
@@ -48,6 +50,14 @@ I read only the teacher transcript (`_teacher.md`) and the checklist. I read fro
 | PASS | starter › prompt | Where has this gone wrong — and what should the line say? | Clear, direct, two-part question fit for projecting to a class. |
 | PASS | Set-up › owner banner (repeat) | You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) | Clear, consistent with its first appearance. |
 | FAIL | Set-up › copy-by-hand link | http://localhost/maths/mathshelf/index.html?class=demo | This is not a link a real teacher could hand to her class — "localhost" only works on the machine serving this demo, unlike the clean short-link form ("ols.link/10a") this same feature uses elsewhere. A teacher trusting this cold would send her class nowhere. → "ols.link/10b" |
+
+_Added on the steward cut, 13 Sept 2026 — five sentences judged by path, outside the transcript._
+
+| REWRITE | Set-up screen › crumb at the top of the class table screen | "Set-up" | Bare and unglossed — the checklist's own list of platform words needing a first-meeting gloss names "Set-up", and nothing beside it says what the screen holds (classes? books? topics?). A colleague landing here cold would ask "set up what?" → "Your classes" |
+| REWRITE | Any markbook (book) page › crumb back to the class table screen | "Set-up" | Same unglossed word, now doing double duty as the way back — from deep inside a book it reads like a route to preferences, not a path back to her list of classes and pupils. → "Your classes" |
+| PASS | Set-up screen › topic tickbox, "Handling Data" strand | "Handling Data · Collecting and displaying" | Plain and concrete — the department's own strand name plus an ordinary description of what the book covers. Reads clean aloud, consistent with its siblings ("Handling Data · Averages", "Handling Data · Quartiles, curves and box plots") and the plain single-word boxes ("Angles", "Algebra"), and works equally well as the markbook's book tab. |
+| PASS | Set-up screen › grey line under the class table, shown only when it scrolls sideways | "Scroll or swipe the table sideways to see all of it." | Names both ways in (mouse/trackpad and touch), so nobody is told to do something their device can't manage; "it" points straight back at the table sitting above the line. Clear, actionable, reads clean aloud. |
+| PASS | Set-up screen › note above the class table, first sentence (crumb above still reads "Set-up"; followed by the owner banner) | "Set-up is where you add a class and choose the books it sees." | This is exactly the gloss the bare crumb was missing — it names the two things this screen is for (add a class, choose the books it sees) in plain words, right at first meeting. "The books it sees" matches the approved metaphor already passed on this screen ("Tick the books this class should see."). Two clauses, both with their verb, reads clean aloud. |
 
 ## The read-first candidate prompts, judged by path
 
