@@ -88,6 +88,8 @@ const CONTROLS = [
   { id: 'ledger-pushes-the-page', kind: 'fixture', plant: 'fixture-ledger-no-host', mustFail: /pushes the whole page sideways/ },
   /* the pupil's book named "Algebra" whatever it was (13 Sept 2026, the tutorial film) */
   { id: 'bookview-wrong-book-name', kind: 'fixture', plant: 'fixture-bookview-two-book-name', mustFail: /names the wrong book/ },
+  /* the Staff button on the teacher's own door (13 Sept 2026, the tutorial film's chapter 1) */
+  { id: 'staff-door-stray-staff-button', kind: 'fixture', plant: 'fixture-staff-door-stray-button', mustFail: /Staff button shows on the staff door/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -167,6 +169,27 @@ async function walk(page, width, projector, sidecar, transcript) {
     const log = await page.evaluate(() => window.__stateLog || []);
     return log.some((e) => e.surface === surface && e.state === wantState);
   };
+
+  /* --- THE TEACHER'S OWN DOOR FIRST (13 Sept 2026, seen in the tutorial film).
+     The staff link carries no class, so the cover lands on the passcode box
+     and hides its Staff button; a class rule's display put the button back,
+     and the door offered her a door to the room she was standing in. The
+     walk below arrives by a class link and presses Staff, so it never stood
+     here; this stands here, then goes back to where the walk starts. --- */
+  const walkStart = page.url();
+  await page.goto(BASE + '?nointro&reserve=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await W.settle(page);
+  const landing = await page.evaluate(() => {
+    const root = document.getElementById('scr-cover'); const b = document.getElementById('cover-staff'); const box = document.getElementById('cover-staffbox');
+    const r = b ? b.getBoundingClientRect() : null;
+    return { state: root ? root.getAttribute('data-state') : '', boxShown: !!(box && !box.hidden), staffShown: !!(b && r && r.width > 0 && r.height > 0 && getComputedStyle(b).display !== 'none' && getComputedStyle(b).visibility !== 'hidden') };
+  });
+  g.check(landing.state === 'staff' && landing.boxShown, 'staff-cover:landing @' + width, 'labelled',
+    'the staff link did not land on the passcode box — the cover drew "' + landing.state + '"');
+  g.check(!landing.staffShown, 'staff-cover:landing @' + width, 'labelled',
+    'the Staff button shows on the staff door — the teacher arriving by the staff link is already in the staff area, so the button is a door to the room she is standing in');
+  await page.goto(walkStart, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await W.settle(page);
 
   /* --- the cover, wrong passcode first --- */
   await page.evaluate(() => localStorage.clear());
@@ -441,7 +464,8 @@ async function walk(page, width, projector, sidecar, transcript) {
   if (crumbBook && bookHead) {
     g.check(bookHead.indexOf(crumbBook) > -1, 'book-view:pencil @' + width, 'labelled',
       'the pupil\'s book names the wrong book — its header reads "' + bookHead.slice(0, 80) + '" while the trail was on "' + crumbBook + '"');
-  } else g.note('book-view:pencil @' + width + ': no header line or no book crumb to compare (' + JSON.stringify({ crumbBook, bookHead: bookHead.slice(0, 40) }) + ')');
+  } else g.check(false, 'book-view:pencil @' + width, 'labelled',
+    'the walk could not compare the pupil\'s book with the trail (' + JSON.stringify({ crumbBook, bookHead: bookHead.slice(0, 40) }) + ') — a law that cannot read its own evidence is not a pass');
   say(await page.evaluate(() => (document.querySelector('.jp-read, .readline') || {}).textContent || ''));
   say(await page.evaluate(() => (document.querySelector('.jp-posture, .posture') || {}).textContent || ''));
 
@@ -510,7 +534,12 @@ async function walk(page, width, projector, sidecar, transcript) {
   await wait(1200);
   await armLog();
   const switched = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('.cp-books button')].filter(x => x.getAttribute('aria-pressed') !== 'true')[0];
+    /* PREFER A THIRD BOOK (13 Sept 2026): the control that puts the v3 two-book
+       guess back can only be seen from a book that is neither Angles nor
+       Algebra — on those two the guess is right. The 18:02 battery switched to
+       Algebra and passed the planted fault. */
+    const off = [...document.querySelectorAll('.cp-books button')].filter(x => x.getAttribute('aria-pressed') !== 'true');
+    const b = off.filter(x => !/^\s*(Angles|Algebra)\b/.test(x.textContent || ''))[0] || off[0];
     if (!b) return false; b.click(); return true;
   });
   if (switched) {
@@ -522,6 +551,10 @@ async function walk(page, width, projector, sidecar, transcript) {
     if (await drewState('class-page', 'book-switch')) await recordKnown('class-page', 'book-switch');
     else await record('class-page', 'book-switch');
   }
+
+  /* THE BOOK SHE IS ON, by the pressed tab's own name, before anything else is
+     opened from it — compared with the pupil-book header a few presses below */
+  const tabBook = await page.evaluate(() => { const b = document.querySelector('.cp-books button[aria-pressed="true"]'); return b ? (b.textContent || '').trim() : ''; });
 
   /* a cell under her eye, before she opens it */
   await page.evaluate(() => { const c = document.querySelector('.excard'); if (c) c.click(); });
@@ -551,6 +584,13 @@ async function walk(page, width, projector, sidecar, transcript) {
   });
   await wait(1600);
   if (openedAmber) {
+    /* the same law as book-view:pencil above, stood on the SWITCHED book */
+    const head2 = await page.evaluate(() => { const m = [...document.querySelectorAll('#scr-staff .ui-msg')].find(e => /every committed line/.test(e.textContent || '')); return m ? m.textContent.trim() : ''; });
+    if (tabBook && head2) {
+      g.check(head2.indexOf(tabBook) > -1, 'book-view:switched @' + width, 'labelled',
+        'the pupil\'s book names the wrong book — its header reads "' + head2.slice(0, 80) + '" while the class page was on "' + tabBook + '"');
+    } else g.check(false, 'book-view:switched @' + width, 'labelled',
+      'the walk could not compare the pupil\'s book with the book tab (' + JSON.stringify({ tabBook, head2: head2.slice(0, 40) }) + ') — a law that cannot read its own evidence is not a pass');
     const wl = await page.evaluate(() => {
       const su = document.querySelector('[data-surface="book-view"]');
       return su ? su.getAttribute('data-state') : null;

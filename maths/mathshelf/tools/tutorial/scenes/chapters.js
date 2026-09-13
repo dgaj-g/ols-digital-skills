@@ -91,7 +91,7 @@ const opening = {
     await cine.curtain({
       crest: CREST, kicker: F.KICKER,
       title: 'A Guide to MathShelf',
-      sub: 'The teacher’s side, the pupil’s side, and the markbook.\nFilmed on a practice class of made-up pupils.'
+      sub: 'The teacher’s side, the pupil’s side, and the markbook.'
     });
     cine.mark('lift');
     await cine.pause(5200);
@@ -105,22 +105,26 @@ const ch1 = {
   id: 'ch1', label: 'Opening the markbook',
   run: async ({ page, cine }) => {
     await F.boot(page, '?nointro');
-    await F.chapterOpen(cine, CREST, 1, 'Opening the markbook', 'the one link, and the staff passcode');
+    await F.chapterOpen(cine, CREST, 1, 'Opening the markbook', 'the staff link, and the passcode');
     await cine.lift();
     await cine.ensureCursor(640, 640);
 
-    await cine.caption('MathShelf has <b>one address</b>. Pupils open it from their class link; you open the same address to reach the markbook.');
+    /* HIS RULING (13 Sept 2026): "one address" misled — a teacher would think
+       one link serves everything. The staff link is the teacher's; every class
+       carries its own. The Staff button is NOT pressed: the staff link lands
+       on the passcode box already, and the film stands where the teacher
+       stands. Google's consent screen cannot be filmed (it only comes on a
+       real first visit with a real account), so it is told, not shown. */
+    await cine.caption('The <b>staff link</b> opens the staff area. Each class you add gets its own link. Pupils use that link to reach their class&rsquo;s shelf.');
+    await cine.caption('The first time you open any MathShelf link, Google asks you to allow MathShelf. Tick <b>Select all</b>. Press <b>Continue</b>. Google asks only once.');
     await F.ring(cine, page, '#cover-welcome', null,
-      'The page knows who you are from your school Google account, so there is <b>nothing to sign in to</b>.', { side: 'below' });
-    await F.ring(cine, page, '#cover-staff', null,
-      'Staff use this small <b>Staff</b> link at the bottom of the page.', { side: 'above' });
-    await F.clickAt(cine, page, '#cover-staff', null, { after: 900 });
-    await F.ring(cine, page, '#cover-staffbox', null,
-      'A box appears for the <b>staff passcode</b>. The department has one passcode; the Head of Department gives it out.', { side: 'below' });
+      'After that, the page knows you from your school Google account, so the staff link lands here, on the passcode box.', { side: 'below' });
+    await F.ring(cine, page, '#cover-pass', null,
+      'The department has one <b>staff passcode</b>. Ask the Head of Department for it.', { side: 'below' });
     await F.typeInto(cine, page, '#cover-pass', 'demo', { delay: 160 });
-    await cine.caption('Type the passcode, then press <b>Open the markbook</b>.');
+    await cine.caption('Type the passcode. Press <b>Open the markbook</b>.');
     await F.clickAt(cine, page, '#cover-open', null, { after: 2200 });
-    await cine.caption('The markbook opens on <b>Set-up</b>. The markbook closes itself after fifteen minutes away, so you may be asked for the passcode again.');
+    await cine.caption('The markbook opens on <b>Set-up</b>, where you add classes and choose their books. It closes itself after fifteen minutes away, so you may be asked for the passcode again.');
     await F.chapterClose(cine);
   }
 };
