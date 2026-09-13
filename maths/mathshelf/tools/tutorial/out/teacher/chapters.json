@@ -1,6 +1,6 @@
 {
  "file": "teacher.mp4",
- "seconds": 1575,
+ "seconds": 1571,
  "chapters": [
   {
    "t": 0,
@@ -39,11 +39,11 @@
    "label": "Your work is saved"
   },
   {
-   "t": 1330,
+   "t": 1328,
    "label": "Reading the class’s work"
   },
   {
-   "t": 1568,
+   "t": 1565,
    "label": "Closing"
   }
  ]
