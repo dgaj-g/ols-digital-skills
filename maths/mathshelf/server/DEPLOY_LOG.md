@@ -1,5 +1,19 @@
 # MathShelf — the deploy log
 
+## 13 September 2026, 17:03 — FRONT DOOR Version 38 (THE BOOK-VIEW NAME CUT) — a CLIENT-ONLY cut; DATA stays Version 2
+
+From commit `635bebc`. `Index.html` md5 `3d2d74523d6e3c912b582acbe88fd0db` (1,554,789 chars, rolling hash 1539737611) fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`); the first click on the Files list landed on Code.gs and the model check refused the paste (the common miss, caught by the guard); Index.html selected by its list entry, the active model verified as `file_2.html`, the length and rolling hash read back equal to the repo's, saved ("Saved to Drive" after a click into the editor). `Code.gs` NOT pasted — md5 `21070f13916e9cd00bf87373cd6fd3ac`, byte-identical to Version 37's. Manifest read before and after the cut: `USER_ACCESSING` + `DOMAIN`, untouched. Manage deployments → the one active deployment by ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → "New version" → **Version 38 on 13 Sept 2026, 17:03**. Same `/exec`.
+
+**Proof rows, 17:03 (the deployer's own visit to `…?class=10E-Maths` after the cut), from the Executions log:**
+
+    FRONT DOOR (bound project)   Version 38 | doGet   | 13 Sept 2026, 17:03:52 | 2.005 s | Completed   ← no apiCall row follows it
+    DATA (standalone project)    Version 2  | doPost  | 13 Sept 2026, 17:03:56 | 1.500 s | Completed   ← the page's own direct store calls
+    DATA                         Version 2  | doPost  | 13 Sept 2026, 17:03:59 | 3.542 s | Completed
+
+(His own re-test at 14:17–14:34, visible in the same logs: direct doPost 3.9–5.9 s each, one relayed call at 14:34:17 of 10.4 s — the fallback firing once, as designed.)
+
+**What it carries:** `staff.js`'s book-view header names `bookTitle(view.act)` — it had kept a v3 two-book guess (`view.act === 'angles' ? 'Angles' : 'Algebra'`), so a pupil's Averages book was headed "Algebra". Seen in the tutorial film's markbook chapter at 16:3x; sit-teacher law on book-view:pencil (the header carries the book the trail named), control `bookview-wrong-book-name` (plant: the old guess), its battery run in the background after this deploy. The served page (read after the visit) carries `bookTitle(view.act) +` and no trace of the old guess.
+
 ## 13 September 2026, 13:27 / 13:30 — DATA Version 2, FRONT DOOR Version 37 — THE SERVER CUT (a Code.gs change, both projects, no manifest touched)
 
 From commit `210ced7`. `Code.gs` md5 `21070f13916e9cd00bf87373cd6fd3ac` (51,033 chars, rolling hash 301332670) fetched into BOTH editors from the pushed commit on raw.githubusercontent (`cache: no-store`), the active model verified as `file_1.js` before each `setValue`, the length and rolling hash read back equal to the repo's, saved ("Saved to Drive" — the front door needed a second Cmd+S after a click into the editor). `Index.html` NOT pasted — unchanged from Version 36 (md5 `ac389c46de7ff426ee68b5d8b399cbc8`, the editor's copy 1,554,486). Manifests read before and after each cut, untouched: DATA `USER_DEPLOYING` + `ANYONE_ANONYMOUS`; FRONT DOOR `USER_ACCESSING` + `DOMAIN`. DATA first: Manage deployments → the one active deployment by ID `AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA` → edit → "New version" → **Version 2 on 13 Sept 2026, 13:27**. Then the FRONT DOOR by ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → "New version" → **Version 37 on 13 Sept 2026, 13:30**. Neither `/exec` changed.
@@ -211,6 +225,7 @@ log showing the deployment actually ran.
 | 2026-09-13 13:16 | FRONT DOOR | Version 36 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE STEWARD CUT, client-only: Index.html only, Code.gs unchanged from Version 34 (books named with their volume, the set-up table tidy and called Set-up, the rhyme caption, the echo bounce re-sent on the direct path) | 9197482 | ac389c46de7ff426ee68b5d8b399cbc8 | 3e3f4819fa809c04cc2af310c3faabcd |
 | 2026-09-13 13:27 | DATA (standalone project `14j0H7VG…jn3h`, deployment `AKfycbzjSy3t…yRkiA`) | Version 2 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor's manifest before the cut and again after it, untouched — THE SERVER CUT: the relay re-sends once on the echo bounce and logs the answer, the store answers a stray GET with JSON, one open and one read of the data tab per call | 210ced7 | (no Index in this project) | 21070f13916e9cd00bf87373cd6fd3ac |
 | 2026-09-13 13:30 | FRONT DOOR | Version 37 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE SERVER CUT's Code.gs (the relay re-sends once on the echo bounce and logs the answer); Index.html unchanged from Version 36 | 210ced7 | ac389c46de7ff426ee68b5d8b399cbc8 | 21070f13916e9cd00bf87373cd6fd3ac |
+| 2026-09-13 17:03 | FRONT DOOR | Version 38 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE BOOK-VIEW NAME CUT, client-only: Index.html only, Code.gs unchanged from Version 37 (the pupil's book in the markbook names the book it shows; the tutorial film caught the v3 two-book guess that called every book but Angles "Algebra") | 635bebc | 3d2d74523d6e3c912b582acbe88fd0db | 21070f13916e9cd00bf87373cd6fd3ac |
 ## Proof rows
 
 ### 12 Sept 2026, 22:58 — the new standalone DATA project answers the live front door
