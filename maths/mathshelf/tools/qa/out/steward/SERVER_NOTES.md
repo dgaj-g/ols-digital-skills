@@ -133,3 +133,8 @@ new section-A row and the FIRED lines under "The steward cut — 13 Sept 2026".
 - before: `3e3f4819fa809c04cc2af310c3faabcd`
 - after:  `21070f13916e9cd00bf87373cd6fd3ac`
 - `server/Index.html` unchanged: `ac389c46de7ff426ee68b5d8b399cbc8`
+
+
+## The commit
+`210ced7` on `draft/issue-24-25-maths-m2-revision`, pushed. `run.js --fast` is
+green end to end at that commit, `qa-repo-prod` included.
