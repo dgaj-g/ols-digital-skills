@@ -2378,7 +2378,11 @@ body.gj :focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px;
 .grid table { border-collapse: collapse; width: 100%; font-size: 14px; }
 .grid th, .grid td { border-bottom: 1px solid var(--hairline); padding: 9px 14px; text-align: center; }
 .grid th { font: 600 13px var(--f-ui); color: var(--ink); vertical-align: bottom; }
-.grid th .gist { display: block; font-family: var(--f-maths); font-weight: 400; font-size: 13.5px; color: var(--pencil); max-width: 190px; }
+/* THE GIST IS INK, NOT PENCIL (13 Sept 2026, the whole-tree walk stood on a
+   Handling Data book at 768 for the first time): the maths face at 13.5px and
+   weight 400 in --pencil sampled 4.2:1 in rendered pixels against the panel,
+   under the 4.5:1 floor \2014  a thin glyph is paler than its declared colour. */
+.grid th .gist { display: block; font-family: var(--f-maths); font-weight: 500; font-size: 13.5px; color: var(--ink); max-width: 190px; }
 .grid th .mini { display: flex; height: 4px; border-radius: 2px; overflow: hidden; background: var(--hairline); margin-top: 7px; }
 .grid th .mini i { display: block; height: 4px; }
 .grid td.nm, .grid th.nm { text-align: left; font-weight: 600; position: sticky; left: 0; background: var(--panel); min-width: 170px; }

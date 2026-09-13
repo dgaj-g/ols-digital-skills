@@ -4,30 +4,30 @@
   "marks": [
    {
     "name": "lift",
-    "ms": 4274
+    "ms": 4346
    },
    {
     "name": "down",
-    "ms": 87830
+    "ms": 91414
    }
   ],
   "tailMs": 1300,
-  "recordedAt": "2026-09-13T16:02:16.473Z"
+  "recordedAt": "2026-09-13T17:33:14.232Z"
  },
  "ch0": {
   "file": "ch0.webm",
   "marks": [
    {
     "name": "lift",
-    "ms": 1516
+    "ms": 1554
    },
    {
     "name": "down",
-    "ms": 6717
+    "ms": 6755
    }
   ],
   "tailMs": 200,
-  "recordedAt": "2026-09-13T16:00:47.600Z"
+  "recordedAt": "2026-09-13T17:29:11.325Z"
  },
  "ch2": {
   "file": "ch2.webm",
