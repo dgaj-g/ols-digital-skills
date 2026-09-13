@@ -4,7 +4,7 @@
  "width": 1280,
  "tier": "preview",
  "contentHash": "759816449d16",
- "when": "2026-09-13T11:49:23.358Z",
+ "when": "2026-09-13T17:24:51.254Z",
  "states": [
   {
    "surface": "cover",
@@ -5486,7 +5486,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 31
+    "readability": 30
    }
   },
   {
@@ -14228,7 +14228,7 @@
    },
    "measured": {
     "said-twice": 1,
-    "readability": 24
+    "readability": 23
    }
   },
   {
@@ -14610,7 +14610,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 22
+    "readability": 20
    }
   },
   {

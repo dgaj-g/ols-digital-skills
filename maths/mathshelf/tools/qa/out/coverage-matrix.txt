@@ -1,30 +1,92 @@
 
-  COVERAGE MATRIX (content hash 989b2056b5ab, tier fast)
+  COVERAGE MATRIX (content hash 412354afd4f7, tier full)
   cell family   closed  missing  debt
   ------------  ------  -------  ----
-  click-safety  222
-  colour        222
-  consequence   222
+  click-safety  136     86
+  colour        136     86
+  consequence   136     86
   deploy        3
-  empty         222
-  geometry      222
+  empty         136     86
+  geometry      136     86
   human-pace    47
-  movie         84
-  mute-locks    222
-  nested        222
-  overlap       222
-  readability   222
-  said-twice    222
-  steps         222
+  movie         56      28
+  mute-locks    136     86
+  nested        136     86
+  overlap       136     85       1
+  readability   135     86       1
+  said-twice    136     86
+  steps         136     86
   truth         142
   two-homes     13
   verdict       4
-  waits         222
-  walk-right    426
-  walk-stage    1926
+  waits         136     86
+  walk-right    127     293      6
+  walk-stage    642     1284
   walk-wrong    426
 
-  every cell is closed.
+  CELLS NOTHING CLOSES (2636)
+  family      cell                                                     why
+  ----------  ----------------------------------------------  -------  ---
+  walk-right  algebra > s1 > q1 (subst) @375 × walk-right     MISSING
+  walk-right  algebra > s1 > q1 (subst) @768 × walk-right     MISSING
+  walk-right  algebra > s1 > q2 (subst) @375 × walk-right     MISSING
+  walk-right  algebra > s1 > q2 (subst) @768 × walk-right     MISSING
+  walk-right  algebra > s1 > q3 (subst) @375 × walk-right     MISSING
+  walk-right  algebra > s1 > q3 (subst) @768 × walk-right     MISSING
+  walk-right  algebra > s1 > q4 (subst) @375 × walk-right     MISSING
+  walk-right  algebra > s1 > q4 (subst) @768 × walk-right     MISSING
+  walk-right  algebra > s2 > q5 (simplify) @375 × walk-right  MISSING
+  walk-right  algebra > s2 > q5 (simplify) @768 × walk-right  MISSING
+  walk-right  algebra > s2 > q6 (simplify) @375 × walk-right  MISSING
+  walk-right  algebra > s2 > q6 (simplify) @768 × walk-right  MISSING
+  walk-right  algebra > s2 > q7 (simplify) @375 × walk-right  MISSING
+  walk-right  algebra > s2 > q7 (simplify) @768 × walk-right  MISSING
+  walk-right  algebra > s2 > q8 (simplify) @375 × walk-right  MISSING
+  walk-right  algebra > s2 > q8 (simplify) @768 × walk-right  MISSING
+  walk-right  algebra > s3 > q9 (expand) @375 × walk-right    MISSING
+  walk-right  algebra > s3 > q9 (expand) @768 × walk-right    MISSING
+  walk-right  algebra > s3 > q10 (expand) @375 × walk-right   MISSING
+  walk-right  algebra > s3 > q10 (expand) @768 × walk-right   MISSING
+  walk-right  algebra > s3 > q11 (expand) @375 × walk-right   MISSING
+  walk-right  algebra > s3 > q11 (expand) @768 × walk-right   MISSING
+  walk-right  algebra > s3 > q12 (expand) @375 × walk-right   MISSING
+  walk-right  algebra > s3 > q12 (expand) @768 × walk-right   MISSING
+  walk-right  algebra > s4 > q13 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s4 > q13 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s4 > q14 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s4 > q14 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s4 > q15 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s4 > q15 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s4 > q16 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s4 > q16 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s5 > q17 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s5 > q17 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s5 > q18 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s5 > q18 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s5 > q18 (solve) @1280 × walk-right   MISSING
+  walk-right  algebra > s5 > q19 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s5 > q19 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s5 > q20 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s5 > q20 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s6 > q21 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s6 > q21 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s6 > q22 (solve) @375 × walk-right    MISSING
+  walk-right  algebra > s6 > q22 (solve) @768 × walk-right    MISSING
+  walk-right  algebra > s6 > q23 (form) @375 × walk-right     MISSING
+  walk-right  algebra > s6 > q23 (form) @768 × walk-right     MISSING
+  walk-right  algebra > s6 > q23 (form) @1280 × walk-right    MISSING
+  walk-right  algebra > s6 > q24 (form) @375 × walk-right     MISSING
+  walk-right  algebra > s6 > q24 (form) @768 × walk-right     MISSING
+  walk-right  angles > s1 > c1 (classify) @375 × walk-right   MISSING
+  walk-right  angles > s1 > c1 (classify) @768 × walk-right   MISSING
+  walk-right  angles > s1 > c1 (classify) @1280 × walk-right  MISSING
+  walk-right  angles > s1 > c2 (classify) @375 × walk-right   MISSING
+  walk-right  angles > s1 > c2 (classify) @768 × walk-right   MISSING
+  walk-right  angles > s1 > c2 (classify) @1280 × walk-right  MISSING
+  walk-right  angles > s1 > c3 (classify) @375 × walk-right   MISSING
+  walk-right  angles > s1 > c3 (classify) @768 × walk-right   MISSING
+  walk-right  angles > s1 > c3 (classify) @1280 × walk-right  MISSING
+  walk-right  angles > s1 > c4 (classify) @375 × walk-right   MISSING
 
   DEBT LEDGER (printed every run)
   cell                                                     owner / phase                                                                                                                                  file                state

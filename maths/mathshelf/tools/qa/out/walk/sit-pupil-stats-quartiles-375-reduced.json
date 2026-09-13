@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "759816449d16",
- "when": "2026-09-13T11:50:14.139Z",
+ "when": "2026-09-13T17:25:41.507Z",
  "states": [
   {
    "surface": "cover",
@@ -3751,7 +3751,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 16
+    "readability": 18
    }
   },
   {
@@ -13238,7 +13238,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13289,7 +13289,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13363,7 +13363,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13415,7 +13415,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13467,7 +13467,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13518,7 +13518,7 @@
    },
    "measured": {
     "said-twice": 4,
-    "readability": 14
+    "readability": 13
    }
   },
   {
@@ -13898,7 +13898,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -13949,7 +13949,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -14023,7 +14023,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -14075,7 +14075,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -14127,7 +14127,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -14178,7 +14178,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 14
+    "readability": 15
    }
   },
   {
@@ -14610,7 +14610,7 @@
    },
    "measured": {
     "said-twice": 0,
-    "readability": 13
+    "readability": 14
    }
   },
   {
