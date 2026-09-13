@@ -36,7 +36,7 @@ use the app’s mark
 Marked right — full marks. Your mark is the one pupils and staff now see.
 Marked wrong. Your mark is the one pupils and staff now see.
 Back to the app’s mark.
-Spot the slip · starter 1 of 2
+Spot the slip · starter 1 of 3
 Where has this gone wrong — and what should the line say?
 Set-up is where you add a class and choose the books it sees. You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
-http://localhost:8426/maths/mathshelf/index.html?class=demo
+http://localhost:8099/maths/mathshelf/index.html?class=demo
