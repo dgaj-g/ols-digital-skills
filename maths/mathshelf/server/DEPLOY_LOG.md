@@ -1,5 +1,20 @@
 # MathShelf — the deploy log
 
+## 13 September 2026, 13:27 / 13:30 — DATA Version 2, FRONT DOOR Version 37 — THE SERVER CUT (a Code.gs change, both projects, no manifest touched)
+
+From commit `210ced7`. `Code.gs` md5 `21070f13916e9cd00bf87373cd6fd3ac` (51,033 chars, rolling hash 301332670) fetched into BOTH editors from the pushed commit on raw.githubusercontent (`cache: no-store`), the active model verified as `file_1.js` before each `setValue`, the length and rolling hash read back equal to the repo's, saved ("Saved to Drive" — the front door needed a second Cmd+S after a click into the editor). `Index.html` NOT pasted — unchanged from Version 36 (md5 `ac389c46de7ff426ee68b5d8b399cbc8`, the editor's copy 1,554,486). Manifests read before and after each cut, untouched: DATA `USER_DEPLOYING` + `ANYONE_ANONYMOUS`; FRONT DOOR `USER_ACCESSING` + `DOMAIN`. DATA first: Manage deployments → the one active deployment by ID `AKfycbzjSy3tZDPohHUfKRXgmFnK6iWlkOGvU_IPU8g1xKecvWRdVuQ86t7G6cL7lV5P6yRkiA` → edit → "New version" → **Version 2 on 13 Sept 2026, 13:27**. Then the FRONT DOOR by ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → "New version" → **Version 37 on 13 Sept 2026, 13:30**. Neither `/exec` changed.
+
+**Proof rows, 13:30 (the deployer's own visit to `…?class=10E-Maths` after both cuts), from the Executions log:**
+
+    FRONT DOOR (bound project)   Version 37 | doGet   | 13 Sept 2026, 13:30:35 | 1.263 s | Completed   ← no apiCall row follows it
+    DATA (standalone project)    Version 2  | doPost  | 13 Sept 2026, 13:30:38 | 1.817 s | Completed   ← the page's own direct store calls
+    DATA                         Version 2  | doPost  | 13 Sept 2026, 13:30:47 | 3.642 s | Completed
+    DATA                         Version 2  | doGet   | 13 Sept 2026, 13:28:04 | 1.520 s | Completed   ← a stray GET, answered with JSON (before the cut: Failed)
+
+**What it carries (the second continuation of ruling 51; PROGRESS.md's server-cut entry):** `apiCall` re-sends its UrlFetch once when the answer is not a 200 or not the store's JSON (Google's echo bounce, measured one in eight) and logs the code and the first 80 characters; the store's `doGet` answers a stray GET with `{"ok":false,"error":"use-post"}` instead of a Failed row; one open of the Sheet and one four-column read of the Data tab per call (`EXEC`, `dataIndex_`, `dataRowValues_`; the Config tab read once) — a `hello` had been opening the Sheet six times and reading the whole tab twice.
+
+**Measured from outside Google with the page's own token, before and after (the store's own execution time from its log in brackets):** a stray GET → `{"ok":false,"error":"use-post"}` in 1.5 s Completed (before: HTML, "doGet Failed"). hello: before 6.7 / 36.8 / 10.4 s (5.7–8.2 s), after 4.4 / 4.0 / 4.0 s (3.0–3.9 s). load: before 10.4 / 6.3 / 7.0 s (5.6–8.2 s), after 5.8 / 5.4 / 8.4 s (3.3–4.8 s). The remaining 3–5 s is `openById` on a Sheet whose cells carry whole jotter states plus Google's own front; the index could live in CacheService in a later cut.
+
 ## 13 September 2026, 13:16 — FRONT DOOR Version 36 (THE STEWARD CUT) — a CLIENT-ONLY cut; DATA stays the standalone project's Version 1
 
 From commit `9197482`. `Index.html` md5 `ac389c46de7ff426ee68b5d8b399cbc8` (1,554,486 chars, rolling hash 549104958) fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), the active model verified as `file_2.html` before `setValue`, the length and rolling hash read back equal to the repo's, saved (Cmd+S, "Saved to Drive"). `Code.gs` NOT pasted — its md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) is byte-identical to Version 35's and the editor's copy read back at 46,004. Manifest read in the editor before and after the cut: `USER_ACCESSING` + `DOMAIN`, untouched. Manage deployments → the one active deployment by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → Version "New version" → **Version 36 on 13 Sept 2026, 13:16**. Same `/exec`.
@@ -194,6 +209,8 @@ log showing the deployment actually ran.
 
 | 2026-09-13 02:46 | FRONT DOOR | Version 35 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK B (Averages), client-only: Index.html only, Code.gs unchanged from Version 34; the Config row `acts` gained `"stats-averages"` | 7175f3d | 45b243fd92f738eb1ffb3dd1cf962c3d | 3e3f4819fa809c04cc2af310c3faabcd |
 | 2026-09-13 13:16 | FRONT DOOR | Version 36 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE STEWARD CUT, client-only: Index.html only, Code.gs unchanged from Version 34 (books named with their volume, the set-up table tidy and called Set-up, the rhyme caption, the echo bounce re-sent on the direct path) | 9197482 | ac389c46de7ff426ee68b5d8b399cbc8 | 3e3f4819fa809c04cc2af310c3faabcd |
+| 2026-09-13 13:27 | DATA (standalone project `14j0H7VG…jn3h`, deployment `AKfycbzjSy3t…yRkiA`) | Version 2 | `USER_DEPLOYING` (and `ANYONE_ANONYMOUS`), read in the editor's manifest before the cut and again after it, untouched — THE SERVER CUT: the relay re-sends once on the echo bounce and logs the answer, the store answers a stray GET with JSON, one open and one read of the data tab per call | 210ced7 | (no Index in this project) | 21070f13916e9cd00bf87373cd6fd3ac |
+| 2026-09-13 13:30 | FRONT DOOR | Version 37 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE SERVER CUT's Code.gs (the relay re-sends once on the echo bounce and logs the answer); Index.html unchanged from Version 36 | 210ced7 | ac389c46de7ff426ee68b5d8b399cbc8 | 21070f13916e9cd00bf87373cd6fd3ac |
 ## Proof rows
 
 ### 12 Sept 2026, 22:58 — the new standalone DATA project answers the live front door
