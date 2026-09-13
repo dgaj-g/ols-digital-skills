@@ -20,6 +20,11 @@ const CELL_MAX = 50000;   /* the real Google Sheets limit, characters per cell *
 function makeSheet(width, name) {
   return {
     _rows: [], _name: name,
+    /* COUNTERS, NEVER BEHAVIOUR (the server cut, 13 Sept 2026). How many times
+       this tab was read whole (getDataRange().getValues()) and how many times a
+       narrow range was read (getRange(...).getValues()). A gate resets them
+       before a call and reads them after; nothing here changes an answer. */
+    _reads: { dataRange: 0, range: 0 },
     _pad(r) { const a = (this._rows[r] || []).slice(); while (a.length < width) a.push(''); return a; },
     _ensureRow(r) { while (this._rows.length <= r) this._rows.push(new Array(width).fill('')); },
     _guard(v) {
@@ -32,7 +37,7 @@ function makeSheet(width, name) {
     getLastRow() { return this._rows.length; },
     getMaxRows() { return Math.max(this._rows.length, 1000); },
     appendRow(r) { const a = r.map(v => this._guard(v)); while (a.length < width) a.push(''); this._rows.push(a); },
-    getDataRange() { const self = this; return { getValues() { return self._rows.map(r => { const a = r.slice(); while (a.length < width) a.push(''); return a; }); } }; },
+    getDataRange() { const self = this; return { getValues() { self._reads.dataRange++; return self._rows.map(r => { const a = r.slice(); while (a.length < width) a.push(''); return a; }); } }; },
     insertRowsAfter(after, n) { for (let i = 0; i < n; i++) this._rows.push(new Array(width).fill('')); },
     deleteRow(idx) { this._rows.splice(idx - 1, 1); },
     getRange(row, col, numRows, numCols) {
@@ -40,7 +45,7 @@ function makeSheet(width, name) {
       const self = this;
       return {
         setNumberFormat() { return this; },
-        getValues() { const out = []; for (let i = 0; i < numRows; i++) { const r = self._pad(row - 1 + i); out.push(r.slice(col - 1, col - 1 + numCols)); } return out; },
+        getValues() { self._reads.range++; const out = []; for (let i = 0; i < numRows; i++) { const r = self._pad(row - 1 + i); out.push(r.slice(col - 1, col - 1 + numCols)); } return out; },
         setValue(v) { self._ensureRow(row - 1); self._rows[row - 1][col - 1] = self._guard(v); return this; },
         setValues(vals) {
           for (let i = 0; i < numRows; i++) {
@@ -93,7 +98,11 @@ function makeEnv(opts) {
     active: opts.active || '',
     effective: opts.effective || 'd.gartland@c2ken.net',
     oidc: opts.oidc == null ? { given_name: 'Aoife', family_name: 'Gartland' } : opts.oidc,
-    fetches: []
+    fetches: [],
+    /* COUNTERS, NEVER BEHAVIOUR (the server cut, 13 Sept 2026): every line the
+       server logged, and how many times it reached for the Index template. */
+    logs: [],
+    htmlTemplates: 0
   };
 
   const sandbox = {
@@ -140,7 +149,7 @@ function makeEnv(opts) {
         return { getResponseCode: () => 404, getContentText: () => '' };
       }
     },
-    Logger: { log() {} },
+    Logger: { log(msg) { state.logs.push(String(msg)); } },
     Utilities: {
       sleep() {},
       getUuid: () => 'mock-uuid',
@@ -156,7 +165,7 @@ function makeEnv(opts) {
       base64Encode: (bytes) => Buffer.from(bytes.map(b => (b < 0 ? b + 256 : b))).toString('base64')
     },
     HtmlService: {
-      createTemplateFromFile: (n) => ({
+      createTemplateFromFile: (n) => (state.htmlTemplates++, {
         _n: n,
         evaluate() {
           const self = this;

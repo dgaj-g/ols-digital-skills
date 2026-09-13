@@ -122,6 +122,7 @@ each run, and the CONTROL MATRIX prints whatever the verdict.
 | 51 (the pupil's side: a card that heals itself) | qa-waits | outbox-card-tap-only |
 | 51 (the hop itself: the page's own road to the store) | qa-two-homes | token-any-signature, token-never-expires, token-for-another-pupil, secret-in-the-page, relay-with-bearer, store-payload-disagrees |
 | 51 (the hop itself: the page's side of the road) | qa-waits | store-never-direct, store-no-fallback, store-no-refresh, store-no-timeout |
+| 51 (the relay's re-send, the store's stray visit and its scan, 13 Sept 2026) | qa-two-homes | relay-no-resend, data-doget-throws, scan-per-call |
 
 _What the store cut's controls hold (12 Sept 2026, ruling 51, the hop): the served page carries `BOOT.store` (url, exp, sig) and never the secret (`secret-in-the-page` prints it in); the store refuses a forged signature `token-bad`, an old token `token-expired`, and a token presented under another pupil's email (the signature covers the email; `token-for-another-pupil` signs the expiry alone); the relay fetch carries no Authorization header (`relay-with-bearer` puts it back); the shim's payload and `storePayload`'s agree for every action (`store-payload-disagrees` drops the summary from one road); and on the page, measured on the app's own `call` with fetch and the relay both stubbed and counted: a save with a token goes by fetch as a simple request and never to the relay (`store-never-direct`), a network error lands the save through the relay with a console line (`store-no-fallback`), an expired token is refreshed once through `apiCall token` and retried on the direct path with the fresh signature kept (`store-no-refresh`), and a store that never answers is abandoned at 25 s for the relay (`store-no-timeout`)._
 
@@ -204,6 +205,27 @@ Rulings 52–55 (feedback master) and the second continuation of 51. Laws in `si
     sit-teacher  ledger-pushes-the-page      FIRED      (DID NOT FIRE in the 12:03 battery with the frame-only plant; FIRED at 12:11 and 12:27 with the whole fault planted)
     sit-teacher  over-tightening             PASSES
     qa-waits     store-no-resend             FIRED      (with the ten older qa-waits controls, all FIRED; over-tightening PASSES)
+
+**The server cut — 13 Sept 2026 (the relay's re-send, the store's stray visit, one open and one read).** The same echo bounce the client cut met on the direct road was still costing the pupil a call on the RELAY, and the store's own execution time had gone from 1.4–3 s (12 Sept) to 5.6–8.2 s (Executions log, 13:09–13:10 on 13 Sept, a quiet moment, a class with no saved rows) because every call opened the Sheet several times and read the WHOLE Data tab — whose cells carry entire jotter states — several times. Three laws in `qa-two-homes`, each seen to fail on the unfixed tree first: L-A the relay re-sends once and logs what came back (`RELAY_RESENDS`), L-B the standalone store answers a stray GET with `{ok:false,error:'use-post'}` and touches neither HtmlService nor the Sheet, L-C per relayed call `openById` ≤ 1, whole-tab reads = 0, ranged reads ≤ 1 + the rows that matched (`EXEC`, `dataIndex_`, `dataRowValues_`). Measured through the gate's own counters: hello 6 opens / 2 whole reads → 1 open / 1 ranged read; save 7 / 1 → 1 / 1; load 5 / 1 → 1 / 2 (one matched row). The FIRED lines, as they ran (`tools/qa/out/steward/controls-server.log`):
+
+    qa-two-homes  relay-no-resend             FIRED
+    qa-two-homes  data-doget-throws           FIRED
+    qa-two-homes  scan-per-call               FIRED
+    qa-two-homes  addclass-field-parity       FIRED
+    qa-two-homes  data-without-secret-guard   FIRED
+    qa-two-homes  data-serves-unticked-book   FIRED
+    qa-two-homes  secret-in-a-return-value    FIRED
+    qa-two-homes  front-door-touches-the-sheet FIRED
+    qa-two-homes  token-any-signature         FIRED
+    qa-two-homes  token-never-expires         FIRED
+    qa-two-homes  token-for-another-pupil     FIRED
+    qa-two-homes  secret-in-the-page          FIRED
+    qa-two-homes  relay-with-bearer           FIRED
+    qa-two-homes  store-payload-disagrees     FIRED
+    qa-two-homes  acts-hardcoded              FIRED
+    qa-two-homes  acts-any-string             FIRED
+    qa-two-homes  active-spreadsheet-call-site FIRED
+    qa-two-homes  over-tightening             PASSES
 
 ### Book B's controls — 13 Sept 2026 (declared; the battery runs after the deploy, in the background)
 New single-fault controls, each quoting the sentence its gate prints: `sit-pupil` `stats-b-list-fig-missing` (a values question's printed list not on the page), `stats-b-stage-skipped` (a table jumps empty → ready), `stats-b-rowpick-two-pressed` (two rows pressed in one ask — the new `ROWPICK_SINGLE` probe), `stats-b-total-before-cells`, `stats-b-tfn-leak` (a verdict word on the page before Check — the `SIGNATURE` probe widened to `.stat-verdict-leak`); the sixth plant, `stats-b-cell-inconsistent` (a wrong fx marked right by the consistency rule), is written but UNREGISTERED — it needs a bespoke wrong attempt, and the engine's own selfTest covers the rule (`markTable` cases in dev/test-statcore.js). The lint's Book B rules are proved on two throwaway packs: `tools/qa/out/bookB/lint-probe-pass.js` (7 questions, clean) and `lint-probe-fail.js` (30 questions, one fault each → 43 attributed failures; the sentences are in LINT_NOTES.md). Every walker control is `controls: pending the post-deploy battery` until that run's FIRED lines are pasted here.

@@ -331,6 +331,38 @@ const PLANTS = {
       "      if (typeof id !== 'string' || !ACT_ID_RE.test(id)) continue;",
       "      if (typeof id !== 'string') continue;   /* planted: any string will do */");
   },
+  /* ── THE SERVER CUT (13 Sept 2026): three ways the store could still be
+     slow or lost, each planted back into the template ─────────────────── */
+  /* the relay asks once and gives up: the echo bounce becomes relay-failed */
+  'fixture-relay-no-resend': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      'var RELAY_RESENDS = 1;',
+      'var RELAY_RESENDS = 0;   /* planted: one ask, and the bounce is a closed road */');
+  },
+  /* the store has no answer for a stray GET: every echo bounce is a Failed row */
+  'fixture-data-doget-throws': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      "  if (String(sp_().getProperty('sheetId') || '')) {\n    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'use-post' }))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n",
+      '  /* THE STORE\'S ANSWER TO A STRAY VISIT, REMOVED: planted */\n');
+  },
+  /* one helper reads the WHOLE Data tab again - megabytes of jotter states to
+     answer a question about column A */
+  'fixture-scan-per-call': (dir) => {
+    edit(dir, 'server/Code.gs.template',
+      [
+        '    var idx = dataIndex_();',
+        '    for (var i = 1; i < idx.length; i++) {',
+        "      if (String(idx[i][0]) === String(cls) && String(idx[i][1]).toLowerCase() === String(email).toLowerCase()) return true;",
+        '    }'
+      ].join('\n'),
+      [
+        '    var vals = dataSheet_().getDataRange().getValues();   /* planted: the whole tab, again */',
+        '    for (var i = 1; i < vals.length; i++) {',
+        "      if (String(vals[i][0]) === String(cls) && String(vals[i][1]).toLowerCase() === String(email).toLowerCase()) return true;",
+        '    }'
+      ].join('\n'));
+  },
+
   /* one call site still asks for the ACTIVE spreadsheet: fine in the bound
      project, a throw in the standalone one */
   'fixture-active-spreadsheet': (dir) => {

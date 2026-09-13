@@ -29,6 +29,10 @@ function makeSheet(width) {
       const self = this;
       return {
         setNumberFormat() { return this; },
+        /* the server reads the Data tab's index (columns A-D) and one whole row
+           at a time since the server cut, 13 Sept 2026 - so the stub answers a
+           ranged read as the real API does. Shape only; no behaviour. */
+        getValues() { const out = []; for (let i = 0; i < numRows; i++) { const r = self._pad(row - 1 + i); out.push(r.slice(col - 1, col - 1 + numCols)); } return out; },
         setValue(v) { self._ensureRow(row - 1); self._rows[row - 1][col - 1] = v; return this; },
         setValues(vals) {
           for (let i = 0; i < numRows; i++) {

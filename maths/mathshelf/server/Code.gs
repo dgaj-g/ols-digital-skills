@@ -137,6 +137,21 @@ var LEGACY_ON = { angles: true, algebra: true };
 var STATE_MAX = 45000;
 var SUMMARY_MAX = 8000;
 
+/* THE ECHO BOUNCE, AND HOW MANY TIMES THE RELAY ASKS AGAIN (13 Sept 2026).
+   MEASURED, not guessed. Google's answer host bounces about one answer in
+   eight: after ~15 s it answers the POST with a 302 back to the script's own
+   /exec as a GET, so what comes back down the followed redirect is an HTML
+   page, not the store's JSON. The page's own road already re-sends on that
+   (STORE_RESENDS, the client cut); apiCall did not, and turned the bounce into
+   'relay-failed' for the pupil. The same bounce lands on the DATA project as a
+   GET, which is why doGet there now answers JSON instead of throwing.
+   One extra ask is the whole fix: the second POST is a fresh execution of the
+   store, and the store's own time was measured at 5.6-8.2 s a call in the
+   Executions log at 13:09-13:10 on 13 Sept 2026 (a quiet moment, a class with
+   no saved rows) - against 1.4-3 s on 12 Sept, which is what the read-narrowing
+   below is for. */
+var RELAY_RESENDS = 1;
+
 /* ---------- one-time setup (run from the editor; doubles as the OAuth consent moment) ---------- */
 function initJotter() {
   var ss = ss_();
@@ -166,6 +181,17 @@ function initJotter() {
    email and her real name go into BOOT with the page -- she is known before
    the cover has finished drawing, on the very first visit. */
 function doGet(e) {
+  /* THE STORE ANSWERS A STRAY VISIT WITH JSON (13 Sept 2026). The `sheetId`
+     property is set in the STANDALONE DATA project and nowhere else, so this
+     is the store, and the store has no page: it has no Index file to serve and
+     every GET that reached it threw, writing a "doGet Failed" row in the
+     Executions log. The GETs are not people - they are the echo bounce, the
+     302 back to /exec that Google answers about one POST in eight with. The
+     store says use-post and touches nothing else: no HtmlService, no Sheet. */
+  if (String(sp_().getProperty('sheetId') || '')) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'use-post' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   var t = HtmlService.createTemplateFromFile('Index');
   t.classCode = (e && e.parameter && e.parameter['class']) ? String(e.parameter['class']) : 'default';
   t.baseUrl = ScriptApp.getService().getUrl();
@@ -224,9 +250,42 @@ function sp_() { return PropertiesService.getScriptProperties(); }
    `sheetId` script property. In the bound front-door project the property is
    unset and this falls back to the active spreadsheet - the same file runs in
    both homes, and no Sheet read anywhere reaches SpreadsheetApp except here. */
+/* ONE OPEN AND ONE READ PER CALL (13 Sept 2026). EXEC is this execution's own
+   scratch: apiRelay opens it on the way in and clears it on the way out, so
+   every helper below shares ONE opened spreadsheet, ONE narrow read of the Data
+   tab's index and ONE read of the Config tab. Outside apiRelay - initJotter,
+   doGet, a call made straight from the editor or from a gate - EXEC is null and
+   every helper behaves exactly as it did before, reading fresh each time.
+   WHY: measured in the Executions log at 13:09-13:10 on 13 Sept 2026, `hello`
+   and `load` took 5.6-8.2 s of the store's own time for a class with NO saved
+   rows, against 1.4-3 s on 12 Sept. One `hello` opened the Sheet six times and
+   read the WHOLE Data tab twice; the Data tab's cells carry whole jotter states,
+   so each whole read pulls megabytes to answer a question about column A. */
+var EXEC = null;
 function ss_() {
+  if (EXEC && EXEC.ss) return EXEC.ss;
   var id = String(sp_().getProperty('sheetId') || '');
-  return id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+  var ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+  if (EXEC) EXEC.ss = ss;
+  return ss;
+}
+
+/* THE DATA TAB'S INDEX: columns A-D only (Class | Email | Name | Act), which is
+   every column any lookup needs. The heavy columns - Summary, State - are read
+   one row at a time, and only for the rows that actually matched. */
+function dataIndex_() {
+  if (EXEC && EXEC.index) return EXEC.index;
+  var out = [], sh = dataSheet_();
+  if (sh) {
+    var last = sh.getLastRow();
+    if (last > 0) out = sh.getRange(1, 1, last, 4).getValues();
+  }
+  if (EXEC) EXEC.index = out;
+  return out;
+}
+/* one whole row, by sheet row number (1-based, the header being row 1) */
+function dataRowValues_(rowIdx) {
+  return dataSheet_().getRange(rowIdx, 1, 1, HEADERS.length).getValues()[0];
 }
 
 /* ---------- the pupil's real name, from her own token ----------
@@ -319,20 +378,34 @@ function apiCall(req) {
        is domain-restricted again, this comes back WITH a re-measurement.
        Redirects stay followed: a web app answers a POST with a 302 to
        googleusercontent and turning that off would break the good path too. */
-    var resp = UrlFetchApp.fetch(url, {
+    var opts = {
       method: 'post',
       contentType: 'application/json',
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
       followRedirects: true
-    });
-    var code = resp.getResponseCode();
-    if (code !== 200) {
-      /* so the Executions log says WHICH failure it was next time */
-      Logger.log('relay-failed: DATA answered ' + code + ' for ' + String(req.action || ''));
-      return { ok: false, error: 'relay-failed' };
+    };
+    /* THE RE-SEND (13 Sept 2026, RELAY_RESENDS above). An answer that is not a
+       200, or that is a 200 carrying something other than a JSON object - the
+       echo bounce's HTML page - is not a closed road, it is one answer lost.
+       So the log says what came back, and the relay asks again, once. Only a
+       second bad answer is 'relay-failed'. */
+    var attempt = 0, out = null;
+    while (attempt <= RELAY_RESENDS) {
+      attempt++;
+      var resp = UrlFetchApp.fetch(url, opts);
+      var code = resp.getResponseCode();
+      var text = String(resp.getContentText() || '');
+      out = null;
+      if (code === 200) {
+        try { var parsed = JSON.parse(text); if (parsed && typeof parsed === 'object') out = parsed; } catch (e) { out = null; }
+      }
+      if (out) break;
+      /* so the Executions log says WHICH failure it was, and on which ask */
+      Logger.log('relay: DATA answered ' + code + ' \u2014 ' + text.slice(0, 80) +
+        ' for ' + String(req.action || '') + ' (attempt ' + attempt + ')');
     }
-    var out = JSON.parse(resp.getContentText());
+    if (!out) return { ok: false, error: 'relay-failed' };
     /* belt and braces: nothing that came back may carry the secret onward */
     if (out && typeof out === 'object') { delete out.secret; delete out.dataUrl; }
     return out;
@@ -391,6 +464,7 @@ function apiRelay(body) {
   var p = body.payload || {};
   RELAY_EMAIL = email;
   ACTS_LIVE = null;   /* one execution, one reading of the Config row */
+  EXEC = {};          /* one execution, one opened Sheet and one narrow read */
   try {
     switch (action) {
       case 'whoami':  return apiWhoAmI();
@@ -404,6 +478,7 @@ function apiRelay(body) {
   } finally {
     RELAY_EMAIL = '';
     ACTS_LIVE = null;
+    EXEC = null;
   }
 }
 
@@ -455,21 +530,22 @@ function parseJson_(raw) { try { var o = JSON.parse(String(raw || '')); return (
    to show the one quiet line about Google's permission screen. */
 function haveAnyRow_(cls, email) {
   try {
-    var vals = dataSheet_().getDataRange().getValues();
-    for (var i = 1; i < vals.length; i++) {
-      if (String(vals[i][0]) === String(cls) && String(vals[i][1]).toLowerCase() === String(email).toLowerCase()) return true;
+    var idx = dataIndex_();
+    for (var i = 1; i < idx.length; i++) {
+      if (String(idx[i][0]) === String(cls) && String(idx[i][1]).toLowerCase() === String(email).toLowerCase()) return true;
     }
   } catch (e) {}
   return false;
 }
 
 function findRow_(cls, email, act) {
-  var vals = dataSheet_().getDataRange().getValues();
+  var idx = dataIndex_();
   var who = String(email || '').toLowerCase();
-  for (var i = 1; i < vals.length; i++) {
+  for (var i = 1; i < idx.length; i++) {
     try {
-      if (String(vals[i][0]) === cls && String(vals[i][1]).toLowerCase() === who && String(vals[i][3]) === act) {
-        return { row: i + 1, vals: vals[i] };
+      if (String(idx[i][0]) === cls && String(idx[i][1]).toLowerCase() === who && String(idx[i][3]) === act) {
+        /* the match is found in the index; the heavy row is read only now */
+        return { row: i + 1, vals: dataRowValues_(i + 1) };
       }
     } catch (e) { /* skip bad row */ }
   }
@@ -485,19 +561,30 @@ function writeRow_(rowIdx, cls, email, name, act, summary, state) {
   var rng = sh.getRange(rowIdx, 1, 1, HEADERS.length);
   rng.setNumberFormat('@');
   rng.setValues([[cls, email, name, act, summary, state, nowIso_()]]);
+  if (EXEC) EXEC.index = null;   /* the index this execution holds is now stale */
 }
 
 /* ---------- config / class registry (registry = JSON in Config) ---------- */
-function getConfig_(key) {
+/* the Config tab, read once per execution. It is small, but getConfig_ is
+   called a dozen times on the way through one hello (the registry, the acts
+   row, the passcode, the pupil's stored name, a nudge), and each call was a
+   read of the whole tab. */
+function configValues_() {
+  if (EXEC && EXEC.cfg) return EXEC.cfg;
   var cfg = ss_().getSheetByName(CONFIG_TAB);
-  if (!cfg) return '';
-  var vals = cfg.getDataRange().getValues();
+  var vals = cfg ? cfg.getDataRange().getValues() : [];
+  if (EXEC) EXEC.cfg = vals;
+  return vals;
+}
+function getConfig_(key) {
+  var vals = configValues_();
   for (var i = 1; i < vals.length; i++) if (String(vals[i][0]) === key) return String(vals[i][1]);
   return '';
 }
 function setConfig_(key, value) {
   var cfg = ss_().getSheetByName(CONFIG_TAB);
-  var vals = cfg.getDataRange().getValues();
+  var vals = configValues_();
+  if (EXEC) EXEC.cfg = null;   /* what is about to be written makes it stale */
   for (var i = 1; i < vals.length; i++) {
     if (String(vals[i][0]) === key) {
       var rng = cfg.getRange(i + 1, 2); rng.setNumberFormat('@'); rng.setValue(value); return;
@@ -532,10 +619,10 @@ function getName_(email) { return getConfig_(nameKey_(email)); }
 
 /* distinct pupils per class (for the staff classes list) */
 function pupilCountByClass_() {
-  var vals = dataSheet_().getDataRange().getValues(), byClass = {};
-  for (var i = 1; i < vals.length; i++) {
+  var idx = dataIndex_(), byClass = {};
+  for (var i = 1; i < idx.length; i++) {
     try {
-      var c = String(vals[i][0]), e = String(vals[i][1]).toLowerCase();
+      var c = String(idx[i][0]), e = String(idx[i][1]).toLowerCase();
       if (!c || !e) continue;
       (byClass[c] = byClass[c] || {})[e] = true;
     } catch (err) { /* skip bad row */ }
@@ -564,12 +651,15 @@ function apiHello(req) {
   var rec = findClass_(req.classCode); if (!rec) return { ok: false, error: 'unknown-class' };
   var summaries = {}, live = acts_();
   for (var si = 0; si < live.length; si++) summaries[live[si]] = null;
-  var vals = dataSheet_().getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
+  /* the index says WHICH rows are hers; only those rows are read in full, and
+     only their Summary cell is wanted - never the whole tab, whose State cells
+     carry every line of working every pupil in the class has ever written */
+  var idx = dataIndex_();
+  for (var i = 1; i < idx.length; i++) {
     try {
-      if (String(vals[i][0]) !== rec.name || String(vals[i][1]).toLowerCase() !== who.toLowerCase()) continue;
-      var act = String(vals[i][3]);
-      if (actOk_(act)) summaries[act] = parseJson_(vals[i][4]);
+      if (String(idx[i][0]) !== rec.name || String(idx[i][1]).toLowerCase() !== who.toLowerCase()) continue;
+      var act = String(idx[i][3]);
+      if (actOk_(act)) summaries[act] = parseJson_(dataRowValues_(i + 1)[4]);
     } catch (e) { /* skip bad row */ }
   }
   /* THE NAME, and where it comes from now. The front door read it from her own
@@ -753,6 +843,7 @@ function adminDeleteClass_(req, ctx) {
     for (var j = data.length - 1; j >= 1; j--) {
       if (String(data[j][0]) === del) { sh.deleteRow(j + 1); removed++; }
     }
+    if (EXEC) EXEC.index = null;   /* rows have gone; the index is stale */
     var reg = getClasses_(), kept = [];
     for (var i = 0; i < reg.length; i++) if (reg[i].name !== del) kept.push(reg[i]);
     setClasses_(kept);

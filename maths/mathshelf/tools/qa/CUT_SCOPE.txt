@@ -3,26 +3,16 @@
 # `/` included. A file changed since the cut's start commit (tools/qa/out/
 # cut-start.json) that matches no line here fails qa-scope by name.
 #
-# STEWARD CUT — the set-up screen: book names, tidy row controls, Set-up named,
-# the class table in its own frame (13 Sept 2026, Fable steward, 120-minute clock)
-script.js
-staff.js
-strings.js
-style.css
-tools/qa/sit-teacher.js
+# SERVER CUT — the relay re-sends on the echo bounce, the store answers a stray
+# visit with JSON, one open and one read per call (13 Sept 2026, Fable steward,
+# 120-minute clock)
+server/Code.gs.template
+server/Code.gs
+server/Index.html
+tools/qa/qa-two-homes.js
+tools/qa/lib/mockenv.js
 tools/qa/fixtures/plants.js
-tools/qa/MATHS_*.md
+dev/test-server-scoping.js
+tools/qa/MATHS_GATES_AUDIT.md
 tools/qa/out/*
 tools/qa/CUT_SCOPE.txt
-PROGRESS.md
-content-stats-averages.js
-tools/qa/qa-waits.js
-server/Index.html
-server/Code.gs
-server/DEPLOY_LOG.md
-HANDOVER.md
-tools/qa/MATHS_COLD_READ_VERDICTS_TEACHER.md
-tools/qa/MATHS_COLD_READ_VERDICTS_stats-averages.md
-tools/qa/MATHS_COLD_READ_VERDICTS_stats-collect.md
-tools/qa/MATHS_COLD_READ_VERDICTS_stats-quartiles.md
-tools/qa/MATHS_COLD_READ_VERDICTS_v4.md
