@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "9ccfa262d9ef",
- "when": "2026-09-13T01:02:59.329Z",
+ "contentHash": "58fa75a99f62",
+ "when": "2026-09-13T01:36:02.115Z",
  "states": [
   {
    "surface": "question",
@@ -1312,7 +1312,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1336,7 +1336,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1360,7 +1360,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1384,7 +1384,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1408,7 +1408,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1432,7 +1432,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1456,7 +1456,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1480,7 +1480,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1504,7 +1504,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1528,7 +1528,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1552,7 +1552,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1576,7 +1576,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
@@ -1600,7 +1600,7 @@
    "section": 4,
    "width": 1280,
    "audits": {
-    "empty": "FAIL",
+    "empty": "PASS",
     "nested": "PASS",
     "geometry": "PASS",
     "steps": "PASS",
