@@ -53,6 +53,10 @@ const CONTROLS = [
   { id: 'acts-hardcoded', kind: 'fixture', plant: 'fixture-acts-hardcoded', mustFail: /still answered bad-act/ },
   { id: 'acts-any-string', kind: 'fixture', plant: 'fixture-acts-any-string', mustFail: /junk id/ },
   { id: 'active-spreadsheet-call-site', kind: 'fixture', plant: 'fixture-active-spreadsheet', mustFail: /STANDALONE/ },
+  /* THE SERVER CUT (13 Sept 2026): the echo bounce, the stray GET, the scan */
+  { id: 'relay-no-resend', kind: 'fixture', plant: 'fixture-relay-no-resend', mustFail: /took the echo bounce for a closed road/ },
+  { id: 'data-doget-throws', kind: 'fixture', plant: 'fixture-data-doget-throws', mustFail: /answered a stray visit with a failure/ },
+  { id: 'scan-per-call', kind: 'fixture', plant: 'fixture-scan-per-call', mustFail: /read the data tab/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -320,6 +324,35 @@ const admin = (env, req) => env.call('apiAdmin')(req);
       'a call through the front door did not come back: ' + JSON.stringify(r));
     g.check(JSON.stringify(r || {}).indexOf(SECRET) < 0, 'call', 'two-homes',
       'the shared secret came back through the relay — a secret the client can see is not a secret');
+  }
+
+  /* --- L-A THE RELAY RE-SENDS ONCE (the server cut, 13 Sept 2026) --------
+     MEASURED, not guessed: Google's answer host bounces about one answer in
+     eight. After ~15 s it answers the POST with a 302 back to the script's own
+     /exec as a GET, so what lands is an HTML page, not the store's JSON. The
+     page side already re-sends on that (STORE_RESENDS, the client cut); the
+     RELAY turned the same bounce into 'relay-failed' for the pupil. Executed:
+     UrlFetchApp answers HTML once and the relayed JSON on the second ask. */
+  {
+    front.state.active = PUPIL;
+    const realFetch = front.sandbox.UrlFetchApp.fetch;
+    let fetches = 0;
+    front.state.logs.length = 0;
+    front.sandbox.UrlFetchApp.fetch = function (url, params) {
+      fetches++;
+      if (fetches === 1) return { getResponseCode: () => 200, getContentText: () => '<!DOCTYPE html><html>…</html>' };
+      return realFetch.call(this, url, params);
+    };
+    let r = null;
+    try { r = front.call('apiCall')({ action: 'hello', payload: { classCode: '10A-Maths' } }); }
+    catch (e) { r = { ok: false, error: 'threw', threw: String(e && e.message || e) }; }
+    finally { front.sandbox.UrlFetchApp.fetch = realFetch; }
+    const logged = front.state.logs.some(l => /DATA answered/.test(l));
+    g.check(!!(r && r.ok === true) && fetches === 2 && logged, 'relay re-send', 'two-homes',
+      'the relay took the echo bounce for a closed road — one HTML answer and apiCall said relay-failed instead of asking once more');
+    g.note('relay re-send: ' + fetches + ' fetch(es), answer ' + JSON.stringify(r).slice(0, 60) + ', logged=' + logged);
+    front.state.fetches.length = 0;
+    front.state.logs.length = 0;
   }
 
   /* --- 'classes' / scoping — the twenty assertions, absorbed ----------- */
@@ -689,6 +722,69 @@ const admin = (env, req) => env.call('apiAdmin')(req);
     const frontSrc = [fd, call, mint].map(m => (m ? m[0] : '')).join('\n').replace(/\/\*[\s\S]*?\*\//g, '');
     g.check(!/acts_\(|ss_\(|getConfig_\(|coerceActs_\(|actOk_\(|SpreadsheetApp/.test(frontSrc), 'front door', 'two-homes',
       'doGet, apiCall or storeToken_ names acts_/ss_/getConfig_/coerceActs_/actOk_/SpreadsheetApp - the act list lives in the Sheet now, and the front door runs as a pupil who cannot open it');
+  }
+
+  /* --- L-B THE STORE ANSWERS A STRAY VISIT WITH JSON --------------------
+     The same echo bounce lands on the DATA project as a GET. The standalone
+     home has no Index file to serve, so its doGet threw and every bounce wrote
+     a "doGet Failed" row in the Executions log. The store answers a stray visit
+     with JSON instead, and touches nothing: no HtmlService, no Sheet. */
+  {
+    solo.state.htmlTemplates = 0;
+    let text = '', threw = null;
+    try {
+      const out = solo.call('doGet')({ parameter: {} });
+      text = (out && typeof out.getContent === 'function') ? String(out.getContent()) : String(out);
+    } catch (e) { threw = String(e && e.message || e); }
+    let parsed = null; try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
+    g.check(!threw && !!parsed && parsed.ok === false && parsed.error === 'use-post' && solo.state.htmlTemplates === 0,
+      'store doGet', 'two-homes',
+      'the store answered a stray visit with a failure — the echo bounce lands here as a GET, and every one is a Failed row in the log');
+    g.note('store doGet: threw=' + JSON.stringify(threw) + ', body=' + JSON.stringify(String(text).slice(0, 60)) + ', HtmlService reached ' + solo.state.htmlTemplates + ' time(s)');
+  }
+
+  /* --- L-C ONE OPEN, ONE READ (the server cut, 13 Sept 2026) -------------
+     MEASURED on the live store (Executions log, 13:09-13:10 on 13 Sept 2026, a
+     quiet moment, a class with no saved rows): `hello` and `load` took 5.6-8.2 s
+     of the store's OWN execution time, against 1.4-3 s the day before. Every
+     call opened the Sheet several times and read the WHOLE Data tab several
+     times, and the Data tab's cells carry big JSON states, so each whole read
+     pulls megabytes. Counted here per call, in a world of its own so the count
+     is the call's and nothing else's. */
+  {
+    const meter = makeWorld({
+      active: PUPIL, effective: DEPLOYER, passcode: PW, standalone: true, sheetId: SHEET_ID,
+      props: { relaySecret: SECRET, sheetId: SHEET_ID }
+    });
+    loadTemplate(meter, TPL);
+    try { meter.call('initJotter')(); } catch (e) {}
+    const M = (body) => { try { return meter.call('apiRelay')(body); } catch (e) { return { ok: false, error: 'threw', threw: String(e && e.message || e) }; } };
+    M({ secret: SECRET, email: TA, action: 'admin', payload: { passcode: PW, sub: 'addClass', className: '10A Maths' } });
+    M({ secret: SECRET, email: TA, action: 'admin', payload: { passcode: PW, sub: 'setActs', className: '10A-Maths', acts: { angles: true } } });
+    /* how many Data rows this call could honestly need to read in full */
+    const matched = (cls, email, act) => meter.dataSheet._rows.filter((r, i) => i > 0 &&
+      String(r[0]) === cls && String(r[1]).toLowerCase() === String(email).toLowerCase() &&
+      (act == null || String(r[3]) === act)).length;
+    const measure = (action, body, rows) => {
+      meter.state.openById = 0;
+      meter.dataSheet._reads.dataRange = 0;
+      meter.dataSheet._reads.range = 0;
+      const r = M(body);
+      const opens = meter.state.openById, whole = meter.dataSheet._reads.dataRange, ranged = meter.dataSheet._reads.range;
+      g.check(!!(r && r.ok === true), 'one open one read', 'two-homes',
+        'the measured ' + action + ' did not succeed, so nothing it read was measured honestly: ' + JSON.stringify(r).slice(0, 120));
+      g.check(opens <= 1 && whole === 0 && ranged <= 1 + rows, 'one open one read', 'two-homes',
+        action + ' opened the Sheet ' + opens + ' times and read the data tab ' + (whole + ranged) +
+        ' times in one call — measured 5.6–8.2 s a call on 13 Sept 2026 for a class with no rows');
+      g.note('one open one read: ' + action + ' openById=' + opens + ' whole=' + whole + ' ranged=' + ranged + ' (rows that matched: ' + rows + ')');
+    };
+    measure('hello', { secret: SECRET, email: PUPIL, action: 'hello', payload: { classCode: '10A-Maths' } },
+      matched('10A-Maths', PUPIL, null));
+    const mState = JSON.stringify({ v: 1, qs: { c1: { st: 'ok' } } });
+    measure('save', { secret: SECRET, email: PUPIL, action: 'save', payload: { classCode: '10A-Maths', act: 'angles', state: mState, summary: '{"qs":{}}' } },
+      matched('10A-Maths', PUPIL, 'angles'));
+    measure('load', { secret: SECRET, email: PUPIL, action: 'load', payload: { classCode: '10A-Maths', act: 'angles' } },
+      matched('10A-Maths', PUPIL, 'angles'));
   }
 
   /* --- the quota arithmetic, reported --------------------------------- */
