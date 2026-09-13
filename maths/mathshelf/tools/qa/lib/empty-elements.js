@@ -47,7 +47,16 @@ const EXEMPTIONS = [
   'a live region ([role=status] or [aria-live]) — it is meant to start empty',
   'holds a picture, video, canvas, SVG or a control',
   'painted with a background image',
-  'a stem-and-leaf row (.stat-sl td): an empty row is the diagram saying no value has that stem (Book A, 12 Sept 2026)'
+  'a stem-and-leaf row (.stat-sl td): an empty row is the diagram saying no value has that stem (Book A, 12 Sept 2026)',
+  /* Book B (13 Sept 2026, WALK-B): a table's GIVEN cells are plain <td>s
+     (numeric or the printed class text) and are already inside td's own TAGS
+     rule above — nothing new exempts them, they are simply never empty by
+     construction. What IS new is the other direction: an empty DERIVED
+     button.stat-cell, before she has filled it, is legitimate (that is what
+     "empty" means for a cell she has not keyed yet) — but ONLY while it still
+     carries its own aria-label naming the head and row it belongs to; with no
+     name it is condemned below, not exempted. A button.stat-rowpick is never
+     exempt at all: it always carries the row's own class text as its name. */
 ];
 
 const QUERY = `(function () {
@@ -85,10 +94,43 @@ const QUERY = `(function () {
       w: Math.round(r.width), h: Math.round(r.height)
     });
   });
+  /* ADDITION (Book B, 13 Sept 2026): a table's own two control kinds are not
+     content containers - a <button> is deliberately off the TAGS list above,
+     because most empty buttons hold an icon or are simply between presses -
+     so they are asked a NARROWER question of their own: not "is it empty"
+     but "does it still say what it is while it is". */
+  document.querySelectorAll('button.stat-cell').forEach(function (el) {
+    if (el.hasAttribute('hidden') || el.closest('[hidden]')) return;
+    if ((el.textContent || '').trim() !== '') return;               /* not yet filled - normal */
+    var r = el.getBoundingClientRect();
+    if (r.width < 8 || r.height < 6) return;
+    var cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) <= 0.05) return;
+    if (el.getAttribute('aria-label')) return;                      /* named - a legitimate empty button */
+    out.push({ tag: 'button', cls: '.stat-cell', reason: 'stat-cell-no-name', w: Math.round(r.width), h: Math.round(r.height) });
+  });
+  document.querySelectorAll('button.stat-rowpick').forEach(function (el) {
+    if (el.hasAttribute('hidden') || el.closest('[hidden]')) return;
+    var r = el.getBoundingClientRect();
+    if (r.width < 8 || r.height < 6) return;
+    var cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) <= 0.05) return;
+    var name = (el.getAttribute('aria-label') || el.textContent || '').trim();
+    if (name) return;
+    out.push({ tag: 'button', cls: '.stat-rowpick', reason: 'stat-rowpick-no-name', w: Math.round(r.width), h: Math.round(r.height) });
+  });
   return out;
 })`;
 
 function describe(f) {
+  if (f.reason === 'stat-cell-no-name') {
+    return 'AN EMPTY DERIVED TABLE CELL WITH NO NAME ' + f.w + '×' + f.h + 'px — ' +
+      'button.stat-cell with nothing keyed yet is only a legitimate empty button while it carries its own aria-label naming the column head and row (CONTRACT_B.md "table")';
+  }
+  if (f.reason === 'stat-rowpick-no-name') {
+    return 'A ROW-PICK BUTTON WITH NO NAME ' + f.w + '×' + f.h + 'px — ' +
+      "button.stat-rowpick must carry the row's own class text as its name, filled or not (CONTRACT_B.md \"table\")";
+  }
   return 'A VISIBLE EMPTY ' + f.tag.toUpperCase() + ' ' + (f.cls || '(no class)') +
     ' — ' + f.w + '×' + f.h + 'px of nothing' +
     (f.inside ? ', inside ' + f.inside : '') +

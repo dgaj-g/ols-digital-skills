@@ -56,6 +56,11 @@ const { bookHash, contentHash } = require('./lib/hash.js');
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
    tells a reader what rule broke and nothing about where to look. */
 function describe(f) {
+  /* Book B: an empty derived table cell or an unnamed row-pick button
+     (lib/empty-elements.js's own two new checks) name themselves - see the
+     comment there for why a bare <tag>.class line would say nothing useful
+     about either */
+  if (f.reason === 'stat-cell-no-name' || f.reason === 'stat-rowpick-no-name') return require('./lib/empty-elements.js').describe(f);
   const bits = [];
   if (f.law) bits.push(f.law);
   if (f.sel) bits.push(f.sel);
@@ -130,6 +135,9 @@ const CONTROLS = [
   { id: 'stats-a-truth-before-lock', kind: 'fixture', plant: 'stats-a-truth-before-lock', mustFail: /truth-before-lock/ },
   { id: 'stats-a-signature-leak', kind: 'fixture', plant: 'stats-a-signature-leak', mustFail: /an answer value is on the page before Check/ },
   { id: 'stats-a-stage-skipped', kind: 'fixture', plant: 'stats-a-stage-skipped', mustFail: /never stood on stage/ },
+  /* Book B's single-fault plants (13 Sept 2026, WALK-B) */
+  { id: 'stats-b-list-fig-missing', kind: 'fixture', plant: 'stats-b-list-fig-missing', mustFail: /the list the question is about is not on the page/ },
+  { id: 'stats-b-stage-skipped', kind: 'fixture', plant: 'stats-b-stage-skipped', mustFail: /never stood on stage/ },
   { id: 'lit-spine-unreadable', kind: 'fixture', plant: 'fixture-css-lit-spine', mustFail: /against what is actually behind it/ },
   /* AND THE SAME SCREEN, WITH ONLY THE EMBLEM WRONG. The plant above moves
      two things at once, so it fired on the band alone while the emblem's
@@ -385,7 +393,17 @@ async function walkBook(page, book, width, sidecar, transcript) {
           sub: '.movie-line .ml-eq',
           /* Book A's ops (12 Sept 2026) */
           venn: '.ml-venn', vfill: '.ml-vfill', pie: '.ml-pie', sector: '.ml-sector',
-          stemleaf: '.ml-stemleaf', leaf: '.ml-leaf', key: '.ml-key', lobf: '.ml-lobf'
+          stemleaf: '.ml-stemleaf', leaf: '.ml-leaf', key: '.ml-key', lobf: '.ml-lobf',
+          /* Book B (CONTRACT_B.md "Films"): every other op its films name -
+             write, ring, table, tcell, stamp, note, tick, and box (handled
+             below via the boxframe/boxplot split) - already has a selector
+             above; `bracket {i, j}` is the one genuinely new op ("circle the
+             middle two"), so it needs one of its own. No `.ml-bracket` exists
+             in today's jotter-stats.js (the table kind has not landed) - this
+             is the selector RENDER must draw to, real rendered pixels
+             spanning the i-th to j-th value's glyphs on the line it names,
+             exactly as `ring` already must for a single value. */
+          bracket: '.ml-bracket'
         };
         const kinds = {};
         live.forEach(op => {
@@ -508,6 +526,34 @@ async function walkBook(page, book, width, sidecar, transcript) {
         if (!sig.ok) g.fail('question:fresh > ' + qid + ' @' + width, 'consequence', sig.why);
       }
 
+      /* THE FIGURE A `values` QUESTION IS ABOUT IS ON THE PAGE (CONTRACT_B.md
+         "values", fig:{type:'list'}): a slot's label ("the median of the
+         list") means nothing without the list itself printed above the
+         boxes in .stat-list. Asked on question:fresh, the same moment
+         SIGNATURE is asked, because a missing figure is a missing thing to
+         work from, not a wrong answer - it belongs beside the other "what she
+         needs is not here" law, not among the genuine-consequence ones.
+         stats-b-list-fig-missing plants exactly this: BUILD.values keeps its
+         boxes but the .stat-list paragraph never appears. */
+      {
+        const listOk = await page.evaluate((id) => {
+          const r = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+            .filter((x) => (x.getAttribute('data-qid') || (x.id || '').replace(/^jq-/, '')) === id)[0];
+          if (!r || r.getAttribute('data-kind') !== 'values') return true;
+          const book = r.getAttribute('data-book') || '';
+          let packQ = null;
+          try {
+            const pack = window.GJ.app.content(book);
+            (pack.sections || []).forEach((s) => (s.questions || []).forEach((x) => { if (x.id === id) packQ = x; }));
+          } catch (e) { return true; }
+          if (!packQ || !packQ.fig || packQ.fig.type !== 'list') return true;
+          const printed = r.querySelector('.stat-list');
+          return !!(printed && (printed.textContent || '').trim());
+        }, qid);
+        if (!listOk) g.fail('question:fresh > ' + qid + ' @' + width, 'consequence',
+          'the list the question is about is not on the page — a fig:{type:"list"} question prints its list above the boxes, on ' + qid);
+      }
+
       /* EVERY BOARD SHE SITS IN FRONT OF, not just the first and the last.
          A stats kind shows three to five in-between boards - points placed but
          not joined, markers placed but the box not drawn, the ordered row
@@ -522,6 +568,17 @@ async function walkBook(page, book, width, sidecar, transcript) {
         for (const stg of declared.stages) {
           answered = await page.evaluate((s2, args) => eval(s2)(args), W.ANSWER, [qid, false, stg]);
           if (!answered.ok) break;
+          /* A TABLE LEAVES "EMPTY" ON ITS VERY FIRST CELL (CONTRACT_B.md
+             "table"; stat-probes.js TABLE_ONE_CELL). Asked the moment the
+             walk drives to "filling" - drive.js's pressTable has pressed
+             exactly one cell by then - so a table that skips straight from
+             "empty" to "asking"/"ready" the instant a cell lands is caught
+             here, one press earlier than STAGE_SETTLE's own "never stood on
+             stage" would notice it. */
+          if (stg === 'filling') {
+            const tc = await page.evaluate((s2, args) => eval(s2)(args), P.TABLE_ONE_CELL, [qid]);
+            if (!tc.ok) g.fail('question > ' + qid + ' @' + width, 'consequence', tc.why);
+          }
           /* ONE ATTENTION BEAT when a stage begins, ONE GOLD GLOW when the
              Check lights - and neither for ever (ruling 40; DESIGN 4.0). Read
              before the walk settles, while the classes are still on. */

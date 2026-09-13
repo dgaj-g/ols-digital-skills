@@ -33,6 +33,7 @@
        They read in that order on the shelf; C is built first because it is what
        was asked for, so A and B slot in ABOVE this line as they are built. */
     { id: 'stats-collect', title: 'Handling Data', sub: 'Collecting and displaying', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'stemscatter' },
+    { id: 'stats-averages', title: 'Handling Data', sub: 'Averages', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'ftable' },
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
@@ -1041,6 +1042,15 @@
         '<circle cx="89" cy="16" r="2.2" fill="#E4B824"/><circle cx="74" cy="22" r="2.2" fill="#E4B824" opacity="0.7"/>' +
         '<path d="M58 46 L92 12" fill="none" stroke="#E4B824" stroke-width="1.4" opacity="0.7"/></svg>';
     }
+    /* Book B: a frequency table with its totals row, a mean line beneath (DESIGN 20.1) */
+    if (kind === 'ftable') {
+      return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
+        '<rect x="12" y="8" width="76" height="34" fill="none" stroke="#E4B824" stroke-width="1.6"/>' +
+        '<path d="M12 19 H88 M12 30 H88 M37 8 V42 M62 8 V42" fill="none" stroke="#E4B824" stroke-width="1" opacity="0.7"/>' +
+        '<path d="M12 42 H88" fill="none" stroke="#E4B824" stroke-width="2.4"/>' +
+        '<path d="M40 50 H60" fill="none" stroke="#E4B824" stroke-width="2" stroke-linecap="round"/>' +
+        '<circle cx="24" cy="36" r="2" fill="#E4B824"/><circle cx="49" cy="36" r="2" fill="#E4B824"/><circle cx="74" cy="36" r="2" fill="#E4B824"/></svg>';
+    }
     if (kind === 'curve') {
       return '<svg class="motif" viewBox="0 0 100 56" aria-hidden="true" width="86" height="48">' +
         '<path d="M8 50 C 40 50, 56 30, 92 8" fill="none" stroke="#E4B824" stroke-width="2.5" stroke-linecap="round"/>' +
@@ -1523,6 +1533,14 @@
       s4: ['putting the leaves in order', 'which stem a value goes on', 'the key', 'something else'],
       s5: ['plotting the points', 'drawing the line of best fit', 'reading off the line', 'something else'],
       _: ['the method', 'reading the scale', 'the arithmetic', 'something else']
+    },
+    'stats-averages': {
+      s1: ['putting the list in order first', 'which average is which', 'the arithmetic', 'something else'],
+      s2: ['finding the total first', 'how many there are now', 'the arithmetic', 'something else'],
+      s3: ['multiplying each value by its frequency', 'the totals row', 'dividing by the total frequency', 'something else'],
+      s4: ['the midpoints', 'multiplying by the frequency', 'dividing by the total frequency', 'something else'],
+      s5: ['which average changes', 'what a table cannot tell you', 'true, false or not enough information', 'something else'],
+      _: ['the method', 'the totals', 'the arithmetic', 'something else']
     },
     'stats-quartiles': {
       s1: ['putting the list in order', 'finding the right position', 'taking one away from the other', 'something else'],

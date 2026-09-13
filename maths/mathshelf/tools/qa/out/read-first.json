@@ -180,6 +180,114 @@
     "locked": true
   },
   {
+    "path": "stats-averages > s1 > movie > step2 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "Nine numbers, exactly as printed.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s1 > q5 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "The mean of 3, 5, 6 and ?  /  The mean of 7, 8, 4 and ?",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s2 > movie > step3 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "A fifth girl joins them, aged 5.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s2 > q9 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "A fourth player, who scored 6 goals, joins them.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s2 > q13 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "A girl runs 8 laps of a track in an average time of 48.2 seconds per lap.  /  Calculate her average time per lap for the last 2 laps.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s3 > q18 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "The table shows the number of days absent in a term.  /  Calculate the mean number of days absent.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s4 > movie > step1 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "During 3 hours at Heathrow, 55 aircraft arrived late.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s4 > movie > step1 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "During 3 hours at Heathrow, 55 aircraft arrived late.  /  The table groups them by minutes late.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s4 > movie > step2 > say",
+    "kind": "PREPOSITION-PILEUP",
+    "text": "Each class stands in for its midpoint — halfway between its two ends.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s4 > movie > step9 > say",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "A grouped table gives an estimate, never an exact value — the individual arrival times are gone once they are grouped.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > walt",
+    "kind": "STACKED-WH",
+    "text": "Decide which average to use, predict what changes it, and judge a claim from a grouped table as true, false or not enough information",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > movie > step6 > say",
+    "kind": "BARE-DEMONSTRATIVE",
+    "text": "That is exactly the method — true.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > movie > step8 > say",
+    "kind": "FRAGMENT-RUN",
+    "text": "Claim: \"3 loaves of bread cost 87p.\"  /  A grouped table cannot say what one loaf cost — not enough information.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > q26 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "A grouped frequency table shows the performance of 22 students in a test.  /  Decide the effect of amending the table.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > q27 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from £50,000 to £200,000).",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > q27 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "A table shows the salaries of 120 workers, grouped into unequal class widths (the top class stretches from £50,000 to £200,000).  /  Decide which average better represents a typical salary here.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > q28 > prompt",
+    "kind": "FRAGMENT-CHAIN",
+    "text": "After a week she measured the heights of thirty seedlings, in millimetres, and recorded her results in the table below.",
+    "locked": false
+  },
+  {
+    "path": "stats-averages > s5 > q28 > prompt",
+    "kind": "FRAGMENT-RUN",
+    "text": "Alma planted some seeds to test different composts.  /  After a week she measured the heights of thirty seedlings, in millimetres, and recorded her results in the table below.",
+    "locked": false
+  },
+  {
     "path": "stats-collect > s1 > movie > step7 > say",
     "kind": "FRAGMENT-CHAIN",
     "text": "Another leading question, this time about sport on television.",
@@ -369,6 +477,12 @@
     "path": "strings.js > pupil > statPieNoAngles",
     "kind": "NEGATION-FRAGMENT",
     "text": "no angles yet",
+    "locked": false
+  },
+  {
+    "path": "strings.js > pupil > statTableWhyCells",
+    "kind": "PREPOSITION-PILEUP",
+    "text": "Fill in at least one box of the table first.",
     "locked": false
   },
   {

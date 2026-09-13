@@ -78,7 +78,7 @@ const ANSWER = `((args) => {
        loop checks after each atomic press whether the walker only asked to be
        driven up to a named stage, and stops there. ───────────────────────── */
   const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
-    'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+    'order', 'pick', 'stemleaf', 'pie', 'scatter', 'table'];
   if (STAT_KINDS.indexOf(kind) > -1) {
     const curStage = () => root.getAttribute('data-stage');
     const stagesOfRoot = () => (root.getAttribute('data-stages') || '').split(' ').filter(Boolean);
@@ -260,8 +260,32 @@ const ANSWER = `((args) => {
       const slots = (pq && pq.slots) || [];
       const order = (pq && pq.order) || slots.map((s2) => s2.id) || Object.keys(v);
       const labelOf = (id) => { const s2 = slots.filter((x) => x.id === id)[0]; return s2 ? s2.label : null; };
+      const setOf = (id) => { const s2 = slots.filter((x) => x.id === id)[0]; return s2 && s2.set; };
       for (let i = 0; i < order.length; i++) {
         const id = order[i];
+        /* A CONSTRAINT SET IS FIVE BOXES, NOT ONE (CONTRACT_B.md "values"): a
+           slot authored with set:5 opens five boxes, keyed from
+           S.v[id + '_set'] (an array of five), each found by its OWN label -
+           the renderer's contract is aria-label="<label>, value N", N 1-5 -
+           never by position, for the same reason a figure's overlay box is
+           opened by label above. */
+        const setN = setOf(id);
+        if (setN) {
+          const arr = (v[id + '_set']) || [];
+          const label = labelOf(id);
+          for (let k = 0; k < setN; k++) {
+            if (arr[k] == null || arr[k] === '') continue;
+            const boxLabel = label ? (label + ', value ' + (k + 1)) : null;
+            const btn = boxLabel ? all('.stat-cell[aria-label="' + boxLabel + '"]')[0] : null;
+            if (!btn) return { ok: false, why: 'no box ' + (k + 1) + ' of the set "' + id + '" on ' + qid };
+            if (txt(btn) === String(arr[k])) continue;              /* already keyed */
+            btn.click();
+            const pad = one('.numpad');
+            if (!pad || !padType(pad, arr[k])) return { ok: false, why: 'could not key value ' + (k + 1) + ' of the set "' + id + '" on ' + qid };
+            const sset = maybeStop('filled value ' + (k + 1) + ' of the set "' + id + '"'); if (sset) return sset;
+          }
+          continue;
+        }
         if (v[id] == null || v[id] === '') continue;
         /* A FIGURE'S OVERLAY BOXES LIVE IN .stat-fig, NOT .stat-slots
            (CONTRACT §"values with a figure"): every .stat-cell carries
@@ -282,6 +306,72 @@ const ANSWER = `((args) => {
         const pad = one('.numpad');
         if (!pad || !padType(pad, v[id])) return { ok: false, why: 'could not key "' + id + '" on ' + qid };
         const s = maybeStop('filled "' + id + '"'); if (s) return s;
+      }
+      return null;
+    }
+
+    /* ── table: fill every derived column down, then the totals, then ask ──
+       CONTRACT_B.md "table". Table order, then row order within each column -
+       resumable the same way pressCftable is: a cell whose button already
+       reads the wanted value is skipped, so a re-drive to a later stage on the
+       SAME board never re-presses a cell already keyed. Given columns
+       (col.given, no col.derive) are plain tds and are never pressed. */
+    function pressTable(S, pq) {
+      const cols = (pq && pq.cols) || [];
+      const cells = S.cells || {};
+      const derivedCols = cols.filter((c) => c.derive);
+      for (let ci = 0; ci < derivedCols.length; ci++) {
+        const col = derivedCols[ci];
+        const vals = cells[col.id] || [];
+        for (let ri = 0; ri < vals.length; ri++) {
+          if (vals[ri] == null || vals[ri] === '') continue;
+          const btn = all('button.stat-cell[data-col="' + col.id + '"][data-row="' + ri + '"]')[0];
+          if (!btn) return { ok: false, why: 'no cell for column "' + col.id + '" row ' + ri + ' on ' + qid };
+          if (txt(btn) === String(vals[ri])) continue;              /* already keyed */
+          btn.click();
+          const pad = one('.numpad');
+          if (!pad || !padType(pad, vals[ri])) return { ok: false, why: 'could not key "' + col.id + '" row ' + ri + ' on ' + qid };
+          const s1 = maybeStop('filled "' + col.id + '", row ' + (ri + 1)); if (s1) return s1;
+        }
+      }
+      const totals = (pq && pq.totals) || [];
+      const totalVals = S.totals || {};
+      for (let ti = 0; ti < totals.length; ti++) {
+        const col = totals[ti];
+        if (totalVals[col] == null || totalVals[col] === '') continue;
+        const btn = all('button.stat-cell[data-col="' + col + '"][data-row="total"]')[0];
+        if (!btn) return { ok: false, why: 'no total cell for "' + col + '" on ' + qid };
+        if (txt(btn) === String(totalVals[col])) continue;          /* already keyed */
+        btn.click();
+        const pad = one('.numpad');
+        if (!pad || !padType(pad, totalVals[col])) return { ok: false, why: 'could not key the total for "' + col + '" on ' + qid };
+        const s2 = maybeStop('filled the total for "' + col + '"'); if (s2) return s2;
+      }
+      /* the asks, value then row, in the pack's own order (CONTRACT: "value
+         asks as .stat-slots rows", opened by aria-label the same way a
+         values slot is - never by position, since a row ask and a value ask
+         may interleave) */
+      const asks = (pq && pq.asks) || [];
+      const askVals = S.asks || {};
+      for (let ai = 0; ai < asks.length; ai++) {
+        const ask = asks[ai];
+        const want = askVals[ask.id];
+        if (want == null || want === '') continue;
+        if (ask.type === 'row') {
+          const btn = all('button.stat-rowpick[data-ask="' + ask.id + '"][data-row="' + want + '"]')[0];
+          if (!btn) return { ok: false, why: 'no row-pick button for "' + ask.id + '" row ' + want + ' on ' + qid };
+          if (btn.getAttribute('aria-pressed') === 'true') continue; /* already chosen */
+          btn.click();
+          const s3 = maybeStop('chose the row for "' + ask.id + '"'); if (s3) return s3;
+        } else {
+          const btn = all('.stat-cell[aria-label="' + ask.label + '"]')[0];
+          if (!btn) return { ok: false, why: 'no value-ask box for "' + ask.label + '" on ' + qid };
+          if (txt(btn) === String(want)) continue;                  /* already keyed */
+          btn.click();
+          const pad = one('.numpad');
+          if (!pad || !padType(pad, want)) return { ok: false, why: 'could not key the answer for "' + ask.label + '" on ' + qid };
+          const s4 = maybeStop('answered "' + ask.label + '"'); if (s4) return s4;
+        }
       }
       return null;
     }
@@ -626,6 +716,11 @@ const ANSWER = `((args) => {
       const r = pressValues((attempt.S || {}), packQ);
       if (r) return r;
       return { ok: true, how: 'opened every box and keyed its value', stage: curStage() };
+    }
+    if (kind === 'table') {
+      const r = pressTable((attempt.S || {}), packQ);
+      if (r) return r;
+      return { ok: true, how: 'filled every derived cell and total from the given columns, then answered every question under the table', stage: curStage() };
     }
     if (kind === 'cfplot') {
       const r = pressCfplot(attempt.S || {}, packQ);

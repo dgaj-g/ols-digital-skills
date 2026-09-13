@@ -36,6 +36,9 @@ const { contentHash } = require('./lib/hash.js');
    law and nothing else - "marking-colour-outside-a-mark", forty times - which
    tells a reader what rule broke and nothing about where to look. */
 function describe(f) {
+  /* Book B: an empty derived table cell or an unnamed row-pick button name
+     themselves - see lib/empty-elements.js */
+  if (f.reason === 'stat-cell-no-name' || f.reason === 'stat-rowpick-no-name') return require('./lib/empty-elements.js').describe(f);
   const bits = [];
   if (f.law) bits.push(f.law);
   if (f.sel) bits.push(f.sel);

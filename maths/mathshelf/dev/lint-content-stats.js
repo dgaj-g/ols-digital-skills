@@ -48,7 +48,8 @@ var DEFAULT_PACK_PATHS = [
    this book uses is re-derived by something. A kind added to a pack and not
    added here fails coverage by name. */
 const KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
-  /* Book A (CONTRACT_A.md, 12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter'];
+  /* Book A (CONTRACT_A.md, 12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter',
+  /* Book B (CONTRACT_B.md, 13 Sept 2026) */ 'table'];
 
 /* ──────────────────────────────── failures / report shape ──────────────── */
 
@@ -343,6 +344,102 @@ function splineX(spline, h) {
 var FT_RULE_NAMES = ['venn.only', 'venn.outside', 'venn.both.fromTotals', 'pie.angle',
   'pie.angle.fromTheirs', 'rm.total', 'rm.newMean', 'avg.mean', 'table.mean', 'sl.read'];
 
+/* ──────────────────────────────── §17.1/§17.2 Book B averages (own copy) ── */
+/* A second, independent implementation of "the four averages of a list"
+   (mean/median/mode/range) and of the `table` kind's derived columns/totals/
+   mean/modal-row/median-row — never calling into statcore.js for the truth
+   itself (statcore's own GJ_STATS.listStats/tableDerive are consulted ONLY as
+   a cross-check, exactly as checkQlist cross-checks GJ_STATS.quartiles). */
+function myListStats(values) {
+  var vals = Rs(values || []).filter(Boolean);
+  if (!vals.length) return null;
+  var srt = sortR(vals);
+  var sum = vals.reduce(function (a, b) { return radd(a, b); }, R0);
+  var freq = {}, keys = [];
+  srt.forEach(function (v) { var k = rstr(v); if (freq[k] === undefined) { freq[k] = 0; keys.push(k); } freq[k]++; });
+  var maxF = 0;
+  keys.forEach(function (k) { if (freq[k] > maxF) maxF = freq[k]; });
+  var allSame = keys.every(function (k) { return freq[k] === maxF; });
+  var mode = (allSame && keys.length > 1) ? [] : keys.filter(function (k) { return freq[k] === maxF; }).map(R);
+  return {
+    n: vals.length, sum: sum, distinct: keys.length, maxFreq: maxF,
+    mean: rdiv(sum, rat(vals.length)),
+    median: medianOf(srt),
+    medianUnordered: medianOf(vals),           /* the list in its PRINTED order — AV_MEDIAN_UNORDERED's truth */
+    mode: mode,
+    range: rsub(srt[srt.length - 1], srt[0]),
+    sorted: srt, printed: vals
+  };
+}
+
+/* ---- the `table` kind's own truth (mirrors statcore's tableDerive, kept
+   independent): rows, every numeric column (given read, derived computed),
+   each column's total, the mean, and the modal/median rows by the SAME rule
+   the engine uses — first row whose cumulative frequency reaches (n+1)/2
+   (never "average the two middle rows": a straddle at n even is reported,
+   not treated as an authoring fault — the engine's own convention, per the
+   coordinator's 13 Sept correction). */
+function tColById(cols, id) { return (cols || []).filter(function (c) { return c.id === id; })[0] || null; }
+function tClassCol(cols) { return (cols || []).filter(function (c) { return c.given && c.given.length && c.given[0] && typeof c.given[0] === 'object' && c.given[0].lo !== undefined; })[0] || null; }
+function tColByRole(cols, role) {
+  if (role === 'f') return tColById(cols, 'f') || (cols || []).filter(function (c) { return c.given && /freq/i.test(c.head || ''); })[0] || null;
+  if (role === 'x') return tColById(cols, 'x') || (cols || []).filter(function (c) { return c.given && c.id !== 'f' && typeof c.given[0] !== 'object'; })[0] || null;
+  if (role === 'mid') return (cols || []).filter(function (c) { return c.derive === 'mid'; })[0] || null;
+  return null;
+}
+function tDerivedCols(cols) { return (cols || []).filter(function (c) { return !!c.derive; }); }
+function tRows(cols) {
+  var n = 0;
+  (cols || []).forEach(function (c) { if (c.given && c.given.length > n) n = c.given.length; });
+  return n;
+}
+function myTableDerive(cols) {
+  var rows = tRows(cols), cells = {}, totals = {}, i;
+  var cls = tClassCol(cols), fCol = tColByRole(cols, 'f'), xCol = tColByRole(cols, 'x');
+  (cols || []).forEach(function (c) { if (c.given && c !== cls) cells[c.id] = Rs(c.given); });
+  var midCol = tColByRole(cols, 'mid'), mid = null;
+  if (cls) mid = cls.given.map(function (g) { var lo = R(g.lo), hi = R(g.hi); return (lo && hi) ? rdiv(radd(lo, hi), R2) : null; });
+  if (midCol) cells[midCol.id] = mid || [];
+  var f = fCol ? cells[fCol.id] : null;
+  var value = mid || (xCol ? cells[xCol.id] : null);
+  (cols || []).forEach(function (c) {
+    if (c.derive === 'f*x') {
+      cells[c.id] = [];
+      for (i = 0; i < rows; i++) cells[c.id].push((f && f[i] && value && value[i]) ? rmul(f[i], value[i]) : null);
+    } else if (c.derive === 'cum') {
+      cells[c.id] = []; var run = R0;
+      for (i = 0; i < rows; i++) { run = radd(run, (f && f[i]) || R0); cells[c.id].push(run); }
+    }
+  });
+  Object.keys(cells).forEach(function (id) { totals[id] = (cells[id] || []).reduce(function (a, b) { return b ? radd(a, b) : a; }, R0); });
+  var n = f ? totals[fCol.id] : null, sumFx = null, mean = null;
+  if (f && value) {
+    sumFx = R0;
+    for (i = 0; i < rows; i++) if (f[i] && value[i]) sumFx = radd(sumFx, rmul(f[i], value[i]));
+    mean = (n && n.n !== 0) ? rdiv(sumFx, n) : null;
+  }
+  var modalRow = -1, modalTie = false, medianRow = -1, straddle = false;
+  if (f) {
+    for (i = 0; i < rows; i++) {
+      if (modalRow === -1 || rlt(f[modalRow], f[i])) { modalRow = i; modalTie = false; }
+      else if (i !== modalRow && f[i] && req(f[i], f[modalRow])) modalTie = true;
+    }
+    var half = rdiv(radd(n, R1), R2), run2 = R0, lowerRow = -1;
+    for (i = 0; i < rows; i++) {
+      var before = run2;
+      run2 = radd(run2, f[i] || R0);
+      if (lowerRow === -1 && rle(rdiv(n, R2), run2)) lowerRow = i;
+      if (medianRow === -1 && rle(half, run2)) medianRow = i;
+    }
+    straddle = (n.d === 1 && n.n % 2 === 0 && lowerRow !== -1 && medianRow !== -1 && lowerRow !== medianRow);
+  }
+  return {
+    rows: rows, cells: cells, totals: totals, n: n, sumFx: sumFx, mean: mean,
+    modalRow: modalRow, modalTie: modalTie, medianRow: medianRow, straddle: straddle,
+    mid: mid, fId: fCol ? fCol.id : null, xId: xCol ? xCol.id : null, midId: midCol ? midCol.id : null, clsCol: cls
+  };
+}
+
 /* ──────────────────────────────── §6.6 reason bank (own copy) ───────────── */
 var REASON_IDS = ['SMALL', 'BIASED', 'WRONG_POP', 'ESTIMATE', 'TIME_PLACE',
   'USE_IQR_OUTLIERS', 'USE_RANGE_ALL', 'USE_MIDDLE_HALF'];
@@ -634,8 +731,20 @@ function myUnitsOf(q, rules) {
     case 'stemleaf': return stemleafKindUnits(q);
     case 'pie': return pieKindUnits(q);
     case 'scatter': return scatterKindUnits(q);
+    case 'table': return tableKindUnits(q);
     default: return [];
   }
+}
+/* Book B's table (CONTRACT_B.md §table): one method unit per derived cell
+   (rows × derived cols), one method unit per total, one accuracy unit per
+   ask — counts only (labels/ftEarns are the engine's business, not this
+   reachable-marks check's). */
+function tableKindUnits(q) {
+  var out = [], rows = tRows(q.cols);
+  tDerivedCols(q.cols).forEach(function () { for (var i = 0; i < rows; i++) out.push({ band: 'method', w: 1 }); });
+  (q.totals || []).forEach(function () { out.push({ band: 'method', w: 1 }); });
+  (q.asks || []).forEach(function () { out.push({ band: 'accuracy', w: 1 }); });
+  return out;
 }
 function orderUnits(q) {
   var n = (q.tiles || []).length;
@@ -976,11 +1085,169 @@ function checkJudge(book, secId, q) {
     if (bank.indexOf(rid) === -1) fail(book, secId, q.id, 'src', 'reasons names "' + rid + '" which is not in the reason bank');
   });
   checkJudgeOptions(book, secId, q);
+  checkJudgeProofs(book, secId, q);
+}
+
+/* ──────────────────────────────── §20.3 Book B — judge TFN proofs ───────── */
+/* CONTRACT_B.md's judge/TFN section names the field the pack carries its
+   computable data on but leaves the exact shape for this package to record
+   (CONTENT-B authors in parallel — tools/qa/out/bookB/CONTENT_NOTES.md, not
+   yet written as of this pass; see LINT_NOTES.md for the decision and how
+   to adapt it once that file exists). Decided here: `q.data`, one of
+   `{ values:[…] }` (a plain list) or `{ cols:[…] }` (the SAME cols shape as
+   the `table` kind — x|cls + f — reusing myTableDerive) or, for a two-group
+   comparison claim, `{ A:{values:[…]}, B:{values:[…]} }`.
+   Scope: ONLY a claim whose `options` includes 'Not enough information' is
+   required to carry a `proof` — Book C's existing non-TFN options claims
+   (Increase/Decrease/Stay the same; City A/City B) predate this rule and are
+   NOT retrofitted (rule 30 in spirit: they stay exactly as shipped). */
+var TFN_PROOF_KINDS = ['estMeanDivisor', 'countAtLeast', 'medianInterval', 'modalInterval',
+  'exactFromGrouped', 'costOf', 'changes', 'compareAverage'];
+function checkJudgeProofs(book, secId, q) {
+  (q.claims || []).forEach(function (c, i) {
+    if (!c.options || c.options.indexOf('Not enough information') === -1) return;
+    if (!c.proof || TFN_PROOF_KINDS.indexOf(c.proof.kind) === -1) {
+      fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ' has no lint-provable proof');
+      return;
+    }
+    if (c.proof.kind === 'compareAverage') { checkCompareAverageProof(book, secId, q, c, i); return; }
+    if (c.proof.kind === 'exactFromGrouped') { checkExactFromGroupedProof(book, secId, q, c, i); return; }
+    var verdict = evalJudgeProof(c.proof, q);
+    if (verdict === undefined) {
+      info(secId + '/' + q.id + ' claim ' + (i + 1) + ': proof "' + c.proof.kind + '" could not be evaluated (missing q.data) — not checked');
+      return;
+    }
+    if (verdict !== c.verdict)
+      fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ': proof (' + c.proof.kind + ') gives verdict "' + verdict + '" but authored verdict is "' + c.verdict + '"');
+  });
+}
+function constructExtreme(D, which) {
+  var out = [], cls = D.clsCol, f = D.fId ? D.cells[D.fId] : null;
+  if (!cls || !f) return null;
+  cls.given.forEach(function (g, i) {
+    var edge = R(which === 'lo' ? g.lo : g.hi), count = f[i] ? Math.round(rnum(f[i])) : 0;
+    for (var k = 0; k < count; k++) out.push(edge);
+  });
+  return out;
+}
+function evalJudgeProof(proof, q) {
+  var data = q.data || {};
+  switch (proof.kind) {
+    case 'estMeanDivisor': {
+      var D = data.cols && myTableDerive(data.cols);
+      if (!D || !D.n) return undefined;
+      return req(rat(Number(proof.divisor)), D.n) ? 'True' : 'False';
+    }
+    case 'countAtLeast': {
+      var lo = R(proof.lo);
+      if (Array.isArray(data.values)) {
+        var vals = Rs(data.values).filter(Boolean);
+        var cnt = vals.filter(function (v) { return rle(lo, v); }).length;
+        return cnt === Number(proof.says) ? 'True' : 'False';
+      }
+      if (data.cols) {
+        var D2 = myTableDerive(data.cols), cls = D2.clsCol;
+        if (!cls || !lo) return undefined;
+        var onBoundary = cls.given.some(function (g) { return req(R(g.lo), lo); });
+        if (!onBoundary) return 'Not enough information';
+        var f = D2.fId ? D2.cells[D2.fId] : null;
+        if (!f) return undefined;
+        var sum = R0;
+        cls.given.forEach(function (g, idx) { if (rle(lo, R(g.lo))) sum = radd(sum, f[idx] || R0); });
+        return req(sum, rat(Number(proof.says))) ? 'True' : 'False';
+      }
+      return undefined;
+    }
+    case 'medianInterval': {
+      var D3 = data.cols && myTableDerive(data.cols);
+      if (!D3 || D3.medianRow === -1) return undefined;
+      return D3.medianRow === Number(proof.row) ? 'True' : 'False';
+    }
+    case 'modalInterval': {
+      var D4 = data.cols && myTableDerive(data.cols);
+      if (!D4 || D4.modalRow === -1 || D4.modalTie) return undefined;
+      return D4.modalRow === Number(proof.row) ? 'True' : 'False';
+    }
+    case 'costOf': {
+      if (data.cols && tClassCol(data.cols)) return 'Not enough information';
+      if (Array.isArray(data.values)) {
+        var vs = Rs(data.values).filter(Boolean);
+        var uniq = {}; vs.forEach(function (v) { uniq[rstr(v)] = true; });
+        if (Object.keys(uniq).length !== 1) return undefined; /* not a uniform per-item price: out of scope here */
+        return req(rmul(vs[0], rat(Number(proof.n))), rat(Number(proof.says))) ? 'True' : 'False';
+      }
+      return undefined;
+    }
+    case 'changes': {
+      var before = myListStats(proof.before), after = myListStats(proof.after);
+      if (!before || !after) return undefined;
+      var b = before[proof.stat], a2 = after[proof.stat];
+      if (!b || !a2 || Array.isArray(b) || Array.isArray(a2)) return undefined;
+      return req(a2, b) ? 'Stay the same' : (rlt(b, a2) ? 'Increase' : 'Decrease');
+    }
+  }
+  return undefined;
+}
+/* compareAverage is not verdict-matched (which group is "better" is a
+   domain judgement the lint cannot make, exactly as checkCompare already
+   treats context.higherIs) — only DISTINGUISHABILITY is proved: the two
+   groups' named stat must not be equal, or no group is definitively ahead. */
+/* exactFromGrouped: the verdict must be NEI, PROVED by constructing two
+   datasets both consistent with the grouped table (every item at its class's
+   lower bound; every item at its class's upper bound) and showing the named
+   stat differs between them. If the two extremes agree, the claim is NOT
+   actually undecidable on this data — that is a real authoring fault, so it
+   fails (mirroring every other "dx equals the truth" distinguishability
+   check in this file) rather than being silently accepted. */
+function checkExactFromGroupedProof(book, secId, q, c, i) {
+  var data = q.data || {}, D = data.cols && myTableDerive(data.cols);
+  if (!D || !D.clsCol) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': exactFromGrouped has no grouped q.data.cols — not checked'); return; }
+  if (c.verdict !== 'Not enough information')
+    fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ' (exactFromGrouped): only NEI can be proved from grouped data, but the authored verdict is "' + c.verdict + '"');
+  /* RANGE is special: shifting every item together from "all at lo" to "all
+     at hi" leaves the range UNCHANGED whenever the classes are equal width
+     (uniform-width classes are the common case — e.g. Alma's seedlings, all
+     width 5) even though the true range genuinely IS undecidable. The real
+     two extremes for range are: widest possible (first item at the FIRST
+     class's lo, last item at the LAST class's hi) vs narrowest possible
+     (first item at the first class's hi, last item at the last class's lo). */
+  if (c.proof.stat === 'range') {
+    var classes = D.clsCol.given;
+    var firstLo = R(classes[0].lo), firstHi = R(classes[0].hi);
+    var lastLo = R(classes[classes.length - 1].lo), lastHi = R(classes[classes.length - 1].hi);
+    if (!firstLo || !firstHi || !lastLo || !lastHi) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': exactFromGrouped(range) has non-numeric class boundaries — not checked'); return; }
+    var rangeMax = rsub(lastHi, firstLo), rangeMin = rsub(lastLo, firstHi);
+    if (req(rangeMax, rangeMin))
+      fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ' (exactFromGrouped, range): the widest-possible and narrowest-possible ranges both give ' + rstr(rangeMax) + ' — this table does NOT prove "Not enough information", pick different data');
+    return;
+  }
+  var lower = constructExtreme(D, 'lo'), upper = constructExtreme(D, 'hi');
+  if (!lower || !upper || !lower.length) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': exactFromGrouped could not construct the two extreme datasets — not checked'); return; }
+  var sLo = myListStats(lower), sHi = myListStats(upper);
+  var vLo = sLo && sLo[c.proof.stat], vHi = sHi && sHi[c.proof.stat];
+  if (Array.isArray(vLo) || Array.isArray(vHi) || !vLo || !vHi) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': exactFromGrouped could not compute "' + c.proof.stat + '" at both extremes (a tied mode) — not checked'); return; }
+  if (req(vLo, vHi))
+    fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ' (exactFromGrouped): the lower-bound and upper-bound datasets both give ' + c.proof.stat + ' = ' + rstr(vLo) + ' — this table does NOT prove "Not enough information", pick different data');
+}
+function checkCompareAverageProof(book, secId, q, c, i) {
+  var proof = c.proof, data = q.data || {};
+  var A = proof.A || data.A, B = proof.B || data.B;
+  if (!A || !B) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': compareAverage has no q.data.A/B — not checked'); return; }
+  var sa = A.values ? myListStats(A.values) : (A.cols ? myTableDerive(A.cols) : null);
+  var sb = B.values ? myListStats(B.values) : (B.cols ? myTableDerive(B.cols) : null);
+  var va = sa && sa[proof.stat], vb = sb && sb[proof.stat];
+  if (!va || !vb || Array.isArray(va) || Array.isArray(vb)) { info(secId + '/' + q.id + ' claim ' + (i + 1) + ': compareAverage could not compute "' + proof.stat + '" for both groups — not checked'); return; }
+  if (req(va, vb)) fail(book, secId, q.id, 'judge', 'claim ' + (i + 1) + ' (compareAverage): both groups\' ' + proof.stat + ' are ' + rstr(va) + ' — no group is definitively better');
 }
 
 function checkValues(book, secId, q) {
   (q.slots || []).forEach(function (slot) {
-    if (!slot.answer || slot.answer.constraints) return;
+    if (slot.earns !== undefined && ['method', 'accuracy'].indexOf(slot.earns) === -1)
+      fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" earns "' + slot.earns + '" — must be method or accuracy');
+    if (slot.answer && slot.answer.constraints) {
+      checkConstraintSet(book, secId, q, slot);
+      return;
+    }
     var a = R(slot.answer);
     if (!a) return;
     if (!terminates(a) && slot.dp === undefined && q.dp === undefined)
@@ -988,7 +1255,214 @@ function checkValues(book, secId, q) {
     if (slot.ft && slot.ft.rule && FT_RULE_IDS.indexOf(slot.ft.rule) === -1)
       fail(book, secId, q.id, 'src', 'slot "' + slot.id + '" ft.rule "' + slot.ft.rule + '" not in the closed table');
   });
+  checkValuesOrderIds(book, secId, q);
+  checkValuesAverages(book, secId, q);
+  checkValuesReverseMean(book, secId, q);
   checkValuesFig(book, secId, q);
+}
+
+/* `order` (when authored) must name real slots — a stray id would silently
+   drop that slot from marking (valuesUnits/markValues both iterate `order`,
+   never `slots`, for anything with an authored order). */
+function checkValuesOrderIds(book, secId, q) {
+  if (!Array.isArray(q.order)) return;
+  var ids = {}; (q.slots || []).forEach(function (s) { ids[s.id] = true; });
+  q.order.forEach(function (id) {
+    if (!ids[id]) fail(book, secId, q.id, 'values', 'order names "' + id + '" which is not one of this question\'s slots');
+  });
+}
+
+/* ──────────────────────────────── §17.1 Book B — averages from a list ───── */
+/* `slot.stat` against `q.fig.values` (CONTRACT_B §values): re-derive
+   mean/median/mode/range independently and prove the classic slip for that
+   stat gives a DIFFERENT number on this data (else the slip is invisible and
+   the lint says so) — `slot.dx:false` is an explicit, honoured waiver. */
+function checkValuesAverages(book, secId, q) {
+  var hasList = q.fig && Array.isArray(q.fig.values);
+  var st = hasList ? myListStats(q.fig.values) : null;
+  (q.slots || []).forEach(function (slot) {
+    if (!slot.stat) return;
+    if (['mean', 'median', 'mode', 'range', 'missing', 'total', 'newMean', 'medianClass'].indexOf(slot.stat) === -1)
+      fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" stat "' + slot.stat + '" is not a recognised stat');
+
+    if (slot.stat === 'medianClass') { checkValuesMedianClass(book, secId, q, slot); return; }
+
+    if (slot.stat === 'missing') {
+      var mentionsMean = (typeof q.prompt === 'string' && /mean/i.test(q.prompt)) ||
+        (typeof slot.label === 'string' && /mean/i.test(slot.label));
+      if (!mentionsMean)
+        fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" is stat:"missing" — a missing value cannot be found from the list alone, and neither the prompt nor the slot label states the mean');
+      if (slot.given && slot.given.mean !== undefined && slot.given.n !== undefined && hasList) {
+        var known = q.fig.values.filter(function (v) { return R(v) !== null; }).map(R);
+        var missingCount = q.fig.values.length - known.length;
+        var answer = R(slot.answer);
+        if (missingCount === 1 && answer) {
+          var knownSum = known.reduce(function (a, b) { return radd(a, b); }, R0);
+          var givenMean = R(slot.given.mean), givenN = rat(Number(slot.given.n));
+          var impliedTotal = rmul(givenMean, givenN);
+          if (!req(radd(knownSum, answer), impliedTotal) || q.fig.values.length !== Number(slot.given.n))
+            fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" (missing value) does not reconcile with given.mean = ' + rstr(givenMean) + ', given.n = ' + slot.given.n);
+        }
+      }
+      return;
+    }
+    if (slot.stat === 'total' || slot.stat === 'newMean') return; /* checkValuesReverseMean's job */
+    if (!hasList || !st) return; /* nothing printed to re-derive from */
+
+    var truth = slot.stat === 'mean' ? st.mean : slot.stat === 'range' ? st.range :
+      slot.stat === 'median' ? st.median : (st.mode.length === 1 ? st.mode[0] : null);
+    if (slot.stat === 'mode' && st.mode.length !== 1) {
+      info(secId + '/' + q.id + ' slot "' + slot.id + '": the printed list has ' + (st.mode.length === 0 ? 'no single mode (every value equally frequent)' : 'more than one mode') + ' — not checked against an authored answer');
+    } else {
+      var answered = R(slot.answer);
+      var tol = R(slot.tol || 0) || R0;
+      if (answered && truth && !(rle(rabs(rsub(answered, truth)), tol)))
+        fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" stat ' + slot.stat + ': printed list gives ' + rstr(truth) + ' but answer says ' + rstr(answered));
+    }
+
+    /* distinguishability: the named slip must differ from the truth here */
+    if (truth && slot.dx !== false) {
+      var slip = null;
+      if (slot.stat === 'median') slip = st.medianUnordered;
+      else if (slot.stat === 'mode') slip = rat(st.maxFreq);
+      else if (slot.stat === 'range') slip = st.sorted[st.sorted.length - 1]; /* AV_RANGE_NOT_DIFF: the max (or min, or max+min — one representative case is enough to prove the list distinguishes) */
+      else if (slot.stat === 'mean') slip = rdiv(st.sum, rat(st.distinct));
+      var dxName = { median: 'AV_MEDIAN_UNORDERED', mode: 'AV_MODE_AS_FREQ', range: 'AV_RANGE_NOT_DIFF', mean: 'AV_DIV_ROWS' }[slot.stat];
+      if (slip && req(slip, truth))
+        fail(book, secId, q.id, 'dx', 'slot "' + slot.id + '": "' + dxName + '" equals the truth');
+    } else if (slot.dx === false) {
+      info(secId + '/' + q.id + ' slot "' + slot.id + '": dx:false — slip detection deliberately waived by the pack');
+    }
+  });
+}
+
+/* ──────────────────────────────── §17.1 Book B — reverse mean ───────────── */
+/* `stat:'medianClass'` (CONTENT-B's name, 13 Sept 2026, not in the original
+   CONTRACT_B list — the Xtra Brite reserve item, §18.2 s5 q5): a LINEAR-
+   INTERPOLATION estimate of the median from a grouped table, distinct from
+   `table`'s own row-index "medianClass" ask. Re-derived when the question
+   carries `fig:{type:'table', cols:[…]}` (the same cols shape as the `table`
+   kind); otherwise reported, not failed — the estimate cannot be checked
+   until the grouped data is present as structured fig data, not prose in
+   `src` (see LINT_NOTES.md). */
+function interpolatedMedian(D) {
+  if (!D.clsCol || !D.n) return null;
+  var f = D.fId ? D.cells[D.fId] : null;
+  if (!f) return null;
+  var half = rdiv(D.n, R2), cum = R0, before = R0, row = -1;
+  for (var i = 0; i < D.rows; i++) {
+    before = cum;
+    cum = radd(cum, f[i] || R0);
+    if (rlt(before, half) && rle(half, cum)) { row = i; break; }
+  }
+  if (row === -1) return null;
+  var g = D.clsCol.given[row], lo = R(g.lo), hi = R(g.hi);
+  if (!lo || !hi || !f[row] || f[row].n === 0) return null;
+  var frac = rdiv(rsub(half, before), f[row]);
+  return radd(lo, rmul(frac, rsub(hi, lo)));
+}
+function checkValuesMedianClass(book, secId, q, slot) {
+  if (!q.fig || q.fig.type !== 'table' || !Array.isArray(q.fig.cols)) {
+    info(secId + '/' + q.id + ' slot "' + slot.id + '": stat:"medianClass" (interpolated median estimate) needs fig:{type:"table", cols:[…]} to be re-derived — not yet present, not checked (the grouped data currently lives only in this question\'s src comment)');
+    return;
+  }
+  var D = myTableDerive(q.fig.cols);
+  var truth = interpolatedMedian(D);
+  if (truth) checkTableValue(book, secId, q, { id: slot.id, label: slot.label, answer: slot.answer, dp: slot.dp }, truth, 'interpolated median');
+}
+function checkValuesReverseMean(book, secId, q) {
+  var slots = q.slots || [];
+  slots.forEach(function (slot) {
+    if (slot.stat === 'total') {
+      var answer = R(slot.answer);
+      if (!answer) return;
+      if (slot.given && slot.given.mean !== undefined && slot.given.n !== undefined) {
+        var truth = rmul(R(slot.given.mean), rat(Number(slot.given.n)));
+        if (!req(answer, truth))
+          fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" (total): given.mean × given.n = ' + rstr(truth) + ' but answer says ' + rstr(answer));
+        info(secId + '/' + q.id + ' slot "' + slot.id + '": total re-derived from slot.given.mean/n');
+        return;
+      }
+      var nm = slots.filter(function (s) { return s.stat === 'newMean' && s.ft && s.ft.rule === 'rm.newMean' && (s.ft.from || [])[0] === slot.id; })[0];
+      if (nm) {
+        var ctx = reverseMeanFields(nm, slots);
+        var nmAns = R(nm.answer);
+        if (nmAns && ctx.x && ctx.n) {
+          var backTotal = ctx.minus ? radd(rmul(nmAns, ctx.n), ctx.x) : rsub(rmul(nmAns, ctx.n), ctx.x);
+          if (!req(answer, backTotal))
+            fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" (total): back-derived from slot "' + nm.id + '"\'s newMean gives ' + rstr(backTotal) + ' but answer says ' + rstr(answer));
+          info(secId + '/' + q.id + ' slot "' + slot.id + '": total cross-checked via the newMean slot\'s own ft (no slot.given.mean/n authored)');
+        }
+      }
+      return;
+    }
+    if (slot.stat === 'newMean') {
+      if (!slot.ft || slot.ft.rule !== 'rm.newMean')
+        fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" stat:"newMean" needs ft.rule "rm.newMean"');
+      var c = reverseMeanFields(slot, slots);
+      var mine = R(slot.answer);
+      if (!mine || !c.total || !c.x || !c.n) return;
+      var truth2 = rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.n);
+      if (!req(mine, truth2))
+        fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" (newMean): re-derived ' + rstr(truth2) + ' but answer says ' + rstr(mine));
+      if (slot.dx !== false) {
+        if (c.oldMean && req(mine, rdiv(radd(c.oldMean, c.x), R2)))
+          fail(book, secId, q.id, 'dx', 'slot "' + slot.id + '": "RM_AVERAGED_MEANS" equals the truth');
+        if (c.oldN && c.oldN.n !== 0 && req(mine, rdiv(c.minus ? rsub(c.total, c.x) : radd(c.total, c.x), c.oldN)))
+          fail(book, secId, q.id, 'dx', 'slot "' + slot.id + '": "RM_WRONG_N" equals the truth');
+      } else info(secId + '/' + q.id + ' slot "' + slot.id + '": dx:false — slip detection deliberately waived by the pack');
+    }
+  });
+}
+function reverseMeanFields(slot, slots) {
+  var ft = slot.ft || {};
+  var totalSlot = ft.from ? slots.filter(function (s) { return s.id === ft.from[0]; })[0] : null;
+  var total = totalSlot ? R(totalSlot.answer) : null;
+  var x = ft.xFrom ? R((slots.filter(function (s) { return s.id === ft.xFrom; })[0] || {}).answer) : R(ft.x);
+  var n = R(ft.n);
+  var oldMean = ft.oldMean !== undefined ? R(ft.oldMean) : (totalSlot && totalSlot.ft && R(totalSlot.ft.mean));
+  var oldN = ft.oldN !== undefined ? R(ft.oldN) : (totalSlot && totalSlot.ft && R(totalSlot.ft.n));
+  return { total: total, x: x, n: n, minus: !!ft.minus, oldMean: oldMean, oldN: oldN };
+}
+
+/* ──────────────────────────────── §17.1 constraint sets (set:5) ─────────── */
+function checkConstraintSet(book, secId, q, slot) {
+  var cons = slot.answer.constraints || {};
+  if (cons.n !== 5) return; /* only the one shape CONTRACT_B names is checked here */
+  if (!constraintSetSatisfiable(cons))
+    fail(book, secId, q.id, 'values', 'slot "' + slot.id + '" constraints (n:5, mean:' + cons.mean + ', median:' + cons.median + ', mode:' + cons.mode + (cons.range !== undefined ? ', range:' + cons.range : '') + ') have no solution of 5 positive integers ≤ 30');
+}
+/* brute force over non-decreasing 5-tuples of {1..30} — C(34,5) = 278,256,
+   fast enough for an authoring-time lint; the FIRST satisfying tuple found
+   is enough to prove satisfiability (not uniqueness). */
+function constraintSetSatisfiable(cons) {
+  var LIMIT = 30;
+  var wantMean = cons.mean !== undefined ? R(cons.mean) : null;
+  var wantMedian = cons.median !== undefined ? R(cons.median) : null;
+  var wantMode = cons.mode !== undefined ? R(cons.mode) : null;
+  var wantRange = cons.range !== undefined ? R(cons.range) : null;
+  var wantSum = wantMean ? rmul(wantMean, R(5)) : null;
+  for (var a = 1; a <= LIMIT; a++) {
+    for (var b = a; b <= LIMIT; b++) {
+      for (var c = b; c <= LIMIT; c++) {
+        if (wantMedian && !req(rat(c), wantMedian)) continue;
+        for (var d = c; d <= LIMIT; d++) {
+          for (var e = d; e <= LIMIT; e++) {
+            if (wantRange && !req(rsub(rat(e), rat(a)), wantRange)) continue;
+            if (wantSum && (a + b + c + d + e) !== wantSum.n / wantSum.d) continue;
+            if (wantMode) {
+              var freq = {}; [a, b, c, d, e].forEach(function (v) { freq[v] = (freq[v] || 0) + 1; });
+              var maxF = 0, ties = 0, modeVal = null;
+              Object.keys(freq).forEach(function (k) { if (freq[k] > maxF) { maxF = freq[k]; modeVal = Number(k); ties = 1; } else if (freq[k] === maxF) ties++; });
+              if (maxF === 1 || ties > 1 || modeVal !== wantMode.n / wantMode.d) continue;
+            }
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }
 
 /* ──────────────────────────────── §17.3 order — permutation re-check ────── */
@@ -1119,6 +1593,17 @@ function checkValuesFig(book, secId, q) {
   if (q.fig.type === 'venn2') checkValuesVenn(book, secId, q, false);
   else if (q.fig.type === 'venn3') checkValuesVenn(book, secId, q, true);
   else if (q.fig.type === 'stemleaf') { checkValuesStemleafFig(book, secId, q); checkStemleafTelegraph(book, secId, q.id, q.prompt); }
+  else if (q.fig.type === 'list') {
+    /* Book B (CONTRACT_B.md): the printed list itself — checkValuesAverages
+       re-derives every slot.stat against it; here only the figure's own
+       shape (every printed entry parses) is checked. No tray (qa-tray-order
+       records this as a deliberate "none"). */
+    if (!Array.isArray(q.fig.values) || !q.fig.values.length)
+      fail(book, secId, q.id, 'values', 'fig:{type:"list"} has no values[] printed');
+    else q.fig.values.forEach(function (v, i) {
+      if (v !== null && v !== '?' && !R(v)) fail(book, secId, q.id, 'values', 'fig.values[' + i + '] "' + v + '" does not parse as a number');
+    });
+  }
 }
 
 /* ──────────────────────────────── §17.5 stemleaf kind — build the diagram ── */
@@ -1286,6 +1771,156 @@ function checkScatterKind(book, secId, q) {
   if (sameSet) fail(book, secId, q.id, 'dx', '"SC_XY_SWAPPED" equals the truth');
 }
 
+/* ──────────────────────────────── §17.2 Book B — table kind ─────────────── */
+function withinLint(a, b, tol) { return rle(rabs(rsub(a, b)), tol || R0); }
+function roundToDpRat(r, dp) {
+  var scale = Math.pow(10, dp);
+  var scaled = rnum(r) * scale;
+  return rat(Math.round(scaled + (scaled >= 0 ? 1e-9 : -1e-9)), scale);
+}
+/* answer must equal truth exactly (no dp) or truth rounded to dp (dp set) */
+function checkTableValue(book, secId, q, a, truth, what) {
+  var answer = R(a.answer);
+  if (!answer || !truth) return;
+  /* dp set: the engine accepts EITHER the exact rational OR the value rounded
+     to dp (its dpTol marks within half a unit in the dp-th place) — so the
+     author may write either; only neither is a fault. dp unset: exact only. */
+  if (a.dp === undefined) {
+    if (!req(answer, truth))
+      fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (' + what + '): table gives ' + rstr(truth) + ' but answer says ' + rstr(answer));
+    return;
+  }
+  var rounded = roundToDpRat(truth, Number(a.dp));
+  if (!req(answer, truth) && !req(answer, rounded))
+    fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (' + what + '): table gives ' + rstr(truth) + ' (' + rstr(rounded) + ' to ' + a.dp + ' dp) but answer says ' + rstr(answer));
+}
+var ASK_FT_LINT = /^sum\((\w+)\)\/sum\((\w+)\)$/;
+function checkTableKind(book, secId, q) {
+  var cols = q.cols || [];
+  /* ── column structure ── */
+  var seen = {};
+  cols.forEach(function (c) {
+    if (!c.id) { fail(book, secId, q.id, 'table', 'a column has no id'); return; }
+    if (seen[c.id]) fail(book, secId, q.id, 'table', 'column id "' + c.id + '" is not unique');
+    seen[c.id] = true;
+  });
+  var xCol = tColByRole(cols, 'x'), clsCol = tClassCol(cols), fCol = tColByRole(cols, 'f');
+  if (xCol && clsCol) fail(book, secId, q.id, 'table', 'has both an "x" column and a class column — exactly one is allowed');
+  if (!xCol && !clsCol) fail(book, secId, q.id, 'table', 'has neither an "x" column nor a class column');
+  if (!fCol) fail(book, secId, q.id, 'table', 'has no frequency ("f") column');
+  else (fCol.given || []).forEach(function (v, i) { if (!R(v)) fail(book, secId, q.id, 'table', 'f column row ' + (i + 1) + ' "' + v + '" is not a number'); });
+
+  /* ── class boundaries: shape + contiguity (§16 item 4; text rendered as printed) ── */
+  if (clsCol) {
+    var given = clsCol.given || [];
+    given.forEach(function (g, i) {
+      var lo = R(g.lo), hi = R(g.hi);
+      if (!lo || !hi) fail(book, secId, q.id, 'table', 'class row ' + (i + 1) + ' has a non-numeric lo/hi');
+      else if (!rlt(lo, hi)) fail(book, secId, q.id, 'table', 'class row ' + (i + 1) + ' has lo ≥ hi (' + rstr(lo) + '–' + rstr(hi) + ')');
+      if (typeof g.text !== 'string' || !g.text.trim()) fail(book, secId, q.id, 'table', 'class row ' + (i + 1) + ' has no printed text');
+    });
+    for (var i = 0; i < given.length - 1; i++) {
+      var hiI = R(given[i].hi), loNext = R(given[i + 1].lo);
+      if (!hiI || !loNext) continue;
+      var gap = rnum(loNext) - rnum(hiI);
+      if (Math.abs(gap) > 1e-9 && Math.abs(gap - 1) > 1e-9)
+        fail(book, secId, q.id, 'table', 'classes ' + (i + 1) + ' and ' + (i + 2) + ' are not contiguous (row ' + (i + 1) + ' ends at ' + rstr(hiI) + ', row ' + (i + 2) + ' starts at ' + rstr(loNext) + ')');
+    }
+    /* finding (13 Sept 2026): qa-notation's mathsBearing() only fires on a
+       digit touching a LETTER (or "="); a plain hyphenated class range like
+       "0-10" has no letter anywhere in it, so it never reaches the ASCII-
+       operator regex at all — exactly the reasoning already recorded above
+       this file's own TELEGRAPH_PHRASES comment for §16 item 4. No ban is
+       added here: one would incorrectly fail content the design requires
+       ("render as printed"). Recorded per the brief; see LINT_NOTES.md. */
+  }
+
+  var D = myTableDerive(cols);
+  if (GJ_STATS && GJ_STATS.tableDerive) {
+    var eng = GJ_STATS.tableDerive(q);
+    if (eng) {
+      if (D.mean && eng.mean && !req(D.mean, eng.mean)) fail(book, secId, q.id, 'table', 'engine cross-check: independent mean ' + rstr(D.mean) + ' disagrees with statcore\'s ' + rstr(eng.mean));
+      if (D.modalRow !== eng.modalRow) fail(book, secId, q.id, 'table', 'engine cross-check: independent modalRow ' + D.modalRow + ' disagrees with statcore\'s ' + eng.modalRow);
+      if (D.medianRow !== eng.medianRow) fail(book, secId, q.id, 'table', 'engine cross-check: independent medianRow ' + D.medianRow + ' disagrees with statcore\'s ' + eng.medianRow);
+    }
+  }
+
+  /* ── totals: every id names a real, numeric (non-class) column ── */
+  (q.totals || []).forEach(function (id) {
+    var c = tColById(cols, id);
+    if (!c) fail(book, secId, q.id, 'table', 'totals names "' + id + '" which is not a column');
+    else if (c === clsCol) fail(book, secId, q.id, 'table', 'totals names the class column "' + id + '", which has no numeric total');
+  });
+
+  if (D.straddle) info(secId + '/' + q.id + ': n is even — the (n/2)th and (n/2+1)th values fall in different rows; the median row follows the engine\'s own rule (first row whose cumulative frequency reaches (n+1)/2), not an average of the two rows');
+  if (D.modalTie) info(secId + '/' + q.id + ': the modal row is tied between two or more rows');
+
+  var valueCol = D.mid || (D.xId ? D.cells[D.xId] : null);
+
+  (q.asks || []).forEach(function (a) {
+    if (a.type === 'row') {
+      var isModal = /modal/i.test(a.id || '') || /modal/i.test(a.label || '');
+      var isMedianRow = /median/i.test(a.id || '') || /median/i.test(a.label || '');
+      if (isModal) {
+        if (D.modalTie) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (modal row): the frequency column is tied — no single modal row exists');
+        else if (Number(a.answer) !== D.modalRow) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (modal row): table gives row ' + D.modalRow + ' but answer says ' + a.answer);
+      } else if (isMedianRow) {
+        if (Number(a.answer) !== D.medianRow) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (median row): table gives row ' + D.medianRow + ' but answer says ' + a.answer);
+      } else info(secId + '/' + q.id + ' ask "' + a.id + '": a row ask not named modal/median* is not re-derived by this lint');
+      return;
+    }
+    if (a.type !== 'value') return;
+    var idLabel = (a.id || '') + ' ' + (a.label || '');
+    var isMean = /mean/i.test(idLabel), isMedian = /median/i.test(idLabel), isMode = /mode/i.test(idLabel);
+    if (a.ft !== undefined) {
+      var m = ASK_FT_LINT.exec(a.ft);
+      if (!m) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" ft "' + a.ft + '" is not of the closed sum(a)/sum(b) form');
+      else [m[1], m[2]].forEach(function (cid) {
+        if (!tColById(cols, cid) && (q.totals || []).indexOf(cid) === -1)
+          fail(book, secId, q.id, 'table', 'ask "' + a.id + '" ft references column "' + cid + '" which is neither a column nor a total');
+      });
+      if (isMedian || isMode) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" is a ' + (isMedian ? 'median' : 'mode') + ' value ask and must carry no ft (ft is only ever sum(a)/sum(b), for a mean)');
+    }
+    if (isMean) {
+      checkTableValue(book, secId, q, a, D.mean, 'mean');
+      if (D.rows && D.mean) {
+        var dp = a.dp;
+        var flags = [];
+        if (D.sumFx) { var v1 = rdiv(D.sumFx, rat(D.rows)); if (dpEq(v1, D.mean, dp)) flags.push('AV_DIV_ROWS'); }
+        if (clsCol) {
+          var given2 = clsCol.given, sumFHi = R0, sumFLo = R0, f = D.fId ? D.cells[D.fId] : null, okB = true;
+          for (var i = 0; i < D.rows; i++) {
+            var hi = R(given2[i].hi), lo = R(given2[i].lo);
+            if (!f || !f[i] || !hi || !lo) { okB = false; break; }
+            sumFHi = radd(sumFHi, rmul(f[i], hi)); sumFLo = radd(sumFLo, rmul(f[i], lo));
+          }
+          if (okB && D.n && D.n.n !== 0) {
+            if (dpEq(rdiv(sumFHi, D.n), D.mean, dp)) flags.push('AV_NO_MIDPOINT (upper bound)');
+            if (dpEq(rdiv(sumFLo, D.n), D.mean, dp)) flags.push('AV_NO_MIDPOINT (lower bound)');
+          }
+        }
+        if (valueCol && valueCol.every(function (x) { return !!x; })) {
+          var s = valueCol.reduce(function (x, y) { return radd(x, y); }, R0);
+          if (dpEq(rdiv(s, rat(D.rows)), D.mean, dp)) flags.push('AV_FX_NOT_SUMMED');
+        }
+        flags.forEach(function (name) { fail(book, secId, q.id, 'dx', 'ask "' + a.id + '": "' + name + '" equals the truth'); });
+      }
+    } else if (isMedian) {
+      if (clsCol) info(secId + '/' + q.id + ' ask "' + a.id + '": a median VALUE ask on a grouped table is not re-derived here — author a row ask ("medianClass") instead');
+      else if (D.medianRow > -1 && valueCol) checkTableValue(book, secId, q, a, valueCol[D.medianRow], 'median');
+    } else if (isMode) {
+      if (D.modalTie) fail(book, secId, q.id, 'table', 'ask "' + a.id + '" (mode): the frequency column is tied — no single mode exists');
+      else if (D.modalRow > -1 && valueCol) checkTableValue(book, secId, q, a, valueCol[D.modalRow], 'mode');
+    } else {
+      info(secId + '/' + q.id + ' ask "' + a.id + '": cannot tell what statistic this value ask computes from its id/label — not re-derived');
+    }
+  });
+}
+function dpEq(a, b, dp) {
+  if (!a || !b) return false;
+  return dp !== undefined ? req(roundToDpRat(a, Number(dp)), roundToDpRat(b, Number(dp))) : req(a, b);
+}
+
 /* ──────────────────────────────── shared dataset (movie vs question) ────── */
 function datasetSignature(q) {
   var parts = {};
@@ -1361,6 +1996,7 @@ packs.forEach(function (pack) {
         case 'stemleaf': checkStemleafKind(bookName, sec.id, q); break;
         case 'pie': checkPieKind(bookName, sec.id, q); break;
         case 'scatter': checkScatterKind(bookName, sec.id, q); break;
+        case 'table': checkTableKind(bookName, sec.id, q); break;
       }
       checkReachableMarks(bookName, sec.id, q, rulesForQ);
 

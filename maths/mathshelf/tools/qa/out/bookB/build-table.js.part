@@ -1,0 +1,313 @@
+  /* ══ table — derived columns, the totals, then the reads (Book B, DESIGN 17.2) ══
+     The table is HER working: the given columns are printed, every derived
+     cell is a box the pad fills (top to bottom, one column after another),
+     the totals row comes after the cells, and the questions under the table
+     come last - a number box for a value (the mean), a row of pressable
+     class names for a "which row" question (the modal class, the class the
+     median is in). The engine (statcore.js markTable) marks a derived cell
+     right when it is consistent with HER OWN inputs in that row, and a value
+     ask right when it follows from HER table, so a slip is paid for once. */
+
+  BUILD.table = function (ctx) {
+    var q = ctx.q;
+    var cols = q.cols || [];
+    var totalsOf = q.totals || [];
+    var asks = q.asks || [];
+    var D = window.GJ_STATS.tableDerive(q);
+    var rows = D.rows;
+    var derived = cols.filter(function (c) { return !!c.derive; });
+    var nameCol = cols.filter(function (c) { return c.given && c.id !== 'f'; })[0] || cols[0] || null;
+    var cells = {}, totals = {}, ans = {};
+    function blankCells() { var o = {}; derived.forEach(function (c) { o[c.id] = []; for (var i = 0; i < rows; i++) o[c.id].push(''); }); return o; }
+    cells = blankCells();
+
+    function colById(id) { for (var i = 0; i < cols.length; i++) if (cols[i].id === id) return cols[i]; return { id: id, head: id }; }
+    function headText(c) { return c.head || c.id; }
+    function lowerHead(c) { var h = headText(c); return /^[A-Z][a-z]/.test(h) ? h.charAt(0).toLowerCase() + h.slice(1) : h; }
+    function givenText(c, i) {
+      var g = (c.given || [])[i];
+      if (g && typeof g === 'object') return g.text || (g.lo + '–' + g.hi);
+      return (g === undefined || g === null) ? '' : String(g);
+    }
+    function rowName(i) { return nameCol ? givenText(nameCol, i) : String(i + 1); }
+    function cellLabel(c, i) { return fill(T().statTableCellLabel, { head: headText(c), n: i + 1 }); }
+    function totalLabel(id) { return fill(T().statTableTotalLabel, { head: lowerHead(colById(id)) }); }
+
+    /* THE PAD'S ROUTE: every box the pad can open, in the order she meets them -
+       each derived column top to bottom, then the totals, then the questions
+       under the table that want a number. `open` is an index into it. */
+    var route = [];
+    derived.forEach(function (c) { for (var i = 0; i < rows; i++) route.push({ kind: 'cell', col: c.id, row: i, label: cellLabel(c, i) }); });
+    totalsOf.forEach(function (id) { route.push({ kind: 'total', col: id, label: totalLabel(id) }); });
+    asks.forEach(function (a) { if (a.type === 'value') route.push({ kind: 'ask', id: a.id, label: a.label, unit: a.unit }); });
+    var tableBoxes = route.filter(function (r) { return r.kind !== 'ask'; });
+    var open = -1, pad = null;
+
+    function routeIndex(kind, col, row, id) {
+      for (var k = 0; k < route.length; k++) {
+        var r = route[k];
+        if (r.kind !== kind) continue;
+        if (kind === 'ask' ? r.id === id : (r.col === col && (kind === 'total' || r.row === row))) return k;
+      }
+      return -1;
+    }
+    function valueOf(r) {
+      if (r.kind === 'cell') return cells[r.col][r.row] || '';
+      if (r.kind === 'total') return totals[r.col] || '';
+      return (ans[r.id] === undefined || ans[r.id] === null) ? '' : String(ans[r.id]);
+    }
+    function setValue(r, v) {
+      if (r.kind === 'cell') cells[r.col][r.row] = v;
+      else if (r.kind === 'total') totals[r.col] = v;
+      else ans[r.id] = v;
+    }
+    function askDone(a) {
+      var v = ans[a.id];
+      return a.type === 'row' ? (v !== undefined && v !== null && v !== '') : !!(v && String(v).length);
+    }
+    function nAsksDone() { return asks.filter(askDone).length; }
+
+    var host = el('div', 'stat-tablekind');
+    host.setAttribute('data-work', '');
+    ctx.boardHost.appendChild(host);
+    var tableHost = el('div', 'stat-table-host');          /* scrolls sideways at 375 rather than squeezing */
+    host.appendChild(tableHost);
+    var table = el('table', 'stat-table stat-table-edit');
+    tableHost.appendChild(table);
+    var askHost = el('div', 'stat-asks');
+    host.appendChild(askHost);
+
+    function boxFor(k) {
+      var r = route[k];
+      var b = el('button', 'stat-cell' + (open === k ? ' is-open' : ''));
+      b.type = 'button';
+      b.textContent = valueOf(r);
+      if (valueOf(r)) b.setAttribute('data-placed', '');
+      b.setAttribute('aria-label', r.label);
+      if (r.kind !== 'ask') { b.setAttribute('data-col', r.col); b.setAttribute('data-row', r.kind === 'total' ? 'total' : String(r.row)); }
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (ctx.locked()) return;
+        open = k; render(); ctx.changed();
+      });
+      return b;
+    }
+    function render() {
+      stage();
+      table.innerHTML = '';
+      var thead = el('thead'), hr = el('tr');
+      cols.forEach(function (c) { hr.appendChild(el('th', null, esc(headText(c)))); });
+      thead.appendChild(hr); table.appendChild(thead);
+      var tb = el('tbody');
+      for (var i = 0; i < rows; i++) {
+        var tr = el('tr');
+        cols.forEach(function (c) {
+          var td = el('td');
+          if (c.derive) td.appendChild(boxFor(routeIndex('cell', c.id, i)));
+          else td.textContent = givenText(c, i);
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      }
+      if (totalsOf.length) {
+        var tt = el('tr', 'stat-table-totals');
+        var firstTotal = -1;
+        cols.forEach(function (c, ci) { if (firstTotal < 0 && totalsOf.indexOf(c.id) > -1) firstTotal = ci; });
+        if (firstTotal > 0) {
+          var lab = el('th', null, esc(T().statTableTotal));
+          lab.setAttribute('scope', 'row');
+          if (firstTotal > 1) lab.colSpan = firstTotal;
+          tt.appendChild(lab);
+        }
+        cols.forEach(function (c, ci) {
+          if (ci < firstTotal) return;
+          var td = el('td');
+          if (totalsOf.indexOf(c.id) > -1) td.appendChild(boxFor(routeIndex('total', c.id)));
+          else {
+            /* a column with no total asked is SAID so, not left as a hole
+               the empty-elements law would rightly name */
+            td.className = 'stat-table-none';
+            td.textContent = '—';
+            td.setAttribute('aria-label', T().statTableNoTotal);
+          }
+          tt.appendChild(td);
+        });
+        tb.appendChild(tt);
+      }
+      table.appendChild(tb);
+      renderAsks();
+      renderDock();
+    }
+    function renderAsks() {
+      askHost.innerHTML = '';
+      asks.forEach(function (a) {
+        if (a.type === 'value') {
+          var slots = el('div', 'stat-slots');
+          var line = el('div', 'stat-slot');
+          line.appendChild(el('span', 'stat-slot-label', esc(a.label)));
+          line.appendChild(boxFor(routeIndex('ask', null, null, a.id)));
+          if (a.unit) line.appendChild(el('span', 'stat-slot-unit', esc(a.unit)));
+          slots.appendChild(line);
+          askHost.appendChild(slots);
+          return;
+        }
+        if (a.type !== 'row') return;
+        var grp = el('div', 'stat-rowpick-group');
+        grp.setAttribute('role', 'group');
+        grp.setAttribute('aria-label', a.label);
+        grp.appendChild(el('p', 'stat-slot-label', esc(a.label)));
+        var picks = el('div', 'stat-rowpicks');
+        for (var i = 0; i < rows; i++) {
+          (function (ri) {
+            var b = el('button', 'stat-rowpick');
+            b.type = 'button';
+            b.textContent = rowName(ri);
+            b.setAttribute('data-ask', a.id);
+            b.setAttribute('data-row', String(ri));
+            b.setAttribute('aria-pressed', ans[a.id] === ri ? 'true' : 'false');
+            b.addEventListener('click', function (e) {
+              e.stopPropagation();
+              if (ctx.locked()) return;
+              ans[a.id] = (ans[a.id] === ri) ? null : ri;          /* press again clears */
+              open = -1;
+              render(); ctx.changed();
+            });
+            picks.appendChild(b);
+          })(i);
+        }
+        grp.appendChild(picks);
+        askHost.appendChild(grp);
+      });
+    }
+    function renderDock() {
+      ctx.dock.innerHTML = '';
+      pad = null;
+      if (open < 0) { window.GJ.setState(ctx.dock, 'dock', 'chips'); return; }
+      var r = route[open];
+      window.GJ.setState(ctx.dock, 'dock', 'numpad');
+      pad = makeNumPad(ctx.dock, {
+        label: r.label, decimal: true,
+        onChange: function (v) { setValue(r, v); paint(); ctx.changed(); }
+      });
+      pad.set(valueOf(r));
+      if (open < route.length - 1) {
+        var next = el('button', 'btn-quiet', T().statNextRow);
+        next.type = 'button';
+        next.addEventListener('click', function (e) { e.stopPropagation(); open++; render(); });
+        ctx.dock.appendChild(next);
+      }
+    }
+    function stage() {
+      var filled = tableBoxes.filter(function (r) { return !!valueOf(r); }).length;
+      var done = nAsksDone();
+      var s = (!filled && !done) ? 'empty'
+        : (filled < tableBoxes.length) ? 'filling'
+        : (asks.length && done < asks.length) ? 'asking' : 'ready';
+      ctx.setStage(s);
+      say(s, filled);
+    }
+    function say(s, filled) {
+      var t = T();
+      if (s === 'ready') { ctx.say(t.statStageTableDone); return; }
+      if (s === 'empty' || s === 'filling') {
+        var nextCell = route.filter(function (r) { return r.kind === 'cell' && !valueOf(r); })[0];
+        if (nextCell) {
+          var c = colById(nextCell.col);
+          var inCol = route.filter(function (r) { return r.kind === 'cell' && r.col === c.id; });
+          var got = inCol.filter(function (r) { return !!valueOf(r); }).length;
+          ctx.say(fill(t.statStageTableFill, { head: headText(c), n: got, m: inCol.length }));
+          return;
+        }
+        var tots = route.filter(function (r) { return r.kind === 'total'; });
+        ctx.say(fill(t.statStageTableTotals, { n: tots.filter(function (r) { return !!valueOf(r); }).length, m: tots.length }));
+        return;
+      }
+      var a = asks.filter(function (x) { return !askDone(x); })[0];
+      if (!a) { ctx.say(t.statStageTableDone); return; }
+      ctx.say(fill(a.type === 'row' ? t.statStageTableRow : t.statStageTableAsks, { label: a.label }));
+    }
+    function paint() {
+      stage();
+      route.forEach(function (r, k) {
+        var sel = r.kind === 'ask' ? '.stat-cell[aria-label="' + String(r.label).replace(/"/g, '\\"') + '"]'
+          : '.stat-cell[data-col="' + r.col + '"][data-row="' + (r.kind === 'total' ? 'total' : r.row) + '"]';
+        var b = host.querySelector(sel);
+        if (!b) return;
+        b.textContent = valueOf(r);
+        if (valueOf(r)) b.setAttribute('data-placed', ''); else b.removeAttribute('data-placed');
+      });
+    }
+    /* a rational as the pupil would write it */
+    function fmtR(x, dp) {
+      if (!x) return '';
+      if (x.d === 1) return String(x.n);
+      var v = x.n / x.d;
+      return (dp !== undefined && dp !== null) ? v.toFixed(dp) : String(Math.round(v * 100) / 100);
+    }
+    function copyState(S) {
+      var out = { cells: {}, totals: {}, asks: {} };
+      derived.forEach(function (c) {
+        var src = (S.cells && S.cells[c.id]) || [];
+        out.cells[c.id] = []; for (var i = 0; i < rows; i++) out.cells[c.id].push(src[i] === undefined || src[i] === null ? '' : String(src[i]));
+      });
+      totalsOf.forEach(function (id) { out.totals[id] = (S.totals && S.totals[id]) ? String(S.totals[id]) : ''; });
+      asks.forEach(function (a) {
+        var v = S.asks ? S.asks[a.id] : undefined;
+        if (v === undefined) return;
+        out.asks[a.id] = a.type === 'row' ? (v === null || v === '' ? null : Number(v)) : String(v);
+      });
+      return out;
+    }
+
+    return {
+      start: function () { render(); },
+      reset: function () { cells = blankCells(); totals = {}; ans = {}; open = -1; render(); },
+      restore: function (S) { var c = copyState(S || {}); cells = c.cells; totals = c.totals; ans = c.asks; open = -1; render(); },
+      state: function () { return copyState({ cells: cells, totals: totals, asks: ans }); },
+      ready: function () {
+        var any = tableBoxes.some(function (r) { return !!valueOf(r); });
+        if (tableBoxes.length && !any) return { ok: false, why: T().statTableWhyCells };
+        if (nAsksDone() < asks.length) return { ok: false, why: T().statTableWhyAsks };
+        return { ok: true };
+      },
+      lock: function () {
+        ctx.dock.innerHTML = '';
+        host.querySelectorAll('button').forEach(function (b) { b.disabled = true; setLockedWhy(b, T().statAlreadyMarked); });
+      },
+      showTruth: function () {
+        var parts = [];
+        derived.forEach(function (c) {
+          parts.push(headText(c) + ': ' + (D.cells[c.id] || []).map(function (x) { return fmtR(x); }).join(', '));
+        });
+        totalsOf.forEach(function (id) { parts.push(totalLabel(id) + ' ' + fmtR(D.totals[id])); });
+        asks.forEach(function (a) {
+          if (a.type === 'row') parts.push(a.label + ': ' + rowName(Number(a.answer)));
+          else parts.push(a.label + ' ' + fmtR(a.answer, a.dp));
+        });
+        var box = el('div', 'stat-truth');
+        box.setAttribute('data-truth', '');
+        box.textContent = parts.join(' · ');
+        ctx.boardHost.appendChild(box);
+      },
+      ghost: function (holder, att) {
+        holder.innerHTML = '';
+        var S = copyState((att && att.S) || {});
+        var g = el('div', 'stat-row struck');
+        route.forEach(function (r) {
+          var t = el('span', 'stat-tile');
+          var v = r.kind === 'cell' ? S.cells[r.col][r.row] : r.kind === 'total' ? S.totals[r.col] : S.asks[r.id];
+          t.textContent = v || '—';
+          g.appendChild(t);
+        });
+        asks.forEach(function (a) {
+          if (a.type !== 'row') return;
+          var t = el('span', 'stat-tile');
+          var v = S.asks[a.id];
+          t.textContent = (v === undefined || v === null) ? '—' : rowName(Number(v));
+          g.appendChild(t);
+        });
+        holder.appendChild(g);
+      }
+    };
+  };
+

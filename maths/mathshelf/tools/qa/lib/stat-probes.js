@@ -173,4 +173,34 @@ function STAGE_SETTLE(qid, declared, visited) {
     (missing.length > 1 ? ' (and ' + (missing.length - 1) + ' more)' : '') };
 }
 
-module.exports = { PERSISTS, SIGNATURE, STAGE_SETTLE };
+/* ── TABLE_ONE_CELL (Book B) ──────────────────────────────────────────────
+ * CONTRACT_B.md "table": stages "empty · filling · asking · ready". The
+ * generic machinery every other stats kind already rides - STAGES_OF reads
+ * data-stages/data-stage off the root, sit-pupil's own per-stage loop drives
+ * to each named stage in turn with ANSWER(qid, false, stage), and
+ * STAGE_SETTLE asserts every declared stage was actually stood on - already
+ * proves a SKIPPED stage was "never stood on" (that is what
+ * stats-b-stage-skipped, a table that jumps empty -> ready, must fail). What
+ * that alone cannot say is WHEN the skip happens: a table could dawdle on
+ * "empty" for several cells and only skip straight to "ready" once the last
+ * one lands, and STAGE_SETTLE would report exactly the same missing stage
+ * either way. This probe stands on the one board no other law names by
+ * itself: called the instant the walk drives to the "filling" stage, before
+ * lib/drive.js's pressTable has pressed more than its first cell, it asserts
+ * the table has ALREADY left "empty" - the same "one press, one board" law
+ * PERSISTS reads a wrong placement against, read here on the right path
+ * instead. Not a page function that presses anything itself: pressTable
+ * already pressed the one cell by the time sit-pupil calls this, so it only
+ * reads the stage attribute. */
+const TABLE_ONE_CELL = `((args) => {
+  const [qid] = args;
+  const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+  if (!root) return { ok: false, why: qid + ' is not on screen' };
+  if (root.getAttribute('data-kind') !== 'table') return { ok: true, why: null };
+  const stage = root.getAttribute('data-stage');
+  if (stage === 'empty') return { ok: false, why: 'one cell keyed on ' + qid + ' and the table is still on stage "empty" - a table moves to "filling" the moment its first box is keyed' };
+  return { ok: true, why: null };
+})`;
+
+module.exports = { PERSISTS, SIGNATURE, STAGE_SETTLE, TABLE_ONE_CELL };

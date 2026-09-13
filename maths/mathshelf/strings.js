@@ -213,6 +213,7 @@
       statStageCompare2: 'Finish the second sentence: choose the measure, the group and the two values.',
       statStageJudge: 'For each statement choose Fair to say or Not fair. If you choose Not fair, choose the reason as well.',
       statStageJudgeOptions: 'Choose what happens to each one.',
+      statStageJudgeChoose: 'Read each statement and choose one of the answers under it.',
 
       /* ── BOOK A — Collecting and displaying (12 Sept 2026): the kinds order,
          pick, stemleaf, pie and scatter, and values on a figure. Same law as
@@ -294,6 +295,25 @@
       statSlKeyLeaf: 'Leaf',
       statEstimateLabel: 'Estimate',
       numpadDefaultLabel: 'Enter a number',
+
+      /* Book B - Averages (13 Sept 2026): the table kind, the list figure, a set of five */
+      statCheckTable: 'Mark my table and answers',
+      statTableWhyCells: 'Fill in at least one box of the table first.',
+      statTableWhyAsks: 'Answer every question under the table first.',
+      statPillTableFill: 'Fill the table',
+      statPillTableAsks: 'The answers',
+      statStageTableFill: 'Fill in the {head} column from the top row down. Choose a box, then use the pad. ({n} of {m} filled.)',
+      statStageTableTotals: 'Now the totals row. Add up each column and put its total in the box at the bottom. ({n} of {m} filled.)',
+      statStageTableAsks: 'Now the questions under the table. Choose the {label} box, then use the pad.',
+      statStageTableRow: 'Choose the row of the table that answers: {label}.',
+      statStageTableDone: 'Everything is in. If a box is wrong, choose it and change it. Then press Mark my table and answers.',
+      statTableTotal: 'Total',
+      statScrollTable: 'Scroll or swipe the table sideways to see all of it.',
+      statTableNoTotal: 'No total is asked for this column.',
+      statTableCellLabel: '{head}, row {n}',
+      statTableTotalLabel: 'Total {head}',
+      statValuesSetLabel: '{label}, value {n}',
+      statValuesSetTruth: 'One set that fits: {list}',
 
       /* the movie player */
       movieWorkedExample: 'Worked example',

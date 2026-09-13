@@ -4,7 +4,7 @@
  "width": 375,
  "tier": "preview",
  "contentHash": "7fef149360a6",
- "when": "2026-09-12T23:14:40.653Z",
+ "when": "2026-09-12T23:41:28.176Z",
  "states": [
   {
    "surface": "question",
@@ -1711,5 +1711,5 @@
    }
   }
  ],
- "consoleErrors": 0
+ "consoleErrors": 5
 }

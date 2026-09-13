@@ -27,8 +27,9 @@ const TIER = 'full';
 const ORDER = 74;
 const MOUNTS = 5;
 const STAT_KINDS = ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values',
-  /* Book A (12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter'];
-const COVERS = { books: '*', kinds: ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values', 'order', 'pick', 'stemleaf', 'pie', 'scatter'], surfaces: ['question'], widths: [1280], projector: false, tier: ['preview'], cells: ['tray-order'] };
+  /* Book A (12 Sept 2026) */ 'order', 'pick', 'stemleaf', 'pie', 'scatter',
+  /* Book B (13 Sept 2026, CONTRACT_B.md) */ 'table'];
+const COVERS = { books: '*', kinds: ['qlist', 'cftable', 'cfplot', 'cfread', 'boxplot', 'compare', 'judge', 'values', 'order', 'pick', 'stemleaf', 'pie', 'scatter', 'table'], surfaces: ['question'], widths: [1280], projector: false, tier: ['preview'], cells: ['tray-order'] };
 const CONTROLS = [
   { id: 'stats-sorted-tray', kind: 'mutation', plant: 'stats-sorted-tray', mustFail: /came out in the answer order/ },
   { id: 'stats-a-sorted-tray', kind: 'mutation', plant: 'stats-a-sorted-tray', mustFail: /came out in the answer order/ },
@@ -98,6 +99,12 @@ function expected(q, strings) {
       out['scatter-corr-' + q.id] = [T.statScPositive, T.statScNegative, T.statScNone].map(String);
     }
   }
+  /* Book B (13 Sept 2026, CONTRACT_B.md): `table` has no tray of its own — its
+     derived cells and row picks are number-padded/tapped in place, never
+     dragged from a shuffled tray — so nothing is added here for it. A
+     `values` question whose `fig` is `{type:'list'}` is the same: the printed
+     list is read-only figure text above the boxes, not a drag source, so it
+     too adds nothing. Both are deliberate omissions, not oversights. */
   if (q.kind === 'compare') {
     const labels = (q.plots || []).map(p => String(p.label));
     const words = ((q.context || {}).words || []).map(String);

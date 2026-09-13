@@ -3,8 +3,8 @@
  "scope": "angles",
  "width": 768,
  "tier": "preview",
- "contentHash": "7fef149360a6",
- "when": "2026-09-12T23:14:49.570Z",
+ "contentHash": "0037f97dbd84",
+ "when": "2026-09-12T23:51:44.709Z",
  "states": [
   {
    "surface": "question",
@@ -1711,5 +1711,5 @@
    }
   }
  ],
- "consoleErrors": 0
+ "consoleErrors": 14
 }
