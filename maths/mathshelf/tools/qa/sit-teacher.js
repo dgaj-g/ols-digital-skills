@@ -78,6 +78,14 @@ const CONTROLS = [
      every gate was green; the readability audit existed, in lib/, and nothing
      called it. This plants that fault back and the walk has to see it. */
   { id: 'invisible-class-names', kind: 'fixture', plant: 'fixture-invisible-text', mustFail: /against what is actually behind it/ },
+  /* ── THE SET-UP SCREEN (the steward cut, 13 Sept 2026). Three faults he
+     found in one look at Book B's set-up, each planted back. L3 (every row
+     lays its controls out the same way) has no plant of its own on purpose:
+     the shape of a row is a consequence of L2, so a fault that breaks it
+     breaks L2 first — written up as such in MATHS_GATES_AUDIT.md. ── */
+  { id: 'tickbox-same-name', kind: 'fixture', plant: 'fixture-tickbox-same-name', mustFail: /two books on the shelf read the same/ },
+  { id: 'row-control-wraps', kind: 'fixture', plant: 'fixture-row-controls-untidy', mustFail: /wraps onto/ },
+  { id: 'ledger-pushes-the-page', kind: 'fixture', plant: 'fixture-ledger-no-host', mustFail: /pushes the whole page sideways/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -205,6 +213,125 @@ async function walk(page, width, projector, sidecar, transcript) {
   g.check(ticks.bands.filter(Boolean).length > 0, 'set-up:tickboxes @' + width, 'labelled',
     'no tickbox says who its book is for — the tickboxes ARE the level system, so the audience has to be on the row');
 
+  /* ── THE SET-UP SCREEN, READ AS A TEACHER MEETS IT (L1–L4, the steward cut,
+     13 Sept 2026) ─────────────────────────────────────────────────────────
+     Four faults he found on the live staff side in one look, and four laws
+     that would have caught each of them before he ever saw it:
+
+     L1  the three Handling Data books all printed the shared title, so every
+         row carried "Handling Data" three times and nothing said which was
+         which. A name a teacher cannot tell apart is not a name.
+     L2  "Open the markbook" and "Copy link" broke onto two lines in a 113px
+         cell. A control is one line or it is not a button.
+     L3  and once they wrap, no two rows stack the same way, so her eye has to
+         re-find every control on every row.
+     L4  and the whole page went sideways at 375 and 768 rather than the table
+         scrolling inside a frame of its own.
+
+     THE ACTIONS CELL IS FOUND TWO WAYS, ON PURPOSE. `td.row-acts` is what the
+     fix names it, and the row's LAST cell is what it is — a law that can be
+     switched off by deleting a class name is a law with an off switch, and
+     this one has to be able to read the tree as it was before the class
+     existed at all. */
+  const setUp = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('#st-rows tr')];
+    return {
+      scrollTable: (window.GJ_STRINGS && window.GJ_STRINGS.teacher && window.GJ_STRINGS.teacher.scrollTable) || '',
+      docW: document.documentElement.scrollWidth,
+      winW: window.innerWidth,
+      host: (() => {
+        const h = document.querySelector('.ledger-host');
+        return h ? { sw: h.scrollWidth, cw: h.clientWidth } : null;
+      })(),
+      hint: (() => {
+        const p = document.querySelector('.ledger-scroll-hint');
+        return p ? { text: (p.textContent || '').trim(), shown: p.offsetParent !== null } : null;
+      })(),
+      rows: rows.map((tr) => {
+        const cell = tr.querySelector('td.row-acts') || tr.querySelector('td:last-child');
+        const cr = cell ? cell.getBoundingClientRect() : null;
+        return {
+          name: ((tr.querySelector('td b') || {}).textContent || '').trim(),
+          /* the label WITHOUT its audience band: the band is the same on all
+             three copper books, so leaving it in would hide the collision */
+          labels: [...tr.querySelectorAll('.tickbox')].map((l) => {
+            const c = l.cloneNode(true);
+            const b = c.querySelector('.tick-band');
+            if (b) b.parentNode.removeChild(b);
+            return (c.textContent || '').replace(/\s+/g, ' ').trim();
+          }),
+          buttons: !cell ? [] : [...cell.querySelectorAll('button')].map((bt) => {
+            const r = bt.getBoundingClientRect();
+            /* HOW MANY LINE BOXES THE TEXT ITSELF OCCUPIES. A height is a
+               guess (padding, line-height, an icon); a Range over the button's
+               own contents is the browser's own count of the lines it drew. */
+            const range = document.createRange();
+            range.selectNodeContents(bt);
+            return {
+              text: (bt.textContent || '').trim(),
+              x: Math.round((r.left - cr.left) / 2) * 2,
+              y: Math.round((r.top - cr.top) / 2) * 2,
+              w: Math.round(r.width), h: Math.round(r.height),
+              lines: range.getClientRects().length,
+              scrollW: bt.scrollWidth, clientW: bt.clientWidth
+            };
+          })
+        };
+      })
+    };
+  });
+  const SU = 'set-up:classes @' + width + (projector ? 'x720' : '');
+  g.note(SU + ': ' + setUp.rows.length + ' class row(s), page ' + setUp.docW + 'px in a ' + setUp.winW + 'px window' +
+    (setUp.host ? ', table frame ' + setUp.host.sw + 'px of content in ' + setUp.host.cw + 'px' : ', no .ledger-host frame'));
+
+  /* L1 — every book on a row reads as a different book */
+  setUp.rows.forEach((r) => {
+    const seen = {};
+    r.labels.forEach((t) => {
+      g.check(!seen[t], SU, 'distinct-book-names',
+        'two books on the shelf read the same — "' + t + '" appears twice in ' + r.name + '\'s row; a teacher cannot tell which book she is ticking');
+      seen[t] = true;
+    });
+  });
+
+  /* L2 — a control is one line or it is not a button */
+  setUp.rows.forEach((r) => {
+    r.buttons.forEach((bt) => {
+      g.check(bt.lines === 1 && bt.scrollW <= bt.clientW + 1, SU, 'one-line-controls',
+        '"' + bt.text + '" wraps onto ' + bt.lines + ' lines in ' + r.name + '\'s row — a control is one line or it is not a button');
+    });
+  });
+
+  /* L3 — and every row lays them out the same way. No plant of its own: the
+     shape of a row is a consequence of the two laws above, and a fault that
+     breaks it breaks one of them first. Written up as such in the audit. */
+  if (setUp.rows.length > 1) {
+    /* TWO PIXELS OF TOLERANCE, NOT TWO-PIXEL BUCKETS. Rows sit on fractional
+       pixels (a cell top at .5 and a button top at .0 is a real 8.5 against a
+       real 9.0), and bucketing those to the nearest 2 turns half a pixel into
+       a two-pixel disagreement whenever the pair straddles a boundary — a red
+       about nothing. Same rule, measured the way it was meant: no control may
+       sit more than 2px from where the first row puts it. */
+    const first = setUp.rows[0];
+    const shape = (r) => r.buttons.map((b) => b.x + ',' + b.y).join(' | ');
+    setUp.rows.slice(1).forEach((r) => {
+      const same = r.buttons.length === first.buttons.length &&
+        r.buttons.every((b, i) => Math.abs(b.x - first.buttons[i].x) <= 2 && Math.abs(b.y - first.buttons[i].y) <= 2);
+      g.check(same, SU, 'same-shape-every-row',
+        'the controls of ' + r.name + '\'s row sit differently from ' + first.name + '\'s — every row lays its controls out the same way');
+      if (!same) g.note(SU + ': ' + r.name + ' lays out ' + shape(r) + ' where ' + first.name + ' lays out ' + shape(first));
+    });
+  }
+
+  /* L4 — the table scrolls inside its own frame, and says so; the PAGE never
+     moves sideways under her */
+  g.check(setUp.docW <= setUp.winW + 1, SU, 'page-never-scrolls-sideways',
+    'the set-up page is ' + setUp.docW + ' px wide on a ' + width + ' px screen — the class table pushes the whole page sideways instead of scrolling inside its own frame');
+  if (setUp.host && setUp.host.sw > setUp.host.cw) {
+    g.check(!!(setUp.hint && setUp.hint.shown && setUp.hint.text && setUp.hint.text === setUp.scrollTable), SU, 'page-never-scrolls-sideways',
+      'the class table hides ' + (setUp.host.sw - setUp.host.cw) + ' px behind a sideways scroll and nothing says so');
+  }
+
   /* --- open a class COLD --- */
   const cold = await page.evaluate(() => {
     const bs = [...document.querySelectorAll('#st-rows button')].filter(b => /Open the markbook/.test(b.textContent));
@@ -304,14 +431,14 @@ async function walk(page, width, projector, sidecar, transcript) {
   say(await page.evaluate(() => (document.querySelector('.jp-posture, .posture') || {}).textContent || ''));
 
   /* --- slips --- */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await new Promise(r => setTimeout(r, 1300));
   await page.evaluate(() => { const b = [...document.querySelectorAll('.toolbtn')].filter(x => /Slips/.test(x.textContent))[0]; if (b) b.click(); });
   await new Promise(r => setTimeout(r, 1800));
   await record('slips', 'ranked');
 
   /* --- the full grid --- */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await new Promise(r => setTimeout(r, 1300));
   await page.evaluate(() => { const b = [...document.querySelectorAll('.toolbtn')].filter(x => /Full grid/.test(x.textContent))[0]; if (b) b.click(); });
   await new Promise(r => setTimeout(r, 1600));
@@ -364,7 +491,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   }
 
   /* back to the class page, and a different book */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1200);
   await armLog();
   const switched = await page.evaluate(() => {
@@ -429,7 +556,7 @@ async function walk(page, width, projector, sidecar, transcript) {
        back). The class page is the crumb that exists here; the first exercise
        card and its first cell are the ordinary route resumed. */
     await page.evaluate(() => {
-      const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0];
+      const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Set-up/.test(b.textContent))[0];
       if (c) c.click();
     });
     await wait(1400);
@@ -471,7 +598,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   if (reteached) { await wait(1400); await record('book-view', 'reteach-sent'); }
 
   /* the slips, thrown on the board */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => !/Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1200);
   await page.evaluate(() => { const b = [...document.querySelectorAll('.toolbtn')].filter(x => /Slips/.test(x.textContent))[0]; if (b) b.click(); });
   await wait(1700);
@@ -498,7 +625,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   }
 
   /* Set-up: a book ticked on, the link and its QR, the CSV */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1400);
   const ticked = await page.evaluate(() => { const cb = document.querySelector('.acts-ticks input[type=checkbox]'); if (!cb) return false; cb.click(); return true; });
   if (ticked) {
@@ -575,7 +702,7 @@ async function walk(page, width, projector, sidecar, transcript) {
      — wrong-twice, pulled-help, stuck-open — is ever met), on a SECOND page
      in this SAME browser (same profile, same localStorage, so her save
      lands where this page can see it), and no-flags is stood on after. */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1200);
   /* empty-class IS DRAWN, THEN OVERWRITTEN IN THE SAME PAINT. staff.js's
      paint(pupils) sets class-page to "empty-class" when there are no
@@ -636,7 +763,7 @@ async function walk(page, width, projector, sidecar, transcript) {
     } catch (e) { g.note('class-page:no-flags @' + width + ': could not drive the pupil (' + String(e.message || e).slice(0, 80) + ')'); }
     await pupilPage.close();
 
-    await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+    await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
     await wait(1200);
     const reopenedDemo = await page.evaluate(() => {
       const rows = [...document.querySelectorAll('#st-rows tr')];
@@ -662,7 +789,7 @@ async function walk(page, width, projector, sidecar, transcript) {
   /* back to Classes first — the no-flags drive above left this page on the
      "demo" class-page, and #st-newclass/#st-add/#st-rows only exist on the
      set-up screen. */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1200);
   const addResult = await page.evaluate(() => {
     const input = document.querySelector('#st-newclass');
@@ -727,7 +854,7 @@ async function walk(page, width, projector, sidecar, transcript) {
      FULL GRID opens in its "one question across the class" mode - and that
      screen is the question view, which is what it now says it is. So the
      route is the full grid, a cell, then the mark. */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1300);
   /* THE SEEDED CLASS, BY NAME. The cold open at the top of this walk takes the
      LAST row and that is the seeded class with twelve pupils in it - but by the
@@ -773,7 +900,7 @@ async function walk(page, width, projector, sidecar, transcript) {
      `call()` always goes through it, so refusing ONE sub-action there is the
      same front door a dropped line arrives through - the same argument the
      set-up:error probe above already stands on. */
-  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Classes/.test(b.textContent))[0]; if (c) c.click(); });
+  await page.evaluate(() => { const c = [...document.querySelectorAll('.crumb-link')].filter(b => /Set-up/.test(b.textContent))[0]; if (c) c.click(); });
   await wait(1300);
   await page.evaluate(() => {
     const orig = window.GJ.app.call;

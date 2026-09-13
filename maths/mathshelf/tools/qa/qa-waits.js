@@ -68,6 +68,9 @@ const CONTROLS = [
   { id: 'store-no-fallback', kind: 'fixture', plant: 'fixture-store-no-fallback', mustFail: /did not fall back to the relay/ },
   { id: 'store-no-refresh', kind: 'fixture', plant: 'fixture-store-no-refresh', mustFail: /token-expired reached the screen/ },
   { id: 'store-no-timeout', kind: 'fixture', plant: 'fixture-store-no-timeout', mustFail: /did not time out/ },
+  /* the echo bounce (13 Sept 2026): an answer that is not the store's JSON is
+     sent again on the direct road before the relay is asked */
+  { id: 'store-no-resend', kind: 'fixture', plant: 'fixture-store-no-resend', mustFail: /went straight to the relay/ },
   { id: 'over-tightening', kind: 'shipped', mustPass: true }
 ];
 
@@ -434,6 +437,12 @@ const g = new Gate('qa-waits');
           if (window.__mode === 'ok') return reply({ ok: true, saved: true, via: 'store' });
           if (window.__mode === 'neterr') return Promise.reject(new TypeError('Failed to fetch'));
           if (window.__mode === 'expired') return reply(body.sig === 'FRESH' ? { ok: true, saved: true, via: 'store' } : { ok: false, error: 'token-expired' });
+          /* THE ECHO BOUNCE, as measured on 13 Sept 2026: the answer host
+             hands back an HTML page instead of the store's JSON. 'bounce'
+             does it once and then answers; 'bounce-always' never stops. */
+          var html = function () { return Promise.resolve({ text: function () { return Promise.resolve('<!DOCTYPE html><html><head></head><body>not the store</body></html>'); } }); };
+          if (window.__mode === 'bounce') { window.__bounced = (window.__bounced || 0) + 1; return window.__bounced === 1 ? html() : reply({ ok: true, saved: true, via: 'store' }); }
+          if (window.__mode === 'bounce-always') return html();
           if (window.__mode === 'hang') return new Promise(function (res, rej) {
             if (opts.signal) opts.signal.addEventListener('abort', function () { var e = new Error('aborted'); e.name = 'AbortError'; rej(e); });
           });
@@ -441,7 +450,7 @@ const g = new Gate('qa-waits');
         };
       });
       const saveVia = (mode) => storePage.evaluate((mode) => {
-        window.__mode = mode; window.__fetches.length = 0; window.__relayCalls.length = 0;
+        window.__mode = mode; window.__fetches.length = 0; window.__relayCalls.length = 0; window.__bounced = 0;
         var t0 = Date.now();
         return Promise.race([
           window.GJ.app.call('save', { act: 'angles', state: '{"v":1}', summary: '{}' }),
@@ -483,6 +492,27 @@ const g = new Gate('qa-waits');
       g.note('silent store: ' + JSON.stringify({ r: hang.r, ms: hang.ms, relay: hang.relay }));
       g.check(hang.r && hang.r.ok && hang.r.via === 'relay' && hang.ms >= 20000 && hang.ms < 38000, 'script.js :: STORE_TIMEOUT_MS', 'waits',
         'a store that never answered did not time out at 25 s and fall back to the relay (' + JSON.stringify(hang.r) + ' after ' + hang.ms + ' ms)');
+
+      /* 5. THE ECHO BOUNCE (13 Sept 2026). About one call in eight, the answer
+         host waits ~15 s and 302s back to the script's own URL, and the browser
+         lands on an HTML page: the store did the work, the answer was lost.
+         Measured by the steward's probe (1 of 8 rounds at 12:1x, 2 of 3 at
+         12:0x), and in the Executions log as "doGet Failed" rows on the DATA
+         project beside Completed doPosts. The law: an answer that is not the
+         store's JSON is sent again on the direct road, and settles there. */
+      const bounce = await saveVia('bounce');
+      g.note('echo bounce: ' + JSON.stringify(bounce));
+      g.check(bounce.r && bounce.r.ok && bounce.r.via === 'store' && bounce.fetches.length === 2 && bounce.relay.length === 0, 'script.js :: STORE_RESENDS', 'waits',
+        'an answer that was not the store\'s JSON went straight to the relay (fetches=' + bounce.fetches.length + ', relay=' + JSON.stringify(bounce.relay) + ') — the echo bounce costs a relay round and the 20 s re-send loop instead of one fresh direct request');
+      g.check(consoleLines.some(l => /sending it again/.test(l)), 'script.js :: STORE_RESENDS', 'waits',
+        'the re-send said nothing in the console — a slow lesson could not be read afterwards');
+
+      /* 6. and a road that bounces every time still comes home by the relay,
+         after its re-sends - the re-send must never become a loop of its own */
+      const bounceAll = await saveVia('bounce-always');
+      g.note('echo bounce, every time: ' + JSON.stringify(bounceAll));
+      g.check(bounceAll.r && bounceAll.r.ok && bounceAll.r.via === 'relay' && bounceAll.fetches.length === 3 && bounceAll.relay.indexOf('save') > -1, 'script.js :: STORE_RESENDS', 'waits',
+        'a store that never answered with JSON was not handed to the relay after its re-sends (fetches=' + bounceAll.fetches.length + ', relay=' + JSON.stringify(bounceAll.relay) + ') — the re-send became a loop of its own, or the road home was never taken');
     }
     await storePage.close();
   } finally { await browser.close(); }

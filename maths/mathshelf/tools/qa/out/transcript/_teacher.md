@@ -1,8 +1,8 @@
 # MathShelf — the TEACHER transcript
 
-TRANSCRIPT HASH: d141eb38da65d7e3
+TRANSCRIPT HASH: eade7de9685d72e6
 sentences: 42
-taken: 2026-09-13 01:54:13
+taken: 2026-09-13 12:11:52
 
 This is every sentence a teacher reads, in the order they meet it,
 as it was RENDERED on the running app. Nothing here is source.
@@ -10,7 +10,7 @@ as it was RENDERED on the running app. Nothing here is source.
 ---
 The markbook is for staff. Enter the department passcode.
 That passcode was not accepted.
-You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.
+Set-up is where you add a class and choose the books it sees. You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net) Tick the books this class should see. A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.
 GCSE (M3 & M4) / KS3 (M2) / GCSE (M3 & M4) / KS3 (M2)
 Loading 10B Maths (demo)…
 12 pupils in 10B Maths (demo)
@@ -48,5 +48,5 @@ Marked wrong. Your mark is the one pupils and staff now see.
 Back to the app’s mark.
 Spot the slip · starter 1 of 2
 Where has this gone wrong — and what should the line say?
-You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
+Set-up is where you add a class and choose the books it sees. You are the markbook owner — you can see and manage every class. (demo.teacher@c2ken.net)
 http://localhost/maths/mathshelf/index.html?class=demo

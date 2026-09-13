@@ -489,7 +489,13 @@
       needsYouStuck: 'Nothing saved for {minutes} minutes on {book}, {exercise}, {question}',
       csvCopied: 'Copied. Paste it into a spreadsheet.',
       csvFallback: 'Your browser would not let the page copy for you. Select the text below and copy it yourself.',
+      /* the screen's name, glossed where a colleague first meets it (the
+         separated reader, 13 Sept 2026: a bare "Set-up" asks "set up what?") */
+      setUpGloss: 'Set-up is where you add a class and choose the books it sees.',
       setUpHint: 'Tick the books this class should see.',
+      /* the class table scrolls inside its own frame on a small screen, and a
+         frame that clips silently loses half the table (ruling 53) */
+      scrollTable: 'Scroll or swipe the table sideways to see all of it.',
       setUpClosedHint: 'A book that is not ticked is closed for that class: it is not on the pupils’ shelf at all.',
 
       /* the markbook's own words */

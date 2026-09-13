@@ -463,6 +463,53 @@ const PLANTS = {
       "'<span class=\"exno\">' + esc(bookTitle(view.act)) + '</span>' +");
   },
 
+  /* ══ THE SET-UP SCREEN, AS HE FOUND IT ON 13 SEPT 2026 ═══════════════════
+     Three faults in one look at Book B's set-up, each put back where it was so
+     the laws that now hold the screen have to be seen to say no to them. ── */
+
+  /* ── THREE BOOKS WITH ONE NAME (ruling 52). bookName() drops the volume, so
+     every class row reads "Handling Data" three times over and nothing on the
+     screen says which box is which. ── */
+  /* ── THE BOUNCE HANDED STRAIGHT TO THE RELAY (13 Sept 2026): no re-send, so
+     an answer that is not the store's JSON costs a relay round at once. ── */
+  'fixture-store-no-resend': (dir) => {
+    edit(dir, 'script.js', '  var STORE_RESENDS = 2;', '  var STORE_RESENDS = 0;   /* plant: no re-send, the relay at once */');
+  },
+
+  'fixture-tickbox-same-name': (dir) => {
+    edit(dir, 'script.js', '    if (!shared || !a.sub) return a.title;',
+      '    return a.title;   /* plant: the volume dropped, so three books read the same */');
+  },
+
+  /* ── THE RAGGED CELL (ruling 53). The two rules that keep a control on one
+     line are taken away and the second row of controls is made a narrow block,
+     which is the 113px cell he was looking at: "Open the markbook" and "Copy
+     link" break in two and the row stops being a row. ── */
+  'fixture-row-controls-untidy': (dir) => {
+    edit(dir, 'style.css', '.ledger td.row-acts { white-space: nowrap; vertical-align: top; }',
+      '.ledger td.row-acts { vertical-align: top; }   /* plant: the cell may wrap again */');
+    edit(dir, 'style.css', '.row-acts button { white-space: nowrap; }',
+      '/* plant: a control may break in two */');
+    edit(dir, 'style.css', '.row-acts-more { display: flex;',
+      '.row-acts-more { display: block; width: 90px;');
+  },
+
+  /* ── THE TABLE THAT MOVED THE PAGE (ruling 53's second half). The frame
+     stops clipping, so the ledger pushes the whole document sideways at 375
+     and 768 exactly as it did before the cut. ── */
+  'fixture-ledger-no-host': (dir) => {
+    /* BOTH HALVES OF THE OLD FAULT. The frame alone is not the fix: once the
+       series groups wrap, the table fits a phone and a frame that clips
+       nothing proves nothing (seen 13 Sept 2026, 12:2x - the plant of the
+       frame alone left the gate green). The fault he met was a 966px
+       non-wrapping tickbox line AND no frame, so the plant puts both back. */
+    edit(dir, 'style.css', '.ledger-host { overflow-x: auto;', '.ledger-host { overflow-x: visible;');
+    edit(dir, 'style.css', '.acts-ticks { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }',
+      '.acts-ticks { display: flex; flex-direction: row; gap: var(--sq); align-items: center; }   /* plant: one line again */');
+    edit(dir, 'style.css', '.ticks-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }',
+      '.ticks-group { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px 18px; }   /* plant: never wraps */');
+  },
+
   /* ── HELP THAT IS NOT EARNED. "Want to see how?" is built hidden and shown
      only after two wrong attempts; this shows it from the start, which is the
      fault the confused walk exists to catch. It replaces a control that planted

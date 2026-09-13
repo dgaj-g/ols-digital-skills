@@ -37,6 +37,23 @@
     { id: 'stats-quartiles', title: 'Handling Data', sub: 'Quartiles, curves and box plots', accent: '#A6522B', accentDeep: '#813F21', livery: 'copper', band: 'GCSE \u00b7 M3 & M4', series: 'GCSE (M3 & M4)', meta: 'CCEA M3 \u00b7 M4', motif: 'curve' }
   ];
 
+  /* A BOOK IS NAMED WITH ITS VOLUME WHEREVER ANOTHER BOOK SHARES ITS TITLE
+     (ruling 52, 13 Sept 2026). Three copper books are titled "Handling Data"
+     and told apart only by `sub`, so every screen that printed the title alone
+     printed the same name three times. A series is named with its volume —
+     "Handling Data · Averages" — and a book nothing else collides with keeps
+     its plain title. DERIVED FROM ACTIVITIES, never a flag on a book: a fourth
+     Handling Data volume names itself the day it is added, and the day Angles
+     ever gains a second volume, both of them start saying which they are.
+     Takes an id or an activity. */
+  function bookName(a) {
+    if (typeof a === 'string') a = ACTIVITIES.filter(function (x) { return x.id === a; })[0] || { title: a };
+    if (!a) return '';
+    var shared = ACTIVITIES.some(function (x) { return x.id !== a.id && x.title === a.title; });
+    if (!shared || !a.sub) return a.title;
+    return a.title + ' \u00b7 ' + a.sub;
+  }
+
   /* WHAT THE OFFLINE STUB THINKS A CLASS HAS, shaped exactly as the server
      shapes it (server/Code.gs.template: ACTS, LEGACY_ON, coerceActs_). The two
      homes are one contract and qa-two-homes / qa-tickbox hold them together: a
@@ -624,6 +641,19 @@
      ever reaches her as a sentence: whatever comes back to the screen came
      from the store or the relay itself. */
   var STORE_TIMEOUT_MS = 25000;
+  /* THE ECHO BOUNCE (13 Sept 2026, the steward's probe). A web app answers a
+     POST with a 302 to script.googleusercontent.com, where the stored answer
+     is read back. About one time in eight (1 of 8 rounds at 12:1x; 2 of 3 at
+     12:0x) that host waits ~15 s and then answers with ANOTHER 302 - back to
+     the script's own /exec as a GET - and the browser lands on an HTML page
+     that is not the store's JSON. The store had already done the work (the
+     Executions log shows the doPost Completed, and a "doGet Failed" row for
+     the bounce), only the answer was lost. Treating that as a closed road cost
+     a whole relay round (4-23 s) and, for a save, the 20 s re-send loop that
+     Damien watched for twenty minutes on 13 Sept. So an answer that is not the
+     store's JSON is tried again on the direct road first, with a fresh
+     request, up to this many times, and only then handed to the relay. */
+  var STORE_RESENDS = 2;
   function hasStore() {
     var st = BOOT && BOOT.store;
     return !!(st && st.url && st.sig && typeof fetch === 'function');
@@ -654,7 +684,8 @@
       return false;
     }, function () { return false; });
   }
-  function storeCall(p, retried) {
+  function storeCall(p, retried, resends) {
+    resends = resends || 0;
     var shaped = storePayload(p);
     if (!shaped) return storeFallback(p, 'has no shape');
     var st = BOOT.store;
@@ -669,11 +700,17 @@
         clearTimeout(timer);
         var out = null;
         try { out = JSON.parse(text); } catch (e) { out = null; }
-        if (!out || typeof out !== 'object') return storeFallback(p, 'answered something that is not the store');
+        if (!out || typeof out !== 'object') {
+          if (resends < STORE_RESENDS) {
+            try { console.warn('[MathShelf] store: direct path answered something that is not the store for ' + p.action + '; sending it again (' + (resends + 1) + ' of ' + STORE_RESENDS + ')'); } catch (e) {}
+            return storeCall(p, retried, resends + 1);
+          }
+          return storeFallback(p, 'answered something that is not the store ' + (resends + 1) + ' times');
+        }
         if (out.error === 'token-expired' || out.error === 'token-bad') {
           if (retried) return storeFallback(p, 'was refused twice (' + out.error + ')');
           return storeRefresh().then(function (fresh) {
-            return fresh ? storeCall(p, true) : storeFallback(p, 'could not get a fresh token');
+            return fresh ? storeCall(p, true, resends) : storeFallback(p, 'could not get a fresh token');
           });
         }
         return out;
@@ -1939,6 +1976,7 @@
     storePayload: storePayload,
     me: function () { return me; },
     activities: ACTIVITIES,
+    bookName: bookName,
     content: function (id) { return window.GJ_CONTENT[id]; },
     summarise: summarise,
     engineFor: engineFor,

@@ -217,4 +217,55 @@ number. They are not renumbered here; a gate cites `L7` and means that.
     the live before/after numbers are in `server/DEPLOY_LOG.md`. His verdict
     on the live site, 12 Sept 2026, 20:4x: "This is FAR better. far more
     responsive and far quicker to load and save."_
+    _13 Sept 2026, his first morning on Books A and B, on a real pupil
+    account: "it took a very long time again before it let me tap 'open your
+    books'"; "i had to wait approx 54 seconds while 'getting your details'
+    flashed"; "opening the actual markbook took about 40 seconds"; "the still
+    saving thing a few times"; "I thought you fixed this? it isn't fixed
+    here." MEASURED before anything was changed: the front door's Executions
+    log carried an `apiCall` (the relay) for almost every call he made,
+    4.4–22.7 s each; the store's own log showed a save re-sent every 20 s
+    for over twenty minutes, each Completed in 4–9 s. The steward's probe
+    from outside Google (eight rounds, the page's own token): the POST
+    answers in 1.1–3.5 s; then, one round in eight (two in three at 12:0x),
+    the answer host waits ~15 s and 302s BACK to the script's own URL as a
+    GET — an HTML page, never the store's JSON (the "doGet Failed" rows in
+    the DATA log are those bounces). The store had done the work; the page
+    threw the answer away as "not the store", took the relay, and for a save
+    began the 20 s re-send loop. THE ECHO BOUNCE IS GOOGLE'S; what is ours
+    is treating it as a closed road. Client cut (13 Sept): an answer that is
+    not the store's JSON is sent again on the direct road, up to twice,
+    before the relay (`STORE_RESENDS`; qa-waits laws 5–6, control
+    `store-no-resend`). Server side, for Opus: the relay's own UrlFetch meets
+    the same bounce and must re-send once too; the DATA project answers a
+    GET with JSON, not a failure; and every call still reads the WHOLE data
+    tab under one script lock — the 4–9 s a save costs while the tab grows,
+    which no transport fix touches._
 
+52. **Every book is named with its volume, everywhere a teacher meets it.**
+    (13 Sept 2026, his first look at Book B's set-up) "there is no way of
+    distinguishing between the data handling books." The set-up tickboxes,
+    the markbook's book tabs and the tick messages printed the shared title
+    "Handling Data" for all three copper books. A book whose title another
+    book shares is named "Title · Volume" (`GJ.app.bookName`), derived from
+    ACTIVITIES, never remembered per book.
+53. **A row's controls are laid out the same way in every row, and no
+    control wraps.** (13 Sept 2026) "the links on the right of each class are
+    quite untidy looking in terms of layout." The class table's What-you-can-do
+    cell was 113 px wide, so "Open the markbook" and "Copy link" broke onto
+    two lines and the four buttons stacked raggedly. Two lines per row, the
+    same in every row; a control is one line or it is not a button; on a
+    small screen the class table scrolls inside its own frame and says so,
+    never the page (measured: 1,242 px of page on a 768 px screen).
+54. **A screen is called on the screen what the instructions call it.**
+    (13 Sept 2026) "you say open set up for one s1 class, but I don't see set
+    up written anywhere." The class table called itself "All classes" / "Your
+    classes" while the class page's button, its crumb and two messages called
+    it Set-up. It is Set-up everywhere.
+55. **The film speaks to her.** (13 Sept 2026, Book B, Exercise 1's film)
+    "the text under the rhyme at the end should say 'Your own…' instead of
+    'Her own…'. That was a silly mistake." A caption never refers to the
+    author in the third person. His wording "Your own rhyme for keeping the
+    four apart." was a verbless fragment on the separated read (13 Sept), so
+    the caption reads "Here is a rhyme to help you keep the four apart." —
+    a sentence, to her, true to the red note being written.

@@ -3,8 +3,8 @@
  "scope": "stats-quartiles",
  "width": 1280,
  "tier": "preview",
- "contentHash": "58fa75a99f62",
- "when": "2026-09-13T04:04:16.270Z",
+ "contentHash": "759816449d16",
+ "when": "2026-09-13T11:53:43.523Z",
  "states": [
   {
    "surface": "cover",
@@ -13568,7 +13568,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13619,7 +13619,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13693,7 +13693,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13745,7 +13745,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13797,7 +13797,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13848,7 +13848,7 @@
    },
    "measured": {
     "said-twice": 3,
-    "readability": 22
+    "readability": 23
    }
   },
   {
@@ -13898,7 +13898,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {
@@ -13949,7 +13949,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {
@@ -14023,7 +14023,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {
@@ -14075,7 +14075,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {
@@ -14127,7 +14127,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {
@@ -14178,7 +14178,7 @@
    },
    "measured": {
     "said-twice": 2,
-    "readability": 20
+    "readability": 22
    }
   },
   {

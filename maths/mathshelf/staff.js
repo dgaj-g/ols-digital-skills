@@ -277,9 +277,9 @@
 
   function showClasses() {
     var body = el('div', '');
-    var scopeNote = isAdmin
+    var scopeNote = esc(TT('setUpGloss')) + ' ' + (isAdmin
       ? 'You are the markbook owner &mdash; you can see and manage every class.'
-      : 'Showing the classes you created &mdash; each teacher sees only their own.';
+      : 'Showing the classes you created &mdash; each teacher sees only their own.');
     /* opacity .65 on an already-muted grey measured 3.4:1 - quiet is a smaller
        size and a lighter weight, never a colour faded until it cannot be read */
     if (meEmail) scopeNote += ' <span class="quiet-note">(' + esc(meEmail) + ')</span>';
@@ -290,10 +290,22 @@
       'style="font-family:var(--f-stationery);font-size:15px;padding:10px;border:1.5px solid var(--navy);border-radius:4px;max-width:240px" aria-label="New class name" />' +
       '<button id="st-add" class="btn-stamp">Add a class</button>' +
       '<span id="st-cmsg" class="ui-msg" role="status"></span></div>' +
+      /* THE TABLE SCROLLS INSIDE ITS OWN FRAME, NEVER THE PAGE (ruling 53).
+         At 768 and 375 the tickbox cell made this table 966px wide and the
+         WHOLE DOCUMENT went sideways with it — 1242px of page on a 768px
+         screen, so every heading and every message slid off too. The frame
+         clips it; the hint under it says so when there is something hidden. */
+      '<div class="ledger-host">' +
       '<table class="ledger"><thead><tr><th>Class</th><th>Pupils</th><th>Books on the shelf</th><th>What you can do</th></tr></thead>' +
       '<tbody id="st-rows"></tbody></table>' +
+      '</div>' +
       '<p class="ui-msg" style="margin-top:var(--sq)">' + esc(TT('setUpHint')) + ' ' + esc(TT('setUpClosedHint')) + '</p>';
-    shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: isAdmin ? 'All classes' : 'Your classes' }] });
+    /* THE SCREEN IS CALLED WHAT THE INSTRUCTIONS CALL IT (ruling 54). The class
+       page's own button, the crumb back from it and two server sentences all
+       said "Set-up"; this screen called itself "All classes" / "Your classes",
+       so there was nowhere on it that the word appeared. Who sees what is the
+       scope sentence's job, directly above the table, and it still says it. */
+    shell({ body: body, surface: 'set-up', state: 'classes', crumbs: [{ label: 'Set-up' }] });
     var rows = body.querySelector('#st-rows');
     var cmsg = body.querySelector('#st-cmsg');
 
@@ -389,11 +401,17 @@
           var key = a.series || 'Other';
           (groups[key] = groups[key] || []).push(a);
         });
+        /* EACH SERIES IS ONE GROUP, AND A GROUP WRAPS (ruling 53). The boxes
+           used to be one non-wrapping flex line 966px long with the series
+           headings strung along it; a group is a block of its own now, its
+           heading on its own line and its boxes flowing underneath. */
         Object.keys(groups).sort().forEach(function (key) {
-          tickWrap.appendChild(el('p', 'ticks-series', esc(key)));
-          groups[key].forEach(addTick);
+          var grp = el('div', 'ticks-group');
+          grp.appendChild(el('p', 'ticks-series', esc(key)));
+          groups[key].forEach(function (a) { addTick(a, grp); });
+          tickWrap.appendChild(grp);
         });
-        function addTick(a) {
+        function addTick(a, into) {
           var lab = el('label', 'tickbox');
           var cb = document.createElement('input');
           cb.type = 'checkbox';
@@ -411,7 +429,7 @@
             c._tickSync = c._tickSync || { busy: false, queued: null, pending: null, tickWrap: tickWrap };
             c._tickSync.tickWrap = tickWrap;
             c._tickSync.queued = acts;
-            c._tickSync.pending = { id: a.id, title: a.title, on: cb.checked };
+            c._tickSync.pending = { id: a.id, title: window.GJ.app.bookName(a), on: cb.checked };
             /* A SAVING MESSAGE IS PRONOUNCED, NOT A WHISPER (ruling 35). The
                class line used to breathe quietly with .is-waiting; it now
                becomes the same gold wait-card the passcode screen uses, in the
@@ -423,25 +441,29 @@
             runTickSync(c);
           });
           lab.appendChild(cb);
-          lab.appendChild(document.createTextNode(a.title));
+          lab.appendChild(document.createTextNode(window.GJ.app.bookName(a)));
           var band = el('span', 'tick-band', esc(a.band || ''));
           lab.appendChild(band);
-          tickWrap.appendChild(lab);
+          (into || tickWrap).appendChild(lab);
         }
         ticks.appendChild(tickWrap);
 
-        var actions = el('td', '');
+        /* TWO LINES, THE SAME IN EVERY ROW (ruling 53). The cell measured 113px
+           and the four buttons stacked raggedly behind three inline margins,
+           so "Open the markbook" and "Copy link" each broke in two and no two
+           rows looked alike. The markbook is the one she came for and it gets
+           its own line; the three small ones sit in a row under it. */
+        var actions = el('td', 'row-acts');
+        var actMain = el('div', 'row-acts-main');
+        var actMore = el('div', 'row-acts-more');
         var wallB = el('button', 'toolbtn', 'Open the markbook');
         wallB.addEventListener('click', function () { view.cls = c.name; showClassPage(); });
         var linkB = el('button', 'btn-pencil', esc(TT('copyLink')));
-        linkB.style.marginLeft = '6px';
         linkB.addEventListener('click', function () { copyText(classLink(c.name), cmsg, 'Link for ' + c.name + ' copied.'); });
         var qrB = el('button', 'btn-pencil', 'QR');
-        qrB.style.marginLeft = '6px';
         qrB.addEventListener('click', function () { showQr(c.name); });
         var delB = el('button', 'btn-pencil', '&times;');
         delB.setAttribute('aria-label', TT('deleteClassAria', { 'class': c.name }));
-        delB.style.marginLeft = '6px';
         delB.addEventListener('click', function () {
           SURF('set-up', 'delete-armed');
           openConfirm('Delete ' + c.name + '?',
@@ -456,7 +478,9 @@
               }).catch(function () { delB.disabled = false; clearBusy(cmsg, ''); staffError(TT('noServer'), cmsg); });
             });
         });
-        actions.appendChild(wallB); actions.appendChild(linkB); actions.appendChild(qrB); actions.appendChild(delB);
+        actMain.appendChild(wallB);
+        actMore.appendChild(linkB); actMore.appendChild(qrB); actMore.appendChild(delB);
+        actions.appendChild(actMain); actions.appendChild(actMore);
 
         tr.appendChild(el('td', '', '<b>' + esc(c.name) + '</b>'));
         tr.appendChild(el('td', '', String(c.count || 0)));
@@ -464,7 +488,36 @@
         tr.appendChild(actions);
         rows.appendChild(tr);
       });
+      sizeHint();
     }
+
+    /* THE HIDDEN PART OF THE TABLE SAYS IT IS THERE. A frame that clips
+       silently is a frame that loses half the table for anyone who does not
+       think to swipe it — so the hint appears only when there IS something
+       behind the edge, and goes again when there is not. Measured after every
+       render and on every resize; the listener lets go the moment this screen
+       is no longer the one on the page. */
+    /* THE HINT EXISTS ONLY WHILE IT IS TRUE. A hidden sentence is still a
+       sentence on the page - the transcript the separated reader is handed
+       read it as if it were always shown (13 Sept 2026) - so the line is
+       made when the frame hides width and removed when it does not. */
+    function sizeHint() {
+      var host = body.querySelector('.ledger-host');
+      if (!host) return;
+      var hint = body.querySelector('.ledger-scroll-hint');
+      var needed = host.scrollWidth > host.clientWidth;
+      if (needed && !hint) {
+        hint = el('p', 'ui-msg ledger-scroll-hint', esc(TT('scrollTable')));
+        host.parentNode.insertBefore(hint, host.nextSibling);
+      } else if (!needed && hint) {
+        hint.parentNode.removeChild(hint);
+      }
+    }
+    var onResize = function () {
+      if (!document.body.contains(body)) { window.removeEventListener('resize', onResize); return; }
+      sizeHint();
+    };
+    window.addEventListener('resize', onResize);
     render();
 
     var addB = body.querySelector('#st-add');
@@ -552,9 +605,14 @@
     return String(q.prompt || '').slice(0, 46);
   }
 
+  /* A BOOK IS NAMED WITH ITS VOLUME, EVERYWHERE A TEACHER MEETS IT (ruling 52,
+     13 Sept 2026). Three copper books are titled "Handling Data" and this
+     returned that title for all three, so the tickboxes, the book tabs, the
+     crumb and the tick messages all said the same word three times. The name
+     is derived in script.js from ACTIVITIES itself — nothing per book to
+     remember, and nothing here to keep in step with it. */
   function bookTitle(actId) {
-    var a = window.GJ.app.activities.filter(function (x) { return x.id === actId; })[0];
-    return a ? a.title : actId;
+    return window.GJ.app.bookName(actId);
   }
   function markState(actId, state, q) {
     var rec = state && state.qs && state.qs[q.id];
@@ -772,7 +830,7 @@
     sw.setAttribute('role', 'group');
     sw.setAttribute('aria-label', TT('whichBook'));
     acts.forEach(function (a) {
-      var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(a.title));
+      var b = el('button', 'toolbtn' + (view.act === a.id ? ' on' : ''), esc(window.GJ.app.bookName(a)));
       b.setAttribute('aria-pressed', view.act === a.id ? 'true' : 'false');
       b.addEventListener('click', function () { view.act = a.id; SURF('class-page', 'book-switch'); showClassPage(); });
       sw.appendChild(b);
@@ -817,7 +875,7 @@
 
     shell({
       body: body, surface: 'class-page', state: 'loading-cold', live: true,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls }]
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls }]
     });
 
     /* the cold first switch says WHICH class it is loading, by name, before
@@ -958,7 +1016,7 @@
 
     shell({
       body: body, surface: 'exercise-view', state: 'loaded', live: true,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: showClassPage },
                { label: bookTitle(view.act), go: showClassPage },
                { label: 'Ex ' + (si + 1) + ' \u00b7 ' + sec.title }]
     });
@@ -1037,7 +1095,7 @@
 
     shell({
       body: body, surface: 'question-view', state: 'loading-progressive',
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: showClassPage },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: showClassPage },
                { label: 'Ex ' + (item.secIdx + 1) + ' \u00b7 ' + item.secTitle, go: function () { showExercise(item.secIdx); } },
                { label: item.qLabel }]
     });
@@ -1080,7 +1138,7 @@
     var body = el('div', '');
     var actTabs = el('div', 'check-row');
     window.GJ.app.activities.forEach(function (a) {
-      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', a.title);
+      var b = el('button', view.act === a.id ? 'btn-stamp' : 'btn-pencil', esc(window.GJ.app.bookName(a)));
       b.addEventListener('click', function () { view.act = a.id; showClassPage(); });
       actTabs.appendChild(b);
     });
@@ -1102,7 +1160,7 @@
       '<span class="glyph-live">●</span> working now &middot; ' +
       '<span class="glyph-un">—</span> not started';
     body.appendChild(actTabs); body.appendChild(tools); body.appendChild(msg); body.appendChild(orient); body.appendChild(legend); body.appendChild(wall);
-    shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
+    shell({ body: body, surface: 'full-grid', state: 'loaded', live: true, crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Full grid' }] });
     /* the grid is wider and taller than the screen; once she has scrolled it,
        the pupil column and the question row are stuck to the edges and that is
        a different screen to read */
@@ -1250,7 +1308,7 @@
        chosen first and named in full on both sides. */
     var jv = sweep ? { surface: 'question-view', state: 'loaded' } : { surface: 'book-view', state: 'pencil' };
     shell({ body: body, surface: jv.surface, state: jv.state,
-      crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
+      crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } },
         { label: sweep ? ctx.qlabel + ' \u00b7 across the class' : 'A pupil\u2019s book' }] });
 
     busyCard(msg, 'Fetching the jotter&hellip; this can take a moment');
@@ -1461,7 +1519,7 @@
     body.appendChild(msg);
     var list = el('div', '');
     body.appendChild(list);
-    shell({ body: body, surface: 'slips', state: 'ranked', crumbs: [{ label: 'Classes', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Slips' }] });
+    shell({ body: body, surface: 'slips', state: 'ranked', crumbs: [{ label: 'Set-up', go: showClasses }, { label: view.cls, go: function () { showClassPage(); } }, { label: 'Slips' }] });
 
     busyCard(msg, 'Reading every jotter&hellip; this can take a moment');
     fullStates().then(function (all) {
