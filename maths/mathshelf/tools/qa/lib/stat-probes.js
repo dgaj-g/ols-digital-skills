@@ -115,7 +115,13 @@ const SIGNATURE = `((args) => {
    *   2. no READ-OUT is showing a true value at mount: the read-out is the one
    *      place on a board that speaks, and DESIGN 4.0 says it prints HER
    *      placement, never the answer. */
-  const truthEls = root.querySelectorAll('[data-truth]');
+  /* .stat-verdict-leak (Book B, 13 Sept 2026): a judge claim with
+     True/False/Not-enough-information options prints its authored verdict
+     word nowhere on a fresh render - the stats-b-tfn-leak plant adds
+     exactly that, from first mount, and it carries no [data-truth] of its
+     own (that attribute names the CHART kinds' true positions), so it is
+     named here alongside it rather than invented as a second law */
+  const truthEls = root.querySelectorAll('[data-truth], .stat-verdict-leak');
   if (truthEls.length) {
     return { ok: false, why: 'an answer value is on the page before Check: the true positions are drawn on ' + qid };
   }
@@ -203,4 +209,31 @@ const TABLE_ONE_CELL = `((args) => {
   return { ok: true, why: null };
 })`;
 
-module.exports = { PERSISTS, SIGNATURE, STAGE_SETTLE, TABLE_ONE_CELL };
+/* ── ROWPICK_SINGLE (Book B) ──────────────────────────────────────────────
+ * CONTRACT_B.md "table": row asks are "one ask at a time; the chosen row
+ * aria-pressed=true ... press again clears" - a row-pick group names exactly
+ * ONE choice, never several. A plain DOM read (not a press), called once a
+ * table question's whole drive is done (same moment STAGE_SETTLE is asked),
+ * over every `.stat-rowpick[data-ask]` group on the question root. Backs
+ * the stats-b-rowpick-two-pressed plant (BUILD.table's aria-pressed check
+ * loosened from "this exact row" to "any row at all"). */
+const ROWPICK_SINGLE = `((args) => {
+  const [qid] = args;
+  const root = [...document.querySelectorAll('[data-surface="question"], .jotter-q')]
+    .filter((r) => (r.getAttribute('data-qid') || (r.id || '').replace(/^jq-/, '')) === qid)[0];
+  if (!root) return { ok: false, why: qid + ' is not on screen' };
+  const groups = {};
+  root.querySelectorAll('button.stat-rowpick[data-ask]').forEach((b) => {
+    const ask = b.getAttribute('data-ask');
+    (groups[ask] = groups[ask] || []).push(b.getAttribute('aria-pressed') === 'true');
+  });
+  for (const ask in groups) {
+    const pressed = groups[ask].filter(Boolean).length;
+    if (pressed > 1) {
+      return { ok: false, why: pressed + ' rows read aria-pressed="true" at once for "' + ask + '" on ' + qid + ' - a row-pick group names exactly one choice' };
+    }
+  }
+  return { ok: true, why: null };
+})`;
+
+module.exports = { PERSISTS, SIGNATURE, STAGE_SETTLE, TABLE_ONE_CELL, ROWPICK_SINGLE };

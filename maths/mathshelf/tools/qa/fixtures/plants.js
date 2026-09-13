@@ -1223,6 +1223,81 @@ const PLANTS = {
       "      var s = (!filled && !done) ? 'empty'\n        : (filled < tableBoxes.length) ? 'filling'\n        : (asks.length && done < asks.length) ? 'asking' : 'ready';",
       "      var s = (!filled && !done) ? 'empty'\n        : false ? 'filling'   /* planted: the table never stands on \"filling\" (Book B) */\n        : (asks.length && done < asks.length) ? 'asking' : 'ready';");
     return { env: BOOK_B };
+  },
+
+  /* ── LINT-B's four (folded in from tools/qa/out/bookB/FIXTURE_B.js, every
+     anchor re-verified against today's tree before writing this) ────────── */
+
+  /* ── a wrong f×x cell marked right regardless of correctness or
+     consistency (statcore.js markTable) ───────────────────────────────────
+     ok:1 should mean the cell equals the TRUE value, ok:2 only that it is
+     consistent with HER OWN earlier inputs in that row - never simply
+     "any non-blank cell". This plant collapses both checks to the first one
+     always taking the (right, ok:1) branch. NOT registered as a CONTROL
+     below (see WALK_NOTES.md "Plants"): the standard wrong-attempt for a
+     table question (dev/model-attempts.js -> statcore.js's own
+     modelBoard(q, true, rules)) is the model board's OWN classic slip -
+     CONTRACT_B.md's own model-board table says that slip lives in the value
+     ASK (Σfx ÷ rows), with every CELL still true - so neither the right-walk
+     nor the ordinary wrong-walk ever presents a cell that is both wrong AND
+     inconsistent for this plant to mismark. Proving it needs a BESPOKE wrong
+     S (an authored table attempt with a genuinely wrong, inconsistent fx),
+     which is dev/model-attempts.js's call, not a file this package owns; the
+     more precise proof is an engine-level one (dev/test-statcore.js), not a
+     walker control. The plant is kept here, real and verified, for whichever
+     package can author that attempt or extend the unit test. */
+  'stats-b-cell-inconsistent': (dir) => {
+    edit(dir, 'statcore.js',
+      "        if (t && eqR(m, t)) { per.push(row(u, 1, null, null)); continue; }\n        var ftv = cellFt(q, D, c, i, theirs, f);\n        if (ftv && eqR(m, ftv) && !(t && eqR(ftv, t))) { per.push(row(u, 2, null, 'from your own earlier answer')); continue; }\n        per.push(row(u, 0, cellDx(q, D, c, i, m), null));",
+      "        per.push(row(u, 1, null, null)); continue;   /* planted: any non-blank cell marks right, right or wrong (Book B) */\n        var ftv = cellFt(q, D, c, i, theirs, f);\n        if (ftv && eqR(m, ftv) && !(t && eqR(ftv, t))) { per.push(row(u, 2, null, 'from your own earlier answer')); continue; }\n        per.push(row(u, 0, cellDx(q, D, c, i, m), null));");
+    return { env: BOOK_B };
+  },
+
+  /* ── two table row-pick buttons both aria-pressed at once ────────────────
+     BUILD.table renderAsks(): each button's pressed state should compare
+     against the SPECIFIC row it is (`ans[a.id] === ri`); this plant loosens
+     it to "any row chosen at all" (`ans[a.id] != null`), so once ANY row is
+     picked, every row in that ask's group reads aria-pressed="true" at once.
+     mustFail (sit-pupil, new stat-probes.js ROWPICK_SINGLE): "read
+     aria-pressed". */
+  'stats-b-rowpick-two-pressed': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "            b.setAttribute('aria-pressed', ans[a.id] === ri ? 'true' : 'false');",
+      "            b.setAttribute('aria-pressed', ans[a.id] != null ? 'true' : 'false');   /* planted: every row in the group reads pressed once any one is chosen (Book B) */");
+    return { env: BOOK_B };
+  },
+
+  /* ── the Totals row excluded from the fill-gate: the stage moves on while
+     a total is still blank ────────────────────────────────────────────────
+     BUILD.table: `tableBoxes` (what stage() compares "filled" against
+     before calling the table done with its boxes) is narrowed here to cells
+     only, so the stage reports "asking"/"ready" while a total box is still
+     empty - the SAME observable symptom as `stats-b-stage-skipped` (the
+     drive is told it has already reached "filling" before it ever presses
+     the total, because the buggy stage jumped past it), so it fails the
+     same way: STAGE_SETTLE reports the walk never really stood on
+     "filling" once every declared stage is checked. mustFail (sit-pupil):
+     "never stood on stage". */
+  'stats-b-total-before-cells': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "    var tableBoxes = route.filter(function (r) { return r.kind !== 'ask'; });",
+      "    var tableBoxes = route.filter(function (r) { return r.kind === 'cell'; });   /* planted: totals excluded from the fill-gate, so the stage moves on before every total is filled (Book B) */");
+    return { env: BOOK_B };
+  },
+
+  /* ── a TFN verdict word visible before Check ──────────────────────────────
+     BUILD.judge render(): a claim card prints only its text and the
+     (unpressed) True/False/NEI chips. This plant appends the AUTHORED
+     verdict itself into every card at first mount - the answer-signature
+     leak stat-probes.js's SIGNATURE probe exists to catch, extended (see
+     stat-probes.js) to also search `.stat-verdict-leak`. mustFail
+     (sit-pupil, the answer-signature law): "an answer value is on the page
+     before Check". */
+  'stats-b-tfn-leak': (dir) => {
+    edit(dir, 'jotter-stats.js',
+      "        var card = el('div', 'stat-claim');\n        card.appendChild(el('p', 'stat-claim-text', esc(c.text)));",
+      "        var card = el('div', 'stat-claim');\n        card.appendChild(el('p', 'stat-claim-text', esc(c.text)));\n        if (c.options) card.appendChild(el('p', 'stat-verdict-leak', esc(c.verdict)));   /* planted: the true verdict word sits on the page from first mount (Book B) */");
+    return { env: BOOK_B };
   }
 };
 

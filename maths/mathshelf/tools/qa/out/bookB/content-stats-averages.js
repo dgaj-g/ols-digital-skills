@@ -78,7 +78,7 @@
             { say: 'The mode is the value that appears most often — 13, four times.',
               do: [{ ring: { i: 0 } }] },
             { say: 'The median is the middle number once they are in order.',
-              do: [{ bracket: { i: 4, j: 4 } }] },
+              do: [{ ring: { i: 4 } }] },   /* one middle value on an odd count: the ring IS the bracket (player.js has no bracket op — orchestrator, 13 Sept) */
             { say: 'The mean is the total of all the values, divided by the number of values.',
               do: [{ write: { text: '13+13+13+13+14+14+16+18+21 = 135' } }] },
             { say: 'Nine values, so divide the total by 9.',
@@ -368,17 +368,17 @@
               do: [{ write: { text: '27+10+7+5+4+2 = 55' } }] },
             { say: 'Total the f × x column, then divide by 55 for an estimate of the mean.',
               do: [{ write: { text: '135+150+175+175+180+110 = 925' } }, { write: { text: '925 ÷ 55 = 16.8' } }] },
-            { say: 'The modal class is the tallest bar — the class with the most aircraft.',
-              do: [{ ring: { i: 0 } }] },
-            { say: 'Count to the 28th aircraft: 27 are in the first class, so the 28th falls in the next one.',
-              do: [{ ring: { i: 1 } }] },
+            { say: 'The modal class is the one with the most aircraft: 27 of them, in the 0–10 class.',
+              do: [{ write: { text: 'Modal class: 27 aircraft in 0–10' } }, { ring: { i: 0 } }] },
+            { say: 'The median is the 28th aircraft of 55. The first class holds 27, so the 28th falls in the next class, 10–20.',
+              do: [{ write: { text: 'Median: the 28th of 55 is in 10–20' } }, { ring: { i: 0 } }] },
             { say: 'A grouped table gives an estimate, never an exact value — the individual arrival times are gone once they are grouped.',
               do: [{ note: { red: true, text: 'Grouped data gives an ESTIMATE of the mean, never the exact value.' } }] }
           ]
         },
         questions: [
           { id: 'q20', kind: 'table', marks: [2, 3],
-            prompt: 'The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal group and the group containing the median.',
+            prompt: 'The table gives the number of words in each sentence of a page of writing. Estimate the mean number of words per sentence, and find the modal class and the class containing the median.',
             cols: [
               { id: 'cls', head: 'Number of words', given: [
                 { lo: 1, hi: 5, text: '1-5' }, { lo: 6, hi: 10, text: '6-10' }, { lo: 11, hi: 15, text: '11-15' },
@@ -391,12 +391,12 @@
             totals: ['f', 'fx'],
             asks: [
               { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 43, d: 4 }, ft: 'sum(fx)/sum(f)', dp: 2 },
-              { type: 'row', id: 'modal', label: 'Modal group', answer: 0 },
-              { type: 'row', id: 'medianClass', label: 'Median group', answer: 1 }
+              { type: 'row', id: 'modal', label: 'Modal class', answer: 0 },
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }
             ],
             src: 'Data Collection and analysis Booklet no answers.docx (1.4) image19, Q1' },
           { id: 'q21', kind: 'table', marks: [2, 3],
-            prompt: 'The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal group and the group containing the median.',
+            prompt: 'The table shows the results of 24 students in a test. Estimate the mean mark, and find the modal class and the class containing the median.',
             cols: [
               { id: 'cls', head: 'Mark', given: [
                 { lo: 40, hi: 54, text: '40-54' }, { lo: 55, hi: 69, text: '55-69' },
@@ -409,12 +409,12 @@
             totals: ['f', 'fx'],
             asks: [
               { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 273, d: 4 }, ft: 'sum(fx)/sum(f)', dp: 2 },
-              { type: 'row', id: 'modal', label: 'Modal group', answer: 1 },
-              { type: 'row', id: 'medianClass', label: 'Median group', answer: 1 }
+              { type: 'row', id: 'modal', label: 'Modal class', answer: 1 },
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 1 }
             ],
             src: 'Data Collection and analysis Booklet no answers.docx (1.4) image20, Q2' },
           { id: 'q22', kind: 'table', marks: [4, 1],
-            prompt: 'The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class interval containing the median.',
+            prompt: 'The table shows the amount of pocket money (p) for a group of students. Estimate the mean pocket money, and find the class containing the median.',
             cols: [
               { id: 'cls', head: 'Pocket money (£)', given: [
                 { lo: 0, hi: 3, text: '0 < p ≤ 3' }, { lo: 3, hi: 6, text: '3 < p ≤ 6' }, { lo: 6, hi: 9, text: '6 < p ≤ 9' },
@@ -427,7 +427,7 @@
             totals: ['f', 'fx'],
             asks: [
               { type: 'value', id: 'mean', label: 'Estimate for the mean =', answer: { n: 1365, d: 158 }, ft: 'sum(fx)/sum(f)', dp: 2 },
-              { type: 'row', id: 'medianClass', label: 'Class interval containing the median', answer: 2 }
+              { type: 'row', id: 'medianClass', label: 'Class containing the median', answer: 2 }
             ],
             src: 'Statistics M7 (1).pdf Q20' },
 
@@ -478,7 +478,7 @@
           mode: 'paper',
           steps: [
             { say: 'Mode, median and mean each have their own advantages and disadvantages.',
-              do: [{ table: { head: ['', 'Mode', 'Median', 'Mean'],
+              do: [{ table: { head: ['Average', 'Mode', 'Median', 'Mean'],
                                rows: [['Advantages', 'Very easy to find; not affected by extreme values', 'Easy to find; not affected by extreme values', 'Uses all the values'],
                                       ['Disadvantages', "Doesn't use all the values; may not exist", "Doesn't use all the values", 'Extreme values can distort it'],
                                       ['Used for', 'Non-numerical data', 'Data with extreme values', 'Data spread in a balanced way']] } }] },
@@ -495,7 +495,7 @@
               do: [{ table: { head: ['Price (p)', 'Frequency', 'Midpoint', 'f × x'],
                                rows: [['80-84', '2', '82', '164'], ['85-89', '3', '87', '261'],
                                       ['90-94', '5', '92', '460'], ['95-99', '10', '97', '970']] } }] },
-            { say: 'Claim: "The estimated mean = 1855 ÷ 20." That is exactly the method — true.',
+            { say: 'Claim: "The estimated mean = 1855 ÷ 20." Dividing 1855 by 20 is exactly the method — the claim is true.',
               do: [{ write: { text: 'The estimated mean = 1855 ÷ 20.' } }, { stamp: { text: 'TRUE' } }] },
             { say: 'Claim: "The modal interval price of bread was 10." Ten is only the frequency; the modal interval is 95–99, so this is false.',
               do: [{ write: { text: 'The modal interval price of bread was 10.' } }, { stamp: { text: 'FALSE' } }] },
@@ -510,19 +510,19 @@
             prompt: 'A mistake was made: a baby\'s weight of 4.6 kg should have been 4.5 kg. Decide whether each of the following changes or stays the same.',
             fig: { type: 'list', values: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1] },
             claims: [
-              { text: 'The range of the weights', options: ['Changes', 'Stays the same'], verdict: 'Stays the same',
+              { text: 'When 4.6 kg is corrected to 4.5 kg, the range of the weights will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
                 proof: { kind: 'changes', stat: 'range',
                   before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
                   after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
-              { text: 'The median weight', options: ['Changes', 'Stays the same'], verdict: 'Stays the same',
+              { text: 'After the correction, the median weight will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
                 proof: { kind: 'changes', stat: 'median',
                   before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
                   after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
-              { text: 'The mean weight', options: ['Changes', 'Stays the same'], verdict: 'Changes',
+              { text: 'With 4.5 kg in place of 4.6 kg, the mean weight will…', options: ['Change', 'Stay the same'], verdict: 'Change',
                 proof: { kind: 'changes', stat: 'mean',
                   before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
                   after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } },
-              { text: 'The modal weight', options: ['Changes', 'Stays the same'], verdict: 'Stays the same',
+              { text: 'Once the weight is corrected, the modal weight will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
                 proof: { kind: 'changes', stat: 'mode',
                   before: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.6, 5.1],
                   after: [2.4, 2.6, 2.8, 2.8, 3.0, 3.5, 3.5, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.2, 4.3, 4.5, 5.1] } }
@@ -538,15 +538,15 @@
               { id: 'f', head: 'Frequency', given: ['7', '6', '4', '3', '4'] }
             ] },
             claims: [
-              { text: 'The range', options: ['Changes', 'Stays the same'], verdict: 'Stays the same',
+              { text: 'Once the two missing scores are added, the range will…', options: ['Change', 'Stay the same'], verdict: 'Stay the same',
                 proof: { kind: 'changes', stat: 'range',
                   before: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90],
                   after: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90] } },
-              { text: 'The mean', options: ['Changes', 'Stays the same'], verdict: 'Changes',
+              { text: 'With 21 and 39 in the table, the mean will…', options: ['Change', 'Stay the same'], verdict: 'Change',
                 proof: { kind: 'changes', stat: 'mean',
                   before: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90],
                   after: [10, 10, 10, 10, 10, 10, 10, 30, 30, 30, 30, 30, 30, 50, 50, 50, 50, 70, 70, 70, 90, 90, 90, 90] } },
-              { text: 'The class interval containing the median', options: ['0 ≤ x < 20', '20 ≤ x < 40', '40 ≤ x < 60', '60 ≤ x < 80', '80 ≤ x < 100'], verdict: '20 ≤ x < 40',
+              { text: 'After the table is amended, the class containing the median will be…', options: ['0 ≤ x < 20', '20 ≤ x < 40', '40 ≤ x < 60', '60 ≤ x < 80', '80 ≤ x < 100'], verdict: '20 ≤ x < 40',
                 proof: { kind: 'medianInterval', row: 1 } }
             ],
             src: 'Statistics M7 (1).pdf Q22' },

@@ -3,8 +3,8 @@
  "scope": "algebra",
  "width": 768,
  "tier": "preview",
- "contentHash": "ee4dbe3053f6",
- "when": "2026-09-12T23:49:42.395Z",
+ "contentHash": "96f0b3c4ba36",
+ "when": "2026-09-13T00:53:57.685Z",
  "states": [
   {
    "surface": "question",
@@ -1663,5 +1663,5 @@
    }
   }
  ],
- "consoleErrors": 4
+ "consoleErrors": 0
 }

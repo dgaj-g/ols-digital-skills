@@ -99,7 +99,11 @@ const QUERY = `(function () {
      because most empty buttons hold an icon or are simply between presses -
      so they are asked a NARROWER question of their own: not "is it empty"
      but "does it still say what it is while it is". */
-  document.querySelectorAll('button.stat-cell').forEach(function (el) {
+  /* SCOPED TO THE TABLE KIND (the whole-tree walk, 13 Sept 2026 02:08): asked of
+     EVERY .stat-cell it condemned Book C's compare/boxplot boxes, which are named
+     by the sentence they sit in, not by an aria-label - a rule of this cut may not
+     re-open an approved book. */
+  document.querySelectorAll('.stat-tablekind button.stat-cell').forEach(function (el) {
     if (el.hasAttribute('hidden') || el.closest('[hidden]')) return;
     if ((el.textContent || '').trim() !== '') return;               /* not yet filled - normal */
     var r = el.getBoundingClientRect();
