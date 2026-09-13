@@ -1,5 +1,19 @@
 # MathShelf — the deploy log
 
+## 13 September 2026, 13:16 — FRONT DOOR Version 36 (THE STEWARD CUT) — a CLIENT-ONLY cut; DATA stays the standalone project's Version 1
+
+From commit `9197482`. `Index.html` md5 `ac389c46de7ff426ee68b5d8b399cbc8` (1,554,486 chars, rolling hash 549104958) fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), the active model verified as `file_2.html` before `setValue`, the length and rolling hash read back equal to the repo's, saved (Cmd+S, "Saved to Drive"). `Code.gs` NOT pasted — its md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) is byte-identical to Version 35's and the editor's copy read back at 46,004. Manifest read in the editor before and after the cut: `USER_ACCESSING` + `DOMAIN`, untouched. Manage deployments → the one active deployment by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → Version "New version" → **Version 36 on 13 Sept 2026, 13:16**. Same `/exec`.
+
+**Proof rows, 13:17 (the deployer's own visit to `…?class=10E-Maths` after the cut):**
+
+    FRONT DOOR (bound project)   Version 36 | doGet   | 13 Sept 2026, 13:17:18 | 2.512 s | Completed   ← no apiCall row follows it
+    DATA (standalone project)    Version 1  | doPost  | 13 Sept 2026, 13:17:23 | 2.091 s | Completed   ← the page's own direct store calls
+    DATA                         Version 1  | doPost  | 13 Sept 2026, 13:17:26 | 9.042 s | Completed   ← the store's own time, the reason for the server cut that follows
+
+The served page (the top frame's own HTML, read after the visit) carries `STORE_RESENDS`, `function bookName`, the Set-up gloss, the new rhyme caption and no old one, and `row-acts-more`. Manifest read after the cut: `USER_ACCESSING` + `DOMAIN`.
+
+**What it carries (rulings 52–55, the second continuation of 51; PROGRESS.md top entry):** every staff screen names a book with its volume ("Handling Data · Averages"); the set-up table's controls on two identical lines per row, the series groups wrapping, the table in its own frame, the screen called Set-up and glossed; Book B's rhyme caption; and `STORE_RESENDS` — an answer that is not the store's JSON (Google's echo bounce, measured one in eight) is sent again on the direct road up to twice before the relay.
+
 ## 13 September 2026, 02:46 — FRONT DOOR Version 35 (BOOK B · Averages) — a CLIENT-ONLY cut; DATA stays the standalone project's Version 1
 
 From commit `7175f3d`. `Index.html` md5 `45b243fd92f738eb1ffb3dd1cf962c3d` (1,546,777 chars) fetched into the editor from the pushed commit on raw.githubusercontent (`cache: no-store`), set into `file_2.html` by name, saved (Cmd+S on the open file — the toolbar save had not taken), the editor reloaded and the length and rolling hash read back equal to the repo's (1,546,777 / 2393194489); `Code.gs` NOT pasted — its md5 `3e3f4819fa809c04cc2af310c3faabcd` (46,004 chars) is byte-identical to Version 34's, and the editor's own copy read back at 46,004 / 3891900974 = the repo's. Manifest read in the editor before the cut: `USER_ACCESSING` + `DOMAIN`, untouched (the Book A cut and the split made every book a client-only cut plus one Sheet cell — this is the first one done that way). Manage deployments → the one active deployment, the FRONT DOOR by its Deployment ID `AKfycbzUZ3bDjcFas_zQ02VrJQCEkPQgEjs3Re4JZ1OQtLACa090AC1B0Md2yUkL4aX81LwP` → edit → Version "New version" → **Version 35 on 13 Sept 2026, 02:46**. Same `/exec`. Then the Sheet's Config tab row 10: `acts` = `["stats-collect","stats-averages"]` (typed by the session, 02:48 — the line `qa-tickbox` prints).
@@ -179,6 +193,7 @@ log showing the deployment actually ran.
 | 2026-09-13 00:27 | FRONT DOOR | Version 34 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK A (Collecting and displaying) + the split's Code.gs (`acts_()` from the Config row, `ss_()` by id); the bound project's OLD DATA deployment (Version 32) is superseded by the standalone project's Version 1 above | 3e16a9c | fffd4d1a4d7cb57a503404d0c7927d53 | 3e3f4819fa809c04cc2af310c3faabcd |
 
 | 2026-09-13 02:46 | FRONT DOOR | Version 35 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and untouched — BOOK B (Averages), client-only: Index.html only, Code.gs unchanged from Version 34; the Config row `acts` gained `"stats-averages"` | 7175f3d | 45b243fd92f738eb1ffb3dd1cf962c3d | 3e3f4819fa809c04cc2af310c3faabcd |
+| 2026-09-13 13:16 | FRONT DOOR | Version 36 | `USER_ACCESSING` (and `DOMAIN`), read in the editor's manifest before the cut and again after it, untouched — THE STEWARD CUT, client-only: Index.html only, Code.gs unchanged from Version 34 (books named with their volume, the set-up table tidy and called Set-up, the rhyme caption, the echo bounce re-sent on the direct path) | 9197482 | ac389c46de7ff426ee68b5d8b399cbc8 | 3e3f4819fa809c04cc2af310c3faabcd |
 ## Proof rows
 
 ### 12 Sept 2026, 22:58 — the new standalone DATA project answers the live front door
