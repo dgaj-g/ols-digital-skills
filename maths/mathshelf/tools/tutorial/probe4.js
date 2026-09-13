@@ -1,0 +1,23 @@
+const { chromium } = require('/Users/damiengartland/Sites/ols-digital-skills/ks3-dt/tools/record-tutorial/node_modules/playwright');
+const F = require('./lib/film'); const C = require('./scenes/chapters'); const sleep = F.sleep;
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const page = await ctx.newPage();
+  await F.boot(page, '?nointro'); await C.ensureFilmClass(page);
+  await F.boot(page, '?class=' + encodeURIComponent(F.FILM_CLASS) + '&nointro'); await F.namePupil(page); await page.reload({ waitUntil: 'domcontentloaded' }); await sleep(1200);
+  await F.pupilIn(page);
+  await page.evaluate(() => document.querySelector('.book[data-book="stats-averages"]').click()); await sleep(2000);
+  await page.evaluate(() => document.querySelectorAll('#act-contents button')[2].click()); await sleep(2000);
+  const q = '[data-surface="question"][data-qid="q17"]';
+  await F.scrollIntoFrame(page, q + ' button.stat-cell[data-col="fx"][data-row="0"]', null, 'center');
+  const cell = await F.rect(page, q + ' button.stat-cell[data-col="fx"][data-row="0"]');
+  await page.mouse.click(cell.x + cell.w / 2, cell.y + cell.h / 2); await sleep(600);
+  await F.scrollIntoFrame(page, q + ' .numpad', null, 'center');
+  const key = async (t) => { const r = await F.rect(page, q + ' .numpad button', '^' + t + '$'); await page.mouse.move(r.x + r.w / 2, r.y + r.h / 2); await page.mouse.down(); await sleep(150); await page.mouse.up(); await sleep(200); };
+  const readCell = () => page.evaluate((s) => ({ cell: document.querySelector(s + ' button.stat-cell[data-col="fx"][data-row="0"]').textContent, cellHTML: document.querySelector(s + ' button.stat-cell[data-col="fx"][data-row="0"]').innerHTML.slice(0, 200), display: (document.querySelector(s + ' .numpad-display, ' + s + ' .np-out, ' + s + ' .keypad-out') || {}).textContent }), q);
+  await key('1'); console.log('after real press 1:', await readCell());
+  await key('3'); console.log('after real press 3:', await readCell());
+  console.log('pad HTML head:', await page.evaluate((s) => document.querySelector(s + ' .numpad').parentNode.innerHTML.slice(0, 600), q));
+  await browser.close();
+})().catch(e => { console.error('PROBE4 FAILED', e); process.exit(1); });

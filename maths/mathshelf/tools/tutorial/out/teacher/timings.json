@@ -1,0 +1,167 @@
+{
+ "ch1": {
+  "file": "ch1.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 4352
+   },
+   {
+    "name": "down",
+    "ms": 88005
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T13:45:36.393Z"
+ },
+ "ch0": {
+  "file": "ch0.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 1516
+   },
+   {
+    "name": "down",
+    "ms": 6717
+   }
+  ],
+  "tailMs": 200,
+  "recordedAt": "2026-09-13T16:00:47.600Z"
+ },
+ "ch2": {
+  "file": "ch2.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11000
+   },
+   {
+    "name": "down",
+    "ms": 211383
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T14:43:14.059Z"
+ },
+ "p-shelf": {
+  "file": "p-shelf.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 7908
+   },
+   {
+    "name": "down",
+    "ms": 113102
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T14:32:06.303Z"
+ },
+ "p-pad": {
+  "file": "p-pad.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11684
+   },
+   {
+    "name": "down",
+    "ms": 250114
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T14:47:25.230Z"
+ },
+ "p-table": {
+  "file": "p-table.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11716
+   },
+   {
+    "name": "down",
+    "ms": 170985
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:20:01.682Z"
+ },
+ "p-choose": {
+  "file": "p-choose.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11685
+   },
+   {
+    "name": "down",
+    "ms": 190466
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:05:33.897Z"
+ },
+ "p-graph": {
+  "file": "p-graph.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11705
+   },
+   {
+    "name": "down",
+    "ms": 236438
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:09:31.454Z"
+ },
+ "p-saving": {
+  "file": "p-saving.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11688
+   },
+   {
+    "name": "down",
+    "ms": 119440
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:13:12.543Z"
+ },
+ "ch9": {
+  "file": "ch9.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 9717
+   },
+   {
+    "name": "down",
+    "ms": 245334
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:29:54.003Z"
+ },
+ "chEnd": {
+  "file": "chEnd.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 1478
+   },
+   {
+    "name": "down",
+    "ms": 6481
+   }
+  ],
+  "tailMs": 200,
+  "recordedAt": "2026-09-13T15:30:01.267Z"
+ }
+}

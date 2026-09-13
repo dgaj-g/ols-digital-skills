@@ -1,0 +1,9 @@
+# the takes and the films are built, not kept: record.js and assemble.js remake them
+out/**/*.webm
+out/**/*.mp4
+out/**/tmp/
+out/**/seg/
+out/recon/
+out/*.log
+out/audit/*.png
+assets/crest.png

@@ -1,0 +1,122 @@
+{
+ "p-open": {
+  "file": "p-open.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 1502
+   },
+   {
+    "name": "down",
+    "ms": 6104
+   }
+  ],
+  "tailMs": 200,
+  "recordedAt": "2026-09-13T15:31:20.862Z"
+ },
+ "p-shelf": {
+  "file": "p-shelf.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 7872
+   },
+   {
+    "name": "down",
+    "ms": 113129
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:33:15.047Z"
+ },
+ "p-pad": {
+  "file": "p-pad.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11680
+   },
+   {
+    "name": "down",
+    "ms": 250192
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:37:26.332Z"
+ },
+ "p-table": {
+  "file": "p-table.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11698
+   },
+   {
+    "name": "down",
+    "ms": 170959
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:40:18.375Z"
+ },
+ "p-choose": {
+  "file": "p-choose.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11686
+   },
+   {
+    "name": "down",
+    "ms": 190450
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:43:29.915Z"
+ },
+ "p-graph": {
+  "file": "p-graph.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11687
+   },
+   {
+    "name": "down",
+    "ms": 236393
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:47:27.397Z"
+ },
+ "p-saving": {
+  "file": "p-saving.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 11679
+   },
+   {
+    "name": "down",
+    "ms": 118002
+   }
+  ],
+  "tailMs": 1300,
+  "recordedAt": "2026-09-13T15:49:26.487Z"
+ },
+ "p-end": {
+  "file": "p-end.webm",
+  "marks": [
+   {
+    "name": "lift",
+    "ms": 1473
+   },
+   {
+    "name": "down",
+    "ms": 6475
+   }
+  ],
+  "tailMs": 200,
+  "recordedAt": "2026-09-13T15:49:33.735Z"
+ }
+}
