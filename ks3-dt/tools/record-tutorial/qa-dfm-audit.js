@@ -42,7 +42,12 @@ if (!fs.existsSync(MASTER) || !fs.existsSync(AUDIT)) {
 const master = fs.readFileSync(MASTER, 'utf8');
 const declared = [];
 master.split('\n').forEach(l => {
-  const m = /^(\d{1,3})\.\s+\*\*/.exec(l);
+  /* A RULE MAY BE WRITTEN EITHER WAY ROUND (14 Sep 2026, K42(d)). Rules 273-279 were
+     written `**279. TITLE` and this regex, which wanted the number BEFORE the bold,
+     could not see them - so the machine that guarantees every rule declares an
+     enforcement home said nothing about the last seven rules (the DFM 278 class: a
+     gate blind to part of its subject passes it). Both spellings now count. */
+  const m = /^(\d{1,3})\.\s+\*\*/.exec(l) || /^\*\*(\d{1,3})\.\s/.exec(l);
   if (m) declared.push(Number(m[1]));
 });
 const rules = declared.filter(n => n >= FIRST).sort((a, b) => a - b);
