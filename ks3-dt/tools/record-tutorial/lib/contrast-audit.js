@@ -41,7 +41,13 @@ const EXEMPTIONS = [
   'not rendered (display:none / visibility:hidden / opacity < 0.05 / smaller than 8x6px)',
   'no text of its own (the words belong to a child element, which is measured instead)',
   'glyphs the sampler cannot separate from their plate — printed as a skip with its reason',
-  'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart'
+  'marks with no letters or digits in them are judged at the 3:1 non-text floor and reported apart',
+  /* 14 Sep 2026, the first j2-4 walk: the class adventure's transcript scrolls,
+     and the rows that had scrolled up out of its panel were still measured —
+     against the starfield behind the card, since that is what the screenshot
+     holds where a clipped row's box is. Eight "1.55:1" findings on text nobody
+     could see. What is clipped is measured when it is in view, not before. */
+  'scrolled out of view inside a scrolling panel (the part outside an overflow ancestor\'s box is not on screen; a partly visible row is measured on its visible part only)'
 ];
 
 /* the floor this row has to clear */
@@ -127,12 +133,27 @@ const MEASURE = async ([dataUri, rects]) => {
 const COLLECT = ([extraSels, hisSels, rootSel]) => {
   const out = [];
   const seen = new Set();
+  /* the visible part of a box: clipped by every overflow ancestor's own box */
+  const clipTo = (el, r) => {
+    let box = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      const clipsY = /auto|scroll|hidden/.test(cs.overflowY), clipsX = /auto|scroll|hidden/.test(cs.overflowX);
+      if (!clipsY && !clipsX) continue;
+      const ar = a.getBoundingClientRect();
+      if (clipsY) { box.top = Math.max(box.top, ar.top); box.bottom = Math.min(box.bottom, ar.bottom); }
+      if (clipsX) { box.left = Math.max(box.left, ar.left); box.right = Math.min(box.right, ar.right); }
+    }
+    return { left: box.left, top: box.top, width: Math.max(0, box.right - box.left), height: Math.max(0, box.bottom - box.top) };
+  };
   const push = (el, forced) => {
     if (seen.has(el)) return;
-    const r = el.getBoundingClientRect();
-    if (r.width < 8 || r.height < 6) return;
+    const r0 = el.getBoundingClientRect();
+    if (r0.width < 8 || r0.height < 6) return;
     const cs = getComputedStyle(el);
     if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.05) return;
+    const r = clipTo(el, r0);
+    if (r.width < 8 || r.height < 6) return;   /* scrolled out of view — declared above */
     const own = Array.from(el.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(' ').trim();
     if (!own && !forced) return;
     seen.add(el);

@@ -189,6 +189,15 @@ const EXPECT = {
      MEASURED TWICE, IDENTICAL BOTH TIMES, before being written down. */
   'j2-3': { xp: 68, chunks: 11, presses: 41, marks: 13, badges: 3 },
   'j3-3': { xp: 65, chunks: 13, presses: 48, marks: 11, badges: 3 },
+  /* J3 Lesson 4 (14 Sep 2026): IDENTICAL on runs 2, 3 and 4 — the Rush's doors
+     are seeded (`window.__relaySeed`) and every build is driven from its own
+     key, so every number holds, XP included. */
+  'j3-4': { xp: 65, chunks: 12, presses: 45, marks: 14, badges: 3 },
+  /* J2 Lesson 4 (14 Sep 2026): IDENTICAL on runs 7 and 8 — the class
+     adventure's doors are seeded, the two words come from the key, and the
+     fourth extra job (a room typed from a blank box) ends by the way back to
+     the hub, so the walk presses the hub's own finish. */
+  'j2-4': { xp: 68, chunks: 12, presses: 61, marks: 12, badges: 3 },
   /* J3 Lesson 2, measured 19 Aug 2026, IDENTICAL on a second run — every number
      including XP, because this lesson has no shuffled surface: four builds, each
      driven from the same key to the same answer. */
@@ -222,7 +231,8 @@ const GHOST_WAIT = 420;
 const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard Engineer', '4': 'The Broken Game', '5': 'Game Studio', 'S1': 'Files That Follow You',
   'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens',
   'j2-2': 'Translation Bureau', 'j3-2': 'First Words in Python',
-  'j2-3': 'Chatbot Workshop', 'j3-3': 'Playlist Engine' };
+  'j2-3': 'Chatbot Workshop', 'j3-3': 'Playlist Engine',
+  'j2-4': 'Adventure Engine', 'j3-4': 'Function Factory' };
 
 let shotN = 0;
 const shotOnce = new Set();   /* the Python screens repeat many turns; shoot each kind once */
@@ -320,6 +330,11 @@ const CASE_LOGS = {
   }, title);
   await sleep(2400);
   note('OPENED ' + title + ' as ' + WHO);
+  /* THE CLASS ADVENTURE'S DOORS ARE SEEDED FOR THE WALK (§C1.1, DFM 199): the
+     relay engine draws its door rng from `window.__relaySeed` when a harness
+     sets one, and from Math.random for a pupil. A pinned shape cannot rest on a
+     random path. Nothing in content can set this. */
+  await page.evaluate(() => { window.__relaySeed = 4; });
 
   /* ---------- the walker ---------- */
   const helpSeen = new Set();
@@ -327,7 +342,7 @@ const CASE_LOGS = {
   const seen = { chunks: new Set(), presses: 0, marks: 0, badges: 0 };
   const askedTexts = new Set();
   const nestedHits = [];
-  const emptyHits = [], clickHits = [], contrastHits = [];
+  const emptyHits = [], clickHits = [], contrastHits = [], contrastWaived = [];
   const stepsHits = [], fitsHits = [];
   const contrastSeen = new Set();
   /* STATE, not chunk: the fault class this round exists to kill */
@@ -413,6 +428,12 @@ const CASE_LOGS = {
             if (m.ratio >= floor) return;
             const line = ck + ': ' + m.sel + ' — ' + m.ratio + ':1 (needs ' + floor + '), ink ' +
               m.ink + ' on ' + m.plate + '  "' + String(m.text || '').slice(0, 44) + '"';
+            /* DFM 282: a dated waiver prints as waived, never as a finding (one home: lib/state-audit.js) */
+            const wv = SA.readabilityWaiver(NUM, m.sel);
+            if (wv) {
+              if (contrastWaived.indexOf(line) === -1) { contrastWaived.push(line); note('WAIVED-BY-HIS-RULING [' + wv.rule + ', ' + wv.ruled + '] ' + line); }
+              return;
+            }
             if (contrastHits.indexOf(line) === -1) { contrastHits.push(line); note('UNREADABLE ' + line); }
           });
         }
@@ -1068,7 +1089,7 @@ const CASE_LOGS = {
             build: bid, key: key ? (key.order || []).join(',') : 'NONE',
             tray: document.querySelectorAll('.pyt-list .pyrun-line').length,
             prog: Array.from(document.querySelectorAll('.pyp-list .pyrun-line')).map(n => n.getAttribute('data-si')).join(','),
-            blanks: Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).map(i => i.getAttribute('data-key') + '=' + (i.value || '')).join(' '),
+            blanks: Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyp-fixed .pyrun-blank')).map(i => i.getAttribute('data-key') + '=' + (i.value || '')).join(' '),
             run: (() => { const b = document.querySelector('.pyrun-run'); return b ? (b.disabled ? 'asleep' : 'armed') : 'none'; })()
           };
         }, [st.kind, String(WALK.MOVES[st.kind])]);
@@ -1189,6 +1210,10 @@ const CASE_LOGS = {
      fails it. This is the same shape sit-wrongpath already uses for the
      click-destroys-placed-work trap, and for the same reason. */
   const waived = LOCKED.has(NUM);
+  if (contrastWaived.length) {
+    note('\n' + contrastWaived.length + ' READABILITY ROW(S) WAIVED BY HIS RULING — dated, printed every run, never a finding:');
+    contrastWaived.forEach(h => note('  WAIVED-BY-HIS-RULING ' + h));
+  }
   const findingsOut = [];
   if (emptyHits.length) findingsOut.push(['visible empty containers: expected none, found ' + emptyHits.length, emptyHits]);
   if (clickHits.length) findingsOut.push(['a single click destroyed placed work: expected never, found ' + clickHits.length, clickHits]);

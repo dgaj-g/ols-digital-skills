@@ -1,0 +1,313 @@
+{
+ "id": "j2-04.deck",
+ "lesson": "j2-04",
+ "driveFileId": "",
+ "year": "j2",
+ "deckName": "KS3 DT · J2 Lesson 4 — Adventure Engine (Teacher Deck)",
+ "theme": {
+  "id": "workshop-slate",
+  "name": "The Workshop",
+  "ground": "#1E2630",
+  "panel": "#2B3644",
+  "accent": "#FFC15E",
+  "accent2": "#5FD6B4",
+  "text": "#FFFFFF",
+  "dim": "#C9D4E2",
+  "display": "Bitter",
+  "body": "Inter"
+ },
+ "sections": [
+  {
+   "id": "opening",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "Lesson 4 · Adventure Engine",
+     "sub": "Your program chooses what happens next. — J2 · Lesson 4 of 17",
+     "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson does not open on today's work — it opens on the Do-Now, a short set of questions from the last three lessons. The questions mark themselves as each pupil answers them, but nothing in it counts, and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the Do-Now questions on your own screen. When they hand you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is sitting on today's first card, stop everybody, eyes front, and go on."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "In this lesson you will…",
+     "bullets": [
+      "Write an if line and an else line, so your program does one thing or the other.",
+      "Add a third road with the word elif, so your program can do a third thing. A road is one thing that can happen next in the story.",
+      "Test your room — the piece of the story you write — by trying every word a player could type, not just the one you expect.",
+      "Write one room of a text adventure. A text adventure is a story that a program tells you one piece at a time, and a room is one piece of it. Then play through the rooms your classmates wrote."
+     ],
+     "notes": "SAY these as they are written. All four are things each pupil will have DONE by the end of the hour, not things she will have heard about.\n\nWHY IT MATTERS: every program these pupils have written so far ran its lines from the top to the bottom and did the same thing every time. From today a program can read what a person typed and then decide which lines to run. That last sentence is the whole hour, and it is worth saying out loud.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The one new idea today",
+     "bullets": [
+      "Every program you have written runs its lines from the top to the bottom, the same every time.",
+      "Today your program reads what the player typed, and then it CHOOSES which lines to run.",
+      "The line that chooses is a fork. The fork is the line that starts with if.",
+      "Nothing else about writing Python changes today."
+     ],
+     "notes": "SAY: \"There is one new idea today and everything else is what you already do. Your program reads what the player typed, and then it chooses which lines to run. The line that does the choosing is called a fork, and it starts with the word if.\"\n\nDO NOT explain elif or else yet, and do not write either word up. The objectives slide named elif; leave it at the name. The film shows both of them working before it names them. In the film, each thing that can happen next is called a road. A pupil who has watched the film run one road understands each word when it arrives, and explaining the words now takes that away.\n\nWHEN TO MOVE: straight on.",
+     "shot": "briefing"
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "How the hour is laid out",
+     "bullets": [
+      "First you watch a short film on your own screen. It has no sound.",
+      "Then you do three training builds. You fix a room, you put a room in order, and you add a road to a room.",
+      "Then you write your own room: a place in this school, one question, and two roads.",
+      "Then you play the class adventure: five rooms, one after another, written by your classmates."
+     ],
+     "notes": "SAY it as written. Pupils work far better when they know the shape of the hour, and the last line is the one to land: the room each pupil writes is not an exercise, it goes into an adventure the whole class plays.\n\nTHE SETTING, said once: the adventure is set in this school after the bell has gone — everybody has gone home, the doors are still open, and odd things happen. Every pupil writes ONE room of it.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "Four things before we start",
+     "bullets": [
+      "Your room goes into the class adventure with a NUMBER on it. Your name is never shown.",
+      "When you press RUN, your room really runs. If it stops, read the plain line under what Python said.",
+      "Every hint is free. The grey button that says Show me the shape never costs a point.",
+      "The website checks every road of your room before your room joins the adventure."
+     ],
+     "notes": "SAY the first one and mean it: nobody in the class will know which room is whose, and that is deliberate — a room stands on what happens in it, not on who wrote it.\n\nSAY the second one as a rule for the whole hour: when a program stops, the console (the panel that shows what the program printed) shows what Python said and one plain line underneath it. The plain line is written for an eleven-year-old, and it nearly always tells her the fix.\n\nTHE LAST ONE: the website plays each pupil's room three times before it will publish it — once with each of the two words the room offers, and once with a word nobody planned for. The screen calls this the path check. If the room breaks on any of the three plays, the pupil is shown which one. Say this now, so that the path check is expected when it appears and not a surprise.\n\nWHEN TO MOVE: send them into the opening card. It says the same things on their own screens, it plays one room of the adventure at the bottom, and its button reads Start the film."
+    }
+   ]
+  },
+  {
+   "id": "film",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The film — on your own screen",
+     "shot": "film",
+     "bullets": [
+      "It has no sound. Every word you need is written on the screen.",
+      "It is in three parts. The three buttons under the film jump to each part.",
+      "The middle part is the one to watch twice: a program with a fork in it, choosing a road.",
+      "When the film finishes, press Done watching."
+     ],
+     "notes": "WHERE THE CLASS IS: about to start the film on their own screens. Nothing to cue up at the front.\n\nSAY: \"It is silent, and it is in three parts. The middle part has the new idea in it. Watch for a signpost with a lamp on it. The lamp lights up when the word in the box matches the word on the signpost, and then the road under it runs. When the film finishes, carry on to the next card.\"\n\nWHAT THEY WILL SEE: the picture is the film card with its three chapter buttons — A room of a text adventure, The fork: if, elif and else, Reading a whole room.\n\nWHILE THEY WATCH: circulate. A pupil who says the film will not play carries on to the next card, which says everything the film shows in writing — the card itself tells her so.\n\nWHEN TO MOVE: when most of the room has finished the film, stop everybody for the next slide."
+    }
+   ]
+  },
+  {
+   "id": "training",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "STOP — eyes front · The training builds",
+     "bullets": [
+      "Three builds, and they get harder as you go.",
+      "The first one is already written. Run it, read what Python says, and fix the fork line.",
+      "The second is a room in pieces, and you put it in order.",
+      "The third has one road written, and you add the other two.",
+      "The first and the third really run when you press RUN. If one stops, read the plain line under what Python said."
+     ],
+     "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"There are three training builds, and they get harder. The first one is already written for you: it is the canteen room from the opening card, with one symbol wrong in it on purpose. Press RUN, read what Python says, and put it right. The second one is a room in eight pieces, and you put them in order. The third has one road done, and you add the other two.\"\n\nTHEN SAY: \"The first and the third really run. When you press RUN, the room asks you a question and waits for you to type, exactly as your chatbot did last lesson.\"\n\nDO NOT walk anybody through the third build from the front. It earns the first badge, and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "When Python stops",
+     "shot": "console",
+     "bullets": [
+      "Press RUN my room on the first build and it stops. That is on purpose.",
+      "The console shows what Python said, in red.",
+      "Under it is one line in plain English, saying what to look at.",
+      "The fork line asks a question with TWO equals signs. One equals sign puts something into a box (a variable).",
+      "Fix the line, press RUN my room again, and type trolley when the room asks."
+     ],
+     "notes": "WHERE THE CLASS IS: about to press RUN on the first build, which has a mistake planted in it: the fork line has one equals sign where it needs two.\n\nSAY it with the picture up, pointing at the red and then at the line under it: \"When you press RUN, Python stops on the fork line. The red is exactly what Python said. The line under it is in plain English, and it tells you what to look at. A fork asks a question, and a question takes two equals signs.\"\n\nWHAT THEY WILL SEE: the picture is the first build after RUN — the room's lines above, and the console underneath with Python's message in red and the plain line under it.\n\nTHE ONE TO STRESS: nothing is lost when a program stops. The lines stay where they are and RUN can be pressed as often as it takes.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "A room in pieces",
+     "bullets": [
+      "Training build 2 gives you the eight lines of a working room, out of order.",
+      "The place comes first, then the question. The fork cannot check an answer nobody has given yet.",
+      "Each road has its own door line, pushed in under it.",
+      "Click a line to move it into Your program, or drag it. Press Put this line back to send one back.",
+      "You get one go. Afterwards the screen shows you the order that works."
+     ],
+     "notes": "WHERE THE CLASS IS: the first build fixed, about to open the second.\n\nSAY: \"Eight lines of a working room, out of order. Think about what has to come first: the room cannot check an answer before it has asked the question. And a door line belongs to the road above it, so it is pushed in under that road.\"\n\nWHAT THEY WILL SEE: the lines in a column on the left, headed The lines, and the order they build on the right, headed Your program. A line moves across when it is clicked or dragged, and the button beside it that says Put this line back sends it back.\n\nTHE ONE TO STRESS: one go. The screen shows the working order afterwards whether the pupil got it right or not, so a wrong go still teaches.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "Add a road, then the path check",
+     "shot": "pathcheck",
+     "bullets": [
+      "Training build 3 has one road already written, and those lines cannot be moved.",
+      "You add the second road with elif, and the road for anything else with else.",
+      "Two of the lines you are given are mistakes on purpose. Leave those where they are.",
+      "When you press RUN my room, the website plays your room three times and shows you a table: the path check.",
+      "Each row is one play: what the player typed, what the room said, and which door they went through."
+     ],
+     "notes": "WHERE THE CLASS IS: about to open the third build, the one that earns the first badge.\n\nSAY it with the picture up, pointing at the table: \"This is the path check. When you press RUN, the website plays your room three times — once with each word that has a road of its own, and once with a word nobody planned for. Each play gets one row. The last column is the door the player went through. If it says no door, the road for that word has no door line, and the adventure would have nowhere to go.\"\n\nWHAT THEY WILL SEE: the picture is the path check as the website draws it after a run: three rows, the word typed, what the room said, and the door.\n\nTHE ONE TO STRESS: the third play uses a word that is not in the question. That is what else is for: it catches everything else, so nobody gets stuck.\n\nDO NOT walk the class through Build 3 from the front of the room. They do it themselves.\n\nWHEN TO MOVE: send them in. Walk the room."
+    }
+   ]
+  },
+  {
+   "id": "myroom",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "2",
+     "heading": "STOP — eyes front · Your room",
+     "bullets": [
+      "You each write one room. It is set in this school, after the bell has gone.",
+      "Your room has a place, one question, and two roads the player can take.",
+      "Decide your two words first. The question must SAY them.",
+      "Put a door line on every road. If a road has no door line, the adventure cannot move on.",
+      "The card lists five jobs your room has to do. When all five say done, you publish your room. It joins the class adventure with a number on it, not your name."
+     ],
+     "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now your own room. Pick a place in this school. Decide the two words the player can type before you write anything. Then write one question — it has to say those two words. Two roads, one for each word, and a way on for anything else. Every road ends with a door line.\"\n\nTHEN SAY: \"The card opens on a plan with the five jobs your room has to do. Read it, type your two words, then press Start writing. The short film on that card shows a room being written and what the path check tells you.\"\n\nTHE ONE TO STRESS: nobody's name goes on a room. When a room is published it gets a number, and that is all anybody sees.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "First you plan",
+     "shot": "plan",
+     "bullets": [
+      "The card starts with a plan. The plan lists the five jobs your room has to do, in order. A short film is on the card too.",
+      "Under the plan are two boxes for your two words. Type them before you start.",
+      "The website uses your two words to test your room, so the question must say them.",
+      "Then press Start writing."
+     ],
+     "notes": "SAY, with the picture up: \"The card starts with a plan. It lists five jobs, in order. One: say where the player is, and ask one question that says your two words. Two: a road for your first word. Three: a road for your second word. Four: a door for anything else. Five: the two roads tell different stories. Under the plan are two boxes. Type your two words into them before you press Start writing.\"\n\nWHAT THEY WILL SEE: the picture is the plan face — the five jobs, the film, the two word boxes, and the Start writing button.\n\nTHE ONE TO STRESS: the two words are not decoration. The website plays the room with each of them, so if the question does not say them, the room fails the path check.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "Then you type",
+     "shot": "bench",
+     "bullets": [
+      "Your two words are pinned above the black space where you type.",
+      "The five jobs are listed across the top. Each one says not yet until your room really does it.",
+      "Beside the black space are ready-made lines. Click one, then change its CAPITAL words.",
+      "There is a button that says Put the shape in for me. It puts the whole shape into your room, and every CAPITAL word is still yours to change."
+     ],
+     "notes": "SAY, with the picture up, pointing at each part: \"Your two words are pinned at the top so you cannot forget them. The five jobs are across the top and every one says not yet. The black space is where you type. Beside it are ready-made lines: click one, it goes in where your cursor is, and you change the words in capitals.\"\n\nWHAT THEY WILL SEE: the picture is the typing screen before anything has been typed — the pinned words, the five jobs all saying not yet, the empty black space, and the ready-made lines beside it.\n\nTHE ONE TO STRESS: a job ticks only when the pupil presses RUN my room and the room really does that job. Typing the line is not enough; running it is.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The path check, and Publish",
+     "bullets": [
+      "Press RUN my room and the website plays your room three times: your first word, your second word, and banana.",
+      "The path check appears under the console. If a row says no door, the road for that word has no door line. For a word you did not plan for, that road is the else road.",
+      "After a run, look under the line that says whether your room works. Every job that still says not yet is listed there again, with what to fix.",
+      "When all five jobs say done, the Publish button wakes up.",
+      "Publish sends your room into the class adventure. You are told its number."
+     ],
+     "notes": "SAY: \"Press RUN my room, and the website plays your room three times: once with each of your words, and once with banana — a word nobody planned for. The path check appears under the console, and each play gets one row. If a row says no door, the road for that word has no door line. When all five jobs say done, the Publish button wakes up. Press it, and your room is in the adventure, with a number.\"\n\nWHAT THEY WILL SEE: after a run, the path check table under the console, the five jobs ticking as the room does them, and — when all five are done — the Publish my room to the class adventure button switching on.\n\nTHE ONE TO STRESS: a room that is published and then changed has to be published again. The screen says so.\n\nWHEN TO MOVE: send them in. This runs about fifteen minutes. Walk the room. The question that unsticks almost everybody is: what does the path check say in its last column?"
+    }
+   ]
+  },
+  {
+   "id": "adventure",
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "3",
+     "heading": "STOP — eyes front · The class adventure",
+     "bullets": [
+      "You play five rooms, one after another. They come from the rooms this class wrote.",
+      "Read the room, then type one of the words it offers you.",
+      "The door sends you into another room. It could be one you have never seen, or it could be your own.",
+      "Play it all the way to the end. The badge is for playing all five.",
+      "Play again for a different path."
+     ],
+     "notes": "WHERE THE CLASS IS: rooms published, eyes front. Pupils will arrive here at different times, and that is fine — the adventure plays on each pupil's own screen.\n\nSAY: \"If you published your room, it is in. Now you play: five rooms, one after another, chosen from the rooms this class wrote. Read the room, type one of the words it offers, and the door takes you somewhere else. Nobody's name is on any room. Play all five — that is what earns the badge — and then play again for a different path.\"\n\nTHE ONE TO STRESS: a room that is not working is skipped by the screen itself, and the adventure moves on. Nobody is held up by a broken room.\n\nWHEN TO MOVE: next slide, then send them in."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "Playing a room",
+     "shot": "play",
+     "bullets": [
+      "The strip at the top says which room you are in, and how many rooms are in the adventure.",
+      "The room tells its story, then asks its question. You type a word and press Send.",
+      "The door line is shown as a note: You go through door A.",
+      "Then the next room loads. Read it from the top: it is somebody else’s room."
+     ],
+     "notes": "SAY, with the picture up: \"The strip at the top tells you which room you are in. The room tells its story, asks its question, and waits. Type one of the words it offers and press Send. The door line comes up as a note, and then the next room loads — somebody else's.\"\n\nWHAT THEY WILL SEE: the picture is one room playing — the strip at the top, the room's lines, the player's word, and the door note.\n\nTHE ONE TO STRESS: type one of the words the room offers. Anything else goes down the room's anything-else road, which is allowed, but the story is better if you play along.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The end, and the way on",
+     "shot": "end",
+     "bullets": [
+      "After five rooms the screen says THE END and lists the rooms you went through.",
+      "Your first whole adventure earns the badge.",
+      "Press Play again, and you take a different path through the class's rooms.",
+      "To move on, press the button that says Finish the adventure and carry on with the lesson."
+     ],
+     "notes": "SAY: \"After five rooms you reach the end, and the screen lists the rooms you went through. Your first whole adventure earns the badge. Play again if there is time — it takes a different path — or press the button that carries you on.\"\n\nWHAT THEY WILL SEE: the end card — THE END, the list of room numbers, Play again, and Finish the adventure and carry on with the lesson.\n\nTHE ONE TO STRESS: if a pupil tries to leave before the fifth room, the screen asks her first, and leaving early earns no badge. The screen says so.\n\nWHEN TO MOVE: send them in. This runs about ten minutes."
+    }
+   ]
+  },
+  {
+   "id": "finishing",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "size": 15,
+     "heading": "The end of the lesson",
+     "shot": "extras",
+     "bullets": [
+      "There is one marked question at the end. Your teacher sees how the class did on it.",
+      "Then you put five lines of a fork in order. You get one go, and the working order is shown afterwards.",
+      "Then you do the How did it go? screen. Everybody does it.",
+      "Before those, you get a screen with four extra jobs on it. None of them is marked, and none of them is saved.",
+      "Nearly time up? The button at the bottom of that screen carries you straight on."
+     ],
+     "notes": "SAY: \"There is one marked question at the end. Then there is a short ordering puzzle, and you get one go at it. Then comes the screen that asks how the hour went — everybody does that one, because it is how your teacher hears from the whole class.\"\n\nWHAT THEY WILL SEE: the picture is the extra jobs screen — four jobs, none of them marked — with the button at the bottom that says Is the hour nearly up? Click here to finish the rest of the lesson.\n\nTHE ONE TO STRESS: the extra jobs are for pupils with time. Nobody is held up by them; the button at the bottom carries everybody on.\n\nWHEN TO MOVE: when the room is on the last screens, move to the closing slide."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Finish the How did it go? screen. Nobody leaves until it is done.",
+      "Sign out every time. If you do not, anything the next person does will look as if you did it.",
+      "Your room is saved, and it stays in the class adventure."
+     ],
+     "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your room is saved and it stays in the adventure. You do not need to write it down.\"\n\nLAST THING: if a pupil landed in her own room while playing, she will want to tell you. Let her — it is the best evidence the hour worked."
+    }
+   ]
+  }
+ ]
+}

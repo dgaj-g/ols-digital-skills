@@ -1,0 +1,1248 @@
+{
+ "id": "j2-04",
+ "num": 4,
+ "year": "j2",
+ "title": "Adventure Engine",
+ "tagline": "You make your program choose what happens next.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Write an if line and an else line, so my program does one thing or the other.",
+  "Add a third road with elif.",
+  "Test my room by trying every word a player could type, not just the one I expect."
+ ],
+ "chunks": [
+  {
+   "id": "adventure",
+   "engine": "briefing",
+   "title": "The Adventure Engine",
+   "minutes": 4,
+   "config": {
+    "clearance": "J2 · LESSON 4 OF 17",
+    "headline": "Today your program chooses what happens next.",
+    "lines": [
+     "Every program you have written so far runs its lines in order, from the top to the bottom, and it does the same thing every time. Today you write a program that CHOOSES. It reads what the player typed, and then it decides which lines to run.",
+     "You are going to build a text adventure. A text adventure is a story that a program tells you one piece at a time. It asks you what to do, you type your answer, and what happens next depends on what you typed.",
+     "Here is one room of a text adventure, playing on its own further down this card. The room asks one question. What happens next depends on the answer, and each thing that can happen next is called a road. The player typed the word trolley, so the room chose the trolley road. Watch it once.",
+     "The whole class is building one adventure today. It is set in this school after the bell has gone: everybody has gone home, the doors are still open, and odd things happen. Each of you writes ONE room — a place in the school, one question, and two roads the player can take. When your room is finished, it joins the class's adventure, and you can play it, going through rooms your classmates wrote.",
+     "Here is what happens in the next hour, in the order it happens.",
+     "1. First you watch a short film. It has no sound.",
+     "2. Then you do three training builds — three short practice jobs. In the first you fix a room somebody else wrote. In the second you put a room in order. In the third you add a third road to a room.",
+     "3. Then you write your own room. The website checks every road in it before it joins the adventure.",
+     "4. Then you play the class adventure. You go through five rooms, one after another. Each room was written by a classmate, or it is one of the rooms from the training builds. Nobody's name is shown on any room — each room has a number instead.",
+     "5. After that there is a screen with four small extra jobs on it. They are there if you want them, and none of them is marked.",
+     "The hour ends with one marked question and the How did it go? screen."
+    ],
+    "demoTitle": "One room playing on its own",
+    "demoStepMs": 1500,
+    "demoAfterLine": 3,
+    "demo": [
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "You are in the canteen. Every chair is stacked on the tables."
+     },
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "A lunch trolley rolls past by itself and stops at a door."
+     },
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "Do you follow the trolley, or open the window? Type trolley or window."
+     },
+     {
+      "who": "you",
+      "label": "The player",
+      "text": "trolley"
+     },
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "You follow the trolley through the door."
+     },
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "You go through door A."
+     }
+    ],
+    "demoNote": "Nothing in there is clever. Somebody typed every one of those sentences, and somebody typed the line that decides which sentences come out when the player types trolley. Today that somebody is you.",
+    "cta": "Start the film",
+    "help": "The words on this card appear a few at a time, as if somebody were typing them. A small piece of a text adventure plays at the bottom of the card. Read the whole card, then press Start the film."
+   }
+  },
+  {
+   "id": "film-a",
+   "engine": "video",
+   "title": "The fork in the road (the film)",
+   "minutes": 6,
+   "config": {
+    "src": "assets/video/j2/j2-l4-a.mp4",
+    "intro": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film jump to each part.",
+    "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film did not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "A room of a text adventure"
+     },
+     {
+      "t": 83,
+      "label": "The fork: if, elif and else"
+     },
+     {
+      "t": 227,
+      "label": "Reading a whole room"
+     }
+    ],
+    "_chapterTimes": "COMPUTED AT BUILD 17 Sep 2026 from j2-l4/chapters.json (halves parts/j2-l4-a.mp4, 390.37s); qa-cross-lesson §4 holds these to the served file",
+    "help": "Press play, or click one of the three buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow, so if you miss something you can carry on."
+   }
+  },
+  {
+   "id": "training-1",
+   "engine": "pyrun",
+   "title": "Training build 1: fix the fork",
+   "minutes": 7,
+   "config": {
+    "runLabel": "RUN my room",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "waitingSay": "The room has stopped and is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "sendLabel": "Send",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The adventure",
+     "idle": "Nothing has happened yet. Press RUN to start the room.",
+     "botWho": "The room",
+     "userWho": "The player",
+     "replyLabel": "Your choice",
+     "sendLabel": "Send",
+     "doorSay": "You go through door {d}."
+    },
+    "errorWords": {
+     "name": "Python does not know a box (a variable) with that name. Check the spelling matches the box name on the input( ) line.",
+     "type": "You have joined a number onto words with a +. Put the number inside speech marks, or wrap it with str( ).",
+     "badinput": "Python could not read that line. Check three things. A fork line asks its question with two equals signs, ==. Every if, elif and else line ends with a colon. The lines that belong under it are pushed in by four spaces.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines under the fork are not lined up. Every line that belongs to an if, an elif or an else starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "The place, the question and the fork",
+    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeClose": "Back to my room",
+    "kicker": "Training build 1",
+    "intro": "This room is already written — it is the canteen room you watched on the first card. One symbol in it is wrong on purpose. You press RUN, Python stops, you read what it says, and you put it right.",
+    "steps": [
+     "Read the room's nine lines.",
+     "Press RUN my room.",
+     "Python stops at the fork line — the line that starts with if. Under what Python said, there is a line written in ordinary words. Read that line.",
+     "Fix the fork line, press RUN again, and type trolley when the room asks. Then press RUN once more and type window when the room asks."
+    ],
+    "beginLabel": "Open the room",
+    "builds": [
+     {
+      "id": "t1",
+      "mode": "worked",
+      "chat": true,
+      "goalLine": "Make this canteen room work: the player types trolley or window, and the room chooses the right road.",
+      "brief": "The fork is the line that starts with if. It ASKS a question: is what the player typed the same as trolley? Something on that line is wrong on purpose, and Python will stop there and tell you.",
+      "lines": [
+       {
+        "t": "print(\"You are in the canteen. Every chair is stacked on the tables.\")"
+       },
+       {
+        "t": "print(\"A lunch trolley rolls past by itself and stops at a door.\")"
+       },
+       {
+        "t": "choice = input(\"Do you follow the trolley, or open the window? Type trolley or window.\")"
+       },
+       {
+        "t": "if choice ____ \"trolley\":",
+        "blanks": [
+         {
+          "key": "t1a",
+          "slot": "____",
+          "pre": "=",
+          "size": 3,
+          "max": 2,
+          "label": "the sign that ASKS a question: is what the player typed the same as trolley?"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"You follow the trolley through the door.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You open the window and climb out into the yard.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       }
+      ],
+      "shape": [
+       "print( where the player is )",
+       "<box> = input( the question — and the two words to type )",
+       "if <box> == \"first word\":",
+       "    print( what happens on that road )",
+       "    print( \"NEXT: door A\" )",
+       "else:",
+       "    print( what happens for anything else )",
+       "    print( \"NEXT: door A\" )"
+      ],
+      "shapeNote": "The two lines pushed in under the if belong to the if. They only run when the answer was the first word. The two lines pushed in under else run for anything else.",
+      "check": {
+       "kind": "clean",
+       "uses": [
+        "=="
+       ],
+       "usesSay": "It ran, but the fork line still has a single = on it. A single = puts something into a box (a variable). Asking whether two things are the same takes two: =="
+      },
+      "matchedSay": "It works. The fork line asks a question now: is what the player typed the same as trolley? Press RUN again and type window when the room asks, to see the other road.",
+      "notYetSay": "It is not working yet. Read what Python said in the console, then look at the fork line — the one that starts with if."
+     }
+    ],
+    "help": "This room has nine lines and one mistake.\n\n1. Read the lines.\n2. Press RUN my room.\n3. Python stops and shows what it said in the console, with a plain line under it.\n4. Fix the fork line — the one that starts with if — and press RUN again.\n5. When the room asks, type trolley in the box and press Send. Then run it again and try window.",
+    "chatPrints": true
+   }
+  },
+  {
+   "id": "training-2",
+   "engine": "parsons",
+   "title": "Training build 2: put the room in order",
+   "minutes": 5,
+   "config": {
+    "introKicker": "Training build 2",
+    "intro": "You get the eight lines of a working room, out of order. Put them in the order that does these four things:",
+    "steps": [
+     "Say where the player is.",
+     "Ask the question.",
+     "The first road: if the player typed left, the room says what happens, then says its door line (the line that starts with NEXT: door).",
+     "The other road: for anything else, the room says what happens, then says its door line."
+    ],
+    "introAfter": "Click a line on the left to move it across into Your program, or drag it across. The lines that belong under the if and the else are already pushed in by four spaces — leave them as they are. You get one go, and you are shown the working order afterwards.",
+    "item": {
+     "id": "j2t4-corridor",
+     "prompt": "Put these eight lines in the order that makes the corridor room work.",
+     "blocks": [
+      "    print(\"You turn left and find the music room open.\")",
+      "choice = input(\"Do you go left or right? Type left or right.\")",
+      "    print(\"NEXT: door B\")",
+      "print(\"You are in the long corridor. Every classroom door is shut.\")",
+      "else:",
+      "if choice == \"left\":",
+      "    print(\"You turn right and reach the stairs.\")",
+      "    print(\"NEXT: door A\")"
+     ]
+    },
+    "doneText": "Correct. The question has to be asked before the fork can check the answer, and each road has its own door line pushed in under it.",
+    "help": "Click a line on the left to move it into Your program. You can drag it across instead. A line you have moved stays where you put it until you drag it back or press Put this line back. Press Check my program when all eight are across.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "trayLabel": "The lines",
+    "checkLabel": "Check my program"
+   }
+  },
+  {
+   "id": "training-3",
+   "engine": "pyrun",
+   "title": "Training build 3: add a road",
+   "minutes": 5,
+   "badge": {
+    "id": "j2-b10",
+    "name": "Fork Builder",
+    "icon": "assets/badges/bolt.png",
+    "xp": 14
+   },
+   "config": {
+    "runLabel": "RUN my room",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "sendLabel": "Send",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The adventure",
+     "idle": "Nothing has happened yet. Press RUN to start the room.",
+     "botWho": "The room",
+     "userWho": "The player",
+     "replyLabel": "Your choice",
+     "sendLabel": "Send",
+     "doorSay": "You go through door {d}."
+    },
+    "errorWords": {
+     "name": "Python does not know a box (a variable) with that name. Check that it is spelled exactly the same as the box name on the input( ) line.",
+     "type": "You have joined a number onto words with a +. Put the number inside speech marks, or put it inside the brackets of str( ).",
+     "badinput": "Python could not read that line. Check three things. A fork line asks its question with two equals signs: ==. Every if, elif and else line ends with a colon. The lines that belong under an if, an elif or an else are pushed in by four spaces.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines under the fork are not lined up. Every line that belongs to an if, an elif or an else starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Place, question, fork",
+    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeClose": "Back to my room",
+    "kicker": "Training build 3",
+    "intro": "The library room is half written. Its first road is done. You add the second road with elif, and the road for anything else with else. Two of the lines you are given are mistakes on purpose, and you leave those where they are.",
+    "steps": [
+     "Read the five lines already in Your program. They cannot be moved.",
+     "Read the eight lines in The lines. Six of them belong in the room.",
+     "Move the six across, in order: the elif road, then the else road.",
+     "Type into the two gaps: the word for your elif road, and what happens on that road.",
+     "Press RUN my room and try all three words. Then try a word that is not in the question."
+    ],
+    "beginLabel": "Open the room",
+    "firstTryXp": 8,
+    "firstTryXpCap": 8,
+    "lockedNote": "RUN switches on as soon as there is at least one line in Your program.",
+    "howLine": "Move the lines you need into **Your program**, put them in the right order, then type into every gap.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "takeBackLabel": "Put this line back",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "trayClickEject": false,
+    "builds": [
+     {
+      "id": "t3",
+      "chat": true,
+      "goalLine": "Finish the library room: add the second road and the road for anything else.",
+      "brief": "The question already offers three words: lamp, desk and door. The lamp road is written. You choose ONE of the other two words for your elif road, and you write what happens there yourself. The else road is for any word the player types that you did not plan for.",
+      "fixedTop": [
+       "print(\"You are in the library. The lights are off, but one lamp is on.\")",
+       "choice = input(\"Do you go to the lamp, the desk or the door? Type lamp, desk or door.\")",
+       "if choice == \"lamp\":",
+       "    print(\"The lamp flickers. Under it is a book with your name on it.\")",
+       "    print(\"NEXT: door A\")"
+      ],
+      "fixedTopLabel": "Already written — these lines stay where they are",
+      "lines": [
+       {
+        "t": "elif choice == \"____\":",
+        "blanks": [
+         {
+          "key": "t3_w2",
+          "slot": "____",
+          "size": 8,
+          "max": 12,
+          "ph": "",
+          "label": "one of the other two words in the question: desk or door"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"____\")",
+        "blanks": [
+         {
+          "key": "t3_story",
+          "slot": "____",
+          "size": 34,
+          "max": 80,
+          "ph": "",
+          "label": "what happens on this road — write it yourself"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You stand still. Somewhere, a chair scrapes.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "elif choice = \"desk\":"
+       },
+       {
+        "t": "print(\"NEXT: door B\")"
+       }
+      ],
+      "shape": [
+       "print( where the player is )",
+       "<box> = input( the question — and the two words to type )",
+       "if <box> == \"first word\":",
+       "    print( what happens on that road )",
+       "    print( \"NEXT: door A\" )",
+       "elif <box> == \"second word\":",
+       "    print( what happens on the other road )",
+       "    print( \"NEXT: door B\" )",
+       "else:",
+       "    print( what happens for anything else )",
+       "    print( \"NEXT: door A\" )"
+      ],
+      "shapeNote": "Every road ends with its own door line, pushed in under it. The else road catches every word you did not plan for.",
+      "check": {
+       "kind": "paths",
+       "words": [
+        "lamp",
+        "{t3_w2}"
+       ],
+       "stranger": "banana"
+      },
+      "actions": [
+       "Read the five lines already in Your program.",
+       "Read all eight lines on the left. Six of them make the room work.",
+       "Move the six across, in this order: the elif line, its story line, its door line, the else line, its story line, its door line.",
+       "Leave the **two mistakes** where they are: one has a single = on it, and one door line has no spaces in front of it.",
+       "Type into both gaps.",
+       "Press **RUN my room**. When the room asks, type lamp. Run it again and type your second word. Run it once more and type banana."
+      ],
+      "matchedSay": "All three roads work, and the banana test passed: a word you did not plan for still reached a door.",
+      "notYetSay": "It is not working yet. The path check shows which words reached a door. If a word reached no door, look at the road for that word: its if, elif or else line, and the door line pushed in under it.",
+      "runCheckedSay": "You chose the second word and wrote its story, so this card cannot show you the exact words to expect. Press RUN and read what the room says."
+     }
+    ],
+    "pathTable": {
+     "title": "The path check",
+     "lead": "The website played your room three times — once with lamp, once with your second word, and once with a word you did not plan for.",
+     "cols": [
+      "The player typed",
+      "The room said",
+      "Door"
+     ],
+     "noneWord": "no door",
+     "strangerLabel": "banana (a word you did not plan for)",
+     "stoppedLead": "Python stopped:",
+     "doorWord": "door"
+    },
+    "help": "The top five lines are already in place and cannot move.\n\n1. Read the eight lines on the left.\n2. Move the six you need into Your program, in this order: the elif line, its story line, its door line, then the else line, its story line, its door line.\n3. Type your second word into the first gap. Type what happens on its road into the second gap.\n4. Press RUN my room. Try lamp, then your second word, then banana.\n\nThe two lines you leave behind are mistakes on purpose: a fork line with a single =, and a door line with no spaces in front of it.",
+    "chatPrints": true
+   }
+  },
+  {
+   "id": "myroom",
+   "engine": "pyrun",
+   "title": "Your room",
+   "minutes": 15,
+   "badge": {
+    "id": "j2-b11",
+    "name": "Room Builder",
+    "icon": "assets/badges/id.png",
+    "xp": 16
+   },
+   "config": {
+    "runLabel": "RUN my room",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "sendLabel": "Send",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The adventure",
+     "idle": "Nothing has happened yet. Press RUN to start the room.",
+     "botWho": "The room",
+     "userWho": "The player",
+     "replyLabel": "Your choice",
+     "sendLabel": "Send",
+     "doorSay": "You go through door {d}."
+    },
+    "errorWords": {
+     "name": "Python does not know a box (a variable) with that name. Check that it is spelled exactly the same as the box name on the input( ) line.",
+     "type": "You have joined a number onto words with a +. Put the number inside speech marks, or put it inside the brackets of str( ).",
+     "badinput": "Python could not read that line. Check three things. A fork line asks its question with two equals signs: ==. Every if, elif and else line ends with a colon. The lines that belong under an if, an elif or an else are pushed in by four spaces.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines under the fork are not lined up. Every line that belongs to an if, an elif or an else starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Place, question, fork",
+    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeClose": "Back to my room",
+    "kicker": "Your room",
+    "title": "Write your room",
+    "intro": "This is the room you write yourself. When it works, it joins the class adventure. The five jobs it has to do are listed below. The film on this card shows a room being written.",
+    "introVideo": "assets/video/j2/j2-l4-b.mp4",
+    "introVideoSay": "This film is three and a half minutes long. It shows how a room is written. Then it shows the path check, which is how the website tests your room.",
+    "mode": "editor",
+    "featureXp": 2,
+    "featureXpCap": 8,
+    "startLabel": "Start writing",
+    "checklistLabel": "The five jobs",
+    "pendingLabel": "not yet",
+    "matchedAllLabel": "ALL FIVE JOBS DONE",
+    "emptySay": "Your room is empty. Click a line on the right to put it in, or press Put the shape in for me.",
+    "paletteLabel": "Lines you can use — click one, then change its words",
+    "paletteLead": "Click one, and it goes into your room at the cursor (the blinking line in the box). The words in CAPITALS are the ones you change.",
+    "firstInsertSay": "The line you clicked is in your room now. Change its CAPITAL words to your own before you press RUN.",
+    "starterSay": "Want the whole shape put in for you? Every CAPITAL word will still be yours to change.",
+    "starterLabel": "Put the shape in for me",
+    "starterDoneSay": "The shape is in. Now change every CAPITAL word, and write your own story lines.",
+    "editor": {
+     "title": "Your room",
+     "aria": "Type your room here",
+     "softWrap": true,
+     "autoIndent": true,
+     "indentGuides": true
+    },
+    "words": {
+     "title": "The two words your player can type",
+     "lead": "Before you write anything, decide the two words. Your question must SAY them, and the website uses them to test your room.",
+     "boxes": [
+      {
+       "key": "w1",
+       "label": "First word",
+       "max": 12
+      },
+      {
+       "key": "w2",
+       "label": "Second word",
+       "max": 12
+      }
+     ],
+     "emptySay": "Type both words first. They are the words your player will type, and the website uses them to test your room.",
+     "sameSay": "Your two words are the same. The player needs two different words to choose between.",
+     "pinnedLabel": "Your two words:"
+    },
+    "pathTable": {
+     "title": "The path check",
+     "lead": "The website played your room three times — once with each of your words, and once with a word you did not plan for.",
+     "cols": [
+      "The player typed",
+      "The room said",
+      "Door"
+     ],
+     "noneWord": "no door",
+     "strangerLabel": "banana (a word you did not plan for)",
+     "stoppedLead": "Python stopped:",
+     "doorWord": "door"
+    },
+    "publish": {
+     "label": "Publish my room to the class adventure",
+     "lockedNote": "This button switches on when all five jobs say done.",
+     "sendingSay": "Sending your room…",
+     "doneKicker": "PUBLISHED",
+     "doneTitle": "Your room is in the class adventure.",
+     "doneSay": "It is room {n}. Nobody sees your name on it — only the number. Any classmate who plays the adventure might land in it.",
+     "failSay": "Your room could not be sent just now. Press Publish again in a moment.",
+     "changedSay": "You changed your room after publishing it. Press Publish again to send the new version.",
+     "continueLabel": "Play the class adventure",
+     "skipLabel": "Carry on without publishing my room"
+    },
+    "builds": [
+     {
+      "id": "myroom",
+      "saveAs": "l4room",
+      "mode": "editor",
+      "staged": true,
+      "chat": true,
+      "planLabel": "The five jobs your room has to do",
+      "goalLine": "Write one room of the class adventure: a place in this school, one question, two roads, and a door for anything else the player types.",
+      "brief": "Pick a place in this school that anybody in your class could picture: the canteen, the ICT room, the gym, the library, the car park, the stairs. Your two words are what the player types to choose a road, so your question must say them.",
+      "features": [
+       {
+        "id": "scene-ask",
+        "probe": "scene-ask",
+        "label": "It says where the player is, then asks ONE question that says your two words.",
+        "nudge": "Your first line should print the place. Then count the lines with input( ) in them: your room needs exactly one, and the question inside it must say both of your words."
+       },
+       {
+        "id": "path-1",
+        "probe": "path",
+        "word": "w1",
+        "door": true,
+        "label": "If the player types your FIRST word, one road runs and ends with a door line.",
+        "nudge": "Look at the word in speech marks on your if line. It must match your first word exactly. Capital letters count. The road under it needs a NEXT: door line."
+       },
+       {
+        "id": "path-2",
+        "probe": "path",
+        "word": "w2",
+        "door": true,
+        "label": "If the player types your SECOND word, the other road runs and ends with a door line.",
+        "nudge": "Look at the word in speech marks on your elif line. It must match your second word exactly, and its road needs a NEXT: door line."
+       },
+       {
+        "id": "catch-all",
+        "probe": "path",
+        "word": "stranger",
+        "door": true,
+        "label": "If the player types anything else, the room still sends them through a door.",
+        "nudge": "The banana test: the player typed banana, and your room had no road for it. The else road catches every word you did not plan for — check it is there, and that it ends with a door line."
+       },
+       {
+        "id": "different",
+        "probe": "different",
+        "words": [
+         "w1",
+         "w2"
+        ],
+        "label": "The two roads tell different stories.",
+        "nudge": "Both roads print the same words. Give each road its own story line."
+       }
+      ],
+      "palette": [
+       {
+        "label": "Where the player is",
+        "line": "print(\"You are in the PLACE. SAY WHAT THE PLAYER CAN SEE.\")"
+       },
+       {
+        "label": "The question, with your two words in it",
+        "line": "choice = input(\"ASK YOUR QUESTION. Type FIRST or SECOND.\")"
+       },
+       {
+        "label": "The first road: if they typed your first word",
+        "line": "if choice == \"FIRST\":\n    print(\"SAY WHAT HAPPENS ON THIS ROAD.\")\n    print(\"NEXT: door A\")"
+       },
+       {
+        "label": "The second road: if they typed your second word. This road starts with elif.",
+        "line": "elif choice == \"SECOND\":\n    print(\"SAY WHAT HAPPENS ON THE OTHER ROAD.\")\n    print(\"NEXT: door B\")"
+       },
+       {
+        "label": "Anything else: the road for every other word",
+        "line": "else:\n    print(\"SAY WHAT HAPPENS IF THEY TYPE SOMETHING ELSE.\")\n    print(\"NEXT: door A\")"
+       }
+      ],
+      "starter": [
+       "print(\"You are in the PLACE. SAY WHAT THE PLAYER CAN SEE.\")",
+       "choice = input(\"ASK YOUR QUESTION. Type FIRST or SECOND.\")",
+       "if choice == \"FIRST\":",
+       "    print(\"SAY WHAT HAPPENS ON THIS ROAD.\")",
+       "    print(\"NEXT: door A\")",
+       "elif choice == \"SECOND\":",
+       "    print(\"SAY WHAT HAPPENS ON THE OTHER ROAD.\")",
+       "    print(\"NEXT: door B\")",
+       "else:",
+       "    print(\"SAY WHAT HAPPENS IF THEY TYPE SOMETHING ELSE.\")",
+       "    print(\"NEXT: door A\")"
+      ],
+      "shape": [
+       "print( where the player is )",
+       "<box> = input( the question — and the two words to type )",
+       "if <box> == \"first word\":",
+       "    print( what happens on that road )",
+       "    print( \"NEXT: door A\" )",
+       "elif <box> == \"second word\":",
+       "    print( what happens on the other road )",
+       "    print( \"NEXT: door B\" )",
+       "else:",
+       "    print( what happens for anything else )",
+       "    print( \"NEXT: door A\" )"
+      ],
+      "shapeNote": "Every road has its own door line, pushed in under it. The else road is the one that catches any word you did not plan for.",
+      "matchedSay": "Every road works, the banana test passed, and every word in your room is your own. Press Publish to put your room into the class adventure.",
+      "notYetSay": "Your room is not doing every job yet. The path check shows which words reached a door and which did not. Read the console too, in case Python stopped."
+     },
+     {
+      "id": "twist",
+      "optional": true,
+      "mode": "editor",
+      "chat": true,
+      "from": "l4room",
+      "offerKicker": "Here is one more thing to try, if you want it.",
+      "offerTitle": "The twist door",
+      "offerLead": "Inside one of your roads, ask a second question with its own if and else — a road that forks again. It is not worth any points, and you can skip it.",
+      "offerYes": "Add a twist",
+      "offerNo": "No thanks — carry on",
+      "offerFree": "You get no points either way.",
+      "goalLine": "Give one road a twist: a second question, with its own if and else, pushed in under that road.",
+      "brief": "Your room is still there, in the box you type in.\n1. Pick one road.\n2. Under its story line, add a second question with input( ).\n3. Under that question, add an if and an else. Push them in EIGHT spaces — four for the road, four more for the twist.\n4. Give each part of the twist — the if road and the else road — its own door line.",
+      "shape": [
+       "if choice == \"first word\":",
+       "    print( what happens on that road )",
+       "    twist = input( a second question )",
+       "    if twist == \"a word\":",
+       "        print( one ending )",
+       "        print( \"NEXT: door A\" )",
+       "    else:",
+       "        print( the other ending )",
+       "        print( \"NEXT: door B\" )"
+      ],
+      "shapeNote": "A fork inside a road is pushed in twice: four spaces for the road, four more for the twist.",
+      "check": {
+       "kind": "clean",
+       "uses": [
+        "    if ",
+        "    else:"
+       ],
+       "usesSay": "It ran, but there is no second fork pushed in under a road yet. The twist is an if and an else with eight spaces in front of them."
+      },
+      "matchedSay": "It runs, and one of your roads forks again. A fork inside a fork is called a nested if.",
+      "notYetSay": "It is not working yet. Read the console. A twist needs eight spaces in front of its if and its else, and each part of the twist needs a door line.",
+      "runCheckedSay": "The twist is yours, so this card cannot tell you the exact words to expect. Press RUN, take the road with the twist in it, and answer the second question.",
+      "finishLabel": "Finish this part and carry on",
+      "staged": true
+     }
+    ],
+    "help": "This card comes in two parts. First you get ready, then you write your room.\n\n1. Read the five jobs your room has to do, and watch the film.\n2. Type the two words your player will be able to type. Your question must say them.\n3. Press Start writing.\n4. Click a line on the right to put it in your room, then change its CAPITAL words. Or press Put the shape in for me and change every CAPITAL word.\n5. Press RUN my room and play it. The path check under the five jobs shows which words reached a door.\n6. When all five jobs say done, press Publish my room to the class adventure.",
+    "jobWord": "Job",
+    "chatPrints": true
+   }
+  },
+  {
+   "id": "classadventure",
+   "engine": "relay",
+   "title": "The class adventure",
+   "minutes": 10,
+   "badge": {
+    "id": "j2-b12",
+    "name": "Adventurer",
+    "icon": "assets/badges/bolt.png",
+    "xp": 12
+   },
+   "config": {
+    "kicker": "The class adventure",
+    "title": "Play the class adventure",
+    "intro": "Now you play five rooms, one after another. They are chosen from the rooms your class has written and the rooms from the training builds. Each room asks you a question. You type a word, and the room sends you through a door into another room. Nobody's name is on any room — only a number. If you published your room, one of the five might be yours.",
+    "steps": [
+     "Read the room, then type one of the words it offers you.",
+     "The room sends you through a door into the next room.",
+     "After five rooms the adventure ends. Play again for a different path."
+    ],
+    "beginLabel": "Start the adventure",
+    "rooms": 5,
+    "houseRooms": [
+     {
+      "n": 1,
+      "title": "the canteen",
+      "lines": [
+       {
+        "t": "print(\"You are in the canteen. Every chair is stacked on the tables.\")"
+       },
+       {
+        "t": "print(\"A lunch trolley rolls past by itself and stops at a door.\")"
+       },
+       {
+        "t": "choice = input(\"Do you follow the trolley, or open the window? Type trolley or window.\")"
+       },
+       {
+        "t": "if choice == \"trolley\":"
+       },
+       {
+        "t": "    print(\"You follow the trolley through the door.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You open the window and climb out into the yard.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       }
+      ]
+     },
+     {
+      "n": 2,
+      "title": "the corridor",
+      "lines": [
+       {
+        "t": "print(\"You are in the long corridor. Every classroom door is shut.\")"
+       },
+       {
+        "t": "choice = input(\"Do you go left or right? Type left or right.\")"
+       },
+       {
+        "t": "if choice == \"left\":"
+       },
+       {
+        "t": "    print(\"You turn left and find the music room open.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You turn right and reach the stairs.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       }
+      ]
+     },
+     {
+      "n": 3,
+      "title": "the library",
+      "lines": [
+       {
+        "t": "print(\"You are in the library. The lights are off, but one lamp is on.\")"
+       },
+       {
+        "t": "choice = input(\"Do you go to the lamp, the desk or the door? Type lamp, desk or door.\")"
+       },
+       {
+        "t": "if choice == \"lamp\":"
+       },
+       {
+        "t": "    print(\"The lamp flickers. Under it is a book with your name on it.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "elif choice == \"desk\":"
+       },
+       {
+        "t": "    print(\"On the desk is a note in red pen: DO NOT OPEN THE DRAWER.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You stand still. Somewhere, a chair scrapes.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       }
+      ]
+     }
+    ],
+    "_houseRoomsNote": "each room's program is its lines joined with newlines; authored as lines[].t so the language gate reads them as code (pupil-visible when played, judged like pyrun lines)",
+    "words": {
+     "roomsOpen": "{n} rooms are in the class adventure so far.",
+     "roomHead": "Room {n}",
+     "roomMine": "Room {n} — this one is yours",
+     "roomHouse": "Room {n} — one of the rooms from the training builds",
+     "roomCount": "Room {i} of {all}",
+     "doorSay": "You go through door {d}.",
+     "fetchingSay": "Finding the next room…",
+     "brokenSay": "Room {n} is not working right now, so the adventure moves on.",
+     "endKicker": "THE END",
+     "endTitle": "You reached the end.",
+     "endSay": "You went through rooms {list}. Every play takes a different path, so play again and see where it goes.",
+     "endFirstSay": "That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson.",
+     "playAgainLabel": "Play again",
+     "finishLabel": "Finish the adventure and carry on with the lesson",
+     "leaveTitle": "Leave the adventure?",
+     "leaveAsk": "You have played {done} of {all} rooms. The badge is for playing all five. Leave now, or keep going?",
+     "leaveYes": "Leave now",
+     "keepGoing": "Keep going",
+     "andWord": "and"
+    },
+    "chatLabels": {
+     "title": "The adventure",
+     "idle": "The first room is loading…",
+     "botWho": "The room",
+     "userWho": "You",
+     "replyLabel": "Your choice",
+     "sendLabel": "Send"
+    },
+    "help": "The adventure is five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter five rooms you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before five rooms, you do not get the badge this time. You can still earn it the next time you play."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 2,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "There is one more question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j2x4-1",
+      "stem": "Saoirse's room prints \"You found the key!\" whatever the player types — trolley, window, even banana. What is the most likely mistake?",
+      "options": [
+       "The if and elif lines, or the lines pushed in under them, are wrong",
+       "The input( ) line is missing from the top of the room",
+       "The words in the print lines need str( ) wrapped around them first",
+       "The room has no NEXT: door line pushed in under any of its roads"
+      ]
+     }
+    ],
+    "help": "This is one marked question about the fork you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away."
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the fork",
+   "minutes": 1,
+   "config": {
+    "introKicker": "Exit check — part 2",
+    "intro": "This is the last one, and it is only five lines.\n\nClick a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards.",
+    "item": {
+     "id": "j2x4-p",
+     "prompt": "Put these five lines in the order that makes the fork work.",
+     "blocks": [
+      "    print(\"You go left and find a torch.\")",
+      "    print(\"You go right and find a locked door.\")",
+      "choice = input(\"Do you go left or right? Type left or right.\")",
+      "else:",
+      "if choice == \"left\":"
+     ]
+    },
+    "doneText": "Correct. The question comes first, then the fork checks the answer, and each road's line is pushed in under its own if or else.",
+    "help": "Click a line in The lines to move it into Your program, or drag it across. Press Check my program when you are sure. You get one go.",
+    "pre": true,
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "trayLabel": "The lines",
+    "checkLabel": "Check my program"
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own when it comes back. The lesson is finished.",
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click the button that says how hard the hour felt, and write a comment if you want to. Only your teacher reads the comment. Press Send when every part is done.",
+    "statements": [
+     "I can write an if line and an else line, so my program does one thing or the other.",
+     "I can add a third road with elif.",
+     "I can test my room by trying each of my two words, and then a word I did not plan for."
+    ]
+   }
+  },
+  {
+   "id": "extras",
+   "engine": "pyrun",
+   "title": "The Workshop's extra jobs",
+   "minutes": 0,
+   "config": {
+    "runLabel": "RUN this room",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said, fix that line, and press RUN again.",
+    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "sendLabel": "Send",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "chatLabels": {
+     "title": "The adventure",
+     "idle": "Nothing has happened yet. Press RUN to start the room.",
+     "botWho": "The room",
+     "userWho": "The player",
+     "replyLabel": "Your choice",
+     "sendLabel": "Send",
+     "doorSay": "You go through door {d}."
+    },
+    "errorWords": {
+     "name": "Python does not know a box (a variable) with that name. Check the spelling matches the box name on the input( ) line.",
+     "type": "You have joined a number onto words with a +. Put the number inside speech marks, or wrap it with str( ).",
+     "badinput": "Python could not read that line. Check three things. A fork line asks its question with two equals signs: ==. Every if, elif and else line ends with a colon. The lines that belong under an if, an elif or an else are pushed in by four spaces.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines under the fork are not lined up. Every line that belongs to an if, an elif or an else starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "extrasMode": true,
+    "kicker": "Extra jobs",
+    "intro": "There are four small jobs on this screen, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished.",
+    "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
+    "finishLabel": "Is the hour nearly up? Click here to finish the rest of the lesson.",
+    "backLabel": "Back to the extra jobs",
+    "doneTick": "job done",
+    "howLine": "Move the lines you need into **Your program**, fill in every gap, then press RUN.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing is here yet. Click or drag a line across from The lines.",
+    "lockedNote": "RUN switches on as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedSay": "Your room works.",
+    "notYetSay": "Your room is not working yet. Read the console, find the first line that is not right, and fix that one.",
+    "targetLead": "This is what your program should print:",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "allDoneLabel": "All four jobs are done — carry on with the lesson",
+    "allDoneSay": "**All four jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen.",
+    "help": "There are four jobs on this screen, and you do not have to do any of them. None of them is worth points, and nothing here is saved. Pick one from the list, or press the button at the bottom to carry on with the lesson.",
+    "builds": [
+     {
+      "id": "j2x4-password",
+      "chat": true,
+      "title": "Job 1 — the password door",
+      "whiff": "A door that opens for one exact word, and stays shut for everything else.",
+      "goalLine": "Build a door that opens only when the player types the password you choose.",
+      "brief": "This is a fork with one road and an else. The password is a word you choose. The two equals signs, ==, check whether what the player typed is EXACTLY that word, capital letters included.",
+      "lines": [
+       {
+        "t": "print(\"A door with a keypad. It wants a word.\")"
+       },
+       {
+        "t": "secret = input(\"What is the password?\")"
+       },
+       {
+        "t": "if secret == \"____\":",
+        "blanks": [
+         {
+          "key": "pw1",
+          "slot": "____",
+          "size": 12,
+          "max": 16,
+          "ph": "",
+          "label": "the password — any word you like"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"Click. The door swings open.\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"Nothing happens. The keypad blinks red.\")"
+       },
+       {
+        "t": "if secret = \"open\":"
+       }
+      ],
+      "check": {
+       "kind": "clean",
+       "uses": [
+        "=="
+       ]
+      },
+      "matchedSay": "It runs. Try the password, then run it again and try the same word with a capital letter. The two equals signs only match the exact word, capital letters included.",
+      "runCheckedSay": "The password is yours, so this card cannot tell you what to expect. Press RUN, type the password, then run it again and type something else."
+     },
+     {
+      "id": "j2x4-fourth",
+      "chat": true,
+      "title": "Job 2 — four roads",
+      "whiff": "A room with four roads: if, elif, another elif, and else.",
+      "goalLine": "Add a third word and a third road to this room, so it has four roads in all.",
+      "brief": "A room can have as many elif roads as you like. Python checks them from the top and takes the FIRST one whose word matches.",
+      "fixedTop": [
+       "print(\"You are in the gym. The lights hum.\")",
+       "choice = input(\"Do you take the ball, the rope or the ____? Type ball, rope or ____.\")",
+       "if choice == \"ball\":",
+       "    print(\"You bounce it once. The echo goes on for a very long time.\")",
+       "    print(\"NEXT: door A\")",
+       "elif choice == \"rope\":",
+       "    print(\"You climb three metres and decide that is plenty.\")",
+       "    print(\"NEXT: door B\")"
+      ],
+      "fixedTopLabel": "Already written — fill the gaps in the question with your third word",
+      "fixedBlanks": [
+       {
+        "key": "f4q",
+        "slot": "____",
+        "size": 8,
+        "max": 12,
+        "label": "your third word, in both gaps of the question"
+       }
+      ],
+      "lines": [
+       {
+        "t": "elif choice == \"____\":",
+        "blanks": [
+         {
+          "key": "f4w",
+          "slot": "____",
+          "size": 8,
+          "max": 12,
+          "ph": "",
+          "label": "your third word again"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"____\")",
+        "blanks": [
+         {
+          "key": "f4s",
+          "slot": "____",
+          "size": 34,
+          "max": 80,
+          "ph": "",
+          "label": "what happens on the third road"
+         }
+        ]
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You stand in the middle of the gym. The lights hum louder.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       },
+       {
+        "t": "    elif choice == \"mat\":"
+       }
+      ],
+      "check": {
+       "kind": "clean",
+       "uses": [
+        "elif",
+        "else:"
+       ]
+      },
+      "matchedSay": "Your room has four roads now, and Python takes the first one whose word matches.",
+      "runCheckedSay": "The third word is yours, so this card cannot tell you what to expect. Press RUN and try all three words. Then try a word that is not in the question."
+     },
+     {
+      "id": "j2x4-name",
+      "chat": true,
+      "title": "Job 3 — the player's name",
+      "whiff": "Ask the player's name first, and use it in the story.",
+      "goalLine": "Ask the player's name before the question, and put it into what the room says.",
+      "brief": "Asking the player's name and using it is what you learned in Lesson 3. Now it goes inside a room. input( ) keeps the name in a box (a variable), and the + sign joins the name onto words.",
+      "lines": [
+       {
+        "t": "name = input(\"Before we start — what is your name?\")"
+       },
+       {
+        "t": "print(\"You are in the ICT room, \" + name + \". Every screen is on, and every screen shows your name.\")"
+       },
+       {
+        "t": "choice = input(\"Do you sit down or run? Type sit or run.\")"
+       },
+       {
+        "t": "if choice == \"sit\":"
+       },
+       {
+        "t": "    print(\"The nearest screen says: hello again, \" + name + \".\")"
+       },
+       {
+        "t": "    print(\"NEXT: door A\")"
+       },
+       {
+        "t": "else:"
+       },
+       {
+        "t": "    print(\"You run. Behind you, every screen goes off at once.\")"
+       },
+       {
+        "t": "    print(\"NEXT: door B\")"
+       },
+       {
+        "t": "print(\"You are in the ICT room, \" + \"name\" + \".\")"
+       }
+      ],
+      "check": {
+       "kind": "clean",
+       "usesReplies": [
+        0
+       ]
+      },
+      "matchedSay": "It works, and the room used the name the player typed.",
+      "notYetSay": "Not yet. If the room printed the word name instead of the name you typed, look for a line where name is inside speech marks — that line is the mistake.",
+      "runCheckedSay": "The name is whatever you type, so this card cannot tell you the exact words to expect. Press RUN, type a name, then type sit.",
+      "_provenance": "DFM 197 14 Sep 2026: usesReplies true → [0] — a fork room never echoes the CHOICE word, so \"every reply must come back out\" could not be passed; the NAME (reply 0) is what the job is about"
+     },
+     {
+      "id": "j2x4-blank",
+      "mode": "editor",
+      "chat": true,
+      "staged": false,
+      "title": "Job 4 — a room from nothing",
+      "whiff": "Write a whole room yourself, from nothing. There are no ready-made lines this time.",
+      "goalLine": "Write a whole room from nothing: a place, one question, two roads and an else.",
+      "brief": "There are no lines to click this time. If you get stuck, the Show me the shape button is still there.",
+      "editor": {
+       "title": "Your room",
+       "aria": "Type your room here",
+       "softWrap": true,
+       "autoIndent": true,
+       "indentGuides": true
+      },
+      "palette": [],
+      "shape": [
+       "print( where the player is )",
+       "<box> = input( the question — and the two words to type )",
+       "if <box> == \"first word\":",
+       "    print( what happens on that road )",
+       "    print( \"NEXT: door A\" )",
+       "elif <box> == \"second word\":",
+       "    print( what happens on the other road )",
+       "    print( \"NEXT: door B\" )",
+       "else:",
+       "    print( what happens for anything else )",
+       "    print( \"NEXT: door A\" )"
+      ],
+      "shapeNote": "Every road ends with its own door line, pushed in under it.",
+      "check": {
+       "kind": "clean",
+       "uses": [
+        "input(",
+        "if ",
+        "else:",
+        "NEXT: door"
+       ],
+       "usesSay": "It ran, but a whole room needs a question with input( ), an if road, an else road, and a NEXT: door line on every road."
+      },
+      "matchedSay": "You wrote a whole room from nothing. It is a real program, and you wrote every word of it.",
+      "runCheckedSay": "Every word here is yours, so this card cannot tell you what to expect. Press RUN and play your room."
+     }
+    ],
+    "chatPrints": true
+   }
+  }
+ ],
+ "_provenance": "Authored by Fable (K44 / DFM 283) in L4_CONTENT_DRAFTS/build_drafts.py; moved into content-src at the build's content step, 14 Sep 2026, with the build-time additions recorded in PROGRESS_J2J3_L4_BUILD.md §C6.",
+ "keysEnc": "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"
+}

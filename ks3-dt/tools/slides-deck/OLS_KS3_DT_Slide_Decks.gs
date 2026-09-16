@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-09-03 from contentVersion 2026-09-03b.
+ * Built 2026-09-16 from contentVersion 2026-09-03b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1853,7 +1853,8 @@ var DECKS = {
        "It is in three parts, and the buttons underneath jump to any part.",
        "The film lasts just over four minutes. Watch it once, then move on to the next card."
       ],
-      "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
+      "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nWHAT THEY WILL SEE: a player with three buttons under it, named \"What a chatbot really is\", \"The program stops and waits\" and \"Reading the whole program\". A pupil can jump to any part while she is on this screen.\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there.",
+      "shot": "film"
      }
     ]
    },
@@ -1885,7 +1886,38 @@ var DECKS = {
        "When the program asks a question, a box appears and the program waits.",
        "Type an answer, press the button, and the program carries on."
       ],
-      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room."
+      "notes": "SAY it while the picture is up, pointing at each part. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nWHAT THEY WILL SEE: the picture is the first build the moment its bot has asked its question — the program on the left, the conversation and the reply space on the right, and RUN switched off until the answer is sent.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room.",
+      "shot": "asks"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "When Python stops",
+      "shot": "console",
+      "size": 15,
+      "bullets": [
+       "If Python stops, the console goes red and shows Python's own words.",
+       "Under them is one line in plain English saying what to look at.",
+       "Read that line first. It tells you which line of your program to check.",
+       "A stopped run costs you nothing. Fix the line and press RUN again.",
+       "The first build stops on purpose. The mistake is in there for you to find."
+      ],
+      "notes": "WHERE THE CLASS IS: about to press RUN on the first build, which has a mistake planted in it on purpose.\n\nSAY it with the picture up: \"When your program stops, this is what you see. Python's own words come first. The line under them is in plain English, and it tells you what to look at. Read that line first.\"\n\nWHAT THEY WILL SEE: the picture is the console after the first build's planted mistake — Python's own error words, and the plain line underneath. The two always appear together. The plain line is the one to point at.\n\nTHE ONE TO STRESS: a stopped run is not a failure and costs nothing. Build 1 stops on purpose — the wrong word is planted — so every pupil meets this screen in the first two minutes and knows what it means before she meets it on her own bot.\n\nTHE HELP THAT ACTUALLY HELPS — three questions, in this order: What did the console print? What did you want it to print? Which one line are you going to change? You do not need to know any Python to ask those, and they are worth more than an answer would be.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The lines are in the wrong order",
+      "shot": "tray",
+      "size": 15,
+      "bullets": [
+       "In Training build 3 you get the lines out of order. The order on the left is not a hint. You work out the correct order yourself.",
+       "Click a line to move it into Your program, or drag it.",
+       "Some lines have gaps in them. You type your own words into the gaps.",
+       "To take a line back, press the button beside it that says Put this line back.",
+       "RUN switches on as soon as there is at least one line in Your program."
+      ],
+      "notes": "WHERE THE CLASS IS: about to open the third training build, the one that carries the first badge.\n\nSAY it with the picture up, pointing at each part: \"The lines are on the left, and your program is on the right. The lines come up in a different order every time, so the order on the left is not a hint. You work out the correct order yourself.\"\n\nWHAT THEY WILL SEE: the picture is the third build before a line has been moved — the shuffled lines with their gaps, the empty program, and the RUN button still switched off.\n\nTHE ONE TO STRESS: the platform shuffles the lines afresh every time the card opens, for every pupil — the screen does not announce this, but it is true — so two neighbours see different orders, and the position of a line on the next desk tells her nothing. That is worth saying out loud, kindly, once.\n\nWHILE THEY WORK: a line can be added by clicking it instead of dragging it, which is worth saying to anyone struggling with the mouse. To take a line back she presses the button beside it that says Put this line back; clicking the line itself does nothing.\n\nWHEN TO MOVE: send them in. Walk the room."
      }
     ]
    },
@@ -1909,16 +1941,29 @@ var DECKS = {
      {
       "kind": "bullets",
       "bg": "section",
+      "heading": "First you plan",
+      "shot": "plan",
       "size": 15,
-      "heading": "First you plan, then you type",
       "bullets": [
        "You see the PLAN first. It shows the goal, the film, and the three jobs. The jobs are in the order you do them.",
-       "Press the button marked Start writing. The card turns into the page where you type. Your three jobs sit along the top.",
-       "You type in the big box underneath. Keep typing if you need to. The box holds everything you write.",
-       "Four ready-made lines sit under the box. The name on each line tells you what that line does. Click one and it appears in your box.",
+       "Watch the film on the card before you type anything. It lasts just over two minutes.",
+       "Press the button marked Start writing. The card turns into the page where you type."
+      ],
+      "notes": "SAY, with the picture up: \"The card starts by telling you what your bot has to do — three jobs, in order. There is a short film on it, and I want you to watch that first. When you press Start writing, the card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nWHAT THEY WILL SEE: the picture is the PLAN face — the goal, the film, the three jobs, and the Start writing button. Nothing can be typed on this face, and that is deliberate: she reads what the bot has to do before she can start.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Then you type",
+      "shot": "bench",
+      "size": 15,
+      "bullets": [
+       "Your three jobs sit along the top of the page.",
+       "You type in the black space underneath. There is room for as many lines as you need.",
+       "Four ready-made lines sit under the black space. The name on each line tells you what that line does. Click one and it lands in your program.",
        "The three jobs tick only after you press RUN. Each job ticks if your bot really does that job."
       ],
-      "notes": "SAY, with the slide up: \"The card starts by telling you what your bot has to do — three jobs, in order. When you press Start writing, that card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees NOT YET, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nThe card deliberately shows one thing at a time. The conversation and the black message panel do not appear at all until a run needs them, so there are no empty boxes to make sense of.\n\nWHEN TO MOVE: send them in."
+      "notes": "SAY, with the picture up, pointing at each part: \"Your three jobs are along the top. You type in the black space underneath. The four ready-made lines are under it, and clicking one puts it into your program.\"\n\nWHAT THEY WILL SEE: the picture is the page where she types, before a character has been typed — the three jobs along the top, the empty box, and the four ready-made lines under it.\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees \"not checked yet\" beside every job, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nABOUT THE READY-MADE LINES: using them is not cheating — the words are still hers to change.\n\nThe card deliberately shows one thing at a time. The conversation and the console are not on the page when she arrives. They appear when she presses RUN — the console first, saying it is running, and the conversation the first time her bot asks something.\n\nWHEN TO MOVE: send them in."
      }
     ]
    },
@@ -1942,16 +1987,45 @@ var DECKS = {
      {
       "kind": "bullets",
       "bg": "section",
+      "heading": "While you wait",
+      "shot": "wait",
+      "size": 15,
+      "bullets": [
+       "You might have to wait for a partner. Nothing is wrong: stay on this screen.",
+       "While you wait, a cartoon chatbot called Fred keeps you company. Talk to him if you like.",
+       "The moment somebody is ready, the screen changes by itself.",
+       "Have you been waiting a while? The screen offers you a button to test your own bot instead."
+      ],
+      "notes": "WHERE THE CLASS IS: bots finished at different times, so pupils reach the Swap at different times — the first ones through will wait.\n\nSAY it with the picture up: \"If you get this screen, you are in the queue and nothing is wrong. The website pairs whoever is ready at the same time. Fred is there to talk to while you wait.\"\n\nWHAT THEY WILL SEE: the picture is the waiting card, with Fred on it. Fred is a chatbot, and the card says so — he is not a pupil.\n\nIF SOMEBODY IS STILL WAITING: they do not need you. After a longer wait the screen itself offers \"Test my own bot instead\", which takes that pupil through the whole Swap alone, on her own bot, badge included. Nothing on this screen needs a teacher to release it.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "You have a partner",
+      "shot": "matched",
+      "size": 15,
+      "bullets": [
+       "This card appears the moment the website has found you a partner.",
+       "The screen tells you your partner's call sign. It also tells you what you are called on their screen.",
+       "Real names stay secret — theirs and yours. Keep them out of anything you type.",
+       "Press Start the Swap. Your bot goes to them, and theirs comes to you."
+      ],
+      "notes": "SAY it with the picture up: \"This is the card you get when you have a partner. It tells you their call sign and yours. That is the only name either of you sees. Press Start the Swap.\"\n\nWHAT THEY WILL SEE: the picture is the PARTNER FOUND card, with two call signs on it — hers, and her partner's. The names on the picture are examples: every pair gets its own.\n\nTHE ONE TO STRESS: real names stay out of everything typed, including her own. You can see who is paired with whom on the Live tab, by call sign with real names in brackets.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
       "size": 15,
       "heading": "What the Swap looks like",
       "bullets": [
-       "Your call sign is at the top. Your partner's is beside it.",
-       "Their bot runs on your screen exactly as they wrote it.",
+       "First you are in the tester's seat: their bot runs on your screen, exactly as they wrote it.",
        "You answer its questions like anybody would.",
-       "Then two spaces: one thing that worked, and one thing you would change.",
-       "Their report on YOUR bot comes back to you a moment later."
+       "When their bot has finished, the button marked Write the report turns on.",
+       "There are two spaces: one for a thing that worked, and one for a thing you would change.",
+       "Then you swap seats. They test your bot while you watch every line, and their report on YOUR bot comes back to you."
       ],
-      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The two spaces are deliberately not a grade and there is no score anywhere on the screen.\n\nTWO PAUSES THAT ARE NOT FAULTS: when a pupil sends a report the screen reads \"Sending your report…\" while it travels, and the report that comes back is the one their partner wrote about their bot, which lands a moment behind. Neither is a freeze.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists, because a pupil who knows the teacher can read it writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+      "notes": "SAY, with the picture up: \"First you are the tester. Your partner's bot runs on your screen. Answer it like anybody would, and when it has finished, write the report.\"\n\nWHAT THEY WILL SEE: the picture is the tester's seat — a partner's bot running on her screen, mid-conversation, with the reply space waiting for her answer.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The report is two short spaces, one sentence in each: one thing that worked, and one thing they would change. It is not a grade, and there is no score anywhere on the screen.\n\nTWO WAITS THAT ARE NOT FAULTS: when a pupil presses Send my report, the screen says \"Sending your report…\" for a moment while it travels. Then she waits for her partner's report about her bot, which arrives a few seconds after her partner presses Send my report. Neither wait is a freeze.\n\nWHAT YOU CAN SEE, on your own screen: open the class link yourself and sign in with your staff account — the same address the pupils use opens the teacher's view for a staff login. Click its Live tab. The Pairing panel there shows who is paired with whom, by call sign with real names in brackets, and its Channel button opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists. A pupil who knows that the teacher can read the messages writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes.",
+      "shot": "tester"
      }
     ]
    },
@@ -1970,7 +2044,8 @@ var DECKS = {
        "Then How did it go? — two ratings and a private line to me.",
        "Nobody leaves without finishing that one."
       ],
-      "notes": "SAY: \"One question, it is marked, and you find out how you did at the end of it, not in the middle.\"\n\nABOUT THE PRIVATE LINE: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer."
+      "notes": "SAY: \"One marked question at the end. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen.\"\n\nABOUT THE COMMENT BOX on the How did it go? screen: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nWHAT THEY WILL SEE: the picture is the extra-jobs screen — three jobs, none of them ticked, and the button at the bottom that carries her straight on.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer.",
+      "shot": "extras"
      }
     ]
    },
@@ -1988,6 +2063,319 @@ var DECKS = {
        "Your bot is saved. It will still be there next lesson."
       ],
       "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your bot is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the room has been noisy about the Swap, it is worth one sentence — \"the reports you wrote each other were better than I expected\" — said honestly. It sets up the next paired lesson."
+     }
+    ]
+   }
+  ]
+ },
+ "j2-04": {
+  "id": "j2-04.deck",
+  "lesson": "j2-04",
+  "driveFileId": "",
+  "year": "j2",
+  "deckName": "KS3 DT · J2 Lesson 4 — Adventure Engine (Teacher Deck)",
+  "theme": {
+   "id": "workshop-slate",
+   "name": "The Workshop",
+   "ground": "#1E2630",
+   "panel": "#2B3644",
+   "accent": "#FFC15E",
+   "accent2": "#5FD6B4",
+   "text": "#FFFFFF",
+   "dim": "#C9D4E2",
+   "display": "Bitter",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 4 · Adventure Engine",
+      "sub": "Your program chooses what happens next. — J2 · Lesson 4 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson does not open on today's work — it opens on the Do-Now, a short set of questions from the last three lessons. The questions mark themselves as each pupil answers them, but nothing in it counts, and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the Do-Now questions on your own screen. When they hand you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is sitting on today's first card, stop everybody, eyes front, and go on."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Write an if line and an else line, so your program does one thing or the other.",
+       "Add a third road with elif, so your program can do a third thing.",
+       "Test your room — the piece of the story you write — by trying every word a player could type, not just the one you expect.",
+       "Write one room of a text adventure. A text adventure is a story that a program tells you one piece at a time, and a room is one piece of it. Then play through the rooms your classmates wrote."
+      ],
+      "notes": "SAY these as they are written. All four are things each pupil will have DONE by the end of the hour, not things she will have heard about.\n\nWHY IT MATTERS: every program these pupils have written so far ran its lines from the top to the bottom and did the same thing every time. From today a program can read what a person typed and then decide which lines to run. That last sentence is the whole hour, and it is worth saying out loud.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The one new idea today",
+      "bullets": [
+       "Every program you have written runs its lines from the top to the bottom, the same every time.",
+       "Today your program reads what the player typed, and then it CHOOSES which lines to run.",
+       "The line that chooses is a fork. The fork is the line that starts with if.",
+       "Nothing else about writing Python changes today."
+      ],
+      "notes": "SAY: \"There is one new idea today and everything else is what you already do. Your program reads what the player typed, and then it chooses which lines to run. The line that does the choosing is called a fork, and it starts with the word if.\"\n\nDO NOT put elif or else on the board yet. The film shows both happening before it names them. A pupil who has watched a road run in the film understands each word when it arrives, and naming them now takes that away.\n\nWHEN TO MOVE: straight on.",
+      "shot": "briefing"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "How the hour is laid out",
+      "bullets": [
+       "First you watch a short film on your own screen. It has no sound.",
+       "Then you do three training builds. You fix a room, you put a room in order, and you add a road to a room.",
+       "Then you write your own room: a place in this school, one question, and two roads.",
+       "Then you play the class adventure: five rooms, one after another, written by your classmates."
+      ],
+      "notes": "SAY it as written. Pupils work far better when they know the shape of the hour, and the last line is the one to land: the room each pupil writes is not an exercise, it goes into an adventure the whole class plays.\n\nTHE SETTING, said once: the adventure is set in this school after the bell has gone — everybody has gone home, the doors are still open, and odd things happen. Every pupil writes ONE room of it.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Four things before we start",
+      "bullets": [
+       "Your room goes into the class adventure with a NUMBER on it. Your name is never shown.",
+       "When you press RUN, your room really runs. If it stops, read the plain line under what Python said.",
+       "Every hint is free. The grey button that says Show me the shape never costs a point.",
+       "The website checks every road of your room before your room joins the adventure."
+      ],
+      "notes": "SAY the first one and mean it: nobody in the class will know which room is whose, and that is deliberate — a room is judged by the people who play it, not by who wrote it.\n\nSAY the second one as a rule for the whole hour: when a program stops, the console shows what Python said and one plain line underneath it. The plain line is written for an eleven-year-old and it is nearly always the fix.\n\nTHE LAST ONE: the website plays each pupil's room three times before it will publish it, once with each of the two words the room offers and once with a word nobody planned for. If the room breaks on any of the three, the pupil is shown which one. Say this now so that the path check is expected when it appears, not a surprise.\n\nWHEN TO MOVE: send them into the opening card. It says the same things on their own screens and plays one room of the adventure at the bottom, and its button reads Start the film."
+     }
+    ]
+   },
+   {
+    "id": "film",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The film — on your own screen",
+      "shot": "film",
+      "bullets": [
+       "It has no sound. Every word you need is written on the screen.",
+       "It is in three parts. The three buttons under the film jump to each part.",
+       "The middle part is the one to watch twice: a program with a fork in it, choosing a road.",
+       "When the film finishes, carry on to the next card."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start the film on their own screens. Nothing to cue up at the front.\n\nSAY: \"It is silent, it is in three parts, and the middle one is the one that matters. Watch how the lamp on the signpost lights up when the word in the box matches, and how the road under it runs. When it finishes, carry on to the next card.\"\n\nWHAT THEY WILL SEE: the picture is the film card with its three chapter buttons — A room of a text adventure, The fork: if, elif and else, Reading a whole room.\n\nWHILE THEY WATCH: circulate. A pupil who says the film will not play carries on to the next card, which says everything the film shows in writing — the card itself tells her so.\n\nWHEN TO MOVE: when most of the room has finished the film, stop everybody for the next slide."
+     }
+    ]
+   },
+   {
+    "id": "training",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The training builds",
+      "bullets": [
+       "Three builds, and they get harder as you go.",
+       "The first one is already written. Run it, read what Python says, and fix the fork line.",
+       "The second is a room in pieces, and you put it in order.",
+       "The third has one road written, and you add the other two.",
+       "The first and the third RUN. If one stops, read the plain line under what Python said."
+      ],
+      "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three training builds, and they get harder. The first one is already written for you: it is the canteen room from the opening card, with one character wrong in it on purpose. Press RUN, read what Python says, and put it right. The second one is a room in eight pieces and you put them in order. The third has one road done and you add the other two.\"\n\nTHEN SAY: \"The first and the third actually run. When you press RUN the room asks you a question and waits for you to type, exactly as your chatbot did last lesson.\"\n\nDO NOT walk anybody through the third build from the front. It carries the first badge and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "When Python stops",
+      "shot": "console",
+      "bullets": [
+       "Press RUN my room on the first build and it stops. That is on purpose.",
+       "The console shows what Python said, in red.",
+       "Under it is one line in plain English, saying what to look at.",
+       "The fork line asks a question with TWO equals signs. One equals sign puts something into a box (a variable).",
+       "Fix the line, press RUN my room again, and type trolley when the room asks."
+      ],
+      "notes": "WHERE THE CLASS IS: about to press RUN on the first build, which has a mistake planted in it: the fork line has one equals sign where it needs two.\n\nSAY it with the picture up, pointing at the red and then at the line under it: \"When you press RUN, Python stops on the fork line. The red is exactly what Python said. The line under it is in plain English, and it tells you what to look at. A fork asks a question, and a question takes two equals signs.\"\n\nWHAT THEY WILL SEE: the picture is the first build after RUN — the room's lines above, and the console underneath with Python's message in red and the plain line under it.\n\nTHE ONE TO STRESS: nothing is lost when a program stops. The lines stay where they are and RUN can be pressed as often as it takes.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "A room in pieces",
+      "bullets": [
+       "Training build 2 gives you the eight lines of a working room, out of order.",
+       "The place comes first, then the question. The fork cannot check an answer nobody has given yet.",
+       "Each road has its own door line, pushed in under it.",
+       "Click a line to move it into Your program, or drag it. Press Put this line back to send one back.",
+       "You get one go. Afterwards the screen shows you the order that works."
+      ],
+      "notes": "WHERE THE CLASS IS: the first build fixed, about to open the second.\n\nSAY: \"Eight lines of a working room, out of order. Think about what has to come first: the room cannot check an answer before it has asked the question. And a door line belongs to the road above it, so it is pushed in under that road.\"\n\nWHAT THEY WILL SEE: the lines in a column on the left, headed The lines, and the order they build on the right, headed Your program. A line moves across when it is clicked or dragged, and the button beside it that says Put this line back sends it back.\n\nTHE ONE TO STRESS: one go. The screen shows the working order afterwards whether the pupil got it right or not, so a wrong go still teaches.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Add a road, then the path check",
+      "shot": "pathcheck",
+      "bullets": [
+       "Training build 3 has one road already written, and those lines cannot be moved.",
+       "You add the second road with elif, and the road for anything else with else.",
+       "Two of the lines you are given are mistakes on purpose. Leave those where they are.",
+       "When you press RUN my room, the website plays your room three times and shows you a table: the path check.",
+       "Each row is one play: what the player typed, what the room said, and which door they went through."
+      ],
+      "notes": "WHERE THE CLASS IS: about to open the third build, the one that carries the first badge.\n\nSAY it with the picture up, pointing at the table: \"This is the path check. When you press RUN, the website plays your room three times — once with each word that has its own road, and once with a word nobody planned for. One row per play. The last column is the door the player went through. If it says no door, that road has no door line, and the adventure would have nowhere to go.\"\n\nWHAT THEY WILL SEE: the picture is the path check as the website draws it after a run: three rows, the word typed, what the room said, and the door.\n\nTHE ONE TO STRESS: the third play uses a word that is not in the question. That is the point of else — it catches everything else, so nobody gets stuck.\n\nDO NOT walk the class through Build 3 from the front of the room. They do it themselves.\n\nWHEN TO MOVE: send them in. Walk the room."
+     }
+    ]
+   },
+   {
+    "id": "myroom",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — eyes front · Your room",
+      "bullets": [
+       "You each write one room. It is set in this school, after the bell has gone.",
+       "Your room has a place, one question, and two roads the player can take.",
+       "Decide your two words first. The question must SAY them.",
+       "Put a door line on every road. If a road has no door line, the adventure cannot move on.",
+       "When all five jobs say done, you publish your room. It joins the class adventure with a number on it, not your name."
+      ],
+      "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now your own room. Pick a place in this school. Decide the two words the player can type before you write anything. Then write one question — it has to say those two words. Two roads, one for each word, and a way on for anything else. Every road ends with a door line.\"\n\nTHEN SAY: \"The card opens on a plan with the five jobs your room has to do. Read it, type your two words, then press Start writing. The short film on that card shows a room being written and what the path check tells you.\"\n\nTHE ONE TO STRESS: nobody's name goes on a room. When a room is published it gets a number, and that is all anybody sees.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "First you plan",
+      "shot": "plan",
+      "bullets": [
+       "The card starts with a plan: the five jobs your room has to do, in order, and the film.",
+       "Under the plan are two boxes for your two words. Type them before you start.",
+       "The website uses your two words to test your room, so the question must say them.",
+       "Then press Start writing."
+      ],
+      "notes": "SAY, with the picture up: \"The card starts with a plan. Five jobs, in order — say where the player is and ask one question that says your two words; a road for your first word; a road for your second; a door for anything else; and the two roads tell different stories. Under the plan are two boxes. Type your two words into them before you press Start writing.\"\n\nWHAT THEY WILL SEE: the picture is the plan face — the five jobs, the film, the two word boxes, and the Start writing button.\n\nTHE ONE TO STRESS: the two words are not decoration. The website plays the room with each of them, so if the question does not say them, the room fails its own check.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Then you type",
+      "shot": "bench",
+      "bullets": [
+       "Your two words are pinned above the black space where you type.",
+       "The five jobs are listed across the top. Each one says not yet until your room really does it.",
+       "Beside the black space are ready-made lines. Click one, then change its CAPITAL words.",
+       "There is a button that says Put the shape in for me. It puts the whole shape into your room, and every CAPITAL word is still yours to change."
+      ],
+      "notes": "SAY, with the picture up, pointing at each part: \"Your two words are pinned at the top so you cannot forget them. The five jobs are across the top and every one says not yet. The black space is where you type. Beside it are ready-made lines: click one, it goes in where your cursor is, and you change the words in capitals.\"\n\nWHAT THEY WILL SEE: the picture is the typing screen before anything has been typed — the pinned words, the five jobs all saying not yet, the empty black space, and the ready-made lines beside it.\n\nTHE ONE TO STRESS: a job ticks only when the pupil presses RUN my room and the room really does that job. Typing the line is not enough; running it is.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The path check, and Publish",
+      "bullets": [
+       "Press RUN my room and the website plays your room three times: your first word, your second word, and banana.",
+       "The path check appears under the console. If a row says no door, that road has no door line.",
+       "After a run, look under the line that says whether your room works. Every job that still says not yet is listed there again, with what to fix.",
+       "When all five jobs say done, the Publish button wakes up.",
+       "Publish sends your room into the class adventure. You are told its number."
+      ],
+      "notes": "SAY: \"Press RUN my room and the website plays your room three times, once with each of your words and once with banana — a word nobody planned for. The path check appears under the console, one row per play. If a row says no door, that road has no door line. When all five jobs say done, the Publish button wakes up. Press it and your room is in the adventure, with a number.\"\n\nWHAT THEY WILL SEE: after a run, the path check table under the console, the five jobs ticking as the room does them, and — when all five are done — the Publish my room to the class adventure button switching on.\n\nTHE ONE TO STRESS: a room that is published and then changed has to be published again. The screen says so.\n\nWHEN TO MOVE: send them in. This runs about fifteen minutes. Walk the room. The question that unsticks almost everybody is: what does the path check say in its last column?"
+     }
+    ]
+   },
+   {
+    "id": "adventure",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — eyes front · The class adventure",
+      "bullets": [
+       "You play five rooms, one after another. They come from the rooms this class wrote.",
+       "Read the room, then type one of the words it offers you.",
+       "The door sends you into another room. It could be one you have never seen, or it could be your own.",
+       "Play it all the way to the end. The badge is for playing all five.",
+       "Play again for a different path."
+      ],
+      "notes": "WHERE THE CLASS IS: rooms published, eyes front. Pupils will arrive here at different times, and that is fine — the adventure plays on each pupil's own screen.\n\nSAY: \"Your room is in. Now you play. Five rooms, one after another, chosen from the rooms this class wrote. Read the room, type one of the words it offers, and the door takes you somewhere else. Nobody's name is on any room. Play all five — that is what earns the badge — and then play again for a different path.\"\n\nTHE ONE TO STRESS: a room that is not working is skipped by the screen itself, and the adventure moves on. Nobody is held up by a broken room.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Playing a room",
+      "shot": "play",
+      "bullets": [
+       "The strip at the top says which room you are in, and how many rooms are in the adventure.",
+       "The room tells its story, then asks its question. You type a word and press Send.",
+       "The door line is shown as a note: You go through door A.",
+       "Then the next room loads. Read it from the top: it is somebody else’s room."
+      ],
+      "notes": "SAY, with the picture up: \"The strip at the top tells you which room you are in. The room tells its story, asks its question, and waits. Type one of the words it offers and press Send. The door line comes up as a note, and then the next room loads — somebody else's.\"\n\nWHAT THEY WILL SEE: the picture is one room playing — the strip at the top, the room's lines, the player's word, and the door note.\n\nTHE ONE TO STRESS: type one of the words the room offers. Anything else goes down the room's anything-else road, which is allowed, but the story is better if you play along.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The end, and the way on",
+      "shot": "end",
+      "bullets": [
+       "After five rooms the screen says THE END and lists the rooms you went through.",
+       "Your first whole adventure earns the badge.",
+       "The Play again button takes a different path through the class's rooms.",
+       "To move on, press the button that says Finish the adventure and carry on with the lesson."
+      ],
+      "notes": "SAY: \"After five rooms you reach the end, and the screen lists the rooms you went through. Your first whole adventure earns the badge. Play again if there is time — it takes a different path — or press the button that carries you on.\"\n\nWHAT THEY WILL SEE: the end card — THE END, the list of room numbers, Play again, and Finish the adventure and carry on with the lesson.\n\nTHE ONE TO STRESS: if a pupil tries to leave before the fifth room, the screen asks her first, and leaving early earns no badge. The screen says so.\n\nWHEN TO MOVE: send them in. This runs about ten minutes."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The end of the lesson",
+      "shot": "extras",
+      "bullets": [
+       "There is one marked question at the end. Your teacher sees how the class did on it.",
+       "Then you put five lines of a fork in order. You get one go, and the working order is shown afterwards.",
+       "Then you do the How did it go? screen. Everybody does it.",
+       "Before those, you get a screen with four extra jobs on it. None of them is marked, and none of them is saved.",
+       "Nearly time up? The button at the bottom of that screen carries you straight on."
+      ],
+      "notes": "SAY: \"One marked question at the end. Then a short ordering puzzle, one go. Then the screen that asks how the hour went — everybody does that one, it is how your teacher hears from the whole class.\"\n\nWHAT THEY WILL SEE: the picture is the extra jobs screen — four jobs, none of them marked — with the button at the bottom that says Nearly time up? Click here to finish the rest of the lesson.\n\nTHE ONE TO STRESS: the extra jobs are for pupils with time. Nobody is held up by them; the button at the bottom carries everybody on.\n\nWHEN TO MOVE: when the room is on the last screens, move to the closing slide."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Finish the How did it go? screen. Nobody leaves until it is done.",
+       "Sign out every time. If you do not, anything the next person does will look as if you did it.",
+       "Your room is saved, and it stays in the class adventure."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your room is saved and it stays in the adventure. You do not need to write it down.\"\n\nLAST THING: if a pupil landed in her own room while playing, she will want to tell you. Let her — it is the best evidence the hour worked."
      }
     ]
    }
@@ -2620,7 +3008,8 @@ var DECKS = {
        "Four parts, and the buttons underneath jump to any part.",
        "Just under four minutes."
       ],
-      "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"On your screen, not mine. No sound at all. Just under four minutes, four parts, and the buttons underneath let you go back to any of them.\"\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once."
+      "notes": "WHERE THE CLASS IS: about to start the first film on their own machines.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all. It is just under four minutes long, in four parts, and the buttons underneath take you back to any of them.\"\n\nWHAT THEY WILL SEE: a player with four buttons under it, named \"One box, then a rack of them\", \"Counting starts at 0\", \"How many things are in the list?\" and \"Adding one on the end\". A pupil can jump to any part while she is on this screen.\n\nDO NOT play it on the board — it is written to be read at each pupil's own pace.\n\nWHILE IT RUNS: walk the room and check everybody is on it. You will want the room together for the next slide.\n\nWHEN TO MOVE: when most of the room is past it. Pull the stragglers up — the Match needs everybody at once.",
+      "shot": "film"
      }
     ]
    },
@@ -2644,15 +3033,44 @@ var DECKS = {
      {
       "kind": "bullets",
       "bg": "section",
+      "heading": "While you wait",
+      "shot": "wait",
       "size": 15,
+      "bullets": [
+       "You might have to wait for somebody to play against. Nothing is wrong: stay on this screen.",
+       "While you wait, a cartoon theatre critic called Margo keeps you company.",
+       "The moment somebody is ready, the screen changes by itself.",
+       "If you have waited a long time, the screen offers you a button marked Play the computer. Press it and you play all six rounds on your own."
+      ],
+      "notes": "WHERE THE CLASS IS: pupils finish the film at different times, so they reach the Match at different times — the first ones through will wait.\n\nSAY it with the picture up: \"If you get this screen, you are in the queue and nothing is wrong. The website matches whoever is ready at the same time. Margo is there to keep you company.\"\n\nWHAT THEY WILL SEE: the picture is the waiting card, with Margo on it. She mostly talks to herself and is not a real chatbot, though she has one line for anything a pupil types at her — and she vanishes the moment an opponent arrives.\n\nIF SOMEBODY IS STILL WAITING: they do not need you. After a longer wait the screen itself offers \"Play the computer\", which runs all six rounds on that pupil's own screen, badge included. Nothing on this screen needs a teacher to release it.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "You have an opponent",
+      "shot": "matched",
+      "size": 15,
+      "bullets": [
+       "This card appears the moment the website has found you somebody to play against.",
+       "The screen tells you your opponent's call sign. It also tells you what you are called on their screen.",
+       "Real names stay secret — theirs and yours — until the Match ends.",
+       "Press Start the Match. You both see the same code at the same moment."
+      ],
+      "notes": "SAY it with the picture up: \"This is the card you get when you have an opponent. It tells you their call sign and yours. That is the only name either of you sees until the Match is over. Press Start the Match.\"\n\nWHAT THEY WILL SEE: the picture is the MATCHED card, with two call signs on it — hers, and her opponent's. The names on the picture are examples: every pair gets its own.\n\nTHE ONE TO STRESS: real names stay out of everything until the Match ends, when the screen tells each pupil who she was playing. You can see who is matched with whom on the Live tab, by call sign with real names in brackets.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
       "heading": "What the Match looks like",
       "bullets": [
-       "The line of Python is in the middle. Your call sign is at the top.",
-       "You choose or type what it prints, then press to commit.",
-       "It waits until you have both committed. Then both answers appear.",
-       "Then it RUNS the line, for real, and you see what it actually printed."
+       "The lines of Python are in the middle of the card. Read them before you choose.",
+       "You choose or type what it prints, then press Lock in my prediction.",
+       "Once you lock in, the answers switch off and the screen waits for your opponent.",
+       "When you have both locked in, the code runs for real, and both predictions sit beside what it really printed.",
+       "Getting one wrong costs you nothing. Read the line that explains it, then press Next round."
       ],
-      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it. There is deliberately no picture of a round on this slide: any round photographed shows that round's code and its answer, and the Match is played after this slide.\n\nTHE ONE TO STRESS: the reveal is the line really running. It is not a stored answer and it is not marking — the class is watching Python do it.\n\nAND: locking in is final for that round, and nothing is shown until both have done it — so there is nothing to gain by waiting to see what the other one puts.\n\nIF A PAIR DISAGREES AND BOTH ARE WRONG: that is the best thing that can happen and it is worth saying so. Nothing is deducted.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has sent each other.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes.",
+      "size": 15
      }
     ]
    },
@@ -2670,7 +3088,8 @@ var DECKS = {
        "Three parts. Just under four minutes.",
        "It includes the one that caught nearly everybody."
       ],
-      "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"Second film, same as the first: your screen, no sound, just under four minutes. It carries straight on from the Match, and it explains the one that caught most of the room.\"\n\nWHEN TO MOVE: when most of the room is past it."
+      "notes": "WHERE THE CLASS IS: Match finished. Some pairs will be talking about the round that caught them — let that run for fifteen seconds, it is the point of the activity.\n\nSAY: \"This is the second film, and it works like the first: it is on your screen, it has no sound, and it is just under four minutes long. It carries straight on from the Match, and it explains the round that caught most of the room.\"\n\nWHAT THEY WILL SEE: a player with three buttons under it, named \"Taking one out\", \"Taking just the first three\" and \"Putting the titles in order, and the trap that catches people\".\n\nWHEN TO MOVE: when most of the room is past it.",
+      "shot": "filmb"
      }
     ]
    },
@@ -2699,10 +3118,26 @@ var DECKS = {
       "bullets": [
        "The program is on the left. The console is on the right.",
        "RUN is at the bottom. Nothing happens until it is pressed.",
-       "The pieces in the second build are shuffled every time.",
-       "So the order you see them in is never the order they go in."
+       "The console shows exactly what your program printed. The first build prints Now Playing and three titles.",
+       "If Python stops, the console goes red. Read the plain line under the red first."
       ],
-      "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: the pieces are shuffled every single time, for every pupil. Two pupils sitting together do not have the same starting order, so copying the shape off a neighbour's screen does not work — and that is worth saying out loud, kindly, once.\n\nWHEN TO MOVE: send them in."
+      "notes": "SAY it with the picture up, pointing at each part.\n\nWHAT THEY WILL SEE: the picture is the first build after its run — the six lines on the left, and on the right the console printing Now Playing - Top 3 and three titles, with IT WORKS underneath. That console is the shape of every playlist engine in the hour: make the list, add one, take one out, print the first three.\n\nTHE ONE TO STRESS: the console shows what the program REALLY did. When it is not what the target says, read the console and the lines above it side by side, and find the first line that is different.\n\nSAY ABOUT ERRORS: \"When a program stops, Python puts up a red message and there is a plain English line underneath it. Read that line first.\"\n\nWHEN TO MOVE: next slide.",
+      "shot": "nowplaying"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The lines are in the wrong order",
+      "shot": "tray",
+      "size": 15,
+      "bullets": [
+       "In Build 3 you get six lines, out of order. Two of them are not part of the program. The six lines sit on the left in a mixed-up order. That order is not a hint. You work out the correct order yourself.",
+       "Four of the six make the working program. Two are there to be read and left alone.",
+       "Click a line to move it into Your program, or drag it. Some lines have gaps you type into.",
+       "To take a line back, press the button beside it that says Put this line back.",
+       "RUN switches on as soon as there is at least one line in Your program."
+      ],
+      "notes": "WHERE THE CLASS IS: about to open the third build, the one that carries a badge.\n\nSAY it with the picture up, pointing at each part: \"The six lines are on the left, and your program is on the right. Four of them make the working program and two are wrong on purpose. The order on the left is not a hint. You work out the correct order yourself.\"\n\nWHAT THEY WILL SEE: the picture is the third build before a line has been moved — six shuffled lines with their gaps, the empty program, and the RUN button still switched off.\n\nTHE ONE TO STRESS: the platform shuffles the lines on THIS build afresh every time the card opens, for every pupil — the screen does not announce this, but it is true — so two neighbours see different orders, and the position of a line on the next desk tells her nothing. That is worth saying out loud, kindly, once. The second build is different: its four lines sit in the same order for everybody, and each pupil gets one go at it.\n\nDO NOT walk the class through Build 3 from the front of the room. They do it themselves.\n\nWHEN TO MOVE: send them in."
      }
     ]
    },
@@ -2718,23 +3153,36 @@ var DECKS = {
        "Twelve minutes. You type this one — there are no pieces to drag.",
        "Five jobs: add a song, take one out, pick one at random, put them in A to Z order, and print Now Playing with the first three.",
        "The random one uses Python nobody has shown you. The card teaches it before you need it.",
-       "You see the PLAN first. It shows the goal and the five jobs in the order you do them.",
-       "Press the button marked Start writing. The card turns into the page where you type. Your five jobs sit along the top, and they tick only after you press RUN."
+       "Your five jobs sit along the top of the card, and they tick only after you press RUN."
       ],
-      "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"Twelve minutes and you are typing this one from scratch. No pieces to drag. Five things it has to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nTHE ONE PIECE OF NEW PYTHON: the third job picks a song at random, and nothing before this hour has taught that. The card teaches it at the top, in two lines — import random on the very first line of the program, and random.choice(playlist) to pick one title out. You do not need to teach it from the front; you do need to know it is there, because it is the job pupils ask about.\n\nWHEN TO MOVE: next slide, then walk the room.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The plan says what she is making before anything can be typed; Start writing gives her the page where she types, and the black message panel does not appear until a run has ended."
+      "notes": "WHERE THE CLASS IS: the three builds finished, eyes front. This is the biggest block of the hour and the hardest, and the room needs to know what finished looks like.\n\nSAY: \"You have twelve minutes, and you type this one from scratch — there are no lines to drag. It has five jobs to do, and they are listed across the top of the card so you can see which ones you have done.\"\n\nTHEN SAY: \"Those five are not read off your program. They watch your program while it runs. So if you have written the right thing and it still says NOT YET — have you pressed RUN since you changed it?\"\n\nTHAT ONE SENTENCE answers most of what you will be asked in the next twelve minutes.\n\nTHE ONE PIECE OF NEW PYTHON: the third job picks a song at random, and nothing before this hour has taught that. The card teaches it at the top, in two lines — import random on the very first line of the program, and random.choice(playlist) to pick one title out. You do not need to teach it from the front; you do need to know it is there, because it is the job pupils ask about.\n\nABOUT THE TWO PARTS: the card shows one thing at a time. The first face says what she is making before anything can be typed; Start writing gives her the page where she types, and the console is not on that page until she presses RUN. The next two slides are those two faces.\n\nWHEN TO MOVE: next slide, then walk the room."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "First you plan",
+      "shot": "plan",
+      "size": 15,
+      "bullets": [
+       "The card starts by showing you the goal and the five jobs, in the order you do them.",
+       "Read the five jobs before you type anything. They are what the card checks.",
+       "Press the button marked Start writing. The card turns into the page where you type."
+      ],
+      "notes": "SAY, with the picture up: \"The card starts by telling you what your engine has to do — five jobs, in order. When you press Start writing, the card turns into the page where you type, and those same five jobs move up to the top so you can see them the whole time.\"\n\nWHAT THEY WILL SEE: the picture is the PLAN face — the goal, the five jobs, and the Start writing button. Nothing can be typed on this face, and that is deliberate: she reads what the engine has to do before she can start.\n\nWHEN TO MOVE: next slide."
      },
      {
       "kind": "bullets",
       "bg": "section",
       "size": 15,
-      "heading": "What to do when a job does not tick",
+      "heading": "Then you type",
       "bullets": [
-       "You type into the box. It has line numbers, like real Python.",
+       "You type your program into the black space. It numbers your lines for you.",
        "Tab moves you four spaces in — that is how lines go inside a loop.",
        "The five jobs are along the top. Each job ticks when your program really does that job.",
-       "Stuck? The help on the card is free and costs you nothing."
+       "If you are stuck, press Show me the shape or Write the shape for me. You lose no points for using either."
       ],
-      "notes": "SAY the bullets aloud, naming each part of the card as you reach it.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nIF THE RANDOM JOB WILL NOT TICK, it is one of two things and the card's own nudge says both: the first line of the program has to read import random, and the line that prints Tonight has to use random.choice. Ask which of the two is missing rather than reading the program yourself.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in."
+      "notes": "SAY it with the picture up.\n\nWHAT THEY WILL SEE: the picture is the page where she types, before a character has been typed — the five jobs along the top, the empty box with its line numbers, and the help row under it.\n\nABOUT THE HELP: everything on that card is free — no points are taken for opening any of it, and nobody is shown who used it. Say that plainly. A pupil who thinks help costs her something will sit and do nothing instead, which costs her more.\n\nIF THE RANDOM JOB WILL NOT TICK, it is one of two things and the card's own nudge says both: the first line of the program has to read import random, and the line that prints Tonight has to use random.choice. Ask which of the two is missing rather than reading the program yourself.\n\nABOUT INDENTING: Tab puts four spaces in. Pupils who have only ever dragged blocks have never had to indent anything, and this is the first hour they meet it.\n\nWHEN TO MOVE: send them in.",
+      "shot": "bench"
      }
     ]
    },
@@ -2749,11 +3197,12 @@ var DECKS = {
       "bullets": [
        "First a screen of three extra jobs. They are optional and none of them is marked.",
        "Then one question about append. That one IS marked.",
-       "Then one short program to put back in order — also marked.",
+       "Then you put three short lines of Python in the right order. You get one go, and you are shown the working order afterwards.",
        "You are told how you did at the very end, not as you go.",
        "Then How did it go? Nobody leaves without finishing it."
       ],
-      "notes": "SAY: \"One question and one short ordering job. They are marked, and you find out at the end of them rather than in the middle.\"\n\nABOUT THE PRIVATE LINE in How did it go?: it goes to you and to nobody else.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the engine — it is not a reward for finishing early. There are three of them, they carry no points at all, nothing there is marked or saved, and a button on it carries a pupil straight on. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer."
+      "notes": "SAY: \"One marked question, then a short ordering puzzle. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen.\"\n\nABOUT THE COMMENT BOX on the How did it go? screen: it goes to you and to nobody else.\n\nWHAT THEY WILL SEE: the picture is the extra-jobs screen — three jobs, none of them ticked, and the button at the bottom that carries her straight on.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the engine — it is not a reward for finishing early. There are three of them, they carry no points at all, nothing there is marked or saved, and a button on it carries a pupil straight on. Say so, or a pupil who thinks she is missing marks will rush what matters.\n\nWHEN TO MOVE: straight on to the closer.",
+      "shot": "extras"
      }
     ]
    },
@@ -2771,6 +3220,320 @@ var DECKS = {
        "Your playlist engine is saved. It will still be there next lesson."
       ],
       "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your engine is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the Match went well, say so. It is the first time these pupils have worked against a partner they could not see, and a sentence about how they handled it makes the next one easier to run."
+     }
+    ]
+   }
+  ]
+ },
+ "j3-04": {
+  "id": "j3-04.deck",
+  "lesson": "j3-04",
+  "driveFileId": "",
+  "year": "j3",
+  "deckName": "KS3 DT · J3 Lesson 4 — Function Factory (Teacher Deck)",
+  "theme": {
+   "id": "control-room",
+   "name": "The Control Room",
+   "ground": "#08090F",
+   "panel": "#14161F",
+   "accent": "#5AA9FF",
+   "accent2": "#FF6EC7",
+   "text": "#FFFFFF",
+   "dim": "#B9C2D6",
+   "display": "IBM Plex Mono",
+   "body": "Inter"
+  },
+  "sections": [
+   {
+    "id": "opening",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 4 · Function Factory",
+      "sub": "Build a machine once. Use it again and again. — J3 · Lesson 4 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link from Google Classroom. The lesson does not open on today's work — it opens on the Do-Now, a short set of questions from the last three lessons. The questions mark themselves as each pupil answers them. Nothing in the Do-Now counts, and nothing about it is shown to the class.\n\nSAY: \"Log in, open the class link, and work through the Do-Now questions on your own screen. When the Do-Now hands you over to today's first card, stop and look up.\"\n\nWHY: it is revision, and it gives you a settled room to take the register in.\n\nWHEN TO MOVE: when most of the room is sitting on today's first card, stop everybody, eyes front, and go on."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Say why one machine (a function) is better than the same lines of program copied many times.",
+       "Write a function with a slot (a parameter) that hands something back (return).",
+       "Use the same function many times, with a different order (a name and a number of seats) each time.",
+       "Run somebody else’s orders through your factory, and check what their factory made from your orders."
+      ],
+      "notes": "SAY these as they are written. All four are things each pupil will have DONE by the end of the hour, not things she will have heard about.\n\nWHY IT MATTERS: in every program these pupils have written so far, each job was done by typing the lines for it, and typing them again for the next job. From today a job is built once, as a machine, and used as many times as it is needed. That last sentence is the whole hour, and it is worth saying out loud.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The one new idea today",
+      "bullets": [
+       "The box office has twelve orders. Each order needs the same two lines: a label and a cost. Until today, that meant twenty-four lines, every one typed by hand.",
+       "A factory does not build a new machine for every order. It builds the machine once, and feeds every order through it.",
+       "In Python a machine like this is called a FUNCTION.",
+       "It has a name, a slot for what goes in, and a way of handing the finished thing back out."
+      ],
+      "notes": "SAY: \"There is one new idea today. Instead of typing the same lines twelve times, you build a machine once and drop each order into it. Python calls the machine a function. It has a name, a slot for what goes in, and a way of handing the finished thing back out.\"\n\nDO NOT put def or return on the board yet. The film shows both happening before it names them, and a pupil who has watched a ticket come out of the chute understands the word when it arrives. Naming them here costs you that.\n\nWHEN TO MOVE: straight on.",
+      "shot": "boxoffice"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "How the hour is laid out",
+      "bullets": [
+       "First you watch a short film on your own screen. It has no sound.",
+       "Then you do three training builds. In the first you fix a machine. In the second you put a machine in order. In the third you fill the gaps in a machine.",
+       "Then you build your own factory: two machines. A spec card tells you what each machine must hand back. The factory floor feeds twelve orders through them.",
+       "The Rush: somebody else in this room sends your factory three orders, and checks what came out."
+      ],
+      "notes": "SAY it as written. Pupils work far better when they know the shape of the hour, and the last line is the one to land: the factory each pupil builds is not an exercise, somebody else in the room is going to send it orders.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Four things before we start",
+      "bullets": [
+       "In the Rush you get a call sign — a made-up name like Foreman 4. That is the only name your partner sees.",
+       "Most of what you build today RUNS. If your program stops, Python says why, in red words. Under the red words is a short message in plain English. It says what to check. Read it.",
+       "Every hint is free. The grey Show me the shape button never costs a point.",
+       "Your machines make products. The factory floor checks every product against the spec card. The spec card says what each machine must hand back. The floor shows you the products that did not match."
+      ],
+      "notes": "SAY the first one now, not at the end: knowing that somebody else will send the factory orders changes how carefully it is built.\n\nSAY the second one as a rule for the whole hour: when a program stops, the console shows what Python said and one plain line underneath it. The plain line is written for a thirteen-year-old and it is nearly always the fix.\n\nTHE LAST ONE: the floor drops every order into the pupil's machine and stamps each product — matches, or not what the spec asked for — and the ones that did not match go into a reject bin beside what the spec wanted. Say this now so that the reject bin is expected when it appears, not a surprise.\n\nWHEN TO MOVE: send them into the opening card. It says the same things on their own screens and scrolls the twenty-four-line program past at the bottom, then its button reads Start the film."
+     }
+    ]
+   },
+   {
+    "id": "film",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The film — on your own screen",
+      "shot": "film",
+      "bullets": [
+       "It has no sound. Every word you need is written on the screen.",
+       "It is in three parts. The three buttons under the film jump to each part.",
+       "The middle part is the one to watch twice. It shows a machine being built, a name being dropped into its slot, and a ticket coming out of its chute.",
+       "When it finishes, press Done watching."
+      ],
+      "notes": "WHERE THE CLASS IS: about to start the film on their own screens. Nothing to cue up at the front.\n\nSAY: \"It is silent, it is in three parts, and the middle one is the one that matters. Watch what def does — it builds the machine and nothing runs — and watch the ticket come down the chute when the machine hands it back. Press Done watching when it finishes.\"\n\nWHAT THEY WILL SEE: the picture is the film card with its three chapter buttons. They read \"The box office\", \"How a machine works: def, the slot, and return\", and \"Reading a machine\".\n\nWHILE THEY WATCH: circulate. A pupil who says the film will not play carries on to the next card, which says everything the film shows in writing — the card itself tells her so.\n\nWHEN TO MOVE: when most of the room has pressed Done watching, stop everybody for the next slide."
+     }
+    ]
+   },
+   {
+    "id": "training",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · The training builds",
+      "bullets": [
+       "There are three builds, and they get harder as you go.",
+       "The first machine is already built, with one word missing from its inside. Run it, read what came out, and put the word in.",
+       "The second is a machine in pieces, and you put it in order.",
+       "The third has gaps, and the factory floor runs it for you.",
+       "The first and the third of them RUN. If your program stops, Python says why, in red words. Under the red words is a short message in plain English. It says what to check. Read it."
+      ],
+      "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"Three training builds, and they get harder. The first machine is already built and used three times, but one word is missing from its inside. Press RUN, read what the three bottom lines printed, and you will know which word. The second is a machine in five pieces and you put them in order. The third has two gaps, and the factory floor under it drops three orders in and shows you what comes out.\"\n\nTHEN SAY: \"The first and the third of them actually run. When you press RUN the machine really makes something, and in the third the floor really checks it.\"\n\nDO NOT walk anybody through the third build from the front. It carries the first badge and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The missing word, and the length meter",
+      "shot": "meter",
+      "bullets": [
+       "The first two lines are the machine. The last three use it, once for each name.",
+       "Press RUN my program. Read what the last three lines printed. That tells you the missing word.",
+       "Under the words IT WORKS is the length meter. It compares two programs: the twelve-order program is twenty-four lines long, and one machine used twelve times is fifteen lines long.",
+       "Both programs print the same twenty-four lines. The one with the machine is written in fewer lines."
+      ],
+      "notes": "WHERE THE CLASS IS: about to open the first build: a Reserved-sign machine. The word that hands the sign back out is missing from it.\n\nSAY it with the picture up, pointing at the two bars: \"The two lines that start at def are the machine. Nothing happens when Python reads them — it only builds the machine. The three lines at the bottom use it. Press RUN, read what came out, and put the missing word in. Lower down the card is the length meter: two bars, twenty-four lines against fifteen, and both programs print exactly the same thing.\"\n\nWHAT THEY WILL SEE: the picture is the first build after a run that works: the five lines, the console, and the length meter under it with its two bars.\n\nTHE ONE TO STRESS: the meter's point is not that shorter is prettier. It is that if the price of a seat changes, the machine changes in ONE place instead of twelve.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "A machine in pieces",
+      "bullets": [
+       "Training build 2 gives you the five lines of a working program, out of order.",
+       "The def line comes first. Then comes the inside of the machine, pushed in under it.",
+       "Then come the lines that use it. A machine has to be built before it can be used.",
+       "Click a line to move it into Your program, or drag it. Press Put this line back to send one back.",
+       "You get one go. Afterwards the screen shows you the order that works."
+      ],
+      "notes": "WHERE THE CLASS IS: the first build fixed, about to open the second.\n\nSAY: \"Five lines of a working program, out of order. The def line comes first, its inside is pushed in under it, and only then can the machine be used. Python cannot use a machine it has not built yet.\"\n\nWHAT THEY WILL SEE: the lines in a column on the left, headed The lines, and the order they build on the right, headed Your program. A line moves across when it is clicked or dragged, and the button beside it that says Put this line back sends it back.\n\nTHE ONE TO STRESS: one go. The screen shows the working order afterwards whether the pupil got it right or not, so a wrong go still teaches.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The factory floor",
+      "shot": "floor",
+      "bullets": [
+       "Training build 3 has two gaps, and both want the same word: the name of the slot.",
+       "Two of the lines you are given are mistakes on purpose. Leave those where they are.",
+       "When you press RUN my program, the factory floor drops three orders into your machine.",
+       "Each order gets a product card: the order that went in, the product that came out, and a stamp.",
+       "A product that did not match goes into the reject bin, beside what the spec wanted."
+      ],
+      "notes": "WHERE THE CLASS IS: about to open the third build, the one that carries the first badge.\n\nSAY it with the picture up, pointing at the product cards: \"This is the factory floor. When you press RUN, the floor drops three orders into your machine and shows what comes out — one card per order. The stamp says matches, or it says what went wrong. Anything that did not match is in the reject bin underneath, beside what it should be, so you can see the difference.\"\n\nWHAT THEY WILL SEE: the picture is the factory floor as the website draws it after a run: the product cards, their stamps, and the reject bin.\n\nTHE ONE TO STRESS: the stamp \"nothing came back\" is the one a product gets when the machine printed instead of handing back with return. The film showed the hand receiving None — Python's word for nothing at all; this is the same thing on a card.\n\nDO NOT walk the class through Build 3 from the front of the room. They do it themselves.\n\nWHEN TO MOVE: send them in. Walk the room."
+     }
+    ]
+   },
+   {
+    "id": "factory",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "2",
+      "heading": "STOP — eyes front · Your factory",
+      "bullets": [
+       "You build two machines, one called label and one called cost. A spec card tells you what each one must do.",
+       "Read the spec card first. It says what each machine is called, what goes in, and what it must hand back.",
+       "Build both, and use each one once at the bottom so you can see it work.",
+       "Press RUN my program, and the floor drops twelve orders through them.",
+       "When both machines work, the badge is yours. Then comes the Rush."
+      ],
+      "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now your own factory. Two machines, and the spec card says exactly what each one must do: label makes the label for an order, cost works out what it costs. Read the spec first. Build both machines, use each one once at the bottom, and press RUN. The floor drops twelve orders through them and shows you every product.\"\n\nTHEN SAY: \"The card opens on a plan with the spec card on it. Read it, then press Start building. The short film on that card shows how to read the spec and what the reject bin tells you.\"\n\nTHE ONE TO STRESS: the spec's example column. label(\"Aoife\", 2) hands back Aoife x 2 — that is the exact product, spaces and all, and the floor checks for exactly that.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "First you read the spec card",
+      "shot": "spec",
+      "bullets": [
+       "When the card opens, you see a plan. It shows the two machines your factory needs, a short film, and the spec card.",
+       "One row per machine: its name, its slots, what it hands back, and one example.",
+       "The label machine has TWO slots, with a comma between them. The cost machine has one slot.",
+       "Then press Start building."
+      ],
+      "notes": "SAY, with the picture up, pointing at the rows: \"One row per machine. The name is what you call it on the def line. The slots are what goes in the brackets. The third column is what it must hand back, and the last column is one example you can check your own machine against by hand.\"\n\nWHAT THEY WILL SEE: the picture is the plan face — the two jobs, the film, the spec card with its two rows, and the Start building button.\n\nTHE ONE TO STRESS: str( ) wraps a number so a + can join it onto words. The spec card says so under the table, and it is the line most pupils miss.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Then you type",
+      "shot": "bench",
+      "bullets": [
+       "The two machines are listed across the top. Each says not yet until the floor proves it works.",
+       "A short copy of the spec sits just above the black space where you type.",
+       "The button Put the shape in for me puts the shape of both machines in for you. You write the insides yourself.",
+       "Press RUN my program. The lines you wrote at the bottom print into the console. Under the console, the floor runs the twelve orders."
+      ],
+      "notes": "SAY, with the picture up, pointing at each part: \"The two machines are across the top and both say not yet. The spec sits just above the black space so you never have to go back for it. Put the shape in for me gives you the outline — def, the slots, return — and you write the insides.\"\n\nWHAT THEY WILL SEE: the picture is the typing screen before anything has been typed — the two jobs saying not yet, the compact spec above the black space, and the empty black space itself.\n\nTHE ONE TO STRESS: a machine ticks only when the floor has run all twelve orders through it and every product matched. Typing it is not enough; running it is.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The floor, and the reject bin",
+      "shot": "reject",
+      "bullets": [
+       "After RUN, the factory floor appears under the console: twelve product cards per machine.",
+       "Every card is stamped: matches, nothing came back, or not what the spec asked for.",
+       "The reject bin shows each wrong product beside the product the spec wanted.",
+       "If all twelve rejects come from the same mistake, the bin shows three of them and says how many more are like them.",
+       "Fix the one line inside the machine, press RUN again, and all twelve change together."
+      ],
+      "notes": "SAY, with the picture up: \"After RUN the floor appears under your console. Twelve cards per machine, each one stamped. The reject bin under them shows your product beside the one the spec wanted — read both, and the difference is the fix. Because it is one machine, fixing one line fixes all twelve.\"\n\nWHAT THEY WILL SEE: the picture is the reject bin after a run whose cost machine printed instead of using return — every product stamped nothing came back, the bin's one sentence saying why, and one product shown beside what the spec wanted.\n\nTHE ONE TO STRESS: nothing came back means the machine printed instead of using return. It is the one mistake the film spent a whole chapter on, and it is the one to look for first.\n\nWHEN TO MOVE: send them in. This runs about sixteen minutes. Walk the room: the question that unsticks almost everybody is what the reject bin shows beside the product."
+     }
+    ]
+   },
+   {
+    "id": "rush",
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "3",
+      "heading": "STOP — eyes front · The Rush",
+      "bullets": [
+       "You are paired with somebody in this room. You get a call sign — a made-up name — and so do they.",
+       "You write three orders: a name and a number of seats each.",
+       "Your orders go to their factory. Their orders come to your factory, and your machines make the products.",
+       "You check what came back from their factory: is each product what you ordered?",
+       "Keep real names out of anything you type. Your partner says Yes or No to each of your products. Nobody is marked on those answers."
+      ],
+      "notes": "WHERE THE CLASS IS: factories built, eyes front. Pupils will arrive here at different times, and that is fine — the website pairs them as they arrive.\n\nSAY: \"Your factory works. Now somebody else in this room is going to send it orders. You get a call sign, a made-up name, and that is the only name they see. Write three orders, send them, and their orders come to you. Your machines make the products and send them back. Then you check what their factory made from your orders — is each one what you ordered? Yes or no.\"\n\nTHE ONE TO STRESS: nobody is marked on what their partner said. The Rush pays for taking part, and a product that came back wrong is a genuine find, not a failure.\n\nWHEN TO MOVE: next slide, then send them in."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "While you wait",
+      "shot": "wait",
+      "bullets": [
+       "You are paired as you arrive, so you may wait a moment for somebody else to reach the Rush.",
+       "Unit 7, the factory robot, keeps you company while you wait.",
+       "If you have waited a while, the screen offers you the Studio’s own orders instead. You keep the badge either way.",
+       "If your teacher says time is up, press the button underneath that says Leave the Rush and carry on with the lesson."
+      ],
+      "notes": "WHERE THE CLASS IS: factories finished at different times, so the first pupils to reach the Rush will wait for a partner.\n\nSAY: \"You are paired as you arrive, so you might wait a moment. A cartoon robot called Unit 7 keeps you company while you wait. If you have waited a while, the screen offers you the Studio's own orders instead, and you keep the badge either way.\"\n\nWHAT THEY WILL SEE: the picture is the waiting card — the wait line, Unit 7 the robot beside it, and the Take the Studio's orders button under it.\n\nTHE ONE TO STRESS: nobody has to wait for you to unstick them. The screen offers the way forward by itself.\n\nWHEN TO MOVE: next slide."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "Your orders go out, their orders come in, and you check the products",
+      "shot": "orders",
+      "bullets": [
+       "You have a partner: the screen shows their call sign.",
+       "Write three orders — a name and a number of seats each — and press Send my orders.",
+       "Their orders arrive. Press RUN their orders through my factory, and your products go back to them.",
+       "Their products arrive. For each one, say Yes or No: is it what you ordered?",
+       "When both of you have checked, the Rush closes and you see who your partner really was."
+      ],
+      "notes": "SAY, with the picture up: \"Three orders: a name, and seats from one to nine. Send them. Their orders arrive on your screen — press the RUN button and your machines make the products. Then their products come back for you to check, one at a time, yes or no.\"\n\nWHAT THEY WILL SEE: the picture is the order form — three rows, a name and a number of seats each, and the Send my orders button.\n\nTHE ONE TO STRESS: a wait between the steps is the website working, not failing. The screen says what it is waiting for.\n\nWHEN TO MOVE: send them in. This runs about eight minutes."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "size": 15,
+      "heading": "The last screens",
+      "shot": "extras",
+      "bullets": [
+       "One marked question at the end. Your teacher sees how the class did on it.",
+       "Then you put a three-line machine in order. You get one go, and you are shown the working order afterwards.",
+       "Then comes the How did it go? screen. Everybody does it.",
+       "Before those screens, there is a screen of four extra jobs. None of them is marked, and nothing you do on them is saved.",
+       "Nearly time up? Press the button at the bottom of that screen. It takes you straight on to the rest of the lesson."
+      ],
+      "notes": "SAY: \"One marked question at the end. Then a short ordering puzzle, one go. Then the screen that asks how the hour went — everybody does that one, it is how I hear from the whole class.\"\n\nWHAT THEY WILL SEE: the picture is the extra jobs screen — four jobs, none of them marked — with the button at the bottom that says Nearly time up? Click here to finish the rest of the lesson.\n\nTHE ONE TO STRESS: the extra jobs are for pupils with time. Nobody is held up by them; the button at the bottom carries everybody on.\n\nWHEN TO MOVE: when the room is on the last screens, the closer."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Finish the How did it go? screen. Nobody leaves until it is done.",
+       "Sign out every time. If you do not, the next person at this computer is still signed in as you, and everything they do counts as yours.",
+       "Your factory is saved. It will still be there next lesson."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most.\n\nSAY: \"Your factory is saved. You do not need to write it down or email it to yourself.\"\n\nLAST THING: if the room has been noisy about the Rush, it is worth one sentence — \"the products came back better than I expected\" — said honestly. It sets up the next paired lesson."
      }
     ]
    }
@@ -3424,9 +4187,11 @@ function createLesson5Deck() { return createDeck_('j1-05'); }
 function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
 function createJ2Lesson2Deck() { return createDeck_('j2-02'); }
 function createJ2Lesson3Deck() { return createDeck_('j2-03'); }
+function createJ2Lesson4Deck() { return createDeck_('j2-04'); }
 function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 function createJ3Lesson2Deck() { return createDeck_('j3-02'); }
 function createJ3Lesson3Deck() { return createDeck_('j3-03'); }
+function createJ3Lesson4Deck() { return createDeck_('j3-04'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
@@ -3436,9 +4201,11 @@ function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
 function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
 function rebuildJ2Lesson2Deck() { return rebuildDeck_('j2-02'); }
 function rebuildJ2Lesson3Deck() { return rebuildDeck_('j2-03'); }
+function rebuildJ2Lesson4Deck() { return rebuildDeck_('j2-04'); }
 function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 function rebuildJ3Lesson2Deck() { return rebuildDeck_('j3-02'); }
 function rebuildJ3Lesson3Deck() { return rebuildDeck_('j3-03'); }
+function rebuildJ3Lesson4Deck() { return rebuildDeck_('j3-04'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -3528,9 +4295,11 @@ function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
 function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
 function exportJ2Lesson2Proofs() { return exportDeckProofs_('j2-02'); }
 function exportJ2Lesson3Proofs() { return exportDeckProofs_('j2-03'); }
+function exportJ2Lesson4Proofs() { return exportDeckProofs_('j2-04'); }
 function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 function exportJ3Lesson2Proofs() { return exportDeckProofs_('j3-02'); }
 function exportJ3Lesson3Proofs() { return exportDeckProofs_('j3-03'); }
+function exportJ3Lesson4Proofs() { return exportDeckProofs_('j3-04'); }
 
 /* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
    than typed. It used to be a hardcoded array of five, which was true on the day

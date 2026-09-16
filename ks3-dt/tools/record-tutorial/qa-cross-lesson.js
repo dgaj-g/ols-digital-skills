@@ -262,6 +262,29 @@ for (const year of YEARS) {
             '" — one film, one fact (DFM 144)');
         });
       });
+      /* (a2) A PLACEHOLDER IS REFUSED OUTRIGHT (spec §C13 / 164b, 14 Sep 2026).
+         The Lesson 4 drafts were authored before their films existed and carried
+         `t: 0` on every chapter with a `_chapterTimes` note saying so. A second
+         chapter that starts at second 0 is not a time anybody measured; a home
+         still carrying the note has not been through the assembler. Either one
+         fails here by itself — before the manifest comparison below, so a film
+         that was never assembled cannot hide behind "no manifest found". */
+      homes.forEach(h => {
+        const zeros = (h.chapters || []).slice(1).filter(c => Number(c.t) === 0).length;
+        check(zeros === 0, label + '/' + f + ': "' + h.path + '" carries no 0 placeholder after its first chapter (' +
+          (h.chapters || []).map(c => c.t).join('/') + ') — chapter times are COMPUTED AT BUILD, never left at 0');
+      });
+      const placeholderNote = (node, p, out) => {
+        if (Array.isArray(node)) { node.forEach((v, i) => placeholderNote(v, p + '[' + i + ']', out)); return out; }
+        if (!node || typeof node !== 'object') return out;
+        if (typeof node._chapterTimes === 'string' && /placeholder/i.test(node._chapterTimes) && !/COMPUTED AT BUILD \d/.test(node._chapterTimes)) out.push(p);
+        Object.keys(node).forEach(k => placeholderNote(node[k], p + ' › ' + k, out));
+        return out;
+      };
+      const notes = [];
+      (L.chunks || []).forEach(c => placeholderNote(c.config || {}, f.replace(/\.json$/, '') + ' › ' + c.id + ' › config', notes));
+      check(notes.length === 0, label + '/' + f + ': no chapter-time home still carries a placeholder note' +
+        (notes.length ? ' — ' + notes.join('; ') : ''));
       /* (b) and each home says what the assembler measured out of THE FILE IT
          SERVES — the full film, or the half it points at. A home that agreed
          with its twin while both were wrong would still jump a pupil to the

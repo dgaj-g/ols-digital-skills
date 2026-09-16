@@ -1,0 +1,1151 @@
+{
+ "id": "j3-04",
+ "num": 4,
+ "year": "j3",
+ "title": "Function Factory",
+ "tagline": "You build a machine (a function) once, then use it again and again.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Say why one machine (a function) beats the same lines copied many times.",
+  "Write a function with a slot (a parameter) that hands something back (return).",
+  "Use the same function many times, with a different order each time."
+ ],
+ "chunks": [
+  {
+   "id": "floor",
+   "engine": "briefing",
+   "title": "The Function Factory",
+   "minutes": 4,
+   "config": {
+    "clearance": "J3 · LESSON 4 OF 17",
+    "headline": "Today you build a machine once and use it again and again.",
+    "lines": [
+     "The Studio's box office has twelve orders on the counter. Every order needs the same two things. One is a label with the name and the number of seats on it. The other is the cost. Until today, a program that did that job had two lines typed out for every order, and those two lines looked nearly the same every time.",
+     "Here is what that program looks like, just below. It works. It is also very long. The same two lines come round for every order, with only the name and the numbers changed, so if those lines are wrong, they are wrong in twelve places.",
+     "A factory does not build a new machine for every order. It builds the machine once, and then feeds every order through it. Today you build machines like that. In Python, a machine like this is called a FUNCTION.",
+     "A function has a name, a slot for what goes in, and a way of handing the finished thing back out. You write it once. Then you can use it as many times as you like, with a different order each time.",
+     "Here is what happens in the next hour, in the order it happens.",
+     "1. First you watch a short film. It has no sound.",
+     "2. Then you do three training builds. In the first you read a machine that is already built, and fix one word in it. In the second you put the lines of a machine in the right order. In the third you fill in the gaps in a machine.",
+     "3. Then you build your own factory. It has two machines, and the factory floor feeds twelve orders through them.",
+     "4. Then comes the Rush. You are paired with somebody in this room, at another computer. They send you three orders, your machines make the products, and they check what came out. You do the same for them.",
+     "You are not told who your partner is until the end. You each get a call sign instead — a made-up name, like Foreman 4. They see your call sign, and you see theirs.",
+     "5. After the Rush there is a screen with four small extra jobs on it. They are there if you want them, and none of them is marked.",
+     "The hour ends with one marked question and the How did it go? screen."
+    ],
+    "demoTitle": "The twelve-order program",
+    "demoStepMs": 900,
+    "demoAfterLine": 2,
+    "demo": [
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Aoife x 2\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Cost: 8\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Ben x 4\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Cost: 16\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Cara x 1\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "print(\"Cost: 4\")"
+     },
+     {
+      "who": "bot",
+      "label": "The program",
+      "text": "… and eighteen more lines exactly like these, for the other nine orders."
+     }
+    ],
+    "demoNote": "Every one of those lines was typed by hand. If the price of a seat changes, twelve lines have to be found and changed.",
+    "cta": "Start the film",
+    "help": "The words on this card appear a few at a time, as if somebody were typing them. Part of a long program scrolls past at the bottom of the card. Read the whole card, then press Start the film."
+   }
+  },
+  {
+   "id": "film-a",
+   "engine": "video",
+   "title": "Build it once (the film)",
+   "minutes": 6,
+   "config": {
+    "src": "assets/video/j3/j3-l4-a.mp4",
+    "intro": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. Click one of the three buttons under the film to jump to that part.",
+    "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film did not play.",
+    "chapters": [
+     {
+      "t": 0,
+      "label": "The box office"
+     },
+     {
+      "t": 104,
+      "label": "How a machine works: def, the slot, and return"
+     },
+     {
+      "t": 233,
+      "label": "Reading a machine"
+     }
+    ],
+    "_chapterTimes": "COMPUTED AT BUILD 17 Sep 2026 from j3-l4/chapters.json (halves parts/j3-l4-a.mp4, 326.07s); qa-cross-lesson §4 holds these to the served file",
+    "help": "Press play, or click one of the three buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow."
+   }
+  },
+  {
+   "id": "machine-1",
+   "engine": "pyrun",
+   "title": "Training build 1: the Reserved sign machine",
+   "minutes": 7,
+   "config": {
+    "runLabel": "RUN my program",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your program stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said. Fix the line Python stopped at. Then press RUN again.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a machine or a box (a variable) with that name. Check the spelling matches the name on the def line.",
+     "type": "Python stopped for one of two reasons. Reason one: the machine was given the wrong number of orders. Count the slots on the def line, and give the machine one order for each slot. Reason two: a number was joined onto words with a +. Wrap the number in str( ), so the + can join it onto the words.",
+     "badinput": "Python could not read that line. Check three things. A def line ends with a colon. The slot inside its brackets is a name, not a number. The line pushed in under it starts four spaces in.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up. Every line that belongs inside a machine starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Build it once, use it many times",
+    "shapeLead": "Every machine in this lesson has the same shape: a def line with the machine's name and its slot, then one line pushed in under it that hands the product back with return. After that you can use the machine as many times as you like.",
+    "shapeClose": "Back to my program",
+    "kicker": "Training build 1",
+    "intro": "This machine is already built. It makes a Reserved sign for whatever name is dropped into its slot. A Reserved sign is the kind of sign that sits on a seat. The machine is used three times. One word is missing from it on purpose. You press RUN, read what came out, and put the word in.",
+    "steps": [
+     "Read the five lines. The first two are the machine. The last three use it.",
+     "Press RUN my program. Then read what the last three lines printed.",
+     "Type the missing word into the gap, and press RUN again."
+    ],
+    "beginLabel": "Open the machine",
+    "meter": {
+     "title": "The length meter",
+     "beforeLabel": "The twelve-order program",
+     "beforeLines": 24,
+     "afterLabel": "One machine, used twelve times",
+     "afterLines": 15,
+     "say": "Both programs print the same twenty-four lines. The program with one machine has fewer lines than the twelve-order program. If the price of a seat ever changed, you would change it in ONE place instead of twelve.",
+     "before": {
+      "lines": [
+       "print(\"Aoife x 2\")",
+       "print(\"Cost: 8\")",
+       "print(\"Ben x 4\")",
+       "print(\"Cost: 16\")",
+       "print(\"Cara x 1\")",
+       "print(\"Cost: 4\")",
+       "print(\"Dev x 3\")",
+       "print(\"Cost: 12\")",
+       "print(\"Erin x 2\")",
+       "print(\"Cost: 8\")",
+       "print(\"Finn x 5\")",
+       "print(\"Cost: 20\")",
+       "print(\"Grace x 1\")",
+       "print(\"Cost: 4\")",
+       "print(\"Hugo x 2\")",
+       "print(\"Cost: 8\")",
+       "print(\"Isla x 6\")",
+       "print(\"Cost: 24\")",
+       "print(\"Jack x 3\")",
+       "print(\"Cost: 12\")",
+       "print(\"Kate x 2\")",
+       "print(\"Cost: 8\")",
+       "print(\"Liam x 1\")",
+       "print(\"Cost: 4\")"
+      ]
+     },
+     "after": {
+      "lines": [
+       "def order(name, seats):",
+       "    print(name + \" x \" + str(seats))",
+       "    print(\"Cost: \" + str(seats * 4))",
+       "order(\"Aoife\", 2)",
+       "order(\"Ben\", 4)",
+       "order(\"Cara\", 1)",
+       "order(\"Dev\", 3)",
+       "order(\"Erin\", 2)",
+       "order(\"Finn\", 5)",
+       "order(\"Grace\", 1)",
+       "order(\"Hugo\", 2)",
+       "order(\"Isla\", 6)",
+       "order(\"Jack\", 3)",
+       "order(\"Kate\", 2)",
+       "order(\"Liam\", 1)"
+      ]
+     },
+     "linesWord": "{n} lines"
+    },
+    "builds": [
+     {
+      "id": "m1",
+      "mode": "worked",
+      "chat": false,
+      "goalLine": "Make this machine hand back a Reserved sign, then watch it make three.",
+      "brief": "The def line and the line under it are the machine. Nothing is printed when Python reads them — it only BUILDS the machine. The three print lines at the bottom USE it, once for each name. One word is missing from the machine's inside.",
+      "lines": [
+       {
+        "t": "def sign(name):"
+       },
+       {
+        "t": "    ____ \"Reserved for \" + name",
+        "blanks": [
+         {
+          "key": "m1a",
+          "slot": "____",
+          "pre": "",
+          "size": 8,
+          "max": 8,
+          "label": "the word that hands the sign back out of the machine"
+         }
+        ]
+       },
+       {
+        "t": "print(sign(\"Aoife\"))"
+       },
+       {
+        "t": "print(sign(\"Ben\"))"
+       },
+       {
+        "t": "print(sign(\"Cara\"))"
+       }
+      ],
+      "target": [
+       "Reserved for Aoife",
+       "Reserved for Ben",
+       "Reserved for Cara"
+      ],
+      "shape": [
+       "def <machine name>(<slot>):",
+       "    return <what it hands back>",
+       "print( <machine name>( <an order> ) )"
+      ],
+      "shapeNote": "The slot is called a parameter. Whatever is dropped into it — Aoife, then Ben, then Cara — is what the machine works with that time.",
+      "check": {
+       "kind": "target"
+      },
+      "matchedSay": "Your machine made three signs. It was written once. Each of the three bottom lines dropped a different name into its slot, and return handed each sign back out.",
+      "notYetSay": "The machine made nothing. Each print at the bottom printed None — Python's word for nothing at all. The machine needs the word that HANDS the sign back out. The film showed it."
+     }
+    ],
+    "help": "This machine has five lines and one missing word.\n\n1. Read the lines. The def line and the line under it are the machine. The three print lines use it.\n2. Press RUN my program. Read what it printed.\n3. Type the missing word into the gap on line 2, then press RUN again.\n\nThe length meter on this card compares the twelve-order program from the first card with one machine used twelve times."
+   }
+  },
+  {
+   "id": "machine-2",
+   "engine": "parsons",
+   "title": "Training build 2: put the machine in order",
+   "minutes": 5,
+   "config": {
+    "introKicker": "Training build 2",
+    "intro": "You get the five lines of a working program, out of order. Put them in the order that makes the program do these four things, one after the other:",
+    "steps": [
+     "Build the stamp machine: its def line, then its inside.",
+     "Use it for Aoife.",
+     "Use it for Ben.",
+     "Print the words Two stamps, one machine."
+    ],
+    "introAfter": "Click a line in The lines to move it across, or drag it. The machine's inside is already pushed in by four spaces — keep it that way. You get one go, and you are shown the working order afterwards.",
+    "item": {
+     "id": "j3t4-stamp",
+     "prompt": "Put these five lines in the order that makes the stamp machine work.",
+     "blocks": [
+      "print(stamp(\"Ben\"))",
+      "def stamp(name):",
+      "print(\"Two stamps, one machine.\")",
+      "print(stamp(\"Aoife\"))",
+      "    return \"Paid: \" + name"
+     ]
+    },
+    "doneText": "Correct. A machine has to be built before it can be used, so the def line and its inside come first. The two uses come next. The line that prints Two stamps, one machine comes last.",
+    "help": "Click a line on the left to move it into Your program. You can drag it across instead. Press Check my program when all five are across.",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "trayLabel": "The lines",
+    "checkLabel": "Check my program"
+   }
+  },
+  {
+   "id": "machine-3",
+   "engine": "pyrun",
+   "title": "Training build 3: fill the gaps",
+   "minutes": 5,
+   "badge": {
+    "id": "j3-b10",
+    "name": "Machine Builder",
+    "icon": "assets/badges/bolt.png",
+    "xp": 12
+   },
+   "config": {
+    "runLabel": "RUN my program",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your program stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said. Fix the line Python stopped at. Then press RUN again.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a machine or a box (a variable) with that name. Check the spelling matches the name on the def line.",
+     "type": "Python stopped for one of two reasons. Reason one: the machine was given the wrong number of orders. Count the slots on the def line, and give the machine one order for each slot. Reason two: a number was joined onto words with a +. Wrap the number in str( ), so the + can join it onto the words.",
+     "badinput": "Python could not read that line. Check three things. A def line ends with a colon. The slot inside its brackets is a name, not a number. The line pushed in under it starts four spaces in.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up. Every line that belongs inside a machine starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Build it once, use it many times",
+    "shapeLead": "Every machine in this lesson has the same shape: a def line with the machine's name and its slot, then one line pushed in under it that hands the product back with return. After that you can use the machine as many times as you like.",
+    "shapeClose": "Back to my program",
+    "kicker": "Training build 3",
+    "intro": "This time you do not write the lines that use the machine. The factory floor under your program does that for you. You build the price machine: two lines, with two gaps. The floor drops three orders into the machine and shows what comes out. Two of the lines you are given are mistakes on purpose.",
+    "steps": [
+     "Read the four lines on the left. Two of them make the machine.",
+     "Move those two into Your program, in order: the def line, then its inside.",
+     "Type a name for the slot into both gaps — the same name both times.",
+     "Press RUN my program and read the three product cards on the floor."
+    ],
+    "beginLabel": "Open the machine",
+    "firstTryXp": 6,
+    "firstTryXpCap": 6,
+    "lockedNote": "RUN switches on as soon as there is at least one line in Your program.",
+    "howLine": "Move the two lines you need into **Your program**, then type the slot's name into both gaps.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "takeBackLabel": "Put this line back",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "trayClickEject": false,
+    "floor": {
+     "title": "The factory floor",
+     "lead": "The floor drops every order into your machine and shows what comes out.",
+     "orderLabel": "Order",
+     "productLabel": "Product",
+     "expectedLabel": "Should be",
+     "okStamp": "matches",
+     "noneStamp": "nothing came back",
+     "wrongStamp": "not what it should be",
+     "rejectTitle": "The reject bin",
+     "rejectLead": "These products came out wrong. Each one is shown beside what it should be.",
+     "rejectEmpty": "The reject bin is empty.",
+     "noMachine": "The floor cannot find a machine called {fn}. Check the name on your def line.",
+     "yourLabel": "Your product",
+     "moreSay": "… and {n} more like these.",
+     "allNoneSay": "Every product came back as None — {stamp}. The machine printed instead of handing back with return. One is shown beside what it should be:",
+     "stoppedLead": "Python stopped:",
+     "noMachineCard": "(no machine)"
+    },
+    "builds": [
+     {
+      "id": "m3",
+      "chat": false,
+      "goalLine": "Build the price machine: a seat costs 4 pounds, so it hands back the number of seats times 4.",
+      "brief": "The slot is where the number of seats goes in. Give the slot a name in the def line, and use the same name inside the machine. The floor will drop 2, then 5, then 1 into it.",
+      "lines": [
+       {
+        "t": "def price(____):",
+        "blanks": [
+         {
+          "key": "m3a",
+          "slot": "____",
+          "size": 8,
+          "max": 12,
+          "ph": "",
+          "label": "a name for the slot — what goes into the machine"
+         }
+        ]
+       },
+       {
+        "t": "    return ____ * 4",
+        "blanks": [
+         {
+          "key": "m3b",
+          "slot": "____",
+          "size": 8,
+          "max": 12,
+          "ph": "",
+          "label": "the slot's name again, so the machine uses what was put in"
+         }
+        ]
+       },
+       {
+        "t": "    print(seats * 4)"
+       },
+       {
+        "t": "def price(4):"
+       }
+      ],
+      "shape": [
+       "def <machine name>(<slot>):",
+       "    return <the slot> * 4"
+      ],
+      "shapeNote": "The word in the def line's brackets and the word inside the machine must be the same word. That is how the machine gets hold of what was dropped in.",
+      "check": {
+       "kind": "calls",
+       "fn": "price",
+       "args": [
+        [
+         2
+        ],
+        [
+         5
+        ],
+        [
+         1
+        ]
+       ],
+       "reference": "def price(seats):\n    return seats * 4"
+      },
+      "actions": [
+       "Read the four lines on the left. Two of them make the machine.",
+       "Move the def line across, then its inside.",
+       "Leave the **two mistakes** where they are: one prints instead of handing back, and one has a number where the slot's name should be.",
+       "Type the slot's name into both gaps.",
+       "Press **RUN my program**. The floor drops three orders in and shows three product cards."
+      ],
+      "matchedSay": "Three orders went in, and three correct products came out. The slot took 2, then 5, then 1, and the machine used whatever was in it each time.",
+      "notYetSay": "Look at the reject bin. If a product is stamped “nothing came back”, the machine printed instead of handing back with return. If a product is the wrong number, the line inside the machine is not using the slot's name, so it is not using what was dropped in.",
+      "runCheckedSay": "You chose the slot's name yourself, so this card cannot say the exact words your lines should have. Press RUN and read the product cards on the floor."
+     }
+    ],
+    "help": "Two lines make this machine, and two lines are mistakes on purpose.\n\n1. Move the def line into Your program, then its inside.\n2. Type a name for the slot into both gaps — the same name both times.\n3. Press RUN my program.\n\nThe factory floor under the program drops three orders into your machine and shows a product card for each. A card in the reject bin is a product that is not what it should be."
+   }
+  },
+  {
+   "id": "factory",
+   "engine": "pyrun",
+   "title": "Your factory",
+   "minutes": 16,
+   "badge": {
+    "id": "j3-b11",
+    "name": "Factory Owner",
+    "icon": "assets/badges/id.png",
+    "xp": 15
+   },
+   "config": {
+    "runLabel": "RUN my program",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your program stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said. Fix the line Python stopped at. Then press RUN again.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a machine or a box (a variable) with that name. Check the spelling matches the name on the def line.",
+     "type": "Python stopped for one of two reasons. Reason one: the machine was given the wrong number of orders. Count the slots on the def line, and give the machine one order for each slot. Reason two: a number was joined onto words with a +. Wrap the number in str( ), so the + can join it onto the words.",
+     "badinput": "Python could not read that line. Check three things. A def line ends with a colon. The slot inside its brackets is a name, not a number. The line pushed in under it starts four spaces in.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up. Every line that belongs inside a machine starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "shapeLabel": "Show me the shape",
+    "shapeKicker": "The shape",
+    "shapeTitle": "Build it once, use it many times",
+    "shapeLead": "Every machine in this lesson has the same shape. First comes a def line with the machine's name and its slot (or its two slots). Then comes one line pushed in under it, which hands the product back with return. After that you can use the machine as many times as you like.",
+    "shapeClose": "Back to my program",
+    "kicker": "Your factory",
+    "title": "Build your factory",
+    "intro": "This is the factory you build yourself. It has two machines, and both must do what the spec card says. The floor feeds twelve orders through them. The film shows how to read the spec card, and what the reject bin tells you.",
+    "introVideo": "assets/video/j3/j3-l4-b.mp4",
+    "introVideoSay": "This film is three minutes long. It shows how to read the spec card, and what the reject bin tells you.",
+    "mode": "editor",
+    "featureXp": 5,
+    "featureXpCap": 10,
+    "startLabel": "Start building",
+    "checklistLabel": "The two machines",
+    "pendingLabel": "not yet",
+    "matchedAllLabel": "BOTH MACHINES WORK",
+    "emptySay": "Your factory is empty. Type the two machines, or press Put the shape in for me.",
+    "starterSay": "Want the shape put in for you? Both machines will still be empty inside. The two lines at the bottom use the machines. You can change those two lines if you like.",
+    "starterLabel": "Put the shape in for me",
+    "starterDoneSay": "The shape is in. Now write the inside of each machine — the return line — and press RUN.",
+    "editor": {
+     "title": "Your factory",
+     "aria": "Type your factory here",
+     "softWrap": true,
+     "autoIndent": true,
+     "indentGuides": true
+    },
+    "floor": {
+     "title": "The factory floor",
+     "lead": "The floor drops every order into your machine and shows what comes out.",
+     "orderLabel": "Order",
+     "productLabel": "Product",
+     "expectedLabel": "Should be",
+     "okStamp": "matches",
+     "noneStamp": "nothing came back",
+     "wrongStamp": "not what the spec asked for",
+     "rejectTitle": "The reject bin",
+     "rejectLead": "These products came out wrong. Each one is shown beside what it should be.",
+     "rejectEmpty": "The reject bin is empty.",
+     "noMachine": "The floor cannot find a machine called {fn}. Check the name on your def line.",
+     "yourLabel": "Your product",
+     "moreSay": "… and {n} more like these.",
+     "allNoneSay": "Every product came back as None — {stamp}. The machine printed instead of handing back with return. One is shown beside what it should be:",
+     "stoppedLead": "Python stopped:",
+     "noMachineCard": "(no machine)"
+    },
+    "spec": {
+     "title": "The spec card",
+     "lead": "Every order on the floor is a name and a number of seats. Your factory needs these two machines:",
+     "rows": [
+      {
+       "fn": "label",
+       "slots": "name, seats",
+       "gives": "the name, a space, the letter x, a space, then the seats",
+       "example": "label(\"Aoife\", 2) hands back Aoife x 2"
+      },
+      {
+       "fn": "cost",
+       "slots": "seats",
+       "gives": "the seats times 4 — a seat is 4 pounds",
+       "example": "cost(2) hands back 8"
+      }
+     ],
+     "note": "The label machine has TWO slots, with a comma between them. str( ) wraps a number so a + can join it onto words.",
+     "cols": [
+      "Machine",
+      "Its slots",
+      "What it hands back",
+      "For example"
+     ]
+    },
+    "builds": [
+     {
+      "id": "factory",
+      "saveAs": "l4factory",
+      "mode": "editor",
+      "staged": true,
+      "chat": false,
+      "planLabel": "The two machines your factory needs",
+      "goalLine": "Build two machines: label, which makes the label for an order, and cost, which works out what it costs.",
+      "brief": "Read the spec card. Then build both machines in the box, and use each one once at the bottom so you can see it work. When you press RUN, the floor drops all twelve orders into your machines.",
+      "orders": [
+       [
+        "Aoife",
+        2
+       ],
+       [
+        "Ben",
+        4
+       ],
+       [
+        "Cara",
+        1
+       ],
+       [
+        "Dev",
+        3
+       ],
+       [
+        "Erin",
+        2
+       ],
+       [
+        "Finn",
+        5
+       ],
+       [
+        "Grace",
+        1
+       ],
+       [
+        "Hugo",
+        2
+       ],
+       [
+        "Isla",
+        6
+       ],
+       [
+        "Jack",
+        3
+       ],
+       [
+        "Kate",
+        2
+       ],
+       [
+        "Liam",
+        1
+       ]
+      ],
+      "features": [
+       {
+        "id": "label",
+        "probe": "calls",
+        "fn": "label",
+        "argsFrom": "orders",
+        "reference": "def label(name, seats):\n    return name + \" x \" + str(seats)",
+        "label": "label makes the right label for every order.",
+        "nudge": "Look at the reject bin: it shows your label beside the label the spec wanted. Check the spaces and the x, and check str( ) is wrapping the seats."
+       },
+       {
+        "id": "cost",
+        "probe": "calls",
+        "fn": "cost",
+        "argsFrom": "orders",
+        "argIndex": [
+         1
+        ],
+        "reference": "def cost(seats):\n    return seats * 4",
+        "label": "cost works out the right cost for every order.",
+        "nudge": "Look at the reject bin. If the stamp on a cost says nothing came back, your machine printed instead of using return. If a cost is the wrong number, the inside is not the seats times 4."
+       }
+      ],
+      "starter": [
+       "def label(name, seats):",
+       "    return ",
+       "",
+       "def cost(seats):",
+       "    return ",
+       "",
+       "print(label(\"Aoife\", 2))",
+       "print(cost(2))"
+      ],
+      "shape": [
+       "def <machine name>(<slot>, <slot>):",
+       "    return <what it hands back>",
+       "",
+       "def <machine name>(<slot>):",
+       "    return <what it hands back>",
+       "",
+       "print( <machine name>( an order ) )"
+      ],
+      "shapeNote": "Build every machine before you use it. The line pushed in under def is the machine's inside, and return is how it hands the product back.",
+      "matchedSay": "Twelve orders went in. Twelve labels and twelve costs came out, and every one is correct. All of them came from two machines you wrote once. That is what a function is for: you write it once, and you use it again and again.",
+      "notYetSay": "Your factory is not making every product yet. The reject bin shows each wrong product beside the one the spec wanted. Fix one machine at a time, then press RUN again."
+     },
+     {
+      "id": "chain",
+      "optional": true,
+      "mode": "editor",
+      "chat": false,
+      "from": "l4factory",
+      "offerKicker": "Here is one more thing to try, if you want it.",
+      "offerTitle": "The chain",
+      "offerLead": "There is a third machine you can build. It USES your first two: it calls label and cost, and hands back one line with both in it. It is not worth any points, and you can skip it.",
+      "offerYes": "Build the chain",
+      "offerNo": "No thanks — carry on",
+      "offerFree": "You get no points either way.",
+      "goalLine": "Build receipt(name, seats): it hands back the label, a space, a dash, a space, the cost, a space, and the word pounds — like Aoife x 2 - 8 pounds.",
+      "brief": "Your two machines are already in the box. A machine can use another machine: inside receipt, write label(name, seats) and cost(seats) where you need them. The cost is a number, so str( ) has to wrap it before a + can join it onto words.",
+      "orders": [
+       [
+        "Aoife",
+        2
+       ],
+       [
+        "Ben",
+        4
+       ],
+       [
+        "Cara",
+        1
+       ]
+      ],
+      "features": [
+       {
+        "id": "receipt",
+        "probe": "calls",
+        "fn": "receipt",
+        "argsFrom": "orders",
+        "reference": "def label(name, seats):\n    return name + \" x \" + str(seats)\ndef cost(seats):\n    return seats * 4\ndef receipt(name, seats):\n    return label(name, seats) + \" - \" + str(cost(seats)) + \" pounds\"",
+        "label": "receipt hands back the label and the cost in one line, for every order.",
+        "nudge": "Look at the reject bin. Check the dash has a space on each side, check str( ) is wrapping cost(seats), and check the word pounds is at the end."
+       }
+      ],
+      "shape": [
+       "def receipt(<slot>, <slot>):",
+       "    return label(<slot>, <slot>) + \" - \" + str(cost(<slot>)) + \" pounds\""
+      ],
+      "shapeNote": "This is a machine calling a machine. label and cost each hand something back, and receipt joins the two together.",
+      "matchedSay": "Your receipt machine uses two other machines. Big programs are built the same way: people write small machines that each do one job, and then join them together.",
+      "notYetSay": "The receipt machine is not working yet. Read the reject bin: it shows your receipt beside the one the spec wanted.",
+      "finishLabel": "Finish this part and carry on",
+      "staged": true
+     }
+    ],
+    "help": "1. Read the spec card. It asks for two machines.\n2. Watch the short film.\n3. Press Start building.\n4. Type both machines into the box called Your factory, or press Put the shape in for me and then write the inside of each machine.\n5. Press RUN my program. The floor drops twelve orders into your machines and shows a product card for each. Anything wrong goes in the reject bin, beside the product the spec wanted.\n6. When the card says BOTH MACHINES WORK, press Continue.",
+    "jobWord": "Job",
+    "nextBuildLabel": "Continue"
+   }
+  },
+  {
+   "id": "rush",
+   "engine": "orders",
+   "title": "The Rush",
+   "minutes": 8,
+   "badge": {
+    "id": "j3-b12",
+    "name": "Rush Hour",
+    "icon": "assets/badges/id.png",
+    "xp": 12
+   },
+   "config": {
+    "kicker": "The Rush",
+    "title": "The Rush: partner orders",
+    "intro": "Your factory works. Now somebody else in this room sends it orders. You are paired with a classmate at another computer. They write three orders, your machines make the products, and they check what came out. You do the same for them.",
+    "steps": [
+     "You are given a **call sign** — a made-up name like Foreman 4. That is the only name your partner sees, and theirs is the only name you see.",
+     "You write three orders: a name and a number of seats each.",
+     "Your orders go to their factory, and theirs come to yours. Your machines make the products.",
+     "You check the products that came back from their factory: is each one what you ordered?"
+    ],
+    "beginLabel": "Open the Rush",
+    "phaseCount": 4,
+    "sideAfterMs": 8000,
+    "words": {
+     "signPrefix": "",
+     "openingHead": "Looking for somebody to send orders to…",
+     "openingSay": "Checking who else in your class has a working factory right now…",
+     "waitHead": "Waiting for a partner.",
+     "waitSay": "You are in the queue. Somebody else in your class has to reach this screen too. As soon as one of them does, the two of you are paired.",
+     "trioHoldHead": "You are one of the last three.",
+     "trioHoldSay": "There is an odd number of you left, so the last three of you work as one group. Waiting for the third person to arrive…",
+     "waitLongSay": "Still waiting? You do not have to keep waiting. Press “Take the Studio's orders” below, and the Rush starts on this screen with three orders from the Studio. You keep the badge either way.",
+     "waitOwnLabel": "Take the Studio's orders",
+     "ownKicker": "THE STUDIO'S ORDERS",
+     "ownTitle": "You stopped waiting, so the Studio is sending you orders instead.",
+     "ownLine": "Three orders arrive, your machines make the products, and you check them yourself. The only difference is that no classmate checks your products.",
+     "ownButton": "Start the Rush",
+     "leaveLabel": "Leave the Rush and carry on with the lesson",
+     "leaveSay": "If your teacher says time is up while you are waiting, you can leave here and finish the lesson. Anything you have already earned stays yours.",
+     "pairKicker": "PAIRED",
+     "pairTitle": "You have a partner.",
+     "pairLead": "Your partner for the Rush is {sign}. They are at another computer in this room, and their factory is waiting for your orders.",
+     "mineLine": "On their screen, you are {sign}.",
+     "secretPair": "You are not told who they really are until the Rush ends. So keep real names out of anything you type here — including the names on your orders, which can be any names you like.",
+     "pairClose": "You each write three orders. The orders cross over, both factories run, and you each check what came back.",
+     "trioKicker": "A THREE",
+     "trioTitle": "You are working in a group of three.",
+     "trioLead": "There is an odd number of you here, so the last three of you work together. Your group is {signs}. Your orders go to one person in your group. The other person's orders come to you.",
+     "secretTrio": "You are not told who they really are until the Rush ends. So keep real names out of anything you type here. That includes the names on your orders — make those names up.",
+     "trioClose": "Each of you writes three orders, each factory runs somebody else's orders, and each of you checks the products that came back.",
+     "matchButton": "Start the Rush",
+     "soloKicker": "THE STUDIO'S ORDERS",
+     "soloTitle": "Everybody else has already done the Rush, so the Studio is sending you orders instead.",
+     "soloLine": "Three orders arrive, your machines make the products, and you check them yourself. The badge is yours either way.",
+     "soloButton": "Take the Studio's orders",
+     "monitorBanner": "YOUR TEACHER CAN READ EVERYTHING YOU SEND EACH OTHER.",
+     "chatPlaceholder": "Message your partner…",
+     "chatSend": "Send",
+     "meWho": "You",
+     "chatOpenSay": "You can send messages to each other now. Remember your teacher can read them.",
+     "studioName": "the Studio",
+     "offTitle": "Pairing is switched off for your class today, so the Studio is sending you orders instead."
+    },
+    "form": {
+     "kicker": "Your orders",
+     "title": "Write three orders",
+     "lead": "Each order is a first name and a number of seats from 1 to 9. Your partner's factory will make a product for each of these orders.",
+     "nameLabel": "Name",
+     "seatsLabel": "Seats",
+     "sendLabel": "Send my orders",
+     "emptySay": "Every order needs a name and a number of seats between 1 and 9.",
+     "sendingSay": "Sending your orders…",
+     "sentSay": "Sent. Waiting for your partner's orders…",
+     "failSay": "Your orders could not be sent just now. Press Send my orders again in a moment."
+    },
+    "run": {
+     "kicker": "Their orders",
+     "title": "Orders from {sign} have arrived.",
+     "lead": "Press RUN to drop them into your factory. Your machines make the products, and the products go back to your partner to check.",
+     "runLabel": "RUN their orders through my factory",
+     "sendingSay": "Sending the products to {sign}…",
+     "sentSay": "Sent. Waiting for their factory to send back the products it makes from your orders…",
+     "brokenSay": "Your factory stopped while making these orders. Python says what went wrong in the console below. Press RUN again to try once more."
+    },
+    "check": {
+     "kicker": "Check the products",
+     "title": "The products from their factory",
+     "lead": "Here is what {sign}'s factory made from your orders. For each product, say whether it is what you ordered.",
+     "orderLabel": "You ordered",
+     "productLabel": "They made",
+     "yes": "Yes — that is my order",
+     "no": "No — that is not right",
+     "noneStamp": "nothing came back",
+     "doneSay": "You have checked every product. Waiting for your partner to finish checking yours…",
+     "ownDoneSay": "You have checked every product.",
+     "ownLead": "Here is what your factory made from the Studio's orders. For each product, say whether it is what the Studio ordered."
+    },
+    "seal": {
+     "sealingSay": "Closing the Rush…",
+     "sealKicker": "THE RUSH IS OVER",
+     "sealTitle": "Both factories ran, and both sets of products were checked.",
+     "sealSay": "Your partner said {yes} of your {n} products were what they ordered. {sign} was really {name}. Nobody is marked on what their partner said. The Rush is for taking part, not for marks.",
+     "ownSealTitle": "Your factory ran the Studio's orders, and you checked the products.",
+     "ownSealSay": "You said {yes} of the {n} products were right. The Rush is for taking part, not for marks.",
+     "_provenance": "DFM 197 14 Sep 2026: \"3 products\" → \"{n} products\" — a two-machine factory makes six products from three orders, and the seal said \"6 of the 3\" (qa-rush-paired)"
+    },
+    "leaveTitle": "Leave the Rush?",
+    "leaveAsk": "You have done {done} of {all} parts of the Rush. The badge is for finishing it. Leave now, or keep going?",
+    "leaveYes": "Leave now",
+    "finishLabel": "Leave the Rush and carry on with the lesson",
+    "afterLabel": "Carry on with the lesson",
+    "solo": {
+     "orders": [
+      [
+       "Nuala",
+       3
+      ],
+      [
+       "Orla",
+       1
+      ],
+      [
+       "Pat",
+       5
+      ]
+     ]
+    },
+    "sideShow": {
+     "id": "unit7",
+     "name": "Unit 7",
+     "mode": "monologue",
+     "alt": "Unit 7, a cartoon factory robot with a dented chest plate and one drooping antenna",
+     "art": {
+      "idle": "assets/img/j3/unit7/unit7-idle.webp",
+      "typing": "assets/img/j3/unit7/unit7-typing.webp",
+      "delighted": "assets/img/j3/unit7/unit7-delighted.webp",
+      "offended": "assets/img/j3/unit7/unit7-offended.webp",
+      "devastated": "assets/img/j3/unit7/unit7-offended.webp"
+     },
+     "typingMs": 700,
+     "everyMs": 7000,
+     "open": "Unit 7 reporting. I have made this same part four thousand and twelve times. By hand. This one is slightly worse than the last one.",
+     "lines": [
+      "Nobody has asked me for a part in nearly a minute. I do not know what to do with my arms.",
+      "I once tried to make two parts at the same time. We do not talk about it.",
+      "The conveyor belt and I are not speaking. It knows what it did.",
+      "I have a dream. In the dream, somebody builds a machine, and I sit down.",
+      "Four thousand and thirteen. I have started another one. I could not help myself.",
+      "If you are still waiting, so am I. We are waiting together. This is the nicest thing that has happened to me all week."
+     ],
+     "exitFace": "delighted",
+     "exitLine": "A PARTNER! ORDERS! A REASON TO EXIST! Please excuse the shouting — go, go, they are waiting!",
+     "leaveLine": "Off you go. I will be here, making part four thousand and fourteen.",
+     "exitMs": 1800
+    },
+    "help": "The Rush has four parts.\n\n1. You are paired with a classmate, and you both get a call sign.\n2. You write three orders — a name and a number of seats each — and press Send my orders.\n3. Their orders arrive. Press RUN and your factory makes the products, which go back to them.\n4. Their products arrive. For each one, click Yes or No: is it what you ordered?\n\nIf nobody is free to pair with you, the Studio sends you three orders instead, and you check the products yourself. Press the button at the bottom to leave the Rush and carry on with the lesson."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 2,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j3x4-1",
+      "stem": "Sinéad builds a machine. Its first line is def bonus(points): and the line pushed in under it is return points * 2. Then she writes print(bonus(5)). What does that line show?",
+      "options": [
+       "points * 2",
+       "10",
+       "Nothing at all",
+       "5"
+      ]
+     }
+    ],
+    "help": "This is one marked question, about a machine like the ones you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away."
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the machine",
+   "minutes": 1,
+   "config": {
+    "introKicker": "Exit check — part 2",
+    "intro": "This is the last part of the exit check, and it is only three lines.\n\nClick a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards.",
+    "item": {
+     "id": "j3x4-p",
+     "prompt": "Put these three lines in the order that makes the greet machine work.",
+     "blocks": [
+      "print(greet(\"Maria\"))",
+      "def greet(name):",
+      "    return \"Welcome, \" + name"
+     ]
+    },
+    "doneText": "Correct. The machine is built first: the def line, then its inside pushed in under it. A line can use the machine only after it is built.",
+    "help": "Click a line in The lines to move it into Your program, or drag it across. Press Check my program when you are sure. You get one go.",
+    "pre": true,
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "trayLabel": "The lines",
+    "checkLabel": "Check my program"
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "The internet has dropped out. Your answers are saved on this computer. They will send on their own when the internet comes back. The lesson is finished.",
+    "difficulty": true,
+    "comment": true,
+    "help": "1. Under each sentence, click the button that says how today really went.\n2. At the bottom of the screen, click the button that says how hard the hour felt.\n3. Write a comment if you want to. Only your teacher reads the comment.\n4. Press Send when every part is done.",
+    "statements": [
+     "I can say why one machine (a function) is better than the same lines copied many times.",
+     "I can write a function with a slot (a parameter) that hands something back (return).",
+     "I can use the same function many times, with a different order each time."
+    ]
+   }
+  },
+  {
+   "id": "extras",
+   "engine": "pyrun",
+   "title": "The Studio's extra jobs",
+   "minutes": 0,
+   "config": {
+    "runLabel": "RUN this program",
+    "matchedLabel": "IT WORKS",
+    "notYetLabel": "NOT WORKING YET",
+    "notCheckedLabel": "could not be checked",
+    "continueLabel": "Continue",
+    "runDiedSay": "Your program stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said. Fix the line Python stopped at. Then press RUN again.",
+    "consoleLabels": {
+     "title": "The console",
+     "idle": "Nothing has run yet. Press RUN when you are ready.",
+     "running": "Running your program…",
+     "printedLead": "Your program printed this:",
+     "nothingLead": "Your program ran, and it printed nothing at all.",
+     "errorLead": "Python stopped, and this is exactly what it said:",
+     "offline": "Python did not load just now. Tell whoever is in the room, and press RUN again in a moment."
+    },
+    "errorWords": {
+     "name": "Python does not know a machine or a box (a variable) with that name. Check the spelling matches the name on the def line.",
+     "type": "Python stopped for one of two reasons. Reason one: the machine was given the wrong number of orders. Count the slots on the def line, and give the machine one order for each slot. Reason two: a number was joined onto words with a +. Wrap the number in str( ), so the + can join it onto the words.",
+     "badinput": "Python could not read that line. Check three things. A def line ends with a colon. The slot inside its brackets is a name, not a number. The line pushed in under it starts four spaces in.",
+     "eof": "Something was opened on that line and never closed. Look for a bracket or a speech mark with no partner.",
+     "unindent": "The lines are not lined up. Every line that belongs inside a machine starts exactly four spaces in — no more and no less.",
+     "timelimit": "Your program was still going after a few seconds, so the website stopped it. Press RUN again. If it happens a second time, tell whoever is in the room.",
+     "other": "Python stopped at the line named above. Read that line again, slowly, and check every bracket and every speech mark."
+    },
+    "extrasMode": true,
+    "kicker": "Extra jobs",
+    "intro": "There are four small jobs on this screen, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished.",
+    "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
+    "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
+    "backLabel": "Back to the extra jobs",
+    "doneTick": "job done",
+    "howLine": "Move the lines you need into **Your program**, fill in every gap, then press RUN.",
+    "trayLabel": "The lines",
+    "progLabel": "Your program",
+    "trayEmpty": "Every line has been moved across.",
+    "progEmpty": "Nothing here yet — click or drag a line across from The lines.",
+    "lockedNote": "RUN switches on as soon as there is at least one line in Your program.",
+    "blankEmptySay": "One of the gaps is still empty. Type something into it, then press RUN again.",
+    "matchedSay": "That works.",
+    "notYetSay": "Your program is not working yet. Find the lines under the words This is what your program should print. Compare them with what the console printed, and find the first line that is different.",
+    "targetLead": "This is what your program should print:",
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "allDoneLabel": "All four jobs are done — carry on with the lesson",
+    "allDoneSay": "**All four jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen.",
+    "help": "There are four jobs on this screen, and all of them are optional. None of them is worth points, and nothing here is saved. Pick one from the list, or press the button at the bottom to carry on with the lesson.",
+    "builds": [
+     {
+      "id": "j3x4-swap",
+      "title": "Job 1 — the slots the other way round",
+      "whiff": "See what happens when the name and the seats go into the wrong slots.",
+      "goalLine": "Run this program and read what comes out. Then swap the name and the number of seats back the right way round.",
+      "brief": "A machine fills its slots in order. The first thing in the brackets goes into the first slot, and the second thing goes into the second slot. Put them the wrong way round, and the machine does not check what you gave it. The number goes into the slot meant for a name, and the name goes into the slot meant for the seats.",
+      "lines": [
+       {
+        "t": "print(label(____))",
+        "blanks": [
+         {
+          "key": "swap",
+          "slot": "____",
+          "pre": "2, \"Aoife\"",
+          "size": 14,
+          "max": 24,
+          "ph": "",
+          "label": "the name and the number of seats — the first one goes into the first slot"
+         }
+        ]
+       }
+      ],
+      "check": {
+       "kind": "clean"
+      },
+      "example": {
+       "lead": "Try it as it is first. The first label comes out fine. Then Python stops at the last line, because the number 2 went into the slot meant for a name, and a number cannot be joined onto words. Read what it says. Then change the last line so the name and the seats are in the right slots.",
+       "lines": [],
+       "after": "This job shows one thing. A machine takes whatever is dropped into its slots, in order. It does not check what you gave it."
+      },
+      "matchedSay": "It runs all the way through now: the name goes in first and the seats second, and both labels come out right.",
+      "notYetSay": "Python stopped at the last line. That is what this job is about. Read what Python said in the console. Then put the name and the seats in the right slots, and press RUN again.",
+      "runCheckedSay": "This job is about reading what comes out, so this card does not check what your program printed. Press RUN, read the console, then fix the last line.",
+      "_provenance": "DFM 197 14 Sep 2026: last line moved into a gap (fixedTop + pre-filled blank) — an assemble card cannot \"change the last line\"",
+      "fixedTopLabel": "Already written — the machine, and one order that goes in the right way round",
+      "fixedTop": [
+       "def label(name, seats):",
+       "    return name + \" x \" + str(seats)",
+       "print(label(\"Aoife\", 2))"
+      ]
+     },
+     {
+      "id": "j3x4-loop",
+      "title": "Job 2 — the list of names",
+      "whiff": "A loop feeds every name in a list through your machine.",
+      "goalLine": "Feed every name in a list through the label machine, one after another.",
+      "brief": "You met a loop in Lesson 3. A loop goes through a list one thing at a time. Here, the loop drops each name into the label machine.",
+      "lines": [
+       {
+        "t": "def label(name, seats):"
+       },
+       {
+        "t": "    return name + \" x \" + str(seats)"
+       },
+       {
+        "t": "names = [\"Aoife\", \"Ben\", \"Cara\", \"Dev\"]"
+       },
+       {
+        "t": "for name in names:"
+       },
+       {
+        "t": "    print(label(name, 2))"
+       },
+       {
+        "t": "print(label(names, 2))"
+       }
+      ],
+      "target": [
+       "Aoife x 2",
+       "Ben x 2",
+       "Cara x 2",
+       "Dev x 2"
+      ],
+      "check": {
+       "kind": "target"
+      },
+      "matchedSay": "One machine and one loop made four labels. If the list had a fifth name, the loop would make a fifth label, and nothing else would have to change."
+     },
+     {
+      "id": "j3x4-named",
+      "title": "Job 3 — the named slot",
+      "whiff": "Fill a slot by its name, so the order inside the brackets stops mattering.",
+      "goalLine": "Use the machine by naming its slots, in either order.",
+      "brief": "You can fill a slot by writing its name and an = sign inside the brackets. Then the order does not matter, because each thing goes to the slot you named.",
+      "lines": [
+       {
+        "t": "def label(name, seats):"
+       },
+       {
+        "t": "    return name + \" x \" + str(seats)"
+       },
+       {
+        "t": "print(label(name=\"Aoife\", seats=2))"
+       },
+       {
+        "t": "print(label(seats=3, name=\"Ben\"))"
+       },
+       {
+        "t": "print(label(\"seats\"=3, \"Ben\"=name))"
+       }
+      ],
+      "target": [
+       "Aoife x 2",
+       "Ben x 3"
+      ],
+      "check": {
+       "kind": "target"
+      },
+      "matchedSay": "Both labels are right, even though the second line named the slots the other way round."
+     },
+     {
+      "id": "j3x4-default",
+      "title": "Job 4 — the slot with a usual value",
+      "whiff": "A slot can have a usual value built in. It uses that value unless you give it a different one.",
+      "goalLine": "Give the cost machine a price slot that is usually 4. Then use the machine twice: once without a price, and once with a different price in the brackets.",
+      "brief": "A slot can carry its usual value in the def line, like price=4. Leave that slot empty when you use the machine and it uses 4. Give it a number and it uses yours.",
+      "lines": [
+       {
+        "t": "def cost(seats, price=4):"
+       },
+       {
+        "t": "    return seats * price"
+       },
+       {
+        "t": "print(cost(2))"
+       },
+       {
+        "t": "print(cost(2, 10))"
+       },
+       {
+        "t": "def cost(seats, price):"
+       }
+      ],
+      "target": [
+       "8",
+       "20"
+      ],
+      "check": {
+       "kind": "target"
+      },
+      "matchedSay": "The first use printed 8, with the usual price. The second use printed 20, because the brackets gave it a different price, 10. That is one machine used in two ways."
+     }
+    ]
+   }
+  }
+ ],
+ "_provenance": "Authored by Fable (K44 / DFM 283) in L4_CONTENT_DRAFTS/build_drafts.py; moved into content-src at the build's content step, 14 Sep 2026, with the build-time additions recorded in PROGRESS_J2J3_L4_BUILD.md §C6.",
+ "keysEnc": "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"
+}

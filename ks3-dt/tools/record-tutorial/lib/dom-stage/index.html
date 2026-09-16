@@ -1,0 +1,154 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Platform stage</title>
+<!-- THE PLATFORM STAGE (14 Sep 2026, the L4 films). Part B of each Lesson 4 film
+     teaches a SURFACE the pupil is about to meet — the path check table, the
+     five-jobs strip, the spec card, the factory floor, the reject bin — so the
+     honest set is the platform's own renderers with the platform's own CSS:
+     engines.js draws the table and the floor exactly as it draws them on her
+     card, from a REAL Skulpt run of the HOUSE room / the house machines (DFM
+     210: never her build). Nothing here is a mock-up of a screen; it IS the
+     screen, enlarged so a projector can read it.
+
+     The lower third is the caption's: the host stops 150px above the bottom of
+     the frame and SCROLLS rather than grows (py-stage's J13g rule), and the
+     scene declares the host as a subject region so the caption law measures it. -->
+<link rel="stylesheet" href="../../../../platform/style.css">
+<style>
+  /* the platform's page chrome is not the set: a navy stage, one card, one eyebrow */
+  html, body { width: 1280px; height: 720px; overflow: hidden; margin: 0; padding: 0;
+    background: #0B152B !important; }
+  body::before, body::after { display: none !important; }
+  /* THE HOST IS A WINDOW, NOT A PAGE: 396px tall, ending at 478px, so a caption
+     of the full five-line height (drawn at bottom:26px, up to 215px tall) never
+     touches it. What does not fit SCROLLS, and the scene scrolls the row it is
+     talking about into view (py-stage's J13g rule). The subject region the
+     scene declares is this window (#hostWrap), because that is what is seen. */
+  #stage { position: relative; width: 1280px; height: 720px; padding: 40px 88px 0; display: flex;
+    flex-direction: column; gap: 18px; justify-content: flex-start; }
+  .eyebrow { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; font-size: 19px; letter-spacing: .16em;
+    text-transform: uppercase; color: #E4B824; font-weight: 700; min-height: 24px; }
+  #hostWrap { flex: 0 0 396px; height: 396px; overflow: hidden; }
+  /* zoom, not transform: the text reflows at the larger size, so a long story
+     wraps where it would wrap on a screen this wide */
+  #host { zoom: 1.5; width: 740px; margin: 0 auto; }
+  #host > * { margin-top: 0 !important; }
+  /* the lead sentence under each title is the CAPTION's job on camera (the
+     caption says those words, over the table they describe); hiding it is what
+     lets the table itself stand at a size a projector can read */
+  #host .pth-lead, #host .fac-lead, #host .fac-spec-lead { display: none; }
+  #host .pth, #host .fac, #host .fac-spec { box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+  #host .pyf-list { background: #FFFFFF; border: 1.5px solid #D7DEEA; border-radius: 12px; padding: 12px 14px; }
+  #host .pyf-list h3 { margin: 0 0 8px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: #1A3A6B; }
+  #host .lit-row td, #host .lit-row { outline: 3px solid #E4B824; outline-offset: -3px; }
+  #host .fac-order.lit, #host .fac-pair.lit, #host .pyf-item.lit { outline: 3px solid #E4B824; }
+  .hidden { display: none !important; }
+</style></head><body>
+<div id="stage">
+  <div class="eyebrow" id="eyebrow"></div>
+  <div id="hostWrap"><div id="host"></div></div>
+</div>
+<script src="../../../../platform/assets/vendor/skulpt/skulpt.min.js"></script>
+<script src="../../../../platform/assets/vendor/skulpt/skulpt-stdlib.js"></script>
+<script>
+  /* the App mimic the harnesses use (lib/l4-engine-page.js): engines.js needs
+     esc/asset/armButton and nothing here ever calls the server */
+  window.App = {
+    esc: function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); },
+    asset: function (p) { return p; },
+    armButton: function (b, fn) { if (b) b.onclick = fn; },
+    toast: function () {},
+    confirm: function (title, ask, yes, cb) { cb(true); },
+    state: { pairing: 0, chunkIdx: 0, chunks: [] }
+  };
+</script>
+<script src="../../../../platform/engines.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = window.App.esc;
+  if (window.PyRun) window.PyRun._p = Promise.resolve(true);   /* Skulpt is already here */
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  window.domstage = {
+    ready: Promise.resolve(true),
+    reset: function () { $('eyebrow').textContent = ''; $('host').innerHTML = ''; $('hostWrap').scrollTop = 0; },
+    eyebrow: function (t) { $('eyebrow').textContent = t || ''; },
+    zoom: function (z) { $('host').style.zoom = String(z); },
+    width: function (w) { $('host').style.width = w + 'px'; },
+    mount: function (html) { $('host').innerHTML = html; return wait(80); },
+    append: function (html) { $('host').insertAdjacentHTML('beforeend', html); return wait(80); },
+    /* the REAL renderers, from engines.js */
+    pathTable: function (T, rows) { return window.domstage.append(window.PyRun.pathTableHtml(T, { rows: rows })); },
+    floor: function (F, results, fn) { window.PyRun.renderFloor($('host'), F, results, fn); return wait(80); },
+    /* the PLAN-face spec card, the markup engines.js draws on the factory card */
+    spec: function (S) {
+      return window.domstage.append('<div class="fac-spec"><h3>' + esc(S.title || '') + '</h3><p class="fac-spec-lead">' + esc(S.lead || '') + '</p>' +
+        '<table><thead><tr>' + (S.cols || []).map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        (S.rows || []).map(function (r) {
+          return '<tr><td><code>' + esc(r.fn) + '</code></td><td><code>' + esc(r.slots) + '</code></td><td>' + esc(r.gives) + '</td><td><code>' + esc(r.example) + '</code></td></tr>';
+        }).join('') + '</tbody></table>' + (S.note ? '<p class="fac-spec-note">' + esc(S.note) + '</p>' : '') + '</div>');
+    },
+    /* the five-jobs strip as the BENCH draws it (pyf-item rows; state per job) */
+    jobs: function (title, feats, pendingLabel, states) {
+      return window.domstage.append('<ol class="pyf-list"><h3>' + esc(title || '') + '</h3>' + feats.map(function (f, i) {
+        var st = states ? states[i] : '';
+        return '<li class="pyf-item ' + (st === 'ok' ? 'is-matched' : st === 'no' ? 'is-notyet' : '') + '" data-f="' + esc(f.id) + '">' +
+          '<span class="pyf-tag"><span class="pyf-num">' + (i + 1) + '</span>' + esc(st === 'ok' ? (f.doneLabel || 'done') : (pendingLabel || 'not yet')) + '</span>' +
+          '<span class="pyf-say">' + esc(f.label || '') + '</span></li>';
+      }).join('') + '</ol>');
+    },
+    setJob: function (i, state, doneLabel) {
+      var rows = $('host').querySelectorAll('.pyf-item');
+      var r = rows[i]; if (!r) return false;
+      r.className = 'pyf-item ' + (state === 'ok' ? 'is-matched' : state === 'no' ? 'is-notyet' : '');
+      var tag = r.querySelector('.pyf-tag'); var num = tag.querySelector('.pyf-num');
+      tag.innerHTML = ''; tag.appendChild(num); tag.appendChild(document.createTextNode(state === 'ok' ? (doneLabel || 'done') : 'not yet'));
+      return true;
+    },
+    /* a gold outline on the row / card the caption is talking about */
+    lit: function (selector, i) {
+      $('host').querySelectorAll('.lit, .lit-row').forEach(function (e) { e.classList.remove('lit'); e.classList.remove('lit-row'); });
+      if (selector == null) return true;
+      var els = $('host').querySelectorAll(selector);
+      var e = els[i || 0]; if (!e) return false;
+      e.classList.add(e.tagName === 'TR' ? 'lit-row' : 'lit');
+      e.scrollIntoView({ block: 'nearest' });
+      return true;
+    },
+    scrollTo: function (selector, i) {
+      var els = $('host').querySelectorAll(selector); var e = els[i || 0]; if (!e) return false;
+      e.scrollIntoView({ block: 'center' }); return true;
+    },
+    runPaths: function (code, cfg) { return window.PyRun.checkPaths(code, cfg); },
+    runCalls: function (code, cfg) { return window.PyRun.checkCalls(code, cfg); },
+    probe: function () {
+      var h = $('host'), w = $('hostWrap');
+      var r = h.getBoundingClientRect();
+      return {
+        eyebrow: $('eyebrow').textContent.trim(),
+        text: h.textContent.replace(/\s+/g, ' ').trim().slice(0, 4000),
+        rows: h.querySelectorAll('tbody tr').length,
+        orders: h.querySelectorAll('.fac-order').length,
+        jobs: Array.prototype.map.call(h.querySelectorAll('.pyf-item'), function (e) { return e.className.replace('pyf-item', '').trim(); }),
+        hostBottom: Math.round(r.bottom), hostHeight: Math.round(r.height),
+        overflow: h.scrollHeight > w.clientHeight + 2,
+        litInView: (function () {
+          var e = h.querySelector('.lit, .lit-row'); if (!e) return true;
+          var a = w.getBoundingClientRect(), b = e.getBoundingClientRect();
+          return b.top >= a.top - 2 && b.bottom <= a.bottom + 2;
+        })(),
+        /* the smallest font actually on camera, in film pixels (zoom applied) */
+        minFontPx: (function () {
+          var z = parseFloat(getComputedStyle(h).zoom) || 1; var m = 999;
+          h.querySelectorAll('*').forEach(function (e) {
+            /* words, not badges: a one-character numeral in a round tag is a
+               marker, not a thing anybody reads */
+            if (e.textContent.trim().length < 2 || e.children.length) return;
+            var f = parseFloat(getComputedStyle(e).fontSize) * z; if (f < m) m = f;
+          });
+          return Math.round(m * 10) / 10;
+        })()
+      };
+    }
+  };
+})();
+</script></body></html>

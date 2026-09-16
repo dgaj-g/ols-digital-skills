@@ -40,6 +40,16 @@ const had = new Set(Object.keys(before.entries || before));
 const stale = new Set(String(execFileSync(process.execPath,
   [path.join(__dirname, 'ledger-tool.js'), '--stale-paths'], { encoding: 'utf8' }))
   .split('\n').map(x => x.trim()).filter(Boolean));
+/* AND THE BRIEF SIDE'S VOIDED RECORDS TOO (14 Sep 2026, DFM 281's ratchet). The
+   brief register keeps its own stale walk (`--stale-brief-paths`), and this set
+   was built from the lesson walk alone — so the seven brief openers rewritten
+   under DFM 281 would have been refused as "already-had-a-record", the same
+   shape as the 18 brief judgements refused in one night before `--set-brief`
+   was routed. A voided brief record is replaceable exactly like a voided
+   lesson record. */
+String(execFileSync(process.execPath,
+  [path.join(__dirname, 'ledger-tool.js'), '--stale-brief-paths'], { encoding: 'utf8' }))
+  .split('\n').map(x => x.trim()).filter(Boolean).forEach(p => stale.add(p));
 
 const rows = [];
 fs.readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
