@@ -225,6 +225,9 @@ window.OLS_TRANSPORT = {
         case 'galleryOpen':    g.apiGalleryOpen(p); break;
         case 'galleryPost':    g.apiGalleryPost(p); break;
         case 'galleryFeed':    g.apiGalleryFeed(p); break;
+        case 'roomPut':        g.apiRoomPut(p); break;
+        case 'roomList':       g.apiRoomList(p); break;
+        case 'roomGet':        g.apiRoomGet(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }

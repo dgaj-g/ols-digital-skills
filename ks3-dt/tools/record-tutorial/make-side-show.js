@@ -43,8 +43,15 @@ const CAST = [
              offended: 'fred-offended', devastated: 'fred-devastated' } },
   { who: 'margo', dir: path.join(OUT, 'j3', 'margo'),
     files: { idle: 'margo-idle', typing: 'margo-typing', delighted: 'margo-rave',
-             offended: 'margo-offended' } }
+             offended: 'margo-offended' } },
+  /* UNIT 7 (j3-04, K40/K43): the content names four files and maps its
+     `devastated` face to the offended render, so four are shipped */
+  { who: 'unit7', dir: path.join(OUT, 'j3', 'unit7'),
+    files: { idle: 'unit7-idle', typing: 'unit7-typing', delighted: 'unit7-delighted',
+             offended: 'unit7-offended' } }
 ];
+/* `--only <who>` re-renders one character (the others' files stay as they are) */
+const ONLY = (() => { const i = process.argv.indexOf('--only'); return i === -1 ? null : process.argv[i + 1]; })();
 
 const SHIP_W = 540;          /* about 4x the box they are shown in, for retina */
 const SHIP_H = 588;
@@ -81,6 +88,7 @@ function sh(cmd, args) { return execFileSync(cmd, args, { encoding: 'utf8' }); }
     await page.evaluate(() => window.ss.ready);
 
     for (const member of CAST) {
+      if (ONLY && member.who !== ONLY) continue;
       fs.mkdirSync(member.dir, { recursive: true });
       for (const [state, base] of Object.entries(member.files)) {
         const spec = STATES[state];

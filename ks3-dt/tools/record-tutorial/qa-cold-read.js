@@ -47,7 +47,7 @@ const CHECKLIST = path.join(__dirname, 'COLD_READ_CHECKLIST.md');
 
 /* the lessons whose text is being changed in this round. A lesson NOT under
    review is signed off and its verdicts are historic (DFM 176/221). */
-const UNDER_REVIEW = (process.env.KS3DT_REVIEW || 'j2-03,j3-03').split(',').map(s => s.trim()).filter(Boolean);
+const UNDER_REVIEW = (process.env.KS3DT_REVIEW || 'j2-03,j3-03,j2-04,j3-04').split(',').map(s => s.trim()).filter(Boolean);
 
 let failures = 0;
 const check = (ok, m) => { console.log((ok ? '  PASS  ' : '  FAIL  ') + m); if (!ok) failures++; };

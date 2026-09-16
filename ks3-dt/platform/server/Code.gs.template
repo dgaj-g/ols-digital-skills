@@ -1763,7 +1763,9 @@ function apiPairComplete(req) {
    because a program cut in half would run and be wrong (DFM 157a: a limit that
    lives in two places is a contract). */
 var PAIR_BLOB_MAX = 4096;      // chars per slot value
-var PAIR_BLOB_SLOTS = ['bot', 'report', 'card'];
+/* `products` (14 Sep 2026): the Rush's products travel back to the partner as a
+   blob — the dev mimic is the twin; qa-rush-paired drives both sides. */
+var PAIR_BLOB_SLOTS = ['bot', 'report', 'card', 'products'];
 function blobPKey_(cls, pid, slot, mi) { return 'pair:' + cls + ':bl:' + pid + ':' + slot + ':' + mi; }
 
 function apiPairBlob(req) {
@@ -1992,6 +1994,178 @@ function apiGalleryFeed(req) {
     myReviews: myReviews, total: total, given: given, studioCount: studios.length };
 }
 
+/* ==================== section 15: the class adventure's ROOM STORE (j2-04) ====
+   THE CLASS-BUILT ARTEFACT (J2J3_L4_DESIGN_SPEC.md SS C2). Every pupil publishes
+   ONE room - a small Python program - and the class's rooms make one adventure
+   that each pupil then plays on her own screen. The store is the Press Night
+   pattern exactly (section 14): a tiny HEAD key and numbered SHARDS, one value
+   never past the 9,216-byte ceiling, shard written first and the head after.
+
+     room:<cls>:<lessonId>       head    {v:1, seq, ns}   seq = the last room number given
+     rooms:<cls>:<lessonId>:<i>  shards  {email: {n, code, h, t, v}}
+
+   The sibling prefix 'rooms:' deliberately does not begin with 'room:' (the
+   colon), so the sweep's head scan selects exactly one key per class-lesson and
+   the orphan pass can tell a shard from a head. ROOM NUMBERS, NEVER NAMES, are
+   what a pupil sees (the Vault secrecy convention); the teacher's Live tab reads
+   the authors' names through the admin sub 'rooms' below. A pupil's FIRST put
+   assigns her number (the next integer in the class); a republish replaces her
+   code under the same number. `v` counts the times another pupil's play reached
+   the room, which is what lets the Live tab say which rooms nobody has reached.
+   Wiped by deleteClass's prefix pass, dropped whole by resetLesson for the class,
+   and one entry is removed when the teacher's Start again names ONE pupil. Swept
+   to the archive Sheet on the chat horizon, like the gallery. */
+/* THE CEILING WAS MEASURED, NOT ESTIMATED (qa-room-store §C, 14 Sep 2026). The
+   design's 1,500 put a year group of rooms at 242 KB, which with every pupil
+   record of the school in the same store (the 500 KB quota is one pool) left
+   NEGATIVE headroom; the pre-agreed Sheet-backed fallback cannot take a pupil's
+   write on an execute-as-user deployment (a pupil is refused on the owner's
+   Sheet). A real room is 450-700 characters and the twist door takes it to ~850,
+   so 1,000 is the honest ceiling: it fits five classes of rooms beside the
+   records with the headroom the spec demanded, and the client says plainly when
+   a room is longer than the adventure can hold. His word on the store is in the
+   L4 window's done message. */
+var ROOM_CODE_MAX = 1000;      // chars of Python per room (a room is ~10 lines)
+/* ROOMS NEVER STARVE THE RECORDS. The store is one 500 KB pool shared with every
+   pupil record of the school; a badge that cannot be written is a lost badge,
+   while a room that cannot be published is an honest sentence on screen and an
+   adventure that still plays (the house rooms are always there). So a put is
+   refused, by name, once the whole store passes this line. */
+var ROOM_STORE_CEILING = 450000;
+var ROOM_HEADERS = ['archivedAt', 'class', 'lesson', 'room', 'email', 'name', 'visits', 'code', 'publishedAt'];
+function roomKey_(cls, lessonId) { return 'room:' + cls + ':' + lessonId; }
+function roomSBase_(cls, lessonId) { return 'rooms:' + cls + ':' + lessonId; }
+function roomHead_(cls, lessonId) {
+  var h = jget_(sp_(), roomKey_(cls, lessonId), null) || {};
+  return { v: 1, seq: num_(h.seq), ns: num_(h.ns) };
+}
+function roomSaveHead_(cls, lessonId, seq, ns) {
+  jset_(sp_(), roomKey_(cls, lessonId), { v: 1, seq: num_(seq), ns: num_(ns) });
+}
+/* every room of a class-lesson, keyed by author email. Lock-free. */
+function roomMap_(cls, lessonId) {
+  var h = roomHead_(cls, lessonId);
+  return { head: h, rooms: shardMap_(roomSBase_(cls, lessonId), h.ns) };
+}
+/* a short content hash, so a player can tell a republished room from the one it
+   already cached without fetching the code again */
+function roomHash_(code) {
+  var h = 5381;
+  for (var i = 0; i < code.length; i++) h = ((h * 33) ^ code.charCodeAt(i)) >>> 0;
+  return h.toString(16);
+}
+/* the honesty floor on a room (never a judgement of its story - DFM 193a): it
+   asks the player something, and every road ends in a door line. The full path
+   check runs on the pupil's own machine before Publish wakes up; the server only
+   refuses what could never be a room at all. */
+function roomShape_(code) {
+  if (code.indexOf('input(') === -1) return 'no-question';
+  if (!/NEXT: door [AB]/.test(code)) return 'no-door';
+  return '';
+}
+/* delete one entry of a sharded MAP; returns true if it was there. Under lock. */
+function shardDel_(base, n, key) {
+  var sp = sp_(), i, v;
+  for (i = 0; i <= n; i++) {
+    v = jget_(sp, shardKey_(base, i), null);
+    if (!v || v[key] === undefined) continue;
+    delete v[key];
+    sp.setProperty(shardKey_(base, i), JSON.stringify(v));
+    return true;
+  }
+  return false;
+}
+function roomAuth_(req) {
+  var email = userEmail_();
+  if (!email) return { err: { ok: false, error: 'not-signed-in' } };
+  var cls = realClass_(req.classCode);
+  if (!cls) return { err: { ok: false, error: 'unknown-class' } };
+  var lessonId = str_(req.lessonId);
+  var numStr = lessonNum_(classYear_(cls), lessonId);
+  if (!numStr || !lessonAccessible_(cls, numStr, email)) return { err: { ok: false, error: 'locked' } };
+  /* a member of THIS class, and nobody else: a room is published under her own
+     record (the teacher's read joins her name from it), and the adventure a
+     pupil plays is her class's. The chat verbs let the lock alone decide;
+     this store asks the stricter question because a room OUTLIVES the hour. */
+  if (!readPupil_(cls, email)) return { err: { ok: false, error: 'not-member' } };
+  return { email: email, cls: cls, lessonId: lessonId };
+}
+function apiRoomPut(req) {
+  req = req || {};
+  var a = roomAuth_(req);
+  if (a.err) return a.err;
+  var code = str_(req.code).replace(/\r/g, '');
+  if (!code.trim()) return { ok: false, error: 'empty' };
+  if (code.length > ROOM_CODE_MAX) return { ok: false, error: 'too-big', max: ROOM_CODE_MAX, was: code.length };
+  var shape = roomShape_(code);
+  if (shape) return { ok: false, error: shape };
+  if (num_(storeHealth_().bytes) > ROOM_STORE_CEILING) return { ok: false, error: 'store-full' };
+  return withLock_(function () {
+    var m = roomMap_(a.cls, a.lessonId);
+    var mine = m.rooms[a.email];
+    var seq = num_(m.head.seq);
+    var n = mine ? num_(mine.n) : (seq + 1);
+    var entry = { n: n, code: code, h: roomHash_(code), t: tmin_(), v: num_(mine && mine.v) };
+    try {
+      var ns = shardPut_(roomSBase_(a.cls, a.lessonId), m.head.ns, a.email, entry);   // shard first, then head
+      roomSaveHead_(a.cls, a.lessonId, mine ? seq : n, ns);
+    } catch (e) { return STORE_FULL_; }
+    return { ok: true, n: num_(n), h: str_(entry.h), replaced: mine ? 1 : 0 };
+  });
+}
+/* numbers and hashes only - never an author, never a name */
+function apiRoomList(req) {
+  req = req || {};
+  var a = roomAuth_(req);
+  if (a.err) return a.err;
+  var m = roomMap_(a.cls, a.lessonId);
+  var out = [], mine = 0;
+  Object.keys(m.rooms).forEach(function (e) {
+    var r = m.rooms[e];
+    out.push({ n: num_(r.n), h: str_(r.h) });
+    if (e === a.email) mine = num_(r.n);
+  });
+  out.sort(function (x, y) { return x.n - y.n; });
+  return { ok: true, rooms: out, count: num_(out.length), mine: num_(mine) };
+}
+/* one room's program by its number. A get from ANOTHER pupil counts as a reach,
+   so the Live tab can name the rooms nobody has landed in yet; the author
+   re-reading her own room does not. */
+function apiRoomGet(req) {
+  req = req || {};
+  var a = roomAuth_(req);
+  if (a.err) return a.err;
+  var n = num_(req.n);
+  if (!n) return { ok: false, error: 'bad-room' };
+  var m = roomMap_(a.cls, a.lessonId);
+  var hitEmail = '';
+  Object.keys(m.rooms).forEach(function (e) { if (num_(m.rooms[e].n) === n) hitEmail = e; });
+  if (!hitEmail) return { ok: false, error: 'no-room', n: n };
+  var r = m.rooms[hitEmail];
+  if (hitEmail !== a.email) {
+    withLock_(function () {
+      var m2 = roomMap_(a.cls, a.lessonId);
+      var cur = m2.rooms[hitEmail];
+      if (!cur) return;
+      cur.v = num_(cur.v) + 1;
+      try {
+        var ns2 = shardPut_(roomSBase_(a.cls, a.lessonId), m2.head.ns, hitEmail, cur);
+        roomSaveHead_(a.cls, a.lessonId, m2.head.seq, ns2);
+      } catch (e) { /* a reach that could not be counted never stops the play */ }
+    });
+  }
+  return { ok: true, n: num_(r.n), h: str_(r.h), code: str_(r.code), mine: hitEmail === a.email ? 1 : 0 };
+}
+/* the archive Sheet's tab for rooms (section 15). Same self-healing pattern. */
+function roomSheet_(ss) {
+  var sh = ss.getSheetByName('Rooms Archive');
+  if (!sh) {
+    sh = ss.insertSheet('Rooms Archive');
+    sh.appendRow(ROOM_HEADERS);
+  }
+  return sh;
+}
+
 /* ==================== STAFF API ==================== */
 
 function apiAdmin(req) {
@@ -2122,7 +2296,7 @@ function apiAdmin(req) {
          were never caught by the p: prefix and survived a deleted class. Now
          that a gallery is a head PLUS shards, leaving them behind would leak
          several KB per lesson against the 500 KB script-wide quota. */
-      ['gal:', 'gals:', 'galr:', 'chat:', 'chats:', 'pair:'].forEach(function (p) {
+      ['gal:', 'gals:', 'galr:', 'chat:', 'chats:', 'pair:', 'room:', 'rooms:'].forEach(function (p) {
         var pre2 = p + cls + ':';
         Object.keys(props).forEach(function (k) { if (k.indexOf(pre2) === 0) spp.deleteProperty(k); });
       });
@@ -2443,9 +2617,43 @@ function apiAdmin(req) {
         });
         sp_().deleteProperty(pairRegKey_(cls, str_(le.id)));
         sp_().deleteProperty(pqPKey_(cls, str_(le.id)));
+        /* section 15: the class adventure's rooms belong to the run they were
+           written in. A whole-class Start again drops the store outright; a
+           Start again on ONE pupil removes her room and leaves the class's
+           adventure standing (her number is simply not in it any more). */
+        var rsRoomHd = roomHead_(cls, str_(le.id));
+        if (rsOne) {
+          shardDel_(roomSBase_(cls, str_(le.id)), rsRoomHd.ns, rsOne);
+        } else {
+          shardDrop_(roomSBase_(cls, str_(le.id)), rsRoomHd.ns);
+          sp_().deleteProperty(roomKey_(cls, str_(le.id)));
+        }
       });
       return { ok: true, cleared: num_(rsCleared) };
     });
+  }
+
+  /* ---------- the class adventure's rooms (section 15): the teacher's read ----------
+     Names are shown HERE and nowhere else - the teacher sees who wrote what; a
+     pupil only ever sees a number. Read-only, lock-free. */
+  if (sub === 'rooms') {
+    if (!cls) return { ok: false, error: 'unknown-class' };
+    var rmLesson = str_(req.lessonId);
+    var rmMap = roomMap_(cls, rmLesson);
+    var rmOut = [];
+    /* §C7's panel (14 Sep 2026) reads three more things off the same rows:
+       `plays` (the reach count, by another player), `lines`, and the class
+       totals — rooms published, reaches, rooms nobody has reached yet */
+    var rmPlays = 0, rmUnreached = 0;
+    Object.keys(rmMap.rooms).forEach(function (e) {
+      var rr = rmMap.rooms[e];
+      var rp = readPupil_(cls, e);
+      rmOut.push({ n: num_(rr.n), name: str_(rp && rp.n || ''), email: str_(e), code: str_(rr.code),
+        v: num_(rr.v), plays: num_(rr.v), lines: num_(String(rr.code || '').split('\n').length), t: num_(rr.t), h: str_(rr.h) });
+      rmPlays += num_(rr.v); if (!num_(rr.v)) rmUnreached++;
+    });
+    rmOut.sort(function (x, y) { return x.n - y.n; });
+    return { ok: true, rooms: rmOut, count: num_(rmOut.length), plays: num_(rmPlays), unreached: num_(rmUnreached) };
   }
 
   /* ---------- pairing lens (section 12): live queue / pairs / laggards ---------- */
@@ -2930,6 +3138,39 @@ function archiveSweep_() {
       }
       dropGal();
     });
+    /* ---------- the class adventure's rooms (section 15): same 7-day horizon ----------
+       One row per room to the Rooms Archive tab (the teacher keeps what her class
+       wrote); write-VERIFY, then the head and every shard go. A class whose newest
+       room is younger than the horizon is left alone - the adventure may still
+       be being played in review mode. */
+    Object.keys(allProps).forEach(function (k) {
+      if (k.indexOf('room:') !== 0) return;
+      var parts3 = k.split(':'); // room:<cls>:<lessonId>
+      var rCls = str_(parts3[1]), rLesson = parts3.slice(2).join(':');
+      var rm = roomMap_(rCls, rLesson);
+      var dropRooms = function () {
+        sp.deleteProperty(k);
+        shardDrop_(roomSBase_(rCls, rLesson), rm.head.ns);
+      };
+      var rEmails = Object.keys(rm.rooms || {});
+      if (!rEmails.length) { dropRooms(); return; }
+      var newest4 = 0;
+      rEmails.forEach(function (e) { if (num_(rm.rooms[e].t) > newest4) newest4 = num_(rm.rooms[e].t); });
+      if (newest4 > chatCutoff) return;
+      var roomRows = rEmails.map(function (e) {
+        var rr = rm.rooms[e];
+        var rp2 = readPupil_(rCls, e);
+        return [new Date(), rCls, rLesson, num_(rr.n), str_(e), str_(rp2 && rp2.n || ''), num_(rr.v),
+          str_(rr.code).slice(0, ROOM_CODE_MAX), tminToDate_(num_(rr.t))];
+      });
+      var rSheet = roomSheet_(ss);
+      var rBefore = rSheet.getLastRow();
+      rSheet.getRange(rBefore + 1, 1, roomRows.length, ROOM_HEADERS.length).setValues(roomRows);
+      SpreadsheetApp.flush();
+      if (rSheet.getLastRow() !== rBefore + roomRows.length) throw new Error('rooms write verify failed for ' + k);
+      meta.roomRows = num_(meta.roomRows) + roomRows.length;
+      dropRooms();
+    });
     /* Orphan pass: a shard whose head never landed (a crash between the two
        writes) would otherwise sit in the store forever, and the store-wide
        500 KB quota is the thing this whole sweep exists to protect. A shard is
@@ -2938,6 +3179,7 @@ function archiveSweep_() {
       var pre = '';
       if (k.indexOf('gals:') === 0 || k.indexOf('galr:') === 0) pre = 'gal:';
       else if (k.indexOf('chats:') === 0) pre = 'chat:';
+      else if (k.indexOf('rooms:') === 0) pre = 'room:';
       else return;
       var rest = k.slice(k.indexOf(':') + 1);          // <cls>:<lessonId>:<i>
       var cut = rest.lastIndexOf(':');

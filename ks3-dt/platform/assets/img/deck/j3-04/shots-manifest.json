@@ -1,0 +1,174 @@
+{
+ "lesson": "j3-04",
+ "shots": {
+  "reject": {
+   "name": "reject",
+   "kind": "film-frame",
+   "src": "assets/video/j3/j3-l4-b.mp4",
+   "tSeconds": 130,
+   "filmHash": "43885aa28082",
+   "crop": {
+    "x": 88,
+    "y": 85,
+    "w": 1104,
+    "h": 396
+   },
+   "ring": null,
+   "inset": null,
+   "says": "the reject bin as the film draws it for a cost machine that printed instead of returning: every product None, the one-sentence explanation, and your product beside what the spec wanted",
+   "contentVersion": "2026-09-03b",
+   "px": "1440x560"
+  },
+  "boxoffice": {
+   "name": "boxoffice",
+   "kind": "app",
+   "chunkId": "floor",
+   "selector": ".chunk-host .dossier",
+   "textSnippet": "The Studio's box office has twelve orders on the counter. Every order needs the same two things. One is a label with the name and the number of seats on it. The other is the cost. Until today, a progr",
+   "contentAnchor": "The Studio's box office has twelve orders on the counter. Every order needs the same two things. One is a label with the name and the number of seats on it. The other is the cost. Until today, a program that did that job had the same lines typed out twelve times.",
+   "cardText": "J3 · LESSON 4 OF 17 · Today you build a machine once and use it again and again. · The Studio's box office has twelve orders on the counter. Every order needs the same two things. One is a label with the name and the number of seats on it. The other is the cost. Until today, a program that did that job had the same lines typed out twelve times. · Here is what that program looks like, just below. It works. It is also very long. The same lines are in it twelve times, so if those lines are wrong, t",
+   "says": "the opening card's demo once it has scrolled past: the twelve-order program, and the note under it",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".dossier-demo",
+    "keepFrac": 0.606,
+    "from": ".dossier-demo",
+    "fromFrac": 0.24
+   },
+   "chunkHash": "eb4fbaa49cff",
+   "px": "1372x1351"
+  },
+  "film": {
+   "name": "film",
+   "kind": "app",
+   "chunkId": "film-a",
+   "selector": ".chunk-host .video-card",
+   "textSnippet": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. Click one of the three buttons under the film to jump to that part.",
+   "contentAnchor": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. Click one of the three buttons under the film to jump to that part.",
+   "cardText": "Build it once (the film) · Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. Click one of the three buttons under the film to jump to that part. · The box office · How a machine works: def, the slot, and return · Reading a machine · Done watching",
+   "says": "the film screen with its three chapter buttons",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "361d9e30416d",
+   "px": "1748x1552"
+  },
+  "meter": {
+   "name": "meter",
+   "kind": "app",
+   "chunkId": "machine-1",
+   "selector": ".chunk-host .pyrun-card",
+   "textSnippet": "The def line and the line under it are the machine. Nothing is printed when Python reads them — it only BUILDS the machine. The three print lines at the bottom USE it, once for each name. One word is ",
+   "contentAnchor": "The def line and the line under it are the machine. Nothing is printed when Python reads them — it only BUILDS the machine. The three print lines at the bottom USE it, once for each name. One word is missing from the machine's inside.",
+   "cardText": "Make this machine hand back a Reserved sign, then watch it make three. · The def line and the line under it are the machine. Nothing is printed when Python reads them — it only BUILDS the machine. The three print lines at the bottom USE it, once for each name. One word is missing from the machine's inside. · THE PROGRAM · def sign(name): · \"Reserved for \" + name · the word that hands the sign back out of the machine · print(sign(\"Aoife\")) · print(sign(\"Ben\")) · print(sign(\"Cara\")) · Show me the ",
+   "says": "the length meter (the bloat meter of the spec, renamed by the L4 cold read) under the first build: two bars, 24 lines against 15, and the sentence that says both print the same",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".fac-meter",
+    "keepFrac": 0.988,
+    "from": ".fac-meter",
+    "fromFrac": 0.719
+   },
+   "chunkHash": "2ab85f6aad1c",
+   "px": "1572x506"
+  },
+  "floor": {
+   "name": "floor",
+   "kind": "app",
+   "chunkId": "machine-3",
+   "selector": ".chunk-host .pyrun-card",
+   "textSnippet": "The slot is where the number of seats goes in. Give the slot a name in the def line, and use the same name inside the machine. The floor will drop 2, then 5, then 1 into it.",
+   "contentAnchor": "The slot is where the number of seats goes in. Give the slot a name in the def line, and use the same name inside the machine. The floor will drop 2, then 5, then 1 into it.",
+   "cardText": "Build the price machine: a seat costs 4 pounds, so it hands back the number of seats times 4. · Read the four lines on the left. Two of them make the machine. · Move the def line across, then its inside. · Leave the two mistakes where they are: one prints instead of handing back, and one has a number where the slot's name should be. · Type the slot's name into both gaps. · Press RUN my program. The floor drops three orders in and shows three product cards. · The slot is where the number of seats",
+   "says": "the factory floor after a run: three product cards, each stamped matches, and the empty reject bin under them",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".fac",
+    "keepFrac": 0.873,
+    "from": ".fac",
+    "fromFrac": 0.651
+   },
+   "chunkHash": "9db0cb9828cf",
+   "px": "1572x747"
+  },
+  "spec": {
+   "name": "spec",
+   "kind": "app",
+   "chunkId": "factory",
+   "selector": ".chunk-host .pye-plan",
+   "textSnippet": "This is the factory you build yourself: two machines that match the spec card, and the floor feeds twelve orders through them. The film shows how to read the spec card and what the reject bin tells yo",
+   "contentAnchor": "This is the factory you build yourself: two machines that match the spec card, and the floor feeds twelve orders through them. The film shows how to read the spec card and what the reject bin tells you.",
+   "cardText": "YOUR FACTORY · Build your factory · This is the factory you build yourself: two machines that match the spec card, and the floor feeds twelve orders through them. The film shows how to read the spec card and what the reject bin tells you. · This film is three minutes long. It shows how to read the spec card, and what the reject bin tells you. · THE SPEC CARD · Every order on the floor is a name and a number of seats. Your factory needs these two machines: · MACHINE ITS SLOTS WHAT IT HANDS BACK F",
+   "says": "the PLAN face of her factory: the spec card with its two rows, the two machines it needs, and Start building",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".pye-start",
+    "keepFrac": 0.992,
+    "from": ".fac-spec",
+    "fromFrac": 0.527
+   },
+   "chunkHash": "5c6b3ae8870a",
+   "px": "1692x1250"
+  },
+  "bench": {
+   "name": "bench",
+   "kind": "app",
+   "chunkId": "factory",
+   "selector": ".chunk-host .pye-bench",
+   "textSnippet": "Want the shape put in for you? Both machines will still be empty inside. The two lines at the bottom, which use the machines, are yours to change.",
+   "contentAnchor": "Want the shape put in for you? Both machines will still be empty inside. The two lines at the bottom, which use the machines, are yours to change.",
+   "cardText": "Build two machines: label, which makes the label for an order, and cost, which works out what it costs. · THE TWO MACHINES · 1NOT YET · label makes the right label for every order. · 2NOT YET · cost works out the right cost for every order. · THE SPEC CARD · label(name, seats) the name, a space, the letter x, a space, then the seats label(\"Aoife\", 2) hands back Aoife x 2 · cost(seats) the seats times 4 — a seat is 4 pounds cost(2) hands back 8 · YOUR FACTORY · 1 line · 1 · Want the shape put in ",
+   "says": "the BENCH face: the two machines saying not yet, the compact spec, and the empty typing box",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".pye-host",
+    "keepFrac": 0.722,
+    "from": null,
+    "fromFrac": 0
+   },
+   "chunkHash": "5c6b3ae8870a",
+   "px": "1692x1379"
+  },
+  "wait": {
+   "name": "wait",
+   "kind": "app",
+   "chunkId": "rush",
+   "selector": ".chunk-host .pair-wait",
+   "textSnippet": "If your teacher says time is up while you are waiting, you can leave here and finish the lesson. Anything you have already earned stays yours.",
+   "contentAnchor": "If your teacher says time is up while you are waiting, you can leave here and finish the lesson. Anything you have already earned stays yours.",
+   "cardText": "Waiting for a partner. · You are in the queue. Somebody else in your class has to reach this screen too. As soon as one of them does, the two of you are paired. · UNIT 7 · Unit 7 reporting. I have made this same part four thousand and twelve times. By hand. This one is slightly worse than the last one. · If your teacher says time is up while you are waiting, you can leave here and finish the lesson. Anything you have already earned stays yours. · Leave the Rush and carry on with the lesson",
+   "says": "the waiting card while the website finds a partner, with Unit 7 on it",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "80949fb2fc88",
+   "px": "1372x1302"
+  },
+  "orders": {
+   "name": "orders",
+   "kind": "app",
+   "chunkId": "rush",
+   "selector": ".chunk-host .ord-form-card",
+   "textSnippet": "Each order is a first name and a number of seats from 1 to 9. Your partner's factory will make a product for each of these orders.",
+   "contentAnchor": "Each order is a first name and a number of seats from 1 to 9. Your partner's factory will make a product for each of these orders.",
+   "cardText": "YOUR ORDERS · Write three orders · Each order is a first name and a number of seats from 1 to 9. Your partner's factory will make a product for each of these orders. · 1 · Name · Seats · 2 · Name · Seats · 3 · Name · Seats · Send my orders · Leave the Rush and carry on with the lesson",
+   "says": "the order form once she has a partner: three empty rows, a name and a number of seats each, and Send my orders",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "80949fb2fc88",
+   "px": "1372x1030"
+  },
+  "extras": {
+   "name": "extras",
+   "kind": "app",
+   "chunkId": "extras",
+   "selector": ".chunk-host .pyrun-hub",
+   "textSnippet": "There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you",
+   "contentAnchor": "There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished.",
+   "cardText": "EXTRA JOBS · There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished. · Job 1 — the slots the other way round · See what happens when the name and the seats go into the wrong slots. · Job 2 — the list of names · A loop feeds every name in a list through your machine. · Job 3 — the named slot · Fill a sl",
+   "says": "the extra jobs screen, untouched: four jobs, none ticked, and the button that carries her on",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "59878dc1d4f5",
+   "px": "1572x1288"
+  }
+ }
+}

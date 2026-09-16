@@ -46,12 +46,18 @@ without his word (DFM 221); his approvals are not re-opened (DFM 273a).
 | `j2-3` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.   [ledger row engines.js:2821] |
 | `j2-3` | The ones you missed will come back around — that’s how remembering works.   [ledger row engines.js:2842] |
 | `j2-3` | While everyone logs in…   [ledger row engines.js:2820] |
+| `j2-4` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.   [ledger row engines.js:2821] |
+| `j2-4` | The ones you missed will come back around — that’s how remembering works.   [ledger row engines.js:2842] |
+| `j2-4` | While everyone logs in…   [ledger row engines.js:2820] |
 | `j3-2` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.   [ledger row engines.js:2821] |
 | `j3-2` | The ones you missed will come back around — that’s how remembering works.   [ledger row engines.js:2842] |
 | `j3-2` | While everyone logs in…   [ledger row engines.js:2820] |
 | `j3-3` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.   [ledger row engines.js:2821] |
 | `j3-3` | The ones you missed will come back around — that’s how remembering works.   [ledger row engines.js:2842] |
 | `j3-3` | While everyone logs in…   [ledger row engines.js:2820] |
+| `j3-4` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.   [ledger row engines.js:2821] |
+| `j3-4` | The ones you missed will come back around — that’s how remembering works.   [ledger row engines.js:2842] |
+| `j3-4` | While everyone logs in…   [ledger row engines.js:2820] |
 | `wrongpath:1` | Check you have it |
 | `wrongpath:1` | Learn your way around |
 | `wrongpath:1` | Solo mission — your own answers only. |
@@ -96,6 +102,10 @@ without his word (DFM 221); his approvals are not re-opened (DFM 273a).
 | `wrongpath:j2-3` | The box is full — 0 characters left. |
 | `wrongpath:j2-3` | The ones you missed will come back around — that’s how remembering works. |
 | `wrongpath:j2-3` | While everyone logs in… |
+| `wrongpath:j2-4` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public. |
+| `wrongpath:j2-4` | The box is full — 0 characters left. |
+| `wrongpath:j2-4` | The ones you missed will come back around — that’s how remembering works. |
+| `wrongpath:j2-4` | While everyone logs in… |
 | `wrongpath:j3-1` | The box is full — 0 characters left. |
 | `wrongpath:j3-2` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public. |
 | `wrongpath:j3-2` | The box is full — 0 characters left. |
@@ -105,4 +115,8 @@ without his word (DFM 221); his approvals are not re-opened (DFM 273a).
 | `wrongpath:j3-3` | The box is full — 0 characters left. |
 | `wrongpath:j3-3` | The ones you missed will come back around — that’s how remembering works. |
 | `wrongpath:j3-3` | While everyone logs in… |
+| `wrongpath:j3-4` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public. |
+| `wrongpath:j3-4` | The box is full — 0 characters left. |
+| `wrongpath:j3-4` | The ones you missed will come back around — that’s how remembering works. |
+| `wrongpath:j3-4` | While everyone logs in… |
 

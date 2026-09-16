@@ -1250,6 +1250,12 @@
       var removed = 0;
       Object.keys(s.pupils).forEach(function (k) { if (k.indexOf(pre) === 0) { delete s.pupils[k]; removed++; } });
       delete s.locks[cls]; delete s.cfg[cls]; delete s.team[cls];
+      /* section 15: the class adventure's rooms live in the modelled properties
+         under room:/rooms:<cls>: — the same prefix pass the template runs */
+      ['room:', 'rooms:'].forEach(function (rp) {
+        var pre2 = rp + cls + ':';
+        Object.keys(props_(s)).forEach(function (k) { if (k.indexOf(pre2) === 0) pDel_(s, k); });
+      });
       s.classes = getClasses_(s).filter(function (c) { return c.name !== cls; });
       save_(s);
       return Promise.resolve({ ok: true, removed: num_(removed) });
@@ -1293,6 +1299,16 @@
       s.rst[cls] = rsAll;
       if (s.pairing) Object.keys(s.pairing).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pairing[k]; });
       if (s.pq) Object.keys(s.pq).forEach(function (k) { if (k.indexOf(cls + ':') === 0) delete s.pq[k]; });
+      /* section 15: a whole-class Start again drops the lesson's room store; a
+         Start again on ONE pupil removes her room and leaves the rest standing */
+      Object.keys(props_(s)).forEach(function (k) {
+        if (k.indexOf('room:' + cls + ':') !== 0) return;
+        var rsLessonId = k.slice(('room:' + cls + ':').length);
+        var rsHd = roomHeadD_(s, cls, rsLessonId);
+        if (rsOne) { shDel_(s, roomSBaseD_(cls, rsLessonId), rsHd.ns, rsOne); return; }
+        shDrop_(s, roomSBaseD_(cls, rsLessonId), rsHd.ns);
+        pDel_(s, k);
+      });
       save_(s);
       return Promise.resolve({ ok: true, cleared: num_(rsCleared) });
     }
@@ -1518,6 +1534,26 @@
     }
 
     /* ---------- pairing lens mirror (section 12) ---------- */
+    /* section 15: the teacher's read of the class adventure's rooms, WITH names */
+    if (sub === 'rooms') {
+      if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
+      var rmMap = roomMapD_(s, cls, str_(p.lessonId));
+      var rmOut = [];
+      /* §C7's panel (14 Sep 2026) reads three more things off the same rows:
+         `plays` (the reach count, by another player), `lines`, and the class
+         totals — rooms published, reaches, rooms nobody has reached yet */
+      var rmPlays = 0, rmUnreached = 0;
+      Object.keys(rmMap.rooms).forEach(function (e) {
+        var rr = rmMap.rooms[e];
+        var rp = readPupil_(s, cls, e);
+        rmOut.push({ n: num_(rr.n), name: str_(rp && rp.n || ''), email: str_(e), code: str_(rr.code),
+          v: num_(rr.v), plays: num_(rr.v), lines: num_(String(rr.code || '').split('\n').length), t: num_(rr.t), h: str_(rr.h) });
+        rmPlays += num_(rr.v); if (!num_(rr.v)) rmUnreached++;
+      });
+      rmOut.sort(function (x, y) { return x.n - y.n; });
+      return Promise.resolve({ ok: true, rooms: rmOut, count: num_(rmOut.length), plays: num_(rmPlays), unreached: num_(rmUnreached) });
+    }
+
     if (sub === 'pairs') {
       if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
       var plLessonId = str_(p.lessonId);
@@ -2105,12 +2141,68 @@
     }).catch(function () { return false; });
   }
 
+  /* THE RUSH (j3-04, 14 Sep 2026). Pixel has to do the three things a partner
+     does: send three orders, fill the pupil's orders through a factory of its
+     own and put the product cards in its blob slot, and check the products that
+     came back. Its factory is deliberately the one the prototype's partner had —
+     the cost machine PRINTS instead of returning — so one product comes back
+     "nothing came back" and the pupil's No button has a real reason (§C14). The
+     products are worked out here rather than by running Python: the mimic has
+     no Skulpt, and a partner's factory is not the pupil's to judge. */
+  var PIXEL_ORDERS = [['Sorcha', 3], ['Dara', 1], ['Eabha', 5]];
+  function rushBot_(s, cls, lessonId, pid, P, ch) {
+    var store = blobD_(s, pid);
+    var acted = false;
+    var nowS = tsecD_();
+    if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
+      ch.bot.greeted = 1; acted = true;
+      appendEvD_(ch, 1, 'msg', 'Pixel here. My factory is warmed up, send me your orders.');
+    }
+    if (!ch.bot.ordered && nowS - num_(ch.bot.startS) >= 3) {
+      ch.bot.ordered = 1; acted = true;
+      appendEvD_(ch, 1, 'msg', 'ORD ' + PIXEL_ORDERS.map(function (o) { return o[0] + ' ' + o[1]; }).join('; '));
+    }
+    /* the pupil's orders arrive as one frame; Pixel fills them and puts its cards up */
+    var theirs = null;
+    ch.ev.forEach(function (e) {
+      if (num_(e[1]) !== 0) return;
+      var t = str_(e[3]);
+      if (t.indexOf('ORD ') === 0) theirs = t.slice(4).split(';').map(function (x) {
+        var m = /^\s*(.+?)\s+(\d)\s*$/.exec(x); return m ? [m[1], num_(m[2])] : null;
+      }).filter(Boolean);
+    });
+    if (theirs && !store['products:1']) {
+      var cards = [
+        { fn: 'label', products: theirs.map(function (o) { return { order: o, product: o[0] + ' x ' + o[1], none: false, err: false }; }) },
+        { fn: 'cost', products: theirs.map(function (o) { return { order: [o[1]], product: 'None', none: true, err: false }; }) }
+      ];
+      store['products:1'] = { v: JSON.stringify(cards), t: tsecD_() };
+      appendEvD_(ch, 1, 'msg', 'PROD sent');
+      acted = true;
+    }
+    /* once the pupil's products are up, Pixel checks them — every label right,
+       every cost as it finds it */
+    var theyProd = ch.ev.some(function (e) { return num_(e[1]) === 0 && str_(e[3]).indexOf('PROD') === 0; });
+    if (theyProd && !ch.bot.checked && store['products:0']) {
+      ch.bot.checked = 1; acted = true;
+      var yes = 0, all = 0;
+      try {
+        JSON.parse(str_(store['products:0'].v)).forEach(function (m) {
+          (m.products || []).forEach(function (p) { all++; if (!p.none && !p.err && p.product) yes++; });
+        });
+      } catch (e) { all = 6; }
+      appendEvD_(ch, 1, 'msg', 'CHK ' + yes + '/' + all);
+    }
+    return Promise.resolve(acted);
+  }
+
   function botThink_(s, cls, lessonId, pid, P, ch, year) {
     if (!ch.bot) return Promise.resolve(false);
     /* which activity is this pair actually in? The lesson says, and asking it
        is what stops the Vault brain talking about folders inside the Swap. */
     if (lessonId === 'j2-03') return swapBot_(s, cls, lessonId, pid, P, ch);
     if (lessonId === 'j3-03') return duelBot_(s, cls, lessonId, pid, P, ch, year);
+    if (lessonId === 'j3-04') return rushBot_(s, cls, lessonId, pid, P, ch);
     var acted = false;
     var nowS = tsecD_();
     if (!ch.bot.greeted && nowS - num_(ch.bot.startS) >= 2) {
@@ -2243,7 +2335,10 @@
      against one matrix and holds them equal (DFM 234a) — asserting the mimic
      alone verifies nothing about the file he pastes. */
   var PAIR_BLOB_MAX = 4096;
-  var PAIR_BLOB_SLOTS = ['bot', 'report', 'card'];
+  /* `products` (14 Sep 2026): the Rush's products travel back to the partner as
+     a blob — qa-rush-paired found the paired Rush could never finish on either
+     server because the slot was refused as bad-slot. Mirrors the template. */
+  var PAIR_BLOB_SLOTS = ['bot', 'report', 'card', 'products'];
   function blobD_(s, pid) {
     if (!s.pbl) s.pbl = {};
     if (!s.pbl[pid]) s.pbl[pid] = {};
@@ -2274,6 +2369,120 @@
     store[slot + ':' + num_(hit.mi)] = { v: v, t: tsecD_() };
     save_(s);
     return Promise.resolve({ ok: true, bytes: v.length, mi: num_(hit.mi), max: PAIR_BLOB_MAX });
+  }
+
+  /* ---- the class adventure's ROOM STORE (section 15) — the mimic ----------
+     Mirrors Code.gs.template's roomPut/roomList/roomGet one-for-one: the same
+     head + shards under the SAME budget (pSet_ enforces the 9,216-byte cap), the
+     same refusals, the same shard-first-then-head write order. qa-room-store
+     executes the TEMPLATE and this mimic against one matrix and holds them equal
+     (DFM 234a) — every bug in the sharding shows up here too. */
+  var ROOM_CODE_MAX = 1000;      // measured, not estimated — see Code.gs.template
+  var ROOM_STORE_CEILING = 450000;
+  function roomKeyD_(cls, lessonId) { return 'room:' + cls + ':' + lessonId; }
+  function roomSBaseD_(cls, lessonId) { return 'rooms:' + cls + ':' + lessonId; }
+  function roomHeadD_(s, cls, lessonId) {
+    var h = pGet_(s, roomKeyD_(cls, lessonId), null) || {};
+    return { v: 1, seq: num_(h.seq), ns: num_(h.ns) };
+  }
+  function roomSaveHeadD_(s, cls, lessonId, seq, ns) { pSet_(s, roomKeyD_(cls, lessonId), { v: 1, seq: num_(seq), ns: num_(ns) }); }
+  function roomMapD_(s, cls, lessonId) {
+    var h = roomHeadD_(s, cls, lessonId);
+    return { head: h, rooms: shMap_(s, roomSBaseD_(cls, lessonId), h.ns) };
+  }
+  function roomHashD_(code) {
+    var h = 5381;
+    for (var i = 0; i < code.length; i++) h = ((h * 33) ^ code.charCodeAt(i)) >>> 0;
+    return h.toString(16);
+  }
+  function roomShapeD_(code) {
+    if (code.indexOf('input(') === -1) return 'no-question';
+    if (!/NEXT: door [AB]/.test(code)) return 'no-door';
+    return '';
+  }
+  function shDel_(s, base, n, key) {
+    var i, v;
+    for (i = 0; i <= n; i++) {
+      v = pGet_(s, shKey_(base, i), null);
+      if (!v || v[key] === undefined) continue;
+      delete v[key];
+      pSet_(s, shKey_(base, i), v);
+      return true;
+    }
+    return false;
+  }
+  function roomAuthD_(s, p) {
+    var cls = realClass_(s, p.classCode);
+    if (!cls) return Promise.resolve({ err: { ok: false, error: 'unknown-class' } });
+    var lessonId = str_(p.lessonId);
+    return tnNumFor_(s, cls, lessonId).then(function (numStr) {
+      if (!numStr || !lessonAccessible_(s, cls, numStr)) return { err: { ok: false, error: 'locked' } };
+      if (!readPupil_(s, cls, PUPIL_EMAIL)) return { err: { ok: false, error: 'not-member' } };
+      return { cls: cls, lessonId: lessonId, email: PUPIL_EMAIL };
+    });
+  }
+  function doRoomPut(p) {
+    var s = load_();
+    return roomAuthD_(s, p).then(function (a) {
+      if (a.err) return a.err;
+      var code = str_(p.code).replace(/\r/g, '');
+      if (!code.trim()) return { ok: false, error: 'empty' };
+      if (code.length > ROOM_CODE_MAX) return { ok: false, error: 'too-big', max: ROOM_CODE_MAX, was: code.length };
+      var shape = roomShapeD_(code);
+      if (shape) return { ok: false, error: shape };
+      var storeBytes = 0;
+      Object.keys(props_(s)).forEach(function (k) { storeBytes += k.length + props_(s)[k].length; });
+      Object.keys(s.pupils || {}).forEach(function (k) { storeBytes += k.length + 2 + JSON.stringify(s.pupils[k]).length; });
+      if (storeBytes > ROOM_STORE_CEILING) return { ok: false, error: 'store-full' };
+      var m = roomMapD_(s, a.cls, a.lessonId);
+      var mine = m.rooms[a.email];
+      var seq = num_(m.head.seq);
+      var n = mine ? num_(mine.n) : (seq + 1);
+      var entry = { n: n, code: code, h: roomHashD_(code), t: tmin_(), v: num_(mine && mine.v) };
+      try {
+        var ns = shPut_(s, roomSBaseD_(a.cls, a.lessonId), m.head.ns, a.email, entry);
+        roomSaveHeadD_(s, a.cls, a.lessonId, mine ? seq : n, ns);
+      } catch (e) { if (e.ks3dtStoreFull) return { ok: false, error: 'store-full' }; throw e; }
+      save_(s);
+      return { ok: true, n: num_(n), h: str_(entry.h), replaced: mine ? 1 : 0 };
+    });
+  }
+  function doRoomList(p) {
+    var s = load_();
+    return roomAuthD_(s, p).then(function (a) {
+      if (a.err) return a.err;
+      var m = roomMapD_(s, a.cls, a.lessonId);
+      var out = [], mine = 0;
+      Object.keys(m.rooms).forEach(function (e) {
+        var r = m.rooms[e];
+        out.push({ n: num_(r.n), h: str_(r.h) });
+        if (e === a.email) mine = num_(r.n);
+      });
+      out.sort(function (x, y) { return x.n - y.n; });
+      return { ok: true, rooms: out, count: num_(out.length), mine: num_(mine) };
+    });
+  }
+  function doRoomGet(p) {
+    var s = load_();
+    return roomAuthD_(s, p).then(function (a) {
+      if (a.err) return a.err;
+      var n = num_(p.n);
+      if (!n) return { ok: false, error: 'bad-room' };
+      var m = roomMapD_(s, a.cls, a.lessonId);
+      var hitEmail = '';
+      Object.keys(m.rooms).forEach(function (e) { if (num_(m.rooms[e].n) === n) hitEmail = e; });
+      if (!hitEmail) return { ok: false, error: 'no-room', n: n };
+      var r = m.rooms[hitEmail];
+      if (hitEmail !== a.email) {
+        r.v = num_(r.v) + 1;
+        try {
+          var ns2 = shPut_(s, roomSBaseD_(a.cls, a.lessonId), m.head.ns, hitEmail, r);
+          roomSaveHeadD_(s, a.cls, a.lessonId, m.head.seq, ns2);
+          save_(s);
+        } catch (e) { /* a reach that could not be counted never stops the play */ }
+      }
+      return { ok: true, n: num_(r.n), h: str_(r.h), code: str_(r.code), mine: hitEmail === a.email ? 1 : 0 };
+    });
   }
 
   function doPairComplete(p) {
@@ -2586,6 +2795,9 @@
       case 'galleryOpen': return doGalleryOpen(p);
       case 'galleryPost': return doGalleryPost(p);
       case 'galleryFeed': return doGalleryFeed(p);
+      case 'roomPut': return doRoomPut(p);
+      case 'roomList': return doRoomList(p);
+      case 'roomGet': return doRoomGet(p);
       case 'admin': return doAdmin(p);
       default: return Promise.resolve({ ok: false, error: 'unknown-action' });
     }

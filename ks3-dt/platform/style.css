@@ -3666,6 +3666,111 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 
 /* ==========================================================================
+   LEVELS 4 AND 5 — the four looks that land with Lesson 4 (K42h, 14 Sep 2026)
+   The K21/K22 bar, and nothing else: light blooming and fading, particles
+   drifting, the wallpaper breathing. Every period is short enough to be SEEN in
+   a three-second glance (the Blueprint lesson: amplitude is not the thing that
+   fails, period is), and every part is stilled by the reduced-motion block.
+   ========================================================================== */
+
+/* ---- J2 level 4 "The Patina": pale gold light breathing over old copper gone green ---- */
+.fx-patina .fx-sheen {
+  position: absolute; inset: -8%;
+  background: linear-gradient(108deg, transparent 12%, rgba(255, 236, 190, 0.20) 38%, rgba(var(--gold-hi-rgb), 0.10) 58%, transparent 84%);
+  filter: blur(42px);
+  animation: patinaSheen 8s ease-in-out infinite alternate;
+}
+@keyframes patinaSheen {
+  from { opacity: 0.14; transform: scale(1) translate3d(-5vw, 2vh, 0); }
+  to { opacity: 0.96; transform: scale(1.16) translate3d(5vw, -2vh, 0); }
+}
+.fx-patina .fx-bloom.b1 {
+  position: absolute; right: 0; bottom: -10%; width: 48vw; height: 48vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.22), rgba(var(--gold-rgb), 0.08) 44%, transparent 70%);
+  filter: blur(48px);
+  animation: bloomBreatheB 10s ease-in-out infinite alternate;
+}
+
+/* ---- J2 level 5 "White Heat": the forge at its hottest, white light in the middle, red at the edges ---- */
+.fx-whiteheat .fx-forge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 52vh;
+  background: linear-gradient(0deg, rgba(var(--gold-hi-rgb), 0.34), rgba(var(--gold-rgb), 0.12) 40%, transparent 85%);
+  filter: blur(20px);
+  animation: whiteheatBreathe 7s ease-in-out infinite alternate;
+}
+@keyframes whiteheatBreathe {
+  from { opacity: 0.18; transform: translate3d(0, 4vh, 0) scaleY(0.9); }
+  to { opacity: 1; transform: translate3d(0, -2vh, 0) scaleY(1.12); }
+}
+.fx-whiteheat .fx-bloom.b1 {
+  position: absolute; left: 28%; bottom: -14%; width: 54vw; height: 54vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22), rgba(var(--gold-hi-rgb), 0.10) 40%, transparent 70%);
+  filter: blur(50px);
+  animation: bloomBreathe 9s ease-in-out infinite alternate;
+}
+.fx-spark {
+  position: absolute; bottom: -3vh; width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-rgb), 0) 70%);
+  box-shadow: 0 0 8px rgba(var(--gold-hi-rgb), 0.5);
+  opacity: 0;
+}
+.fx-spark.m1 { left: 9%; animation: sparkRise 14s ease-out infinite 0s; }
+.fx-spark.m2 { left: 19%; width: 3px; height: 3px; animation: sparkRise 18s ease-out infinite 2.1s; }
+.fx-spark.m3 { left: 30%; width: 5px; height: 5px; animation: sparkRise 12s ease-out infinite 4.4s; }
+.fx-spark.m4 { left: 41%; animation: sparkRise 16s ease-out infinite 1.3s; }
+.fx-spark.m5 { left: 52%; width: 3px; height: 3px; animation: sparkRise 19s ease-out infinite 6.7s; }
+.fx-spark.m6 { left: 63%; width: 5px; height: 5px; animation: sparkRise 13s ease-out infinite 3.2s; }
+.fx-spark.m7 { left: 74%; animation: sparkRise 17s ease-out infinite 8.1s; }
+.fx-spark.m8 { left: 85%; width: 6px; height: 6px; animation: sparkRise 11s ease-out infinite 5.5s; }
+.fx-spark.m9 { left: 94%; width: 3px; height: 3px; animation: sparkRise 15s ease-out infinite 9.6s; }
+@keyframes sparkRise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  12% { opacity: 0.9; }
+  60% { transform: translate3d(2vw, -48vh, 0); opacity: 0.55; }
+  100% { transform: translate3d(-2vw, -92vh, 0); opacity: 0; }
+}
+
+/* ---- J3 level 4 "The Executive Suite": city lights blooming through the glass, brass on walnut ---- */
+.fx-suite .fx-bloom {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.22), rgba(var(--gold-rgb), 0.08) 44%, transparent 72%);
+  filter: blur(46px);
+}
+.fx-suite .fx-bloom.b1 { left: 4%; top: 10%; width: 44vw; height: 44vw; animation: bloomBreathe 8s ease-in-out infinite alternate; }
+.fx-suite .fx-bloom.b2 { right: 2%; top: 30%; width: 40vw; height: 40vw; animation: bloomBreatheB 11s ease-in-out infinite alternate; }
+.fx-suite .fx-house {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 38vh;
+  background: radial-gradient(ellipse at 20% 100%, rgba(232, 183, 90, 0.16), transparent 60%),
+              radial-gradient(ellipse at 80% 100%, rgba(255, 217, 138, 0.12), transparent 60%);
+  filter: blur(22px);
+  animation: suiteGlow 7s ease-in-out infinite alternate;
+}
+@keyframes suiteGlow { from { opacity: 0.2; } to { opacity: 1; } }
+
+/* ---- J3 level 5 "The Backlot at Dawn": one big lamp still on, the dawn veil coming up, dust settling ---- */
+.fx-backlot .fx-lamp {
+  position: absolute; left: -4%; top: 4%; width: 54vw; height: 54vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.30), rgba(var(--gold-rgb), 0.10) 42%, transparent 70%);
+  filter: blur(50px);
+  animation: lampBloom 8s ease-in-out infinite alternate;
+}
+.fx-backlot .fx-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(var(--gold-rgb), 0.18) 0%, rgba(var(--gold-hi-rgb), 0.06) 45%, transparent 80%);
+  filter: blur(36px);
+  animation: dawnRise 9s ease-in-out infinite alternate;
+}
+@keyframes dawnRise {
+  from { opacity: 0.16; transform: translate3d(0, 6vh, 0) scale(1); }
+  to { opacity: 0.95; transform: translate3d(0, -4vh, 0) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-patina .fx-sheen, .fx-patina .fx-bloom, .fx-whiteheat .fx-forge, .fx-whiteheat .fx-bloom, .fx-spark,
+  .fx-suite .fx-bloom, .fx-suite .fx-house, .fx-backlot .fx-lamp, .fx-backlot .fx-veil { animation: none; }
+}
+
+/* ==========================================================================
    RUNNER v2 + THE PAIRED SET-PIECES (J2/J3 Lesson 3, spec §A/§C)
    Every surface below is NEW, so every surface below sets its OWN ink on its
    OWN ground and inherits nothing from the dark shell. That is DFM 207(g)
@@ -3753,6 +3858,20 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-size: 0.92rem; line-height: 1.6; white-space: pre; overflow-x: auto;
 }
 .pye-code:focus { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
+/* ---- the indent guides (L4 §C1.5): a gutter ROW per line, drawn only under the
+   `indentGuides` flag; the guide sits left of the digits, never across them
+   (the prototype's own pixels found it drawn across the number the first time) */
+.pye-nums .pye-gut { display: flex; align-items: stretch; }
+.pye-nums .pye-guide { flex: 0 0 8px; position: relative; }
+.pye-nums .pye-guide.is-in::before, .pye-nums .pye-guide.is-in2::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(var(--gold-rgb), .55);
+}
+.pye-nums .pye-guide.is-in2::after {
+  content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 3px; background: rgba(var(--gold-rgb), .35);
+}
+/* the digit's own box holds the digit and nothing else; deepened from #6E819F
+   (4.9:1, a whisker over the floor) so a sampler's anti-aliasing has room */
+.pye-nums .pye-num { flex: 1 1 auto; padding-left: 4px; color: #8496B3; }
 .pye.is-locked .pye-code { color: #C3D3EE; background: #0A1424; }
 
 .pye-cols { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
@@ -4322,3 +4441,161 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    beside the words they belong to */
 .help-steps { margin: .35rem 0 .6rem; padding-left: 1.35rem; }
 .help-steps li { margin: .3rem 0; line-height: 1.5; }
+
+/* ═══════════════════════════ L4 SURFACES (K43/K44, 14 Sep 2026) ═══════════════
+   Fable's proto.css, folded VERBATIM (§C14) — the stylesheet delta the two L4
+   prototypes were proved on, at final size, on this file's own tokens. Four
+   class families: .pth-* (the path check, j2-04), .rly-* (the class adventure,
+   j2-04), .fac-* (the factory floor, j3-04), .ord-* (the Rush, j3-04).
+   THREE RULES OF THE DELTA ARE NOT HERE, and why: the prototype-shell rules
+   (.proto-*) never ship; `.pye-nums .pye-num / .is-in / .is-in2` and
+   `.pyp-chip-code { display:block; white-space:pre-wrap }` were folded with the
+   editor increments earlier in this file (the chip rule sits just below); and `.pyw-card .pyw-line code { color:
+   var(--ink) }` is DROPPED, not folded — it was the fix for a prototype-only
+   artefact (the prototype's worked card drew its lines without the `.pyw-list`
+   plate, so the light ink sat on white), and on the platform the same rule
+   would put dark ink on the dark plate the real worked card renders. Recorded
+   in PROGRESS (DFM 197). */
+/* ---------- THE WORDS BOX on the PLAN face (j2-04 myroom) ---------- */
+.pth-words { margin: 0 0 18px; padding: 14px 16px; border-radius: var(--r-md, 12px); background: var(--field); border: 1.5px solid var(--line-l); color: var(--ink); }
+.pth-words h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.pth-words-lead { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; color: var(--ink); }
+.pth-words-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.pth-words-row label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 700; color: var(--ink); }
+.pth-words-row input { font: inherit; font-size: 1rem; padding: 9px 12px; border-radius: 9px; border: 1.5px solid var(--line-l); background: #fff; color: var(--ink); min-width: 160px; }
+.pth-words-say { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; font-size: .93rem; }
+.pth-words-pinned { display: flex; gap: 10px; align-items: center; margin: 0 0 12px; font-size: .9rem; color: var(--ink); }
+.pth-words-pinned code { padding: 3px 9px; border-radius: 999px; background: rgba(var(--gold-rgb), .18); border: 1px solid rgba(var(--gold-rgb), .5); color: var(--accent-ink); font-weight: 700; }
+
+/* ---------- THE PATH TABLE (j2-04 training-3 + myroom) ---------- */
+.pth { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.pth h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.pth-lead { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; color: var(--ink); }
+.pth table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.pth th { text-align: left; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: #5B6579; padding: 4px 8px; border-bottom: 1px solid var(--line-l); }
+.pth td { padding: 8px; border-bottom: 1px solid var(--line-l); vertical-align: top; color: var(--ink); }
+.pth td.pth-word code { font-weight: 700; color: var(--accent-ink); background: rgba(var(--gold-rgb), .16); padding: 2px 8px; border-radius: 999px; }
+.pth td.pth-door { white-space: nowrap; font-weight: 800; }
+.pth td.pth-door.is-ok { color: #17734A; }
+.pth td.pth-door.is-none { color: #A3271B; }
+.pth td.pth-story { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .85rem; white-space: pre-wrap; }
+.pth-stranger td.pth-word { font-style: italic; }
+.pth-err { margin: 8px 0 0; font-size: .9rem; color: #7A2018; }
+
+/* ---------- PUBLISH ROW (j2-04 myroom) ---------- */
+.pth-publish { margin: 14px 0 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.pth-publish-note { margin: 0; font-size: .9rem; color: var(--ink); }
+.pth-published { margin: 14px 0 0; padding: 14px 16px; border-radius: 12px; background: var(--good-soft, #E6F5EC); border: 1.5px solid #2E9E63; color: var(--ink); }
+.pth-published h3 { margin: 6px 0 6px; font-size: 1.05rem; }
+
+/* ---------- THE CLASS ADVENTURE (j2-04 relay) ---------- */
+.rly-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 12px; font-size: .9rem; color: var(--ink); }
+.rly-room { font-weight: 800; padding: 4px 11px; border-radius: 999px; background: rgba(var(--gold-rgb), .18); border: 1px solid rgba(var(--gold-rgb), .55); color: var(--accent-ink); }
+.rly-room.is-mine { background: var(--good-soft, #E6F5EC); border-color: #2E9E63; color: #17734A; }
+.rly-count { color: #5B6579; }
+.rly-open { margin-left: auto; color: #5B6579; }
+.pyx-row.is-door { background: #FFF6DA; border: 1px dashed #E0C070; font-style: italic; }
+.rly-end { text-align: center; }
+.rly-end .rly-rooms { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+.rly-end-first { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; background: var(--good-soft, #E6F5EC); border: 1.5px solid #2E9E63; color: var(--ink); }
+.rly-leave-ask { margin: 12px 0 0; padding: 12px 14px; border-radius: 11px; background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), .75); color: var(--ink); }
+
+/* ---------- THE SPEC CARD (j3-04 factory PLAN + BENCH) ---------- */
+.fac-spec { margin: 0 0 16px; padding: 14px 16px; border-radius: var(--r-md, 12px); background: #FFFAE8; border: 1.5px solid rgba(var(--gold-rgb), .55); border-left-width: 5px; color: var(--ink); }
+.fac-spec h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--accent-ink); }
+.fac-spec-lead { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; }
+.fac-spec table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.fac-spec th { text-align: left; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: #5B6579; padding: 4px 8px; border-bottom: 1px solid rgba(0,0,0,.08); }
+.fac-spec td { padding: 7px 8px; border-bottom: 1px solid rgba(0,0,0,.06); vertical-align: top; }
+.fac-spec td code { font-weight: 700; color: var(--accent-ink); }
+.fac-spec-note { margin: 10px 0 0; font-size: .9rem; line-height: 1.5; }
+
+/* ---------- THE FACTORY FLOOR (j3-04 machine-3 + factory + rush) ---------- */
+.fac { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.fac h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.fac-lead { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; }
+.fac-line { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.fac-order { padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-l); background: var(--field); display: flex; flex-direction: column; gap: 6px; }
+.fac-order .fac-tag { font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 800; color: #5B6579; }
+.fac-order .fac-in { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88rem; }
+.fac-product { margin-top: 2px; padding: 9px 10px; border-radius: 8px; background: #fff; border: 1.5px solid var(--line-l); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92rem; white-space: pre-wrap; word-break: break-word; }
+.fac-order.is-ok .fac-product { border-color: #2E9E63; background: var(--good-soft, #E6F5EC); }
+.fac-order.is-bad .fac-product { border-color: #C4443A; background: #FFF2F0; }
+.fac-order.is-none .fac-product { border-color: #C4443A; background: #FFF2F0; font-style: italic; }
+.fac-stamp { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; }
+.fac-order.is-ok .fac-stamp { color: #17734A; }
+.fac-order.is-bad .fac-stamp, .fac-order.is-none .fac-stamp { color: #A3271B; }
+.fac-reject { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFF2F0; border: 1.5px solid #C4443A; color: var(--ink); }
+.fac-reject h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: #A3271B; }
+.fac-reject-lead { margin: 0 0 10px; font-size: .9rem; }
+.fac-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 8px; }
+.fac-pair > div { padding: 8px 10px; border-radius: 8px; background: #fff; border: 1px solid var(--line-l); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88rem; white-space: pre-wrap; }
+.fac-pair .fac-tag { display: block; font-family: inherit; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: #5B6579; margin-bottom: 3px; }
+.fac-empty { margin: 0; font-size: .9rem; color: #17734A; }
+.fac-nomachine { margin: 8px 0 0; font-size: .92rem; color: #7A2018; }
+
+/* ---------- THE BLOAT METER (j3-04 machine-1) ---------- */
+.fac-meter { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.fac-meter h3 { margin: 0 0 8px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.fac-meter-row { display: grid; grid-template-columns: 180px 1fr 60px; gap: 10px; align-items: center; margin: 0 0 8px; font-size: .9rem; }
+.fac-meter-bar { height: 16px; border-radius: 999px; background: var(--field); border: 1px solid var(--line-l); overflow: hidden; }
+.fac-meter-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-hi), var(--gold)); }
+.fac-meter-say { margin: 8px 0 0; font-size: .92rem; line-height: 1.5; }
+
+/* ---------- THE RUSH (j3-04 orders engine) ---------- */
+.ord-form { margin: 12px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.ord-row { display: grid; grid-template-columns: 40px 1fr 110px; gap: 10px; align-items: center; }
+.ord-row .ord-n { font-weight: 800; color: var(--accent-ink); }
+.ord-row label { display: flex; flex-direction: column; gap: 3px; font-size: .78rem; font-weight: 700; color: var(--ink); }
+.ord-row input { font: inherit; font-size: .98rem; padding: 8px 11px; border-radius: 9px; border: 1.5px solid var(--line-l); background: #fff; color: var(--ink); }
+.ord-say { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; font-size: .93rem; }
+.ord-wait { margin: 12px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--field); border: 1px dashed var(--line-l); color: var(--ink); font-size: .93rem; }
+.ord-check { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; }
+.ord-card { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--field); border: 1.5px solid var(--line-l); }
+.ord-card .fac-tag { display: block; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: #5B6579; }
+.ord-card code { font-size: .92rem; }
+.ord-card.is-none code.ord-made { color: #A3271B; font-style: italic; }
+.ord-yn { display: flex; gap: 6px; }
+.ord-yn .ghost-btn.is-on { background: rgba(var(--gold-rgb), .18); border-color: var(--gold); color: var(--accent-ink); }
+.ord-seal { text-align: center; }
+@media (max-width: 640px) { .ord-card { grid-template-columns: 1fr; } .fac-pair { grid-template-columns: 1fr; } .fac-meter-row { grid-template-columns: 1fr; } }
+
+/* ---------- FOUND IN THE PIXELS (14 Sep 2026, the prototype read) ---------- */
+/* a palette chip that inserts a BLOCK shows its lines as lines, never collapsed to one */
+/* the Rush check card: the order and the product never wrap mid-word */
+.ord-card { grid-template-columns: 1.25fr 1fr auto; }
+.ord-card code { white-space: nowrap; }
+/* the verdict repeats every NOT YET job's nudge where she is reading, so the
+   reason is never a screen away from the run that produced it (DFM 205's "note
+   two steps away" — the strip stays at the top, the verdict carries the words) */
+.pyrun-verdict .pyv-nudges { margin: 8px 0 0; padding-left: 1.2em; }
+.pyrun-verdict .pyv-nudges li { margin: 4px 0; font-size: .93rem; line-height: 1.5; }
+/* the reject bin groups identical rejects: three pairs, then "and N more like these" */
+.fac-reject-more { margin: 4px 0 0; font-size: .9rem; color: #7A2018; }
+.fac-reject-all { margin: 0 0 10px; font-size: .95rem; line-height: 1.5; }
+
+/* a palette chip that inserts a BLOCK shows its lines as lines, never collapsed
+   to one (the prototype read, 14 Sep 2026) — a one-line chip is unchanged */
+.pyp-chip-code { white-space: pre-wrap; }
+/* ---------- the engines' own small additions ---------- */
+/* a worked card's code line keeps its leading spaces: a fork's body is pushed in
+   four, and a line that renders flush with its `if` is a wrong program on the
+   pupil's screen (found in the j3-03 deck pictures, 14 Sep 2026) */
+.pyw-line code { white-space: pre-wrap; }
+/* lines already in place at the top of Your program (fixedTop), read not moved */
+.pyp-fixed { margin: 0 0 8px; padding: 8px 10px; border-radius: 9px; background: rgba(0,0,0,.04); border: 1px dashed var(--line-l); }
+.pyp-fixed-label { margin: 0 0 6px; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 800; color: #5B6579; }
+.pyp-fixed-list { list-style: none; margin: 0; padding: 0; counter-reset: pyfx; }
+.pyp-fixed-line { counter-increment: pyfx; display: flex; gap: 8px; align-items: baseline; padding: 2px 0; }
+.pyp-fixed-line::before { content: counter(pyfx); flex: 0 0 22px; text-align: right; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .84rem; color: #6E819F; }
+.pyp-fixed-line code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word; color: var(--ink); }
+.pyp-fixed-hint { margin: 6px 0 0; }
+.pyrun-fixed-blank { margin: 0 2px; }
+/* the story's system lines in the class adventure */
+.pyx-row.is-note { justify-content: center; font-style: italic; color: #5B6579; background: transparent; border: 0; }
+.pyx-row.is-note .pyx-who { display: none; }
+.rly-count-line { margin: 10px 0 0; font-size: .95rem; color: var(--ink); font-weight: 700; }
+.rly-exit-row { margin-top: 14px; }
+.pth-publish-note.pth-fail, .pth-publish-note.pth-changed { padding: 10px 12px; border-radius: 9px; background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), .75); }
+.ord-card-own, .ord-form-card, .ord-run-card, .ord-check-card { position: relative; }
+.ord-side { margin: 12px 0 0; }

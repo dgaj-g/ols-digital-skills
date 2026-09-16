@@ -80,9 +80,10 @@
    "tagline": "You make your program choose what happens next.",
    "block": "b2",
    "icon": "🗺️",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j2/lessons/j2-04.json"
   },
   {
    "id": "j2-05",
