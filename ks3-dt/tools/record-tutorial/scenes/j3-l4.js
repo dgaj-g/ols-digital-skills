@@ -175,7 +175,7 @@ const scenes = [
        BEAT_OF says which beat each caption belongs to; a new beat number plays the
        stage and measures its named actor (146b), a repeat holds the picture. */
     const BEATS = [
-      '<b>def</b> BUILDS a machine. These two lines build a machine called <b>ticket</b>. It has a slot for what goes in. The slot’s label is the word in the brackets: <b>name</b>.',
+      'These two lines build a machine called <b>ticket</b>. The first word, <b>def</b>, BUILDS a machine. The machine has a slot for what goes in. The slot is named in the brackets. This slot is called name.',
       'The two lines that build the machine do nothing on their own. The machine just sits there until a line uses it. Building a machine is not the same as using it.',
       '<b>ticket("Aoife")</b> USES the machine. The word in the brackets is dropped into the slot, and the machine works with it.',
       '<b>return</b> hands the finished thing back out: a ticket comes down the chute into the waiting hand. Whatever comes after the word return is what the machine hands back.',
@@ -295,7 +295,7 @@ const scenes = [
     await cine.caption('When you press RUN, the floor drops every order into your machine and shows what comes out: the order that went in, and the product beside it.');
     await page.evaluate(() => window.domstage.lit('.fac-order', 1));
     await assertDom(page, { litInView: true });
-    await cine.caption('Every product gets a stamp. When the stamp says <b>matches</b>, the product is exactly what the spec card asked for. You are aiming for twelve orders and twelve stamps that say matches.');
+    await cine.caption('Every product gets a stamp. When the stamp says <b>matches</b>, the product is exactly what the spec card asked for. You are aiming for twelve stamps that say matches, one for every order.');
     await page.evaluate(() => { window.domstage.lit(null); window.domstage.scrollTo('.fac-reject', 0); });
     await cine.caption('And under the floor is the reject bin. When every product matches, it is empty &mdash; which is what you are aiming for.');
     await cine.drop({});
@@ -329,7 +329,7 @@ const scenes = [
     await cine.caption('This cost machine has <b>print</b> on its inside line, and no <b>return</b>. Every product is <b>None</b>, Python’s word for nothing at all. So every product gets the stamp “<b>nothing came back</b>”.');
     await page.evaluate(() => window.domstage.scrollTo('.fac-reject', 0));
     await assertDom(page, { has: 'printed instead of handing back with return' });
-    await cine.caption('The reject bin explains in one sentence: the machine printed instead of handing back with return. One card shows your product beside what the spec wanted. Put return on the inside line, and the bin empties.');
+    await cine.caption('The reject bin shows what went wrong: the machine printed instead of returning. Each card shows your product beside what the spec card wanted. Change print to return on the inside line, and the bin empties.');
 
     /* a machine that hands back the WRONG thing: the bin shows the pair */
     await page.evaluate(() => { window.domstage.reset(); window.domstage.eyebrow('THE REJECT BIN, A DIFFERENT MISTAKE'); });
