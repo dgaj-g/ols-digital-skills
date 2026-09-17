@@ -1395,6 +1395,36 @@ const WRONG_MOVES = {
       if (btn && btn.disabled && !(v && !v.hidden)) return;
       st.shapeRun = 'seen';
     }
+    /* SHE FORGETS A DOOR (17 Sep 2026, j2-4 walks 12–13: "a row of the path check
+       with NO door" was never stood on). The starter and the answer both end every
+       road with a NEXT: door line, so no run so far has ever left a road doorless.
+       Once the shape run has been seen she types the answer with its first door
+       line missing and runs it — the path check then shows a road with no door and
+       the verdict says NOT YET — and only then does the plain mover type the answer.
+       Derived from the card: the answer (key.program) must contain a door line;
+       never from a lesson's name (DFM 271). */
+    if (st.shapeRun === 'seen' && !st.doorless) {
+      const key = window.__walkKey ? window.__walkKey(bid) : null;
+      const prog = key && key.program ? String(key.program) : '';
+      const lines = prog.split('\n');
+      const di = lines.findIndex(l => /NEXT: door [AB]/.test(l));
+      st.doorless = 'typed';
+      if (di !== -1) {
+        lines.splice(di, 1);
+        const ta = card.querySelector('.pye-code');
+        ta.value = lines.join('\n');
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        const run = card.querySelector('.pyrun-run:not([disabled])');
+        window.__wpNote = 'forget-door';
+        if (run && run.offsetParent !== null) { run.click(); return; }
+      }
+    }
+    if (st.doorless === 'typed') {
+      const v = card.querySelector('.pyrun-verdict');
+      const btn = card.querySelector('.pyrun-run');
+      if (btn && btn.disabled && !(v && !v.hidden)) return;
+      st.doorless = 'seen';
+    }
     return 'defer';
   },
   /* SHE PRESSES THE WAY OUT IN THE MIDDLE OF THE ADVENTURE. The card asks first
