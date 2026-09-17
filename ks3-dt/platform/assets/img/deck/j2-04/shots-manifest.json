@@ -1,0 +1,155 @@
+{
+ "lesson": "j2-04",
+ "shots": {
+  "pathcheck": {
+   "name": "pathcheck",
+   "kind": "film-frame",
+   "src": "assets/video/j2/j2-l4-b.mp4",
+   "tSeconds": 158,
+   "filmHash": "53f6d6c8e592",
+   "crop": {
+    "x": 88,
+    "y": 85,
+    "w": 1104,
+    "h": 396
+   },
+   "ring": null,
+   "inset": null,
+   "says": "the path check as the film draws it for the corridor room with its else door line missing: three plays, two of them with no door",
+   "contentVersion": "2026-09-03b",
+   "px": "1440x560"
+  },
+  "film": {
+   "name": "film",
+   "kind": "app",
+   "chunkId": "film-a",
+   "selector": ".chunk-host .video-card",
+   "textSnippet": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film jump to each part.",
+   "contentAnchor": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film jump to each part.",
+   "cardText": "The fork in the road (the film) · Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film jump to each part. · A room of a text adventure · The fork: if, elif and else · Reading a whole room · Done watching",
+   "says": "the film screen with its three chapter buttons",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "903c30efae8d",
+   "px": "1748x1552"
+  },
+  "console": {
+   "name": "console",
+   "kind": "app",
+   "chunkId": "training-1",
+   "selector": ".chunk-host .pyrun-card",
+   "textSnippet": "Python could not read that line. Check three things. A fork line asks its question with two equals signs, ==. Every if, elif and else line ends with a colon. The lines that belong under it are pushed ",
+   "contentAnchor": "Python could not read that line. Check three things. A fork line asks its question with two equals signs, ==. Every if, elif and else line ends with a colon. The lines that belong under it are pushed in by four spaces.",
+   "cardText": "Make this canteen room work: the player types trolley or window, and the room chooses the right road. · The fork is the line that starts with if. It ASKS a question: is what the player typed the same as trolley? Something on that line is wrong on purpose, and Python will stop there and tell you. · THE PROGRAM · print(\"You are in the canteen. Every chair is stacked on the tables.\") · print(\"A lunch trolley rolls past by itself and stops at a door.\") · choice = input(\"Do you follow the trolley, or",
+   "says": "the first build after RUN with the planted mistake: the room, Python stopped in red, the plain line under it, and NOT WORKING YET",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".pyrun-verdict",
+    "keepFrac": 0.991,
+    "from": ".pyw-prog",
+    "fromFrac": 0.128
+   },
+   "chunkHash": "32175c26032e",
+   "px": "1572x2060"
+  },
+  "plan": {
+   "name": "plan",
+   "kind": "app",
+   "chunkId": "myroom",
+   "selector": ".chunk-host .pye-plan",
+   "textSnippet": "Pick a place in this school that anybody in your class could picture: the canteen, the ICT room, the gym, the library, the car park, the stairs. Your two words are what the player types to choose a ro",
+   "contentAnchor": "Pick a place in this school that anybody in your class could picture: the canteen, the ICT room, the gym, the library, the car park, the stairs. Your two words are what the player types to choose a road, so your question must say them.",
+   "cardText": "YOUR ROOM · Write your room · This is the room you write yourself. When it works, it joins the class adventure. The five jobs it has to do are listed below. The film on this card shows a room being written. · This film is three and a half minutes long. It shows how a room is written. Then it shows the path check, which is how the website tests your room. · THE FIVE JOBS YOUR ROOM HAS TO DO · Write one room of the class adventure: a place in this school, one question, two roads, and a door for an",
+   "says": "the PLAN face of her room: the five jobs in order, the two empty word boxes, and Start writing",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".pye-start",
+    "keepFrac": 0.992,
+    "from": ".pye-plan-h",
+    "fromFrac": 0.522
+   },
+   "chunkHash": "9641fd4b89eb",
+   "px": "1692x1271"
+  },
+  "bench": {
+   "name": "bench",
+   "kind": "app",
+   "chunkId": "myroom",
+   "selector": ".chunk-host .pye-bench",
+   "textSnippet": "Write one room of the class adventure: a place in this school, one question, two roads, and a door for anything else the player types.",
+   "contentAnchor": "Write one room of the class adventure: a place in this school, one question, two roads, and a door for anything else the player types.",
+   "cardText": "Write one room of the class adventure: a place in this school, one question, two roads, and a door for anything else the player types. · Your two words: · lamp · desk · THE FIVE JOBS · 1NOT YET · It says where the player is, then asks ONE question that says your two words. · 2NOT YET · If the player types your FIRST word, one road runs and ends with a door line. · 3NOT YET · If the player types your SECOND word, the other road runs and ends with a door line. · 4NOT YET · If the player types anyt",
+   "says": "the BENCH face: her two words pinned, the five jobs all not yet, the empty typing box, and the ready-made lines beside it",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".pyp-palette",
+    "keepFrac": 0.839,
+    "from": null,
+    "fromFrac": 0
+   },
+   "chunkHash": "9641fd4b89eb",
+   "px": "1692x2481"
+  },
+  "play": {
+   "name": "play",
+   "kind": "app",
+   "chunkId": "classadventure",
+   "selector": ".chunk-host .rly-card",
+   "textSnippet": "You are in the long corridor. Every classroom door is shut.",
+   "contentAnchor": "You are in the long corridor. Every classroom door is shut.",
+   "cardText": "Room 2 — one of the rooms from the training builds · Room 1 of 5 · 4 rooms are in the class adventure so far. · THE ADVENTURE · — Room 2 — one of the rooms from the training builds — · THE ROOM · You are in the long corridor. Every classroom door is shut. · THE ROOM · Do you go left or right? Type left or right. · YOU · Tuesday · THE ROOM · You turn right and reach the stairs. · You go through door B. · Finding the next room… · Finish the adventure and carry on with the lesson",
+   "says": "one room of the class adventure playing: the strip naming the room, its story, and the word the player typed",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "260f68f5c1fc",
+   "px": "1572x1102"
+  },
+  "end": {
+   "name": "end",
+   "kind": "app",
+   "chunkId": "classadventure",
+   "selector": ".chunk-host .rly-end",
+   "textSnippet": "That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson.",
+   "contentAnchor": "That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson.",
+   "cardText": "THE END · You reached the end. · That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson. · Room 2 · Room 4 · Room 3 · Room 1 · You went through rooms 2, 4, 3 and 1. Every play takes a different path, so play again and see where it goes. · Play again · Finish the adventure and carry on with the lesson",
+   "says": "the end card: THE END, the rooms she went through, Play again, and the way on",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "260f68f5c1fc",
+   "px": "1372x840"
+  },
+  "extras": {
+   "name": "extras",
+   "kind": "app",
+   "chunkId": "extras",
+   "selector": ".chunk-host .pyrun-hub",
+   "textSnippet": "There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you",
+   "contentAnchor": "There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished.",
+   "cardText": "EXTRA JOBS · There are four small jobs on this screen, and they are all optional. None of them is worth any points, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished. · Job 1 — the password door · A door that opens for one exact word, and stays shut for everything else. · Job 2 — four roads · A room with four roads: if, elif, another elif, and else. · Job 3 — the player's name · Ask the player's na",
+   "says": "the extra jobs screen, untouched: four jobs, none ticked, and the button that carries her on",
+   "contentVersion": "2026-09-03b",
+   "crop": null,
+   "chunkHash": "7a0d1e40dcc2",
+   "px": "1572x1288"
+  },
+  "briefing": {
+   "name": "briefing",
+   "kind": "app",
+   "chunkId": "adventure",
+   "selector": ".chunk-host .dossier",
+   "textSnippet": "The whole class is building one adventure today. It is set in this school after the bell has gone: everybody has gone home, the doors are still open, and odd things happen. Each of you writes ONE room",
+   "contentAnchor": "The whole class is building one adventure today. It is set in this school after the bell has gone: everybody has gone home, the doors are still open, and odd things happen. Each of you writes ONE room — a place in the school, one question, and two roads the player can take. When your room is finished, it joins the class's adventure, and you can play it, going through rooms your classmates wrote.",
+   "cardText": "J2 · LESSON 4 OF 17 · Today your program chooses what happens next. · Every program you have written so far runs its lines in order, from the top to the bottom, and it does the same thing every time. Today you write a program that CHOOSES. It reads what the player typed, and then it decides which lines to run. · You are going to build a text adventure. A text adventure is a story that a program tells you one piece at a time. It asks you what to do, you type your answer, and what happens next dep",
+   "says": "the opening card's demo once it has played through: the canteen room, and the note under it",
+   "contentVersion": "2026-09-03b",
+   "crop": {
+    "to": ".dossier-demo",
+    "keepFrac": 0.616,
+    "from": ".dossier-demo",
+    "fromFrac": 0.269
+   },
+   "chunkHash": "fd065b4b9473",
+   "px": "1372x1248"
+  }
+ }
+}
