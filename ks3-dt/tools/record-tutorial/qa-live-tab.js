@@ -832,6 +832,133 @@ async function readTab(page) {
       YR.year + ': the per-question exit columns render for a lesson of this year');
   }
 
+  /* ============================================================
+     VI. LESSON 4 IN BOTH YEARS (§C7, 14 Sep 2026): the build-activity column
+     reads `myroom=` / `classadventure=` (J2) and `factory=` / `rush=` (J3) by
+     content detection, the ROOMS panel appears for the lesson whose content
+     declares a relay — and only for it — with the author's name, the reach
+     count and the room's lines read-only, and the CSV carries the columns.
+     ============================================================ */
+  for (const Y of [
+    { year: 'j2', lesson: 'j2-04', cols: ['Your room', 'The class adventure'], detail: ['myroom=1/1;classadventure=5/5', 'myroom=1/1;classadventure=3/5'], rooms: true },
+    { year: 'j3', lesson: 'j3-04', cols: ['Your factory', 'The Rush'], detail: ['factory=2/2;rush=4/4', 'factory=1/2;rush=2/4'], rooms: false }
+  ]) {
+    section('VI. THE LIVE TAB ON A ' + Y.year.toUpperCase() + ' LESSON 4 CLASS');
+    await page.evaluate(() => localStorage.clear());
+    await page.evaluate((cfg) => {
+      const EPOCH = 1767225600000;
+      const tmin = Math.floor((Date.now() - EPOCH) / 60000);
+      const weekAgo = tmin - 7 * 1440;
+      const CLS = 'QA-L4', STAFF = 'teacher@demo';
+      const s = {
+        passcode: 'demo',
+        classes: [{ name: CLS, owner: STAFF, year: cfg.year, created: new Date(Date.now() - 7 * 864e5).toISOString() }],
+        locks: {}, hods: [], cfg: {}, team: {}, pupils: {}, userProps: {}, props: {}
+      };
+      s.locks[CLS] = { '4': { u: weekAgo, on: 1 } };
+      s.cfg[CLS] = { lb: { mode: 'off', basis: 'xp', names: 'codename', topN: 0 }, absDays: 5, cover: { on: 0, lesson: '', ts: 0 }, pairing: { on: 1 }, tn: { mode: 'team' } };
+      const mk = (name, xp, detail) => ({ n: name, cn: name.split(' ')[0] + ' Wren', j: weekAgo, xp: xp, g: '',
+        L: { '4': [2, xp, detail, '1', '222|1', tmin - 60, 40, 0, '', 0, 0] } });
+      s.pupils[CLS + ':aoife@demo'] = mk('Aoife Brennan', 62, cfg.detail[0]);
+      s.pupils[CLS + ':niamh@demo'] = mk('Niamh Quinn', 41, cfg.detail[1]);
+      if (cfg.rooms) {
+        /* two published rooms in the store's own shape (head + shard 0), one
+           reached three times by other players, one reached by nobody */
+        s.props['room:' + CLS + ':' + cfg.lesson] = JSON.stringify({ v: 1, seq: 2, ns: 0 });
+        s.props['rooms:' + CLS + ':' + cfg.lesson + ':0'] = JSON.stringify({
+          'aoife@demo': { n: 1, code: 'print("You are in the gym.")\nchoice = input("Type rope or ball.")\nif choice == "rope":\n    print("You climb.")\n    print("NEXT: door A")\nelse:\n    print("You bounce it.")\n    print("NEXT: door B")', h: 'a1', t: tmin - 30, v: 3 },
+          'niamh@demo': { n: 2, code: 'print("You are in the hall.")\nchoice = input("Type stage or door.")\nif choice == "stage":\n    print("You bow.")\n    print("NEXT: door B")\nelse:\n    print("You leave.")\n    print("NEXT: door A")', h: 'b2', t: tmin - 20, v: 0 }
+        });
+      }
+      localStorage.setItem('ks3dt-dev', JSON.stringify(s));
+    }, Y);
+    await page.goto('http://localhost:8096/ks3-dt/platform/index.html?class=QA-L4', { waitUntil: 'domcontentloaded' });
+    await sleep(2200);
+    await page.evaluate(() => window.Staff.open());
+    await sleep(700);
+    await page.evaluate(() => {
+      const i = document.querySelector('#staff-modal input[type=password], #staff-modal input');
+      if (i) { i.value = 'demo'; i.dispatchEvent(new Event('input', { bubbles: true })); }
+      const b = Array.from(document.querySelectorAll('#staff-modal button')).find(x => /enter|unlock|go/i.test(x.textContent || ''));
+      if (b) b.click();
+    });
+    await sleep(1800);
+    await page.evaluate(() => { const b = document.querySelector('#staff-modal [data-action="select-class"][data-class="QA-L4"]'); if (b) b.click(); });
+    await sleep(900);
+    await page.evaluate(() => {
+      const t = Array.from(document.querySelectorAll('#staff-modal [data-action="switch-tab"]')).find(x => /^live$/i.test((x.textContent || '').trim()));
+      if (t) t.click();
+    });
+    await sleep(3200);
+    const t4 = await readTab(page);
+    for (const col of Y.cols) {
+      check(t4.heads.some(h => h.indexOf(col) !== -1), Y.year + ': the table has a "' + col + '" column, detected from the lesson\'s content');
+    }
+    const cells = await page.evaluate((names) => {
+      const body = document.getElementById('staff-body');
+      const out = {};
+      names.forEach(name => {
+        const tr = Array.from(body.querySelectorAll('.dash-table tr')).find(tr => (tr.querySelector('td') || {}).textContent && tr.querySelector('td').textContent.indexOf(name) !== -1);
+        out[name] = tr ? Array.from(tr.querySelectorAll('.lc-actwrap')).map(w => ({ text: w.textContent.trim(), title: w.getAttribute('title') || '' })) : [];
+      });
+      return out;
+    }, ['Aoife Brennan', 'Niamh Quinn']);
+    const aC = cells['Aoife Brennan'], nC = cells['Niamh Quinn'];
+    check(aC.length >= 2 && nC.length >= 2, Y.year + ': both pupils show both build cells (' + aC.length + ' / ' + nC.length + ')');
+    if (Y.year === 'j2') {
+      check(aC.some(c => /5\s*\/\s*5/.test(c.text)) && nC.some(c => /3\s*\/\s*5/.test(c.text)), 'j2: the class-adventure cells read 5/5 and 3/5 from the detail ledger');
+      check(aC.some(c => /rooms played in her longest play/.test(c.title)), 'j2: hovering the adventure cell explains it in the relay\'s own words');
+      const legend = await page.evaluate(() => (document.querySelector('#staff-body .live-legend') || {}).textContent || '');
+      check(/rooms of the class adventure she played/.test(legend) && /Rooms panel/.test(legend), 'j2: the legend explains the adventure column and points at the Rooms panel');
+    } else {
+      check(aC.some(c => /4\s*\/\s*4/.test(c.text)) && nC.some(c => /2\s*\/\s*4/.test(c.text)), 'j3: the Rush cells read 4/4 and 2/4 from the detail ledger');
+      check(aC.some(c => /parts of the Rush done/.test(c.title)), 'j3: hovering the Rush cell explains it in the Rush\'s own words');
+      const legend = await page.evaluate(() => (document.querySelector('#staff-body .live-legend') || {}).textContent || '');
+      check(/never.*scored on what her partner said/.test(legend), 'j3: the legend says the Rush is never scored on the partner\'s verdict');
+    }
+    const rooms = await page.evaluate(() => {
+      const box = document.querySelector('#rooms-lens .rooms-lens-box');
+      if (!box) return null;
+      return {
+        heading: (box.querySelector('h3') || {}).textContent || '',
+        note: (box.querySelector('.pl-note') || {}).textContent || '',
+        rows: Array.from(box.querySelectorAll('.rl-room')).map(r => ({ row: r.querySelector('.rl-row').textContent.replace(/\s+/g, ' ').trim(), hidden: r.querySelector('.rl-code').hidden }))
+      };
+    });
+    if (Y.rooms) {
+      check(!!rooms, 'j2: the ROOMS panel is on the Live tab for a lesson whose content declares a relay');
+      check(!!rooms && /2 rooms published/.test(rooms.note) && /3 times/.test(rooms.note) && /1 nobody has reached/.test(rooms.note),
+        'j2: it counts rooms published, reaches, and rooms nobody has reached — "' + (rooms && rooms.note.slice(0, 90)) + '"');
+      check(!!rooms && rooms.rows.length === 2 && /Room 1 — Aoife Brennan/.test(rooms.rows[0].row) && /reached 3 times/.test(rooms.rows[0].row) &&
+        /Room 2 — Niamh Quinn/.test(rooms.rows[1].row) && /nobody has reached it yet/.test(rooms.rows[1].row),
+        'j2: each room carries its NUMBER (what pupils see) and its AUTHOR\'S NAME (for the teacher only)');
+      check(!!rooms && rooms.rows.every(r => r.hidden), 'j2: the rooms open closed — no code on screen until Open is pressed');
+      await page.evaluate(() => { const b = document.querySelector('#rooms-lens .rl-open'); if (b) b.click(); });
+      await sleep(300);
+      const opened = await page.evaluate(() => { const r = document.querySelector('#rooms-lens .rl-room'); return { hidden: r.querySelector('.rl-code').hidden, text: r.querySelector('.rl-code').textContent, btn: r.querySelector('.rl-open').textContent }; });
+      check(!opened.hidden && /You are in the gym/.test(opened.text) && /NEXT: door A/.test(opened.text) && opened.btn === 'Close',
+        'j2: Open shows the room\'s own lines, read-only, and the button turns into Close');
+      const ro = await page.evaluate(() => { const pre = document.querySelector('#rooms-lens .rl-code'); return pre.tagName === 'PRE' && !pre.isContentEditable; });
+      check(ro, 'j2: the room is a read-only block — nothing on the panel edits a pupil\'s room');
+      const guide = staff.indexOf('grows a <b>Rooms</b> panel') !== -1;
+      check(guide, 'j2: the Guide tab explains the Rooms panel (DFM 156c: a panel and its sentence ship together)');
+    } else {
+      check(rooms === null, 'j3: CONTROL — a lesson with no relay chunk gets NO Rooms panel (the Rush is not an adventure)');
+    }
+    /* the CSV carries the same columns */
+    await page.evaluate(() => { window.__copied = ''; const orig = App.copyText; App.copyText = function (t, m) { window.__copied = t; }; });
+    await page.evaluate(() => { const b = document.querySelector('#staff-body [data-action="live-csv"]'); if (b) b.click(); });
+    await sleep(600);
+    const csv = await page.evaluate(() => window.__copied || '');
+    const head = (csv.split('\n')[0] || '');
+    check(Y.cols.every(c => head.indexOf(c) !== -1), Y.year + ': the CSV header carries "' + Y.cols.join('" and "') + '"');
+    check(new RegExp(Y.year === 'j2' ? '"5/5"' : '"4/4"').test(csv), Y.year + ': and the rows carry the cell values');
+  }
+  section('VI2. CONTROL — the build he sat has no Rooms panel and no relay/orders column (DFM 196)');
+  const satStaff = (() => { try { return execFileSync('git', ['show', '8f58434:ks3-dt/platform/staff.js'], { cwd: ROOT, encoding: 'utf8' }); } catch (e) { return null; } })();
+  check(!!satStaff && satStaff.indexOf('rooms-lens') === -1, 'pre-change staff.js (8f58434) has no rooms panel');
+  check(!!satStaff && !/'relay', 'orders'/.test(satStaff), 'pre-change staff.js detects no relay / orders column');
+
   section('V2. CONTROL — the build he sat must FAIL the J2/J3 panel checks (DFM 196)');
   /* the control ref for THIS round is the build he actually sat */
   const preStaff = (() => {

@@ -77,12 +77,13 @@
    "id": "j3-04",
    "num": 4,
    "title": "Function Factory",
-   "tagline": "You package your code into functions you can use again and again.",
+   "tagline": "You build a machine (a function) once, then use it again and again.",
    "block": "b2",
    "icon": "🏭",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-04.json"
   },
   {
    "id": "j3-05",

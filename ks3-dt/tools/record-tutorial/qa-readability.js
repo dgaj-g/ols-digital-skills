@@ -245,9 +245,12 @@ const COLLECT = CA.COLLECT;
     }, chunkId);
     if (ok !== true) throw new Error('could not reach the chunk "' + chunkId + '": ' + ok);
     await sleep(1400);
-    /* the chunk's own intro card, where it has one */
+    /* the chunk's own intro card, where it has one. NOT the PLAN face's Start
+       button (K41/K44): since L4 the pyrun intro lives on the plan face itself,
+       so the plan IS the first screen — its button is a surface to measure, and
+       the surfaces that want the bench press `.pye-start` themselves. */
     await page.evaluate(() => {
-      const b = document.querySelector('.chunk-host .intro-card .primary-btn, .chunk-host .primary-btn');
+      const b = document.querySelector('.chunk-host .intro-card .primary-btn, .chunk-host .primary-btn:not(.pye-start)');
       if (b && !b.disabled) b.click();
     });
     await sleep(900);

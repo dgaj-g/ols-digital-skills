@@ -163,7 +163,12 @@ async function abort(page, msg) {
 }
 
 /* ═══════════════════════ staging a preview pupil ══════════════════════════ */
-async function pupil(ctx, who, lesson, fresh) {
+/* THE SECOND REAL PUPIL FOR A PAIRED SET-PIECE (K42b, 14 Sep 2026) — the same
+   two the paired harnesses use (qa-swap-paired: aoife + leah), so a capture
+   stands where the harness stands (DFM 144) */
+const PARTNER_OF = { j1: 'cara', j2: 'leah', j3: 'katie' };
+
+async function pupil(ctx, who, lesson, fresh, opts) {
   const cls = CLASS_OF[yearOf(lesson)];
   const page = await ctx.newPage();
   page.on('console', m => { if (m.type() === 'error') console.error('   [page error] ' + m.text().slice(0, 140)); });
@@ -178,16 +183,23 @@ async function pupil(ctx, who, lesson, fresh) {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await sleep(1800);
   }
-  await page.evaluate((cls) => {
+  await page.evaluate((a) => {
+    const cls = a.cls;
     const db = JSON.parse(localStorage.getItem('ks3dt-dev'));
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
     db.locks = db.locks || {};
     db.locks[cls] = db.locks[cls] || {};
     for (const n of ['1', '2', '3', '4', '5', 'S1']) db.locks[cls][n] = { u: now, on: 1 };
     db.cfg[cls] = db.cfg[cls] || {};
-    db.cfg[cls].pairing = { on: 0 };
+    /* PAIRING IS ON ONLY FOR A LESSON WHOSE PLAN PHOTOGRAPHS A PAIRED SCREEN
+       (K42b). Off, the two Lesson 3 set-pieces go straight to their one-machine
+       seat and the waiting card, the PARTNER FOUND card and the tester's seat
+       cannot exist — the harness's own configuration, not the lesson, would be
+       what kept them off the board. Derived from the plan's own selectors, never
+       from a lesson's name (DFM 271). */
+    db.cfg[cls].pairing = { on: a.pairing ? 1 : 0 };
     localStorage.setItem('ks3dt-dev', JSON.stringify(db));
-  }, cls);
+  }, { cls, pairing: !!(opts && opts.pairing) });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await sleep(2200);
   /* a studio identity per pupil, so Press Night's marquee lists two DIFFERENT
@@ -287,6 +299,22 @@ async function settled(pg, el, name) {
   });
   /* one more beat so a fade that has just started is over before the shutter */
   await pg.waitForTimeout(500);
+  /* AND THE CARD MUST HAVE STOPPED GROWING (14 Sep 2026). The L4 briefing
+     demos type their rows in one at a time, and the last row of J3's — two
+     lines long — was still unfolding when the crop was measured: the picture
+     stopped one note short of what the plan said it showed. So the shutter
+     waits until two readings of the card's height, a third of a second apart,
+     agree — up to six seconds, and then it says so rather than shooting a
+     screen that is still moving. */
+  const grew = Date.now() + 6000;
+  let last = -1;
+  for (;;) {
+    const h = await el.evaluate(node => Math.round(node.getBoundingClientRect().height));
+    if (h === last) break;
+    last = h;
+    if (Date.now() > grew) { console.log('    note: "' + name + '" was still changing height after 6s — photographed anyway, READ THIS ONE.'); break; }
+    await pg.waitForTimeout(350);
+  }
 }
 
 /* ═══════════════ ONE WALK, SHOOTING WHATEVER COMES TRUE ═══════════════════
@@ -295,8 +323,12 @@ async function settled(pg, el, name) {
    ordinary step. That is what makes a mislabelled shot impossible: a picture
    exists only because its own predicate held while the shutter was open. */
 async function walkAndShoot(page, owed, take, budget) {
-  let lastKey = '', same = 0, stretchSeen = 0, reviewsFiled = 0;
-  for (let turn = 0; turn < (budget || 320) && owed.size; turn++) {
+  let lastKey = '', same = 0, stretchSeen = 0, reviewsFiled = 0, holds = 0;
+  /* the sweep: every picture still owed whose screen is TRUE right now is taken
+     now. Named so a paired stager can call it at the one moment that matters —
+     the PARTNER FOUND card is up for exactly as long as it takes the walk to
+     press its button, so it is photographed the instant it appears (K42b). */
+  const sweep = async () => {
     for (const name of Array.from(owed)) {
       const spec = take.spec(name);
       let on = false;
@@ -305,7 +337,35 @@ async function walkAndShoot(page, owed, take, budget) {
       await take.shoot(page, name, spec);
       owed.delete(name);
     }
+  };
+  for (let turn = 0; turn < (budget || 320) && owed.size; turn++) {
+    await sweep();
     if (!owed.size) break;
+    /* THE PARTNER'S TURN (K42b). A paired lesson's second pupil takes her own
+       step here, once per turn of the walk, and may ask the walk to hold still
+       — the photographed pupil is kept at the door until her partner is
+       standing at it too, so the wait she is photographed in is a real one and
+       the preview's simulated partner never has time to arrive. */
+    if (take.tick) {
+      const r = await take.tick(page, owed, sweep);
+      if (r && r.holdA) { await sleep(900); continue; }
+      if (!owed.size) break;
+    }
+    /* A PICTURE MAY ASK THE WALK TO WAIT (14 Sep 2026): a row's `hold` names a
+       state that is ABOUT to become the picture — the opening card's demo still
+       playing — and while it holds, the walk takes no step, so the shutter is
+       not beaten by the press that ends the screen. It never steers toward the
+       picture; it only declines to walk away from a screen that is still
+       arriving. Bounded, so a hold that never clears cannot stall a walk. */
+    let holding = false;
+    for (const name of Array.from(owed)) {
+      const spec = take.spec(name);
+      if (!spec.hold) continue;
+      let h = false;
+      try { h = await page.evaluate(spec.hold); } catch (e) { h = false; }
+      if (h) { holding = true; break; }
+    }
+    if (holding && (holds = (holds || 0) + 1) < 40) { await sleep(900); continue; }
 
     /* THE ONE CONTROL THAT ENDS LESSON 4's CASE BOARD, pressed by name.
        `.case-finish-btn` ("Wrap up the board") is rendered inside the RELEASE
@@ -627,6 +687,140 @@ async function stagePressNight(ctx, page, lesson) {
     'the marquee will show only real studios, as the live app does.');
 }
 
+/* ═══════════ A PAIRED SET-PIECE NEEDS A REAL PARTNER (K42b, 14 Sep 2026) ═══
+   Both Lesson 3s put the pupil with a partner — the Chatbot Swap and the
+   Prediction Match — and three of the screens a teacher most needs on the board
+   exist only for a pupil who HAS one: the waiting card with the character on
+   it, the PARTNER FOUND card with her call sign, and the seat where her
+   partner's work is on her screen. The preview will pair a lone pupil with its
+   simulated partner after twenty seconds, and that partner is called "Pixel
+   (simulated)" — projected, that is the Press Night fault again (DFM 225b's
+   word SIMULATED on a slide). So a SECOND REAL preview pupil is staged on the
+   two-account rig qa-swap-paired built, and driven in step with the walk:
+
+     1. she walks to the door of the paired chunk on her own, with the ordinary
+        movers, and stops there; the photographed pupil is HELD at her own door
+        until the partner is standing at hers, so the wait about to be
+        photographed is a real one and the simulated partner never has time;
+     2. the photographed pupil opens her door and genuinely waits; the character
+        mounts after the lesson's own `sideAfterMs`; the waiting card is taken;
+     3. only then does the partner open hers — and the PARTNER FOUND card is
+        photographed the instant it appears, before the walk presses its button;
+     4. from there the partner keeps pace, one or two ordinary moves per turn,
+        with ONE more hold: in the Match she never locks a prediction while the
+        photographed pupil's "locked in, waiting" picture is still owed, so that
+        state really exists on screen before the reveal is allowed to happen.
+
+   Nothing here steers the photographed walk toward a picture (the rule at the
+   top of this file); it steers the PARTNER, and the pictures are still taken
+   only when their own predicates hold. */
+async function stagePartner(ctx, lesson, lj) {
+  /* `orders` (14 Sep 2026): J3 Lesson 4's Rush pairs through the same PairKit
+     door — its beginLabel opens the wait, and the partner keeps pace with the
+     ordinary ord-form / ord-check movers once matched */
+  const paired = (lj.chunks || []).find(c => c.engine === 'chatswap' || c.engine === 'duel' || c.engine === 'orders');
+  if (!paired) throw new Error(lesson + ': the plan photographs a paired screen but the lesson has no paired chunk');
+  const doorChunk = paired.id;
+  const doorLabel = String((paired.config || {}).beginLabel || '').trim();
+  const order = (lj.chunks || []).map(c => c.id);
+  const who = PARTNER_OF[yearOf(lesson)];
+  console.log('  · staging a real partner (' + who + ') for the ' + doorChunk +
+    ' — the preview\'s simulated one would be projected…');
+  const pB = await pupil(ctx, who, lesson, false, { pairing: true });
+  const st = { doorOpen: false, done: false, held: 0 };
+  const atDoor = (pg) => pg.evaluate((a) => {
+    const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+    if (!s || s.id !== a.chunk) return false;
+    if (document.querySelector('.pair-wait, .swap-card, .duel-card, .pair-pop, .ord-form-card, .ord-card-own')) return false;
+    const b = Array.from(document.querySelectorAll('.chunk-host button.primary-btn'))
+      .find(x => x.offsetParent !== null && !x.disabled && (x.textContent || '').trim() === a.label);
+    return !!b;
+  }, { chunk: doorChunk, label: doorLabel });
+  const pressDoor = (pg) => pg.evaluate((a) => {
+    const b = Array.from(document.querySelectorAll('.chunk-host button.primary-btn'))
+      .find(x => x.offsetParent !== null && !x.disabled && (x.textContent || '').trim() === a.label);
+    if (b) b.click();
+    return !!b;
+  }, { label: doorLabel });
+  const idx = id => order.indexOf(id);
+
+  /* one ordinary step for the partner — the shared movers, then the same plain
+     fallbacks qa-swap-paired's advance() uses; `noLock` holds a Match commit */
+  async function stepB(noLock) {
+    const k = await pB.evaluate(WALK.detectKind);
+    if (!k) return 'nothing';
+    if (noLock && k.kind === 'duel-lock') return 'held-lock';
+    const mv = WALK.MOVES[k.kind];
+    if (mv) {
+      try { await pB.evaluate(mv); } catch (e) { /* re-detected next turn */ }
+      await sleep(Math.min(WALK.SETTLE[k.kind] || 600, 1400));
+      return k.kind;
+    }
+    if (WALK.ACTIONS[k.kind]) {
+      try { await WALK.ACTIONS[k.kind](pB); } catch (e) {}
+      await sleep(700);
+      return k.kind;
+    }
+    await pB.evaluate(() => {
+      const q = (s) => document.querySelector(s);
+      const vis = (e) => e && e.offsetParent !== null && !e.disabled;
+      const pop = q('.badge-pop button'); if (vis(pop)) { pop.click(); return; }
+      const skip = q('.intro-skip'); if (vis(skip)) { skip.click(); return; }
+      const opt = q('.chunk-host .q-opt'); if (vis(opt)) { opt.click(); return; }
+      for (const b of document.querySelectorAll('.chunk-host button.primary-btn, .chunk-host button.ghost-btn')) {
+        if (vis(b) && !/Running out of time|leave|Leave/i.test(b.textContent)) { b.click(); return; }
+      }
+    });
+    await sleep(700);
+    return k.kind + '*';
+  }
+
+  async function tick(pageA, owed, sweep) {
+    if (st.done) return null;
+    const ckB = await pB.evaluate(WALK.chunkNow);
+    if (idx(ckB) > idx(doorChunk)) {
+      st.done = true;
+      console.log('  · the partner is through the ' + doorChunk + ' — she is not needed again');
+      return null;
+    }
+    if (!st.doorOpen) {
+      const bAtDoor = ckB === doorChunk && await atDoor(pB);
+      if (!bAtDoor) {
+        /* she walks; the photographed pupil is held at her own door meanwhile */
+        await stepB(false);
+        const ckA = await pageA.evaluate(WALK.chunkNow);
+        if (ckA === doorChunk && await atDoor(pageA)) {
+          if (++st.held % 10 === 1) console.log('   · (holding at the door until the partner arrives — ' + who + ' is at ' + ckB + ')');
+          return { holdA: true };
+        }
+        return null;
+      }
+      /* both at the door. The photographed pupil opens hers by her own next move
+         and waits; nothing happens here until her waiting card has been taken */
+      if (owed.has('wait')) return null;
+      const pressed = await pressDoor(pB);
+      if (!pressed) return null;
+      st.doorOpen = true;
+      console.log('   · (the partner opened her door; watching for the PARTNER FOUND card)');
+      /* the card is up only until the walk presses its button: photograph it the
+         moment the poll brings it, before the walk gets its turn */
+      for (let i = 0; i < 60 && owed.has('matched'); i++) {
+        await sleep(400);
+        await sweep();
+      }
+      if (owed.has('matched')) console.log('   !! the PARTNER FOUND card never showed a real call sign within 24s');
+      return null;
+    }
+    /* after the door: keep pace, two steps a turn, never committing a Match
+       prediction while the locked-in picture is still owed */
+    const noLock = owed.has('locked');
+    await stepB(noLock);
+    await stepB(noLock);
+    return null;
+  }
+  return { tick, close: async () => { try { await pB.close(); } catch (e) {} } };
+}
+
 /* ══════════════════════════════ THE RUN ═══════════════════════════════════ */
 /* deck shots that came out too tall to read on a slide, gathered across the
    whole run and reported together at the end */
@@ -722,8 +916,13 @@ async function captureLesson(browser, lesson) {
   const owedDeck = new Set(Object.keys(deckPlan));
   if (owedDeck.size) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 940 }, deviceScaleFactor: 2 });
-    const page = await pupil(ctx, WHO_OF[yearOf(lesson)], lesson);
+    /* a lesson whose plan photographs a paired screen is staged with pairing ON
+       and a second real pupil (derived from the rows, DFM 271) */
+    const PAIRED = Object.values(deckPlan).some(r => /pair-wait|pair-pop/.test(String(r.selector)));
+    const page = await pupil(ctx, WHO_OF[yearOf(lesson)], lesson, true, { pairing: PAIRED });
+    const partner = PAIRED ? await stagePartner(ctx, lesson, lj) : null;
     const take = {
+      tick: partner ? partner.tick : null,
       spec: n => deckPlan[n],
       shoot: async (pg, name, spec) => {
         const el = await pg.$(spec.selector) || await pg.$('.chunk-host .card') || await pg.$('.chunk-host');
@@ -774,6 +973,48 @@ async function captureLesson(browser, lesson) {
            part of the screen being claimed. `visibility` rather than `display`,
            so no layout moves and the predicate that was true a moment ago is
            still true after (it is re-checked below, and would catch it if not). */
+        let crop = null;
+        const measureCrop = async () => el.evaluate((node, sels) => {
+            const a = node.getBoundingClientRect();
+            if (!a.height) return null;
+            const out = { to: sels.to || null, keepFrac: 1, from: sels.from || null, fromFrac: 0 };
+            /* THE AIR NEVER SHOWS A NEIGHBOUR (14 Sep 2026). The little margin
+               above and below a crop used to be a flat 14/16px, and on the L4
+               briefing cards that was enough to catch one line of the paragraph
+               next door: a projected slide with a sentence cut mid-word along
+               its edge. So the air is now the lesser of the flat margin and
+               HALF the gap to the nearest text-bearing element on that side —
+               measured, never assumed. Inside a tight card the crop closes up;
+               inside a roomy one it keeps its air. */
+            const texty = [...node.querySelectorAll('*')].filter(e => {
+              if (!e.offsetParent && getComputedStyle(e).position !== 'fixed') return false;
+              const r = e.getBoundingClientRect();
+              return r.height > 0 && r.width > 0 && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+            }).map(e => e.getBoundingClientRect());
+            if (sels.to) {
+              const inner = node.querySelector(sels.to);
+              if (!inner) return null;
+              const b = inner.getBoundingClientRect().bottom;
+              const below = texty.filter(r => r.top >= b - 0.5).map(r => r.top - b);
+              const air = below.length ? Math.max(0, Math.min(16, Math.floor(Math.min(...below) / 2))) : 16;
+              out.keepFrac = Math.min(1, (b - a.top + air) / a.height);
+            }
+            /* `cropFrom` starts the picture at an element's top, with a little
+               air above it — the same measured-fraction discipline as cropTo */
+            if (sels.from) {
+              const start = node.querySelector(sels.from);
+              if (!start) return null;
+              const t = start.getBoundingClientRect().top;
+              const above = texty.filter(r => r.bottom <= t + 0.5).map(r => t - r.bottom);
+              const air = above.length ? Math.max(0, Math.min(14, Math.floor(Math.min(...above) / 2))) : 14;
+              out.fromFrac = Math.max(0, (t - a.top - air) / a.height);
+            }
+            if (out.fromFrac >= out.keepFrac) return null;
+            return out;
+          }, { to: spec.cropTo || null, from: spec.cropFrom || null });
+        let retakes = 0;
+        for (;;) {
+        const cropBeforeShot = (spec.cropTo || spec.cropFrom) ? await measureCrop() : null;
         const unchromed = await el.evaluate((node) => {
           const hidden = [];
           Array.from(document.querySelectorAll('body *')).forEach(e => {
@@ -806,19 +1047,32 @@ async function captureLesson(browser, lesson) {
            same card is a different height. A cropTo that matches nothing is a
            failure, never a silent full-size shot — the whole point is that the
            picture is the size the plan says it is. */
-        let crop = null;
-        if (spec.cropTo) {
-          crop = await el.evaluate((node, sel) => {
-            const inner = node.querySelector(sel);
-            if (!inner) return null;
-            const a = node.getBoundingClientRect(), b = inner.getBoundingClientRect();
-            if (!a.height) return null;
-            return { to: sel, keepFrac: Math.min(1, (b.bottom - a.top + 16) / a.height) };
-          }, spec.cropTo);
-          if (!crop) {
-            await abort(pg, '"' + name + '" declares cropTo "' + spec.cropTo +
-              '", and the element photographed has no such descendant');
+        if (spec.cropTo || spec.cropFrom) {
+          crop = await measureCrop();
+          /* MEASURED TWICE, EITHER SIDE OF THE SHUTTER (14 Sep 2026). The J3
+             briefing's demo note faded in a beat after its last row, between the
+             screenshot and the measurement: the fractions were read off a taller
+             card than the one in the picture, and the crop started a line early
+             and ended a line short. The crop is measured BEFORE the shot (above,
+             `cropBefore`) and again after; if the card moved between the two, the
+             picture is of a moving screen and is taken again, up to three times. */
+          const cropBefore = cropBeforeShot;
+          if (cropBefore && crop && (Math.abs(cropBefore.keepFrac - crop.keepFrac) > 0.002 ||
+              Math.abs(cropBefore.fromFrac - crop.fromFrac) > 0.002)) {
+            if (retakes < 3) {
+              retakes++;
+              console.log('      (the card changed height under the shutter — taking "' + name + '" again, ' + retakes + ' of 3)');
+              await pg.waitForTimeout(900);
+              continue;
+            }
+            await abort(pg, '"' + name + '" kept changing height under the shutter — a screen still moving is not a screen to project');
           }
+          if (!crop) {
+            await abort(pg, '"' + name + '" declares cropTo/cropFrom "' + (spec.cropTo || '') + '" / "' +
+              (spec.cropFrom || '') + '", and the element photographed has no such descendant (or they cross)');
+          }
+        }
+        break;
         }
         const framed = path.join(deckDir, 'shot-' + name + '.png');
         const size = await frameShot(raw, framed, theme, crop);
@@ -852,7 +1106,8 @@ async function captureLesson(browser, lesson) {
           cardText: lines.join(' · ').slice(0, 500),
           says: spec.says, contentVersion: CONTENT_VERSION,
           /* what was done to the picture, recorded rather than implied */
-          crop: crop ? { to: crop.to, keepFrac: Math.round(crop.keepFrac * 1000) / 1000 } : null,
+          crop: crop ? { to: crop.to, keepFrac: Math.round(crop.keepFrac * 1000) / 1000,
+                         from: crop.from, fromFrac: Math.round(crop.fromFrac * 1000) / 1000 } : null,
           chunkHash: chunkHash(lj, spec.chunk), px: size.w + 'x' + size.h
         };
         write();
@@ -869,6 +1124,7 @@ async function captureLesson(browser, lesson) {
        rather than tuned: the loop exits the moment nothing is owed, so a bigger
        ceiling costs nothing on the lessons that finish early. */
     await walkAndShoot(page, owedDeck, take, 1500);
+    if (partner) await partner.close();
     if (owedDeck.size) {
       console.error('');
       console.error('!! ' + lesson + ': these deck pictures were never taken, because their');

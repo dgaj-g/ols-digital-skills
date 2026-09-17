@@ -78,7 +78,22 @@ const ALLOWED_REPEATS = [
   ['call sign is the only name',
    'the judge\'s own sentence: "Your call sign is the only name they see, and their call sign is the only name you see."'],
   ['you are shown the working order',
-   'the parsons intro states the one-go rule and then what happens either way']
+   'the parsons intro states the one-go rule and then what happens either way'],
+  /* L4 (17 Sep 2026). Each judged against the string whole, not the run. */
+  ['the two lines pushed in under',
+   'j2-04 shapeNote: "The two lines pushed in under the if belong to the if … The two lines pushed in under else run for …" — the if and the else described in the one shape, so she sees they are the same kind of thing'],
+  ['line its story line its door',
+   'j2-04 build 4 (actions and help): the move order is a list of six — "the elif line, its story line, its door line, the else line, its story line, its door line" — a deliberate enumeration, each road spelt out in full'],
+  ['with its two lines pushed in',
+   'j2-04 key j2t4-corridor: "The if line comes next, with its two lines pushed in under it. Then comes the else line, with its two lines pushed in under it." — two roads, the same shape on purpose'],
+  ['with its road pushed in under',
+   'j2-04 key j2x4-p: the same two-road parallel as j2t4-corridor, one line per road'],
+  ['goes into the slot meant for',
+   'j3-04 build 11 brief: "The number goes into the slot meant for a name, and the name goes into the slot meant for the seats." — the swap IS the sentence; the two halves must mirror'],
+  ['The order they sit in is not a clue',
+   'j3-03 deck s5.3, the separated reader\'s own rewrite (L4 round): "They sit on the left in a mixed-up order" says the lines are jumbled; "The order they sit in is not a clue" says the jumble carries no information — two facts, not one said twice'],
+  ['None. None',
+   'film j3-l4 ch5: "And the hand gets None. None is Python\'s word for nothing at all." — the same rhetoric as the l5 FALSE. FALSE caption: the word is picked up to be explained']
 ];
 
 let failures = 0;

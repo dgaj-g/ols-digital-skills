@@ -100,6 +100,9 @@ timer never fired, the only consequence is a highlight that stays on screen.
 | `engines.js :: tries :: 900` | The stagger on the ship animation. | Cosmetic. |
 | `engines.js :: bad :: 1000` | Clearing the flash on a wrong Rally score. | Cosmetic. |
 | `engines.js :: kc :: 600` | The beat before the kit desk is redrawn. | Cosmetic. |
+| `engines.js :: head :: 1500` | Adventure relay (j2-04): when a room's code cannot be fetched the "broken" note stays on screen 1.5 s before the relay steps to the next room. | A pause she reads, never a decision she makes; the story moves on by itself, as the relay always does. |
+| `engines.js :: wait :: 350` | Adventure relay (j2-04): reading time after her choice before the next room replaces the transcript — 1.2 s + 0.35 s a word (the film law's pace), floor 1.5 s. | Longer for more words, never shorter than 1.5 s; the lines printed after her choice are hers to read at the film law's own pace. |
+| `engines.js :: w :: 900` | The Rush (j3-04), solo: after her last yes/no on the partner-order cards the "done" line shows 0.9 s before the seal. | A beat so she sees the line land; nothing is awaited from her — in paired mode the seal waits for the other side instead. |
 | `app.js :: r :: 200` | Redrawing the starfield after a resize. | Cosmetic. |
 | `app.js :: end :: 450` | Removing the film overlay after its fade. | Cosmetic. |
 | `app.js :: area :: 350` | The shell's own ghost fade. | Cosmetic. |

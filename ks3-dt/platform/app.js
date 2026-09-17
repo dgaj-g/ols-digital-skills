@@ -326,7 +326,16 @@
     silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9),
     /* --- the two level-3 unlocks, landing with each year's Lesson 2 --- */
     blueprint: wash() + '<span class="fx-draft"></span>' + motes('fx-glint', 8),
-    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8)
+    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8),
+    /* --- levels 4 and 5, landing with each year's Lesson 4 (K42h, 14 Sep 2026).
+       Same law as every look above: light that blooms and fades, particles
+       that drift, the wallpaper breathing — nothing with an edge travelling
+       across the view (K21), and every layer built to be SEEN (K22, measured by
+       qa-fx-motion on the registry's own list). --- */
+    patina: wash() + '<span class="fx-sheen"></span><span class="fx-bloom b1"></span>' + motes('fx-glint', 7),
+    whiteheat: wash() + '<span class="fx-forge"></span><span class="fx-bloom b1"></span>' + motes('fx-spark', 9),
+    suite: wash() + '<span class="fx-bloom b1"></span><span class="fx-bloom b2"></span><span class="fx-house"></span>' + motes('fx-mote', 6),
+    backlot: wash() + '<span class="fx-lamp"></span><span class="fx-veil"></span>' + motes('fx-dust', 9)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own

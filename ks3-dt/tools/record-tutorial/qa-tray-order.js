@@ -285,6 +285,15 @@ async function run() {
              empty bank and reported a shuffle fault the card does not have
              (DFM 146a). Press Start writing to reach the bench, exactly as she
              does. */
+          /* THE PLAN FACE MAY ASK FOR HER TWO WORDS FIRST (j2-04 myroom, 17 Sep
+             2026): Start writing refuses while a word box is empty, so a walk
+             that pressed it blind measured an empty bank five times over
+             ("served [[],[],[],[],[]]") — the card had no fault. Fill every word
+             box with a distinct word, as she must, then press Start. */
+          Array.prototype.slice.call(host.querySelectorAll('.pye-plan .pth-words input')).forEach((inp, i) => {
+            inp.value = ['lamp', 'desk', 'door', 'book'][i] || ('word' + i);
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+          });
           const start = host.querySelector('.pye-start');
           if (start) { start.click(); await wait(120); }
           return Array.prototype.slice.call(host.querySelectorAll('.pyp-chip'))

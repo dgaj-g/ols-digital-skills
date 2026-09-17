@@ -516,6 +516,101 @@ function xpPromiseSection() {
   }
 }
 
+/* ================= THE J2/J3 LADDERS — K42h, 14 Sep 2026 =================
+   Levels 4 and 5 landed with the L4 build, COMPUTED from the built content by
+   DFM 165's own method and pinned here so a content edit that moves the XP fails
+   loudly instead of quietly breaking rule 131 again. Three paths per lesson:
+     FLOOR  every badge earned, nothing first try, no bonus — the cheapest honest
+            finish (J2/J3 carry no priced help, K38c, so the floor is the badges);
+     BEST   every first-try / feature bonus at its cap (the "no-stretch" finisher);
+     EVERY-STRETCH = BEST, because from J2/J3 L2 onward optional work pays nothing
+            (DFM 265a) — so there is no third path to serve or to sacrifice.
+   The engine award sites are asserted from engines.js so the model can never drift
+   from the code (the J1 section's own discipline). */
+function j2j3LadderSection() {
+  section('K42h - the J2/J3 ladders through Lesson 4, computed from built content');
+  const themes = JSON.parse(fs.readFileSync(path.join(CONTENT, 'themes.json'), 'utf8'));
+  const eng = fs.readFileSync(path.join(ROOT, 'ks3-dt/platform/engines.js'), 'utf8');
+  check(/Math\.min\(Number\(cfg\.featureXp\) \* featureFirst, Number\(cfg\.featureXpCap \|\| 0\)\)/.test(eng) &&
+        /Math\.min\(Number\(cfg\.firstTryXp \|\| 0\) \* cleanFirst, Number\(cfg\.firstTryXpCap \|\| 0\)\)/.test(eng),
+    'pyrun still pays featureXp x features (capped) or firstTryXp x clean builds (capped) on top of the badge');
+  check(/earned \+= found \* Number\(sc\.xpPerFlag/.test(eng) || /xpPerFlag/.test(eng), 'inspect still pays per flag + clean scene on top of the badge');
+  const EXIT_XP = 10;
+  function paths(L) {
+    let floor = 0, best = 0;
+    (L.chunks || []).forEach(c => {
+      const b = c.badge; if (!b) return;
+      const cfg = c.config || {};
+      const base = Number(b.xp || 0);
+      let hi = base;
+      if (c.engine === 'inspect') {
+        hi = base + (cfg.scenes || []).reduce((sum, sc) => sum +
+          (sc.zones || []).filter(z => z.breaks).length * Number(sc.xpPerFlag || 0) + Number(sc.xpClean || 0), 0);
+      } else if (c.engine === 'snap' || c.engine === 'pyrun') {
+        const per = Number(cfg.firstTryXp || 0), cap = Number(cfg.firstTryXpCap || 0);
+        const units = c.engine === 'snap' ? (cfg.pairs || []).length : (cfg.builds || []).filter(x => !x.optional).length;
+        let bonus = Math.min(per * units, cap || (per * units));
+        const fper = Number(cfg.featureXp || 0), fcap = Number(cfg.featureXpCap || 0);
+        if (fper) {
+          const feats = (cfg.builds || []).filter(x => !x.optional).reduce((n, x) => n + (x.features || []).length, 0);
+          bonus = Math.min(fper * feats, fcap || (fper * feats));
+        }
+        hi = base + bonus;
+      }
+      floor += base; best += hi;
+    });
+    if ((L.chunks || []).some(c => c.engine === 'exitcheck')) { floor += EXIT_XP; best += EXIT_XP; }
+    return { floor, best };
+  }
+  const EXPECT = {
+    j2: { floor: [57, 102, 154, 206], best: [83, 149, 217, 285], thr: { 1: 0, 2: 40, 3: 87, 4: 150, 5: 200 } },
+    j3: { floor: [57, 102, 151, 200], best: [57, 114, 179, 244], thr: { 1: 0, 2: 40, 3: 87, 4: 145, 5: 194 } }
+  };
+  ['j2', 'j3'].forEach(y => {
+    const dir = path.join(CONTENT, y, 'lessons');
+    const files = fs.readdirSync(dir).filter(f => /^j[23]-0[1-4]\.json$/.test(f)).sort();
+    check(files.length === 4, y + ': four built lessons (L1-L4) exist to compute from (' + files.length + ')');
+    const cum = []; let cf = 0, cb = 0;
+    files.forEach(f => {
+      const p = paths(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+      cf += p.floor; cb += p.best; cum.push({ floor: cf, best: cb });
+    });
+    console.log('  ' + y + ' cumulative XP: floor ' + cum.map(c => c.floor).join(' / ') + '   best ' + cum.map(c => c.best).join(' / '));
+    check(JSON.stringify(cum.map(c => c.floor)) === JSON.stringify(EXPECT[y].floor.slice(0, cum.length)) &&
+          JSON.stringify(cum.map(c => c.best)) === JSON.stringify(EXPECT[y].best.slice(0, cum.length)),
+      y + ': the floor and best paths are the PINNED numbers (a moved XP fails here, on purpose — DFM 199)');
+    const ladder = ((themes.clearancesByYear || {})[y] || []);
+    const thr = {}; ladder.forEach(c => { thr[c.level] = Number(c.xp); });
+    check(JSON.stringify(thr) === JSON.stringify(EXPECT[y].thr), y + ': the ladder is ' + Object.keys(EXPECT[y].thr).map(l => EXPECT[y].thr[l]).join('/') + ' (levels 1-3 untouched; 4 and 5 as computed)');
+    ladder.forEach((c, i, all) => { if (i) check(Number(c.xp) > Number(all[i - 1].xp), y + ': level ' + c.level + ' sits above level ' + all[i - 1].level); });
+    /* the floor pupil unlocks a level at the end of every lesson that has one to give */
+    for (let n = 1; n <= cum.length; n++) {
+      const lvl = n + 1;
+      if (thr[lvl] == null) continue;
+      check(cum[n - 1].floor >= thr[lvl], y + ': the FLOOR pupil unlocks level ' + lvl + ' at the end of Lesson ' + n + ' (' + cum[n - 1].floor + ' >= ' + thr[lvl] + ')');
+      if (thr[lvl + 1] != null) check(cum[n - 1].floor < thr[lvl + 1], y + ': and the floor pupil does NOT reach level ' + (lvl + 1) + ' early (' + cum[n - 1].floor + ' < ' + thr[lvl + 1] + ')');
+      if (n >= 2) {
+        const early = cum[n - 2].best >= thr[lvl];
+        if (y === 'j2' && lvl === 5) {
+          check(early, 'RECORDED, NOT FIXABLE (the DFM 165 shape): a J2 pupil with EVERY first-try bonus in L1-L3 (' + cum[n - 2].best + ') is past level 5 (' + thr[lvl] + ') before Lesson 4 — the ladder serves the floor pupil, and the six-rung ladder is spent (the L5 design round\'s question, K42h)');
+        } else {
+          check(!early, y + ': the best pupil after Lesson ' + (n - 1) + ' (' + cum[n - 2].best + ') is still under level ' + lvl + ' (' + thr[lvl] + ') — no two levels in one hour on the no-stretch path');
+        }
+      }
+    }
+    /* every look and insignia of the year points at a level that exists, and each level from 2 up has a look to give */
+    const levels = ladder.map(c => Number(c.level));
+    const looks = (themes.themes || []).filter(t => t.year === y);
+    const sigs = (themes.insignia || []).filter(t => t.year === y);
+    check(looks.every(t => levels.indexOf(Number(t.clearance)) !== -1) && sigs.every(t => levels.indexOf(Number(t.clearance)) !== -1),
+      y + ': every look and insignia points at a level that exists');
+    levels.filter(l => l >= 2).forEach(l => check(looks.some(t => Number(t.clearance) === l),
+      y + ': level ' + l + ' has a look to give (rule 131 — every lesson-end unlocks something new)'));
+    /* NO-LOSS (DFM 145/165): levels 1-3 are exactly the shipped values, so nobody's unlocked look moves above her */
+    check(thr[1] === 0 && thr[2] === 40 && thr[3] === 87, y + ': NOBODY LOSES A LOOK — levels 1-3 are the shipped 0/40/87, and levels 4-5 are new (a new level can only grant)');
+  });
+}
+
 /* ================= browser halves ================= */
 async function openStaffPanel(page) {
   await page.evaluate(() => {
@@ -929,6 +1024,7 @@ async function c14Browser(ctx) {
   if (!ONLY || ONLY === 'e08' || ONLY === 'server') e08Section();
   if (!ONLY || ONLY === 'c11' || ONLY === 'server') c11Section();
   if (!ONLY || ONLY === 'xp' || ONLY === 'server') xpPromiseSection();
+  if (!ONLY || ONLY === 'xp' || ONLY === 'server') j2j3LadderSection();
   if (ONLY !== 'server' && ONLY !== 'e08') {
     let browser;
     try {

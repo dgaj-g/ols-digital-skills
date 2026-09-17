@@ -63,7 +63,7 @@ const VERDICT_FILES = fs.readdirSync(KS3)
    cannot ship on nobody's word. The four before them stay: they were judged and
    their rows are filed, and dropping a lesson off this list the moment it is
    signed off would let a later edit slip past the judgement it once had. */
-const UNDER_REVIEW = ['j2-01', 'j3-01', 'j2-02', 'j3-02', 'j2-03', 'j3-03'];
+const UNDER_REVIEW = ['j2-01', 'j3-01', 'j2-02', 'j3-02', 'j2-03', 'j3-03', 'j2-04', 'j3-04'];
 const SCORING = ['diagnostic', 'items', 'quiz', 'exit', 'exitcheck'];
 const isConfidence = (it) => /^\s*NO RIGHT ANSWER/i.test(String(it.stem || ''));
 

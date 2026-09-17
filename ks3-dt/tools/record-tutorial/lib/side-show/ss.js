@@ -323,6 +323,130 @@
   margo.visible = false;
   scene.add(margo);
 
+  /* ====================================================================== */
+  /*  UNIT 7 -- a factory robot who has made the same part by hand four      */
+  /*  thousand times (j3-04, K40/K43). A dented chest plate, one antenna     */
+  /*  standing and one that has given up, a part in one claw it cannot put   */
+  /*  down. Built to Fred's proportions so the same legibility numbers hold  */
+  /*  at 132 pixels: the SHAPE of the eyes, the SHAPE of the mouth, the tilt */
+  /*  of the whole body carry every state.                                   */
+  /* ====================================================================== */
+  var unit7 = new THREE.Group();
+  (function () {
+    var STEEL = 0x8A98B4, DARK = 0x4C5A78, PLATE = 0xB7C1D4, HAZARD = 0xE4B824, RUST = 0xA3562A, LAMP = 0xFF7A3D;
+
+    /* a cylinder head with a flat face plate: a machine, not a toy */
+    var head = at(solid(new THREE.CylinderGeometry(1.72, 1.72, 2.55, 30), STEEL, { grow: 1.03 }), 0, 0.95, 0);
+    unit7.add(head);
+    head.add(at(solid(new THREE.BoxGeometry(2.7, 1.9, 0.3), PLATE, { grow: 1.04 }), 0, 0.05, 1.55));
+    /* the hazard band round the crown */
+    head.add(at(solid(new THREE.CylinderGeometry(1.76, 1.76, 0.34, 30), HAZARD, { grow: 1.03 }), 0, 1.12, 0));
+    /* two rivets on the face plate */
+    [-1.15, 1.15].forEach(function (x) {
+      head.add(at(solid(new THREE.SphereGeometry(0.12, 12, 10), DARK, { grow: 1.16 }), x, -0.72, 1.74));
+    });
+
+    /* two antennae: one upright with a lamp, one that DROOPS (the content's own
+       alt text: "one drooping antenna") */
+    function antenna(bend) {
+      var a = new THREE.Group();
+      var stalk = at(solid(new THREE.CylinderGeometry(0.09, 0.11, 1.25, 10), DARK, { grow: 1.14 }), 0, 0.62, 0);
+      a.add(stalk);
+      var bulb = at(solid(new THREE.SphereGeometry(0.3, 20, 16), LAMP, { grow: 1.09 }), 0, 1.3, 0);
+      a.add(bulb);
+      a.userData = { bulb: bulb.userData.skin.material, base: bend };
+      return a;
+    }
+    var antUp = antenna(0.12), antDroop = antenna(1.35);
+    antUp.position.set(-0.75, 2.2, 0); antUp.rotation.z = 0.12;
+    antDroop.position.set(0.85, 2.2, 0); antDroop.rotation.z = -1.35;
+    unit7.add(antUp); unit7.add(antDroop);
+
+    var eL = at(makeEye(0.53, PLATE), -0.72, 1.12, 1.62);
+    var eR = at(makeEye(0.53, PLATE), 0.72, 1.12, 1.62);
+    unit7.add(eL); unit7.add(eR);
+    var browL = at(solid(new THREE.BoxGeometry(0.95, 0.19, 0.19), DARK, { grow: 1.1 }), -0.72, 1.86, 1.72);
+    var browR = at(solid(new THREE.BoxGeometry(0.95, 0.19, 0.19), DARK, { grow: 1.1 }), 0.72, 1.86, 1.72);
+    unit7.add(browL); unit7.add(browR);
+
+    /* a mouth, because a robot with a mouth is a cartoon and a robot with a
+       grille is an appliance */
+    var mouth = at(makeMouth(0.42, 0.14, DARK), 0, 0.22, 1.72);
+    mouth.rotation.z = Math.PI;
+    unit7.add(mouth);
+    var gob = at(new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 14, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5),
+                                pbr(0x1E1626, 0.5)), 0, 0.24, 1.66);
+    gob.visible = false;
+    unit7.add(gob);
+
+    /* the body: a box, a DENTED chest plate (a dark inset with a rust bloom
+       beside it), and the number 7 */
+    var body = at(solid(new THREE.BoxGeometry(2.7, 2.1, 1.9), STEEL, { grow: 1.04 }), 0, -1.3, 0);
+    unit7.add(body);
+    var plate = at(solid(new THREE.BoxGeometry(1.9, 1.35, 0.14), PLATE, { grow: 1.05 }), 0, 0.05, 0.98);
+    body.add(plate);
+    var dent = at(new THREE.Mesh(new THREE.SphereGeometry(0.42, 18, 14), pbr(DARK, 0.85)), 0.52, -0.28, 0.98);
+    dent.scale.set(1.1, 0.75, 0.28);
+    body.add(dent);
+    body.add(at(flat(new THREE.SphereGeometry(0.17, 12, 10), RUST), -0.68, -0.48, 1.06));
+    /* the 7: a top bar, and a diagonal from its right end down to the left */
+    body.add(at(flat(new THREE.BoxGeometry(0.66, 0.13, 0.05), DARK), -0.3, 0.5, 1.09));
+    var seven = at(flat(new THREE.BoxGeometry(0.13, 0.7, 0.05), DARK), -0.14, 0.18, 1.09);
+    seven.rotation.z = -0.4;
+    body.add(seven);
+    /* a hazard stripe along the base and two stubby feet */
+    body.add(at(solid(new THREE.BoxGeometry(2.74, 0.22, 1.94), HAZARD, { grow: 1.03 }), 0, -1.0, 0));
+    [-0.75, 0.75].forEach(function (x) {
+      unit7.add(at(solid(new THREE.BoxGeometry(0.8, 0.45, 1.1), DARK, { grow: 1.06 }), x, -2.6, 0.1));
+    });
+
+    /* arms with claws; the right claw holds THE PART (a gear) it cannot put down */
+    var arms = [];
+    [-1, 1].forEach(function (sgn) {
+      var arm = new THREE.Group();
+      var CapG = THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.2, 1.1, 6, 14)
+                                       : new THREE.CylinderGeometry(0.2, 0.2, 1.45, 14);
+      arm.add(at(solid(CapG, DARK, { grow: 1.1 }), 0, -0.6, 0));
+      var claw = new THREE.Group();
+      [-0.16, 0.16].forEach(function (x) {
+        claw.add(at(solid(new THREE.BoxGeometry(0.16, 0.42, 0.22), STEEL, { grow: 1.1 }), x, 0, 0));
+      });
+      claw.position.set(0, -1.38, 0);
+      arm.add(claw);
+      if (sgn === 1) {
+        var gear = new THREE.Group();
+        gear.add(solid(new THREE.CylinderGeometry(0.34, 0.34, 0.14, 8), HAZARD, { grow: 1.08 }));
+        for (var k = 0; k < 8; k++) {
+          var tooth = solid(new THREE.BoxGeometry(0.16, 0.14, 0.2), HAZARD, { grow: 1.08 });
+          tooth.position.set(Math.cos(k * Math.PI / 4) * 0.38, 0, Math.sin(k * Math.PI / 4) * 0.38);
+          tooth.rotation.y = -k * Math.PI / 4;
+          gear.add(tooth);
+        }
+        gear.rotation.x = Math.PI / 2;
+        gear.position.set(0, -1.55, 0.2);
+        arm.add(gear);
+        arm.userData.gear = gear;
+      }
+      arm.position.set(sgn * 1.62, -0.85, -0.05);
+      arm.rotation.z = sgn * 0.42;
+      arm.userData.sgn = sgn;
+      unit7.add(arm); arms.push(arm);
+    });
+
+    var dots = new THREE.Group();
+    for (var d = 0; d < 3; d++) {
+      dots.add(at(solid(new THREE.SphereGeometry(0.21, 14, 10), 0x8FA0C4, { grow: 1.16 }), (d - 1) * 0.64, 0, 0));
+    }
+    dots.position.set(2.2, 2.3, 0.55);
+    dots.visible = false;
+    unit7.add(dots);
+
+    unit7.userData = { head: head, antUp: antUp, antDroop: antDroop, eyes: [eL, eR], brows: [browL, browR],
+                       mouth: mouth, gob: gob, dots: dots, arms: arms };
+  })();
+  unit7.visible = false;
+  scene.add(unit7);
+
   /* ---- framing --------------------------------------------------------
      The character decides the camera, not the other way round -- but ONE camera
      for all of that character's states, taken from the union of every pose at
@@ -332,16 +456,18 @@
   var box = new THREE.Box3(), sizeV = new THREE.Vector3(), midV = new THREE.Vector3();
   var STATES_ALL = ['idle', 'typing', 'delighted', 'offended', 'devastated'];
   /* a deliberate, declared bottom crop in world units -- null means "show all" */
-  var CROP = { fred: null, margo: -1.95 };
+  var CROP = { fred: null, margo: -1.95, unit7: null };
   var CAM = {};
+  function charOf(who) { return who === 'fred' ? fred : who === 'unit7' ? unit7 : margo; }
+  function poserOf(who) { return who === 'fred' ? poseFred : who === 'unit7' ? poseUnit7 : poseMargo; }
   function computeCam(who) {
-    var g = (who === 'fred') ? fred : margo;
+    var g = charOf(who);
     var was = g.visible; g.visible = true;
     var union = new THREE.Box3(); union.makeEmpty();
     var tmp = new THREE.Box3();
     STATES_ALL.forEach(function (st) {
       for (var i = 0; i < 8; i++) {
-        (who === 'fred' ? poseFred : poseMargo)(st, i / 8);
+        poserOf(who)(st, i / 8);
         g.updateMatrixWorld(true);
         tmp.setFromObject(g);
         union.union(tmp);
@@ -503,6 +629,83 @@
     u.hangArm(u.armL, u.handL, u.shoL);
   }
 
+  function poseUnit7(state, t) {
+    var u = unit7.userData, wob = Math.sin(t * Math.PI * 2);
+    u.dots.visible = (state === 'typing');
+    u.gob.visible = (state === 'delighted');
+    u.mouth.visible = (state !== 'delighted');
+    unit7.rotation.set(0, 0, 0); unit7.position.set(0, 0, 0);
+    u.antUp.rotation.z = 0.12; u.antDroop.rotation.z = -1.35;
+    u.antUp.userData.bulb.color.setHex(0xFF7A3D); u.antDroop.userData.bulb.color.setHex(0x9A5A3A);
+    u.brows[0].rotation.z = 0; u.brows[1].rotation.z = 0;
+    u.brows[0].position.y = 1.86; u.brows[1].position.y = 1.86;
+    u.mouth.rotation.z = Math.PI; u.mouth.position.y = 0.22; u.mouth.scale.set(1, 1, 1);
+    u.arms.forEach(function (a) { a.rotation.z = a.userData.sgn * 0.42; a.position.y = -0.85; });
+    var gear = u.arms[1].userData.gear;
+
+    if (state === 'idle') {
+      /* WEARY: a slow breath, eyes half-lidded and down on the part, a slow
+         blink, the drooping antenna swaying, the gear turning by habit */
+      u.eyes.forEach(function (e) { eyeState(e, { shut: 0.28 + 0.72 * SLOW(t, 0.62, 0.2), lookY: -0.5, lookX: 0.35 }); });
+      u.brows[0].rotation.z = 0.16; u.brows[1].rotation.z = -0.16;     /* inner ends up: put-upon */
+      /* a flat, slightly down mouth: weary, not smiling */
+      u.mouth.rotation.z = 0; u.mouth.scale.set(0.85, 0.42, 1); u.mouth.position.y = 0.3;
+      /* only the drooping antenna moves between blinks, so the loop stays
+         small on a C2k line (a whole-body breath makes thirty unique frames) */
+      u.antDroop.rotation.z = -1.35 + wob * 0.08;
+
+    } else if (state === 'typing') {
+      /* a line arriving: eyes on the part, the claw working it, dots bouncing */
+      u.eyes.forEach(function (e) { eyeState(e, { shut: BLINK(t, 0.74), lookY: -0.85, lookX: 0.4 }); });
+      u.brows[0].rotation.z = -0.07; u.brows[1].rotation.z = 0.07;
+      u.brows[0].position.y = 1.74; u.brows[1].position.y = 1.74;
+      u.mouth.scale.set(0.55, 0.4, 1);
+      u.dots.children.forEach(function (d, i) { d.position.y = Math.sin(t * Math.PI * 2 + i * 0.95) * 0.18; });
+      u.arms[1].rotation.z = 0.95 + Math.sin(t * Math.PI * 6) * 0.14;
+      u.arms[1].position.y = -0.6;
+      if (gear) gear.rotation.z = Math.sin(t * Math.PI * 6) * 0.6;
+
+    } else if (state === 'delighted') {
+      /* RAPTURE: "A PARTNER! ORDERS!" -- both antennae straight up and lit, ^ ^
+         eyes, the gob wide, arms up, a hop */
+      u.eyes.forEach(function (e) { eyeState(e, { happy: true }); });
+      u.brows[0].position.y = 2.02; u.brows[1].position.y = 2.02;
+      u.gob.scale.set(1 + Math.abs(wob) * 0.12, 1.1 + Math.abs(wob) * 0.2, 1);
+      u.antUp.rotation.z = wob * 0.2; u.antDroop.rotation.z = -0.1 + wob * 0.2;
+      u.antUp.userData.bulb.color.setHex(0xFFE566); u.antDroop.userData.bulb.color.setHex(0xFFE566);
+      u.arms.forEach(function (a) { a.rotation.z = a.userData.sgn * 2.3; a.position.y = -0.45; });
+      unit7.position.y = Math.abs(Math.sin(t * Math.PI)) * 0.24;
+
+    } else if (state === 'offended') {
+      /* ONE brow up, eyes narrowed and sliding sideways, the mouth a pursed
+         line, the head cocked, the working antenna stiffening */
+      var sb = SLOW(t, 0.46, 0.3);
+      u.eyes.forEach(function (e, i) {
+        var base = (i === 0) ? 0.1 : 0.42;
+        eyeState(e, { shut: base + (1 - base) * sb, lookX: 0.55 });
+      });
+      u.brows[0].rotation.z = 0.5; u.brows[0].position.y = 2.1;
+      u.brows[1].rotation.z = -0.1; u.brows[1].position.y = 1.74;
+      u.mouth.rotation.z = Math.PI * 0.55;
+      u.mouth.scale.set(0.42, 0.34, 1);
+      u.mouth.position.y = 0.2;
+      u.antUp.rotation.z = -0.05;
+      unit7.rotation.z = 0.11;
+      u.arms[0].rotation.z = -1.25; u.arms[1].rotation.z = 1.25;
+
+    } else if (state === 'devastated') {
+      /* everything sags a little further than idle: the content maps this face
+         to the offended render, so it exists here only for the camera's union */
+      u.eyes.forEach(function (e) { eyeState(e, { shut: 0.4 + 0.16 * (0.5 - 0.5 * Math.cos(t * Math.PI * 2)), lookY: -0.5 }); });
+      u.brows[0].rotation.z = 0.36; u.brows[1].rotation.z = -0.36;
+      u.brows[0].position.y = 1.66; u.brows[1].position.y = 1.66;
+      u.mouth.rotation.z = 0; u.mouth.position.y = -0.06; u.mouth.scale.set(1.05, 0.95, 1);
+      u.antUp.rotation.z = 0.9;
+      u.arms.forEach(function (a) { a.rotation.z = a.userData.sgn * 0.08; a.position.y = -1.0; });
+      unit7.position.y = -0.16;
+    }
+  }
+
   var drawn = false;
   function tick() { renderer.render(scene, camera); drawn = true; requestAnimationFrame(tick); }
   tick();
@@ -524,8 +727,9 @@
     set: function (who, state, t) {
       fred.visible = (who === 'fred');
       margo.visible = (who === 'margo');
+      unit7.visible = (who === 'unit7');
       frame(who);   /* FIRST: computeCam walks every pose, so it must not be last */
-      if (who === 'fred') poseFred(state, t == null ? 0 : t); else poseMargo(state, t == null ? 0 : t);
+      poserOf(who)(state, t == null ? 0 : t);
       renderer.render(scene, camera);
       return true;
     },
@@ -540,13 +744,13 @@
     /* the features that carry the expression, in pixels of a 980-tall frame.
        These are the numbers a shrink-to-260 has to survive. */
     measure: function (who) {
-      var u = (who === 'fred' ? fred : margo).userData;
-      pbox.setFromObject(who === 'fred' ? fred : margo); pbox.getSize(pv2);
+      var u = charOf(who).userData;
+      pbox.setFromObject(charOf(who)); pbox.getSize(pv2);
       var c = CAM[who] || (CAM[who] = computeCam(who));
       /* what the UNION frame claims of the panel: the number that says whether
          the framing is tight, independent of a state that happens to slump */
       var fillPx = Math.round(c.fillY / (2 * c.dist * Math.tan(camera.fov * Math.PI / 360)) * H);
-      var u2 = (who === 'fred' ? fred : margo).userData;
+      var u2 = charOf(who).userData;
       var headBox = new THREE.Box3().setFromObject(u2.head);
       if (u2.bun) headBox.union(new THREE.Box3().setFromObject(u2.bun));
       var hTop = new THREE.Vector3(0, headBox.max.y, headBox.max.z).project(camera);
@@ -555,11 +759,11 @@
         head: Math.round(Math.abs(hTop.y - hBot.y) * H / 2),
         headCut: (hTop.y > 0.995 || hBot.y < -0.995),
         fill: fillPx,
-        whole: pxHeight(who === 'fred' ? fred : margo),
+        whole: pxHeight(charOf(who)),
         eye: pxHeight(u.eyes[0]),
         mouth: pxHeight(u.mouth.visible ? u.mouth : u.gob),
         brow: pxHeight(u.brows[0]),
-        cropped: (pxHeight(who === 'fred' ? fred : margo) > H - 6)
+        cropped: (pxHeight(charOf(who)) > H - 6)
       };
     }
   };
