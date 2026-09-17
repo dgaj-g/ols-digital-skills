@@ -156,7 +156,10 @@
   function cacheKey(path) { return 'ks3dt-content:' + App.state.contentVersion + ':' + path; }
   App.fetchContent = function (path) {
     try {
-      var hit = localStorage.getItem(cacheKey(path));
+      /* No version known yet (the staff panel before its gate check) - never
+         read or write the cache: an unversioned key is never purged, so a copy
+         stored under it would be served for ever (DFM 189, staff path). */
+      var hit = App.state.contentVersion ? localStorage.getItem(cacheKey(path)) : null;
       if (hit) return Promise.resolve(JSON.parse(hit));
     } catch (e) {}
     /* THE VERSION GOES IN THE URL, and this is the half of DFM 189 that was
@@ -181,7 +184,7 @@
       if (!r.ok) throw new Error('content ' + path + ' HTTP ' + r.status);
       return r.text();
     }).then(function (text) {
-      try { localStorage.setItem(cacheKey(path), text); } catch (e) {}
+      try { if (App.state.contentVersion) localStorage.setItem(cacheKey(path), text); } catch (e) {}
       return JSON.parse(text);
     }).catch(function (err) {
       // wifi blip: last-resort stale read from ANY cached version
@@ -206,6 +209,15 @@
       dead.forEach(function (k) { localStorage.removeItem(k); });
     } catch (e) {}
   }
+
+  /* The staff gate learns the version from its passcode check (no pupil boot
+     ran): adopt it, drop every cached copy from another version. */
+  App.setContentVersion = function (v) {
+    v = String(v || '');
+    if (!v || v === App.state.contentVersion) return;
+    App.state.contentVersion = v;
+    purgeOldContent();
+  };
 
   /* ---------------- boot ---------------- */
   /* static starfield: drawn once (no animation loop — old C2k machines), the

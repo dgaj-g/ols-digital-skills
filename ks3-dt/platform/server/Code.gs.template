@@ -2178,7 +2178,13 @@ function apiAdmin(req) {
   var className = str_(req.className || '');
   var cls = className ? realClass_(className) : '';
 
-  if (sub === 'check') return { ok: true, email: str_(me) };
+  /* 17 Sep 2026: the staff panel opens WITHOUT a pupil boot, so the client had
+     no contentVersion when it fetched the year manifests - an unversioned URL
+     and an unversioned localStorage key that was never purged (the second half
+     of DFM 189, on the staff path). A freshly authored lesson stayed "(content
+     coming)" on the Classes grid through every hard refresh. The gate check now
+     carries the version so the panel's fetches are versioned from the start. */
+  if (sub === 'check') return { ok: true, email: str_(me), contentVersion: str_(contentVersion_()) };
 
   if (sub === 'classes') {
     var reg = getClasses_();
