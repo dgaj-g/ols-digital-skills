@@ -228,7 +228,7 @@
     busyStatus(msg, 'Checking');
     App.call('admin', { passcode: val, sub: 'check' }).then(function (r) {
       btn.disabled = false;
-      if (r && r.ok) { pass = val; startIdleWatch(); renderPanel(); return; }
+      if (r && r.ok) { pass = val; if (r.contentVersion && App.setContentVersion) App.setContentVersion(r.contentVersion); manifestCache = {}; startIdleWatch(); renderPanel(); return; }
       plainStatus(msg, (r && r.error === 'bad-passcode') ? 'That passcode was not recognised.' : 'Could not check the passcode -- please try again.');
     });
   }
