@@ -1764,7 +1764,7 @@ function apiPairComplete(req) {
    lives in two places is a contract). */
 var PAIR_BLOB_MAX = 4096;      // chars per slot value
 /* `products` (14 Sep 2026): the Rush's products travel back to the partner as a
-   blob — the dev mimic is the twin; qa-rush-paired drives both sides. */
+   blob -- the dev mimic is the twin; qa-rush-paired drives both sides. */
 var PAIR_BLOB_SLOTS = ['bot', 'report', 'card', 'products'];
 function blobPKey_(cls, pid, slot, mi) { return 'pair:' + cls + ':bl:' + pid + ':' + slot + ':' + mi; }
 
@@ -2015,7 +2015,7 @@ function apiGalleryFeed(req) {
    Wiped by deleteClass's prefix pass, dropped whole by resetLesson for the class,
    and one entry is removed when the teacher's Start again names ONE pupil. Swept
    to the archive Sheet on the chat horizon, like the gallery. */
-/* THE CEILING WAS MEASURED, NOT ESTIMATED (qa-room-store §C, 14 Sep 2026). The
+/* THE CEILING WAS MEASURED, NOT ESTIMATED (qa-room-store section C, 14 Sep 2026). The
    design's 1,500 put a year group of rooms at 242 KB, which with every pupil
    record of the school in the same store (the 500 KB quota is one pool) left
    NEGATIVE headroom; the pre-agreed Sheet-backed fallback cannot take a pupil's
@@ -2641,9 +2641,9 @@ function apiAdmin(req) {
     var rmLesson = str_(req.lessonId);
     var rmMap = roomMap_(cls, rmLesson);
     var rmOut = [];
-    /* §C7's panel (14 Sep 2026) reads three more things off the same rows:
+    /* section C7's panel (14 Sep 2026) reads three more things off the same rows:
        `plays` (the reach count, by another player), `lines`, and the class
-       totals — rooms published, reaches, rooms nobody has reached yet */
+       totals -- rooms published, reaches, rooms nobody has reached yet */
     var rmPlays = 0, rmUnreached = 0;
     Object.keys(rmMap.rooms).forEach(function (e) {
       var rr = rmMap.rooms[e];

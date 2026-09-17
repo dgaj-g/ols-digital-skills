@@ -1,7 +1,7 @@
 {
  "id": "j3-04.deck",
  "lesson": "j3-04",
- "driveFileId": "",
+ "driveFileId": "1W8Ga2dgqgdzxZheI3j1cQIqMXjqN7G1h-QXqIBYHFP8",
  "year": "j3",
  "deckName": "KS3 DT · J3 Lesson 4 — Function Factory (Teacher Deck)",
  "theme": {
@@ -130,7 +130,7 @@
       "Under the words IT WORKS is the length meter. It compares two programs: the twelve-order program is twenty-four lines long, and one machine used twelve times is fifteen lines long.",
       "Both programs print the same twenty-four lines. The one with the machine is written in fewer lines."
      ],
-     "notes": "WHERE THE CLASS IS: about to open the first build: a Reserved-sign machine. The word that hands the sign back out is missing from it.\n\nSAY it with the picture up, pointing at the two bars: \"The two lines that start at def are the machine. Nothing happens when Python reads them — it only builds the machine. The three lines at the bottom use it. Press RUN, read what came out, and put the missing word in. Lower down the card is the length meter: two bars, twenty-four lines against fifteen, and both programs print exactly the same thing.\"\n\nWHAT THEY WILL SEE: the picture is the first build after a run that works: the five lines, the console, and the length meter under it with its two bars.\n\nTHE ONE TO STRESS: the meter's point is not that shorter is prettier. It is that if the price of a seat changes, the machine changes in ONE place instead of twelve.\n\nWHEN TO MOVE: next slide."
+     "notes": "WHERE THE CLASS IS: about to open the first build, Training build 1: the Reserved sign machine. The word that hands the sign back out is missing from the machine.\n\nWHAT THEY WILL SEE: the picture on this slide is the first build after a run that works. It shows the five lines, the console under them, and the length meter under that. The length meter is two bars.\n\nSAY it with the picture up. Point at each part as you name it: the two lines that start at def, then the three lines at the bottom, then the two bars of the length meter. \"The two lines that start at def are the machine. Nothing happens when Python reads them. It only builds the machine. The three lines at the bottom use it. Press RUN. Read what came out. Then put the missing word in. Lower down the card is the length meter. It has two bars, one for each of two programs. One program is twenty-four lines long. The other is fifteen. Both programs print exactly the same thing.\"\n\nTHE ONE TO STRESS: the point of the meter is not that shorter looks nicer. It is this: if the price of a seat changes, you change it in ONE place, inside the machine, instead of in twelve places.\n\nWHEN TO MOVE: as soon as you have said this, go to the next slide."
     },
     {
      "kind": "bullets",
@@ -178,7 +178,7 @@
       "Press RUN my program, and the floor drops twelve orders through them.",
       "When both machines work, the badge is yours. Then comes the Rush."
      ],
-     "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now your own factory. Two machines, and the spec card says exactly what each one must do: label makes the label for an order, cost works out what it costs. Read the spec first. Build both machines, use each one once at the bottom, and press RUN. The floor drops twelve orders through them and shows you every product.\"\n\nTHEN SAY: \"The card opens on a plan with the spec card on it. Read it, then press Start building. The short film on that card shows how to read the spec and what the reject bin tells you.\"\n\nTHE ONE TO STRESS: the spec's example column. label(\"Aoife\", 2) hands back Aoife x 2 — that is the exact product, spaces and all, and the floor checks for exactly that.\n\nWHEN TO MOVE: next slide."
+     "notes": "WHERE THE CLASS IS: the class has finished the three training builds and is looking at the front. This is the biggest block of the hour, so this STOP slide deserves a full minute.\n\nSAY: \"Now you build your own factory. It has two machines. The spec card says exactly what each one must do. The machine called label makes the label for an order. The machine called cost works out what the order costs. Read the spec card first. Then build both machines. Use each one once at the bottom. Then press RUN. The factory floor drops twelve orders through both machines and shows you every product.\"\n\nTHEN SAY: \"The card opens with the spec card and a short film on it. Read the spec card. Watch the film. It shows how to read the spec card and what the reject bin tells you. Then press Start building.\"\n\nTHE ONE TO STRESS: the example column on the spec card. label(\"Aoife\", 2) hands back Aoife x 2. That is the exact product, spaces and all, and the floor checks for exactly that.\n\nWHEN TO MOVE: as soon as you have said this, go to the next slide."
     },
     {
      "kind": "bullets",

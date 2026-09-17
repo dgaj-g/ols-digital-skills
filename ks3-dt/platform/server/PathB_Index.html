@@ -3674,6 +3674,111 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 
 /* ==========================================================================
+   LEVELS 4 AND 5 \2014  the four looks that land with Lesson 4 (K42h, 14 Sep 2026)
+   The K21/K22 bar, and nothing else: light blooming and fading, particles
+   drifting, the wallpaper breathing. Every period is short enough to be SEEN in
+   a three-second glance (the Blueprint lesson: amplitude is not the thing that
+   fails, period is), and every part is stilled by the reduced-motion block.
+   ========================================================================== */
+
+/* ---- J2 level 4 "The Patina": pale gold light breathing over old copper gone green ---- */
+.fx-patina .fx-sheen {
+  position: absolute; inset: -8%;
+  background: linear-gradient(108deg, transparent 12%, rgba(255, 236, 190, 0.20) 38%, rgba(var(--gold-hi-rgb), 0.10) 58%, transparent 84%);
+  filter: blur(42px);
+  animation: patinaSheen 8s ease-in-out infinite alternate;
+}
+@keyframes patinaSheen {
+  from { opacity: 0.14; transform: scale(1) translate3d(-5vw, 2vh, 0); }
+  to { opacity: 0.96; transform: scale(1.16) translate3d(5vw, -2vh, 0); }
+}
+.fx-patina .fx-bloom.b1 {
+  position: absolute; right: 0; bottom: -10%; width: 48vw; height: 48vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.22), rgba(var(--gold-rgb), 0.08) 44%, transparent 70%);
+  filter: blur(48px);
+  animation: bloomBreatheB 10s ease-in-out infinite alternate;
+}
+
+/* ---- J2 level 5 "White Heat": the forge at its hottest, white light in the middle, red at the edges ---- */
+.fx-whiteheat .fx-forge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 52vh;
+  background: linear-gradient(0deg, rgba(var(--gold-hi-rgb), 0.34), rgba(var(--gold-rgb), 0.12) 40%, transparent 85%);
+  filter: blur(20px);
+  animation: whiteheatBreathe 7s ease-in-out infinite alternate;
+}
+@keyframes whiteheatBreathe {
+  from { opacity: 0.18; transform: translate3d(0, 4vh, 0) scaleY(0.9); }
+  to { opacity: 1; transform: translate3d(0, -2vh, 0) scaleY(1.12); }
+}
+.fx-whiteheat .fx-bloom.b1 {
+  position: absolute; left: 28%; bottom: -14%; width: 54vw; height: 54vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22), rgba(var(--gold-hi-rgb), 0.10) 40%, transparent 70%);
+  filter: blur(50px);
+  animation: bloomBreathe 9s ease-in-out infinite alternate;
+}
+.fx-spark {
+  position: absolute; bottom: -3vh; width: 4px; height: 4px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.95), rgba(var(--gold-rgb), 0) 70%);
+  box-shadow: 0 0 8px rgba(var(--gold-hi-rgb), 0.5);
+  opacity: 0;
+}
+.fx-spark.m1 { left: 9%; animation: sparkRise 14s ease-out infinite 0s; }
+.fx-spark.m2 { left: 19%; width: 3px; height: 3px; animation: sparkRise 18s ease-out infinite 2.1s; }
+.fx-spark.m3 { left: 30%; width: 5px; height: 5px; animation: sparkRise 12s ease-out infinite 4.4s; }
+.fx-spark.m4 { left: 41%; animation: sparkRise 16s ease-out infinite 1.3s; }
+.fx-spark.m5 { left: 52%; width: 3px; height: 3px; animation: sparkRise 19s ease-out infinite 6.7s; }
+.fx-spark.m6 { left: 63%; width: 5px; height: 5px; animation: sparkRise 13s ease-out infinite 3.2s; }
+.fx-spark.m7 { left: 74%; animation: sparkRise 17s ease-out infinite 8.1s; }
+.fx-spark.m8 { left: 85%; width: 6px; height: 6px; animation: sparkRise 11s ease-out infinite 5.5s; }
+.fx-spark.m9 { left: 94%; width: 3px; height: 3px; animation: sparkRise 15s ease-out infinite 9.6s; }
+@keyframes sparkRise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  12% { opacity: 0.9; }
+  60% { transform: translate3d(2vw, -48vh, 0); opacity: 0.55; }
+  100% { transform: translate3d(-2vw, -92vh, 0); opacity: 0; }
+}
+
+/* ---- J3 level 4 "The Executive Suite": city lights blooming through the glass, brass on walnut ---- */
+.fx-suite .fx-bloom {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.22), rgba(var(--gold-rgb), 0.08) 44%, transparent 72%);
+  filter: blur(46px);
+}
+.fx-suite .fx-bloom.b1 { left: 4%; top: 10%; width: 44vw; height: 44vw; animation: bloomBreathe 8s ease-in-out infinite alternate; }
+.fx-suite .fx-bloom.b2 { right: 2%; top: 30%; width: 40vw; height: 40vw; animation: bloomBreatheB 11s ease-in-out infinite alternate; }
+.fx-suite .fx-house {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 38vh;
+  background: radial-gradient(ellipse at 20% 100%, rgba(232, 183, 90, 0.16), transparent 60%),
+              radial-gradient(ellipse at 80% 100%, rgba(255, 217, 138, 0.12), transparent 60%);
+  filter: blur(22px);
+  animation: suiteGlow 7s ease-in-out infinite alternate;
+}
+@keyframes suiteGlow { from { opacity: 0.2; } to { opacity: 1; } }
+
+/* ---- J3 level 5 "The Backlot at Dawn": one big lamp still on, the dawn veil coming up, dust settling ---- */
+.fx-backlot .fx-lamp {
+  position: absolute; left: -4%; top: 4%; width: 54vw; height: 54vw; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--gold-hi-rgb), 0.30), rgba(var(--gold-rgb), 0.10) 42%, transparent 70%);
+  filter: blur(50px);
+  animation: lampBloom 8s ease-in-out infinite alternate;
+}
+.fx-backlot .fx-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(var(--gold-rgb), 0.18) 0%, rgba(var(--gold-hi-rgb), 0.06) 45%, transparent 80%);
+  filter: blur(36px);
+  animation: dawnRise 9s ease-in-out infinite alternate;
+}
+@keyframes dawnRise {
+  from { opacity: 0.16; transform: translate3d(0, 6vh, 0) scale(1); }
+  to { opacity: 0.95; transform: translate3d(0, -4vh, 0) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-patina .fx-sheen, .fx-patina .fx-bloom, .fx-whiteheat .fx-forge, .fx-whiteheat .fx-bloom, .fx-spark,
+  .fx-suite .fx-bloom, .fx-suite .fx-house, .fx-backlot .fx-lamp, .fx-backlot .fx-veil { animation: none; }
+}
+
+/* ==========================================================================
    RUNNER v2 + THE PAIRED SET-PIECES (J2/J3 Lesson 3, spec \a7 A/\a7 C)
    Every surface below is NEW, so every surface below sets its OWN ink on its
    OWN ground and inherits nothing from the dark shell. That is DFM 207(g)
@@ -3761,6 +3866,20 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   font-size: 0.92rem; line-height: 1.6; white-space: pre; overflow-x: auto;
 }
 .pye-code:focus { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
+/* ---- the indent guides (L4 \a7 C1.5): a gutter ROW per line, drawn only under the
+   `indentGuides` flag; the guide sits left of the digits, never across them
+   (the prototype's own pixels found it drawn across the number the first time) */
+.pye-nums .pye-gut { display: flex; align-items: stretch; }
+.pye-nums .pye-guide { flex: 0 0 8px; position: relative; }
+.pye-nums .pye-guide.is-in::before, .pye-nums .pye-guide.is-in2::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: rgba(var(--gold-rgb), .55);
+}
+.pye-nums .pye-guide.is-in2::after {
+  content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 3px; background: rgba(var(--gold-rgb), .35);
+}
+/* the digit's own box holds the digit and nothing else; deepened from #6E819F
+   (4.9:1, a whisker over the floor) so a sampler's anti-aliasing has room */
+.pye-nums .pye-num { flex: 1 1 auto; padding-left: 4px; color: #8496B3; }
 .pye.is-locked .pye-code { color: #C3D3EE; background: #0A1424; }
 
 .pye-cols { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
@@ -4331,6 +4450,164 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .help-steps { margin: .35rem 0 .6rem; padding-left: 1.35rem; }
 .help-steps li { margin: .3rem 0; line-height: 1.5; }
 
+/* \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550  L4 SURFACES (K43/K44, 14 Sep 2026) \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 \2550 
+   Fable's proto.css, folded VERBATIM (\a7 C14) \2014  the stylesheet delta the two L4
+   prototypes were proved on, at final size, on this file's own tokens. Four
+   class families: .pth-* (the path check, j2-04), .rly-* (the class adventure,
+   j2-04), .fac-* (the factory floor, j3-04), .ord-* (the Rush, j3-04).
+   THREE RULES OF THE DELTA ARE NOT HERE, and why: the prototype-shell rules
+   (.proto-*) never ship; `.pye-nums .pye-num / .is-in / .is-in2` and
+   `.pyp-chip-code { display:block; white-space:pre-wrap }` were folded with the
+   editor increments earlier in this file (the chip rule sits just below); and `.pyw-card .pyw-line code { color:
+   var(--ink) }` is DROPPED, not folded \2014  it was the fix for a prototype-only
+   artefact (the prototype's worked card drew its lines without the `.pyw-list`
+   plate, so the light ink sat on white), and on the platform the same rule
+   would put dark ink on the dark plate the real worked card renders. Recorded
+   in PROGRESS (DFM 197). */
+/* ---------- THE WORDS BOX on the PLAN face (j2-04 myroom) ---------- */
+.pth-words { margin: 0 0 18px; padding: 14px 16px; border-radius: var(--r-md, 12px); background: var(--field); border: 1.5px solid var(--line-l); color: var(--ink); }
+.pth-words h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.pth-words-lead { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; color: var(--ink); }
+.pth-words-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.pth-words-row label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 700; color: var(--ink); }
+.pth-words-row input { font: inherit; font-size: 1rem; padding: 9px 12px; border-radius: 9px; border: 1.5px solid var(--line-l); background: #fff; color: var(--ink); min-width: 160px; }
+.pth-words-say { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; font-size: .93rem; }
+.pth-words-pinned { display: flex; gap: 10px; align-items: center; margin: 0 0 12px; font-size: .9rem; color: var(--ink); }
+.pth-words-pinned code { padding: 3px 9px; border-radius: 999px; background: rgba(var(--gold-rgb), .18); border: 1px solid rgba(var(--gold-rgb), .5); color: var(--accent-ink); font-weight: 700; }
+
+/* ---------- THE PATH TABLE (j2-04 training-3 + myroom) ---------- */
+.pth { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.pth h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.pth-lead { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; color: var(--ink); }
+.pth table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.pth th { text-align: left; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: #5B6579; padding: 4px 8px; border-bottom: 1px solid var(--line-l); }
+.pth td { padding: 8px; border-bottom: 1px solid var(--line-l); vertical-align: top; color: var(--ink); }
+.pth td.pth-word code { font-weight: 700; color: var(--accent-ink); background: rgba(var(--gold-rgb), .16); padding: 2px 8px; border-radius: 999px; }
+.pth td.pth-door { white-space: nowrap; font-weight: 800; }
+.pth td.pth-door.is-ok { color: #17734A; }
+.pth td.pth-door.is-none { color: #A3271B; }
+.pth td.pth-story { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .85rem; white-space: pre-wrap; }
+.pth-stranger td.pth-word { font-style: italic; }
+.pth-err { margin: 8px 0 0; font-size: .9rem; color: #7A2018; }
+
+/* ---------- PUBLISH ROW (j2-04 myroom) ---------- */
+.pth-publish { margin: 14px 0 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.pth-publish-note { margin: 0; font-size: .9rem; color: var(--ink); }
+.pth-published { margin: 14px 0 0; padding: 14px 16px; border-radius: 12px; background: var(--good-soft, #E6F5EC); border: 1.5px solid #2E9E63; color: var(--ink); }
+.pth-published h3 { margin: 6px 0 6px; font-size: 1.05rem; }
+
+/* ---------- THE CLASS ADVENTURE (j2-04 relay) ---------- */
+.rly-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 12px; font-size: .9rem; color: var(--ink); }
+.rly-room { font-weight: 800; padding: 4px 11px; border-radius: 999px; background: rgba(var(--gold-rgb), .18); border: 1px solid rgba(var(--gold-rgb), .55); color: var(--accent-ink); }
+.rly-room.is-mine { background: var(--good-soft, #E6F5EC); border-color: #2E9E63; color: #17734A; }
+.rly-count { color: #5B6579; }
+.rly-open { margin-left: auto; color: #5B6579; }
+.pyx-row.is-door { background: #FFF6DA; border: 1px dashed #E0C070; font-style: italic; }
+.rly-end { text-align: center; }
+.rly-end .rly-rooms { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+.rly-end-first { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; background: var(--good-soft, #E6F5EC); border: 1.5px solid #2E9E63; color: var(--ink); }
+.rly-leave-ask { margin: 12px 0 0; padding: 12px 14px; border-radius: 11px; background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), .75); color: var(--ink); }
+
+/* ---------- THE SPEC CARD (j3-04 factory PLAN + BENCH) ---------- */
+.fac-spec { margin: 0 0 16px; padding: 14px 16px; border-radius: var(--r-md, 12px); background: #FFFAE8; border: 1.5px solid rgba(var(--gold-rgb), .55); border-left-width: 5px; color: var(--ink); }
+.fac-spec h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--accent-ink); }
+.fac-spec-lead { margin: 0 0 10px; font-size: .95rem; line-height: 1.55; }
+.fac-spec table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.fac-spec th { text-align: left; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: #5B6579; padding: 4px 8px; border-bottom: 1px solid rgba(0,0,0,.08); }
+.fac-spec td { padding: 7px 8px; border-bottom: 1px solid rgba(0,0,0,.06); vertical-align: top; }
+.fac-spec td code { font-weight: 700; color: var(--accent-ink); }
+.fac-spec-note { margin: 10px 0 0; font-size: .9rem; line-height: 1.5; }
+
+/* ---------- THE FACTORY FLOOR (j3-04 machine-3 + factory + rush) ---------- */
+.fac { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.fac h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.fac-lead { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; }
+.fac-line { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.fac-order { padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-l); background: var(--field); display: flex; flex-direction: column; gap: 6px; }
+.fac-order .fac-tag { font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 800; color: #5B6579; }
+.fac-order .fac-in { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88rem; }
+.fac-product { margin-top: 2px; padding: 9px 10px; border-radius: 8px; background: #fff; border: 1.5px solid var(--line-l); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92rem; white-space: pre-wrap; word-break: break-word; }
+.fac-order.is-ok .fac-product { border-color: #2E9E63; background: var(--good-soft, #E6F5EC); }
+.fac-order.is-bad .fac-product { border-color: #C4443A; background: #FFF2F0; }
+.fac-order.is-none .fac-product { border-color: #C4443A; background: #FFF2F0; font-style: italic; }
+.fac-stamp { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; }
+.fac-order.is-ok .fac-stamp { color: #17734A; }
+.fac-order.is-bad .fac-stamp, .fac-order.is-none .fac-stamp { color: #A3271B; }
+.fac-reject { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFF2F0; border: 1.5px solid #C4443A; color: var(--ink); }
+.fac-reject h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: #A3271B; }
+.fac-reject-lead { margin: 0 0 10px; font-size: .9rem; }
+.fac-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 8px; }
+.fac-pair > div { padding: 8px 10px; border-radius: 8px; background: #fff; border: 1px solid var(--line-l); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88rem; white-space: pre-wrap; }
+.fac-pair .fac-tag { display: block; font-family: inherit; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: #5B6579; margin-bottom: 3px; }
+.fac-empty { margin: 0; font-size: .9rem; color: #17734A; }
+.fac-nomachine { margin: 8px 0 0; font-size: .92rem; color: #7A2018; }
+
+/* ---------- THE BLOAT METER (j3-04 machine-1) ---------- */
+.fac-meter { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid var(--line-l); color: var(--ink); }
+.fac-meter h3 { margin: 0 0 8px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--ols-blue); }
+.fac-meter-row { display: grid; grid-template-columns: 180px 1fr 60px; gap: 10px; align-items: center; margin: 0 0 8px; font-size: .9rem; }
+.fac-meter-bar { height: 16px; border-radius: 999px; background: var(--field); border: 1px solid var(--line-l); overflow: hidden; }
+.fac-meter-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-hi), var(--gold)); }
+.fac-meter-say { margin: 8px 0 0; font-size: .92rem; line-height: 1.5; }
+
+/* ---------- THE RUSH (j3-04 orders engine) ---------- */
+.ord-form { margin: 12px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.ord-row { display: grid; grid-template-columns: 40px 1fr 110px; gap: 10px; align-items: center; }
+.ord-row .ord-n { font-weight: 800; color: var(--accent-ink); }
+.ord-row label { display: flex; flex-direction: column; gap: 3px; font-size: .78rem; font-weight: 700; color: var(--ink); }
+.ord-row input { font: inherit; font-size: .98rem; padding: 8px 11px; border-radius: 9px; border: 1.5px solid var(--line-l); background: #fff; color: var(--ink); }
+.ord-say { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; font-size: .93rem; }
+.ord-wait { margin: 12px 0 0; padding: 10px 12px; border-radius: 9px; background: var(--field); border: 1px dashed var(--line-l); color: var(--ink); font-size: .93rem; }
+.ord-check { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 0; }
+.ord-card { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--field); border: 1.5px solid var(--line-l); }
+.ord-card .fac-tag { display: block; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: #5B6579; }
+.ord-card code { font-size: .92rem; }
+.ord-card.is-none code.ord-made { color: #A3271B; font-style: italic; }
+.ord-yn { display: flex; gap: 6px; }
+.ord-yn .ghost-btn.is-on { background: rgba(var(--gold-rgb), .18); border-color: var(--gold); color: var(--accent-ink); }
+.ord-seal { text-align: center; }
+@media (max-width: 640px) { .ord-card { grid-template-columns: 1fr; } .fac-pair { grid-template-columns: 1fr; } .fac-meter-row { grid-template-columns: 1fr; } }
+
+/* ---------- FOUND IN THE PIXELS (14 Sep 2026, the prototype read) ---------- */
+/* a palette chip that inserts a BLOCK shows its lines as lines, never collapsed to one */
+/* the Rush check card: the order and the product never wrap mid-word */
+.ord-card { grid-template-columns: 1.25fr 1fr auto; }
+.ord-card code { white-space: nowrap; }
+/* the verdict repeats every NOT YET job's nudge where she is reading, so the
+   reason is never a screen away from the run that produced it (DFM 205's "note
+   two steps away" \2014  the strip stays at the top, the verdict carries the words) */
+.pyrun-verdict .pyv-nudges { margin: 8px 0 0; padding-left: 1.2em; }
+.pyrun-verdict .pyv-nudges li { margin: 4px 0; font-size: .93rem; line-height: 1.5; }
+/* the reject bin groups identical rejects: three pairs, then "and N more like these" */
+.fac-reject-more { margin: 4px 0 0; font-size: .9rem; color: #7A2018; }
+.fac-reject-all { margin: 0 0 10px; font-size: .95rem; line-height: 1.5; }
+
+/* a palette chip that inserts a BLOCK shows its lines as lines, never collapsed
+   to one (the prototype read, 14 Sep 2026) \2014  a one-line chip is unchanged */
+.pyp-chip-code { white-space: pre-wrap; }
+/* ---------- the engines' own small additions ---------- */
+/* a worked card's code line keeps its leading spaces: a fork's body is pushed in
+   four, and a line that renders flush with its `if` is a wrong program on the
+   pupil's screen (found in the j3-03 deck pictures, 14 Sep 2026) */
+.pyw-line code { white-space: pre-wrap; }
+/* lines already in place at the top of Your program (fixedTop), read not moved */
+.pyp-fixed { margin: 0 0 8px; padding: 8px 10px; border-radius: 9px; background: rgba(0,0,0,.04); border: 1px dashed var(--line-l); }
+.pyp-fixed-label { margin: 0 0 6px; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 800; color: #5B6579; }
+.pyp-fixed-list { list-style: none; margin: 0; padding: 0; counter-reset: pyfx; }
+.pyp-fixed-line { counter-increment: pyfx; display: flex; gap: 8px; align-items: baseline; padding: 2px 0; }
+.pyp-fixed-line::before { content: counter(pyfx); flex: 0 0 22px; text-align: right; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .84rem; color: #6E819F; }
+.pyp-fixed-line code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word; color: var(--ink); }
+.pyp-fixed-hint { margin: 6px 0 0; }
+.pyrun-fixed-blank { margin: 0 2px; }
+/* the story's system lines in the class adventure */
+.pyx-row.is-note { justify-content: center; font-style: italic; color: #5B6579; background: transparent; border: 0; }
+.pyx-row.is-note .pyx-who { display: none; }
+.rly-count-line { margin: 10px 0 0; font-size: .95rem; color: var(--ink); font-weight: 700; }
+.rly-exit-row { margin-top: 14px; }
+.pth-publish-note.pth-fail, .pth-publish-note.pth-changed { padding: 10px 12px; border-radius: 9px; background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), .75); }
+.ord-card-own, .ord-form-card, .ord-run-card, .ord-check-card { position: relative; }
+.ord-side { margin: 12px 0 0; }
+
 </style>
 </head>
 <body>
@@ -4551,6 +4828,9 @@ window.OLS_TRANSPORT = {
         case 'galleryOpen':    g.apiGalleryOpen(p); break;
         case 'galleryPost':    g.apiGalleryPost(p); break;
         case 'galleryFeed':    g.apiGalleryFeed(p); break;
+        case 'roomPut':        g.apiRoomPut(p); break;
+        case 'roomList':       g.apiRoomList(p); break;
+        case 'roomGet':        g.apiRoomGet(p); break;
         case 'admin':          g.apiAdmin(p); break;
         default: reject(new Error('unknown action: ' + p.action));
       }
@@ -4887,7 +5167,16 @@ window.OLS_TRANSPORT = {
     silverdust: wash() + '<span class="fx-sheen"></span>' + motes('fx-dust', 9),
     /* --- the two level-3 unlocks, landing with each year's Lesson 2 --- */
     blueprint: wash() + '<span class="fx-draft"></span>' + motes('fx-glint', 8),
-    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8)
+    greenroom: wash() + '<span class="fx-lamp"></span>' + motes('fx-mote', 8),
+    /* --- levels 4 and 5, landing with each year's Lesson 4 (K42h, 14 Sep 2026).
+       Same law as every look above: light that blooms and fades, particles
+       that drift, the wallpaper breathing \u2014 nothing with an edge travelling
+       across the view (K21), and every layer built to be SEEN (K22, measured by
+       qa-fx-motion on the registry's own list). --- */
+    patina: wash() + '<span class="fx-sheen"></span><span class="fx-bloom b1"></span>' + motes('fx-glint', 7),
+    whiteheat: wash() + '<span class="fx-forge"></span><span class="fx-bloom b1"></span>' + motes('fx-spark', 9),
+    suite: wash() + '<span class="fx-bloom b1"></span><span class="fx-bloom b2"></span><span class="fx-house"></span>' + motes('fx-mote', 6),
+    backlot: wash() + '<span class="fx-lamp"></span><span class="fx-veil"></span>' + motes('fx-dust', 9)
   };
   /* ---------------- the DEFAULT look is the YEAR's, not J1's ----------------
      DAMIEN, 14 Aug 2026 (DFM 224b): "Each Year group must have it's own
@@ -7606,6 +7895,418 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* ================= L4 \u2014 THE JUDGING ROUTINES FABLE WROTE (K44 / DFM 283) =====
+     Lifted VERBATIM from KS3 DT Platform/L4_PROTOTYPES/probes/{run-py,paths,
+     calls,relay-doors}.js, where they were proved against the platform's own
+     Skulpt with 26 controls (\u00a7C14). The only substitution the contract allows
+     is the runner: `runPy` was a minimal Skulpt runner with EXACTLY PyRun.start's
+     shape, and here it IS PyRun.start, wrapped so the three routines keep the
+     signature they were proved with \u2014 `runPy(code, { inputs, ask, onOut,
+     limitMs, preamble, epilogue })` resolving `{ ok, out, err, asks }`. Nothing
+     inside checkPaths / checkCalls / relayDoors was edited: the controls that
+     proved them (qa-paths-probe, qa-calls-probe, qa-relay) run these functions
+     off this object, so a drift here would fail there.
+     WHAT `asks` IS FOR: every input( ) the program made, with the prompt it
+     showed and the length of `out` at that moment \u2014 which is what lets a probe
+     say what was printed BEFORE the question (the scene) and what came after
+     (the road). An input with no answer left in the queue resolves '' (the
+     program carries on with an empty answer), the honest way to observe "asked
+     more questions than it should" without hanging. */
+  PyRun.runPy = function (code, opts) {
+    opts = opts || {};
+    var inputs = (opts.inputs || []).slice();
+    var out = '';
+    var asks = [];
+    var run = PyRun.start(code, {
+      limitMs: opts.limitMs,
+      preamble: opts.preamble,
+      epilogue: opts.epilogue,
+      onOut: function (t) {
+        out += t;
+        if (opts.onOut) { try { opts.onOut(t); } catch (e) { /* a relay must never stop a run */ } }
+      },
+      inputfun: function (prompt) {
+        asks.push({ prompt: String(prompt == null ? '' : prompt), at: out.length });
+        /* two resolvers, as PyRun.start has: a LIVE one (opts.ask \u2014 a real reply box,
+           the pupil's own conversation) or the QUEUE (opts.inputs \u2014 a silent probe) */
+        return opts.ask ? Promise.resolve(opts.ask(String(prompt == null ? '' : prompt)))
+                        : Promise.resolve(inputs.length ? inputs.shift() : '');
+      }
+    });
+    var p = run.p.then(function (r) {
+      return { ok: !!r.ok, out: String(r.out || ''), err: String(r.err || ''), offline: !!r.offline, asks: asks };
+    });
+    p.abandon = run.abandon;
+    return p;
+  };
+
+  /* paths.js \u2014 THE PATH CHECK (j2-04, spec \u00a7C1.2). Reference implementation.
+   * What it judges, and only from OBSERVABLE EFFECTS (the L3 probe law \u2014 no code
+   * tracing, no injection): the room is RUN once per declared word and once with a
+   * stranger word, each answered by a single input( ), and for each run it reads
+   *   scene  \u2014 everything printed BEFORE the first question
+   *   story  \u2014 everything printed AFTER it, minus the door line
+   *   door   \u2014 the LAST line of the form  NEXT: door A  /  NEXT: door B   (or null)
+   * The five features of `myroom` (and training-3's three-word variant) are then
+   * decided from those rows:
+   *   scene-ask  \u2014 scene non-empty AND exactly one question asked AND the question
+   *                names both declared words
+   *   path (w)   \u2014 the run for w reached a door AND printed a story
+   *   catch-all  \u2014 the stranger's run reached a door
+   *   different  \u2014 story(w1) !== story(w2)
+   * A run that stops with an error yields a row with `err` and no door; every
+   * feature that depends on that row is NOT YET and the console shows the error. */
+  PyRun.DOOR_RX = /^NEXT: door ([AB])\s*$/;
+  PyRun.parseRoomRun = function (res) {
+    var DOOR_RX = PyRun.DOOR_RX;
+    function tidy(s) {
+      return String(s == null ? '' : s).replace(/\r/g, '')
+        .split('\n').map(function (l) { return l.replace(/[ \t]+$/, ''); })
+        .join('\n').replace(/\n+$/, '');
+    }
+    var out = String(res.out || '');
+    var firstAsk = res.asks && res.asks.length ? res.asks[0].at : out.length;
+    var scene = tidy(out.slice(0, firstAsk));
+    var after = tidy(out.slice(firstAsk)).split('\n').filter(function (l) { return l.trim() !== ''; });
+    var door = null;
+    var story = [];
+    after.forEach(function (l) {
+      var m = DOOR_RX.exec(l.trim());
+      if (m) door = m[1]; else story.push(l);
+    });
+    return { scene: scene, story: story.join('\n'), door: door, asks: (res.asks || []).map(function (a) { return a.prompt; }) };
+  };
+  /* WHICH REPLIES MUST COME BACK OUT (14 Sep 2026, j2-04's name-the-player job).
+     `usesReplies: true` means EVERY typed answer must appear in what was
+     printed \u2014 the Lesson 3 chatbot rule, where a bot that ignores what you said
+     is the fault. A room with a fork in it never echoes the CHOICE word (it
+     chooses a road), so on a card that asks a name and then a choice the rule
+     as written could not be passed by any pupil \u2014 the expert walk answered
+     both questions for ever. `usesReplies: [0]` names the replies that must
+     echo by position; `true` still means all of them. */
+  PyRun.repliesToEcho = function (want, replies) {
+    if (!want) return [];
+    if (Array.isArray(want)) return want.map(function (i) { return replies[Number(i)]; }).filter(function (r) { return r != null; });
+    return replies.slice();
+  };
+  PyRun.checkPaths = function (code, cfg, runPy) {
+    runPy = runPy || PyRun.runPy;
+    var parseRun = PyRun.parseRoomRun;
+    function mentions(prompt, word) {
+      return String(prompt || '').toLowerCase().indexOf(String(word || '').toLowerCase()) !== -1;
+    }
+    cfg = cfg || {};
+    var words = (cfg.words || []).map(function (w) { return String(w || '').trim(); });
+    var stranger = String(cfg.stranger || 'banana');
+    var plan = words.map(function (w, i) { return { word: w, kind: 'word' + (i + 1) }; })
+      .concat([{ word: stranger, kind: 'stranger' }]);
+    var rows = [];
+    return plan.reduce(function (chain, p) {
+      return chain.then(function () {
+        return runPy(code, { inputs: [p.word], limitMs: cfg.limitMs }).then(function (res) {
+          var row = parseRun(res);
+          row.word = p.word; row.kind = p.kind; row.ok = !!res.ok;
+          row.err = res.ok ? '' : String(res.err || '');
+          rows.push(row);
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      var byKind = {}; rows.forEach(function (r) { byKind[r.kind] = r; });
+      var w1 = byKind.word1, w2 = byKind.word2, st = byKind.stranger;
+      var anyErr = rows.some(function (r) { return !r.ok; });
+      var features = {};
+      features['scene-ask'] = !anyErr && !!w1 && w1.scene.length > 0 && w1.asks.length === 1 &&
+        words.length >= 2 && words.every(function (w) { return w && mentions(w1.asks[0], w); });
+      features['path-1'] = !!(w1 && w1.ok && w1.door && w1.story.length > 0);
+      features['path-2'] = !!(w2 && w2.ok && w2.door && w2.story.length > 0);
+      features['catch-all'] = !!(st && st.ok && st.door);
+      features['different'] = !!(w1 && w2 && w1.ok && w2.ok && w1.story !== w2.story);
+      /* training-3's three-word variant asks for the same things under other names */
+      features['paths-all'] = features['path-1'] && features['path-2'] && features['catch-all'] && features['different'];
+      return { rows: rows, features: features };
+    });
+  };
+
+  /* calls.js \u2014 THE FACTORY FLOOR'S JUDGE (j3-04, spec \u00a7C1.3). Reference implementation.
+   * Her program is run ONCE with an EPILOGUE that drops every order into the named
+   * machine and prints a marker line per order carrying the value handed back (its
+   * repr) and its type; the hidden REFERENCE machine is run the same way; the two
+   * marker sets are compared order by order. Nothing here reads her code \u2014 a
+   * product is what the machine really handed back.
+   *   product  \u2014 the value her machine returned, rendered the way a card shows it
+   *              (strings without quotes, numbers as numbers, None as None)
+   *   none     \u2014 true when her machine handed back nothing (printed instead of
+   *              returning \u2014 the DFM/K keystone landing)
+   *   defined  \u2014 false when the floor cannot find a machine of that name (NameError
+   *              on the call), and then every order is "no machine"
+   * A machine that raises on an order gives that order an `err` and no product. */
+  PyRun.CALL_MARK = '@@L4CALL@@';
+  PyRun.callsEpilogue = function (fn, args) {
+    var MARK = PyRun.CALL_MARK;
+    function pyLiteral(v) {
+      if (typeof v === 'number') return String(v);
+      if (v === null || v === undefined) return 'None';
+      if (typeof v === 'boolean') return v ? 'True' : 'False';
+      return JSON.stringify(String(v));   /* a JSON string is a valid Python string literal for our names */
+    }
+    var lines = [];
+    args.forEach(function (a, i) {
+      var call = fn + '(' + a.map(pyLiteral).join(', ') + ')';
+      lines.push('try:');
+      lines.push('    __v = ' + call);
+      lines.push('    print("' + MARK + '", ' + i + ', repr(__v), type(__v).__name__)');
+      /* A NAME MISSING INSIDE THE MACHINE IS NOT A MISSING MACHINE (14 Sep 2026,
+         qa-l4-cards, DFM 197 \u2014 recorded, and the one edit to the lifted routine).
+         As proved, every NameError on the call read as NOMACHINE, so a pupil who
+         typed the slot's name wrong INSIDE her machine was told "the floor cannot
+         find a machine called price \u2014 check the name on your def line", which is
+         the wrong line to look at. Python's own message names the name that is
+         missing; only when that name is the MACHINE'S is the machine missing.
+         Fable's misspelt-machine control (`lable`) still lands here, because the
+         name Python cannot find is then `label`. */
+      lines.push('except NameError as _olse:');
+      lines.push('    if "\'' + fn + '\'" in str(_olse):');
+      lines.push('        print("' + MARK + '", ' + i + ', "NOMACHINE", str(_olse))');
+      lines.push('    else:');
+      lines.push('        print("' + MARK + '", ' + i + ', "ERROR", "NameError: " + str(_olse))');
+      lines.push('except Exception as _olse:');
+      lines.push('    print("' + MARK + '", ' + i + ', "ERROR", type(_olse).__name__ + ": " + str(_olse))');
+    });
+    return lines.join('\n');
+  };
+  PyRun.parseCallMarks = function (out) {
+    var MARK = PyRun.CALL_MARK;
+    var got = {};
+    String(out || '').split('\n').forEach(function (l) {
+      if (l.indexOf(MARK) !== 0) return;
+      var rest = l.slice(MARK.length).trim();
+      var sp = rest.indexOf(' ');
+      var i = Number(rest.slice(0, sp));
+      var body = rest.slice(sp + 1);
+      if (body.indexOf('NOMACHINE ') === 0) { got[i] = { none: false, noMachine: true, err: body.slice(10) }; return; }
+      if (body.indexOf('ERROR ') === 0) { got[i] = { none: false, err: body.slice(6) }; return; }
+      var last = body.lastIndexOf(' ');
+      var repr = body.slice(0, last), type = body.slice(last + 1);
+      got[i] = { repr: repr, type: type, none: type === 'NoneType' };
+    });
+    return got;
+  };
+  PyRun.checkCalls = function (code, cfg, runPy) {
+    runPy = runPy || PyRun.runPy;
+    var MARK = PyRun.CALL_MARK;
+    function display(m) {
+      if (!m) return '';
+      if (m.none) return 'None';
+      if (m.type === 'str') { try { return JSON.parse(m.repr.replace(/^'(.*)'$/, function (_, s) { return '"' + s.replace(/"/g, '\\"') + '"'; })); } catch (e) { return m.repr.replace(/^['"]|['"]$/g, ''); } }
+      return m.repr;
+    }
+    cfg = cfg || {};
+    var fn = String(cfg.fn || '');
+    var args = (cfg.args || []).map(function (a) { return Array.isArray(a) ? a : [a]; });
+    var epi = PyRun.callsEpilogue(fn, args);
+    var hers = null, ref = null;
+    return runPy(code, { epilogue: epi, limitMs: cfg.limitMs }).then(function (r) {
+      hers = r;
+      return runPy(String(cfg.reference || ''), { epilogue: epi, limitMs: cfg.limitMs });
+    }).then(function (r) {
+      ref = r;
+      var mine = PyRun.parseCallMarks(hers.out), want = PyRun.parseCallMarks(ref.out);
+      var defined = !args.some(function (_, i) { return mine[i] && mine[i].noMachine; });
+      var products = args.map(function (a, i) {
+        var m = mine[i] || {}, w = want[i] || {};
+        var ok = !!(m.repr && w.repr && m.repr === w.repr && m.type === w.type);
+        return {
+          order: a,
+          product: m.noMachine ? '' : (m.err ? '' : display(m)),
+          expected: display(w),
+          ok: ok,
+          none: !!m.none,
+          noMachine: !!m.noMachine,
+          err: m.err || ''
+        };
+      });
+      /* her program may have died BEFORE the epilogue (a broken def, a stray line):
+         then no marker exists at all and the honest answer is the real error */
+      var ranAtAll = Object.keys(mine).length > 0;
+      return {
+        ok: hers.ok && ranAtAll,
+        err: hers.ok ? '' : String(hers.err || ''),
+        out: hers.out.split('\n').filter(function (l) { return l.indexOf(MARK) !== 0; }).join('\n'),
+        defined: ranAtAll && defined,
+        products: products,
+        allOk: ranAtAll && defined && products.every(function (p) { return p.ok; })
+      };
+    });
+  };
+
+  /* relay-doors.js \u2014 DOOR RESOLUTION for the class adventure (j2-04, spec \u00a7C1.1).
+   * Pure functions, no DOM, no network: the `relay` engine calls these with the
+   * room list it fetched and the play so far.
+   * nextRoom(play, rooms, rng)
+   *   play  \u2014 { visited: [n, n, \u2026], limit: 5 }
+   *   rooms \u2014 every room the class has published PLUS the house rooms, [{ n, house, mine }]
+   *   rng   \u2014 a function returning [0,1); the walkers pass a seeded one (DFM 199)
+   *   \u2192 { n } the next room, or null when the adventure has reached its end
+   *     (limit reached, or no unvisited room is left \u2014 with fewer rooms than the
+   *     limit the adventure simply ends early, which is the solo route by birth:
+   *     three house rooms plus hers is a whole adventure for one pupil)
+   * The door LETTER never changes the choice: A and B both mean "another room I
+   * have not seen". The letters exist so the fork's consequence is visible on the
+   * pupil's own card (a different story, a different door line), not to route.
+   * planPlay(rooms, limit, rng) \u2192 [n, \u2026] the whole path at once, same rule, used by
+   * the walkers and the deck capture so a play can be pinned. */
+  PyRun.relayDoors = (function () {
+    function nextRoom(play, rooms, rng) {
+      rng = rng || Math.random;
+      var limit = Number((play && play.limit) || 5);
+      var visited = (play && play.visited) || [];
+      if (visited.length >= limit) return null;
+      var pool = (rooms || []).filter(function (r) { return visited.indexOf(r.n) === -1; });
+      if (!pool.length) return null;
+      var pick = pool[Math.floor(rng() * pool.length) % pool.length];
+      return { n: pick.n };
+    }
+    function planPlay(rooms, limit, rng) {
+      var play = { visited: [], limit: limit || 5 };
+      var out = [];
+      var next;
+      while ((next = nextRoom(play, rooms, rng))) { out.push(next.n); play.visited.push(next.n); }
+      return out;
+    }
+    /* a tiny seeded rng so a walk can be pinned (mulberry32) */
+    function seeded(seed) {
+      var a = seed >>> 0;
+      return function () {
+        a = (a + 0x6D2B79F5) >>> 0;
+        var t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    return { nextRoom: nextRoom, planPlay: planPlay, seeded: seeded };
+  })();
+
+  /* ---- L4 SURFACES SHARED BY THREE CARDS (\u00a7C13): the path table, the factory
+     floor with its reject bin, and the bloat meter. Lifted from the prototype's
+     paintTable / renderFloor / j3m1 with every pupil-facing word made CONTENT
+     (the prototype hard-coded a handful \u2014 "Your product", "\u2026 and N more like
+     these", the all-None sentence, "Python stopped:" \u2014 and a new engine sentence
+     no gate reads is exactly the debt ENGINE_STRINGS_DEBT.md exists to stop
+     growing, so those ride in the lesson's own `floor` / `pathTable` blocks under
+     the keys below and go through the language gate like every other sentence).
+     The grouping rule is Fable's: three pairs in the bin, then "and N more like
+     these"; every product None collapses to one sentence naming return. */
+  PyRun.pathTableHtml = function (T, r, opts) {
+    T = T || {};
+    opts = opts || {};
+    var stoppedLead = String(T.stoppedLead || 'Python stopped:');
+    return '<div class="pth"><h3>' + esc(T.title || '') + '</h3><p class="pth-lead">' + esc(T.lead || '') + '</p>' +
+      '<table><thead><tr>' + (T.cols || []).map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      (r.rows || []).map(function (row) {
+        var word = row.kind === 'stranger' ? String(T.strangerLabel || row.word) : row.word;
+        var said = row.ok ? esc(((row.scene ? row.scene + '\n' : '') + row.story).slice(0, 160))
+          : '<span class="pth-err">' + esc(stoppedLead + ' ' + String(row.err || '').replace(/^Error:\s*/, '')) + '</span>';
+        return '<tr class="' + (row.kind === 'stranger' ? 'pth-stranger' : '') + '">' +
+          '<td class="pth-word"><code>' + esc(word) + '</code></td>' +
+          '<td class="pth-story">' + said + '</td>' +
+          '<td class="pth-door ' + (row.door ? 'is-ok' : 'is-none') + '">' +
+          esc(row.door ? String(T.doorWord || 'door') + ' ' + row.door : String(T.noneWord || 'no door')) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  };
+  PyRun.renderFloor = function (hostEl, F, results, fnName) {
+    F = F || {};
+    var list = results.products || [];
+    var stoppedLead = String(F.stoppedLead || 'Python stopped:');
+    var yourLabel = String(F.yourLabel || F.productLabel || 'Product');
+    var noMachineCard = String(F.noMachineCard || '\u2014');
+    var html = '<div class="fac"><h3>' + esc(F.title || '') + '</h3><p class="fac-lead">' + esc(F.lead || '') + '</p>';
+    if (!results.defined && results.ok) html += '<p class="fac-nomachine">' + esc(String(F.noMachine || '').replace('{fn}', fnName)) + '</p>';
+    html += '<div class="fac-line">' + list.map(function (p) {
+      var cls = p.ok ? 'is-ok' : p.none ? 'is-none' : 'is-bad';
+      var shown = p.noMachine ? noMachineCard : p.err ? (stoppedLead + ' ' + p.err) : (p.none ? 'None' : p.product);
+      return '<div class="fac-order ' + cls + '"><span class="fac-tag">' + esc(F.orderLabel || '') + '</span>' +
+        '<span class="fac-in">' + esc(fnName + '(' + p.order.map(function (a) { return typeof a === 'number' ? a : '"' + a + '"'; }).join(', ') + ')') + '</span>' +
+        '<span class="fac-tag">' + esc(F.productLabel || '') + '</span><div class="fac-product">' + esc(shown) + '</div>' +
+        '<span class="fac-stamp">' + esc(p.ok ? (F.okStamp || '') : p.none ? (F.noneStamp || '') : (F.wrongStamp || '')) + '</span></div>';
+    }).join('') + '</div>';
+    var bad = list.filter(function (p) { return !p.ok; });
+    var allNone = bad.length === list.length && bad.length > 0 && bad.every(function (p) { return p.none; });
+    var pair = function (p) {
+      return '<div class="fac-pair"><div><span class="fac-tag">' + esc(yourLabel) + '</span>' +
+        esc(p.noMachine ? noMachineCard : p.err ? stoppedLead + ' ' + p.err : p.none ? 'None \u2014 ' + String(F.noneStamp || '') : p.product) + '</div>' +
+        '<div><span class="fac-tag">' + esc(F.expectedLabel || '') + '</span>' + esc(p.expected) + '</div></div>';
+    };
+    html += '<div class="fac-reject"><h3>' + esc(F.rejectTitle || '') + '</h3>' + (bad.length
+      ? (allNone ? '<p class="fac-reject-all">' + esc(String(F.allNoneSay || '').replace('{stamp}', String(F.noneStamp || ''))) + '</p>' + pair(bad[0])
+               : '<p class="fac-reject-lead">' + esc(F.rejectLead || '') + '</p>' + bad.slice(0, 3).map(pair).join('') +
+                 (bad.length > 3 ? '<p class="fac-reject-more">' + esc(String(F.moreSay || '').replace('{n}', String(bad.length - 3))) + '</p>' : ''))
+      : '<p class="fac-empty">' + esc(F.rejectEmpty || '') + '</p>') + '</div></div>';
+    hostEl.insertAdjacentHTML('beforeend', html);
+  };
+  /* THE BLOAT METER: two bars, two counts. Where the meter carries the two real
+     programs (`before.lines` / `after.lines`) the counts are COMPUTED from them,
+     so the number on the pupil's screen can never disagree with the program it
+     describes; the authored numbers are what qa-bloat-meter holds to the same
+     programs. */
+  PyRun.meterHtml = function (M) {
+    M = M || {};
+    var before = (M.before && M.before.lines) ? M.before.lines.length : Number(M.beforeLines || 0);
+    var after = (M.after && M.after.lines) ? M.after.lines.length : Number(M.afterLines || 0);
+    var pct = before > 0 ? Math.max(4, Math.round(100 * after / before)) : 100;
+    var unit = function (n) { return String(M.linesWord || '{n} lines').replace('{n}', String(n)); };
+    return '<div class="fac-meter"><h3>' + esc(M.title || '') + '</h3>' +
+      '<div class="fac-meter-row"><span>' + esc(M.beforeLabel || '') + '</span><div class="fac-meter-bar"><i style="width:100%"></i></div><b>' + esc(unit(before)) + '</b></div>' +
+      '<div class="fac-meter-row"><span>' + esc(M.afterLabel || '') + '</span><div class="fac-meter-bar"><i style="width:' + pct + '%"></i></div><b>' + esc(unit(after)) + '</b></div>' +
+      '<p class="fac-meter-say">' + esc(M.say || '') + '</p></div>';
+  };
+  /* THE STORY IS THE CONVERSATION (\u00a7C1.1 / the prototype's bench, j2-04): with a
+     chunk's `chatPrints` on, every printed line is a story bubble as it is
+     printed and a door line is the system line "You go through door A." (the
+     chunk's own `chatLabels.doorSay`), so a room reads in order \u2014 scene,
+     question, answer, road, door. One router, four call sites (worked, assembly,
+     typed, staged); a chunk that does not ask keeps prints in the console only,
+     exactly as every L3 card does. `needChat` is a function so a staged bench
+     can create its conversation panel at the first line rather than at mount. */
+  PyRun.storyRouter = function (cfg, needChat) {
+    var on = !!(cfg && cfg.chatPrints);
+    var buf = '';
+    function line(l) {
+      if (l.trim() === '') return;
+      var chat = needChat();
+      if (!chat) return;
+      var m = PyRun.DOOR_RX.exec(l.trim());
+      if (m) { chat.say('door', String((cfg.chatLabels || {}).doorSay || '').replace('{d}', m[1]), ''); return; }
+      chat.say('bot', l, cfg.botWho || (cfg.chatLabels || {}).botWho || 'The bot');
+    }
+    return {
+      on: on,
+      onOut: on ? function (t) {
+        buf += t;
+        var parts = buf.split('\n');
+        buf = parts.pop();
+        parts.forEach(line);
+      } : undefined,
+      flush: function () { if (on && buf.trim()) line(buf); buf = ''; }
+    };
+  };
+  /* a feature list whose probes are the L4 kinds is judged by the L4 routines;
+     everything else is PyRun.checkFeatures, untouched */
+  PyRun.hasL4Probes = function (feats) {
+    return (feats || []).some(function (f) {
+      return f.probe === 'scene-ask' || f.probe === 'path' || f.probe === 'different' || f.probe === 'calls';
+    });
+  };
+  PyRun.callArgsFor = function (f, b) {
+    if (f.args) return f.args;
+    var src = (f.argsFrom === 'orders' || !f.argsFrom) ? (f.orders || b.orders || []) : [];
+    var idx = f.argIndex;
+    return src.map(function (o) {
+      var a = Array.isArray(o) ? o : [o];
+      return idx ? idx.map(function (i) { return a[i]; }) : a;
+    });
+  };
+
   /* ---- the feature checker: one run, a handful of honest comparisons -------
      Every probe below answers a question about what HAPPENED, and the answers
      are computed here rather than read off her source. The base run is seeded
@@ -7768,21 +8469,70 @@ window.OLS_TRANSPORT = {
       var lh = parseFloat(cs.lineHeight) || 20;
       return kids.map(function (d) { return Math.max(1, Math.round(d.offsetHeight / lh)); });
     }
+    /* ---- THE TWO INDENT INCREMENTS (L4 spec \u00a7C1.5, config-gated) -----------
+       J2's Lesson 4 is this cohort's FIRST meeting with indentation and J3's
+       Lesson 4 is its first `def` body, so the editor has to make a pushed-in
+       line VISIBLE and make the next one land pushed in by itself:
+         indentGuides  every line that begins with four spaces draws a faint
+                       guide in the gutter, LEFT of its number and never across
+                       the digits (found in the prototype's own pixels); eight
+                       spaces draw two.
+         autoIndent    Enter after a line ending in ':' keeps that line's indent
+                       and adds four spaces; Enter on any indented line keeps
+                       its indent; a plain line is left to the browser.
+       Both are OFF unless the lesson asks: the L2/L3 editors name neither, so
+       they render the gutter they rendered yesterday, byte for byte
+       (qa-editor-indent proves it against the engine he sat). The guides are
+       drawn as gutter rows only under the flag, because a `<pre>` of digits is
+       what every other editor on the platform already paints. */
+    var guides = !!cfg.indentGuides;
+    var autoIndent = !!cfg.autoIndent;
     function paint() {
       var lines = ta.value.split('\n');
       var n = lines.length;
-      var out = '';
       var rows = soft ? rowsPerLine(lines) : null;
-      for (var i = 1; i <= n; i++) {
-        out += i + '\n';
-        if (rows) for (var k = 1; k < rows[i - 1]; k++) out += '\n';
+      if (guides) {
+        var lh = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+        nums.innerHTML = lines.map(function (l, i) {
+          var ind = /^ {8}/.test(l) ? ' is-in2' : (/^ {4}/.test(l) ? ' is-in' : '');
+          var h = rows ? Math.max(1, rows[i]) * lh : 0;
+          /* THE GUIDE IS ITS OWN ELEMENT, BESIDE THE DIGIT, NEVER INSIDE ITS BOX
+             (the first j2-4 / j3-4 expert walks, 14 Sep 2026): drawn as an inset
+             shadow on the number's own box, the gold stripe was read by the
+             readability sampler as the digit's ink \u2014 a 4.9:1 numeral measured
+             at 2.1:1 \u2014 and it was not a sampler fault: the stripe really did sit
+             in the glyph's box. A guide with no text of its own is measured by
+             nobody, and the digit's box holds only the digit. */
+          return '<div class="pye-gut"' + (h ? ' style="height:' + h + 'px"' : '') + '><span class="pye-guide' + ind + '"></span>' +
+            '<span class="pye-num">' + (i + 1) + '</span></div>';
+        }).join('');
+      } else {
+        var out = '';
+        for (var i = 1; i <= n; i++) {
+          out += i + '\n';
+          if (rows) for (var k = 1; k < rows[i - 1]; k++) out += '\n';
+        }
+        nums.textContent = out;
       }
-      nums.textContent = out;
       count.textContent = String(n) + ' ' + (n === 1 ? (cfg.lineWord || 'line') : (cfg.linesWord || 'lines'));
     }
     ta.addEventListener('input', paint);
     ta.addEventListener('scroll', function () { nums.scrollTop = ta.scrollTop; });
     ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && autoIndent) {
+        var a0 = ta.selectionStart;
+        var before = ta.value.slice(0, a0);
+        var line = before.slice(before.lastIndexOf('\n') + 1);
+        var lead = (/^[ ]*/.exec(line) || [''])[0];
+        var add = /:\s*$/.test(line) ? lead + '    ' : lead;
+        if (add) {
+          e.preventDefault();
+          ta.value = before + '\n' + add + ta.value.slice(ta.selectionEnd);
+          ta.selectionStart = ta.selectionEnd = a0 + 1 + add.length;
+          paint();
+        }
+        return;
+      }
       if (e.key !== 'Tab') return;
       e.preventDefault();
       var a = ta.selectionStart, b = ta.selectionEnd;
@@ -10902,6 +11652,9 @@ window.OLS_TRANSPORT = {
             '</div>');
           host.appendChild(c);
           wireHelpRow(c, b);
+          /* THE BLOAT METER (\u00a7C13, j3-04 machine-1): config-gated, drawn under the
+             verdict; a worked card that names no `meter` renders as it did */
+          if (cfg.meter) c.appendChild(el(PyRun.meterHtml(cfg.meter)));
           var stage = c.querySelector('.pyw-stage');
           var chat = b.chat === false ? null : PyRun.chat(stage, cfg.chatLabels || {});
           var con = PyRun.console(stage, cfg.consoleLabels || {});
@@ -10960,9 +11713,12 @@ window.OLS_TRANSPORT = {
                pixels away, which is the "note two steps away" the rule is
                written against. It goes immediately after the button. */
             if (chat && cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
+            var storyW = PyRun.storyRouter(chat ? cfg : null, function () { return chat; });
             liveRun = PyRun.start(codeOf(), {
               limitMs: Number(cfg.limitMs || 0) || undefined,
+              onOut: storyW.onOut,
               inputfun: chat ? function (prompt) {
+                storyW.flush();
                 return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
                   .then(function (v) { replies.push(v); return v; });
               } : undefined
@@ -10970,6 +11726,7 @@ window.OLS_TRANSPORT = {
             liveRun.p.then(function (res) {
               liveRun = null;
               PyRun.clearWaitNote(runBtn);
+              storyW.flush();
               if (chat) chat.closeAsk();
               con.show(res, cfg.errorWords || {});
               var ok = judge(res);
@@ -11018,7 +11775,9 @@ window.OLS_TRANSPORT = {
             if (b.check && b.check.usesReplies) {
               if (!replies.length) return false;
               var text = String(res.out || '');
-              return replies.every(function (r) { return text.indexOf(r) !== -1; });
+              var must = PyRun.repliesToEcho(b.check.usesReplies, replies);
+              if (!must.length) return false;
+              return must.every(function (r) { return text.indexOf(r) !== -1; });
             }
             return true;
           }
@@ -11123,24 +11882,46 @@ window.OLS_TRANSPORT = {
             }).join('') + '</div></div>'
           : '';
 
-        var c = el('<div class="card pyrun-card pye-card" data-build="' + esc(b.id || '') + '">' +
+        /* `.pye-wall`, NOT `.pye-card` (14 Sep 2026, the first j2-4 expert walk):
+           `.pye-card` is the class the SENT card <pre> wears \u2014 the platform's one
+           dark monospace block \u2014 and this card wore it too, which is the exact
+           collision the K41 note below describes. Nothing on the platform stood
+           on this shape until j2-04's fourth extra job (a room typed from a blank
+           box, with no palette, no checklist and no film \u2014 none of the wall he
+           rejected), so the navy-on-navy title went unmeasured until a walker
+           stood here. One class, one world (DFM 207g). */
+        var isExtraW = !!cfg.extrasMode;
+        var c = el('<div class="card pyrun-card pye-wall" data-build="' + esc(b.id || '') + '">' +
           '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
           (b.brief ? '<p class="pyrun-brief">' + fmtBold(b.brief) + '</p>' : '') +
           '<div class="pye-cols">' +
           '<div class="pye-main"><div class="pye-host"></div>' + paletteHtml + '</div>' +
-          '<aside class="pye-side"><h3>' + esc(b.checklistLabel || cfg.checklistLabel || 'What it has to do') + '</h3>' +
-          '<ol class="pyf-list">' + checklist + '</ol>' +
-          (b.starter && b.starter.length
-            ? '<div class="pye-starter"><p class="pye-starter-say">' + fmtBold(b.starterSay || cfg.starterSay || '') + '</p>' +
-              '<button class="ghost-btn pye-starter-btn" type="button">' + esc(b.starterLabel || cfg.starterLabel || 'Put the shape in for me') + '</button></div>'
-            : '') +
-          '</aside></div>' +
+          /* no jobs and no starter \u2192 no side panel: a heading over an empty list
+             is a promise the card does not keep (the blank-box extra job) */
+          ((feats.length || (b.starter && b.starter.length))
+            ? '<aside class="pye-side"><h3>' + esc(b.checklistLabel || cfg.checklistLabel || 'What it has to do') + '</h3>' +
+              '<ol class="pyf-list">' + checklist + '</ol>' +
+              (b.starter && b.starter.length
+                ? '<div class="pye-starter"><p class="pye-starter-say">' + fmtBold(b.starterSay || cfg.starterSay || '') + '</p>' +
+                  '<button class="ghost-btn pye-starter-btn" type="button">' + esc(b.starterLabel || cfg.starterLabel || 'Put the shape in for me') + '</button></div>'
+                : '') +
+              '</aside>'
+            : '') + '</div>' +
           helpRowHtml(b) +
           '<button class="primary-btn pyrun-run" type="button">' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
           '<div class="pyw-stage"></div>' +
           '<div class="pyrun-verdict" hidden></div>' +
+          /* the hub's two ways out, live from mount (DFM 265c), on this shape too */
+          (isExtraW ? '<div class="rung-actions pyrun-exit-row">' +
+            '<button class="ghost-btn pyrun-back" type="button">' + esc(cfg.backLabel || 'Back') + '</button>' +
+            '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
+            '</div>' : '') +
           '</div>');
         host.appendChild(c);
+        if (isExtraW) {
+          App.armButton(c.querySelector('.pyrun-back'), function () { hub(); });
+          App.armButton(c.querySelector('.pyrun-finish'), function () { done(); });
+        }
         wireHelpRow(c, b);
 
         var ed = PyRun.editor(c.querySelector('.pye-host'), b.editor || cfg.editor || {});
@@ -11239,8 +12020,10 @@ window.OLS_TRANSPORT = {
              is the same every time she presses RUN and can never turn on a word
              she happened to type (rule 35's family: a fail state she could not
              diagnose is a trap). */
+          var storyE = PyRun.storyRouter(chat ? cfg : null, function () { return chat; });
           liveRun = PyRun.start(code, {
             limitMs: Number(cfg.limitMs || 0) || undefined,
+            onOut: storyE.onOut,
             /* AND A PROGRAM THAT ASKS WHERE THERE IS NOWHERE TO ANSWER MUST
                STOP, NOT HANG. With no chat on the card, `inputfun` used to be
                left undefined, so the runtime suspended on the pupil's first
@@ -11252,6 +12035,7 @@ window.OLS_TRANSPORT = {
                immediately, which settles the run, re-arms RUN, and puts a real
                sentence in the console. */
             inputfun: chat ? function (prompt) {
+              storyE.flush();
               return chat.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
                 .then(function (v) { replies.push(v); return v; });
             } : function () { return Promise.reject(new Error('no-answer-here')); }
@@ -11259,6 +12043,7 @@ window.OLS_TRANSPORT = {
           liveRun.p.then(function (res) {
             liveRun = null;
             PyRun.clearWaitNote(runBtn);
+            storyE.flush();
             if (chat) chat.closeAsk();
             con.show(res, cfg.errorWords || {});
             /* THE RUN DIED, SO NOTHING WAS MEASURED, SO NOTHING IS CLAIMED
@@ -11266,7 +12051,22 @@ window.OLS_TRANSPORT = {
                line, so every probe would come back false and the checklist
                would print three failures over work that was fine. */
             if (!res.ok) { runStopped(res); return; }
-            if (!feats.length) { settle(res, PyRun.matches(res.out, b.target || []), []); return; }
+            if (!feats.length) {
+              /* `check.kind: "clean"` on a typed build (j2-04's blank-box extra):
+                 ran clean and used the lines the card names; a target-less build
+                 that names no check marks as it always did */
+              var kindE = String((b.check && b.check.kind) || 'target');
+              var okE, usesMissingE = false;
+              if (kindE === 'clean') {
+                okE = res.ok;
+                if (okE && b.check && b.check.uses && b.check.uses.length) {
+                  usesMissingE = b.check.uses.some(function (frag) { return String(code).indexOf(frag) === -1; });
+                  if (usesMissingE) okE = false;
+                }
+              } else okE = PyRun.matches(res.out, b.target || []);
+              settle(res, okE, [], usesMissingE);
+              return;
+            }
             PyRun.checkFeatures(code, feats, {
               answers: b.probeAnswers || cfg.probeAnswers || [],
               limitMs: Number(cfg.limitMs || 0) || undefined,
@@ -11300,12 +12100,13 @@ window.OLS_TRANSPORT = {
           runBtn.disabled = false;
         }
 
-        function settle(res, ok, results) {
+        function settle(res, ok, results, usesMissing) {
           verdict.hidden = false;
           verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
           var n = (results || []).filter(function (r) { return r.ok; }).length;
           var say = ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
-                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay);
+                       : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
+                                      : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay));
           verdict.innerHTML = '<p class="pyrun-vtag">' +
             esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
             (feats.length ? '<p class="pyf-count">' + esc(String(n) + ' / ' + String(feats.length)) + '</p>' : '') +
@@ -11330,6 +12131,14 @@ window.OLS_TRANSPORT = {
           }
           ed.lock();
           c.querySelectorAll('.pyp-chip').forEach(function (n2) { n2.disabled = true; });
+          if (isExtraW) {
+            /* a finished extra job ticks on the hub and promotes the way back \u2014 the
+               assemble card's own behaviour; a Continue here ended the whole zone */
+            doneJobs[b.id] = true;
+            var backW = c.querySelector('.pyrun-back');
+            if (backW) backW.className = 'primary-btn pyrun-back';
+            return;
+          }
           var last = (at + 1 >= builds.length);
           var go = el('<button class="primary-btn" type="button">' +
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
@@ -11438,7 +12247,34 @@ window.OLS_TRANSPORT = {
         var b = builds[at];
         var feats = b.features || [];
         var firstInsert = true;
-        var keptCode = '';
+        /* THE STAGED SHAPE INSIDE THE EXTRA JOBS (14 Sep 2026, the first j2-4
+           expert walk). j2-04's fourth extra job is typed from a blank box, and
+           the only editor the hub knew was the WALL he rejected (K41) \u2014 navy on
+           navy, and a Continue that ended the whole zone. The staged shape is
+           the ruled one, so it carries the hub's law here: the two ways out
+           (back to the list, finish the lesson) live on both faces from the
+           moment they mount (DFM 265c), a finished job ticks on the hub, and
+           the way back is promoted to the primary action \u2014 the assemble card's
+           own behaviour, mirrored. */
+        var isExtraS = !!cfg.extrasMode;
+        var exitRowS = isExtraS ? '<div class="rung-actions pyrun-exit-row">' +
+          '<button class="ghost-btn pyrun-back" type="button">' + esc(cfg.backLabel || 'Back') + '</button>' +
+          '<button class="ghost-btn pyrun-finish" type="button">' + esc(finishLabel()) + '</button>' +
+          '</div>' : '';
+        function wireExitS(card) {
+          if (!isExtraS) return;
+          App.armButton(card.querySelector('.pyrun-back'), function () { hub(); });
+          App.armButton(card.querySelector('.pyrun-finish'), function () { done(); });
+        }
+        /* AN OPTIONAL BUILD STARTS FROM WHAT SHE ALREADY WROTE (\u00a7C13: the twist
+           and the chain carry `from: "l4room"` / `"l4factory"`) \u2014 her saved draft
+           is the starting text, so "your room is already in the box" is true */
+        var keptCode = (b.from && ctx.draft && ctx.draft[b.from]) ? String(ctx.draft[b.from]) : '';
+        /* THE TWO WORDS (\u00a7C13, j2-04 myroom): typed on the PLAN face, pinned on the
+           BENCH, and the words the path check runs under */
+        var wordsVals = {};
+        var published = null;            /* her room number once roomPut has said so */
+        var publishedCode = null;
         var state = {};                       /* feature id -> true once matched */
         var attempts = 0;
         var replies = [];
@@ -11472,20 +12308,60 @@ window.OLS_TRANSPORT = {
           var jobs = feats.map(function (f) {
             return '<li>' + esc(f.label || '') + '</li>';
           }).join('');
+          /* THE SPEC CARD (\u00a7C13, j3-04 factory): the whole table on the PLAN face */
+          var S = cfg.spec;
+          var specHtml = S ? '<div class="fac-spec"><h3>' + esc(S.title || '') + '</h3><p class="fac-spec-lead">' + esc(S.lead || '') + '</p>' +
+            '<table><thead><tr>' + (S.cols || []).map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+            (S.rows || []).map(function (r) {
+              return '<tr><td><code>' + esc(r.fn) + '</code></td><td><code>' + esc(r.slots) + '</code></td><td>' + esc(r.gives) + '</td><td><code>' + esc(r.example) + '</code></td></tr>';
+            }).join('') + '</tbody></table>' + (S.note ? '<p class="fac-spec-note">' + esc(S.note) + '</p>' : '') + '</div>' : '';
+          /* THE TWO WORDS BOX (\u00a7C13, j2-04 myroom) */
+          var Wd = cfg.words;
+          var wordsHtml = Wd ? '<div class="pth-words"><h3>' + esc(Wd.title || '') + '</h3><p class="pth-words-lead">' + esc(Wd.lead || '') + '</p>' +
+            '<div class="pth-words-row">' + (Wd.boxes || []).map(function (bx) {
+              return '<label>' + esc(bx.label || '') + '<input type="text" maxlength="' + Number(bx.max || 12) + '" data-w="' + esc(bx.key) + '" value="' +
+                esc(wordsVals[bx.key] || '') + '" autocomplete="off" spellcheck="false"></label>';
+            }).join('') + '</div><p class="pth-words-say" hidden></p></div>' : '';
           var c = el('<div class="card pyrun-card pye-plan" data-build="' + esc(b.id || '') + '">' +
             '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
             '<h2>' + esc(cfg.title || '') + '</h2>' +
             (cfg.intro ? '<p class="intro-lead">' + fmtBold(cfg.intro) + '</p>' : '') +
             film +
+            specHtml +
             '<h3 class="pye-plan-h">' + esc(cfg.planLabel || b.planLabel || '') + '</h3>' +
             '<p class="pye-plan-goal">' + fmtBold(b.goalLine || '') + '</p>' +
             '<ol class="pye-plan-list">' + jobs + '</ol>' +
+            wordsHtml +
             (b.brief ? '<p class="pye-plan-brief">' + fmtBold(b.brief) + '</p>' : '') +
             '<button class="primary-btn pye-start" type="button">' +
             esc(cfg.startLabel || b.startLabel || 'Start writing') + '</button>' +
+            exitRowS +
             '</div>');
           host.appendChild(c);
-          App.armButton(c.querySelector('.pye-start'), function () { bench(); });
+          wireExitS(c);
+          App.armButton(c.querySelector('.pye-start'), function () {
+            if (Wd) {
+              /* both words, and two different ones \u2014 the refusal explains itself
+                 and points at the box (DFM 205) */
+              var say = c.querySelector('.pth-words-say');
+              var vals = {};
+              (Wd.boxes || []).forEach(function (bx) { vals[bx.key] = String(c.querySelector('[data-w="' + bx.key + '"]').value || '').trim(); });
+              var keys = (Wd.boxes || []).map(function (bx) { return bx.key; });
+              if (keys.some(function (k) { return !vals[k]; })) {
+                say.hidden = false; say.textContent = Wd.emptySay || '';
+                var first = keys.filter(function (k) { return !vals[k]; })[0];
+                c.querySelector('[data-w="' + first + '"]').focus();
+                return;
+              }
+              if (keys.length > 1 && vals[keys[0]].toLowerCase() === vals[keys[1]].toLowerCase()) {
+                say.hidden = false; say.textContent = Wd.sameSay || '';
+                c.querySelector('[data-w="' + keys[1] + '"]').focus();
+                return;
+              }
+              wordsVals = vals;
+            }
+            bench();
+          }, { repeat: true });   /* a refused press (empty or same words) must leave the button alive \u2014 App.armButton is one-shot by default, and the L4 wrong-path walk found Start dead after its own refusal (14 Sep 2026) */
         }
 
         /* ---------------------------- FACE 2: THE BENCH -------------------- */
@@ -11517,10 +12393,26 @@ window.OLS_TRANSPORT = {
               '<span class="pyf-say">' + esc(f.label || '') + '</span>' +
               '<span class="pyf-nudge" hidden></span></li>';
           }).join('');
+          var Wd = cfg.words, S = cfg.spec;
+          var pinnedHtml = (Wd && !b.optional)
+            ? '<div class="pth-words-pinned"><span>' + esc(Wd.pinnedLabel || '') + '</span>' +
+              (Wd.boxes || []).map(function (bx) { return '<code>' + esc(wordsVals[bx.key] || '') + '</code>'; }).join('') + '</div>'
+            : '';
+          var specHtml = S
+            ? '<div class="fac-spec"><h3>' + esc(S.title || '') + '</h3><table><tbody>' + (S.rows || []).map(function (r) {
+                return '<tr><td><code>' + esc(r.fn) + '(' + esc(r.slots) + ')</code></td><td>' + esc(r.gives) + '</td><td><code>' + esc(r.example) + '</code></td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '';
+          var pubHtml = (cfg.publish && !b.optional)
+            ? '<div class="pth-publish"><p class="pth-publish-note">' + esc(cfg.publish.lockedNote || '') + '</p>' +
+              '<button class="ghost-btn pth-publish-btn" type="button" disabled>' + esc(cfg.publish.label || '') + '</button></div>'
+            : '';
           var c = el('<div class="card pyrun-card pye-bench" data-build="' + esc(b.id || '') + '">' +
             '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
+            pinnedHtml +
             '<h3 class="pye-strip-h">' + esc(b.checklistLabel || cfg.checklistLabel || '') + '</h3>' +
             '<ol class="pyf-list pye-strip">' + jobs + '</ol>' +
+            specHtml +
             '<div class="pye-host"></div>' +
             (b.starter && b.starter.length && !starterUsed
               ? '<div class="pye-starter"><p class="pye-starter-say">' + fmtBold(b.starterSay || cfg.starterSay || '') + '</p>' +
@@ -11531,13 +12423,75 @@ window.OLS_TRANSPORT = {
             helpRowHtml(b) +
             '<button class="primary-btn pyrun-run" type="button">' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
             '<div class="pyw-stage"></div>' +
+            '<div class="pyl4-host"></div>' +
             '<div class="pyrun-verdict" hidden></div>' +
+            pubHtml +
+            exitRowS +
             '</div>');
           host.appendChild(c);
+          wireExitS(c);
           wireHelpRow(c, b);
 
           var ed = PyRun.editor(c.querySelector('.pye-host'),
             Object.assign({ softWrap: true }, b.editor || cfg.editor || {}));
+          var l4host = c.querySelector('.pyl4-host');
+          var pubBtn = c.querySelector('.pth-publish-btn');
+          var pubNote = c.querySelector('.pth-publish-note');
+          function setPublish(ready) {
+            if (!pubBtn) return;
+            pubBtn.disabled = !ready;
+            pubBtn.className = (ready ? 'primary-btn' : 'ghost-btn') + ' pth-publish-btn';
+            if (pubNote) pubNote.hidden = !!ready;
+          }
+          /* editing after a publish is said, once, and the button comes back
+             (\u00a7C13's `changedSay`); saying it before she has published would be a
+             sentence about something that has not happened */
+          ed.area.addEventListener('input', function () {
+            if (published == null || publishedCode === ed.value()) return;
+            var box = c.querySelector('.pth-publish');
+            if (box && !box.querySelector('.pth-publish-btn')) {
+              box.innerHTML = '<p class="pth-publish-note pth-changed">' + esc(cfg.publish.changedSay || '') + '</p>' +
+                '<button class="ghost-btn pth-publish-btn" type="button" disabled>' + esc(cfg.publish.label || '') + '</button>';
+              pubBtn = box.querySelector('.pth-publish-btn'); pubNote = box.querySelector('.pth-publish-note');
+              wirePublish();
+            }
+          });
+          function goOn() { at++; if (at < builds.length) startBuild(); else done(); }
+          function wirePublish() {
+            if (!pubBtn) return;
+            App.armButton(pubBtn, function () {
+              var P = cfg.publish;
+              var code = String(ed.value());
+              pubBtn.disabled = true;
+              pubBtn.textContent = P.sendingSay || '';
+              ctx.call('roomPut', { lessonId: ctx.lesson.id, code: code }).then(function (r) {
+                if (!r || !r.ok) throw new Error((r && r.error) || 'transport');
+                /* her number as the ADVENTURE will show it: the server's count
+                   plus the house rooms (one derivation, roomNumberBase) */
+                published = Number(r.n) + roomNumberBase(ctx);
+                publishedCode = code;
+                var box = c.querySelector('.pth-publish');
+                box.innerHTML = '<div class="pth-published" data-arrive-live><span class="intro-kicker">' + esc(P.doneKicker || '') + '</span>' +
+                  '<h3>' + esc(P.doneTitle || '') + '</h3><p>' + esc(String(P.doneSay || '').replace('{n}', String(published))) + '</p>' +
+                  '<button class="primary-btn pth-published-go" type="button">' + esc(P.continueLabel || cfg.continueLabel || 'Continue') + '</button></div>';
+                pubBtn = null;
+                App.armButton(box.querySelector('.pth-published-go'), goOn);
+              }).catch(function () {
+                /* honest, and never a dead end: the button comes back, the room
+                   she wrote is still in the box, and a way on that pays nothing
+                   for the publish is offered beside it (DFM 265c) */
+                var box = c.querySelector('.pth-publish');
+                box.innerHTML = '<p class="pth-publish-note pth-fail">' + esc(P.failSay || '') + '</p>' +
+                  '<button class="primary-btn pth-publish-btn" type="button">' + esc(P.label || '') + '</button>' +
+                  (P.skipLabel ? '<button class="ghost-btn pth-publish-skip" type="button">' + esc(P.skipLabel) + '</button>' : '');
+                pubBtn = box.querySelector('.pth-publish-btn'); pubNote = box.querySelector('.pth-publish-note');
+                wirePublish();
+                var skip = box.querySelector('.pth-publish-skip');
+                if (skip) App.armButton(skip, goOn);
+              });
+            });
+          }
+          wirePublish();
           if (keptCode) ed.set(keptCode);
           var stage = c.querySelector('.pyw-stage');
           var runBtn = c.querySelector('.pyrun-run');
@@ -11629,11 +12583,14 @@ window.OLS_TRANSPORT = {
             if (chat) chat.clear();
             needConsole().running();
             if (cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
+            var storyS = PyRun.storyRouter(cfg, needChat);
             liveRun = PyRun.start(code, {
               limitMs: Number(cfg.limitMs || 0) || undefined,
+              onOut: storyS.onOut,
               /* the conversation ARRIVES with the first question, which is also
                  the first moment its label ("The conversation") means anything */
               inputfun: function (prompt) {
+                storyS.flush();
                 return needChat().ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
                   .then(function (v) { replies.push(v); return v; });
               }
@@ -11641,6 +12598,7 @@ window.OLS_TRANSPORT = {
             liveRun.p.then(function (res) {
               liveRun = null;
               PyRun.clearWaitNote(runBtn);
+              storyS.flush();
               if (chat) chat.closeAsk();
               needConsole().show(res, cfg.errorWords || {});
               /* S2(b) \u2014 HIS "FIXES NOT RECOGNISED". This is the card he sat.
@@ -11658,7 +12616,80 @@ window.OLS_TRANSPORT = {
                 runBtn.disabled = false;
                 return;
               }
-              if (!feats.length) { settleStaged(res, PyRun.matches(res.out, b.target || []), [], c, verdict, ed, runBtn); return; }
+              if (!feats.length) {
+                /* a staged build with no jobs strip is judged like an assembly
+                   card: by its target, or \u2014 `check.kind: "clean"` (the twist and
+                   the chain's cousins) \u2014 by having run clean and used the lines
+                   the card names; the sentence for a missing line is the card's own */
+                var kindS = String((b.check && b.check.kind) || 'target');
+                var okS, usesMissingS = false;
+                if (kindS === 'clean') {
+                  okS = res.ok;
+                  if (okS && b.check && b.check.uses && b.check.uses.length) {
+                    usesMissingS = b.check.uses.some(function (frag) { return String(code).indexOf(frag) === -1; });
+                    if (usesMissingS) okS = false;
+                  }
+                } else okS = PyRun.matches(res.out, b.target || []);
+                settleStaged(res, okS, [], c, verdict, ed, runBtn, usesMissingS);
+                return;
+              }
+              /* ---- THE L4 KINDS (\u00a7C13): the path check and the floor's judge ----
+                 Judged by Fable's routines from OBSERVABLE EFFECTS, in a silent
+                 second pass under her declared words / the card's own orders; her
+                 console shows HER run only (the L3 verdict-pass rule). */
+              if (PyRun.hasL4Probes(feats)) {
+                l4host.innerHTML = '';
+                var pathFeats = feats.filter(function (f) { return f.probe === 'scene-ask' || f.probe === 'path' || f.probe === 'different'; });
+                var callFeats = feats.filter(function (f) { return f.probe === 'calls'; });
+                var results = [];
+                var chain = Promise.resolve();
+                if (pathFeats.length) {
+                  var wk = ((cfg.words && cfg.words.boxes) || []).map(function (bx) { return wordsVals[bx.key] || ''; });
+                  var wordsNow = wk.length ? wk : ((b.check && b.check.words) || []);
+                  chain = chain.then(function () {
+                    return PyRun.checkPaths(code, {
+                      words: wordsNow,
+                      stranger: (b.check && b.check.stranger) || cfg.stranger || 'banana',
+                      limitMs: Number(cfg.limitMs || 0) || undefined
+                    }).then(function (r) {
+                      pathFeats.forEach(function (f) {
+                        var ok = false;
+                        if (f.probe === 'scene-ask') ok = !!r.features['scene-ask'];
+                        else if (f.probe === 'different') ok = !!r.features['different'];
+                        else if (f.probe === 'path') {
+                          var w = String(f.word || '');
+                          ok = !!(w === 'w1' ? r.features['path-1'] : w === 'w2' ? r.features['path-2'] : r.features['catch-all']);
+                        }
+                        results.push({ id: f.id, ok: ok });
+                      });
+                      if (cfg.pathTable) l4host.insertAdjacentHTML('beforeend', PyRun.pathTableHtml(cfg.pathTable, r));
+                    });
+                  });
+                }
+                callFeats.forEach(function (f) {
+                  chain = chain.then(function () {
+                    return PyRun.checkCalls(code, {
+                      fn: f.fn, args: PyRun.callArgsFor(f, b), reference: f.reference,
+                      limitMs: Number(cfg.limitMs || 0) || undefined
+                    }).then(function (r) {
+                      results.push({ id: f.id, ok: !!r.allOk, stopped: !r.ok });
+                      if (cfg.floor && r.ok) PyRun.renderFloor(l4host, cfg.floor, r, String(f.fn));
+                    });
+                  });
+                });
+                chain.then(function () {
+                  var ordered = feats.map(function (f) {
+                    return results.filter(function (r) { return r.id === f.id; })[0] || { id: f.id, ok: false };
+                  });
+                  var stoppedAll = ordered.length > 0 && ordered.every(function (r) { return r.stopped; });
+                  paintJobs(ordered, true, stoppedAll);
+                  var all = ordered.every(function (r) { return r.ok; });
+                  if (attempts === 1 && !b.optional) featureFirst = ordered.filter(function (r) { return r.ok; }).length;
+                  settleStaged(res, all, ordered, c, verdict, ed, runBtn, false, true);
+                  setPublish(all);
+                });
+                return;
+              }
               /* HER RUN IS HER RUN; the VERDICT is a second, silent pass under
                  fixed probe answers, so what the jobs strip reports is the same
                  every time and can never turn on a word she happened to type. */
@@ -11677,7 +12708,7 @@ window.OLS_TRANSPORT = {
           };
         }
 
-        function settleStaged(res, ok, results, c, verdict, ed, runBtn) {
+        function settleStaged(res, ok, results, c, verdict, ed, runBtn, usesMissing, l4) {
           var n = (results || []).filter(function (r) { return r.ok; }).length;
           /* ---- THE HEADING IS COMPUTED FROM THE FEATURE LIST (J5) ----------
              His exhibit: "ALL FOUR" printed over a count of 3/3, at the exact
@@ -11688,7 +12719,8 @@ window.OLS_TRANSPORT = {
             ? fill(cfg.matchedAllLabel || b.matchedAllLabel || cfg.matchedLabel || 'MATCHED', n)
             : fill(cfg.notYetLabel || 'NOT YET', n);
           var say = ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
-                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay);
+                       : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
+                                      : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay));
           /* ONE ROW PER JOB, IN THE SAME WORDS AS THE PLAN AND THE STRIP \u2014 she
              reads the same sentence in all three places (DFM 144). */
           var rows = (results || []).map(function (r) {
@@ -11704,9 +12736,18 @@ window.OLS_TRANSPORT = {
           }).join('');
           verdict.hidden = false;
           verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
+          /* THE VERDICT REPEATS EVERY NOT YET JOB'S NUDGE (\u00a7C13, found in the
+             pixels: the strip is a screen away from the run) \u2014 for the L4 kinds,
+             so a card he has already sat says exactly what it said */
+          var nudges = (l4 && !ok) ? (results || []).filter(function (r) { return !r.ok; }).map(function (r) {
+            var fi = -1, f = null;
+            (b.features || []).forEach(function (x, i) { if (x.id === r.id) { f = x; fi = i; } });
+            return (f && f.nudge) ? '<li><b>' + esc(String(cfg.jobWord || 'Job') + ' ' + (fi + 1) + ':') + '</b> ' + esc(f.nudge) + '</li>' : '';
+          }).join('') : '';
           verdict.innerHTML = '<p class="pyrun-vtag">' + esc(head) + '</p>' +
             (rows ? '<ol class="pyv-list">' + rows + '</ol>' : '') +
-            '<p class="pyrun-vsay">' + esc(fill(say, n)) + '</p>';
+            '<p class="pyrun-vsay">' + esc(fill(say, n)) + '</p>' +
+            (nudges ? '<ol class="pyv-nudges">' + nudges + '</ol>' : '');
           if (!ok) { runBtn.disabled = false; return; }
           if (attempts === 1 && !(b.features || []).length) cleanFirst++;
           /* the Swap reads this draft \u2014 unchanged from the shape he approved */
@@ -11718,8 +12759,18 @@ window.OLS_TRANSPORT = {
               ctx.saveDraft(d);
             }
           }
+          /* A ROOM THAT PUBLISHES IS NOT LOCKED AND CARRIES NO CONTINUE OF ITS OWN
+             (\u00a7C13): the way on is the PUBLISHED card's button, and she may still
+             edit and press RUN again before she publishes */
+          if (cfg.publish && !b.optional) { runBtn.disabled = false; return; }
           ed.lock();
           c.querySelectorAll('.pyp-chip').forEach(function (n2) { n2.disabled = true; });
+          if (cfg.extrasMode) {
+            doneJobs[b.id] = true;
+            var backS = c.querySelector('.pyrun-back');
+            if (backS) backS.className = 'primary-btn pyrun-back';
+            return;
+          }
           var last = (at + 1 >= builds.length);
           var go = el('<button class="primary-btn" type="button">' +
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
@@ -11756,7 +12807,41 @@ window.OLS_TRANSPORT = {
         var lines = b.lines || [];
         var placed = [];                 // source indices, in her order
         var vals = {};                   // blank key -> typed value
+        /* A GAP CAN ARRIVE WITH SOMETHING ALREADY IN IT \u2014 the worked card's rule
+           (see startWorked), now on a tray line too: the planted mistake sits in
+           the gap, she runs it as it is, Python says so, and she fixes THAT gap
+           (j3-04's swap job, DFM 197 14 Sep 2026). A gap without `pre` is empty,
+           as every gap was. */
+        lines.forEach(function (L) {
+          (L.blanks || []).forEach(function (bl) { if (bl.pre != null && vals[bl.key] == null) vals[bl.key] = String(bl.pre); });
+        });
         var attempts = 0;
+        /* ---- LINES ALREADY IN PLACE (\u00a7C13, j2-04 training-3 and its extras) ----
+           `fixedTop` renders LOCKED at the top of Your program \u2014 read, not moved,
+           and included in the run \u2014 with `fixedTopLabel` saying so; `fixedBlanks`
+           are gaps INSIDE those fixed lines (one key may fill two slots, as the
+           fourth-road question does), typed like any other gap. A build that
+           names neither renders byte for byte as it did. */
+        var fixedTop = b.fixedTop || [];
+        var fixedBlanks = b.fixedBlanks || [];
+        function fixedLineHtml(t) {
+          var html = esc(t);
+          fixedBlanks.forEach(function (bl) {
+            var slot = esc(bl.slot || '____');
+            while (html.indexOf(slot) !== -1) {
+              html = html.replace(slot, '<input class="pyrun-blank pyrun-fixed-blank" type="text" data-key="' + esc(bl.key) + '" size="' +
+                Number(bl.size || 8) + '" maxlength="' + Number(bl.max || 40) + '" autocomplete="off" spellcheck="false" ' +
+                'aria-label="' + esc(bl.label || 'type here') + '" placeholder="' + esc(bl.ph || '') + '">');
+            }
+          });
+          return html;
+        }
+        var fixedHtml = fixedTop.length
+          ? '<div class="pyp-fixed"><p class="pyp-fixed-label">' + esc(b.fixedTopLabel || '') + '</p><ol class="pyp-fixed-list">' +
+            fixedTop.map(function (t) { return '<li class="pyp-fixed-line"><code>' + fixedLineHtml(t) + '</code></li>'; }).join('') + '</ol>' +
+            (fixedBlanks.length ? '<p class="pyrun-blank-hint pyp-fixed-hint">' + esc(fixedBlanks.map(function (bl) { return bl.label; }).filter(Boolean).join(' \u00b7 ')) + '</p>' : '') +
+            '</div>'
+          : '';
         /* ---- THE TRAY SHUFFLE \u2014 DFM 258, HIS RULING, 25 Aug 2026 -----------
            His words, sitting j2-02's build: "the first four lines were the
            correct ones for me, in that exact order, the lines on the left
@@ -11863,11 +12948,12 @@ window.OLS_TRANSPORT = {
           '<p class="pyrun-how">' + fmtBold(cfg.howLine || '') + '</p>' +
           '<div class="pyrun-cols">' +
           '<div class="pyrun-tray"><h3>' + esc(cfg.trayLabel || 'The lines') + '</h3><div class="pyt-list"></div></div>' +
-          '<div class="pyrun-prog"><h3>' + esc(cfg.progLabel || 'Your program') + '</h3><ol class="pyp-list"></ol></div>' +
+          '<div class="pyrun-prog"><h3>' + esc(cfg.progLabel || 'Your program') + '</h3>' + fixedHtml + '<ol class="pyp-list"></ol></div>' +
           '</div>' +
           '<p class="case-locked-note pyrun-locked-note">' + esc(cfg.lockedNote || PY_SAY.lockedNote) + '</p>' +
           '<button class="primary-btn pyrun-run" type="button" disabled>' + esc(cfg.runLabel || 'RUN my program') + '</button>' +
           '<div class="pyrun-console-host"></div>' +
+          '<div class="pyl4-host"></div>' +
           '<div class="pyrun-verdict" hidden></div>' +
           /* DFM 265(c): THE WAY OUT IS ON EVERY SCREEN. Not on the hub only, and
              not revealed once the job is finished \u2014 a pupil told "time up" is half
@@ -11914,16 +13000,28 @@ window.OLS_TRANSPORT = {
 
         /* ---- code assembly, blanks substituted where she typed them ---- */
         function codeOf() {
-          return placed.map(function (si) {
+          var top = fixedTop.map(function (t) {
+            var line = String(t);
+            fixedBlanks.forEach(function (bl) {
+              var slot = bl.slot || '____';
+              while (line.indexOf(slot) !== -1) line = line.replace(slot, String(vals[bl.key] == null ? '' : vals[bl.key]));
+            });
+            return line;
+          });
+          return top.concat(placed.map(function (si) {
             var L = lines[si];
             var t = String(L.t || '');
             (L.blanks || []).forEach(function (bl) {
               t = t.replace(bl.slot || '____', String(vals[bl.key] == null ? '' : vals[bl.key]));
             });
             return t;
-          }).join('\n');
+          })).join('\n');
         }
         function emptyBlank() {
+          for (var f = 0; f < fixedBlanks.length; f++) {
+            var fv = vals[fixedBlanks[f].key];
+            if (fv == null || !String(fv).trim()) return fixedBlanks[f];
+          }
           for (var i = 0; i < placed.length; i++) {
             var bls = lines[placed[i]].blanks || [];
             for (var k = 0; k < bls.length; k++) {
@@ -11932,6 +13030,18 @@ window.OLS_TRANSPORT = {
             }
           }
           return null;
+        }
+        /* the gaps inside the fixed lines: one key, every slot that carries it */
+        if (fixedBlanks.length) {
+          c.querySelectorAll('.pyp-fixed .pyrun-blank').forEach(function (inp) {
+            var k = inp.getAttribute('data-key');
+            if (vals[k] != null) inp.value = vals[k];
+            inp.addEventListener('input', function () {
+              vals[k] = inp.value;
+              c.querySelectorAll('.pyp-fixed .pyrun-blank[data-key="' + k + '"]').forEach(function (o) { if (o !== inp) o.value = inp.value; });
+            });
+            inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+          });
         }
 
         /* ---- DFM 272's config gate ------------------------------------
@@ -12242,9 +13352,18 @@ window.OLS_TRANSPORT = {
              RUN with nothing beside it */
           if (chatB && cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
           attempts++;
+          /* THE STORY IS THE CONVERSATION (\u00a7C1.1 / the prototype's bench, j2-04):
+             with `chatPrints` on, every printed line is a story bubble as it is
+             printed and a door line is the system line "You go through door A."
+             \u2014 so a room reads in order: scene, question, answer, road, door. A
+             chunk that does not ask keeps prints in the console only, as every
+             L3 card does. */
+          var storyB = PyRun.storyRouter(chatB ? cfg : null, function () { return chatB; });
           liveRun = PyRun.start(codeOf(), {
             limitMs: Number(cfg.limitMs || 0) || undefined,
+            onOut: storyB.onOut,
             inputfun: chatB ? function (prompt) {
+              storyB.flush();
               return chatB.ask(prompt, cfg.botWho || (cfg.chatLabels || {}).botWho, cfg.sendLabel)
                 .then(function (v) { repliesB.push(v); return v; });
             } : undefined
@@ -12252,13 +13371,45 @@ window.OLS_TRANSPORT = {
           liveRun.p.then(function (res) {
             liveRun = null;
             PyRun.clearWaitNote(runBtn);
+            storyB.flush();
             if (chatB) chatB.closeAsk();
             con.show(res, cfg.errorWords || {});
             var kindB = String((b.check && b.check.kind) || (b.target ? 'target' : 'target'));
             var ok;
+            /* ---- THE L4 KINDS (\u00a7C13): judged by Fable's routines in a silent
+               second pass; her live run above is HER run. `paths` reads the
+               declared words, a `{key}` being a gap she filled; `calls` drops the
+               card's own orders into the machine she named. The table / the floor
+               is drawn under the console, where the run that produced it is. */
+            if (kindB === 'paths' || kindB === 'calls') {
+              var l4h = c.querySelector('.pyl4-host');
+              l4h.innerHTML = '';
+              var judge = kindB === 'paths'
+                ? PyRun.checkPaths(codeOf(), {
+                    words: ((b.check && b.check.words) || []).map(function (w) {
+                      var m = /^\{(.+)\}$/.exec(String(w || ''));
+                      return m ? String(vals[m[1]] == null ? '' : vals[m[1]]).trim() : String(w || '');
+                    }),
+                    stranger: (b.check && b.check.stranger) || cfg.stranger || 'banana',
+                    limitMs: Number(cfg.limitMs || 0) || undefined
+                  }).then(function (r) {
+                    if (cfg.pathTable) l4h.insertAdjacentHTML('beforeend', PyRun.pathTableHtml(cfg.pathTable, r));
+                    return res.ok && !!r.features['paths-all'];
+                  })
+                : PyRun.checkCalls(codeOf(), {
+                    fn: b.check.fn, args: b.check.args || [], reference: b.check.reference,
+                    limitMs: Number(cfg.limitMs || 0) || undefined
+                  }).then(function (r) {
+                    if (cfg.floor && r.ok) PyRun.renderFloor(l4h, cfg.floor, r, String(b.check.fn));
+                    return res.ok && !!r.allOk;
+                  });
+              judge.then(function (okL4) { settleAssemble(okL4, false); });
+              return;
+            }
             if (kindB === 'clean') {
               ok = res.ok && (!(b.check && b.check.usesReplies) ||
-                (repliesB.length > 0 && repliesB.every(function (r) { return String(res.out || '').indexOf(r) !== -1; })));
+                (repliesB.length > 0 && PyRun.repliesToEcho(b.check.usesReplies, repliesB).length > 0 &&
+                  PyRun.repliesToEcho(b.check.usesReplies, repliesB).every(function (r) { return String(res.out || '').indexOf(r) !== -1; })));
             } else ok = res.ok && PyRun.matches(res.out, b.target || []);
             /* HIS FIND, 31 Aug 2026, sitting the len card: the target is "3",
                and the two-line program \u2014 build the list, print len of it \u2014
@@ -12276,6 +13427,8 @@ window.OLS_TRANSPORT = {
               usesMissing = b.check.uses.some(function (frag) { return codeNow.indexOf(frag) === -1; });
               if (usesMissing) ok = false;
             }
+            settleAssemble(ok, usesMissing);
+            function settleAssemble(ok, usesMissing) {
             verdict.hidden = false;
             verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
             verdict.innerHTML = '<p class="pyrun-vtag">' +
@@ -12324,6 +13477,7 @@ window.OLS_TRANSPORT = {
               });
             } else {
               runBtn.disabled = false;
+            }
             }
           });
         };
@@ -12678,7 +13832,7 @@ window.OLS_TRANSPORT = {
               say.textContent = cfg.sendFailSay || '';
               sendBtn.focus();
             });
-        });
+        }, { repeat: true });   /* the short-report refusal and the send failure both hand the button back; App.armButton is one-shot by default and left it dead \u2014 found by the L4 round's wrong-path audit of every refusing button (14 Sep 2026) */
       }
       function afterReport() {
         if (mode !== 'paired' || !PairKit.st) { seal(); return; }
@@ -12876,6 +14030,557 @@ window.OLS_TRANSPORT = {
         host.appendChild(c);
         wireFinish(c);
         App.armButton(c.querySelector('.swap-solo-go'), function () { testerSeat(-1, myCode); });
+      }
+    }
+  };
+
+  /* ================= relay \u2014 "The class adventure" (j2-04, spec \u00a7C1.1) ======
+     Five rooms, one after another, chosen from the rooms her class has
+     published plus the three HOUSE ROOMS the content ships \u2014 so one pupil
+     alone plays a whole adventure (the solo route by birth: cover day, catch-up,
+     the first to finish). One room's program runs in Skulpt in chat mode: every
+     print is a story bubble, `input()` opens the reply row, and the room's DOOR
+     LINE (`NEXT: door A` / `B`) is never printed as story \u2014 it renders as the
+     system line "You go through door A." and the engine resolves the door to a
+     random PUBLISHED room not yet visited in this play (`PyRun.relayDoors`,
+     Fable's routine, proved). Numbers only, never names (the Vault's secrecy
+     convention). A play-through of five rooms (or every room there is, if
+     fewer) earns the badge ONCE; leaving mid-play asks first and pays nothing;
+     the way out is on every screen (DFM 265c).
+     THE STORY MOVES FORWARD: every room starts a fresh transcript, so its scene
+     is the first thing she reads (\u00a7C13, found in the pixels).
+     DETERMINISTIC UNDER WALK: a harness may set `window.__relaySeed`, and the
+     door rng is then Fable's seeded mulberry32 so the walkers' paths are fixed
+     (DFM 199); a pupil's play is unseeded. Nothing in content can seed it.
+     ROOM NUMBERS: the house rooms carry their own numbers in content (1\u20133); a
+     published room is shown as its server number PLUS the count of house rooms,
+     which is the same number the myroom card's PUBLISHED card shows \u2014 one
+     derivation (`roomNumberBase`), read from the lesson's own relay chunk. */
+  function roomNumberBase(ctx) {
+    var chunks = (ctx && ctx.lesson && ctx.lesson.chunks) || [];
+    for (var i = 0; i < chunks.length; i++) {
+      if (String(chunks[i].engine) === 'relay') return ((chunks[i].config || {}).houseRooms || []).length;
+    }
+    return 0;
+  }
+  Engines.relay = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var W = cfg.words || {};
+      var L = cfg.chatLabels || {};
+      var limit = Number(cfg.rooms || 5);
+      var base = roomNumberBase(ctx);
+      var house = (cfg.houseRooms || []).map(function (r) {
+        return { n: Number(r.n), house: true, code: (r.lines || []).map(function (l) { return String(l.t || ''); }).join('\n') };
+      });
+      var pool = house.slice();          /* every room the play can land in */
+      var codeCache = {};                /* server n -> code */
+      var best = 0;                      /* the most rooms any play reached */
+      var earned = false;
+      var liveRun = null;
+      var listed = false;
+      var fill = function (t, m) {
+        var out = String(t == null ? '' : t);
+        Object.keys(m || {}).forEach(function (k) { out = out.split('{' + k + '}').join(String(m[k])); });
+        return out;
+      };
+      function headFor(room) {
+        return fill(room.mine ? W.roomMine : room.house ? W.roomHouse : W.roomHead, { n: room.n });
+      }
+      function finish(ok) {
+        if (liveRun) { try { liveRun.abandon(); } catch (e) { /* settled */ } liveRun = null; }
+        finishChunk(ctx, (chunk.id || 'classadventure') + '=' + best + '/' + limit, 0, ok);
+      }
+      /* the room list: once at open and on every Play again (\u00a7C1.1) */
+      function listRooms() {
+        return ctx.call('roomList', { lessonId: ctx.lesson.id }).then(function (r) {
+          if (!r || !r.ok) return;
+          var mine = r.mine == null ? null : Number(r.mine);
+          pool = house.slice().concat((r.rooms || []).map(function (x) {
+            return { n: base + Number(x.n), sn: Number(x.n), mine: mine != null && Number(x.n) === mine };
+          }));
+          listed = true;
+        }, function () { /* an unreachable server: the house rooms are the pool, and the count says so */ });
+      }
+      function codeFor(room) {
+        if (room.house) return Promise.resolve(room.code);
+        if (codeCache[room.sn] != null) return Promise.resolve(codeCache[room.sn]);
+        return ctx.call('roomGet', { lessonId: ctx.lesson.id, n: room.sn }).then(function (r) {
+          if (!r || !r.ok) return null;
+          codeCache[room.sn] = String(r.code || '');
+          return codeCache[room.sn];
+        }, function () { return null; });
+      }
+
+      /* ---- the intro, with the live count ---- */
+      function intro() {
+        host.innerHTML = '';
+        introCard(host, {
+          kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+          steps: cfg.steps, stepsClass: 'rly-intro-steps',
+          extra: '<p class="rly-count-line">' + esc(fill(W.roomsOpen, { n: pool.length })) + '</p>'
+        }, cfg.beginLabel || 'Start the adventure', play);
+        var line = host.querySelector('.rly-count-line');
+        listRooms().then(function () { if (line) line.textContent = fill(W.roomsOpen, { n: pool.length }); });
+      }
+
+      /* ---- one play: rooms until the limit or the pool runs dry ---- */
+      function play() {
+        var rng = (typeof window !== 'undefined' && window.__relaySeed != null)
+          ? PyRun.relayDoors.seeded(Number(window.__relaySeed)) : Math.random;
+        var playState = { visited: [], limit: limit };
+        var stopped = false;
+        host.innerHTML = '';
+        var card = el('<div class="card pyrun-card rly-card">' +
+          '<div class="rly-strip"><span class="rly-room"></span><span class="rly-count"></span>' +
+          '<span class="rly-open">' + esc(fill(W.roomsOpen, { n: pool.length })) + '</span></div>' +
+          '<div class="pyw-stage"></div>' +
+          '<div class="rung-actions rly-exit-row"><button class="ghost-btn rly-finish" type="button">' + esc(W.finishLabel || cfg.finishLabel || '') + '</button></div>' +
+          '<div class="rly-leave-ask" hidden></div></div>');
+        host.appendChild(card);
+        var stage = card.querySelector('.pyw-stage');
+        var chat = PyRun.chat(stage, L);
+        /* THE WAY OUT, on the play screen itself: it asks first, says how far she
+           has got, and a play she did not finish pays nothing (the duel/chatswap
+           leave pattern) */
+        App.armButton(card.querySelector('.rly-finish'), function () {
+          if (earned) { stopped = true; finish(true); return; }
+          var ask = card.querySelector('.rly-leave-ask');
+          ask.hidden = false;
+          ask.innerHTML = '<b>' + esc(W.leaveTitle || '') + '</b><p>' +
+            esc(fill(W.leaveAsk, { done: playState.visited.length, all: limit })) + '</p>' +
+            '<div class="confirm-actions"><button class="ghost-btn rly-leave-yes" type="button">' + esc(W.leaveYes || '') + '</button> ' +
+            '<button class="primary-btn rly-leave-no" type="button">' + esc(W.keepGoing || '') + '</button></div>';
+          App.armButton(ask.querySelector('.rly-leave-yes'), function () { stopped = true; finish(false); });
+          App.armButton(ask.querySelector('.rly-leave-no'), function () { ask.hidden = true; });
+        });
+
+        function step() {
+          if (stopped) return;
+          var next = PyRun.relayDoors.nextRoom(playState, pool, rng);
+          if (!next) { end(); return; }
+          playState.visited.push(next.n);
+          best = Math.max(best, playState.visited.length);
+          var room = pool.filter(function (r) { return r.n === next.n; })[0];
+          var head = card.querySelector('.rly-room');
+          head.className = 'rly-room' + (room.mine ? ' is-mine' : '');
+          head.textContent = headFor(room);
+          card.querySelector('.rly-count').textContent = fill(W.roomCount, { i: playState.visited.length, all: limit });
+          chat.clear();   /* a story moves forward: every room starts a fresh transcript */
+          chat.say('note', '\u2014 ' + headFor(room) + ' \u2014', '');
+          codeFor(room).then(function (code) {
+            if (stopped) return;
+            if (code == null) {
+              chat.say('note', fill(W.brokenSay, { n: room.n }), '');
+              setTimeout(step, 1500);
+              return;
+            }
+            var door = null, buf = '', wordsAfterChoice = 0, chose = false;
+            function line(l) {
+              var m = PyRun.DOOR_RX.exec(l.trim());
+              if (m) { door = m[1]; chat.say('door', fill(W.doorSay, { d: m[1] }), ''); return; }
+              if (l.trim() === '') return;
+              chat.say('bot', l, L.botWho || 'The room');
+              if (chose) wordsAfterChoice += l.trim().split(/\s+/).length;
+            }
+            var run = PyRun.runPy(code, {
+              ask: function (p) { chose = true; return chat.ask(p, L.botWho, L.sendLabel); },
+              onOut: function (t) {
+                buf += t;
+                var parts = buf.split('\n');
+                buf = parts.pop();
+                parts.forEach(line);
+              }
+            });
+            liveRun = run;
+            run.then(function (res) {
+              liveRun = null;
+              if (stopped) return;
+              if (buf.trim()) line(buf);
+              buf = '';
+              chat.closeAsk();
+              if (!res.ok) chat.say('note', fill(W.brokenSay, { n: room.n }), '');
+              chat.say('note', W.fetchingSay || '', '');
+              /* READING TIME before the next room replaces this one: the lines
+                 printed after her choice are hers to read, at the film law's pace
+                 (1.2 s + 0.35 s a word) \u2014 never a half-second flash */
+              var wait = Math.max(1500, 1200 + 350 * wordsAfterChoice);
+              setTimeout(step, wait);
+            }, function () { liveRun = null; });
+          });
+        }
+        function end() {
+          var whole = playState.visited.length >= Math.min(limit, pool.length);
+          var first = !earned && whole;
+          if (whole) earned = true;
+          var list = playState.visited.map(String).join(', ').replace(/, (\d+)$/, ' ' + String(W.andWord || 'and') + ' $1');
+          host.innerHTML = '';
+          var endCard = el('<div class="card rly-end"><span class="intro-kicker">' + esc(W.endKicker || '') + '</span>' +
+            '<h2>' + esc(W.endTitle || '') + '</h2>' +
+            (first ? '<p class="rly-end-first">' + esc(W.endFirstSay || '') + '</p>' : '') +
+            '<div class="rly-rooms">' + playState.visited.map(function (n) {
+              var r = pool.filter(function (x) { return x.n === n; })[0] || {};
+              return '<span class="rly-room' + (r.mine ? ' is-mine' : '') + '">' + esc(fill(W.roomHead, { n: n })) + '</span>';
+            }).join('') + '</div>' +
+            '<p class="intro-lead">' + esc(fill(W.endSay, { list: list })) + '</p>' +
+            '<div class="confirm-actions"><button class="ghost-btn rly-again" type="button">' + esc(W.playAgainLabel || '') + '</button> ' +
+            '<button class="primary-btn rly-done" type="button">' + esc(W.finishLabel || '') + '</button></div></div>');
+          host.appendChild(endCard);
+          App.armButton(endCard.querySelector('.rly-again'), function () { listRooms().then(play, play); });
+          App.armButton(endCard.querySelector('.rly-done'), function () { finish(earned); });
+        }
+        step();
+      }
+      listRooms().then(intro, intro);
+    }
+  };
+
+  /* ================= orders \u2014 "The Rush: partner orders" (j3-04, spec \u00a7C1.4) ==
+     On PairKit (pair / trio / solo): gate \u2192 ORDER FORM (three orders, honesty
+     floors only) \u2192 the orders cross the channel as one frame \u2192 her floor runs
+     HER machines on the partner's orders (the floor judge, expectations from
+     the hidden reference) \u2192 her product cards cross back by pairBlob \u2192 the
+     partner CHECKS each card (a human check beside the machine's) \u2192 seal +
+     reveal. Trio: A\u2192B\u2192C\u2192A. Solo: the Studio's own three orders arrive. Badge 3
+     pays FLAT on completing the exchange, never on the partner's verdict or the
+     machine's. Leaving is on every screen and pays nothing. Records
+     `rush=<phases>/4`. The side show (Unit 7) at \u2265 sideAfterMs on every
+     genuine wait. */
+  Engines.orders = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config;
+      var W = cfg.words || {};
+      var F = cfg.form || {}, U = cfg.run || {}, K = cfg.check || {}, SL = cfg.seal || {};
+      var mode = null, side = null;
+      var phases = 0;
+      var sealed = false;
+      var myOrders = null, theirOrders = null, myProducts = null, theirProducts = null;
+      var myYes = null, theirYes = null;
+      /* HOW MANY PRODUCTS WERE CHECKED, on each side (14 Sep 2026, qa-rush-paired):
+         a factory of two machines makes SIX products from three orders, and the
+         seal's sentence counted them against a literal "3" \u2014 "You said 6 of the
+         3 products were right". The count travels with the verdict (CHK y/n),
+         and the sentence takes it as {n}. */
+      var myN = 0, theirN = 0;
+      var fill = function (t, m) {
+        var out = String(t == null ? '' : t);
+        Object.keys(m || {}).forEach(function (k) { out = out.split('{' + k + '}').join(String(m[k])); });
+        return out;
+      };
+      /* THE FACTORY IS HERS: the machines the factory card saved, and \u2014 where a
+         pupil arrives with none \u2014 the factory's own starter shape, whose empty
+         machines hand back nothing, so the products say so honestly; never the
+         reference, which would make products she did not make. The floor's words
+         and the two machines' references are read off the lesson's own factory
+         chunk (one home, DFM 144). */
+      var factory = (function () {
+        var chunks = (ctx.lesson && ctx.lesson.chunks) || [];
+        for (var i = 0; i < chunks.length; i++) {
+          var c0 = chunks[i];
+          if (String(c0.engine) !== 'pyrun') continue;
+          var bs = ((c0.config || {}).builds || []);
+          for (var j = 0; j < bs.length; j++) {
+            if (bs[j].saveAs && (bs[j].features || []).some(function (f) { return f.probe === 'calls'; })) {
+              return { cfg: c0.config, build: bs[j] };
+            }
+          }
+        }
+        return null;
+      })();
+      var myCode = String((ctx.draft && factory && ctx.draft[factory.build.saveAs]) ||
+        (factory && (factory.build.starter || []).join('\n')) || '');
+      var floorWords = (factory && factory.cfg.floor) || cfg.floor || {};
+      var machines = (factory && factory.build.features || []).filter(function (f) { return f.probe === 'calls'; });
+
+      introCard(host, {
+        kicker: cfg.kicker, title: cfg.title, text: cfg.intro || '',
+        steps: cfg.steps, stepsClass: 'ord-intro-steps'
+      }, cfg.beginLabel || 'Open the Rush', gate);
+
+      function stopSide(why) { if (side) { side.leave(why || 'matched'); side = null; } }
+      function dropSide() { if (side) { side.stop(); side = null; } }
+      function finish(earned) {
+        dropSide(); PairKit.stop();
+        finishChunk(ctx, (chunk.id || 'rush') + '=' + phases + '/' + Number(cfg.phaseCount || 4), 0, earned);
+      }
+      function leave() {
+        var all = Number(cfg.phaseCount || 4);
+        if (phases >= all) { finish(true); return; }
+        App.confirm(cfg.leaveTitle || '', fill(cfg.leaveAsk, { done: phases, all: all }),
+          cfg.leaveYes || '', function (yes) { if (yes) finish(false); });
+      }
+      function finishRow(extra) {
+        return '<div class="rung-actions ord-exit-row">' + (extra || '') +
+          '<button class="ghost-btn ord-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div>';
+      }
+      function wireFinish(root) {
+        var b = root.querySelector('.ord-finish');
+        if (b) App.armButton(b, function () { leave(); });
+      }
+      /* a genuine wait gets the side show (K36b), on the card that is waiting */
+      function waitSide(root) {
+        var slot = root.querySelector('.ord-side');
+        if (!slot || side || !cfg.sideShow) return;
+        setTimeout(function () {
+          if (side || !slot.isConnected) return;
+          side = SideShow.mount(slot, cfg.sideShow);
+        }, Number(cfg.sideAfterMs == null ? 8000 : cfg.sideAfterMs));
+      }
+      var sign = function (mi) {
+        var st = PairKit.st;
+        return st ? PairKit.say('signPrefix', '') + String(st.members[mi] || '') : '';
+      };
+      var orderText = function (o) { return String(o[0]) + ' ' + String(o[1]); };
+      var parseOrders = function (t) {
+        return String(t || '').split(';').map(function (x) {
+          var m = /^\s*(.+?)\s+(\d)\s*$/.exec(x);
+          return m ? [m[1], Number(m[2])] : null;
+        }).filter(Boolean);
+      };
+
+      function gate() {
+        host.innerHTML = '';
+        PairKit.ensure(ctx, host, onMode, W, {
+          onWaiting: function (slot, waitedMs) {
+            if (!slot || side || waitedMs < Number(cfg.sideAfterMs == null ? 8000 : cfg.sideAfterMs)) return;
+            side = SideShow.mount(slot, cfg.sideShow || {});
+          },
+          onWaitOver: function (why) { stopSide(why); }
+        });
+      }
+      function onMode(m) {
+        mode = m;
+        if (m === 'left') { finish(false); return; }
+        if (m === 'paired') { form(); return; }
+        /* THE STUDIO'S ORDERS, SAID BEFORE IT HAPPENS (DFM 146e), in the words
+           for the way she got here: she stopped waiting (`own`), the class has
+           pairing switched off (`social`, the teacher's setting), or PairKit has
+           already told her nobody is left (`solo` \u2014 its own pop has just said so,
+           so the card repeats the same words rather than "you stopped waiting") */
+        ownCard(m === 'own' ? 'own' : (m === 'social' ? 'off' : 'solo'));
+      }
+      function ownCard(why) {
+        mode = 'solo';
+        host.innerHTML = '';
+        var title = why === 'own' ? (W.ownTitle || '') : why === 'off' ? (W.offTitle || W.soloTitle || '') : (W.soloTitle || W.ownTitle || '');
+        var kicker = why === 'own' ? (W.ownKicker || '') : (W.soloKicker || W.ownKicker || '');
+        var line = why === 'own' ? (W.ownLine || '') : (W.soloLine || W.ownLine || '');
+        var c = el('<div class="card ord-card-own"><span class="intro-kicker">' + esc(kicker) + '</span>' +
+          '<h2>' + esc(title) + '</h2><p class="intro-lead">' + fmtBold(line) + '</p>' +
+          finishRow('<button class="primary-btn ord-own-go" type="button">' + esc(W.ownButton || '') + '</button>') + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        App.armButton(c.querySelector('.ord-own-go'), function () {
+          myOrders = ((cfg.solo || {}).orders || []).slice();
+          theirOrders = myOrders.slice();
+          phases = Math.max(phases, 1);
+          arrived();
+        });
+      }
+
+      /* ---- phase 1: the order form ---- */
+      function form() {
+        host.innerHTML = '';
+        var rows = [1, 2, 3].map(function (n) {
+          return '<div class="ord-row"><span class="ord-n">' + n + '</span>' +
+            '<label>' + esc(F.nameLabel || '') + '<input type="text" maxlength="12" data-name="' + n + '" autocomplete="off" spellcheck="false"></label>' +
+            '<label>' + esc(F.seatsLabel || '') + '<input type="number" min="1" max="9" data-seats="' + n + '"></label></div>';
+        }).join('');
+        var c = el('<div class="card ord-form-card"><span class="intro-kicker">' + esc(F.kicker || '') + '</span>' +
+          '<h2>' + esc(F.title || '') + '</h2><p class="intro-lead">' + fmtBold(F.lead || '') + '</p>' +
+          '<div class="ord-form">' + rows + '</div><p class="ord-say" hidden></p>' +
+          '<p class="ord-wait" hidden aria-live="polite"></p><div class="ord-side"></div>' +
+          finishRow('<button class="primary-btn ord-send" type="button">' + esc(F.sendLabel || '') + '</button>') + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var sendBtn = c.querySelector('.ord-send'), say = c.querySelector('.ord-say'), wait = c.querySelector('.ord-wait');
+        App.armButton(sendBtn, function () {
+          var orders = [1, 2, 3].map(function (n) {
+            return [String(c.querySelector('[data-name="' + n + '"]').value || '').replace(/[;\n]/g, ' ').trim().slice(0, 12),
+                    Number(c.querySelector('[data-seats="' + n + '"]').value)];
+          });
+          /* honesty floors only (DFM 193a): a name, and a number from 1 to 9 */
+          if (orders.some(function (o) { return !o[0] || !(o[1] >= 1 && o[1] <= 9) || o[1] !== Math.floor(o[1]); })) {
+            say.hidden = false; say.textContent = F.emptySay || '';
+            return;
+          }
+          say.hidden = true;
+          sendBtn.disabled = true;
+          wait.hidden = false; wait.textContent = F.sendingSay || '';
+          PairKit.relay(ctx, 'msg', 'ORD ' + orders.map(orderText).join('; ')).then(function (r) {
+            if (!r || !r.ok) throw new Error('send');
+            myOrders = orders;
+            phases = Math.max(phases, 1);
+            wait.textContent = F.sentSay || '';
+            waitSide(c);
+            if (theirOrders) arrived();
+          }).catch(function () {
+            sendBtn.disabled = false;
+            wait.hidden = false; wait.textContent = F.failSay || '';
+          });
+        }, { repeat: true });   /* the refusal (a blank name, seats outside 1\u20139) and the send failure both hand the button back \u2014 one-shot would leave it dead (14 Sep 2026) */
+        /* the partner's orders may already be in the transcript, or arrive later */
+        listen();
+      }
+      /* THE CHANNEL, READ BY WHO SENT IT (V62/B2's law): my own frames are skipped
+         first; orders come from the member who orders from me (round-robin:
+         prev), products from the one who fills for me (next). */
+      function listen() {
+        PairKit.onEvent(function (e) {
+          if (!PairKit.st || String(e[2]) !== 'msg') return;
+          var from = Number(e[1]);
+          if (from === Number(PairKit.st.mi)) return;
+          var t = String(e[3] || '');
+          if (t.indexOf('ORD ') === 0 && from === PairKit.prevRound() && !theirOrders) {
+            theirOrders = parseOrders(t.slice(4));
+            if (myOrders) arrived();
+          } else if (t.indexOf('PROD') === 0 && from === PairKit.nextRound() && !theirProducts) {
+            PairKit.blob(ctx, 'get', 'products', PairKit.nextRound()).then(function (r) {
+              if (r && r.ok && Number(r.has)) { try { theirProducts = JSON.parse(String(r.v)); } catch (x) { theirProducts = null; } }
+              if (theirProducts && myProducts) check();
+            });
+          } else if (t.indexOf('CHK ') === 0 && from === PairKit.prevRound() && theirYes == null) {
+            theirYes = Number(t.slice(4).split('/')[0]) || 0;
+            theirN = Number(t.slice(4).split('/')[1]) || 0;
+            if (myYes != null) seal();
+          }
+        });
+      }
+
+      /* ---- phase 2: their orders through MY factory ---- */
+      function arrived() {
+        if (!theirOrders) return;
+        host.innerHTML = '';
+        var who = mode === 'paired' ? sign(PairKit.prevRound()) : String(W.studioName || '');
+        var c = el('<div class="card pyrun-card pye-bench ord-run-card"><span class="intro-kicker">' + esc(U.kicker || '') + '</span>' +
+          '<h2>' + esc(fill(U.title, { sign: who })) + '</h2><p class="intro-lead">' + fmtBold(U.lead || '') + '</p>' +
+          '<div class="fac"><h3>' + esc(U.kicker || '') + '</h3><div class="fac-line">' + theirOrders.map(function (o) {
+            return '<div class="fac-order"><span class="fac-tag">' + esc(floorWords.orderLabel || '') + '</span><span class="fac-in">' + esc(o[0] + ' \u00b7 ' + o[1]) + '</span></div>';
+          }).join('') + '</div></div>' +
+          '<button class="primary-btn pyrun-run" type="button">' + esc(U.runLabel || '') + '</button>' +
+          '<div class="pyw-stage"></div><div class="fac-host"></div>' +
+          '<p class="ord-wait" hidden aria-live="polite"></p><div class="ord-side"></div>' +
+          finishRow() + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var con = PyRun.console(c.querySelector('.pyw-stage'), (factory && factory.cfg.consoleLabels) || {});
+        var runBtn = c.querySelector('.pyrun-run'), wait = c.querySelector('.ord-wait');
+        App.armButton(runBtn, function () {
+          runBtn.disabled = true;
+          con.running();
+          var results = [];
+          var chain = Promise.resolve();
+          machines.forEach(function (f) {
+            chain = chain.then(function () {
+              return PyRun.checkCalls(myCode, {
+                fn: f.fn, args: PyRun.callArgsFor(f, { orders: theirOrders }), reference: f.reference
+              }).then(function (r) { results.push({ fn: f.fn, r: r }); });
+            });
+          });
+          chain.then(function () {
+            var first = results[0] && results[0].r;
+            con.show({ ok: !!(first && first.ok), out: first ? first.out : '', err: first ? first.err : '' },
+              (factory && factory.cfg.errorWords) || {});
+            var fh = c.querySelector('.fac-host'); fh.innerHTML = '';
+            if (first && first.ok) results.forEach(function (x) { PyRun.renderFloor(fh, floorWords, x.r, String(x.fn)); });
+            if (!first || !first.ok) {
+              /* her factory stopped: said plainly, with the way back to the card
+                 before this one in the sentence \u2014 and RUN comes back */
+              wait.hidden = false; wait.textContent = U.brokenSay || '';
+              runBtn.disabled = false;
+              return;
+            }
+            myProducts = results.map(function (x) {
+              return { fn: x.fn, products: x.r.products.map(function (p) {
+                return { order: p.order, product: p.noMachine ? '' : (p.err ? '' : (p.none ? 'None' : p.product)), none: !!p.none, err: !!(p.err || p.noMachine) };
+              }) };
+            });
+            phases = Math.max(phases, 2);
+            if (mode !== 'paired') { theirProducts = myProducts; check(); return; }
+            wait.hidden = false; wait.textContent = fill(U.sendingSay, { sign: sign(PairKit.prevRound()) });
+            PairKit.blob(ctx, 'put', 'products', JSON.stringify(myProducts)).then(function (r) {
+              if (!r || !r.ok) throw new Error('blob');
+              return PairKit.relay(ctx, 'msg', 'PROD sent');
+            }).then(function () {
+              wait.textContent = U.sentSay || '';
+              waitSide(c);
+              if (theirProducts) check();
+            }).catch(function () {
+              wait.textContent = F.failSay || '';
+              runBtn.disabled = false;
+            });
+          });
+        }, { repeat: true });   /* a broken run (brokenSay) and a failed send both re-enable RUN, so it must stay armed (14 Sep 2026) */
+      }
+
+      /* ---- phase 3: she checks the products made from HER orders ---- */
+      function check() {
+        if (!theirProducts || !myOrders) return;
+        dropSide();
+        host.innerHTML = '';
+        var who = mode === 'paired' ? sign(PairKit.nextRound()) : String(W.studioName || '');
+        var lead = mode === 'paired' ? fill(K.lead, { sign: who }) : String(K.ownLead || fill(K.lead, { sign: who }));
+        var cards = [];
+        theirProducts.forEach(function (m) {
+          (m.products || []).forEach(function (p) { cards.push({ fn: m.fn, p: p }); });
+        });
+        var c = el('<div class="card ord-check-card"><span class="intro-kicker">' + esc(K.kicker || '') + '</span>' +
+          '<h2>' + esc(K.title || '') + '</h2><p class="intro-lead">' + fmtBold(lead) + '</p>' +
+          '<div class="ord-check">' + cards.map(function (x, i) {
+            var call = x.fn + '(' + (x.p.order || []).map(function (a) { return typeof a === 'number' ? a : '"' + a + '"'; }).join(', ') + ')';
+            var made = x.p.none || x.p.err || !x.p.product ? (K.noneStamp || '') : x.p.product;
+            return '<div class="ord-card' + (x.p.none || x.p.err ? ' is-none' : '') + '">' +
+              '<div><span class="fac-tag">' + esc(K.orderLabel || '') + '</span><code>' + esc(call) + '</code></div>' +
+              '<div><span class="fac-tag">' + esc(K.productLabel || '') + '</span><code class="ord-made">' + esc(made) + '</code></div>' +
+              '<div class="ord-yn"><button class="ghost-btn" data-yn="y" data-i="' + i + '" type="button">' + esc(K.yes || '') + '</button>' +
+              '<button class="ghost-btn" data-yn="n" data-i="' + i + '" type="button">' + esc(K.no || '') + '</button></div></div>';
+          }).join('') + '</div><p class="ord-wait" hidden aria-live="polite"></p><div class="ord-side"></div>' + finishRow() + '</div>');
+        host.appendChild(c);
+        wireFinish(c);
+        var answers = {};
+        c.querySelectorAll('[data-yn]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            answers[b.getAttribute('data-i')] = b.getAttribute('data-yn');
+            c.querySelectorAll('[data-i="' + b.getAttribute('data-i') + '"]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+            if (Object.keys(answers).length < cards.length || myYes != null) return;
+            myYes = Object.keys(answers).filter(function (k) { return answers[k] === 'y'; }).length;
+            myN = cards.length;
+            phases = Math.max(phases, 3);
+            var w = c.querySelector('.ord-wait');
+            w.hidden = false;
+            if (mode !== 'paired') { w.textContent = K.ownDoneSay || ''; setTimeout(seal, 900); return; }
+            w.textContent = K.doneSay || '';
+            waitSide(c);
+            PairKit.relay(ctx, 'msg', 'CHK ' + myYes + '/' + cards.length).then(function () {
+              if (theirYes != null) seal();
+            });
+          });
+        });
+      }
+
+      /* ---- phase 4: seal + reveal ---- */
+      function seal() {
+        if (sealed) return;
+        sealed = true;
+        dropSide();
+        phases = Math.max(phases, Number(cfg.phaseCount || 4));
+        host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' + esc(SL.sealingSay || '') + '</span></div>';
+        var go = function (names) {
+          host.innerHTML = '';
+          var own = mode !== 'paired';
+          var prev = own ? -1 : PairKit.prevRound();
+          var name = (!own && names && names[prev]) ? String(names[prev]) : '';
+          var c = el('<div class="card ord-seal"><span class="intro-kicker">' + esc(SL.sealKicker || '') + '</span>' +
+            '<h2>' + esc(own ? (SL.ownSealTitle || '') : (SL.sealTitle || '')) + '</h2>' +
+            '<p class="intro-lead">' + fmtBold(own ? fill(SL.ownSealSay, { yes: myYes == null ? 0 : myYes, n: myN })
+              : fill(SL.sealSay, { yes: theirYes == null ? 0 : theirYes, n: theirN || myN, sign: sign(prev), name: name })) + '</p>' +
+            '<button class="primary-btn ord-done" type="button">' + esc(cfg.afterLabel || '') + '</button></div>');
+          host.appendChild(c);
+          App.armButton(c.querySelector('.ord-done'), function () { finish(true); });
+        };
+        if (mode === 'paired' && PairKit.st) {
+          PairKit.complete(ctx).then(function (r) { go((r && r.names) || null); }, function () { go(null); });
+        } else go(null);
       }
     }
   };
@@ -13111,7 +14816,7 @@ window.OLS_TRANSPORT = {
             revealShown = true;
             setTimeout(function () { showReveal(false); }, 400);
           }
-        });
+        }, { repeat: true });   /* the empty refusal must leave the lock alive; found by the L4 round's wrong-path walker on the same one-shot default (14 Sep 2026) */
 
         function waitSay() {
           if (mode !== 'paired' || !PairKit.st) return cfg.soloWaitSay || '';
@@ -16754,12 +18459,12 @@ window.OLS_TRANSPORT = {
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [], relay: null };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [], relay: null };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
@@ -16794,7 +18499,12 @@ window.OLS_TRANSPORT = {
              reads chunks rather than lesson numbers (DFM 240). A chunk with no
              BADGE writes nothing to the server, so it is not offered a column
              it could never fill. */
-          if (['pyrun', 'snap', 'duel', 'chatswap'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
+          /* LESSON 4 (\u00a7C7, 14 Sep 2026): the class adventure (`relay`) and the
+             Rush (`orders`) write `classadventure=5/5` and `rush=4/4` the same
+             way, and read here by the same content detection (156b). A lesson
+             whose content declares a relay also grows the ROOMS panel. */
+          if (ch.engine === 'relay') f.relay = { id: String(ch.id), title: String(cfg.tab || cfg.kicker || ch.title || ch.id) };
+          if (['pyrun', 'snap', 'duel', 'chatswap', 'relay', 'orders'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
             /* ---- S11(b), his second sit: A COLUMN HEADER IS A NAME, NOT A
                SENTENCE. The header took the chunk's CARD TITLE, and a card
                title is written to be read by a pupil at the top of a screen \u2014
@@ -17124,6 +18834,12 @@ window.OLS_TRANSPORT = {
     } else if (b.engine === 'duel') {
       say = [fr.n + ' of ' + fr.d + ' rounds played. It pays for playing, never for being right \u2014 ' +
              'how many she predicted correctly is private to her and her opponent.'];
+    } else if (b.engine === 'relay') {
+      say = [fr.n + ' of ' + fr.d + ' rooms played in her longest play of the class adventure. ' +
+             'It pays for playing all ' + fr.d + '; nobody is marked on which rooms, and no room shows its author\'s name to a pupil.'];
+    } else if (b.engine === 'orders') {
+      say = [fr.n + ' of the ' + fr.d + ' parts of the Rush done \u2014 her orders written, her partner\'s orders run through her factory, ' +
+             'the products checked, and the Rush sealed. It pays the same whatever her partner said of her products.'];
     } else {
       say = [fr.n + ' of ' + fr.d + ' cleared first time.'];
       say.push(fr.n === fr.d
@@ -17399,6 +19115,7 @@ window.OLS_TRANSPORT = {
     var html =
       liveHeaderHtml(delivered, num) +
       '<div id="pair-lens"></div>' +
+      '<div id="rooms-lens"></div>' +
       '<div id="tourney-slot"></div>' +
       '<div id="gallery-lens"></div>' +
       '<h3 style="margin-top:18px">' + (le ? lessonHeadingFor(le) : 'Lesson ' + App.esc(num)) + '</h3>' +
@@ -17425,6 +19142,7 @@ window.OLS_TRANSPORT = {
     setPane(html);
     if (le) loadMisconceptions(le);
     initPairLens(le, feat);
+    initRoomsLens(le, feat);
     initTourneySlot(le, feat);
     initGalleryLens(le, feat);
   }
@@ -17486,6 +19204,17 @@ window.OLS_TRANSPORT = {
           'filed, and the Swap sealed. <b class="lc-act all">4/4</b> is the whole thing. It pays a flat amount ' +
           'for taking part and is <b>never</b> scored on how anybody&rsquo;s bot behaved, so a bot that fell ' +
           'over does not show here as a failure. <span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else if (b.engine === 'relay') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is how many rooms of the class adventure she played ' +
+          'in her longest play. <b class="lc-act all">5/5</b> is a whole adventure, which is what earns its badge. It pays ' +
+          'for playing and never for which rooms came up; a pupil who left early shows what she reached. ' +
+          '<span class="lc-dash">&ndash;</span> means she never reached it. The rooms themselves are in the Rooms panel above.</p>');
+      } else if (b.engine === 'orders') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the paired part of the hour: how many of its four parts ' +
+          'she got through &mdash; her three orders written, her partner&rsquo;s orders run through her factory, the ' +
+          'products checked, and the Rush sealed. <b class="lc-act all">4/4</b> is the whole thing. It pays a flat amount ' +
+          'for taking part and is <b>never</b> scored on what her partner said of her products, so a product that came ' +
+          'back wrong does not show here as a failure. <span class="lc-dash">&ndash;</span> means she never reached it.</p>');
       } else if (b.engine === 'duel') {
         out.push('<p>The <b>' + App.esc(b.title) + '</b> column is how many of the six rounds she played. ' +
           '<b class="lc-act all">6/6</b> is all of them. It pays for playing and never for being right: how many ' +
@@ -17827,6 +19556,12 @@ window.OLS_TRANSPORT = {
     st.id = 'pair-lens-style';
     st.textContent =
       '.pair-lens-box{background:#F8FAFD;border:1px solid #E3E8F2;border-radius:12px;padding:14px 16px;margin:0 0 16px}' +
+      '.rl-list{display:flex;flex-direction:column;gap:6px}' +
+      '.rl-room{border:1px solid #E3E8F2;border-radius:9px;background:#fff;padding:6px 10px}' +
+      '.rl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.92rem;color:#1A2B4A}' +
+      '.rl-meta{color:#5B6579;font-size:.85rem}' +
+      '.rl-open{margin-left:auto;padding:3px 10px;font-size:.82rem}' +
+      '.rl-code{margin:8px 0 2px;padding:10px 12px;border-radius:8px;background:#0E1A30;color:#EAF2FF;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85rem;line-height:1.55;white-space:pre-wrap;overflow-x:auto}' +
       '.pl-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}' +
       '.pl-head h3{margin:0}' +
       '.pl-mute{margin-left:auto;font-size:0.8rem;color:var(--muted);display:flex;gap:6px;align-items:center}' +
@@ -17869,6 +19604,54 @@ window.OLS_TRANSPORT = {
       if (!document.getElementById('pair-lens-body')) { clearInterval(pairLensTimer); pairLensTimer = null; return; }
       pairLensTick();
     }, 5000);
+  }
+
+  /* \u2550\u2550\u2550 THE ROOMS PANEL (\u00a7C7 / 156b, 14 Sep 2026) \u2550\u2550\u2550
+     Only a lesson whose content declares a `relay` chunk grows it. It lists the
+     class adventure's rooms as the teacher may see them \u2014 the author's NAME
+     beside each room number (pupils see the number only), how many times each
+     room has been reached by somebody else, and the rooms nobody has reached
+     yet \u2014 and opens any room read-only. It re-reads itself every ten seconds
+     while the tab is open, like the pairing panel. */
+  var roomsLensTimer = null, roomsLensLesson = '';
+  function initRoomsLens(le, feat) {
+    var slot = q('#rooms-lens');
+    if (roomsLensTimer) { clearInterval(roomsLensTimer); roomsLensTimer = null; }
+    if (!slot || !le || !feat || !feat.relay) { if (slot) slot.innerHTML = ''; return; }
+    injectPairStyles();
+    roomsLensLesson = String(le.id);
+    slot.innerHTML = '<div class="pair-lens-box rooms-lens-box"><div class="pl-head"><h3>Rooms &mdash; ' +
+      App.esc(feat.relay.title) + ' (' + App.esc(lessonLabelFor(le.num)) + ')</h3></div>' +
+      '<div id="rooms-lens-body">' + busyHtml('Reading the rooms') + '</div></div>';
+    roomsLensTick();
+    roomsLensTimer = setInterval(function () {
+      if (!document.getElementById('rooms-lens-body')) { clearInterval(roomsLensTimer); roomsLensTimer = null; return; }
+      roomsLensTick();
+    }, 10000);
+  }
+  function roomsLensTick() {
+    adminCall('rooms', { className: cls, lessonId: roomsLensLesson }).then(function (r) {
+      var bodyEl = q('#rooms-lens-body');
+      if (!bodyEl || !r || !r.ok) return;
+      var open = {};
+      bodyEl.querySelectorAll('.rl-room.is-open').forEach(function (n) { open[n.getAttribute('data-n')] = 1; });
+      if (!Number(r.count)) {
+        bodyEl.innerHTML = '<p class="pl-note">No room has been published yet. The three house rooms are always in the adventure, so it can be played from the first pupil onward.</p>';
+        return;
+      }
+      var head = '<p class="pl-note"><b>' + Number(r.count) + '</b> room' + (Number(r.count) === 1 ? '' : 's') + ' published &middot; ' +
+        '<b>' + Number(r.plays) + '</b> time' + (Number(r.plays) === 1 ? '' : 's') + ' a published room was reached by somebody else &middot; ' +
+        '<b>' + Number(r.unreached) + '</b> nobody has reached yet. Numbers are what pupils see; names are for you only.</p>';
+      bodyEl.innerHTML = head + '<div class="rl-list">' + (r.rooms || []).map(function (rm) {
+        var isOpen = !!open[String(rm.n)];
+        return '<div class="rl-room' + (isOpen ? ' is-open' : '') + '" data-n="' + Number(rm.n) + '">' +
+          '<div class="rl-row"><b>Room ' + Number(rm.n) + '</b> &mdash; ' + App.esc(rm.name) +
+          ' <span class="rl-meta">&middot; ' + Number(rm.lines) + ' line' + (Number(rm.lines) === 1 ? '' : 's') + ' &middot; ' +
+          (Number(rm.plays) ? 'reached ' + Number(rm.plays) + ' time' + (Number(rm.plays) === 1 ? '' : 's') : 'nobody has reached it yet') + '</span>' +
+          '<button type="button" class="ghost-btn rl-open" data-action="room-open" data-n="' + Number(rm.n) + '">' + (isOpen ? 'Close' : 'Open') + '</button></div>' +
+          '<pre class="rl-code"' + (isOpen ? '' : ' hidden') + '>' + App.esc(rm.code) + '</pre></div>';
+      }).join('') + '</div>';
+    });
   }
 
   function pairLensTick() {
@@ -18956,7 +20739,13 @@ window.OLS_TRANSPORT = {
       'whole queue at once, and <b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair ' +
       'to finish alone; released pairs cannot be re-paired. A lesson with a class tournament shows its ' +
       '<b>Tournament view</b> launch row here, and a lesson that ends in a gallery &mdash; J1&rsquo;s ' +
-      'Press Night is the one built so far &mdash; brings its own review panel.</p>' +
+      'Press Night is the one built so far &mdash; brings its own review panel. A lesson with a <b>class ' +
+      'adventure</b> &mdash; J2&rsquo;s Lesson 4 is the one built so far &mdash; grows a <b>Rooms</b> panel: every ' +
+      'room the class has published, numbered as the pupils see it, with the author&rsquo;s name beside it for ' +
+      'you only, how many times somebody else has reached it, and <b>Open</b>, which shows the room&rsquo;s ' +
+      'lines read-only. The count of rooms nobody has reached yet is the one to glance at: the adventure ' +
+      'picks rooms at random, so a low number late in the hour is normal and a room that stays unreached ' +
+      'all lesson is bad luck, not a broken room.</p>' +
       '<p><b>Misconception patterns</b>, at the bottom, follows the same Showing menu: for each exit-check ' +
       'question of the lesson you are viewing, it shows which wrong answers the class actually chose ' +
       '&mdash; each one labelled with the misunderstanding it usually signals, so you know what to ' +
@@ -19134,6 +20923,17 @@ window.OLS_TRANSPORT = {
       case 'strip-jump': stripJump(btn); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(btn); break;
+      case 'room-open': {
+        var rlRoom = btn.closest('.rl-room');
+        if (rlRoom) {
+          var rlOpen = !rlRoom.classList.contains('is-open');
+          rlRoom.classList.toggle('is-open', rlOpen);
+          var rlPre = rlRoom.querySelector('.rl-code');
+          if (rlPre) rlPre.hidden = !rlOpen;
+          btn.textContent = rlOpen ? 'Close' : 'Open';
+        }
+        break;
+      }
       case 'absence-dismiss': absenceDismiss(btn); break;
       case 'team-chip': openChipMenu(btn); break;
       case 'team-add-group': teamAddGroup(); break;

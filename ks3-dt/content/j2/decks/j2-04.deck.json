@@ -1,7 +1,7 @@
 {
  "id": "j2-04.deck",
  "lesson": "j2-04",
- "driveFileId": "",
+ "driveFileId": "1FF3ROyTXsO5g559mAuNj3PLY4FAdeF0q6PLkk1K1dWw",
  "year": "j2",
  "deckName": "KS3 DT · J2 Lesson 4 — Adventure Engine (Teacher Deck)",
  "theme": {
@@ -34,7 +34,7 @@
      "heading": "In this lesson you will…",
      "bullets": [
       "Write an if line and an else line, so your program does one thing or the other.",
-      "Add a third road with the word elif, so your program can do a third thing. A road is one thing that can happen next in the story.",
+      "A road is one thing that can happen next in the story. Add a third road with the word elif, so your program can do a third thing.",
       "Test your room — the piece of the story you write — by trying every word a player could type, not just the one you expect.",
       "Write one room of a text adventure. A text adventure is a story that a program tells you one piece at a time, and a room is one piece of it. Then play through the rooms your classmates wrote."
      ],
@@ -51,7 +51,7 @@
       "The line that chooses is a fork. The fork is the line that starts with if.",
       "Nothing else about writing Python changes today."
      ],
-     "notes": "SAY: \"There is one new idea today and everything else is what you already do. Your program reads what the player typed, and then it chooses which lines to run. The line that does the choosing is called a fork, and it starts with the word if.\"\n\nDO NOT explain elif or else yet, and do not write either word up. The objectives slide named elif; leave it at the name. The film shows both of them working before it names them. In the film, each thing that can happen next is called a road. A pupil who has watched the film run one road understands each word when it arrives, and explaining the words now takes that away.\n\nWHEN TO MOVE: straight on.",
+     "notes": "SAY: \"There is one new idea today and everything else is what you already do. Your program reads what the player typed, and then it chooses which lines to run. The line that does the choosing is called a fork, and it starts with the word if.\"\n\nDO NOT explain elif or else yet, and do not write either word up. The objectives slide named elif; leave it at the name. The film shows both of them working before it names them. In the film, each thing that can happen next is called a road. A pupil who has watched one road run in the film understands each word when the film names it. Explain the words now, and you take that understanding away.\n\nWHEN TO MOVE: straight on.",
      "shot": "briefing"
     },
     {
@@ -114,7 +114,7 @@
       "The first one is already written. Run it, read what Python says, and fix the fork line.",
       "The second is a room in pieces, and you put it in order.",
       "The third has one road written, and you add the other two.",
-      "The first and the third really run when you press RUN. If one stops, read the plain line under what Python said."
+      "The first and the third training builds are real programs. They run when you press RUN. If one stops, look under what Python said. There is a line there in plain words. Read that line."
      ],
      "notes": "WHERE THE CLASS IS: film finished, eyes front. One minute here saves you ten walking the room.\n\nSAY: \"There are three training builds, and they get harder. The first one is already written for you: it is the canteen room from the opening card, with one symbol wrong in it on purpose. Press RUN, read what Python says, and put it right. The second one is a room in eight pieces, and you put them in order. The third has one road done, and you add the other two.\"\n\nTHEN SAY: \"The first and the third really run. When you press RUN, the room asks you a question and waits for you to type, exactly as your chatbot did last lesson.\"\n\nDO NOT walk anybody through the third build from the front. It earns the first badge, and it is meant to be worked out.\n\nWHEN TO MOVE: next slide, then send them in."
     },
@@ -179,7 +179,7 @@
       "Put a door line on every road. If a road has no door line, the adventure cannot move on.",
       "The card lists five jobs your room has to do. When all five say done, you publish your room. It joins the class adventure with a number on it, not your name."
      ],
-     "notes": "WHERE THE CLASS IS: the three training builds finished, eyes front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now your own room. Pick a place in this school. Decide the two words the player can type before you write anything. Then write one question — it has to say those two words. Two roads, one for each word, and a way on for anything else. Every road ends with a door line.\"\n\nTHEN SAY: \"The card opens on a plan with the five jobs your room has to do. Read it, type your two words, then press Start writing. The short film on that card shows a room being written and what the path check tells you.\"\n\nTHE ONE TO STRESS: nobody's name goes on a room. When a room is published it gets a number, and that is all anybody sees.\n\nWHEN TO MOVE: next slide."
+     "notes": "WHERE THE CLASS IS: the three training builds are finished, and eyes are front. This is the biggest block of the hour and the STOP slide is worth the minute.\n\nSAY: \"Now you write your own room. Pick a place in this school. Decide the two words the player can type before you write anything. Then write one question — it has to say those two words. Write two roads, one for each word, and a road for anything else. Every road ends with a door line.\"\n\nTHEN SAY: \"The card opens on a plan with the five jobs your room has to do. Read it, type your two words, then press Start writing. The short film on that card shows a room being written and what the path check tells you.\"\n\nTHE ONE TO STRESS: nobody's name goes on a room. When a room is published it gets a number, and that is all anybody sees.\n\nWHEN TO MOVE: next slide."
     },
     {
      "kind": "bullets",
@@ -193,7 +193,7 @@
       "The website uses your two words to test your room, so the question must say them.",
       "Then press Start writing."
      ],
-     "notes": "SAY, with the picture up: \"The card starts with a plan. It lists five jobs, in order. One: say where the player is, and ask one question that says your two words. Two: a road for your first word. Three: a road for your second word. Four: a door for anything else. Five: the two roads tell different stories. Under the plan are two boxes. Type your two words into them before you press Start writing.\"\n\nWHAT THEY WILL SEE: the picture is the plan face — the five jobs, the film, the two word boxes, and the Start writing button.\n\nTHE ONE TO STRESS: the two words are not decoration. The website plays the room with each of them, so if the question does not say them, the room fails the path check.\n\nWHEN TO MOVE: next slide."
+     "notes": "SAY, with the picture up: \"The card starts with a plan. It lists five jobs, in order. One: say where the player is, and ask one question that says your two words. Two: a road for your first word. Three: a road for your second word. Four: a door for anything else. Five: the two roads tell different stories. Under the plan are two boxes. Type your two words into them before you press Start writing.\"\n\nWHAT THEY WILL SEE: the picture is the card — the five jobs, the film, the two word boxes, and the Start writing button.\n\nTHE ONE TO STRESS: the two words are not decoration. The website plays the room with each of them, and the first of the five jobs checks that the question says them. If the question does not say them, the first job stays at not yet.\n\nWHEN TO MOVE: next slide."
     },
     {
      "kind": "bullets",
@@ -216,7 +216,7 @@
      "heading": "The path check, and Publish",
      "bullets": [
       "Press RUN my room and the website plays your room three times: your first word, your second word, and banana.",
-      "The path check appears under the console. If a row says no door, the road for that word has no door line. For a word you did not plan for, that road is the else road.",
+      "The path check appears under the five jobs. If a row says no door, the road for that word has no door line. The road for a word you did not plan for is the else road.",
       "After a run, look under the line that says whether your room works. Every job that still says not yet is listed there again, with what to fix.",
       "When all five jobs say done, the Publish button wakes up.",
       "Publish sends your room into the class adventure. You are told its number."
@@ -265,7 +265,7 @@
      "bullets": [
       "After five rooms the screen says THE END and lists the rooms you went through.",
       "Your first whole adventure earns the badge.",
-      "Press Play again, and you take a different path through the class's rooms.",
+      "Press the Play again button, and you take a different path through the rooms in the class adventure.",
       "To move on, press the button that says Finish the adventure and carry on with the lesson."
      ],
      "notes": "SAY: \"After five rooms you reach the end, and the screen lists the rooms you went through. Your first whole adventure earns the badge. Play again if there is time — it takes a different path — or press the button that carries you on.\"\n\nWHAT THEY WILL SEE: the end card — THE END, the list of room numbers, Play again, and Finish the adventure and carry on with the lesson.\n\nTHE ONE TO STRESS: if a pupil tries to leave before the fifth room, the screen asks her first, and leaving early earns no badge. The screen says so.\n\nWHEN TO MOVE: send them in. This runs about ten minutes."
