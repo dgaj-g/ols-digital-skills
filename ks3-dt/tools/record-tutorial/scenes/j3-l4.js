@@ -150,7 +150,7 @@ const scenes = [
 /* ------------------------------------------------------------------ ch2 */
 {
   id: 'ch2',
-  label: 'A machine: def, the slot, and return',
+  label: 'How a machine works: def, the slot, and return',
   tailMs: 1600,
   run: async ({ page, cine, log }) => {
     await page.goto(MACHINE, { waitUntil: 'domcontentloaded' });
