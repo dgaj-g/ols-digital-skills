@@ -1541,13 +1541,13 @@
          missing; only when that name is the MACHINE'S is the machine missing.
          Fable's misspelt-machine control (`lable`) still lands here, because the
          name Python cannot find is then `label`. */
-      lines.push('except NameError as __e:');
-      lines.push('    if "\'' + fn + '\'" in str(__e):');
-      lines.push('        print("' + MARK + '", ' + i + ', "NOMACHINE", str(__e))');
+      lines.push('except NameError as _olse:');
+      lines.push('    if "\'' + fn + '\'" in str(_olse):');
+      lines.push('        print("' + MARK + '", ' + i + ', "NOMACHINE", str(_olse))');
       lines.push('    else:');
-      lines.push('        print("' + MARK + '", ' + i + ', "ERROR", "NameError: " + str(__e))');
-      lines.push('except Exception as __e:');
-      lines.push('    print("' + MARK + '", ' + i + ', "ERROR", type(__e).__name__ + ": " + str(__e))');
+      lines.push('        print("' + MARK + '", ' + i + ', "ERROR", "NameError: " + str(_olse))');
+      lines.push('except Exception as _olse:');
+      lines.push('    print("' + MARK + '", ' + i + ', "ERROR", type(_olse).__name__ + ": " + str(_olse))');
     });
     return lines.join('\n');
   };
