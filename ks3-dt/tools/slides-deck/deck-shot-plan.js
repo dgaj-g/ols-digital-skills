@@ -749,6 +749,656 @@ const DECK_SHOTS = {
       mustShow: /venue/i,
       says: 'the build that makes a variable, before a line is moved: the = line still in the tray'
     }
+  },
+
+  /* ═══════════ J2 LESSON 3 — THE CHATBOT WORKSHOP (K42b, 14 Sep 2026) ═══════
+     THE L3 GAP, CLOSED. Both Lesson 3 decks shipped without a single picture —
+     five of their notes told the teacher to speak "with the picture up" on slides
+     that carried none — and the spec for Lesson 4 made the rows for both L3s the
+     first job of that build (§C0a.1). Every row below is a screen a pupil could
+     hesitate at, named from the lesson's own chunk list and photographed only
+     while its own predicate holds.
+     TWO OF THESE SCREENS EXIST ONLY FOR A PUPIL WHO HAS A PARTNER, and a partner
+     who is the preview's simulated one would put the word SIMULATED on a slide
+     (the Press Night lesson, DFM 225b). So the capture stages a SECOND REAL
+     preview pupil on the two-account rig — qa-swap-paired's machinery — and
+     drives both: the photographed pupil opens the door first and genuinely
+     waits (the waiting card, with Fred on it), the partner opens hers only once
+     that picture is taken (the PARTNER FOUND card, with a real call sign), and
+     the two then test each other's bots (the tester's seat). `mustNotShow`
+     guards the two paired pictures against the simulated partner ever reaching
+     a projector. */
+  'j2-03': {
+    film: {
+      chunk: 'film-a',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film-a') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length === 3 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the film screen with its three chapter buttons'
+    },
+    asks: {
+      chunk: 'training-1',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'training-1') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="t1"]');
+        if (!c) return false;
+        /* THE PROGRAM HAS STOPPED AND IS WAITING — the reply space is on screen,
+           live, and nothing has gone wrong yet. This is the state the slide's
+           own THE ONE TO STRESS is about: a pupil who does not realise the
+           program has stopped on purpose thinks it has crashed. */
+        const reply = c.querySelector('.pyx-ask .pyx-reply');
+        return !!reply && reply.offsetParent !== null && !reply.disabled &&
+          !c.querySelector('.pyc.is-bad') && c.querySelectorAll('.pyx-row').length >= 1;
+      },
+      mustShow: /Your reply/i,
+      says: 'the first training build, stopped and waiting: the bot has asked its question and the reply space has appeared'
+    },
+    console: {
+      chunk: 'training-1',
+      selector: '.chunk-host .pyc',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'training-1') return false;
+        const c = document.querySelector('.chunk-host .pyc.is-bad');
+        const err = c && c.querySelector('.pyc-err');
+        /* A RUN THAT REALLY STOPPED, on the planted mistake (`naem` on line 2):
+           `is-bad` is set only when Python raised, and the error box must carry
+           Python's own words. The expert walker reaches this one itself — the
+           worked example ships broken and is only put right after it has been
+           run (walk-moves: ONLY AFTER IT HAS REALLY FAILED). */
+        return !!err && (err.textContent || '').trim().length > 8;
+      },
+      mustShow: /Error/i,
+      says: "the console after a run that did not work: Python's own words, and a line underneath in plain English"
+    },
+    tray: {
+      chunk: 'training-3',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'training-3') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="t3a"]');
+        if (!c) return false;
+        /* UNTOUCHED, AND POST-SHUFFLE (DFM 258): nothing placed, RUN asleep, and
+           the tray's order is NOT the authored order — a tray that rendered in
+           source order would fail this, which is what makes "shuffled" a claim
+           the picture can back rather than a caption. */
+        const run = c.querySelector('.pyrun-run');
+        const sis = Array.from(c.querySelectorAll('.pyt-list .pyrun-line')).map(n => Number(n.getAttribute('data-si')));
+        const ascending = sis.every((v, i) => i === 0 || v > sis[i - 1]);
+        return c.querySelectorAll('.pyp-list .pyrun-line').length === 0 && !!run && run.disabled &&
+          sis.length >= 5 && !ascending;
+      },
+      /* cropped to the two columns, for the same reason as j3-03's tray — and
+         STARTED at them: this card carries six numbered steps and a brief above
+         the columns, and whole it photographed at 1:1.5 */
+      cropFrom: '.pyrun-cols',
+      cropTo: '.pyt-list',
+      mustShow: /RUN my bot|The lines/i,
+      says: 'the third training build before a line is moved: the lines shuffled, the gaps in them, and the empty program'
+    },
+    plan: {
+      chunk: 'mybot',
+      selector: '.chunk-host .pye-plan',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'mybot') return false;
+        const c = document.querySelector('.chunk-host .pye-plan');
+        const start = c && c.querySelector('.pye-start');
+        return !!c && c.querySelectorAll('.pye-plan-list li').length === 3 &&
+          !!start && start.offsetParent !== null && !!c.querySelector('video');
+      },
+      mustShow: /Start writing/i,
+      says: 'the PLAN face of Your bot: the goal, the film, and the three jobs, before anything can be typed'
+    },
+    bench: {
+      chunk: 'mybot',
+      selector: '.chunk-host .pye-bench',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'mybot') return false;
+        const c = document.querySelector('.chunk-host .pye-bench');
+        const ta = c && c.querySelector('.pye-code');
+        /* EMPTY: the box before she has typed a character, the four ready-made
+           lines under it, the three jobs along the top, nothing ticked */
+        return !!ta && !String(ta.value || '').trim() &&
+          c.querySelectorAll('.pyf-item').length === 3 &&
+          c.querySelectorAll('.pyp-chip').length === 4 &&
+          !c.querySelector('.pyf-item.is-matched, .pyf-item.is-notyet, .pyf-item.is-stopped');
+      },
+      mustShow: /RUN my bot/i,
+      says: 'the BENCH face: the three jobs along the top, the empty typing box, and the four ready-made lines under it'
+    },
+    wait: {
+      chunk: 'chatswap',
+      selector: '.chunk-host .pair-wait',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'chatswap') return false;
+        const w = document.querySelector('.chunk-host .pair-wait');
+        /* GENUINELY WAITING, with Fred mounted: his picture is in the card and
+           his opening line is on it. The partner's door is opened only after
+           this picture exists (capture-teacher-layer's paired staging). */
+        return !!w && !!w.querySelector('.sideshow .ss-img') && !!w.querySelector('.sideshow .ss-line') &&
+          !!(w.querySelector('.pw-status') || {}).textContent;
+      },
+      mustShow: /Waiting for a partner/i,
+      mustNotShow: /simulated|pixel/i,
+      says: 'the waiting card while the website finds a partner, with Fred on it'
+    },
+    matched: {
+      chunk: 'chatswap',
+      selector: '.pair-pop .badge-pop-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'chatswap') return false;
+        const pop = document.querySelector('.pair-pop.show');
+        const mine = pop && pop.querySelector('.pk-mysign');
+        /* A REAL PARTNER: her own call sign from the J2 pool, and no simulated
+           partner anywhere on the card */
+        return !!mine && /^(Spanner|Chisel|Hammer|Pliers|Drill|Clamp|Ruler|Mallet) \d$/.test((mine.textContent || '').trim()) &&
+          !/simulated|pixel/i.test(pop.textContent || '');
+      },
+      mustShow: /PARTNER FOUND/i,
+      mustNotShow: /simulated|pixel/i,
+      says: "the PARTNER FOUND card: her own call sign, her partner's, and the button that opens the Swap"
+    },
+    tester: {
+      chunk: 'chatswap',
+      selector: '.chunk-host .swap-test',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'chatswap') return false;
+        const c = document.querySelector('.chunk-host .swap-test');
+        const reply = c && c.querySelector('.pyx-ask .pyx-reply');
+        /* IN THE TESTER'S SEAT, mid-conversation: the partner's bot has spoken
+           and asked, and the reply space is live */
+        return !!reply && reply.offsetParent !== null && !reply.disabled &&
+          c.querySelectorAll('.pyx-row').length >= 1;
+      },
+      mustShow: /tester/i,
+      mustNotShow: /simulated|pixel/i,
+      says: "the tester's seat: a partner's bot running on her screen, waiting for her answer"
+    },
+    extras: {
+      chunk: 'extras',
+      selector: '.chunk-host .pyrun-hub',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'extras') return false;
+        const h = document.querySelector('.chunk-host .pyrun-hub');
+        return !!h && h.querySelectorAll('.pyrun-job').length === 3 &&
+          !h.querySelector('.pyrun-job-tick') && !!h.querySelector('.pyrun-finish');
+      },
+      mustShow: /Running out of time/i,
+      says: 'the extra-jobs screen, untouched, with the button that carries her on to the rest of the lesson'
+    }
+  },
+
+  /* ═══════════ J3 LESSON 3 — THE PLAYLIST ENGINE (K42b, 14 Sep 2026) ════════
+     Same law, same rig. The Match is the paired set-piece here and it comes
+     EARLY, so the partner is staged before the walk reaches it: the photographed
+     pupil waits (Margo on the card), the partner arrives (a real Director/Editor
+     call sign). The two ROUND pictures the spec also named were taken and then
+     withdrawn — see the note where they stood. The partner-driver's hold on the
+     first lock stays in the capture, unused, for the day he rules a round may
+     be shown. */
+  'j3-03': {
+    film: {
+      chunk: 'film-a',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film-a') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length === 4 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the first film screen with its four chapter buttons'
+    },
+    wait: {
+      chunk: 'match',
+      selector: '.chunk-host .pair-wait',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'match') return false;
+        const w = document.querySelector('.chunk-host .pair-wait');
+        return !!w && !!w.querySelector('.sideshow .ss-img') && !!w.querySelector('.sideshow .ss-line') &&
+          !!(w.querySelector('.pw-status') || {}).textContent;
+      },
+      mustShow: /Waiting for somebody to play against/i,
+      mustNotShow: /simulated|pixel/i,
+      says: 'the waiting card while the website finds somebody to play against, with Margo on it'
+    },
+    matched: {
+      chunk: 'match',
+      selector: '.pair-pop .badge-pop-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'match') return false;
+        const pop = document.querySelector('.pair-pop.show');
+        const mine = pop && pop.querySelector('.pk-mysign');
+        return !!mine && /^(Director|Editor|Producer|Camera|Sound|Lighting|Writer|Designer) \d$/.test((mine.textContent || '').trim()) &&
+          !/simulated|pixel/i.test(pop.textContent || '');
+      },
+      mustShow: /MATCHED/,
+      mustNotShow: /simulated|pixel/i,
+      says: "the card that says a partner has been found: her own call sign, her opponent's, and the button that starts the Match"
+    },
+    /* THE TWO MATCH-ROUND PICTURES THE SPEC NAMED ARE WITHDRAWN (14 Sep 2026,
+       DFM 197 — recorded, not patched quietly). §C0a.1 asked for "a commit-locked
+       round and a reveal round with both predictions side by side". Both were
+       captured on the two-account rig and both did what a picture of a round
+       must do: they showed that round's code, its answer buttons with the right
+       one lit, and — on the reveal — what Python really printed and the
+       teaching line ("Counting starts at 0, so playlist[0] is Opening Night and
+       playlist[1] is Curtain Up"), on a slide the teacher shows BEFORE the Match
+       is played. That is DFM 37 in pixels: "do not show the actual quiz
+       questions in the deck." The Match is the lesson's six questions, and a
+       reveal is a question with its answer under it. No crop keeps the state
+       and loses the round — the state IS the round. So the deck carries the
+       waiting card and the MATCHED card, and the round itself stays off the
+       board; the two withdrawn pictures are filed for his look at
+       qa-l2-l5-review/l4-build/l3-deck-shots/withdrawn/, and whether any round
+       may be shown is his call. */
+    filmb: {
+      chunk: 'film-b',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film-b') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length === 3 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the second film screen with its three chapter buttons'
+    },
+    nowplaying: {
+      chunk: 'assembly-1',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'assembly-1') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="a1"]');
+        if (!c) return false;
+        /* AFTER ITS RUN: the verdict says IT WORKS and the console really carries
+           the Now Playing heading and the three titles — the shape of every
+           playlist engine in the hour, printed by Python rather than by a caption */
+        const v = c.querySelector('.pyrun-verdict.is-matched');
+        const con = c.querySelector('.pyc');
+        return !!v && !v.hidden && !!con && /Now Playing - Top 3/.test(con.textContent || '') &&
+          /Opening Night/.test(con.textContent || '');
+      },
+      mustShow: /Now Playing/,
+      says: 'the first build after its run: the six lines, and the console printing Now Playing and three titles'
+    },
+    tray: {
+      chunk: 'assembly-3',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'assembly-3') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="a3"]');
+        if (!c) return false;
+        const run = c.querySelector('.pyrun-run');
+        const sis = Array.from(c.querySelectorAll('.pyt-list .pyrun-line')).map(n => Number(n.getAttribute('data-si')));
+        const ascending = sis.every((v, i) => i === 0 || v > sis[i - 1]);
+        return c.querySelectorAll('.pyp-list .pyrun-line').length === 0 && !!run && run.disabled &&
+          sis.length === 6 && !ascending;
+      },
+      /* THE TWO COLUMNS, AND ONLY THEM (DFM 237b): whole, the card is 1572x2360
+         — 1:1.5, a 166pt ribbon on the slide. The columns are the complete
+         thing a teacher points at ("the lines on this side, your program on
+         that side"); the goal and brief above them are the slide's own words,
+         and RUN and the idle console below are the same on every build card. */
+      cropFrom: '.pyrun-cols',
+      cropTo: '.pyt-list',
+      mustShow: /RUN my program|The lines/i,
+      says: 'the third build before a line is moved: six lines shuffled, the gaps in them, and the empty program'
+    },
+    plan: {
+      chunk: 'engine',
+      selector: '.chunk-host .pye-plan',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'engine') return false;
+        const c = document.querySelector('.chunk-host .pye-plan');
+        const start = c && c.querySelector('.pye-start');
+        return !!c && c.querySelectorAll('.pye-plan-list li').length === 5 &&
+          !!start && start.offsetParent !== null;
+      },
+      mustShow: /Start writing/i,
+      says: 'the PLAN face of the engine: the goal and the five jobs in order, before anything can be typed'
+    },
+    bench: {
+      chunk: 'engine',
+      selector: '.chunk-host .pye-bench',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'engine') return false;
+        const c = document.querySelector('.chunk-host .pye-bench');
+        const ta = c && c.querySelector('.pye-code');
+        return !!ta && !String(ta.value || '').trim() &&
+          c.querySelectorAll('.pyf-item').length === 5 &&
+          !!c.querySelector('.py-help-row') &&
+          !c.querySelector('.pyf-item.is-matched, .pyf-item.is-notyet, .pyf-item.is-stopped');
+      },
+      mustShow: /RUN my engine/i,
+      says: 'the BENCH face: the five jobs along the top, the empty typing box with its line numbers, and the free help row'
+    },
+    extras: {
+      chunk: 'extras',
+      selector: '.chunk-host .pyrun-hub',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'extras') return false;
+        const h = document.querySelector('.chunk-host .pyrun-hub');
+        return !!h && h.querySelectorAll('.pyrun-job').length === 3 &&
+          !h.querySelector('.pyrun-job-tick') && !!h.querySelector('.pyrun-finish');
+      },
+      mustShow: /Leave the extra jobs/i,
+      says: 'the extra-jobs screen, untouched, with the button that carries her on to the rest of the lesson'
+    }
+  },
+  /* ─────────────────────────── J2 LESSON 4 (14 Sep 2026) ───────────────────────────
+     Every row is a screen a LONE pupil really stands on, taken only while its
+     predicate holds. No picture shows a finished build (DFM 37 in pixels): the
+     path check on the board is the FILM'S own frame of the corridor room
+     (COMPOSED below), never a pupil's room after a run. */
+  'j2-04': {
+    briefing: {
+      chunk: 'adventure',
+      selector: '.chunk-host .dossier',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'adventure') return false;
+        const d = document.querySelector('.chunk-host .dossier');
+        const cta = d && d.querySelector('.dossier-cta');
+        /* the card fully typed out, the canteen room played through at the
+           bottom (its scripted demo has said everything), Start the film up */
+        return !!d && d.querySelectorAll('.dossier-demo .pyx-row').length >= 6 &&
+          !!cta && !cta.hidden && cta.offsetParent !== null;
+      },
+      /* the demo (six lines at 1.5 s each) is still playing when Start the film
+         appears, and the walk would press it first — so the walk holds while
+         the demo is mid-play on this card */
+      hold: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'adventure') return false;
+        const d = document.querySelector('.chunk-host .dossier');
+        const n = d ? d.querySelectorAll('.dossier-demo .pyx-row').length : 0;
+        return !!d && !!d.querySelector('.dossier-demo') && n < 6;
+      },
+      /* the demo panel and its note only — the card's own paragraphs above and
+         below are the slide's words, and a 2,300px column reads as nothing */
+      cropFrom: '.dossier-demo',
+      cropTo: '.dossier-demo',
+      mustShow: /trolley/i,
+      says: 'the opening card\'s demo once it has played through: the canteen room, and the note under it'
+    },
+    film: {
+      chunk: 'film-a',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film-a') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length === 3 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the film screen with its three chapter buttons'
+    },
+    console: {
+      chunk: 'training-1',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'training-1') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="t1"]');
+        if (!c) return false;
+        /* the planted `=` has been RUN and Python has stopped: the red console
+           with its plain line, and NOT WORKING YET — before the gap is fixed */
+        const con = c.querySelector('.pyc.is-bad');
+        const v = c.querySelector('.pyrun-verdict.is-notyet');
+        const gap = c.querySelector('.pyw-list .pyrun-blank');
+        return !!con && !!c.querySelector('.pyc-err') && !!v && !v.hidden && !!gap && gap.value.trim() === '=';
+      },
+      cropFrom: '.pyw-prog',
+      cropTo: '.pyrun-verdict',
+      mustShow: /Error/,
+      says: 'the first build after RUN with the planted mistake: the room, Python stopped in red, the plain line under it, and NOT WORKING YET'
+    },
+    plan: {
+      chunk: 'myroom',
+      selector: '.chunk-host .pye-plan',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'myroom') return false;
+        const c = document.querySelector('.chunk-host .pye-plan');
+        const start = c && c.querySelector('.pye-start');
+        const words = c ? Array.from(c.querySelectorAll('.pth-words input')) : [];
+        return !!c && c.querySelectorAll('.pye-plan-list li').length === 5 &&
+          words.length === 2 && words.every(i => !i.value) &&
+          !!start && start.offsetParent !== null;
+      },
+      cropFrom: '.pye-plan-h',
+      cropTo: '.pye-start',
+      mustShow: /Start writing/i,
+      says: 'the PLAN face of her room: the five jobs in order, the two empty word boxes, and Start writing'
+    },
+    bench: {
+      chunk: 'myroom',
+      selector: '.chunk-host .pye-bench',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'myroom') return false;
+        const c = document.querySelector('.chunk-host .pye-bench');
+        const ta = c && c.querySelector('.pye-code');
+        return !!ta && !String(ta.value || '').trim() &&
+          !!c.querySelector('.pth-words-pinned') &&
+          c.querySelectorAll('.pyf-item').length === 5 &&
+          c.querySelectorAll('.pyp-chip').length >= 3 &&
+          !c.querySelector('.pyf-item.is-matched, .pyf-item.is-notyet, .pyf-item.is-stopped');
+      },
+      cropTo: '.pyp-palette',
+      mustShow: /RUN my room/i,
+      says: 'the BENCH face: her two words pinned, the five jobs all not yet, the empty typing box, and the ready-made lines beside it'
+    },
+    play: {
+      chunk: 'classadventure',
+      selector: '.chunk-host .rly-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'classadventure') return false;
+        const c = document.querySelector('.chunk-host .rly-card');
+        if (!c) return false;
+        /* a room mid-play: the strip, the room's own lines, the player's word,
+           and the door note — a whole exchange, before the next room loads */
+        return !!c.querySelector('.rly-strip .rly-room') &&
+          c.querySelectorAll('.pyx-row.is-bot').length >= 2 &&
+          !!c.querySelector('.pyx-row.is-user');
+      },
+      mustShow: /Room \d/,
+      mustNotShow: /simulated|pixel/i,
+      says: 'one room of the class adventure playing: the strip naming the room, its story, and the word the player typed'
+    },
+    end: {
+      chunk: 'classadventure',
+      selector: '.chunk-host .rly-end',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'classadventure') return false;
+        const c = document.querySelector('.chunk-host .rly-end');
+        return !!c && c.querySelectorAll('.rly-rooms .rly-room').length >= 3 &&
+          !!c.querySelector('.rly-again') && !!c.querySelector('.rly-done');
+      },
+      mustShow: /THE END/,
+      says: 'the end card: THE END, the rooms she went through, Play again, and the way on'
+    },
+    extras: {
+      chunk: 'extras',
+      selector: '.chunk-host .pyrun-hub',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'extras') return false;
+        const hub = document.querySelector('.chunk-host .pyrun-hub');
+        return !!hub && hub.querySelectorAll('.pyrun-job').length === 4 && !hub.querySelector('.pyrun-job-tick');
+      },
+      mustShow: /Click here to finish the rest of the lesson/i,
+      says: 'the extra jobs screen, untouched: four jobs, none ticked, and the button that carries her on'
+    }
+  },
+
+  /* ─────────────────────────── J3 LESSON 4 (14 Sep 2026) ─────────────────────────── */
+  'j3-04': {
+    boxoffice: {
+      chunk: 'floor',
+      selector: '.chunk-host .dossier',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'floor') return false;
+        const d = document.querySelector('.chunk-host .dossier');
+        const cta = d && d.querySelector('.dossier-cta');
+        /* the twelve-order program has scrolled past at the bottom of the card
+           (all seven demo rows in), and Start the film is up */
+        return !!d && d.querySelectorAll('.dossier-demo .pyx-row').length >= 7 &&
+          !!cta && !cta.hidden && cta.offsetParent !== null;
+      },
+      /* the demo panel and its note only — the card's own paragraphs above and
+         below are the slide's words, and a 2,300px column reads as nothing */
+      cropFrom: '.dossier-demo',
+      cropTo: '.dossier-demo',
+      mustShow: /Aoife x 2/i,
+      says: 'the opening card\'s demo once it has scrolled past: the twelve-order program, and the note under it'
+    },
+    film: {
+      chunk: 'film-a',
+      selector: '.chunk-host .video-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'film-a') return false;
+        return document.querySelectorAll('.chunk-host .vid-chapter').length === 3 &&
+          !!document.querySelector('.chunk-host video');
+      },
+      says: 'the film screen with its three chapter buttons'
+    },
+    meter: {
+      chunk: 'machine-1',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'machine-1') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="m1"]');
+        if (!c) return false;
+        /* the meter is on the card from the start; taken BEFORE the gap is
+           filled, so the missing word never reaches the board (DFM 37) */
+        const gap = c.querySelector('.pyw-list .pyrun-blank');
+        return !!c.querySelector('.fac-meter .fac-meter-bar') && !!gap && !gap.value.trim();
+      },
+      cropFrom: '.fac-meter',
+      cropTo: '.fac-meter',
+      mustShow: /The length meter/i,
+      says: 'the length meter (the bloat meter of the spec, renamed by the L4 cold read) under the first build: two bars, 24 lines against 15, and the sentence that says both print the same'
+    },
+    floor: {
+      chunk: 'machine-3',
+      selector: '.chunk-host .pyrun-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'machine-3') return false;
+        const c = document.querySelector('.chunk-host .pyrun-card[data-build="m3"]');
+        if (!c) return false;
+        const v = c.querySelector('.pyrun-verdict.is-matched');
+        return !!v && !v.hidden && c.querySelectorAll('.fac .fac-order').length === 3 &&
+          !!c.querySelector('.fac-reject');
+      },
+      /* the FLOOR only — the machine above it is her finished build (DFM 37) */
+      cropFrom: '.fac',
+      cropTo: '.fac',
+      mustShow: /matches/i,
+      says: 'the factory floor after a run: three product cards, each stamped matches, and the empty reject bin under them'
+    },
+    spec: {
+      chunk: 'factory',
+      selector: '.chunk-host .pye-plan',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'factory') return false;
+        const c = document.querySelector('.chunk-host .pye-plan');
+        const start = c && c.querySelector('.pye-start');
+        return !!c && c.querySelectorAll('.fac-spec tbody tr').length === 2 &&
+          c.querySelectorAll('.pye-plan-list li').length === 2 &&
+          !!start && start.offsetParent !== null;
+      },
+      /* from the spec card down: the two jobs, the brief, Start building — the
+         film above them is on its own slide */
+      cropFrom: '.fac-spec',
+      cropTo: '.pye-start',
+      mustShow: /Start building/i,
+      says: 'the PLAN face of her factory: the spec card with its two rows, the two machines it needs, and Start building'
+    },
+    bench: {
+      chunk: 'factory',
+      selector: '.chunk-host .pye-bench',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'factory') return false;
+        const c = document.querySelector('.chunk-host .pye-bench');
+        const ta = c && c.querySelector('.pye-code');
+        return !!ta && !String(ta.value || '').trim() &&
+          c.querySelectorAll('.pyf-item').length === 2 &&
+          !!c.querySelector('.fac-spec') &&
+          !c.querySelector('.pyf-item.is-matched, .pyf-item.is-notyet, .pyf-item.is-stopped');
+      },
+      cropTo: '.pye-host',
+      mustShow: /RUN my program/i,
+      says: 'the BENCH face: the two machines saying not yet, the compact spec, and the empty typing box'
+    },
+    wait: {
+      chunk: 'rush',
+      selector: '.chunk-host .pair-wait',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'rush') return false;
+        const w = document.querySelector('.chunk-host .pair-wait');
+        return !!w && !!w.querySelector('.sideshow .ss-img') && !!w.querySelector('.sideshow .ss-line') &&
+          !!(w.querySelector('.pw-status') || {}).textContent;
+      },
+      mustShow: /Waiting for a partner/i,
+      mustNotShow: /simulated|pixel/i,
+      says: 'the waiting card while the website finds a partner, with Unit 7 on it'
+    },
+    orders: {
+      chunk: 'rush',
+      selector: '.chunk-host .ord-form-card',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'rush') return false;
+        const c = document.querySelector('.chunk-host .ord-form-card');
+        if (!c) return false;
+        const inputs = Array.from(c.querySelectorAll('input'));
+        return c.querySelectorAll('.ord-row').length === 3 && inputs.length >= 6 && inputs.every(i => !i.value) &&
+          !!c.querySelector('.ord-send') && !/simulated|pixel/i.test(c.textContent || '');
+      },
+      mustShow: /Send my orders/i,
+      mustNotShow: /simulated|pixel/i,
+      says: "the order form once she has a partner: three empty rows, a name and a number of seats each, and Send my orders"
+    },
+    extras: {
+      chunk: 'extras',
+      selector: '.chunk-host .pyrun-hub',
+      at: () => {
+        const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
+        if (!s || s.id !== 'extras') return false;
+        const hub = document.querySelector('.chunk-host .pyrun-hub');
+        return !!hub && hub.querySelectorAll('.pyrun-job').length === 4 && !hub.querySelector('.pyrun-job-tick');
+      },
+      mustShow: /Click here to finish the rest of the lesson/i,
+      says: 'the extra jobs screen, untouched: four jobs, none ticked, and the button that carries her on'
+    }
   }
 };
 
@@ -757,6 +1407,37 @@ const DECK_SHOTS = {
    gate can check the deck is showing the class a picture the lesson really
    owns rather than one somebody dropped in a folder. */
 const COMPOSED = {
+  /* THE LESSON 4 PATH CHECK AND REJECT BIN ARE THE FILMS' OWN FRAMES (14 Sep
+     2026). Both surfaces exist on a pupil's card only after a run of a FINISHED
+     build, which is exactly the picture DFM 37 forbids on the board. The films
+     draw the same surfaces with the platform's own renderer on the HOUSE room
+     and the spec's own reference machines (DFM 210), so the board shows the
+     film's frame — the caption band cropped away, the surface whole. The
+     timestamps were chosen by eye from the part files; the md5 rides with each
+     frame so a re-recorded film invalidates its own still. */
+  'j2-04': {
+    pathcheck: {
+      kind: 'film-frame',
+      src: 'assets/video/j2/j2-l4-b.mp4',
+      /* chosen by eye: the whole table in view, the banana row outlined — two
+         rows say no door — and the film's caption clear of the crop */
+      tSeconds: 158.0,
+      crop: { x: 88, y: 85, w: 1104, h: 396 },
+      says: 'the path check as the film draws it for the corridor room with its else door line missing: three plays, two of them with no door'
+    }
+  },
+  'j3-04': {
+    reject: {
+      kind: 'film-frame',
+      src: 'assets/video/j3/j3-l4-b.mp4',
+      /* chosen by eye: the cost machine that PRINTED — four cards stamped
+         nothing came back, the bin's one-sentence collapse ("Every product came
+         back as None…"), and the one pair, None beside 8; the caption clear */
+      tSeconds: 140.0,
+      crop: { x: 88, y: 85, w: 1104, h: 396 },
+      says: 'the reject bin as the film draws it for a cost machine that printed instead of returning: every product None, the one-sentence explanation, and your product beside what the spec wanted'
+    }
+  },
   'j1-02': {
     'inputs-trio': {
       kind: 'content-asset',

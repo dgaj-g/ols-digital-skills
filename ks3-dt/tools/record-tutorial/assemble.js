@@ -30,6 +30,18 @@ const HALVES = {
   'j3-l3': [
     { file: 'j3-l3-a.mp4', ids: ['ch1', 'ch2', 'ch3', 'ch4'], label: 'A list is a rack of boxes' },
     { file: 'j3-l3-b.mp4', ids: ['ch5', 'ch6', 'ch7'], label: 'Taking things out, and putting them in order' }
+  ],
+  /* J2/J3 Lesson 4 (14 Sep 2026, spec §C5). Part A opens the hour on `film-a`;
+     part B rides the PLAN face of `myroom` / `factory` as its introVideo — the
+     room recipe and the path check; the spec card, the floor and the reject
+     bin — at the point of building (DFM 168), each a separate file (DFM 170). */
+  'j2-l4': [
+    { file: 'j2-l4-a.mp4', ids: ['ch1', 'ch2', 'ch3'], label: 'The fork in the road' },
+    { file: 'j2-l4-b.mp4', ids: ['ch4', 'ch5'], label: 'Writing your own room' }
+  ],
+  'j3-l4': [
+    { file: 'j3-l4-a.mp4', ids: ['ch1', 'ch2', 'ch3'], label: 'Build it once' },
+    { file: 'j3-l4-b.mp4', ids: ['ch4', 'ch5'], label: 'The spec card, the floor and the reject bin' }
   ]
 };
 
@@ -164,3 +176,7 @@ if (require.main === module) {
   if (!setName) { console.error('usage: node assemble.js <set>'); process.exit(2); }
   run(setName);
 }
+/* the HALVES table is the one place that says which chapters ride which part
+   file — qa-language reads it so a part-B caption is judged at the chunk where
+   a pupil is actually handed it (DFM 144: one fact, one file) */
+module.exports = { HALVES, run };

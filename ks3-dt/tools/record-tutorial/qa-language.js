@@ -172,6 +172,19 @@ const MACHINE_KEYS = new Set([
      that IS judged. */
   'who', 'slot', 'key', 'probe', 'mark', 'saveAs', 'probeAnswers', 'introVideo', 'exitFace', 'head'
 ]);
+/* MACHINE VALUES THAT SHARE A KEY NAME WITH PUPIL TEXT (14 Sep 2026, found by the
+   L4 fresh reads: a separated reader was handed "w1", "w2", "stranger" and
+   "l4room" to judge and, rightly, asked what they were). `words` is the title
+   of the two-word box on the plan face AND the checker's list of which words
+   to test with; `word` on a feature says which of her words that job tests;
+   `from` on a build names the draft it starts from. The exemption is by PATH
+   SHAPE, so the pupil-facing twins (`words › title`, `words › lead`, every
+   `boxes[n] › label`) stay walked. Added with the same test as the set above:
+   grep engines.js for where the value reaches a screen — nowhere. */
+const MACHINE_PATHS = [
+  /› features\[\d+\] › word$/, /› features\[\d+\] › words\[\d+\]$/,
+  /› check › words\[\d+\]$/, /› check › stranger$/, /› builds\[\d+\] › from$/
+];
 /* Order-bearing contracts: a wording change here can silently break an answer
    key, so they are checked by the LEXICON only - never by shape rules, and they
    are still ledgered. (The parsons prompt is the sentence the block order must
@@ -195,6 +208,7 @@ function collectStrings(lesson, fileId) {
     if (typeof s !== 'string') return;
     const t = s.trim();
     if (!t) return;
+    if (MACHINE_PATHS.some(rx => rx.test(p))) return;
     out.push({ path: p, text: s });
   };
   const walk = (node, p) => {
@@ -212,6 +226,14 @@ function collectStrings(lesson, fileId) {
          may not claim what its picture does not show" had nothing checking it.
          `src` inside stays machine on its own key. */
       if (MACHINE_KEYS.has(k) && !(k === 'img' && node[k] && typeof node[k] === 'object')) return;
+      /* AN UNDERSCORE KEY IS AN AUTHORING NOTE, NEVER A SCREEN (14 Sep 2026).
+         `_provenance`, `_chapterTimes`, `_houseRoomsNote` are the build talking
+         to the next builder — no engine renders a key that starts with `_`
+         (grep engines.js/app.js: none read one) — and demanding a read-aloud
+         record of "COMPUTED AT BUILD 14 Sep 2026 from j2-l4/chapters.json" is
+         the gate inventing work (DFM 146a). The rule is the convention, not a
+         list, so the next note needs no entry here. */
+      if (k.charAt(0) === '_') return;
       walk(node[k], p + ' › ' + k);
     });
   };
@@ -1011,8 +1033,16 @@ function vocabCheck(lessons, vocab, films) {
     String(d.year || yearOfLesson(d.lesson)) === yr) || null;
   const plainSenseNotes = [];
   (vocab.terms || []).forEach(term => {
+    /* A TERM SPELLED WITH A CAPITAL IS MATCHED AS SPELLED (14 Sep 2026): `None`
+       is Python's word and "none of them is marked" is English; a case-blind
+       match made every extras-hub sentence on the platform a use of Python's
+       None. Lower-case terms stay case-blind, as before. `allow` names an
+       English idiom that must never count as a use ("None of …" at the start of
+       a sentence), for the one term where case alone cannot tell them apart. */
+    const caseSensitive = /[A-Z]/.test(term.term);
     const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
-      .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
+      .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', caseSensitive ? '' : 'i');
+    const allowRx = term.allow ? new RegExp(term.allow, 'g') : null;
     const primary = defsOf(term)[0] || {};
     const defLesson = primary.lesson;
     const defNum = orderOf[defLesson];
@@ -1022,7 +1052,7 @@ function vocabCheck(lessons, vocab, films) {
       const yr = yearOf(L);
       const mine = defForYear(term, yr);
       L.strings.forEach(s => {
-        if (!rx.test(s.text)) return;
+        if (!rx.test(allowRx ? s.text.replace(allowRx, '') : s.text)) return;
         if (!mine) {
           out.push(s.path + ': uses "' + term.term + '" but ' + yr.toUpperCase() +
             '\u2019s own spine never teaches it — vocab.json defines it only in ' +
@@ -1236,7 +1266,14 @@ const FILM_MAP = {
   'j2-l3': { lesson: 'j2-03', chunkId: 'film-a' },
   'j2-l3-b': { lesson: 'j2-03', chunkId: 'mybot', sceneOf: 'j2-l3' },
   'j3-l3': { lesson: 'j3-03', chunkId: 'film-a' },
-  'j3-l3-b': { lesson: 'j3-03', chunkId: 'film-b', sceneOf: 'j3-l3' }
+  'j3-l3-b': { lesson: 'j3-03', chunkId: 'film-b', sceneOf: 'j3-l3' },
+  /* THE FOUR LESSON 4 FILMS (14 Sep 2026, spec §C5). Same shape as Lesson 3:
+     part A on `film-a`, part B on the PLAN face of the card where she builds
+     (`myroom` / `factory`), as its introVideo. */
+  'j2-l4': { lesson: 'j2-04', chunkId: 'film-a' },
+  'j2-l4-b': { lesson: 'j2-04', chunkId: 'myroom', sceneOf: 'j2-l4' },
+  'j3-l4': { lesson: 'j3-04', chunkId: 'film-a' },
+  'j3-l4-b': { lesson: 'j3-04', chunkId: 'factory', sceneOf: 'j3-l4' }
 };
 /* Extra constants the extractor may resolve, beyond the ones it harvests
    from the file itself. Extend this the day a scene needs one. */
@@ -1540,6 +1577,17 @@ function collectFilmStrings(dirOverride, mapOverride) {
       for (const c of chapters) { if (c.at < i) id = c.id; else break; }
       return id;
     };
+    /* A PART-B CHAPTER IS JUDGED WHERE SHE IS HANDED IT (14 Sep 2026). A film
+       cut in two at its concept seam (DFM 168) lands its second part on a
+       later card — the `-b` entry above names it — and until now every
+       chapter of the set was placed at part A's chunk, so a part-B caption
+       naming a surface taught between the two parts read as "used before it
+       was defined". The assembler's HALVES table is the one fact that says
+       which chapters ride part B. */
+    const halves = ((() => { try { return require('./assemble.js').HALVES; } catch (e) { return {}; } })())[setId] || [];
+    const mapB = MAP[setId + '-b'];
+    const partB = halves[1];
+    const mapFor = (chapterId) => (mapB && partB && (partB.ids || []).indexOf(chapterId) !== -1) ? mapB : map;
 
     const take = (rangeFrom, rangeTo, fieldName, callName, at) => {
       const vals = resolveStatic(clean.slice(rangeFrom, rangeTo), consts, arrays);
@@ -1553,11 +1601,12 @@ function collectFilmStrings(dirOverride, mapOverride) {
       }
       vals.forEach(raw => {
         if (!String(raw).trim()) return;
+        const mapHere = mapFor(chapterAt(at));
         out.push({
           set: setId, chapter: chapterAt(at), call: callName, field: fieldName || null,
           line: lineAt(at), raw: raw, text: filmRendered(raw),
           plainOnly: !!(fieldName && PLAIN_TEXT_FIELDS.has(fieldName)),
-          lesson: map.lesson, chunkId: map.chunkId, locked: !!map.locked
+          lesson: mapHere.lesson, chunkId: mapHere.chunkId, locked: !!mapHere.locked
         });
       });
     };
@@ -1599,6 +1648,30 @@ function collectFilmStrings(dirOverride, mapOverride) {
   return { strings: out, errs };
 }
 
+/* ONE READING OF `definedIn` FOR THE FILM CHECKS (14 Sep 2026). `definedIn`
+   has been a single object OR an array since None was defined in two lessons,
+   and both film checks read `term.definedIn.lesson` — undefined on an array,
+   so every array-defined term was skipped in silence (DFM 213's shape). The
+   definition that binds a film is the one for the film's own YEAR: the year's
+   ordinary-word declaration if it has one (nothing to check), else the first
+   lesson that year defines it in. The regex is the same case-aware, `allow`-
+   aware one the chunk gate uses. */
+function termDefForFilm(term, lessonId) {
+  const defs = [].concat(term.definedIn || []).filter(Boolean);
+  const yr = String(lessonId || '').slice(0, 2);
+  if (defs.some(d => d.year === yr && d.ordinaryWord)) return { ordinary: true };
+  return defs.find(d => d.lesson && String(d.lesson).slice(0, 2) === yr) || defs.find(d => d.lesson) || null;
+}
+function termRegex(term) {
+  const caseSensitive = /[A-Z]/.test(term.term);
+  return new RegExp('\\b(' + [term.term].concat(term.aliases || [])
+    .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', caseSensitive ? '' : 'i');
+}
+function termHit(term, rx, text) {
+  const t = term.allow ? String(text).replace(new RegExp(term.allow, 'g'), '') : String(text);
+  return rx.test(t);
+}
+
 /* The vocabulary gate, run AT FILM POSITION: a caption may only use a word
    the pupil has already been taught by the moment she is watching. */
 function filmVocabCheck(films, lessons, vocab) {
@@ -1606,23 +1679,24 @@ function filmVocabCheck(films, lessons, vocab) {
   const byId = {};
   lessons.forEach(L => { byId[L.fileId] = L; });
   (vocab.terms || []).forEach(term => {
-    const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
-      .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
-    const defL = byId[term.definedIn.lesson];
+    const rx = termRegex(term);
     films.forEach(f => {
-      if (!rx.test(f.text)) return;
+      if (!termHit(term, rx, f.text)) return;
+      const def = termDefForFilm(term, f.lesson);
+      if (!def || def.ordinary) return;
       const here = byId[f.lesson];
+      const defL = byId[def.lesson];
       if (!here || !defL) return;
       const hereNum = Number(here.json.num || 99), defNum = Number(defL.json.num || 99);
       if (defNum > hereNum) {
         out.push(f.key + ': the film uses "' + term.term + '" but it is not taught until ' +
-          term.definedIn.lesson + ' — she hears the word before she has met the meaning');
+          def.lesson + ' — she hears the word before she has met the meaning');
       } else if (defNum === hereNum) {
         const ids = (here.json.chunks || []).map(c => c.id);
-        const defIdx = ids.indexOf(term.definedIn.chunkId), filmIdx = ids.indexOf(f.chunkId);
+        const defIdx = ids.indexOf(def.chunkId), filmIdx = ids.indexOf(f.chunkId);
         if (defIdx >= 0 && filmIdx >= 0 && defIdx > filmIdx) {
           out.push(f.key + ': the film uses "' + term.term + '" but this lesson does not define it until "' +
-            term.definedIn.chunkId + '", which she reaches AFTER the film in "' + f.chunkId + '"');
+            def.chunkId + '", which she reaches AFTER the film in "' + f.chunkId + '"');
         }
       }
     });
@@ -1666,18 +1740,18 @@ function filmOrderCheck(films, lessons, vocab) {
   (vocab.terms || []).forEach(term => {
     const wants = definingPhrases(term);
     if (!wants.length) return;                    /* WAIVED-DEFINING: printed elsewhere */
-    const rx = new RegExp('\\b(' + [term.term].concat(term.aliases || [])
-      .map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i');
-    const defLesson = term.definedIn.lesson;
-
+    const rx = termRegex(term);
+    /* every lesson this term is defined in (an array may name several); a film
+       in a lesson that defines the term is held to that lesson's definition */
+    const defLessons = [].concat(term.definedIn || []).filter(d => d && d.lesson).map(d => d.lesson);
     const bySet = {};
-    films.filter(f => f.lesson === defLesson).forEach(f => { (bySet[f.set] = bySet[f.set] || []).push(f); });
+    films.filter(f => defLessons.indexOf(f.lesson) !== -1).forEach(f => { (bySet[f.set] = bySet[f.set] || []).push(f); });
 
     Object.keys(bySet).forEach(set => {
       /* the order she WATCHES them in: chapter, then line */
       const caps = bySet[set].slice().sort((a, b) =>
         String(a.chapter).localeCompare(String(b.chapter)) || (a.line - b.line));
-      const firstIdx = caps.findIndex(f => rx.test(f.text));
+      const firstIdx = caps.findIndex(f => termHit(term, rx, f.text));
       if (firstIdx === -1) return;
       const first = caps[firstIdx];
 
@@ -1685,11 +1759,13 @@ function filmOrderCheck(films, lessons, vocab) {
       if (caps.slice(0, firstIdx + 1)
         .some(f => wants.some(w => norm(prose(f.text)).indexOf(w) !== -1))) return;
 
-      const L = byId[defLesson];
+      const def = termDefForFilm(term, first.lesson);
+      if (!def || def.ordinary) return;
+      const L = byId[def.lesson];
       if (!L) return;
       const ids = (L.json.chunks || []).map(c => c.id);
       const hostIdx = ids.indexOf(first.chunkId);
-      const defIdx = ids.indexOf(term.definedIn.chunkId);
+      const defIdx = ids.indexOf(def.chunkId);
 
       /* (b) defined on a chunk she passes BEFORE the film's host chunk */
       if (defIdx >= 0 && hostIdx >= 0 && defIdx < hostIdx) return;
@@ -1998,7 +2074,9 @@ const US_SPELLINGS = [
   [/\brecogniz(e|es|ed|ing)\b/i, 'recognise'], [/\bemphasiz(e|es|ed|ing)\b/i, 'emphasise'],
   [/\bapologiz(e|es|ed|ing)\b/i, 'apologise'], [/\bfavor(s|ed|ite|ites)?\b/i, 'favour'],
   [/\bhonor(s|ed)?\b/i, 'honour'], [/\bpracticing\b/i, 'practising'],
-  [/\bcatalog(s|ed)?\b/i, 'catalogue'], [/\bmeter(s)?\b(?!\s*read)/i, 'metre'],
+  /* a METER is a gauge in UK English too (a gas meter, j3-04's bloat meter —
+     the screen's own name); only the unit of length is spelled metre */
+  [/\bcatalog(s|ed)?\b/i, 'catalogue'], [/(?<!bloat |length )\bmeter(s)?\b(?!\s*read)/i, 'metre'],
   [/\bdefense\b/i, 'defence'], [/\banaly(z|zes|zed|zing)\b/i, 'analyse'],
   [/\bmath\b/i, 'maths']
 ];
@@ -2122,13 +2200,34 @@ function briefLexiconCheck(text) {
   return lexiconCheck(prose(text)).filter(m => !LEXICON_PUPIL_ONLY.test(m));
 }
 
+/* ---- DFM 281 (his ruling, 14 Sep 2026): "both lesson 3s start with something
+   like 'this is the hour where...' and i don't like that... It just needs to
+   be more plain and to the point." A brief's purpose OPENS with what the pupils
+   learn and do, actor-first — "In this lesson pupils…" — never with a frame
+   about the hour itself. The family, swept the same day: seven of the twelve
+   briefs opened with the flourish form; the plain "This is the first Digital
+   Technology lesson of the year" on the three Lesson 1s and "This is the first
+   hour of real computing" on j1-02 are not flourishes and stand. So the ratchet
+   catches exactly the two frames he named — "This is the hour" / "This is the
+   lesson" — on the FIRST purpose paragraph only, where the opener lives. ---- */
+const BRIEF_OPENER_PATH = /› brief › purpose\[0\]$/;
+function briefOpenerCheck(text, path) {
+  if (!BRIEF_OPENER_PATH.test(String(path || ''))) return [];
+  const t = prose(text).trim();
+  const m = /^This is the (hour|lesson)\b/i.exec(t);
+  return m ? ['DFM 281 (14 Sep 2026): a brief\'s purpose opens with a FRAME about the hour ("' +
+    t.slice(0, 60) + '…"). It must open with what the pupils learn and do, actor-first — ' +
+    '"In this lesson pupils…" — plain and to the point.'] : [];
+}
+
 function briefChecks(text, path) {
   return [].concat(
     sheHerCheck(text),
     classSizeCheck(text),
     ukSpellingCheck(text),
     briefFlourishCheck(text, path),
-    briefLexiconCheck(text)
+    briefLexiconCheck(text),
+    briefOpenerCheck(text, path)
   );
 }
 
@@ -2531,6 +2630,20 @@ function runControls() {
     'HIS DFM 227(e) SENTENCE is caught: a brief may not say how many pupils are in a room');
   control(classSizeCheck('and you keep all the pupils moving in the same direction').length === 0,
     'and the replacement he wrote passes');
+  /* DFM 281: the two Lesson 3 openers he named are caught; the plain openers pass */
+  const OP = 'j2-03 › brief › purpose[0]';
+  control(briefOpenerCheck("This is the hour in which a pupil's program stops doing the same thing every time and starts depending on the person sitting at the keyboard.", OP).length === 1,
+    'HIS DFM 281 EXHIBIT (the j2-03 opener, "This is the hour in which…") is caught by the opener ratchet');
+  control(briefOpenerCheck('This is the hour in which one name stops holding one thing and starts holding a whole set of them.', 'j3-03 › brief › purpose[0]').length === 1,
+    'and so is the j3-03 opener');
+  control(briefOpenerCheck('This is the lesson the block was building to: every pupil ships a game of her own.', 'j1-05 › brief › purpose[0]').length === 1,
+    'and the "This is the lesson…" form (j1-05\'s) — the second frame he named');
+  control(briefOpenerCheck('This is the first Digital Technology lesson of the year, and for the pupils in front of you it is their first DT lesson.', 'j1-01 › brief › purpose[0]').length === 0,
+    'while "This is the first Digital Technology lesson of the year" is a plain statement and PASSES');
+  control(briefOpenerCheck('In this lesson pupils learn one new Python word, input( ), and use it to write a chatbot.', OP).length === 0,
+    'and the bound replacement, "In this lesson pupils learn…", passes');
+  control(briefOpenerCheck('This is the hour in which these pupils write their first Python.', 'j3-02 › brief › purpose[1]').length === 0,
+    'and the ratchet reads the FIRST purpose paragraph only — a later paragraph is not an opener');
   /* the ledger demand */
   control(briefLedgerCheck([{ path: 'x › brief › purpose[0]', text: 'anything' }], { entries: {} })
     .some(m => /^UNREVIEWED BRIEF SENTENCE/.test(m)),

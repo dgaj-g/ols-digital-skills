@@ -992,12 +992,12 @@
      part of what made this tab unreadable). Never rejects: a lesson with no
      content file yet still renders its progress column. */
   function lessonFeaturesFor(le) {
-    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
+    var blank = { exitItems: [], parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [], relay: null };
     if (!le || !le.file) return Promise.resolve(blank);
     var id = String(le.id);
     if (!liveFeatureCache[id]) {
       liveFeatureCache[id] = App.fetchContent(le.file).then(function (lesson) {
-        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [] };
+        var f = { exitItems: exitItemsOf(lesson), parsons: null, selfeval: null, paired: false, tournament: null, gallery: null, baseline: null, stretch: null, casework: null, studio: null, builds: [], relay: null };
         (lesson.chunks || []).forEach(function (ch) {
           var cfg = ch.config || {};
           if (cfg.paired) f.paired = true;
@@ -1032,7 +1032,12 @@
              reads chunks rather than lesson numbers (DFM 240). A chunk with no
              BADGE writes nothing to the server, so it is not offered a column
              it could never fill. */
-          if (['pyrun', 'snap', 'duel', 'chatswap'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
+          /* LESSON 4 (§C7, 14 Sep 2026): the class adventure (`relay`) and the
+             Rush (`orders`) write `classadventure=5/5` and `rush=4/4` the same
+             way, and read here by the same content detection (156b). A lesson
+             whose content declares a relay also grows the ROOMS panel. */
+          if (ch.engine === 'relay') f.relay = { id: String(ch.id), title: String(cfg.tab || cfg.kicker || ch.title || ch.id) };
+          if (['pyrun', 'snap', 'duel', 'chatswap', 'relay', 'orders'].indexOf(ch.engine) !== -1 && ch.badge && !cfg.extrasMode) {
             /* ---- S11(b), his second sit: A COLUMN HEADER IS A NAME, NOT A
                SENTENCE. The header took the chunk's CARD TITLE, and a card
                title is written to be read by a pupil at the top of a screen —
@@ -1362,6 +1367,12 @@
     } else if (b.engine === 'duel') {
       say = [fr.n + ' of ' + fr.d + ' rounds played. It pays for playing, never for being right — ' +
              'how many she predicted correctly is private to her and her opponent.'];
+    } else if (b.engine === 'relay') {
+      say = [fr.n + ' of ' + fr.d + ' rooms played in her longest play of the class adventure. ' +
+             'It pays for playing all ' + fr.d + '; nobody is marked on which rooms, and no room shows its author\'s name to a pupil.'];
+    } else if (b.engine === 'orders') {
+      say = [fr.n + ' of the ' + fr.d + ' parts of the Rush done — her orders written, her partner\'s orders run through her factory, ' +
+             'the products checked, and the Rush sealed. It pays the same whatever her partner said of her products.'];
     } else {
       say = [fr.n + ' of ' + fr.d + ' cleared first time.'];
       say.push(fr.n === fr.d
@@ -1637,6 +1648,7 @@
     var html =
       liveHeaderHtml(delivered, num) +
       '<div id="pair-lens"></div>' +
+      '<div id="rooms-lens"></div>' +
       '<div id="tourney-slot"></div>' +
       '<div id="gallery-lens"></div>' +
       '<h3 style="margin-top:18px">' + (le ? lessonHeadingFor(le) : 'Lesson ' + App.esc(num)) + '</h3>' +
@@ -1663,6 +1675,7 @@
     setPane(html);
     if (le) loadMisconceptions(le);
     initPairLens(le, feat);
+    initRoomsLens(le, feat);
     initTourneySlot(le, feat);
     initGalleryLens(le, feat);
   }
@@ -1724,6 +1737,17 @@
           'filed, and the Swap sealed. <b class="lc-act all">4/4</b> is the whole thing. It pays a flat amount ' +
           'for taking part and is <b>never</b> scored on how anybody&rsquo;s bot behaved, so a bot that fell ' +
           'over does not show here as a failure. <span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else if (b.engine === 'relay') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is how many rooms of the class adventure she played ' +
+          'in her longest play. <b class="lc-act all">5/5</b> is a whole adventure, which is what earns its badge. It pays ' +
+          'for playing and never for which rooms came up; a pupil who left early shows what she reached. ' +
+          '<span class="lc-dash">&ndash;</span> means she never reached it. The rooms themselves are in the Rooms panel above.</p>');
+      } else if (b.engine === 'orders') {
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the paired part of the hour: how many of its four parts ' +
+          'she got through &mdash; her three orders written, her partner&rsquo;s orders run through her factory, the ' +
+          'products checked, and the Rush sealed. <b class="lc-act all">4/4</b> is the whole thing. It pays a flat amount ' +
+          'for taking part and is <b>never</b> scored on what her partner said of her products, so a product that came ' +
+          'back wrong does not show here as a failure. <span class="lc-dash">&ndash;</span> means she never reached it.</p>');
       } else if (b.engine === 'duel') {
         out.push('<p>The <b>' + App.esc(b.title) + '</b> column is how many of the six rounds she played. ' +
           '<b class="lc-act all">6/6</b> is all of them. It pays for playing and never for being right: how many ' +
@@ -2065,6 +2089,12 @@
     st.id = 'pair-lens-style';
     st.textContent =
       '.pair-lens-box{background:#F8FAFD;border:1px solid #E3E8F2;border-radius:12px;padding:14px 16px;margin:0 0 16px}' +
+      '.rl-list{display:flex;flex-direction:column;gap:6px}' +
+      '.rl-room{border:1px solid #E3E8F2;border-radius:9px;background:#fff;padding:6px 10px}' +
+      '.rl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.92rem;color:#1A2B4A}' +
+      '.rl-meta{color:#5B6579;font-size:.85rem}' +
+      '.rl-open{margin-left:auto;padding:3px 10px;font-size:.82rem}' +
+      '.rl-code{margin:8px 0 2px;padding:10px 12px;border-radius:8px;background:#0E1A30;color:#EAF2FF;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85rem;line-height:1.55;white-space:pre-wrap;overflow-x:auto}' +
       '.pl-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}' +
       '.pl-head h3{margin:0}' +
       '.pl-mute{margin-left:auto;font-size:0.8rem;color:var(--muted);display:flex;gap:6px;align-items:center}' +
@@ -2107,6 +2137,54 @@
       if (!document.getElementById('pair-lens-body')) { clearInterval(pairLensTimer); pairLensTimer = null; return; }
       pairLensTick();
     }, 5000);
+  }
+
+  /* ═══ THE ROOMS PANEL (§C7 / 156b, 14 Sep 2026) ═══
+     Only a lesson whose content declares a `relay` chunk grows it. It lists the
+     class adventure's rooms as the teacher may see them — the author's NAME
+     beside each room number (pupils see the number only), how many times each
+     room has been reached by somebody else, and the rooms nobody has reached
+     yet — and opens any room read-only. It re-reads itself every ten seconds
+     while the tab is open, like the pairing panel. */
+  var roomsLensTimer = null, roomsLensLesson = '';
+  function initRoomsLens(le, feat) {
+    var slot = q('#rooms-lens');
+    if (roomsLensTimer) { clearInterval(roomsLensTimer); roomsLensTimer = null; }
+    if (!slot || !le || !feat || !feat.relay) { if (slot) slot.innerHTML = ''; return; }
+    injectPairStyles();
+    roomsLensLesson = String(le.id);
+    slot.innerHTML = '<div class="pair-lens-box rooms-lens-box"><div class="pl-head"><h3>Rooms &mdash; ' +
+      App.esc(feat.relay.title) + ' (' + App.esc(lessonLabelFor(le.num)) + ')</h3></div>' +
+      '<div id="rooms-lens-body">' + busyHtml('Reading the rooms') + '</div></div>';
+    roomsLensTick();
+    roomsLensTimer = setInterval(function () {
+      if (!document.getElementById('rooms-lens-body')) { clearInterval(roomsLensTimer); roomsLensTimer = null; return; }
+      roomsLensTick();
+    }, 10000);
+  }
+  function roomsLensTick() {
+    adminCall('rooms', { className: cls, lessonId: roomsLensLesson }).then(function (r) {
+      var bodyEl = q('#rooms-lens-body');
+      if (!bodyEl || !r || !r.ok) return;
+      var open = {};
+      bodyEl.querySelectorAll('.rl-room.is-open').forEach(function (n) { open[n.getAttribute('data-n')] = 1; });
+      if (!Number(r.count)) {
+        bodyEl.innerHTML = '<p class="pl-note">No room has been published yet. The three house rooms are always in the adventure, so it can be played from the first pupil onward.</p>';
+        return;
+      }
+      var head = '<p class="pl-note"><b>' + Number(r.count) + '</b> room' + (Number(r.count) === 1 ? '' : 's') + ' published &middot; ' +
+        '<b>' + Number(r.plays) + '</b> time' + (Number(r.plays) === 1 ? '' : 's') + ' a published room was reached by somebody else &middot; ' +
+        '<b>' + Number(r.unreached) + '</b> nobody has reached yet. Numbers are what pupils see; names are for you only.</p>';
+      bodyEl.innerHTML = head + '<div class="rl-list">' + (r.rooms || []).map(function (rm) {
+        var isOpen = !!open[String(rm.n)];
+        return '<div class="rl-room' + (isOpen ? ' is-open' : '') + '" data-n="' + Number(rm.n) + '">' +
+          '<div class="rl-row"><b>Room ' + Number(rm.n) + '</b> &mdash; ' + App.esc(rm.name) +
+          ' <span class="rl-meta">&middot; ' + Number(rm.lines) + ' line' + (Number(rm.lines) === 1 ? '' : 's') + ' &middot; ' +
+          (Number(rm.plays) ? 'reached ' + Number(rm.plays) + ' time' + (Number(rm.plays) === 1 ? '' : 's') : 'nobody has reached it yet') + '</span>' +
+          '<button type="button" class="ghost-btn rl-open" data-action="room-open" data-n="' + Number(rm.n) + '">' + (isOpen ? 'Close' : 'Open') + '</button></div>' +
+          '<pre class="rl-code"' + (isOpen ? '' : ' hidden') + '>' + App.esc(rm.code) + '</pre></div>';
+      }).join('') + '</div>';
+    });
   }
 
   function pairLensTick() {
@@ -3194,7 +3272,13 @@
       'whole queue at once, and <b>Reset pairing</b> &mdash; which asks twice &mdash; releases every pair ' +
       'to finish alone; released pairs cannot be re-paired. A lesson with a class tournament shows its ' +
       '<b>Tournament view</b> launch row here, and a lesson that ends in a gallery &mdash; J1&rsquo;s ' +
-      'Press Night is the one built so far &mdash; brings its own review panel.</p>' +
+      'Press Night is the one built so far &mdash; brings its own review panel. A lesson with a <b>class ' +
+      'adventure</b> &mdash; J2&rsquo;s Lesson 4 is the one built so far &mdash; grows a <b>Rooms</b> panel: every ' +
+      'room the class has published, numbered as the pupils see it, with the author&rsquo;s name beside it for ' +
+      'you only, how many times somebody else has reached it, and <b>Open</b>, which shows the room&rsquo;s ' +
+      'lines read-only. The count of rooms nobody has reached yet is the one to glance at: the adventure ' +
+      'picks rooms at random, so a low number late in the hour is normal and a room that stays unreached ' +
+      'all lesson is bad luck, not a broken room.</p>' +
       '<p><b>Misconception patterns</b>, at the bottom, follows the same Showing menu: for each exit-check ' +
       'question of the lesson you are viewing, it shows which wrong answers the class actually chose ' +
       '&mdash; each one labelled with the misunderstanding it usually signals, so you know what to ' +
@@ -3372,6 +3456,17 @@
       case 'strip-jump': stripJump(btn); break;
       case 'live-refresh': renderLive(); break;
       case 'live-csv': liveCsv(btn); break;
+      case 'room-open': {
+        var rlRoom = btn.closest('.rl-room');
+        if (rlRoom) {
+          var rlOpen = !rlRoom.classList.contains('is-open');
+          rlRoom.classList.toggle('is-open', rlOpen);
+          var rlPre = rlRoom.querySelector('.rl-code');
+          if (rlPre) rlPre.hidden = !rlOpen;
+          btn.textContent = rlOpen ? 'Close' : 'Open';
+        }
+        break;
+      }
       case 'absence-dismiss': absenceDismiss(btn); break;
       case 'team-chip': openChipMenu(btn); break;
       case 'team-add-group': teamAddGroup(); break;

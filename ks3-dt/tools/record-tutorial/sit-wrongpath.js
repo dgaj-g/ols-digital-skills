@@ -80,7 +80,9 @@ const TILE = {
   'j2-2': /Lesson\s*2(?!\d)/i,
   'j3-2': /Lesson\s*2(?!\d)/i,
   'j2-3': /Lesson\s*3(?!\d)/i,
-  'j3-3': /Lesson\s*3(?!\d)/i
+  'j3-3': /Lesson\s*3(?!\d)/i,
+  'j2-4': /Lesson\s*4(?!\d)/i,
+  'j3-4': /Lesson\s*4(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
 /* ---- REQUIRED COVERAGE (DFM 204, his ruling of 13 Aug 2026) ----
@@ -311,6 +313,78 @@ const LANDMARKS = {
     ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
   ],
+  /* ---- J2 / J3 LESSON 4 (14 Sep 2026, spec §C10: solo routes from birth) ----
+     Every row names a state THIS lone, confused walker really reaches: the red
+     console on training-1's planted `=`; the path check with a `no door` row
+     when she runs the starter shape as it stands; the two-words refusal when she
+     presses Start with the boxes empty; the leave-ask when she presses the way
+     out mid-adventure, and Keep going; the Rush's wait with Unit 7 on it, the
+     way to do it alone, and the Studio's own three orders on the solo seat. */
+  'j2-4': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the Adventure Engine briefing', '.dossier-cta, .dossier', 'adventure'],
+    ['the film and its chapters', '.video-card, .vid-chapter', 'film-a'],
+    ['the worked example, read not built', '.pyw-card .pyw-prog', 'training-1'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'training-1'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'training-2'],
+    ['the lines already in place, locked at the top', '.pyp-fixed', 'training-3'],
+    ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'training-3'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'training-3'],
+    ['the path check, drawn under the run', '.pth table', 'training-3'],
+    ['the PLAN face: the five jobs, before anything can be typed', '.pye-plan .pye-plan-list', 'myroom'],
+    ['the two-words box on the PLAN face', '.pye-plan .pth-words', 'myroom'],
+    ['the refusal when she starts with the words empty, explaining itself', '.pth-words-say:not([hidden])', 'myroom'],
+    ['her two words pinned above the strip', '.pye-bench .pth-words-pinned', 'myroom'],
+    ['the editor, empty, before she types anything', '.pye-bench .pye-code', 'myroom'],
+    ['the ready-made lines under it', '.pyp-chip', 'myroom'],
+    ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'myroom'],
+    ['the free help row', '.py-help-row', 'myroom'],
+    ['a NOT YET that repeats every unfinished job under itself', '.pyrun-verdict.is-notyet .pyv-nudges', 'myroom'],
+    ['a row of the path check with NO door', '.pth .pth-door.is-none', 'myroom'],
+    ['the publish button, asleep, with the note that says why', '.pth-publish .pth-publish-btn[disabled]', 'myroom'],
+    ['PUBLISHED: her room number, and the way on', '.pth-published .pth-published-go', 'myroom'],
+    ['the adventure\'s door: how many rooms are in', '.rly-count-line', 'classadventure'],
+    ['a room playing, fresh transcript', '.rly-card .pyx-row', 'classadventure'],
+    ['a door line, as a system note', '.rly-card .pyx-row.is-door', 'classadventure'],
+    ['leaving mid-adventure asks first', '.rly-leave-ask .rly-leave-no', 'classadventure'],
+    ['THE END, with the rooms she went through', '.rly-end .rly-rooms', 'classadventure'],
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
+  ],
+  'j3-4': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the Function Factory briefing', '.dossier-cta, .dossier', 'floor'],
+    ['the film and its chapters', '.video-card, .vid-chapter', 'film-a'],
+    ['the worked example, read not built', '.pyw-card .pyw-prog', 'machine-1'],
+    ['the length meter under it', '.fac-meter', 'machine-1'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'machine-2'],
+    ['the build tray with a gap in it', '.pyt-list .pyrun-line', 'machine-3'],
+    ['the console after a run that did NOT work', '.pyc.is-bad, .pyc-err', 'machine-3'],
+    ['NOT YET, with no line named', '.pyrun-verdict.is-notyet', 'machine-3'],
+    ['the factory floor, drawn under the run', '.fac .fac-order', 'machine-3'],
+    ['the reject bin with something in it', '.fac-reject .fac-pair', 'machine-3'],
+    ['the PLAN face: the spec card and the jobs, before anything can be typed', '.pye-plan .fac-spec', 'factory'],
+    ['the editor, with the spec beside it', '.pye-bench .fac-spec', 'factory'],
+    ['the checklist that only ticks on a run', '.pyf-list .pyf-item', 'factory'],
+    ['the free help row', '.py-help-row', 'factory'],
+    ['a NOT YET that repeats every unfinished job under itself', '.pyrun-verdict.is-notyet .pyv-nudges', 'factory'],
+    ['the chain, offered and refusable', '.py-offer-card .py-offer-row', 'factory'],
+    ['waiting for a partner', '.pair-wait .pw-status', 'rush'],
+    ['the way to do it alone, offered on a long wait', '.pair-wait .pw-own', 'rush'],
+    ['Unit 7, on the waiting card', '.sideshow .ss-img', 'rush'],
+    ['the solo seat: the Studio\'s own orders', '.ord-card-own .ord-own-go', 'rush'],
+    ['her machines run on three orders', '.ord-run-card .fac-order', 'rush'],
+    ['the check: three products, yes or no', '.ord-check-card .ord-yn', 'rush'],
+    ['the seal', '.ord-seal', 'rush'],
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.pyrun-card .pyrun-exit-row .pyrun-finish', 'extras'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
+  ],
   'j2-2': [
     ['the Do-Now', '.q-opt', '_recap'],
     ['the Bureau briefing', '.dossier-cta, .dossier', 'briefing'],
@@ -489,6 +563,8 @@ const WRONG = {
   }, TILE[LESSON].source);
   if (!opened) { console.error('could not find the Lesson ' + LESSON + ' tile'); await browser.close(); process.exit(2); }
   await page.evaluate(v => { window.__WP_TRACE = v; }, !!process.env.KS3DT_WP_TRACE);
+  /* the class adventure's doors are seeded for the walk (see sit-review.js) */
+  await page.evaluate(() => { window.__relaySeed = 9; });
   /* ---- THE LONG WAIT IS THREE REAL MINUTES, SO THE CLOCK IS WOUND FORWARD ----
      A lone walker on a paired activity reaches the waiting card easily; what she
      could never reach was the state THREE MINUTES LATER, where the card offers
@@ -766,6 +842,19 @@ const WRONG = {
       await page.evaluate(([src]) => { (new Function('return (' + src + ')')())(); }, [String(plain)]);
     }
     await new Promise(r => setTimeout(r, WALK.SETTLE[st.kind] || 600));
+    /* A RUN PRESSED INSIDE A MOVE IS WAITED FOR (14 Sep 2026). The over-placed rule
+       presses RUN from a `pyrun-place` turn, whose settle is a quarter of a second,
+       and a program with a factory floor under it takes longer than that to come
+       back — so the red console and NOT YET landed AFTER the scan on three runs out
+       of four (j3-4 machine-3: reached on run 4, missed on 5, 6 and 7). A landmark
+       that depends on how fast the walker moves is a landmark nobody can trust
+       (the same law as the post-move sample), so the turn now waits for any run in
+       flight to settle before the screen is read. */
+    await page.waitForFunction(() => {
+      const btn = document.querySelector('.chunk-host .pyrun-run');
+      const running = document.querySelector('.chunk-host .pyc.is-running, .chunk-host .pyw-stage .is-running');
+      return !(btn && btn.disabled && !document.querySelector('.chunk-host .pyrun-verdict:not([hidden])')) && !running;
+    }, { timeout: 8000 }).catch(() => {});
     return 'engine:' + st.kind;
   }
 
@@ -863,10 +952,17 @@ const WRONG = {
       if (pblock) { pblock.click(); return 'parsons-place'; }
       const pcheck = Array.from(document.querySelectorAll('.chunk-host .parsons-check:not([disabled])')).filter(vis)[0];
       if (pcheck) { pcheck.click(); return 'parsons-check'; }
-      /* the closing screen answers with CHIPS, not .opt buttons */
-      const chip = Array.from(document.querySelectorAll(
-        '.chunk-host .se-row .se-chip:not(.chosen):not(.on), .chunk-host .se-diff-chips .se-chip:not(.chosen):not(.on)'))
-        .filter(vis)[0];
+      /* the closing screen answers with CHIPS, not .opt buttons — ONE per row.
+         Until 14 Sep 2026 this took "any chip not yet on", and a row whose
+         choice is made still has two chips not on, so the walk re-chose the
+         same three rows for its whole budget and never pressed Send & finish.
+         Nobody noticed because the closing screen was the last chunk of every
+         lesson; the Lesson 4s put the extra jobs hub AFTER it (a pupil finishes
+         the lesson, then plays), and the hub was never reached. A row is
+         answered when one of its chips is on; only an unanswered row is clicked. */
+      const openRow = Array.from(document.querySelectorAll('.chunk-host .se-chips, .chunk-host .se-diff-chips'))
+        .filter(vis).find(r => !r.querySelector('.se-chip.on, .se-chip.chosen'));
+      const chip = openRow && Array.from(openRow.querySelectorAll('.se-chip')).filter(vis)[0];
       if (chip) { chip.click(); return 'se-chip'; }
       /* Lesson 5's QA checks: record an outcome so the desk can move on. The
          walker's job is coverage, not a good score — but a check left unanswered
@@ -1028,11 +1124,20 @@ const WRONG = {
      landmarks and stopped two screens from the end with the walk still moving
      forward, which is a budget running out, not a walk finishing (DFM 204).
      J3 Lesson 2 reaches all sixteen inside 110 and is left alone. */
-  const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 300
+  const MAX = LESSON === 'j3-3' ? 300 : LESSON === 'j2-3' ? 300 : LESSON === 'j2-4' ? 360 : LESSON === 'j3-4' ? 360
     : LESSON === 'j2-1' ? 260 : LESSON === 'j3-1' ? 220 : LESSON === 'j2-2' ? 180
     : LESSON === "5" ? 160 : (LESSON === "1" ? 200 : (LESSON === "3" ? 170 : 110));
   let stuckRuns = 0;
   for (let i = 0; i < MAX; i++) {
+    /* THE LESSON'S END IS THE WALK'S END (14 Sep 2026). The finish overlay is the
+       same one sit-review stops on; after "Back to the map" the player is hidden
+       but its last card is still in the DOM, and a walker reading kinds off
+       hidden cards pressed a hidden hub's Finish for its whole budget. The
+       Lesson 4s put the extra jobs after the closing screen, so they are the
+       first lessons whose LAST card is a hub that can be left from inside a job. */
+    const ended = await page.evaluate(() => !!document.querySelector('.badge-pop-card.finish') ||
+      (document.querySelector('#player') && document.querySelector('#player').hidden && !document.querySelector('#hub[hidden]')));
+    if (ended) { log('  lesson complete — the finish overlay is up (or the map is back)'); break; }
     const where = await page.evaluate(() => {
       const h = document.querySelector('.chunk-host .card h2, .chunk-host h2');
       return (h ? h.textContent : (document.title || 'screen')).trim().slice(0, 46);
@@ -1096,6 +1201,9 @@ const WRONG = {
             if (m.ratio >= floor) return;
             const line = where + ': ' + m.sel + ' — ' + m.ratio + ':1 (needs ' + floor + '), ink ' +
               m.ink + ' on ' + m.plate + '  "' + String(m.text || '').slice(0, 44) + '"';
+            /* DFM 282: a dated waiver prints as waived, never as a finding (one home: lib/state-audit.js) */
+            const wv = SA.readabilityWaiver(LESSON, m.sel);
+            if (wv) { log('WAIVED-BY-HIS-RULING [' + wv.rule + ', ' + wv.ruled + '] ' + line); return; }
             if (contrastHits.indexOf(line) === -1) { contrastHits.push(line); log('UNREADABLE ' + line); }
           });
         }
@@ -1125,7 +1233,8 @@ const WRONG = {
       const dbg = await page.evaluate(() => Array.from(document.querySelectorAll(
         '.chunk-host textarea, .chunk-host input')).filter(e => e.offsetParent !== null)
         .map(e => (e.className || e.type) + '=' + JSON.stringify(String(e.value || '').slice(0, 40))));
-      log('    move: ' + moved + '  boxes: ' + JSON.stringify(dbg));
+      const note = await page.evaluate(() => { const n = window.__wpNote || ''; window.__wpNote = ''; return n; });
+      log('    move: ' + moved + (note ? '  [' + note + ']' : '') + '  boxes: ' + JSON.stringify(dbg));
     }
     /* 'stuck' is usually just EARLY — a card that renders on a timer, a badge
        popping, a chunk still mounting. qa-no-mute-locks learned the same lesson:

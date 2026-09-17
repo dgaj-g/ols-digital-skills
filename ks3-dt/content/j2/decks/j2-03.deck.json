@@ -95,7 +95,8 @@
       "It is in three parts, and the buttons underneath jump to any part.",
       "The film lasts just over four minutes. Watch it once, then move on to the next card."
      ],
-     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there."
+     "notes": "WHERE THE CLASS IS: about to start the film on their own machines, headphones not needed.\n\nSAY: \"The film is on your screen, not mine. It has no sound at all, so you will not miss anything if the room is noisy. Just over four minutes. Watch it once and then keep going. Everything the film shows is written again on the cards after it, so you will not lose anything by moving on.\"\n\nWHAT THEY WILL SEE: a player with three buttons under it, named \"What a chatbot really is\", \"The program stops and waits\" and \"Reading the whole program\". A pupil can jump to any part while she is on this screen.\n\nDO NOT play it on the board. It is written to be read at each pupil's own pace, and reading it as a class removes the pausing that makes it work.\n\nWHILE IT RUNS: these four minutes are your chance to walk the room and check everybody is actually on it.\n\nWHEN TO MOVE: when most of the room is past it — the build cards explain themselves, so the stragglers can catch up there.",
+     "shot": "film"
     }
    ]
   },
@@ -127,7 +128,38 @@
       "When the program asks a question, a box appears and the program waits.",
       "Type an answer, press the button, and the program carries on."
      ],
-     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room."
+     "notes": "SAY it while the picture is up, pointing at each part. Most of the questions you will be asked in the next ten minutes are answered by this slide.\n\nWHAT THEY WILL SEE: the picture is the first build the moment its bot has asked its question — the program on the left, the conversation and the reply space on the right, and RUN switched off until the answer is sent.\n\nTHE ONE TO STRESS: the program WAITS. A pupil who does not realise the program has stopped on purpose thinks it has crashed.\n\nWHEN TO MOVE: send them in. Walk the room.",
+     "shot": "asks"
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "When Python stops",
+     "shot": "console",
+     "size": 15,
+     "bullets": [
+      "If Python stops, the console goes red and shows Python's own words.",
+      "Under them is one line in plain English saying what to look at.",
+      "Read that line first. It tells you which line of your program to check.",
+      "A stopped run costs you nothing. Fix the line and press RUN again.",
+      "The first build stops on purpose. The mistake is in there for you to find."
+     ],
+     "notes": "WHERE THE CLASS IS: about to press RUN on the first build, which has a mistake planted in it on purpose.\n\nSAY it with the picture up: \"When your program stops, this is what you see. Python's own words come first. The line under them is in plain English, and it tells you what to look at. Read that line first.\"\n\nWHAT THEY WILL SEE: the picture is the console after the first build's planted mistake — Python's own error words, and the plain line underneath. The two always appear together. The plain line is the one to point at.\n\nTHE ONE TO STRESS: a stopped run is not a failure and costs nothing. Build 1 stops on purpose — the wrong word is planted — so every pupil meets this screen in the first two minutes and knows what it means before she meets it on her own bot.\n\nTHE HELP THAT ACTUALLY HELPS — three questions, in this order: What did the console print? What did you want it to print? Which one line are you going to change? You do not need to know any Python to ask those, and they are worth more than an answer would be.\n\nWHEN TO MOVE: straight on."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The lines are in the wrong order",
+     "shot": "tray",
+     "size": 15,
+     "bullets": [
+      "In Training build 3 you get the lines out of order. The order on the left is not a hint. You work out the correct order yourself.",
+      "Click a line to move it into Your program, or drag it.",
+      "Some lines have gaps in them. You type your own words into the gaps.",
+      "To take a line back, press the button beside it that says Put this line back.",
+      "RUN switches on as soon as there is at least one line in Your program."
+     ],
+     "notes": "WHERE THE CLASS IS: about to open the third training build, the one that carries the first badge.\n\nSAY it with the picture up, pointing at each part: \"The lines are on the left, and your program is on the right. The lines come up in a different order every time, so the order on the left is not a hint. You work out the correct order yourself.\"\n\nWHAT THEY WILL SEE: the picture is the third build before a line has been moved — the shuffled lines with their gaps, the empty program, and the RUN button still switched off.\n\nTHE ONE TO STRESS: the platform shuffles the lines afresh every time the card opens, for every pupil — the screen does not announce this, but it is true — so two neighbours see different orders, and the position of a line on the next desk tells her nothing. That is worth saying out loud, kindly, once.\n\nWHILE THEY WORK: a line can be added by clicking it instead of dragging it, which is worth saying to anyone struggling with the mouse. To take a line back she presses the button beside it that says Put this line back; clicking the line itself does nothing.\n\nWHEN TO MOVE: send them in. Walk the room."
     }
    ]
   },
@@ -151,16 +183,29 @@
     {
      "kind": "bullets",
      "bg": "section",
+     "heading": "First you plan",
+     "shot": "plan",
      "size": 15,
-     "heading": "First you plan, then you type",
      "bullets": [
       "You see the PLAN first. It shows the goal, the film, and the three jobs. The jobs are in the order you do them.",
-      "Press the button marked Start writing. The card turns into the page where you type. Your three jobs sit along the top.",
-      "You type in the big box underneath. Keep typing if you need to. The box holds everything you write.",
-      "Four ready-made lines sit under the box. The name on each line tells you what that line does. Click one and it appears in your box.",
+      "Watch the film on the card before you type anything. It lasts just over two minutes.",
+      "Press the button marked Start writing. The card turns into the page where you type."
+     ],
+     "notes": "SAY, with the picture up: \"The card starts by telling you what your bot has to do — three jobs, in order. There is a short film on it, and I want you to watch that first. When you press Start writing, the card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nWHAT THEY WILL SEE: the picture is the PLAN face — the goal, the film, the three jobs, and the Start writing button. Nothing can be typed on this face, and that is deliberate: she reads what the bot has to do before she can start.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Then you type",
+     "shot": "bench",
+     "size": 15,
+     "bullets": [
+      "Your three jobs sit along the top of the page.",
+      "You type in the black space underneath. There is room for as many lines as you need.",
+      "Four ready-made lines sit under the black space. The name on each line tells you what that line does. Click one and it lands in your program.",
       "The three jobs tick only after you press RUN. Each job ticks if your bot really does that job."
      ],
-     "notes": "SAY, with the slide up: \"The card starts by telling you what your bot has to do — three jobs, in order. When you press Start writing, that card turns into the page where you type, and those same three jobs move up to the top so you can see them the whole time.\"\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees NOT YET, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nThe card deliberately shows one thing at a time. The conversation and the black message panel do not appear at all until a run needs them, so there are no empty boxes to make sense of.\n\nWHEN TO MOVE: send them in."
+     "notes": "SAY, with the picture up, pointing at each part: \"Your three jobs are along the top. You type in the black space underneath. The four ready-made lines are under it, and clicking one puts it into your program.\"\n\nWHAT THEY WILL SEE: the picture is the page where she types, before a character has been typed — the three jobs along the top, the empty box, and the four ready-made lines under it.\n\nTHE ONE TO STRESS: the three jobs are not read off her program. They watch her program while it RUNS. So a pupil who has written the right thing but not pressed RUN still sees \"not checked yet\" beside every job, and that is correct rather than broken.\n\nIF SHE ASKS why it will not tick: \"Have you run it since you changed it?\" answers most of it.\n\nABOUT THE READY-MADE LINES: using them is not cheating — the words are still hers to change.\n\nThe card deliberately shows one thing at a time. The conversation and the console are not on the page when she arrives. They appear when she presses RUN — the console first, saying it is running, and the conversation the first time her bot asks something.\n\nWHEN TO MOVE: send them in."
     }
    ]
   },
@@ -184,16 +229,45 @@
     {
      "kind": "bullets",
      "bg": "section",
+     "heading": "While you wait",
+     "shot": "wait",
+     "size": 15,
+     "bullets": [
+      "You might have to wait for a partner. Nothing is wrong: stay on this screen.",
+      "While you wait, a cartoon chatbot called Fred keeps you company. Talk to him if you like.",
+      "The moment somebody is ready, the screen changes by itself.",
+      "Have you been waiting a while? The screen offers you a button to test your own bot instead."
+     ],
+     "notes": "WHERE THE CLASS IS: bots finished at different times, so pupils reach the Swap at different times — the first ones through will wait.\n\nSAY it with the picture up: \"If you get this screen, you are in the queue and nothing is wrong. The website pairs whoever is ready at the same time. Fred is there to talk to while you wait.\"\n\nWHAT THEY WILL SEE: the picture is the waiting card, with Fred on it. Fred is a chatbot, and the card says so — he is not a pupil.\n\nIF SOMEBODY IS STILL WAITING: they do not need you. After a longer wait the screen itself offers \"Test my own bot instead\", which takes that pupil through the whole Swap alone, on her own bot, badge included. Nothing on this screen needs a teacher to release it.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "You have a partner",
+     "shot": "matched",
+     "size": 15,
+     "bullets": [
+      "This card appears the moment the website has found you a partner.",
+      "The screen tells you your partner's call sign. It also tells you what you are called on their screen.",
+      "Real names stay secret — theirs and yours. Keep them out of anything you type.",
+      "Press Start the Swap. Your bot goes to them, and theirs comes to you."
+     ],
+     "notes": "SAY it with the picture up: \"This is the card you get when you have a partner. It tells you their call sign and yours. That is the only name either of you sees. Press Start the Swap.\"\n\nWHAT THEY WILL SEE: the picture is the PARTNER FOUND card, with two call signs on it — hers, and her partner's. The names on the picture are examples: every pair gets its own.\n\nTHE ONE TO STRESS: real names stay out of everything typed, including her own. You can see who is paired with whom on the Live tab, by call sign with real names in brackets.\n\nWHEN TO MOVE: next slide."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
      "size": 15,
      "heading": "What the Swap looks like",
      "bullets": [
-      "Your call sign is at the top. Your partner's is beside it.",
-      "Their bot runs on your screen exactly as they wrote it.",
+      "First you are in the tester's seat: their bot runs on your screen, exactly as they wrote it.",
       "You answer its questions like anybody would.",
-      "Then two spaces: one thing that worked, and one thing you would change.",
-      "Their report on YOUR bot comes back to you a moment later."
+      "When their bot has finished, the button marked Write the report turns on.",
+      "There are two spaces: one for a thing that worked, and one for a thing you would change.",
+      "Then you swap seats. They test your bot while you watch every line, and their report on YOUR bot comes back to you."
      ],
-     "notes": "SAY the bullets aloud, naming each part of the screen as you reach it.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The two spaces are deliberately not a grade and there is no score anywhere on the screen.\n\nTWO PAUSES THAT ARE NOT FAULTS: when a pupil sends a report the screen reads \"Sending your report…\" while it travels, and the report that comes back is the one their partner wrote about their bot, which lands a moment behind. Neither is a freeze.\n\nWHAT YOU CAN SEE: on the Live tab, the Pairing panel shows who is paired with whom, by call sign with real names in brackets, and Channel opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists, because a pupil who knows the teacher can read it writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes."
+     "notes": "SAY, with the picture up: \"First you are the tester. Your partner's bot runs on your screen. Answer it like anybody would, and when it has finished, write the report.\"\n\nWHAT THEY WILL SEE: the picture is the tester's seat — a partner's bot running on her screen, mid-conversation, with the reply space waiting for her answer.\n\nTHE ONE TO STRESS: they are TESTING, not marking. The report is two short spaces, one sentence in each: one thing that worked, and one thing they would change. It is not a grade, and there is no score anywhere on the screen.\n\nTWO WAITS THAT ARE NOT FAULTS: when a pupil presses Send my report, the screen says \"Sending your report…\" for a moment while it travels. Then she waits for her partner's report about her bot, which arrives a few seconds after her partner presses Send my report. Neither wait is a freeze.\n\nWHAT YOU CAN SEE, on your own screen: open the class link yourself and sign in with your staff account — the same address the pupils use opens the teacher's view for a staff login. Click its Live tab. The Pairing panel there shows who is paired with whom, by call sign with real names in brackets, and its Channel button opens what a pair has actually sent each other. Use it if you need it — and tell the class it exists. A pupil who knows that the teacher can read the messages writes a better report.\n\nWHEN TO MOVE: send them in. This runs about eleven minutes.",
+     "shot": "tester"
     }
    ]
   },
@@ -212,7 +286,8 @@
       "Then How did it go? — two ratings and a private line to me.",
       "Nobody leaves without finishing that one."
      ],
-     "notes": "SAY: \"One question, it is marked, and you find out how you did at the end of it, not in the middle.\"\n\nABOUT THE PRIVATE LINE: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer."
+     "notes": "SAY: \"One marked question at the end. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen.\"\n\nABOUT THE COMMENT BOX on the How did it go? screen: it goes to you and to nobody else. Pupils use it properly when they are told that plainly.\n\nWHAT THEY WILL SEE: the picture is the extra-jobs screen — three jobs, none of them ticked, and the button at the bottom that carries her straight on.\n\nEXTRA JOBS: every pupil lands on the extra-jobs screen after the Swap — it is not a reward for finishing early. There are three of them, they are worth no points at all, nothing there is marked or saved, and there is a button to carry straight on. Say so — a pupil who thinks she is missing marks will rush the ones that matter.\n\nWHEN TO MOVE: straight on to the closer.",
+     "shot": "extras"
     }
    ]
   },

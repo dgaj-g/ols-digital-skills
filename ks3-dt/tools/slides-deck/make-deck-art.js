@@ -199,6 +199,27 @@ const THEMES = {
     ground: '#08090F', panel: '#14161F', accent: '#5AA9FF', accent2: '#FF6EC7',
     text: '#FFFFFF', dim: '#B9C2D6',
     motif: 'desk'             /* a bank of faders at their own heights + a VU arc */
+  },
+  /* J2 LESSON 4 — THE SCHOOL AFTER THE BELL. A program that chooses is a fork
+     in a road with a signpost at it; the lesson's own film draws exactly that,
+     so the deck's ground does too: a signpost with a lamp, and two roads that
+     leave it. Every straight line in it is a post or a road edge, drawn on a
+     slant — never a rule. */
+  'j2-04': {
+    name: 'The Adventure',
+    ground: '#131A2C', panel: '#1E2740', accent: '#E4B824', accent2: '#5FE08A',
+    text: '#FFFFFF', dim: '#C9D4E2',
+    motif: 'fork'             /* a signpost with a lit lamp, two roads leaving it */
+  },
+  /* J3 LESSON 4 — THE FACTORY FLOOR. A function is a machine built once and
+     fed every order, and the film's machine has a slot in its top, a cog, and a
+     chute: the ground carries that silhouette, low and faint, with a run of
+     product cards leaving the chute. */
+  'j3-04': {
+    name: 'The Factory Floor',
+    ground: '#0E1218', panel: '#1A2029', accent: '#FFB347', accent2: '#5AA9FF',
+    text: '#FFFFFF', dim: '#C4CBD8',
+    motif: 'factory'          /* a machine with a hopper, a cog and a chute; cards leaving it */
   }
 };
 
@@ -854,6 +875,103 @@ const MOTIFS = {
     }
   },
 
+  /* J2 LESSON 4 — THE FORK. A signpost, its lamp lit, and two roads leaving
+     it at a slant; the lesson's own image (the film's second chapter). */
+  fork: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* faint stars: the adventure is set after the bell, doors open, lights off */
+      const n = Math.round(o.starCount * 0.9);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.5 + 0.5).toFixed(2), t.dim, (r() * 0.12 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE SIGNPOST, low left: a post, a plate, and a lamp on top that is LIT —
+         the whole lesson is a lamp lighting TRUE. The lamp's glow is a soft
+         ellipse, the plate a rounded rectangle, the post a vertical. */
+      const px = 236, top = H - 400;
+      const post =
+        `<rect x="${px - 6}" y="${top + 40}" width="12" height="${H - top + 20}" rx="6" ` +
+        `fill="${t.dim}" opacity="${(op * 1.2).toFixed(3)}"/>`;
+      const lamp =
+        `<ellipse cx="${px}" cy="${top + 10}" rx="150" ry="120" fill="${t.accent2}" ` +
+        `opacity="${(op * 0.9).toFixed(3)}" filter="url(#soft)"/>` +
+        `<circle cx="${px}" cy="${top + 10}" r="34" fill="${t.accent2}" opacity="${(op * 2.2).toFixed(3)}"/>`;
+      const plate =
+        `<rect x="${px - 92}" y="${top + 88}" width="184" height="58" rx="14" fill="none" ` +
+        `stroke="${t.accent}" stroke-width="7" opacity="${(op * 1.8).toFixed(3)}"/>`;
+      /* TWO ROADS leaving the post, drawn as slanted bands that widen toward the
+         bottom of frame: one lit (the road that runs), one dark. A slant is not
+         a rule. */
+      const roads =
+        `<path d="M${px + 40},${H - 150} L${px + 300},${H - 190} L${px + 420},${H + 40} L${px + 60},${H + 40} Z" ` +
+        `fill="${t.accent}" opacity="${(op * 0.9).toFixed(3)}"/>` +
+        `<path d="M${px + 40},${H - 150} L${px - 220},${H - 200} L${px - 360},${H + 40} L${px + 10},${H + 40} Z" ` +
+        `fill="${t.dim}" opacity="${(op * 0.35).toFixed(3)}"/>`;
+      return lamp + post + plate + roads;
+    }
+  },
+
+  /* J3 LESSON 4 — THE FACTORY. A machine built once: a body, a hopper in the
+     top, a cog on the face and a chute out of its side, with a run of product
+     cards leaving the chute — the film's own machine as a silhouette. */
+  factory: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      /* PRODUCT CARDS leaving the chute, down the right of frame, each a rounded
+         rectangle a little lower and a little further right than the last */
+      for (let i = 0; i < 6; i++) {
+        const x = 1000 + i * 44, y = 300 + i * 52;
+        out += `<rect x="${x}" y="${y}" width="150" height="46" rx="10" fill="none" ` +
+          `stroke="${t.accent}" stroke-width="5" opacity="0.12"/>`;
+      }
+      /* grit on the floor */
+      const n = Math.round(o.starCount * 0.7);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.3 + 0.5).toFixed(2), t.dim, (r() * 0.10 + 0.03).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      /* THE MACHINE, low left: hopper (a trapezium), body (a rounded box), a
+         cog on its face, and the chute leaving to the right on a slant */
+      const mx = 210, my = H - 330;
+      const body =
+        `<rect x="${mx - 140}" y="${my}" width="280" height="210" rx="18" fill="none" ` +
+        `stroke="${t.dim}" stroke-width="7" opacity="${(op * 1.4).toFixed(3)}"/>`;
+      const hopper =
+        `<path d="M${mx - 84},${my - 90} L${mx + 84},${my - 90} L${mx + 44},${my} L${mx - 44},${my} Z" ` +
+        `fill="none" stroke="${t.dim}" stroke-width="7" stroke-linejoin="round" opacity="${(op * 1.4).toFixed(3)}"/>`;
+      /* the cog: a ring with eight teeth */
+      let cog = `<g opacity="${(op * 2.0).toFixed(3)}">` +
+        `<circle cx="${mx + 30}" cy="${my + 110}" r="46" fill="none" stroke="${t.accent}" stroke-width="8"/>`;
+      for (let k = 0; k < 8; k++) {
+        const a = k * Math.PI / 4;
+        const x1 = mx + 30 + Math.cos(a) * 50, y1 = my + 110 + Math.sin(a) * 50;
+        const x2 = mx + 30 + Math.cos(a) * 68, y2 = my + 110 + Math.sin(a) * 68;
+        cog += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" ` +
+          `stroke="${t.accent}" stroke-width="10" stroke-linecap="round"/>`;
+      }
+      cog += `</g>`;
+      /* the lamp on the face, lit amber */
+      const lamp =
+        `<ellipse cx="${mx - 78}" cy="${my + 60}" rx="70" ry="60" fill="${t.accent}" ` +
+        `opacity="${(op * 0.8).toFixed(3)}" filter="url(#soft)"/>` +
+        `<circle cx="${mx - 78}" cy="${my + 60}" r="18" fill="${t.accent}" opacity="${(op * 2.2).toFixed(3)}"/>`;
+      /* the chute: a slanted band out of the machine's right side */
+      const chute =
+        `<path d="M${mx + 140},${my + 150} L${mx + 330},${my + 214} L${mx + 330},${my + 250} L${mx + 140},${my + 186} Z" ` +
+        `fill="${t.accent2}" opacity="${(op * 0.9).toFixed(3)}"/>`;
+      return body + hopper + cog + lamp + chute;
+    }
+  },
+
   /* J3 LESSON 3 — THE CONTROL ROOM. A playlist is a row of things in order that
      you can take one out of, add one to and re-order, and the object that IS
      that is a mixing desk: a bank of faders each at its own height, and the
@@ -1002,10 +1120,17 @@ const VARIANTS = {
    claim about a screen nobody can check (the film-frame precedent). */
 async function frameShot(srcPng, outPng, t, crop) {
   let img = sharp(srcPng);
-  if (crop && crop.keepFrac > 0 && crop.keepFrac < 1) {
+  /* `keepFrac` keeps the TOP of the card down to a named element; `fromFrac`
+     (K42b, 14 Sep 2026) starts the picture AT a named element instead of at the
+     card's top — the two build cards of the Lesson 3s carry six numbered steps
+     and a brief above their two columns, and a picture that starts at the
+     columns is the complete thing a teacher points at, at twice the width. */
+  const fromFrac = crop && crop.fromFrac > 0 && crop.fromFrac < 1 ? crop.fromFrac : 0;
+  if (crop && ((crop.keepFrac > 0 && crop.keepFrac < 1) || fromFrac)) {
     const m0 = await img.metadata();
-    const keep = Math.max(1, Math.round(m0.height * crop.keepFrac));
-    img = sharp(await img.extract({ left: 0, top: 0, width: m0.width, height: keep })
+    const top = Math.round(m0.height * fromFrac);
+    const keep = Math.max(top + 1, Math.round(m0.height * (crop.keepFrac > 0 && crop.keepFrac < 1 ? crop.keepFrac : 1)));
+    img = sharp(await img.extract({ left: 0, top: top, width: m0.width, height: keep - top })
       .png().toBuffer());
   }
   const meta = await img.metadata();

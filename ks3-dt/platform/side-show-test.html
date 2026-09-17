@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fred and Margo — character check</title>
+<title>Fred, Margo and Unit 7 — character check</title>
 <link rel="stylesheet" href="style.css">
 <style>
   .sst-wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 70px; }
@@ -30,10 +30,11 @@
 </head>
 <body>
 <div class="sst-wrap">
-  <h1 class="sst-h1">Fred and Margo — character check</h1>
-  <p class="sst-lead">Both side-show characters, every expression they have, at the size they are
+  <h1 class="sst-h1">Fred, Margo and Unit 7 — character check</h1>
+  <p class="sst-lead">The three side-show characters, every expression they have, at the size they are
   actually shown to a pupil and again large enough to judge. Nothing on this page is part of a
-  lesson: it exists so the artwork can be looked at on its own before either lesson is unlocked.</p>
+  lesson: it exists so the artwork can be looked at on its own before a lesson is unlocked.
+  <b>Unit 7</b> (J3 Lesson 4's Rush) is the new one, added 14 September 2026.</p>
 
   <div class="sst-sec">
     <h2>At the size a pupil sees them</h2>
@@ -66,7 +67,10 @@
       apart at 132&nbsp;pixels without reading a caption: <b>idle</b>, <b>typing</b> (eyes down on
       the work), <b>delighted</b> (eyes become arcs), <b>offended</b> (one eyebrow up), and for Fred
       <b>devastated</b> (the aerial gives up). Margo has no devastated state on purpose: her
-      Lesson&nbsp;3 exit is the rave.
+      Lesson&nbsp;3 exit is the rave. Unit 7 has four: <b>idle</b> (weary, eyes half shut, one antenna
+      drooping), <b>typing</b> (working the part in its claw), <b>delighted</b> (both antennae up and lit,
+      arms up — the moment a partner arrives) and <b>offended</b>; its lesson maps "devastated" to the
+      offended face.
     </p>
   </div>
 </div>
@@ -76,7 +80,9 @@ var CAST = [
   { who: 'Fred', dir: 'assets/img/j2/fred/', file: 'fred-',
     states: ['idle', 'typing', 'delighted', 'offended', 'devastated'] },
   { who: 'Margo', dir: 'assets/img/j3/margo/', file: 'margo-',
-    states: ['idle', 'typing', 'rave', 'offended'] }
+    states: ['idle', 'typing', 'rave', 'offended'] },
+  { who: 'Unit 7', dir: 'assets/img/j3/unit7/', file: 'unit7-',
+    states: ['idle', 'typing', 'delighted', 'offended'] }
 ];
 function cell(src, cap, cls) {
   return '<div class="sst-cell ' + (cls || '') + '">' +
@@ -97,7 +103,9 @@ document.getElementById('surfaces').innerHTML =
   cell('assets/img/j2/fred/fred-idle.webp', 'Fred &middot; white card', 'sst-onwhite') +
   cell('assets/img/j3/margo/margo-idle.webp', 'Margo &middot; white card', 'sst-onwhite') +
   cell('assets/img/j2/fred/fred-offended.webp', 'Fred &middot; bare shell', 'sst-ondark') +
-  cell('assets/img/j3/margo/margo-rave.webp', 'Margo &middot; bare shell', 'sst-ondark');
+  cell('assets/img/j3/margo/margo-rave.webp', 'Margo &middot; bare shell', 'sst-ondark') +
+  cell('assets/img/j3/unit7/unit7-idle.webp', 'Unit 7 &middot; white card', 'sst-onwhite') +
+  cell('assets/img/j3/unit7/unit7-delighted.webp', 'Unit 7 &middot; bare shell', 'sst-ondark');
 
 /* the live side show, built by hand so this page needs nothing but the CSS */
 function liveOne(name, dir, pre, alt, lines, cls) {
@@ -132,6 +140,13 @@ liveOne('Fred', 'assets/img/j2/fred/', 'fred-', 'Fred, a home-made chatbot', [
   ['Somebody said my jokes were predictable. I found that hurtful.', 'offended'],
   ['You came back! Nobody ever comes back.', 'delighted'],
   ['I am going to go and sit in a variable for a while.', 'devastated']
+]);
+liveOne('Unit 7', 'assets/img/j3/unit7/', 'unit7-', 'Unit 7, a cartoon factory robot with a dented chest plate and one drooping antenna', [
+  ['Unit 7 reporting. I have made this same part four thousand and twelve times. By hand. This one is slightly worse than the last one.', 'idle'],
+  ['Nobody has asked me for a part in nearly a minute. I do not know what to do with my arms.', 'idle'],
+  ['The conveyor belt and I are not speaking. It knows what it did.', 'offended'],
+  ['I have a dream. In the dream, somebody builds a machine, and I sit down.', 'idle'],
+  ['A PARTNER! ORDERS! A REASON TO EXIST! Please excuse the shouting — go, go, they are waiting!', 'delighted']
 ]);
 liveOne('Margo', 'assets/img/j3/margo/', 'margo-', 'Margo, a theatre critic', [
   ['Margo. Critic. I have reviewed nine hundred shows and enjoyed four.', 'idle'],

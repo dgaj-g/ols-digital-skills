@@ -193,6 +193,53 @@ function detectKind() {
 
   if (vis(q('.pyx-ask .pyx-reply:not([disabled])'))) return { kind: 'pyx-reply' };
 
+  /* ---- J2/J3 LESSON 4 (14 Sep 2026): the class adventure, the Rush, the words box
+     and the publish row — every one taught here and in MOVES in the same edit,
+     because a screen the detector knows and no mover can act on is DFM 238(a)'s
+     own fault. ---- */
+  /* THE CLASS ADVENTURE plays itself between questions: a room fetching, a story
+     being read, a door being taken. The only button on that card is the ghost
+     that LEAVES the adventure, so a walker with no rule here would press it and
+     pay nothing — exactly what the Rush's waits and the Swap's had done before
+     their rules existed. Waiting is a state, not a stuck screen. */
+  if (q('.rly-card')) {
+    const ask = q('.rly-leave-ask');
+    if (ask && !ask.hidden && vis(q('.rly-leave-no'))) return { kind: 'rly-keep-going' };
+    return { kind: 'rly-wait' };
+  }
+  /* THE RUSH: the order form, the run card (its RUN, then a wait), the check card
+     (six cards to answer, one Yes at a time) and its waits */
+  /* the solo seat: the Studio's own orders, offered when she stopped waiting */
+  if (q('.ord-card-own') && vis(q('.ord-card-own .ord-own-go'))) return { kind: 'ord-own' };
+  if (q('.ord-form-card')) {
+    const wait = q('.ord-form-card .ord-wait');
+    if (wait && !wait.hidden && !vis(q('.ord-send:not([disabled])'))) return { kind: 'ord-wait' };
+    if (vis(q('.ord-send:not([disabled])'))) return { kind: 'ord-form' };
+    return { kind: 'ord-wait' };
+  }
+  if (q('.ord-run-card')) {
+    if (vis(q('.ord-run-card .pyrun-run:not([disabled])'))) return { kind: 'pyrun-run' };
+    return { kind: 'ord-wait' };
+  }
+  if (q('.ord-check-card')) {
+    const open = Array.from(document.querySelectorAll('.ord-check-card .ord-card'))
+      .find(cd => !cd.querySelector('.ord-yn .is-on'));
+    if (open) return { kind: 'ord-check' };
+    return { kind: 'ord-wait' };
+  }
+  /* THE TWO WORDS on a PLAN face come before its Start button: Start refuses
+     until both are typed and different, and the refusal is a state with nothing
+     for the plan mover to press differently */
+  if (q('.pye-plan .pth-words') && Array.from(document.querySelectorAll('.pye-plan .pth-words input')).some(i => !String(i.value || '').trim())) {
+    return { kind: 'l4-words' };
+  }
+  /* THE PUBLISHED card's own way on, and the publish button once it wakes —
+     both live INSIDE the bench card, above the editor rules that would otherwise
+     press RUN on an already-published room for ever */
+  if (vis(q('.pth-published-go'))) return { kind: 'l4-published' };
+  if (vis(q('.pth-publish-skip'))) return { kind: 'l4-publish-skip' };
+  if (vis(q('.pth-publish-btn:not([disabled])'))) return { kind: 'l4-publish' };
+
   /* THE MATCH. Options first, then the typed rounds, then the reveal's own way
      on — each a distinct state with a distinct control, so a stuck walker names
      which one it stuck on rather than "a duel card". */
@@ -255,7 +302,7 @@ function detectKind() {
   if (q('.pye-plan') && vis(q('.pye-start'))) return { kind: 'pye-plan' };
   /* `.pye-bench` is the second face and it IS an editor card. `.pye-card` stays
      in the list because the unstaged shape still exists in the engine. */
-  const pyeCard = Array.from(document.querySelectorAll('.pye-bench, .pye-card'))
+  const pyeCard = Array.from(document.querySelectorAll('.pye-bench, .pye-wall'))
     .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
   if (pyeCard) {
     const ta = pyeCard.querySelector('.pye-code');
@@ -344,7 +391,7 @@ function detectKind() {
          landmarks, the red console and NOT YET, were never on screen to be stood on.
          A pupil fills the gaps and then runs it. So does she: while every line the answer
          wants is present, an empty gap outranks a wrong order. */
-      const emptyBlank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      const emptyBlank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
         .filter(vis).some(i => !i.value);
       if (missing || (!prefixOk && !emptyBlank)) {
         return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
@@ -375,7 +422,11 @@ function detectKind() {
         return { kind: extraRow ? 'pyrun-extra-place' : 'pyrun-place' };
       }
     }
-    const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+    /* `.pyp-fixed .pyrun-blank` (14 Sep 2026): a gap can live inside a LOCKED
+       line above the tray (j2-04's fourth-road question); the expert pressed
+       RUN for ever on an empty one it could not see — the card's own
+       "type in the gap first" note is not a NOT YET, so nothing else moved */
+    const blank = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
       .filter(vis).find(i => !i.value);
     if (blank) return { kind: 'pyrun-blank', ph: blank.getAttribute('data-key') || '' };
     /* A PRE-FILLED BLANK CAN STILL BE THE THING THAT IS WRONG. The worked
@@ -392,7 +443,7 @@ function detectKind() {
       const bid2 = card2 && card2.getAttribute('data-build');
       const k2 = window.__walkKey ? window.__walkKey(bid2) : null;
       const wrong = (k2 && k2.blanks)
-        ? Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+        ? Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
             .filter(vis).find(i => {
               const kk = i.getAttribute('data-key');
               return k2.blanks[kk] != null && String(i.value) !== String(k2.blanks[kk]);
@@ -576,9 +627,52 @@ const MOVES = {
   'swap-finish': () => { const b = document.querySelector('.swap-finish:not([disabled])'); if (b) b.click(); },
   'swap-wait': () => {},
   'pye-plan': () => { const b = document.querySelector('.pye-start'); if (b) b.click(); },
+  /* ---- J2/J3 Lesson 4 (14 Sep 2026) ---- */
+  'rly-wait': () => {},
+  'rly-keep-going': () => { const b = document.querySelector('.rly-leave-no'); if (b) b.click(); },
+  'ord-wait': () => {},
+  'ord-own': () => { const b = document.querySelector('.ord-card-own .ord-own-go'); if (b) b.click(); },
+  'ord-form': () => {
+    /* three orders a partner's factory can make: names any twelve-year-old could
+       type, seats inside the form's own 1–9 floor */
+    const rows = [['Aoife', 2], ['Ben', 4], ['Cara', 1]];
+    rows.forEach((r, i) => {
+      const n = document.querySelector('.ord-form-card [data-name="' + (i + 1) + '"]');
+      const s = document.querySelector('.ord-form-card [data-seats="' + (i + 1) + '"]');
+      if (n) { n.value = r[0]; n.dispatchEvent(new Event('input', { bubbles: true })); }
+      if (s) { s.value = String(r[1]); s.dispatchEvent(new Event('input', { bubbles: true })); }
+    });
+    const b = document.querySelector('.ord-send:not([disabled])');
+    if (b) b.click();
+  },
+  'ord-check': () => {
+    /* the first card not yet answered: Yes where a product came back, No where
+       nothing did — the honest check a pupil makes */
+    const cd = Array.from(document.querySelectorAll('.ord-check-card .ord-card')).find(x => !x.querySelector('.ord-yn .is-on'));
+    if (!cd) return;
+    const none = cd.classList.contains('is-none');
+    const b = cd.querySelector('.ord-yn [data-yn="' + (none ? 'n' : 'y') + '"]');
+    if (b) b.click();
+  },
+  'l4-words': () => {
+    const plan = document.querySelector('.pye-plan');
+    const key = window.__walkKey ? window.__walkKey(plan && plan.getAttribute('data-build')) : null;
+    /* the words come from the lesson's own key (myroom carries `words`), never
+       invented — a room checked under words the key never wrote is not the walk
+       the key pins */
+    const words = (key && key.words) || [];
+    if (!words.length) return;
+    document.querySelectorAll('.pye-plan .pth-words input').forEach((inp, i) => {
+      inp.value = String(words[i] || '');
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  },
+  'l4-publish': () => { const b = document.querySelector('.pth-publish-btn:not([disabled])'); if (b) b.click(); },
+  'l4-published': () => { const b = document.querySelector('.pth-published-go'); if (b) b.click(); },
+  'l4-publish-skip': () => { const b = document.querySelector('.pth-publish-skip'); if (b) b.click(); },
   'pye-starter': () => { const b = document.querySelector('.pye-starter-btn:not([disabled])'); if (b) b.click(); },
   'pye-write': () => {
-    const card = Array.from(document.querySelectorAll('.pye-bench, .pye-card'))
+    const card = Array.from(document.querySelectorAll('.pye-bench, .pye-wall'))
       .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
     if (!card) return;
     const key = window.__walkKey ? window.__walkKey(card.getAttribute('data-build')) : null;
@@ -697,7 +791,7 @@ const MOVES = {
     const card = document.querySelector('.pyrun-card');
     const bid = card && card.getAttribute('data-build');
     const key = window.__walkKey ? window.__walkKey(bid) : null;
-    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
       .find(i => !i.value);
     if (!inp) return;
     const k = inp.getAttribute('data-key');
@@ -710,7 +804,7 @@ const MOVES = {
     const bid = card && card.getAttribute('data-build');
     const key = window.__walkKey ? window.__walkKey(bid) : null;
     if (!key || !key.blanks) return;
-    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
       .find(i => {
         const k = i.getAttribute('data-key');
         return key.blanks[k] != null && String(i.value) !== String(key.blanks[k]);
@@ -979,11 +1073,11 @@ const WRONG_MOVES = {
        answer wants, so that a decoy can be told from a keeper. Without the key there
        is no such thing as a decoy, and the ordinary mover's own "NO KEY, NO GUESS"
        rule is the right one — so decline rather than invent (DFM 146a). */
-    if (!wanted) return 'defer';
+    if (!wanted) { window.__wpNote = 'defer:no-key'; return 'defer'; }
     const wayBack = document.querySelector('.pyp-list li .pyrun-line')
       ? !!document.querySelector('.pyp-list .take-back')
       : null;
-    if (wayBack === false) return 'defer';
+    if (wayBack === false) { window.__wpNote = 'defer:no-way-back'; return 'defer'; }
     if (wayBack === null) {
       const first = Number(key.order[0]);
       const node = tray.find(n => Number(n.getAttribute('data-si')) === first);
@@ -991,7 +1085,7 @@ const WRONG_MOVES = {
       return;
     }
     if (window.__undoingFor !== bid0) window.__undoing = false;
-    if (tray.length && !window.__undoing) { (tray[0].querySelector('code') || tray[0]).click(); return; }
+    if (tray.length && !window.__undoing) { window.__wpNote = 'take'; (tray[0].querySelector('code') || tray[0]).click(); return; }
     /* everything is across and it is more than the answer needs: run it and let
        it fail, then take the extras back the way the card offers */
     if (wanted && placed > wanted) {
@@ -1003,9 +1097,39 @@ const WRONG_MOVES = {
          failing run ever happened, and the two failure-state landmarks — the red console
          and NOT YET — were unreachable on both L3 lessons. Count a go only when there is
          something to count. */
-      const gapOpen = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+      const gapOpen = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
         .filter(i => i.offsetParent !== null).some(i => !i.value);
-      if (window.__wrongRunFor !== bid0) { window.__wrongRunFor = bid0; window.__wrongRun = 0; }
+      /* THE TWO GOES ARE PER MISTAKE, NOT PER CARD (14 Sep 2026, K42b — the j3-2
+         walker landmark). Keyed on the build alone, the counter was spent by the
+         FIRST decoy she tried, and every decoy after it was handed straight back
+         without ever being run — so on a card with two decoys of different kinds
+         (j3b-takings: one that makes Python STOP, one that merely prints the wrong
+         words) only the decoy the shuffled tray happened to offer first was ever
+         run, and the red console was a coin toss per render (CONTROL-run1..3: 16,
+         15, 15 of 16). The key is the build PLUS the extra lines now placed, so
+         each mistake gets its two goes and the next decoy starts afresh. */
+      /* THE GAPS ARE FILLED BEFORE THE DECOYS ARE JUDGED (17 Sep 2026). On a card
+         with gaps the two wrong runs were skipped while a gap was empty — right —
+         but the extras were then taken straight back in the same breath, so on
+         j2-04's third training build (two gaps, two decoys) no wrong run ever
+         happened and the red console, NOT YET and the no-door row went unstood
+         on. A pupil who has moved everything across fills the gaps next; so does
+         she. The key's values, exactly as the blank-fix mover types them. */
+      if (gapOpen) {
+        Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
+          .filter(i => i.offsetParent !== null && !i.value).forEach(function (i) {
+            const k = i.getAttribute('data-key');
+            const v = (key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
+            i.value = v; i.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+        window.__wpNote = 'fill-gaps';
+        return;
+      }
+      const extrasNow = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
+        .map(n => String(n.getAttribute('data-si')))
+        .filter(si => key.order.map(String).indexOf(si) === -1).sort().join(',');
+      const runKey = bid0 + '|' + extrasNow;
+      if (window.__wrongRunFor !== runKey) { window.__wrongRunFor = runKey; window.__wrongRun = 0; }
       /* ---- AND SHE ORDERS THE REAL LINES BEFORE SHE PRESSES RUN (29 Aug 2026) ----
          THE LOTTERY, AND ITS CAUSE, MEASURED RATHER THAN GUESSED. She took every
          line across in the order the TRAY offered them — a fresh derangement on
@@ -1026,10 +1150,18 @@ const WRONG_MOVES = {
          presses RUN: the program runs every time, does the wrong thing every
          time, and NOT YET is reached every time. Deterministic, and a truer
          picture of the pupil than the shuffle was. */
+      /* THE DECOYS ARE NOT "OUT OF ORDER" (17 Sep 2026). This compared every
+         placed row against the answer's order, so a decoy she had taken across
+         in the tray's own shuffle sat "out of order" among the lines that
+         belong, and the reorder branch below handed it back BEFORE the two wrong
+         runs — the runs then had nothing wrong in them, and on j2-04's third
+         training build the failing run never happened. Order is judged on the
+         lines the answer WANTS; a decoy may sit anywhere until it has been run. */
+      const keep0 = new Set(key.order.map(String));
       const inOrder = (function () {
         const sis = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
-          .map(n => Number(n.getAttribute('data-si')));
-        return key.order.every((v, i) => Number(sis[i]) === Number(v));
+          .map(n => String(n.getAttribute('data-si'))).filter(si => keep0.has(si));
+        return key.order.every((v, i) => sis[i] === String(v));
       })();
       if (!gapOpen && !inOrder) {
         /* one ordering step: strip back to the longest run that is already
@@ -1038,11 +1170,13 @@ const WRONG_MOVES = {
            the same argument as the branch below, applied before the run rather
            than after it. */
         const rows2 = Array.from(document.querySelectorAll('.pyp-list li'));
+        let j2 = 0;   /* the next wanted line the answer expects; decoys are skipped over */
         for (let i = 0; i < rows2.length; i++) {
           const ln = rows2[i].querySelector('.pyrun-line');
           const si = ln && Number(ln.getAttribute('data-si'));
-          if (i < key.order.length && si === Number(key.order[i])) continue;
-          window.__undoing = true; window.__undoingFor = bid0;
+          if (!keep0.has(String(si))) continue;
+          if (j2 < key.order.length && si === Number(key.order[j2])) { j2++; continue; }
+          window.__undoing = true; window.__undoingFor = bid0; window.__wpNote = 'reorder';
           const back2 = rows2[i].querySelector('.take-back');
           if (back2) { back2.click(); return; }
           (ln.querySelector('code') || ln).click(); return;
@@ -1052,6 +1186,7 @@ const WRONG_MOVES = {
         window.__wrongRun = (window.__wrongRun || 0) + 1;
         if (window.__wrongRun <= 2) {
           const run = document.querySelector('.pyrun-run:not([disabled])');
+          window.__wpNote = run ? 'wrong-run-' + window.__wrongRun : 'wrong-run-NO-BUTTON';
           if (run) { run.click(); return; }
         }
       }
@@ -1062,6 +1197,16 @@ const WRONG_MOVES = {
         const si = line && line.getAttribute('data-si');
         if (si != null && !keep.has(String(si))) {
           window.__undoing = true; window.__undoingFor = bid0;
+          /* a decoy handed back AFTER its two goes has been tried — say so where
+             the run mover keeps its list, so it is not placed and run a second
+             time on the way past (one home for "which mistakes she has made") */
+          if (!gapOpen) {
+            const wp = (window.__wpWrong = window.__wpWrong || {});
+            wp[bid0] = wp[bid0] || {};
+            wp[bid0].tried = wp[bid0].tried || [];
+            if (wp[bid0].tried.indexOf(String(si)) === -1) wp[bid0].tried.push(String(si));
+          }
+          window.__wpNote = 'take-back-extra';
           const back = li.querySelector('.take-back');
           if (back) { back.click(); return; }
           (line.querySelector('code') || line).click(); return;
@@ -1088,7 +1233,7 @@ const WRONG_MOVES = {
            this move takes ANY line sitting in the tray — so on a card whose tray ejects on
            click, the strip and the re-take fought each other exactly as the decoy undo once
            did, and J2 Lesson 2 stopped at eight of fifteen screens. One flag, both jobs. */
-        window.__undoing = true; window.__undoingFor = bid0;
+        window.__wpNote = 'strip'; window.__undoing = true; window.__undoingFor = bid0;
         const rows = Array.from(document.querySelectorAll('.pyp-list li'));
         const last = rows[rows.length - 1];
         if (last) {
@@ -1115,7 +1260,7 @@ const WRONG_MOVES = {
     const card = document.querySelector('.pyrun-card');
     const key = window.__walkKey ? window.__walkKey(card && card.getAttribute('data-build')) : null;
     if (!key || !key.blanks) return;
-    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank'))
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank'))
       .find(i => {
         const k = i.getAttribute('data-key');
         return key.blanks[k] != null && String(i.value) !== String(key.blanks[k]);
@@ -1166,9 +1311,11 @@ const WRONG_MOVES = {
       (window.__wpWrong[bid] = {});
     const run = document.querySelector('.pyrun-run');
     if (!st.emptyRun && run && !run.disabled) { st.emptyRun = 1; run.click(); return; }
-    /* then fill it exactly as the right-path mover does */
+    /* then fill it exactly as the right-path mover does — on every card that
+       carries a gap: the tray, the worked card (j3-04's machine-1 opens with an
+       EMPTY gap in a worked card, the first one anywhere), and the locked lines */
     const key = window.__walkKey ? window.__walkKey(bid) : null;
-    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).find(i => !i.value);
+    const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank, .pyw-list .pyrun-blank, .pyp-fixed .pyrun-blank')).find(i => !i.value);
     if (!inp) return;
     const k = inp.getAttribute('data-key');
     const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
@@ -1183,6 +1330,114 @@ const WRONG_MOVES = {
        then put it right and RUN properly, so the walk goes on.
      A build with neither a decoy nor a gap simply runs correctly; there is no
      wrong move available and pretending otherwise would be a fiction. */
+  /* ---- LESSON 4 (14 Sep 2026, spec §C10): two mistakes a pupil really makes ----
+     SHE PRESSES START WITH THE WORD BOXES EMPTY. The PLAN face refuses and says
+     why (the `emptySay`), and that refusal is a landmark a lone walker must
+     stand on. Once, then she fills the boxes from the key as the expert does. */
+  'l4-words': () => {
+    const plan = document.querySelector('.pye-plan');
+    const bid = (plan && plan.getAttribute('data-build')) || '?';
+    const st = (window.__wpWrong = window.__wpWrong || {})[bid] || (window.__wpWrong[bid] = {});
+    if (!st.wordsTried) {
+      st.wordsTried = true;
+      const go = document.querySelector('.pye-start:not([disabled])');
+      if (go) { go.click(); return; }
+    }
+    /* The mover is evaluated inside the page, where MOVES does not exist; the
+       ordinary move is the walker's to make (it runs the plain mover on 'defer'). */
+    return 'defer';
+  },
+  /* SHE STOPS WAITING AND TAKES THE STUDIO'S ORDERS (14 Sep 2026, spec §C10:
+     the lone walker's solo route). On the Rush the long wait offers a button
+     that lets her do the activity alone — the Studio's own three orders through
+     her own machines, to the same check and the same seal. A lone pupil on a
+     cover day presses it, so the walker does: once, on the Rush's wait only
+     (the engine, read off the chunk — never a lesson's name, DFM 271). The
+     Swap's and the Match's waits keep their own walks. */
+  'pair-wait': () => {
+    const s = window.App && App.state && App.state.chunks && App.state.chunks[App.state.chunkIdx];
+    if (!s || s.engine !== 'orders') return 'defer';
+    const st = (window.__wpWrong = window.__wpWrong || {});
+    const own = document.querySelector('.pair-wait .pw-own');
+    /* she watches Unit 7 for a beat before she gives up on a partner — the
+       side show is the state the landmark names, so it is stood on first */
+    const unit7 = document.querySelector('.sideshow .ss-img');
+    if (!st.ordOwnTaken && own && own.offsetParent !== null && unit7 && unit7.offsetParent !== null) { st.ordOwnTaken = true; own.click(); return; }
+    return 'defer';
+  },
+  /* SHE PUTS THE SHAPE IN AND PRESSES RUN BEFORE SHE HAS TYPED A WORD (14 Sep
+     2026, the j3-4 walker: "a NOT YET that repeats every unfinished job under
+     itself" was never stood on). The staged editor offers the shape for free,
+     and a pupil who takes it and runs it as it stands is the commonest sight in
+     the room. The verdict then lists every job under itself, which is the
+     landmark. Once per build; then the ordinary write. */
+  'pye-write': () => {
+    const card = Array.from(document.querySelectorAll('.pye-bench, .pye-wall'))
+      .find(n => n.tagName === 'DIV' && n.querySelector('.pye-code'));
+    if (!card) return 'defer';
+    const bid = card.getAttribute('data-build') || '?';
+    const st = (window.__wpWrong = window.__wpWrong || {})[bid] || (window.__wpWrong[bid] = {});
+    if (!st.shapeRun) {
+      const starter = card.querySelector('.pye-starter-btn:not([disabled])');
+      if (starter && starter.offsetParent !== null) { st.shapeRun = 'shape'; starter.click(); return; }
+      st.shapeRun = 'none';
+    }
+    if (st.shapeRun === 'shape') {
+      const run = card.querySelector('.pyrun-run:not([disabled])');
+      st.shapeRun = 'ran';
+      if (run && run.offsetParent !== null) { run.click(); return; }
+    }
+    if (st.shapeRun === 'ran') {
+      /* the run takes a moment; typing over it mid-run would be a second
+         mistake nobody makes. Stand still until the verdict is up. */
+      const v = card.querySelector('.pyrun-verdict');
+      const btn = card.querySelector('.pyrun-run');
+      if (btn && btn.disabled && !(v && !v.hidden)) return;
+      st.shapeRun = 'seen';
+    }
+    /* SHE FORGETS A DOOR (17 Sep 2026, j2-4 walks 12–13: "a row of the path check
+       with NO door" was never stood on). The starter and the answer both end every
+       road with a NEXT: door line, so no run so far has ever left a road doorless.
+       Once the shape run has been seen she types the answer with its first door
+       line missing and runs it — the path check then shows a road with no door and
+       the verdict says NOT YET — and only then does the plain mover type the answer.
+       Derived from the card: the answer (key.program) must contain a door line;
+       never from a lesson's name (DFM 271). */
+    if (st.shapeRun === 'seen' && !st.doorless) {
+      const key = window.__walkKey ? window.__walkKey(bid) : null;
+      const prog = key && key.program ? String(key.program) : '';
+      const lines = prog.split('\n');
+      const di = lines.findIndex(l => /NEXT: door [AB]/.test(l));
+      st.doorless = 'typed';
+      if (di !== -1) {
+        lines.splice(di, 1);
+        const ta = card.querySelector('.pye-code');
+        ta.value = lines.join('\n');
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        const run = card.querySelector('.pyrun-run:not([disabled])');
+        window.__wpNote = 'forget-door';
+        if (run && run.offsetParent !== null) { run.click(); return; }
+      }
+    }
+    if (st.doorless === 'typed') {
+      const v = card.querySelector('.pyrun-verdict');
+      const btn = card.querySelector('.pyrun-run');
+      if (btn && btn.disabled && !(v && !v.hidden)) return;
+      st.doorless = 'seen';
+    }
+    return 'defer';
+  },
+  /* SHE PRESSES THE WAY OUT IN THE MIDDLE OF THE ADVENTURE. The card asks first
+     (leaveAsk) and offers Keep going; the ask is the landmark, and Keep going is
+     the plain mover's answer. Once per lesson, on a room that is playing. */
+  'rly-wait': () => {
+    const st = (window.__wpWrong = window.__wpWrong || {});
+    if (!st.rlyLeaveTried && document.querySelector('.rly-card .pyx-row') && !(document.querySelector('.rly-leave-ask') && !document.querySelector('.rly-leave-ask').hidden)) {
+      st.rlyLeaveTried = true;
+      const out = document.querySelector('.rly-card .rly-finish:not([disabled])');
+      if (out) { out.click(); return; }
+    }
+  },
   'pyrun-run': () => {
     const card = document.querySelector('.pyrun-card');
     const bid = (card && card.getAttribute('data-build')) || '?';
@@ -1193,41 +1448,101 @@ const WRONG_MOVES = {
     const wanted = (si) => !order || order.indexOf(Number(si)) !== -1;
     const runIt = () => { const b = document.querySelector('.pyrun-run:not([disabled])'); if (b) b.click(); };
 
-    if (order && !st.decoy) {
-      const d = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'))
-        .find(n => !wanted(n.getAttribute('data-si')));
-      if (d) { st.decoy = 'placed'; d.click(); return; }
-      st.decoy = 'none';
-    }
-    if (st.decoy === 'placed') { st.decoy = 'ran'; runIt(); return; }
-    if (st.decoy === 'ran') {
-      st.decoy = 'removed';
-      const d = Array.from(document.querySelectorAll('.pyp-list .pyrun-line'))
-        .find(n => !wanted(n.getAttribute('data-si')));
-      if (d) d.click();
-      return;
-    }
-    if (st.decoy === 'none' && !st.badVal) {
-      const inp = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank'))
-        .filter(i => i.offsetParent !== null)[0];
-      if (inp) {
-        st.badVal = 'set';
-        inp.value = 'not that';
-        inp.dispatchEvent(new Event('input', { bubbles: true }));
+    /* SHE TRIES EVERY LINE SHE DOES NOT RECOGNISE, ONE AT A TIME (14 Sep 2026,
+       K42b — the j3-2 walker landmark, walker only, the lesson untouched).
+       This placed "a decoy" — the FIRST unwanted line the deranged tray happened
+       to offer (DFM 258) — ran it once, and took it back. So on a card with two
+       decoys of different KINDS, which mistake she made was a coin toss per
+       render: j3b-takings carries one line that makes Python STOP (a number
+       added straight onto words, the TypeError its own errorWords answer) and
+       one that merely prints the wrong words, and "the console after a run that
+       did NOT work" was reached on one walk in three against the build he sat
+       (j3-2-walker/CONTROL-run1..3: 16, 15, 15 of 16). A landmark that turns on
+       a shuffle is a lottery, not coverage (DFM 199).
+       A pupil who does not recognise the lines does not try one of them and
+       stop: she tries each. So does she now — every decoy on the card, in the
+       order the tray offers them, placed, run, taken back — and only then the
+       ordinary route. Derived from the key and the card, never from a lesson's
+       name (DFM 271): a card with one decoy walks exactly as it did, a card with
+       none takes the badVal route as it did, and a card whose rows carry a
+       labelled way back is taken back by it (the shipped L3 cards do not eject
+       on click). */
+    /* SHE TYPES THE WRONG THING IN EVERY GAP, ONE AT A TIME (14 Sep 2026, the
+       j3-4 walker: "the reject bin with something in it" was never stood on).
+       This used to be one gap, one wrong word ('not that'), and only on a card
+       with no decoy at all — so a gap card that also carried decoys never saw a
+       wrong VALUE, and the wrong word could only ever make Python STOP. A pupil
+       who has stopped reading types a NUMBER where the slot's name should go
+       (`def price(4):` is machine-3's own decoy, the same misconception), and a
+       number in the second gap RUNS: `return 7 * 4` makes twelve wrong products
+       and fills the reject bin, which a stopped program never can. So: every
+       gap in turn, a wrong number in it, RUN, the right value back — BEFORE the
+       decoys are tried (a harmless decoy can MATCH and end the card, so the
+       gaps go first; 16 Sep 2026) — and only then the ordinary run. Derived from the card, never from
+       a lesson's name (DFM 271). */
+    /* A GAP THAT HOLDS ONE OF HER OWN WORDS CANNOT BE WRONG (17 Sep 2026): on a
+       path-check card the key carries `words`, the gap IS the second word, and
+       whatever she types there is by definition what the room is tested with —
+       so the wrong-value route can only MATCH and end the card before a decoy
+       is ever tried. On such a card the decoys go first. */
+    if (!st.gapsDone && key && key.words) st.gapsDone = true;
+    if (!st.gapsDone) {
+      const blanks = Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).filter(i => i.offsetParent !== null);
+      const right = (i) => { const k = i.getAttribute('data-key'); return (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x'; };
+      st.badAt = st.badAt || 0;
+      if (st.badVal === 'ran') {
+        st.badVal = null;
+        blanks.forEach(function (i) { i.value = right(i); i.dispatchEvent(new Event('input', { bubbles: true })); });
+        st.badAt++;
         return;
       }
-      st.badVal = 'skip';
+      if (st.badAt >= blanks.length) st.gapsDone = true;
+      if (st.badAt < blanks.length) {
+        /* the wrong value and the RUN in ONE move: a gap holding the wrong
+           value is a `pyrun-blank` state to the detector, and the blank-fix
+           mover would put it right before any run — so the run has to be
+           pressed in the same breath the wrong value is typed */
+        const inp = blanks[st.badAt];
+        const r = right(inp);
+        st.badVal = 'ran';
+        inp.value = /^\d+$/.test(r) ? String(Number(r) + 3) : '7';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        runIt();
+        return;
+      }
     }
-    if (st.badVal === 'set') { st.badVal = 'ran'; runIt(); return; }
-    if (st.badVal === 'ran') {
-      st.badVal = 'fixed';
-      Array.from(document.querySelectorAll('.pyp-list .pyrun-blank')).forEach(function (i) {
-        const k = i.getAttribute('data-key');
-        const v = (key && key.blanks && key.blanks[k] != null) ? String(key.blanks[k]) : 'x';
-        i.value = v;
-        i.dispatchEvent(new Event('input', { bubbles: true }));
+    if (order && st.decoy !== 'none' && st.decoy !== 'done') {
+      st.tried = st.tried || [];
+      const placedDecoy = () => Array.from(document.querySelectorAll('.pyp-list li')).find(l => {
+        const n = l.querySelector('.pyrun-line');
+        return n && !wanted(n.getAttribute('data-si'));
       });
-      return;
+      if (st.decoy === 'placed') {
+        /* ON A CARD WITH A LABELLED WAY BACK the over-placed rule takes the card
+           the moment the decoy lands — runs it twice and hands it back — before
+           this mover is asked again, so "placed" can already mean "tried and gone".
+           Run it only if it is still there; otherwise move to the next one. */
+        if (placedDecoy()) { st.decoy = 'ran'; runIt(); return; }
+        st.decoy = 'removed';
+      }
+      if (st.decoy === 'ran') {
+        st.decoy = 'removed';
+        const li = placedDecoy();
+        if (li) {
+          const tb = li.querySelector('.take-back');
+          const n = li.querySelector('.pyrun-line');
+          (tb || (n.querySelector('code') || n)).click();
+          return;
+        }
+      }
+      /* fresh, or the last one is back in the tray: the next decoy not yet tried */
+      const d = Array.from(document.querySelectorAll('.pyt-list .pyrun-line'))
+        .find(n => !wanted(n.getAttribute('data-si')) && st.tried.indexOf(String(n.getAttribute('data-si'))) === -1);
+      if (d) { st.tried.push(String(d.getAttribute('data-si'))); st.decoy = 'placed'; d.click(); return; }
+      /* 'done' = there were decoys and every one has been tried: run it properly,
+         as the single-decoy route always did; 'none' = a card with no decoy at all,
+         which takes the wrong-VALUE route below, as it always did */
+      st.decoy = st.tried.length ? 'done' : 'none';
     }
     runIt();
   }
@@ -1242,6 +1557,8 @@ const SETTLE = {
   /* the staged editor: the plan face is one press, the write is a real type,
      and a RUN on a conversation card has to wait for the probe pass as well */
   'pye-plan': 900, 'pye-write': 400, 'pye-chip': 400, 'pye-run': 3200, 'pye-starter': 700, 'pye-send': 1200,
+  'rly-wait': 1200, 'rly-keep-going': 500, 'ord-wait': 1400, 'ord-own': 1500, 'ord-form': 1500, 'ord-check': 400,
+  'l4-words': 300, 'l4-publish': 1500, 'l4-published': 800, 'l4-publish-skip': 800,
   'case-pin': 900, 'case-log': 400, 'case-close': 1200, 'case-stamped': 700, 'case-wait': 700,
   'std-expand': 700, 'std-run': 700, 'std-outcome': 900, 'std-ready': 1200,
   'gal-review': 900, 'gal-write': 250, 'gal-file': 1200, 'gal-back': 700,
@@ -1486,6 +1803,15 @@ async function primeDevKeys(page, host) {
     window.__walkKey = function (bid) {
       if (!bid) return null;
       if (all) {
+        /* THE OPEN LESSON'S OWN FILE FIRST (14 Sep 2026, the first j2-4 walk).
+           Build ids repeat across lessons — j2-03's worked card and j2-04's are
+           both `t1`, each with a gap `t1a` — and a scan in file order handed
+           the Lesson 4 walk Lesson 3's answer ("name" for a gap that wanted
+           "=="), so the expert "fixed" the fork line wrong and pressed RUN on
+           it for ever. The platform knows which lesson is open; ask it. */
+        const entry = window.App && App.state && App.state.lessonEntry;
+        const own = entry && entry.file ? String(entry.file).replace(/\.json$/, '') : null;
+        if (own && all[own] && all[own][bid]) return all[own][bid];
         for (const fid of Object.keys(all)) {
           const k = all[fid] && all[fid][bid];
           if (k) return k;

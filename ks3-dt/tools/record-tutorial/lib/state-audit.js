@@ -304,4 +304,31 @@ async function settle(page, tries) {
 const describeSteps = (f) => f.sel + ' (' + f.items + ' items) computed ' + f.align + '  "' + f.text + '"';
 const describeFits = (f) => f.sel + ' overflows ' + f.card + ' by ' + f.over + 'px  "' + f.text + '"';
 
-module.exports = { SIG, STEPS_QUERY, FITS_QUERY, RUNNING, OVERLAY, overlayRoot, measureShot, settle, describeSteps, describeFits, EXEMPTIONS };
+/* ---- DFM 282 — HIS RULING, 14 Sep 2026: "no need to bring this up again." -------
+   J1 Lesson 3's LED score display — gold seven-segment digits on a near-black
+   strip, where the sampler's "plate" is the digits' own glow — has printed two
+   readability rows on every walk since V61 and was left alone on his instruction.
+   It is now a DATED WAIVER, the DFM 255/261 shape: printed as WAIVED-BY-HIS-RULING
+   by both walkers, never as a finding, never raised again. Nothing else on j1-03
+   changes. The waiver is keyed by LESSON and SELECTOR, so the same digits on any
+   other lesson, and any other surface on Lesson 3, stay findings — asserted by
+   qa-led-waiver.js, whose control proves an un-waived surface still fails. */
+const READABILITY_WAIVERS = [
+  {
+    lesson: '3',
+    sel: /^\.led-digits\.led-(now|cleared)(\.rolling)?$/,
+    rule: 'DFM 282',
+    ruled: '2026-09-14',
+    why: 'WAIVED BY HIS RULING (DFM 282, 14 Sep 2026): the J1 Lesson 3 LED score display — gold seven-segment ' +
+         'digits on a near-black strip; the sampled "plate" is the digits\' own glow. "No need to bring this up again." ' +
+         'Never raised again, never swept.'
+  }
+];
+/* the waiver row that covers this (lesson, selector), or null */
+function readabilityWaiver(lessonKey, sel) {
+  const k = String(lessonKey || '').replace(/^J([23])-/i, 'j$1-');
+  return READABILITY_WAIVERS.find(w => String(w.lesson) === k && w.sel.test(String(sel || ''))) || null;
+}
+
+module.exports = { SIG, STEPS_QUERY, FITS_QUERY, RUNNING, OVERLAY, overlayRoot, measureShot, settle, describeSteps, describeFits, EXEMPTIONS,
+  READABILITY_WAIVERS, readabilityWaiver };
