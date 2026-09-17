@@ -6,7 +6,7 @@
    "kind": "film-frame",
    "src": "assets/video/j2/j2-l4-b.mp4",
    "tSeconds": 158,
-   "filmHash": "9c9d691a7ab8",
+   "filmHash": "53f6d6c8e592",
    "crop": {
     "x": 88,
     "y": 85,
@@ -30,7 +30,7 @@
    "says": "the film screen with its three chapter buttons",
    "contentVersion": "2026-09-03b",
    "crop": null,
-   "chunkHash": "2ce5917dd3ad",
+   "chunkHash": "903c30efae8d",
    "px": "1748x1552"
   },
   "console": {
@@ -49,7 +49,7 @@
     "from": ".pyw-prog",
     "fromFrac": 0.128
    },
-   "chunkHash": "98ce31571d27",
+   "chunkHash": "32175c26032e",
    "px": "1572x2060"
   },
   "plan": {
@@ -68,7 +68,7 @@
     "from": ".pye-plan-h",
     "fromFrac": 0.522
    },
-   "chunkHash": "e065a6aa4e55",
+   "chunkHash": "9641fd4b89eb",
    "px": "1692x1271"
   },
   "bench": {
@@ -87,7 +87,7 @@
     "from": null,
     "fromFrac": 0
    },
-   "chunkHash": "e065a6aa4e55",
+   "chunkHash": "9641fd4b89eb",
    "px": "1692x2481"
   },
   "play": {
@@ -95,13 +95,13 @@
    "kind": "app",
    "chunkId": "classadventure",
    "selector": ".chunk-host .rly-card",
-   "textSnippet": "Do you follow the trolley, or open the window? Type trolley or window.",
-   "contentAnchor": "Do you follow the trolley, or open the window? Type trolley or window.",
-   "cardText": "Room 1 — one of the rooms from the training builds · Room 1 of 5 · 4 rooms are in the class adventure so far. · THE ADVENTURE · — Room 1 — one of the rooms from the training builds — · THE ROOM · You are in the canteen. Every chair is stacked on the tables. · THE ROOM · A lunch trolley rolls past by itself and stops at a door. · THE ROOM · Do you follow the trolley, or open the window? Type trolley or window. · YOU · Tuesday · THE ROOM · You open the window and climb out into the yard. · You go ",
+   "textSnippet": "You are in the long corridor. Every classroom door is shut.",
+   "contentAnchor": "You are in the long corridor. Every classroom door is shut.",
+   "cardText": "Room 2 — one of the rooms from the training builds · Room 1 of 5 · 4 rooms are in the class adventure so far. · THE ADVENTURE · — Room 2 — one of the rooms from the training builds — · THE ROOM · You are in the long corridor. Every classroom door is shut. · THE ROOM · Do you go left or right? Type left or right. · YOU · Tuesday · THE ROOM · You turn right and reach the stairs. · You go through door B. · Finding the next room… · Finish the adventure and carry on with the lesson",
    "says": "one room of the class adventure playing: the strip naming the room, its story, and the word the player typed",
    "contentVersion": "2026-09-03b",
    "crop": null,
-   "chunkHash": "34c45bafeae2",
+   "chunkHash": "260f68f5c1fc",
    "px": "1572x1102"
   },
   "end": {
@@ -111,11 +111,11 @@
    "selector": ".chunk-host .rly-end",
    "textSnippet": "That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson.",
    "contentAnchor": "That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson.",
-   "cardText": "THE END · You reached the end. · That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson. · Room 1 · Room 4 · Room 2 · Room 3 · You went through rooms 1, 4, 2 and 3. Every play takes a different path, so play again and see where it goes. · Play again · Finish the adventure and carry on with the lesson",
+   "cardText": "THE END · You reached the end. · That was your first whole adventure, and it earns the badge. Press the button below to carry on with the lesson. · Room 2 · Room 4 · Room 3 · Room 1 · You went through rooms 2, 4, 3 and 1. Every play takes a different path, so play again and see where it goes. · Play again · Finish the adventure and carry on with the lesson",
    "says": "the end card: THE END, the rooms she went through, Play again, and the way on",
    "contentVersion": "2026-09-03b",
    "crop": null,
-   "chunkHash": "34c45bafeae2",
+   "chunkHash": "260f68f5c1fc",
    "px": "1372x840"
   },
   "extras": {
@@ -144,11 +144,11 @@
    "contentVersion": "2026-09-03b",
    "crop": {
     "to": ".dossier-demo",
-    "keepFrac": 0.625,
+    "keepFrac": 0.616,
     "from": ".dossier-demo",
-    "fromFrac": 0.273
+    "fromFrac": 0.269
    },
-   "chunkHash": "5e9cf255dc67",
+   "chunkHash": "fd065b4b9473",
    "px": "1372x1248"
   }
  }
