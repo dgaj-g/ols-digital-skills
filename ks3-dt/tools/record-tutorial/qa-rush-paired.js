@@ -358,7 +358,12 @@ async function soloRun(browser) {
   await advance(A, 'A', 'rush', 60, atRushDoor);
   await pressDoor(A); await sleep(1500);
   const own = await waitFor(A, () => !!document.querySelector('.chunk-host .ord-card-own .ord-own-go'), 15000);
-  if (!own) { fail('R6', 'pairing off: the Studio\'s orders card never came'); await ctx.close(); return; }
+  if (!own) {
+    /* say WHAT stood there instead, so a miss can be told from a slow card */
+    const there = await A.evaluate(() => { const h = document.querySelector('.chunk-host'); return { pairing: (window.App && App.state) ? App.state.pairing : '?', chunk: (window.App && App.state) ? App.state.chunkIdx : '?', cls: h ? Array.from(h.querySelectorAll('.card')).map(c => c.className).join(' | ') : 'no host', text: h ? h.innerText.replace(/\s+/g, ' ').slice(0, 300) : '' }; }).catch(e => ({ err: String(e) }));
+    log('    R6 state at the miss: ' + JSON.stringify(there));
+    fail('R6', 'pairing off: the Studio\'s orders card never came'); await ctx.close(); return;
+  }
   await A.evaluate(() => document.querySelector('.chunk-host .ord-own-go').click());
   const ran = await waitFor(A, () => !!document.querySelector('.chunk-host .ord-run-card .pyrun-run'), 15000);
   if (ran) await A.evaluate(() => document.querySelector('.chunk-host .ord-run-card .pyrun-run:not([disabled])').click());
