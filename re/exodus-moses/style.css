@@ -238,6 +238,7 @@ p { margin: 0 0 12px; }
 .feedback-panel.wrong { border-color: var(--no); background: var(--no-bg); }
 .feedback-panel.part  { border-color: var(--part); background: var(--part-bg); }
 .feedback-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.feedback-head .feedback-headline.mark-chip { font-size: 19px; padding: 4px 14px; }
 .feedback-headline { font-size: 19px; font-weight: 600; margin: 0; color: var(--ink); }
 .feedback-headline:focus { outline: none; }
 .mark-chip {
@@ -320,17 +321,19 @@ p { margin: 0 0 12px; }
 .match-card.hover .slot, .match-card.kb-target .slot { border-color: var(--gold); }
 .match-card.is-right { border-color: var(--ok); background: var(--ok-bg); }
 .match-card.is-wrong { border-color: var(--no); background: var(--no-bg); }
-.match-card .verdict { font-weight: 700; }
+.match-card .verdict { font-weight: 700; font-size: 19px; margin: 8px 0 0; display: inline-block; }
 .match-card.is-right .verdict { color: var(--ok); }
 .match-card.is-wrong .verdict { color: var(--no); }
-.match-card .correct-term { font-weight: 400; color: var(--ink); font-size: 16px; }
+.match-card .correct-term { font-weight: 400; color: var(--ink); font-size: 16px; display: inline-block; margin: 8px 0 0 10px; }
 .tray {
   border: 2px solid var(--rule); border-radius: 10px; background: var(--sheet);
   padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px; min-height: 76px; align-items: center;
 }
 .tray.hover, .tray.kb-target { border-color: var(--gold); background: #FFF9E3; }
-.tray-wrap { position: sticky; bottom: 8px; z-index: 5; }
-.tray-wrap .tray { box-shadow: 0 6px 18px rgba(122,31,43,.14); }
+/* under 860px the tray floats at the foot of the screen: the label rides inside the same opaque panel */
+.tray-wrap { position: sticky; bottom: 8px; z-index: 5; background: var(--sheet); border-radius: 12px; padding: 8px 8px 0; margin: 0 -8px; box-shadow: 0 6px 18px rgba(122,31,43,.14); }
+.tray-wrap .tray-label { margin: 0 6px 6px; }
+.tray-wrap .tray { margin-bottom: 8px; }
 .chip {
   font: inherit; font-size: 19px; font-weight: 600; color: var(--ink);
   background: var(--sheet); border: 2px solid var(--red); border-radius: 999px;
@@ -348,7 +351,9 @@ p { margin: 0 0 12px; }
 .chip-placeholder { display: inline-block; border-radius: 999px; visibility: hidden; }
 @media (min-width: 860px) {
   .match { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
-  .tray-wrap { position: sticky; top: 96px; bottom: auto; }
+  .tray-wrap { position: sticky; top: 96px; bottom: auto; background: none; padding: 0; margin: 0; box-shadow: none; }
+  .tray-wrap .tray-label { margin: 0 0 8px; }
+  .tray-wrap .tray { margin-bottom: 0; box-shadow: 0 6px 18px rgba(122,31,43,.14); }
   .tray { flex-direction: column; align-items: stretch; }
   .tray .chip { justify-content: center; }
 }
@@ -359,7 +364,7 @@ p { margin: 0 0 12px; }
 .meta-row .k { color: var(--red); font-weight: 600; font-size: 16px; }
 .meta-row .v { border-bottom: 2px dotted var(--red); padding: 4px 2px; font-size: 20px; font-weight: 600; min-height: 36px; overflow-wrap: anywhere; }
 .score-line { font-size: 56px; font-weight: 700; color: var(--red); line-height: 1; margin: 6px 0 4px; }
-.verdict { font-size: 19px; font-weight: 600; margin: 0 0 18px; }
+.results .verdict { font-size: 19px; font-weight: 600; margin: 0 0 18px; }
 .results-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
 .results-table td { padding: 10px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .results-table tr.answer-row td { padding-top: 2px; border-bottom: 1px solid var(--rule); font-weight: 400; }
@@ -399,5 +404,6 @@ p { margin: 0 0 12px; }
   .btn, .choice, .match-card, .chip { transition: none; }
 }
 
-/* after Check the empty tray has no job */
+/* after Check the empty tray has no job; the cards take the full width */
 .question.checked .tray-wrap { display: none; }
+.question.checked .match { display: block; }

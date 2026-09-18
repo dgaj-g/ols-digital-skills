@@ -316,10 +316,10 @@
   function renderFeedback(container, r) {
     container.innerHTML = '';
     var panel = el('div', { class: 'feedback-panel ' + r.cls });
-    panel.appendChild(el('div', { class: 'feedback-head' }, [
-      el('p', { class: 'feedback-headline', text: r.headline }),
-      el('span', { class: 'mark-chip', text: markChip(r.marks) })
-    ]));
+    var chip = markChip(r.marks);
+    panel.appendChild(el('div', { class: 'feedback-head' }, r.headline === chip
+      ? [el('p', { class: 'feedback-headline mark-chip', text: chip })]          /* Q F: the chip IS the headline */
+      : [el('p', { class: 'feedback-headline', text: r.headline }), el('span', { class: 'mark-chip', text: chip })]));
     (r.body || []).forEach(function (n) { panel.appendChild(n); });
     container.appendChild(panel);
   }
