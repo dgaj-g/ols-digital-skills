@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exodus and the Story of Moses</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="activity exodus on-cover">
+
+<header class="act-header ex-header" id="ex-header">
+  <div class="ex-header-row">
+    <div class="ex-title" aria-hidden="true">
+      <span class="ex-title-long">Exodus and the Story of Moses</span>
+      <span class="ex-title-short">Exodus</span>
+    </div>
+    <div class="lamps" id="lamps" role="img" aria-label="Marks so far: 0 of 10"></div>
+    <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path class="spk" d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2" stroke-linecap="round"/><path class="mute" d="M17 9l5 6M22 9l-5 6" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="sound-label" id="sound-label">Sound on</span>
+    </button>
+  </div>
+  <ol class="stages" id="stages" aria-label="Questions"></ol>
+</header>
+
+<main id="app" class="ex-main"></main>
+
+<dialog class="credits-dialog" id="credits-dialog" aria-labelledby="credits-heading">
+  <div class="credits-body">
+    <h2 id="credits-heading"></h2>
+    <p id="credits-intro"></p>
+    <ul id="credits-lines"></ul>
+    <button type="button" class="btn btn-primary" id="credits-close"></button>
+  </div>
+</dialog>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="content.js"></script>
+<script src="marker.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
