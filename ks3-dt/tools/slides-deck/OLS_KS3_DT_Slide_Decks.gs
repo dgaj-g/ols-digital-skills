@@ -3740,6 +3740,12 @@ function fitSize_(arr, boxW, avail, base, lhFactor, gap) {
 function shotUrl_(d, name) {
   return PAGES_IMG + 'deck/' + d.lesson + '/shot-' + name + '.png';
 }
+/* DFM 286: a screenshot that fails to arrive is RECORDED, never swallowed.
+   The 17 Sep Lesson 3 decks went out with nineteen slides and no pictures
+   because Pages had not been pushed yet and every insertImage miss vanished
+   inside an empty catch. Every miss goes on this list; rebuildDeck_ prints it
+   and throws, so a picture-less deck is a FAILED run in the Executions page. */
+var MISSING_ = [];
 
 /* place N framed screenshots in a row, sized to fit the space left under the
    text — never stretched, because a squashed screenshot of her own screen is
@@ -3756,7 +3762,7 @@ function shots_(slide, d, names, top, maxH) {
       if (w > cellW) { w = cellW; h = w / ratio; }
       img.setWidth(w).setHeight(h);
       img.setLeft(44 + i * (cellW + gap) + (cellW - w) / 2).setTop(top);
-    } catch (e) { /* a missing shot must never stop the whole deck building */ }
+    } catch (e) { MISSING_.push(d.lesson + ' ' + names[i]); }
   }
 }
 
@@ -3813,7 +3819,7 @@ function slideBullets_(slide, d, s, label) {
       var w = maxW, h = w / ratio;
       if (h > maxH) { h = maxH; w = h * ratio; }
       img.setWidth(w).setHeight(h).setLeft(W - 44 - w).setTop(top);
-    } catch (e) { }
+    } catch (e) { MISSING_.push(d.lesson + ' ' + s.shot); }
   } else {
     bullets_(slide, d, arr, top, s.size ? s.size - 2 : 13);
   }
@@ -3951,6 +3957,7 @@ function rebuildDeck_(lessonId) {
   /* IN PLACE: the brief prints two links to this file id and the department
      already has it shared. A new file would break both (DFM 111/62). */
   var pres = SlidesApp.openById(d.driveFileId);
+  MISSING_ = [];
   var old = pres.getSlides();
   for (var i = 0; i < old.length; i++) old[i].remove();
   var n = 0;
@@ -3965,6 +3972,13 @@ function rebuildDeck_(lessonId) {
   var file = DriveApp.getFileById(pres.getId());
   try { file.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW); }
   catch (e) { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); }
+  if (MISSING_.length) {
+    Logger.log('================ DECK NOT READY: ' + MISSING_.length + ' PICTURE(S) MISSING ================');
+    for (var mi = 0; mi < MISSING_.length; mi++) Logger.log('MISSING ' + MISSING_[mi]);
+    Logger.log('Every name above must answer 200 at ' + PAGES_IMG + 'deck/<lesson>/shot-<name>.png');
+    Logger.log('(push main so Pages serves it), then run this rebuild again. DFM 286.');
+    throw new Error(lessonId + ': ' + MISSING_.length + ' screenshot(s) did not insert: ' + MISSING_.join(', '));
+  }
   Logger.log('================ DECK REBUILT ================');
   Logger.log(d.deckName);
   Logger.log(n + ' slides written from contentVersion-packed data');
