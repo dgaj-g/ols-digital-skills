@@ -225,7 +225,7 @@ p { margin: 0 0 12px; }
   .q-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto auto auto auto auto 1fr; column-gap: 28px; row-gap: 0; align-items: start; }
   .q-label-row { grid-column: 1 / -1; grid-row: 1; margin-bottom: 10px; }
   .q-art { grid-column: 1; grid-row: 2 / span 6; }
-  .q-grid > .stem, .q-grid > .answers, .q-grid > .helper, .q-grid > .actions, .q-grid > .feedback { grid-column: 2; }
+  .q-grid > .stem, .q-grid > .answers, .q-grid > .feedback, .q-grid > .helper, .q-grid > .actions { grid-column: 2; }
   .frame { aspect-ratio: 4 / 5; max-height: none; }
 }
 
@@ -398,3 +398,6 @@ p { margin: 0 0 12px; }
   .lamp.beat, .lamp.beat .glow, .field.shake { animation: none; }
   .btn, .choice, .match-card, .chip { transition: none; }
 }
+
+/* after Check the empty tray has no job */
+.question.checked .tray-wrap { display: none; }

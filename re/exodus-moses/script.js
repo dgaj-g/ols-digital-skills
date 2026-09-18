@@ -285,27 +285,32 @@
     var comp = { A: buildMatch, B: buildChoice, C: buildWrite, D: buildChoice, E: buildChoice, F: buildShort }[q.letter];
     var api = comp(q, answers, function ready(ok) { checkBtn.disabled = !ok || state.done[i]; });
 
-    checkBtn.addEventListener('click', function () {
-      if (checkBtn.disabled || state.done[i]) return;
-      var result = api.check();          /* { marks, cls: 'right'|'wrong'|'part', headline, body:[nodes] } */
+    function applyCheck(result, replay) {   /* replay = restoring a question already checked before a reload */
       state.marks[i] = result.marks; state.done[i] = true;
       save();
       checkBtn.remove();
+      helper.remove();                   /* the act it named is done; the button names the next one */
+      sheet.classList.add('checked');
       var nextBtn = el('button', { type: 'button', class: 'btn btn-primary next-btn', text: i === Q.length - 1 ? C.buttons.finish : C.buttons.next });
       nextBtn.addEventListener('click', function () { if (i === Q.length - 1) sfx.finish(); else sfx.turn(); goto(i + 1); });
       actions.appendChild(nextBtn);
       renderFeedback(feedback, result);
       renderStages();
-      renderLamps(true);
+      renderLamps(!replay);
+      if (replay) return;
       if (result.cls === 'right') sfx.correct(); else if (result.cls === 'part') sfx.partial(); else sfx.wrong();
       var h = feedback.querySelector('.feedback-headline'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: false }); }
+    }
+    checkBtn.addEventListener('click', function () {
+      if (checkBtn.disabled || state.done[i]) return;
+      applyCheck(api.check(), false);    /* { marks, cls: 'right'|'wrong'|'part', headline, body:[nodes] } */
     });
-
     grid.appendChild(answers);
+    grid.appendChild(feedback);        /* feedback sits directly under the answers; Next comes after it */
     grid.appendChild(helper);
     grid.appendChild(actions);
-    grid.appendChild(feedback);
     sheet.appendChild(grid);
+    if (state.done[i]) applyCheck(api.check(), true);   /* reload between Check and Next: show the marked page again */
     return sheet;
   }
   function renderFeedback(container, r) {
@@ -559,11 +564,11 @@
       applyMove();
       if (!d.raf) d.raf = requestAnimationFrame(hitTest);
     }
-    function targetAt(x, y) {
+    function targetAt(d, x, y) {
       var list = document.elementsFromPoint(x, y);
       for (var i = 0; i < list.length; i++) {
         var n = list[i];
-        if (n === drag.chip || n === drag.ph || drag.chip.contains(n)) continue;
+        if (n === d.chip || n === d.ph || d.chip.contains(n)) continue;
         var card = n.closest ? n.closest('.match-card') : null;
         if (card && cards.contains(card)) return { kind: 'card', pos: +card.getAttribute('data-pos'), node: card };
         if (n.closest && n.closest('.tray-wrap') === trayWrap) return { kind: 'tray', pos: -1, node: tray };
@@ -572,7 +577,7 @@
     }
     function hitTest() {
       var d = drag; if (!d) return; d.raf = 0;
-      var t = targetAt(d.x, d.y);
+      var t = targetAt(d, d.x, d.y);
       var node = t ? t.node : null;
       if (d.hover !== node) { if (d.hover) d.hover.classList.remove('hover'); if (node) node.classList.add('hover'); d.hover = node; }
     }
@@ -607,7 +612,7 @@
       var lifted = d.lifted;
       endDrag();
       if (!lifted) return;                 /* a tap: the click handler runs the tap alternative */
-      var t = targetAt(d.x, d.y);
+      var t = targetAt(d, d.x, d.y);
       unlift(d);
       var idx = +d.chip.getAttribute('data-pair');
       if (t) place(idx, t.pos); else render();
