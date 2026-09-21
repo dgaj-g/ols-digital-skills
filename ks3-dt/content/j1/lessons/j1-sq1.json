@@ -151,6 +151,8 @@
     "cardTitle": "The Inspection",
     "checking": "Looking inside your real Drive for your folders…",
     "errorText": "The website could not be reached just then. Nothing is lost — try again in a moment.",
+    "skipText": "If the inspection still will not run, you can carry on with the side quest without it. Tell your teacher in class — they can check your folders with you.",
+    "skipLabel": "Carry on without the inspection",
     "intro": "Now prove it. The website will look inside your actual Google Drive — with your permission, that is what the tick-boxes on your first day allowed — and check the folders are really there. Nothing else is looked at: just the two folder names.",
     "checks": [
      {
