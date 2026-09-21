@@ -9788,20 +9788,45 @@ window.OLS_TRANSPORT = {
         wireClipRow(card, cfg.clip);
       }
 
+      /* ---- THE WAY OUT OF "COULD NOT RUN" (DFM 287, his find, 21 Sep 2026) ----
+         At home the driveCheck call fails and this card used to carry ONE
+         control, Try again, which ran the same call again: a pupil could press
+         it for ever and never reach the OneDrive card. That is a one-way door
+         with no door (the artefact check's precedent below: its skip button
+         reveals once `tries` reaches two). The counter lives HERE, outside
+         run(), because run() replaces the whole host on every attempt and a
+         counter inside it would be born at zero each time. The way out carries
+         no badge and no XP \u2014 `finishChunk(..., false)` saves a zero-XP event
+         with `skipped=1` so the Live tab shows who carried on unproved, and
+         the teacher can check her folders in class. Its words are content-
+         owned (the 190d/192g precedent above); the fallbacks are neutral. */
+      var tries = 0;
       function run() {
         host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
           esc(cfg.checking || 'Looking inside your Drive\u2026') + '</span></div>';
         ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
           host.innerHTML = '';
           if (!r || !r.ok) {
+            tries++;
+            var wayOut = tries >= 2;
             var errC = el('<div class="card"><h2>The inspection could not run</h2><p>' +
               (r && r.error === 'locked' ? 'This side quest is not unlocked for your class yet \u2014 check with your teacher.'
                 : esc(cfg.errorText || 'The website could not be reached just then. Nothing is lost \u2014 try again in a moment.')) +
-              '</p><button class="primary-btn" type="button">Try again</button></div>');
+              '</p>' +
+              (wayOut ? '<p class="dc-skip-note">' + esc(cfg.skipText || 'If the inspection still will not run, you can carry on without it and tell your teacher in class.') + '</p>' : '') +
+              /* the FIRST failure renders byte-for-byte what it always did
+                 (qa-clip-overlay locks that shape); only from the second does
+                 the row gain its wrapper and the way out */
+              (wayOut ? '<div class="rung-actions">' : '') +
+              '<button class="primary-btn" type="button">Try again</button>' +
+              (wayOut ? '<button class="ghost-btn dc-skip-btn" type="button">' + esc(cfg.skipLabel || 'Carry on without the inspection') + '</button></div>' : '') +
+              '</div>');
             host.appendChild(errC);
             /* by class here too, for the same reason \u2014 this card carries one
                button today and "today" is exactly how the fault above got in */
             errC.querySelector('.primary-btn').onclick = function () { host.innerHTML = ''; run(); };
+            var skipBtn = errC.querySelector('.dc-skip-btn');
+            if (skipBtn) skipBtn.onclick = function () { finishChunk(ctx, 'skipped=1', 0, false); };
             return;
           }
           var results = { school: !!r.school, dtwork: !!r.dtwork };

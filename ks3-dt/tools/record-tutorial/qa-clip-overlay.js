@@ -221,6 +221,56 @@ async function renderDrivecheck(pg, chunk, verdict, run) {
     check(!/step-clip-btn/.test(err),
       'and the could-not-run card carries NO row — that is a network matter, not a knowledge one');
 
+    /* ---------- (3b) THE WAY OUT OF COULD-NOT-RUN (DFM 287, his find, 21 Sep 2026) ----------
+       At home the driveCheck call fails and the card offered ONE control, Try again,
+       for ever. From the SECOND failure the card carries a note and a ghost button
+       that moves her on with no badge and a zero-XP `skipped=1` event. The FIRST
+       failure must stay byte-identical (section 2 above locks it). The pre-change
+       engine is the control: it must offer nothing after two failures. */
+    console.log('\n=== (3b) THE WAY OUT: after the SECOND failure, and only then (DFM 287) ===');
+    const twice = (pg) => pg.evaluate(async (ch) => {
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      document.body.innerHTML = '<div id="host"></div>';
+      const host = document.getElementById('host');
+      const events = []; let nexts = 0;
+      window.Engines.drivecheck.mount(host, ch, {
+        chunk: ch, review: false, catchup: false, lessonEntry: { num: 'S1' },
+        awardBadge: () => Promise.resolve({ ok: true }), next: () => { nexts++; },
+        saveEvent: (e) => { events.push(e); return Promise.resolve({ ok: true }); },
+        markItem: () => Promise.resolve({ ok: true }),
+        call: () => Promise.resolve({ ok: false, error: 'net' })
+      });
+      await wait(60);
+      host.querySelector('.intro-card .primary-btn').click();
+      for (let i = 0; i < 60 && !host.querySelector('.card h2'); i++) await wait(60);
+      await wait(200);
+      const first = host.innerHTML;
+      host.querySelector('.card .primary-btn').click();          // Try again
+      for (let i = 0; i < 60 && !host.querySelector('.card h2'); i++) await wait(60);
+      await wait(200);
+      const second = host.innerHTML;
+      const skip = host.querySelector('.dc-skip-btn');
+      const skipIsGhost = !!(skip && skip.classList.contains('ghost-btn') && !skip.classList.contains('primary-btn'));
+      if (skip) skip.click();
+      await wait(300);
+      return { first, second, skipIsGhost, events, nexts };
+    }, withClip);
+    const now2 = await twice(pgNow);
+    const old2 = await twice(pgOld);
+    check(/could not run/.test(now2.first) && !/dc-skip-btn/.test(now2.first) && !/dc-skip-note/.test(now2.first),
+      'after ONE failure the card has Try again and NO way out');
+    check(/dc-skip-note/.test(now2.second) && /dc-skip-btn/.test(now2.second),
+      'after the SECOND failure it carries the note AND the way-out button');
+    check(now2.second.indexOf('dc-skip-note') < now2.second.indexOf('primary-btn'),
+      '  the note sits ABOVE the buttons — what she can do before the control that does it');
+    check(now2.skipIsGhost, '  and the way out is the GHOST button, Try again stays the primary');
+    check(/still will not run|carry on/i.test(now2.second), '  the content-owned words are on the card');
+    check(now2.nexts === 1, '  pressing it moves her on (ctx.next called exactly once: ' + now2.nexts + ')');
+    check(now2.events.length === 1 && Number(now2.events[0].xp) === 0 && /skipped=1/.test(String(now2.events[0].detail)),
+      '  and saves ONE zero-XP event carrying skipped=1 — no badge, but the Live tab knows');
+    check(/could not run/.test(old2.second) && !/dc-skip-btn/.test(old2.second) && old2.nexts === 0,
+      'CONTROL: the pre-change engine offers NO way out after two failures — the fault as shipped');
+
     /* ---------- (4) THE RETRY BUTTON IS STILL WIRED (DFM 143a) ---------- */
     console.log('\n=== (4) THE RETRY BUTTON IS WIRED TO THE RETRY BUTTON (DFM 143a) ===');
     const wired = await pgNow.evaluate(async (ch) => {
