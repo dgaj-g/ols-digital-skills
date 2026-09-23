@@ -117,7 +117,7 @@ window.MAW_STRINGS = {
       drag: 'Drag a name onto the map, or tap a name and then tap the map. Place them all, then check.',
       choice: 'Choose one answer. You get one try.',
       globePin: 'Spin the globe and tap to drop your pin. You get one pin.',
-      ruler: 'Press Use the ruler, then drag from one city to the other. Spin the globe first so you can see both.'
+      ruler: 'Spin the globe so you can see both cities. Then press Use the ruler and drag from one city to the other.'
     },
     right: function (points) {
       if (points >= 2) return 'Yes. ' + points + ' points.';
@@ -154,7 +154,8 @@ window.MAW_STRINGS = {
     /* Leg 4 */
     county: function (n) { return 'Tap County ' + n; },
     feature: function (n) {
-      if (/^River |^Lough |^Lower |^Upper /.test(n)) return 'Tap the ' + n.replace(/^Lough/, 'Lough').replace(/^River/, 'River');
+      if (/^River /.test(n)) return 'Tap the ' + n;
+      if (/^Lough |^Lower |^Upper /.test(n)) return 'Tap ' + n;
       if (/Mountains$/.test(n)) return 'Tap the ' + n;
       if (n === 'Slieve Gullion') return 'Tap Slieve Gullion';
       return 'Tap the town of ' + n;

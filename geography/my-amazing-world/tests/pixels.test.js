@@ -8,7 +8,7 @@ var URL = (process.env.MAW_URL || 'http://localhost:8098/geography/my-amazing-wo
 var SHOTS = process.env.SHOTS || path.join(__dirname, 'shots');
 fs.mkdirSync(SHOTS, { recursive: true });
 var LEGS = ['oceans', 'continents', 'europe', 'ni', 'ireland', 'types', 'final'];
-var STATES = ['door'].concat(LEGS.map(function (l) { return 'brief:' + l; }), LEGS.map(function (l) { return 'play:' + l; }), LEGS.map(function (l) { return 'done:' + l; }), ['passport', 'finish']);
+var STATES = ['door'].concat(LEGS.map(function (l) { return 'brief:' + l; }), LEGS.map(function (l) { return 'play:' + l; }), LEGS.map(function (l) { return 'done:' + l; }), ['play:types:1', 'play:types:3', 'play:final:5', 'passport', 'finish']);
 var WIDTHS = [[375, 740], [768, 1024], [1280, 800]];
 var pass = 0, fail = 0;
 function ok(c, m) { if (c) pass++; else { fail++; console.log('FAIL ' + m); } }
@@ -35,14 +35,15 @@ function ok(c, m) { if (c) pass++; else { fail++; console.log('FAIL ' + m); } }
             for (var i = 0; i < d.length; i += 4 * 97) { var k = (d[i] >> 4) + ',' + (d[i + 1] >> 4) + ',' + (d[i + 2] >> 4) + ',' + (d[i + 3] >> 6); if (!seen[k]) { seen[k] = 1; n++; } }
             inked = n; }
           var photo = screen && screen.querySelector('img.maw-photo');
-          return { id: screen && screen.id, overflow: document.documentElement.scrollWidth - innerWidth, card: vis(screen && screen.querySelector('.maw-task, .paper-card')), wantsMap: !!(screen && screen.querySelector('canvas')), canvas: vis(cv), inked: inked, photo: photo ? vis(photo) && photo.naturalWidth > 0 : null, stamp: vis(document.getElementById('done-stamp')), vh: innerHeight };
+          return { id: screen && screen.id, overflow: document.documentElement.scrollWidth - innerWidth, card: vis(screen && screen.querySelector('.maw-task, .paper-card')), wantsMap: !!(screen && screen.querySelector('canvas')), canvas: vis(cv), inked: inked, photo: photo && photo.naturalWidth > 0 ? vis(photo) : null, stamp: vis(document.getElementById('done-stamp')), vh: innerHeight };
         });
-        await page.screenshot({ path: path.join(SHOTS, w[0] + '-' + st.replace(':', '-') + '.png') });
+        await page.screenshot({ path: path.join(SHOTS, w[0] + '-' + st.replace(/:/g, '-') + '.png') });
         ok(m.id, tag + ': no screen showing');
         ok(m.overflow <= 1, tag + ': page spills ' + m.overflow + ' px sideways');
         ok(m.card && m.card.top < m.vh - 40, tag + ': the task card is below the fold');
-        if (st.indexOf('play:') === 0 && st !== 'play:types') ok(m.canvas && m.inked >= 4, tag + ': the map is blank or hidden (' + m.inked + ' colours)');
+        if (st.indexOf('play:') === 0 && st.indexOf('play:types') !== 0) ok(m.canvas && m.inked >= 4, tag + ': the map is blank or hidden (' + m.inked + ' colours)');
         if (st === 'play:types') ok(m.card, tag + ': sorting board not showing');
+        if (/^play:types:/.test(st)) ok(m.photo && m.photo.top < m.vh, tag + ': the photograph is not showing above the fold');
         if (st.indexOf('done:') === 0) ok(m.stamp && m.stamp.top < m.vh * 1.2, tag + ': the stamp is not visible');
       }
       ok(errs.length === 0, w[0] + ': script errors: ' + errs.join(' | '));

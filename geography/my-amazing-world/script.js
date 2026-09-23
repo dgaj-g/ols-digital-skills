@@ -774,7 +774,7 @@
     stopClock(); run = null; task = null;
     if (what === 'door') door();
     else if (what === 'brief') { state.current = id; briefing(id); }
-    else if (what === 'play') { state.current = id; renderHeader(); beginLeg(id); }
+    else if (what === 'play') { state.current = id; renderHeader(); beginLeg(id); if (parts[2]) { run.i = +parts[2]; nextTask(); } }
     else if (what === 'done') { state.legs[id] = state.legs[id] || { points: 10, time: 60000, max: legById(id).max }; legDone(legById(id), 10, 60000); }
     else if (what === 'passport') passport();
     else if (what === 'finish') finish();
