@@ -6,6 +6,7 @@
 <title>My Amazing World</title>
 <link rel="stylesheet" href="../../style.css" />
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="print.css" media="print" />
 </head>
 <body class="activity">
 
@@ -63,15 +64,25 @@
     </div>
   </section>
 
-  <!-- ============ PLAY: THE GLOBE ============ -->
+  <!-- ============ PLAY: GLOBE OR FLAT MAP ============ -->
   <section id="s-play" class="screen" hidden>
     <div class="maw-stage">
       <div class="side">
-        <div class="task-card">
+        <div class="task-card maw-task">
           <p class="task-meta"><span id="play-count"></span> · <span id="clock"></span></p>
           <h2 id="task"></h2>
           <p id="task-sub" class="help"></p>
+          <ol id="clues" class="clues" hidden></ol>
+          <div id="tools" class="tools" hidden>
+            <button class="maw-btn maw-btn-ghost maw-btn-sm" id="tool-spin" type="button" aria-pressed="true"></button>
+            <button class="maw-btn maw-btn-ghost maw-btn-sm" id="tool-ruler" type="button" aria-pressed="false"></button>
+            <span id="ruler-read" class="ruler-read" aria-live="polite"></span>
+          </div>
           <div id="feedback" class="feedback" aria-live="polite"></div>
+          <div class="task-actions">
+            <button class="maw-btn maw-btn-ghost" id="clue-next" type="button" hidden></button>
+            <button class="maw-btn" id="task-go" type="button" hidden></button>
+          </div>
         </div>
         <div id="fact" class="fact-card" hidden>
           <p class="kicker" id="fact-kicker"></p>
@@ -79,9 +90,41 @@
           <button class="maw-btn" id="fact-next" type="button"></button>
         </div>
       </div>
-      <div class="globe-card">
-        <canvas id="globe" role="img"></canvas>
+      <div class="globe-card" id="map-card">
+        <div id="tray" class="tray" role="group" hidden></div>
+        <div class="map-wrap" id="map-wrap">
+          <canvas id="globe" role="img"></canvas>
+          <canvas id="map" role="img" hidden></canvas>
+          <div id="tiles" class="tiles"></div>
+        </div>
+        <button class="maw-btn maw-btn-ghost maw-btn-sm list-toggle" id="list-toggle" type="button" aria-expanded="false" aria-controls="list"></button>
+        <div id="list" class="list" hidden></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ LEG 6: SORT + PHOTOS ============ -->
+  <section id="s-sort" class="screen" hidden>
+    <div class="task-card maw-task sort-task">
+      <p class="task-meta"><span id="sort-count"></span> · <span id="sort-clock"></span></p>
+      <h2 id="sort-task"></h2>
+      <p id="sort-sub" class="help"></p>
+      <div id="sort-feedback" class="feedback" aria-live="polite"></div>
+      <div class="task-actions"><button class="maw-btn" id="sort-check" type="button" hidden></button></div>
+    </div>
+    <div id="sort-board">
+      <div id="sort-tray" class="tray chips" role="group"></div>
+      <div id="zones" class="zones"></div>
+    </div>
+    <div id="photo-board" hidden>
+      <figure class="photo-fig">
+        <div class="photo-wrap" id="photo-wrap"><img id="photo" class="maw-photo" alt="" /><svg id="photo-hot" class="photo-hot" aria-hidden="true"></svg></div>
+        <figcaption id="photo-credit" class="muted"></figcaption>
+      </figure>
+    </div>
+    <div id="sort-fact" class="fact-card" hidden>
+      <p id="sort-fact-text"></p>
+      <button class="maw-btn" id="sort-next" type="button"></button>
     </div>
   </section>
 
@@ -114,18 +157,45 @@
       <p id="pp-explorer" class="lead"></p>
       <p><span id="pp-points"></span> · <span id="pp-rank"></span></p>
       <div id="pp-stamps" class="stamps"></div>
-      <p id="pp-token" class="muted"></p>
+      <div class="token-box" id="pp-token-box">
+        <p class="kicker" id="pp-token-label"></p>
+        <button class="maw-btn maw-btn-ghost" id="pp-copy" type="button"></button>
+        <p class="help" id="pp-token-help"></p>
+        <p class="help" id="pp-token-select"></p>
+        <code id="pp-token" class="token"></code>
+      </div>
       <button class="maw-btn" id="pp-back" type="button"></button>
     </div>
   </section>
 
-  <!-- ============ PROTOTYPE BOUNDARY (removed in the full build) ============ -->
-  <section id="s-later" class="screen" hidden>
-    <div class="paper-card">
-      <h2 id="later-title"></h2>
-      <p id="later-text" class="lead"></p>
-      <button class="maw-btn maw-btn-ghost" id="later-passport" type="button"></button>
-      <button class="maw-btn maw-btn-ghost" id="later-door" type="button"></button>
+  <!-- ============ FINISH: CERTIFICATE ============ -->
+  <section id="s-finish" class="screen" hidden>
+    <div class="paper-card certificate" id="cert">
+      <img src="../../assets/crest.png" alt="" class="cert-crest" aria-hidden="true" />
+      <p class="kicker" id="fin-kicker"></p>
+      <h2 id="fin-title"></h2>
+      <p id="fin-awarded"></p>
+      <p class="cert-name" id="fin-name"></p>
+      <p id="fin-line" class="lead"></p>
+      <p id="fin-points" class="cert-points"></p>
+      <div id="fin-stamps" class="stamps"></div>
+      <p id="fin-date" class="muted"></p>
+      <p class="cert-token"><code id="fin-token" class="token"></code></p>
+    </div>
+    <div class="paper-card no-print fin-actions">
+      <button class="maw-btn big" id="fin-copy" type="button"></button>
+      <p class="help" id="fin-copy-help"></p>
+      <p class="help" id="fin-copy-select"></p>
+      <p>
+        <button class="maw-btn maw-btn-ghost" id="fin-print" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-passport" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-again" type="button"></button>
+      </p>
+      <div id="fin-confirm" class="confirm" hidden>
+        <p id="fin-warn"></p>
+        <button class="maw-btn maw-btn-danger" id="fin-yes" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-no" type="button"></button>
+      </div>
     </div>
   </section>
 </main>

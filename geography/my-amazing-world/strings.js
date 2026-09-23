@@ -54,6 +54,7 @@ window.MAW_STRINGS = {
     print: 'Print my certificate',
     again: 'Start again',
     finish: 'Collect my stamp',
+    certificate: 'See my certificate',
     nextLeg: function (L) { return 'Next leg: ' + L.title; },
     passport: 'Open my passport',
     back: 'Back to the race',
@@ -64,6 +65,7 @@ window.MAW_STRINGS = {
     task: function (name) { return 'Tap the ' + name; },
     sub: 'Spin the globe to find it. Your first tap counts.',
     count: function (i, n) { return 'Ocean ' + i + ' of ' + n; },
+    label: 'Ocean',
     clock: function (t) { return 'Clock ' + t; },
     right: function (name, points) {
       if (points === 3) return 'Yes — the ' + name + '. 3 points.';
@@ -131,6 +133,9 @@ window.MAW_STRINGS = {
     choiceRight: function (p) { return 'Right. ' + p + (p === 1 ? ' point.' : ' points.'); },
     choiceWrong: function (answer) { return 'No — it is ' + answer + '. 0 points.'; },
     listLead: 'Choose the right one. It scores the same as tapping the map.',
+    listDrag: 'Tap a name, then choose the letter on the map where it belongs.',
+    listRuler: 'Choose the distance. Right scores 3 points.',
+    placeAll: function (n) { return n === 1 ? 'Place 1 more name, then check.' : 'Place ' + n + ' more names, then check.'; },
     yourPin: 'your pin'
   },
   tasks: {
@@ -190,6 +195,7 @@ window.MAW_STRINGS = {
       task: 'Drag each word into Physical, Human or Environmental',
       zones: { Physical: 'Physical geography — the natural world: land, water and weather', Human: 'Human geography — people and what they do', Environmental: 'Environmental geography — how people and the natural world affect each other' },
       tray: 'Words to sort',
+      sub: 'Drag a word into a group, or tap a word and then tap the group name.',
       placeAll: function (n) { return n === 1 ? 'Place 1 more word, then check.' : 'Place ' + n + ' more words, then check.'; },
       done: function (p) { return 'Sorted. ' + p + (p === 1 ? ' point.' : ' points.'); },
       back: 'The words in the tray were in the wrong group. Place them again, then check again for 1 point each.',
@@ -202,6 +208,8 @@ window.MAW_STRINGS = {
     },
     /* Leg 7 */
     mystery: function (i) { return 'Drop a pin where you think mystery place ' + i + ' is'; },
+    partMystery: 'Mystery place',
+    rulerPart: 'Measure',
     clueLabel: function (i) { return 'Clue ' + i + ' of 3'; },
     clueCost: 'Each extra clue costs 1 point.',
     mysteryResult: function (name, km, points) { return 'It was ' + name + '. Your pin is ' + km.toLocaleString('en-GB') + ' km away. ' + points + (points === 1 ? ' point.' : ' points.'); },

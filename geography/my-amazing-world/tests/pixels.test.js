@@ -13,7 +13,7 @@ var WIDTHS = [[375, 740], [768, 1024], [1280, 800]];
 var pass = 0, fail = 0;
 function ok(c, m) { if (c) pass++; else { fail++; console.log('FAIL ' + m); } }
 (async function () {
-  var browser = await puppeteer.launch({ headless: 'new' });
+  var browser = await puppeteer.launch({ headless: 'shell' });
   try {
     for (var w of WIDTHS) {
       var page = await browser.newPage();
@@ -28,14 +28,14 @@ function ok(c, m) { if (c) pass++; else { fail++; console.log('FAIL ' + m); } }
         await new Promise(function (r) { setTimeout(r, 450); });
         var m = await page.evaluate(function () {
           var vis = function (el) { if (!el) return null; var r = el.getBoundingClientRect(), cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' ? { top: r.top + scrollY, bottom: r.bottom + scrollY, h: r.height } : null; };
-          var screen = document.querySelector('.maw-screen:not([hidden])');
+          var screen = document.querySelector('.screen:not([hidden])');
           var cv = screen && Array.prototype.filter.call(screen.querySelectorAll('canvas'), function (c) { return vis(c); })[0];
           var inked = null;
           if (cv) { var x = cv.getContext('2d'), d = x.getImageData(0, 0, cv.width, cv.height).data, seen = {}, n = 0;
             for (var i = 0; i < d.length; i += 4 * 97) { var k = (d[i] >> 4) + ',' + (d[i + 1] >> 4) + ',' + (d[i + 2] >> 4) + ',' + (d[i + 3] >> 6); if (!seen[k]) { seen[k] = 1; n++; } }
             inked = n; }
           var photo = screen && screen.querySelector('img.maw-photo');
-          return { id: screen && screen.id, overflow: document.documentElement.scrollWidth - innerWidth, card: vis(screen && screen.querySelector('.maw-task, .card')), wantsMap: !!(screen && screen.querySelector('canvas')), canvas: vis(cv), inked: inked, photo: photo ? vis(photo) && photo.naturalWidth > 0 : null, stamp: vis(document.getElementById('done-stamp')), vh: innerHeight };
+          return { id: screen && screen.id, overflow: document.documentElement.scrollWidth - innerWidth, card: vis(screen && screen.querySelector('.maw-task, .paper-card')), wantsMap: !!(screen && screen.querySelector('canvas')), canvas: vis(cv), inked: inked, photo: photo ? vis(photo) && photo.naturalWidth > 0 : null, stamp: vis(document.getElementById('done-stamp')), vh: innerHeight };
         });
         await page.screenshot({ path: path.join(SHOTS, w[0] + '-' + st.replace(':', '-') + '.png') });
         ok(m.id, tag + ': no screen showing');
