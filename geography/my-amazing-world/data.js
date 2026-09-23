@@ -18,12 +18,12 @@ window.MAW_DATA = {
   ],
   expeditions: {
     oceans: {
-      text: 'Open Google Earth over the Pacific and look at how much of the Earth is water.',
-      url: 'https://earth.google.com/web/@0,-160,0a,25000000d,35y,0h,0t,0r',
-      question: 'Which is the largest ocean?',
-      options: ['Pacific Ocean', 'Atlantic Ocean', 'Indian Ocean', 'Southern Ocean', 'Arctic Ocean'],
-      answer: 'Pacific Ocean',
-      why: 'The Pacific is bigger than all the land on Earth put together.',
+      text: 'Open Google Earth over the Arctic Ocean. It shows the real sea photographed from space — something this globe cannot show you.',
+      url: 'https://earth.google.com/web/@85,0,0a,9000000d,35y,0h,0t,0r',
+      question: 'In the photo, what covers most of the Arctic Ocean?',
+      options: ['White sea ice', 'Yellow sand', 'Green forest', 'Grey city'],
+      answer: 'White sea ice',
+      why: 'The Arctic Ocean is frozen for most of the year. The white you saw is floating sea ice.',
       points: 2
     }
   },

@@ -33,7 +33,7 @@ window.MAW_STRINGS = {
     nextLeg: function (L) { return 'Next leg: ' + L.title; },
     passport: 'Open my passport',
     back: 'Back to the race',
-    door: 'Front door',
+    door: 'Back to the start',
     answer: 'Lock in my answer'
   },
   oceans: {
