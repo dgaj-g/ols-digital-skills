@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Amazing World</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-header-inner">
+    <div class="act-title-block">
+      <h1>My Amazing World</h1>
+      <p class="act-sub">Race Around the World · Geography · Year 8</p>
+    </div>
+    <div class="act-badges">
+      <span class="badge badge-exam" id="badge-leg">Leg 1 of 7</span>
+      <span class="badge badge-unit" id="badge-points">0 pts</span>
+      <button id="btn-passport" class="maw-btn maw-btn-gold maw-btn-sm" type="button">Passport</button>
+    </div>
+  </div>
+</header>
+
+<main id="stage">
+  <nav class="leg-strip" id="leg-strip" aria-label="Legs of the race"></nav>
+
+  <!-- ============ FRONT DOOR ============ -->
+  <section id="s-door" class="screen">
+    <div class="paper-card door-card">
+      <p class="kicker" id="door-kicker"></p>
+      <h2 id="door-title"></h2>
+      <p id="door-lead" class="lead"></p>
+      <form id="door-form" novalidate>
+        <label for="name" id="name-label"></label>
+        <input id="name" type="text" maxlength="24" autocomplete="off" autocapitalize="words" />
+        <p class="help" id="name-help"></p>
+        <p class="error" id="name-error" role="alert"></p>
+        <button class="maw-btn big" type="submit" id="door-start"></button>
+      </form>
+      <div id="door-back" hidden>
+        <p id="door-back-name" class="lead"></p>
+        <p id="door-back-stamps"></p>
+        <button class="maw-btn big" id="door-carry" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="door-restart" type="button"></button>
+        <div id="restart-confirm" class="confirm" hidden>
+          <p id="restart-warn"></p>
+          <button class="maw-btn maw-btn-danger" id="restart-yes" type="button"></button>
+          <button class="maw-btn maw-btn-ghost" id="restart-no" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEG BRIEFING ============ -->
+  <section id="s-brief" class="screen" hidden>
+    <div class="paper-card">
+      <p class="kicker" id="brief-kicker"></p>
+      <h2 id="brief-title"></h2>
+      <p id="brief-text" class="lead"></p>
+      <button class="maw-btn big" id="brief-go" type="button"></button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY: THE GLOBE ============ -->
+  <section id="s-play" class="screen" hidden>
+    <div class="maw-stage">
+      <div class="side">
+        <div class="task-card">
+          <p class="task-meta"><span id="play-count"></span> · <span id="clock"></span></p>
+          <h2 id="task"></h2>
+          <p id="task-sub" class="help"></p>
+          <div id="feedback" class="feedback" aria-live="polite"></div>
+        </div>
+        <div id="fact" class="fact-card" hidden>
+          <p class="kicker" id="fact-kicker"></p>
+          <p id="fact-text"></p>
+          <button class="maw-btn" id="fact-next" type="button"></button>
+        </div>
+      </div>
+      <div class="globe-card">
+        <canvas id="globe" role="img"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEG DONE: STAMP + EXPEDITION ============ -->
+  <section id="s-done" class="screen" hidden>
+    <div class="paper-card done-card">
+      <h2 id="done-title"></h2>
+      <div class="stamp-row"><div class="stamp stamp-in" id="done-stamp" aria-hidden="true"></div></div>
+      <p id="done-points" class="lead"></p>
+      <p id="done-time"></p>
+      <div class="expedition" id="expedition">
+        <p class="kicker" id="exp-kicker"></p>
+        <p id="exp-text"></p>
+        <p><a id="exp-link" class="maw-btn maw-btn-ghost" target="_blank" rel="noopener"></a> <span class="muted" id="exp-opens"></span></p>
+        <p id="exp-then"></p>
+        <p class="q" id="exp-q"></p>
+        <div id="exp-options" class="options" role="group" aria-labelledby="exp-q"></div>
+        <button class="maw-btn" id="exp-lock" type="button" disabled></button>
+        <div id="exp-feedback" class="feedback" aria-live="polite"></div>
+      </div>
+      <button class="maw-btn big" id="done-next" type="button" hidden></button>
+    </div>
+  </section>
+
+  <!-- ============ PASSPORT ============ -->
+  <section id="s-passport" class="screen" hidden>
+    <div class="paper-card passport">
+      <p class="kicker" id="pp-kicker"></p>
+      <h2 id="pp-title"></h2>
+      <p id="pp-explorer" class="lead"></p>
+      <p><span id="pp-points"></span> · <span id="pp-rank"></span></p>
+      <div id="pp-stamps" class="stamps"></div>
+      <p id="pp-token" class="muted"></p>
+      <button class="maw-btn" id="pp-back" type="button"></button>
+    </div>
+  </section>
+
+  <!-- ============ PROTOTYPE BOUNDARY (removed in the full build) ============ -->
+  <section id="s-later" class="screen" hidden>
+    <div class="paper-card">
+      <h2 id="later-title"></h2>
+      <p id="later-text" class="lead"></p>
+      <button class="maw-btn" id="later-passport" type="button"></button>
+      <button class="maw-btn maw-btn-ghost" id="later-door" type="button"></button>
+    </div>
+  </section>
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="assets/vendor/d3.v7.min.js"></script>
+<script src="assets/vendor/topojson-client.min.js"></script>
+<script src="data.js"></script>
+<script src="strings.js"></script>
+<script src="judge.js"></script>
+<script src="engine.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
