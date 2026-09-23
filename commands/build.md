@@ -20,6 +20,12 @@ Parse the arguments:
 **Read the full playbook first — do not skim it:**
 `/Users/damiengartland/Sites/ols-digital-skills/docs/BUILD_PLAYBOOK.md`
 
+**Two windows for a NEW user-facing pattern (BUILD STANDARD in `~/.claude/CLAUDE.md`; DFM 288, 23 Sep 2026):** Damien's extra instructions say which run this is.
+- `DESIGN WINDOW ONLY` — this window is **Fable 5.1 at xhigh**. Run steps 0–6 below, then write the design deliverables (COVERAGE.md, SPEC.md, prototype/index.html at final size, judges with controls, STRINGS.md, ACCEPTANCE_TESTS.md, BUILD_PROMPT.md) into the design folder he names under Claude Work. Open **no** branch, write **no** code in the repo, open **no** PR. End by putting BUILD_PROMPT.md on his clipboard (`LC_CTYPE=en_US.UTF-8 pbcopy`) and asking the five prototype-look questions from `KS3 DT Platform/PROTOTYPE_LOOK_CHECKLIST.md`.
+- `BUILD WINDOW` — a fresh window on **Opus 5.5 at medium**; the pasted BUILD_PROMPT.md is the extra instructions. Steps 3–6 are already done in the design folder: read it first, then run steps 7–11 with the gates built before the surfaces, under the BUILD STANDARD meter.
+- Neither word given, or a REPEAT of an already-built pattern → one run, straight through, from the existing spec.
+Details: playbook → "Work token-lean", points 9–10.
+
 The playbook is the authoritative process. In summary:
 
 0. **Orient** — read the README, the shared `style.css`, `intro-loader.js`, and **skim the reference gallery** (playbook → "The reference gallery"), opening the build whose *shape* is closest to today's brief. `chemistry/mendeleev-cards/` is the house-feel reference, **not** the only bar. A fresh session needs this context.
