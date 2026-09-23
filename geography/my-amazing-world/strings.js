@@ -204,7 +204,18 @@ window.MAW_STRINGS = {
       photoRight: 'Yes. 2 points.',
       photoWrong: 'Not quite — the right place is outlined in gold. 0 points.',
       photoSub: 'Tap the photo. You get one tap.',
-      credit: function (c) { return 'Photo: ' + c; }
+      credit: function (c) { return 'Photo: ' + c; },
+      photoAsk: { city: 'Tap the human feature', delta: 'Tap the physical feature', forest: 'Tap where the forest has been cut' },
+      photoAlt: {
+        city: 'Las Vegas, USA, photographed at night from the International Space Station. Orange and white lights make a grid of streets in the middle of dark desert.',
+        delta: 'The Mississippi River delta, USA, photographed from space. A green river splits into many thin fingers of land that reach out into the blue sea.',
+        forest: 'Rondonia, Brazil, photographed from space. Dark green rainforest with a large pale brown area where straight lines of trees have been cut down.'
+      },
+      photoFact: {
+        city: 'Las Vegas is a city: people built its streets, houses and lights. A city is human geography.',
+        delta: 'This is the delta of the Mississippi River. The river drops mud where it meets the sea, and the mud builds new land. A delta is physical geography.',
+        forest: 'People cut roads into the rainforest, then clear the land beside them for farms. That makes the fishbone pattern. People changing nature is environmental geography.'
+      }
     },
     /* Leg 7 */
     mystery: function (i) { return 'Drop a pin where you think mystery place ' + i + ' is'; },

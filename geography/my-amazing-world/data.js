@@ -148,7 +148,14 @@ window.MAW_DATA = {
       { word: 'farming', zone: 'Human' }, { word: 'tourism', zone: 'Human' }, { word: 'migration', zone: 'Human' }
     ],
     /* Real satellite photographs (NASA, public domain) — see assets/photos/CREDITS.md. hot = hotspot polygon in the image's own pixels. */
-    photos: []
+    photos: [
+      { id: 'city', src: 'assets/photos/las-vegas-at-night.jpg', w: 1280, h: 852, credit: 'NASA, ISS Expedition 26 crew (public domain)',
+        hot: [[340,240],[520,140],[820,130],[930,200],[900,400],[960,580],[800,660],[660,820],[500,800],[340,600],[240,540],[320,440]] },
+      { id: 'delta', src: 'assets/photos/mississippi-delta.jpg', w: 1280, h: 1280, credit: 'NASA / USGS Landsat (public domain)',
+        hot: [[0,110],[180,180],[400,220],[600,300],[800,380],[940,520],[960,660],[840,760],[600,940],[440,960],[340,840],[500,660],[300,500],[160,320],[0,260]] },
+      { id: 'forest', src: 'assets/photos/rondonia-forest.jpg', w: 1280, h: 1001, credit: 'Jesse Allen and Robert Simmon, NASA Earth Observatory (public domain)',
+        hot: [[260,380],[400,200],[660,170],[840,260],[1000,420],[1120,600],[1200,760],[1040,880],[760,860],[580,760],[460,600],[260,520]] }
+    ]
   },
 
   /* Leg 7 — five mystery places. Three clues each, vague to specific; none names the place. */

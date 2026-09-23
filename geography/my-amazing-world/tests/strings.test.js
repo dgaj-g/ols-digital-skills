@@ -32,7 +32,7 @@ all.forEach(function (x) { ok(!US.test(x.s), 'American spelling in ' + x.key + '
 
 /* 3. Task lines name the act first. */
 var VERBS = /^(Tap|Drop|Drag|Choose|Measure|Sort|Find|Spin|Press|Place|Read|Zoom|Look|Open|Paste|Copy|Select|Print)\b/;
-all.filter(function (x) { return /^tasks\.(?!.*(Done|done|Wrong|back|shown|Kicker|part|Part|zones|tray|placeAll|photoRight|photoWrong|photoSub|photoTask|credit|clueLabel|clueCost|mysteryResult|rulerHint|rulerLive|rulerNone|rulerResult|rulerOption|tilesBack|tilesShown))/.test(x.key); })
+all.filter(function (x) { return /^tasks\.(?!.*(Done|done|Wrong|back|shown|Kicker|part|Part|zones|tray|placeAll|photoRight|photoWrong|photoAlt|photoFact|photoSub|photoTask|credit|clueLabel|clueCost|mysteryResult|rulerHint|rulerLive|rulerNone|rulerResult|rulerOption|tilesBack|tilesShown))/.test(x.key); })
   .forEach(function (x) { ok(VERBS.test(x.s), 'task line does not start with a verb: ' + x.key + ': "' + x.s + '"'); });
 Object.keys(S.brief).forEach(function (k) { ok(S.brief[k].length < 330, 'briefing ' + k + ' is over 330 characters'); });
 D.legs.forEach(function (L) { ok(S.brief[L.id], 'no briefing for leg ' + L.id); });
