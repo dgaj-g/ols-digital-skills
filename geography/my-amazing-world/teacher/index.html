@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>My Amazing World — Teacher</title>
+<link rel="stylesheet" href="../../../style.css" />
+<link rel="stylesheet" href="../style.css" />
+<link rel="stylesheet" href="teacher.css" />
+</head>
+<body class="activity">
+<header class="act-header">
+  <div class="act-header-inner">
+    <div class="act-title-block"><h1>My Amazing World</h1><p class="act-sub">Teacher page</p></div>
+  </div>
+</header>
+<main id="stage">
+  <section id="t-gate" class="screen">
+    <form class="paper-card" id="gate-form" novalidate>
+      <label for="pass" class="kicker">Teacher passcode</label>
+      <input id="pass" type="password" autocomplete="off" />
+      <p class="error" id="gate-error" role="alert"></p>
+      <button class="maw-btn big" type="submit">Enter</button>
+    </form>
+  </section>
+
+  <section id="t-main" class="screen" hidden>
+    <div class="paper-card wide">
+      <p class="kicker">Scores</p>
+      <h2>Read your class's scores</h2>
+      <label for="paste">Paste one score or a whole list, one per line. A column copied from a Form, a Sheet or Teams works.</label>
+      <textarea id="paste" rows="8" spellcheck="false" placeholder="MAW-AOIFE-H.G.15.3A.2C.E.Q-XXXXX"></textarea>
+      <button class="maw-btn" id="read" type="button">Read scores</button>
+      <button class="maw-btn maw-btn-ghost" id="csv" type="button" disabled>Download as CSV</button>
+      <p class="help" id="summary" aria-live="polite"></p>
+      <div class="table-wrap"><table id="results" hidden>
+        <thead><tr><th>Name</th><th>Total</th><th>Rank</th><th>Legs done</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <p class="help">Nothing leaves this browser. The scores are read here and never sent anywhere.</p>
+    </div>
+
+    <div class="paper-card wide">
+      <p class="kicker">Google Earth</p>
+      <h2>Expedition tour</h2>
+      <p>One Google Earth file with every Expedition stop from the seven legs. Open it in Google Earth (web: Projects → Open → Import KML file from computer) to show the class all the stops.</p>
+      <a class="maw-btn maw-btn-ghost" href="expeditions.kml" download>Download the tour (KML)</a>
+      <p class="kicker" style="margin-top:18px">Homework</p>
+      <p>The booklet's GeoGuessr homework: <a id="geoguessr" target="_blank" rel="noopener"></a></p>
+    </div>
+
+    <div class="paper-card wide">
+      <p class="kicker">Answer key</p>
+      <h2>Answers, leg by leg</h2>
+      <p class="help">Read from the game's own data, so it always matches what the pupils are marked against.</p>
+      <div id="key"></div>
+    </div>
+
+    <div class="paper-card wide">
+      <p class="kicker">Credits</p>
+      <ul class="credits">
+        <li>World maps: Natural Earth (public domain).</li>
+        <li>Northern Ireland counties, loughs and rivers: © OpenStreetMap contributors (ODbL).</li>
+        <li>Republic of Ireland counties, Upper Lough Erne, River Shannon: Natural Earth (public domain).</li>
+        <li>Leg 6 photographs: NASA / USGS (public domain) — Las Vegas at night (ISS Expedition 26 crew); Mississippi Delta (Landsat); Rondônia, Brazil (Jesse Allen and Robert Simmon, NASA Earth Observatory). Full list in assets/photos/CREDITS.md.</li>
+        <li>Map drawing: d3 and topojson-client (ISC licence).</li>
+        <li>Content: Our Amazing World pupil booklet, J. Mason.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+<script src="../assets/vendor/d3.v7.min.js"></script>
+<script src="../data.js"></script>
+<script src="../strings.js"></script>
+<script src="../judge.js"></script>
+<script src="teacher.js"></script>
+</body>
+</html>
