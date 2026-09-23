@@ -14,4 +14,4 @@ Nothing merged or published. Gates run on the final commit against `python3 -m h
 
 Hand checks: Leg 6 photos tapped inside and outside each hotspot at 1280 → 2 / 0 each, wrong tap shows red dot and gold outline. Cold read of strings.js (one packet, round 1): 2 flags (Lough article, ruler step order) — both agreed and fixed; no round 2 needed.
 
-Shots: `tests/shots/` (git-ignored), 100 screens × 3 widths.
+Shots: `tests/shots/` (git-ignored), 27 screens × 3 widths.
