@@ -1,0 +1,18 @@
+.paper-card.wide { max-width: 980px; margin-bottom: 18px; }
+#t-gate .paper-card { max-width: 420px; margin-top: 40px; }
+#pass, #paste { width: 100%; box-sizing: border-box; font: inherit; padding: 10px 12px; border: 2px solid var(--paper-line); border-radius: var(--radius-sm); background: #fff; }
+#paste { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .95rem; margin-top: 8px; }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
+#results { border-collapse: collapse; width: 100%; font-size: .95rem; }
+#results th, #results td { border-bottom: 1px solid var(--paper-2); padding: 6px 8px; text-align: left; white-space: nowrap; }
+#results th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--paper-line); }
+#results td.num { text-align: right; font-variant-numeric: tabular-nums; }
+#results tr.bad td { color: #9B1C1C; background: #FDECEC; white-space: normal; }
+.boxes { display: inline-flex; gap: 3px; }
+.boxes i { width: 12px; height: 12px; border: 1.5px solid var(--paper-line); border-radius: 3px; }
+.boxes i.on { background: var(--ols-gold); border-color: var(--ols-blue); }
+#key h3 { margin: 18px 0 6px; font-size: 1.05rem; }
+#key ul { margin: 0 0 8px; padding-left: 20px; }
+#key li { margin: 2px 0; }
+.credits li { margin: 4px 0; }
+@media (max-width: 600px) { .paper-card.wide { padding: 18px 14px; } }

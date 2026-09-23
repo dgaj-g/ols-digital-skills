@@ -1,0 +1,22 @@
+{
+  "_about": "Every place, word and question the booklet (issue-39-materials/booklet.md) asks for, grouped by where data.js keeps it. G2 fails if any item is missing from that data list, or if script.js never runs that list in a leg.",
+  "groups": [
+    { "leg": "oceans", "source": "oceans", "items": ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Southern Ocean", "Arctic Ocean"] },
+    { "leg": "continents", "source": "continents", "items": ["Africa", "Antarctica", "Asia", "Australia", "Europe", "North America", "South America"] },
+    { "leg": "europe", "source": "europe.countries", "items": ["United Kingdom", "France", "Germany", "Italy", "Spain", "Norway", "Sweden", "Finland", "Poland", "Ukraine"] },
+    { "leg": "europe", "source": "europe.capitals", "items": ["London", "Paris", "Berlin", "Madrid", "Rome"] },
+    { "leg": "europe", "source": "europe.countries", "field": "fact", "items": ["Eiffel Tower", "boot", "Berlin", "Edinburgh", "Cardiff"] },
+    { "leg": "ni", "source": "ni.counties", "items": ["Down", "Armagh", "Derry/Londonderry", "Tyrone", "Fermanagh", "Antrim"] },
+    { "leg": "ni", "source": "ni.features", "items": ["River Bann", "River Lagan", "River Foyle", "Lough Neagh", "Upper Lough Erne", "Mourne Mountains", "Slieve Gullion", "Sperrin Mountains", "Antrim Mountains"] },
+    { "leg": "ni", "source": "ni.features", "items": ["Newry", "Armagh", "Enniskillen", "Omagh", "Derry", "Antrim", "Belfast"] },
+    { "leg": "ni", "source": "ni.questions", "field": "id", "items": ["highest", "range", "largest", "longest", "basalt", "plateau", "lakelands", "second", "west", "ocean"] },
+    { "leg": "ireland", "source": "ireland.capitals", "items": ["Belfast", "Dublin"] },
+    { "leg": "ireland", "source": "ireland.provinces", "items": ["Ulster", "Munster", "Leinster", "Connacht"] },
+    { "leg": "ireland", "source": "ireland.cities", "items": ["Cork", "Galway", "Limerick", "Derry", "Waterford"] },
+    { "leg": "ireland", "source": "ireland.hills", "items": ["Carrauntoohil"] },
+    { "leg": "ireland", "source": "ireland.rivers", "items": ["River Shannon"] },
+    { "leg": "types", "source": "types.words", "field": "word", "items": ["volcano", "city", "river", "jobs", "climate", "pollution", "people", "mountains", "flooding", "farming", "tourism", "earthquakes", "migration", "deforestation"] },
+    { "leg": "final", "source": "mysteries", "items": ["Giant's Causeway", "Sydney Opera House", "Mount Everest", "the mouth of the Amazon", "New York"] },
+    { "leg": "final", "source": "ruler", "field": "km", "items": [5420] }
+  ]
+}

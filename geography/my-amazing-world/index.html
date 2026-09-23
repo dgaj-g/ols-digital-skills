@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Amazing World</title>
+<link rel="stylesheet" href="../../style.css" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="print.css" media="print" />
+</head>
+<body class="activity">
+
+<header class="act-header">
+  <div class="act-header-inner">
+    <div class="act-title-block">
+      <h1>My Amazing World</h1>
+      <p class="act-sub" id="act-sub"></p>
+    </div>
+    <div class="act-badges">
+      <span class="badge badge-exam" id="badge-leg"></span>
+      <span class="badge badge-unit" id="badge-points"></span>
+      <button id="btn-passport" class="maw-btn maw-btn-gold maw-btn-sm" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="stage">
+  <nav class="leg-strip" id="leg-strip"></nav>
+
+  <!-- ============ FRONT DOOR ============ -->
+  <section id="s-door" class="screen">
+    <div class="paper-card door-card">
+      <p class="kicker" id="door-kicker"></p>
+      <h2 id="door-title"></h2>
+      <p id="door-lead" class="lead"></p>
+      <form id="door-form" novalidate>
+        <label for="name" id="name-label"></label>
+        <input id="name" type="text" maxlength="24" autocomplete="off" autocapitalize="words" />
+        <p class="help" id="name-help"></p>
+        <p class="error" id="name-error" role="alert"></p>
+        <button class="maw-btn big" type="submit" id="door-start"></button>
+      </form>
+      <div id="door-back" hidden>
+        <p id="door-back-name" class="lead"></p>
+        <p id="door-back-stamps"></p>
+        <button class="maw-btn big" id="door-carry" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="door-restart" type="button"></button>
+        <div id="restart-confirm" class="confirm" hidden>
+          <p id="restart-warn"></p>
+          <button class="maw-btn maw-btn-danger" id="restart-yes" type="button"></button>
+          <button class="maw-btn maw-btn-ghost" id="restart-no" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEG BRIEFING ============ -->
+  <section id="s-brief" class="screen" hidden>
+    <div class="paper-card">
+      <p class="kicker" id="brief-kicker"></p>
+      <h2 id="brief-title"></h2>
+      <p id="brief-text" class="lead"></p>
+      <button class="maw-btn big" id="brief-go" type="button"></button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY: GLOBE OR FLAT MAP ============ -->
+  <section id="s-play" class="screen" hidden>
+    <div class="maw-stage">
+      <div class="side">
+        <div class="task-card maw-task">
+          <p class="task-meta"><span id="play-count"></span> · <span id="clock"></span></p>
+          <h2 id="task"></h2>
+          <p id="task-sub" class="help"></p>
+          <ol id="clues" class="clues" hidden></ol>
+          <div id="tools" class="tools" hidden>
+            <button class="maw-btn maw-btn-ghost maw-btn-sm" id="tool-spin" type="button" aria-pressed="true"></button>
+            <button class="maw-btn maw-btn-ghost maw-btn-sm" id="tool-ruler" type="button" aria-pressed="false"></button>
+            <span id="ruler-read" class="ruler-read" aria-live="polite"></span>
+          </div>
+          <div id="feedback" class="feedback" aria-live="polite"></div>
+          <div class="task-actions">
+            <button class="maw-btn maw-btn-ghost" id="clue-next" type="button" hidden></button>
+            <button class="maw-btn" id="task-go" type="button" hidden></button>
+          </div>
+        </div>
+        <div id="fact" class="fact-card" hidden>
+          <p class="kicker" id="fact-kicker"></p>
+          <p id="fact-text"></p>
+          <button class="maw-btn" id="fact-next" type="button"></button>
+        </div>
+      </div>
+      <div class="globe-card" id="map-card">
+        <div id="tray" class="tray" role="group" hidden></div>
+        <div class="map-wrap" id="map-wrap">
+          <canvas id="globe" role="img"></canvas>
+          <canvas id="map" role="img" hidden></canvas>
+          <div id="tiles" class="tiles"></div>
+        </div>
+        <button class="maw-btn maw-btn-ghost maw-btn-sm list-toggle" id="list-toggle" type="button" aria-expanded="false" aria-controls="list"></button>
+        <div id="list" class="list" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEG 6: SORT + PHOTOS ============ -->
+  <section id="s-sort" class="screen" hidden>
+    <div class="task-card maw-task sort-task">
+      <p class="task-meta"><span id="sort-count"></span> · <span id="sort-clock"></span></p>
+      <h2 id="sort-task"></h2>
+      <p id="sort-sub" class="help"></p>
+      <div id="sort-feedback" class="feedback" aria-live="polite"></div>
+      <div class="task-actions"><button class="maw-btn" id="sort-check" type="button" hidden></button></div>
+    </div>
+    <div id="sort-board">
+      <div id="sort-tray" class="tray chips" role="group"></div>
+      <div id="zones" class="zones"></div>
+    </div>
+    <div id="photo-board" hidden>
+      <figure class="photo-fig">
+        <div class="photo-wrap" id="photo-wrap"><img id="photo" class="maw-photo" alt="" /><svg id="photo-hot" class="photo-hot" aria-hidden="true"></svg></div>
+        <figcaption id="photo-credit" class="muted"></figcaption>
+      </figure>
+    </div>
+    <div id="sort-fact" class="fact-card" hidden>
+      <p id="sort-fact-text"></p>
+      <button class="maw-btn" id="sort-next" type="button"></button>
+    </div>
+  </section>
+
+  <!-- ============ LEG DONE: STAMP + EXPEDITION ============ -->
+  <section id="s-done" class="screen" hidden>
+    <div class="paper-card done-card">
+      <h2 id="done-title"></h2>
+      <div class="stamp-row"><div class="stamp stamp-in" id="done-stamp" aria-hidden="true"></div></div>
+      <p id="done-points" class="lead"></p>
+      <p id="done-time"></p>
+      <div class="expedition" id="expedition">
+        <p class="kicker" id="exp-kicker"></p>
+        <p id="exp-text"></p>
+        <p><a id="exp-link" class="maw-btn maw-btn-ghost" target="_blank" rel="noopener"></a> <span class="muted" id="exp-opens"></span></p>
+        <p id="exp-then"></p>
+        <p class="q" id="exp-q"></p>
+        <div id="exp-options" class="options" role="group" aria-labelledby="exp-q"></div>
+        <button class="maw-btn" id="exp-lock" type="button" disabled></button>
+        <div id="exp-feedback" class="feedback" aria-live="polite"></div>
+      </div>
+      <button class="maw-btn big" id="done-next" type="button" hidden></button>
+    </div>
+  </section>
+
+  <!-- ============ PASSPORT ============ -->
+  <section id="s-passport" class="screen" hidden>
+    <div class="paper-card passport">
+      <p class="kicker" id="pp-kicker"></p>
+      <h2 id="pp-title"></h2>
+      <p id="pp-explorer" class="lead"></p>
+      <p><span id="pp-points"></span> · <span id="pp-rank"></span></p>
+      <div id="pp-stamps" class="stamps"></div>
+      <div class="token-box" id="pp-token-box">
+        <p class="kicker" id="pp-token-label"></p>
+        <button class="maw-btn maw-btn-ghost" id="pp-copy" type="button"></button>
+        <p class="help" id="pp-token-help"></p>
+        <p class="help" id="pp-token-select"></p>
+        <code id="pp-token" class="token"></code>
+      </div>
+      <button class="maw-btn" id="pp-back" type="button"></button>
+    </div>
+  </section>
+
+  <!-- ============ FINISH: CERTIFICATE ============ -->
+  <section id="s-finish" class="screen" hidden>
+    <div class="paper-card certificate" id="cert">
+      <img src="../../assets/crest.png" alt="" class="cert-crest" aria-hidden="true" />
+      <p class="kicker" id="fin-kicker"></p>
+      <h2 id="fin-title"></h2>
+      <p id="fin-awarded"></p>
+      <p class="cert-name" id="fin-name"></p>
+      <p id="fin-line" class="lead"></p>
+      <p id="fin-points" class="cert-points"></p>
+      <div id="fin-stamps" class="stamps"></div>
+      <p id="fin-date" class="muted"></p>
+      <p class="cert-token"><code id="fin-token" class="token"></code></p>
+    </div>
+    <div class="paper-card no-print fin-actions">
+      <button class="maw-btn big" id="fin-copy" type="button"></button>
+      <p class="help" id="fin-copy-help"></p>
+      <p class="help" id="fin-copy-select"></p>
+      <p>
+        <button class="maw-btn maw-btn-ghost" id="fin-print" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-passport" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-again" type="button"></button>
+      </p>
+      <div id="fin-confirm" class="confirm" hidden>
+        <p id="fin-warn"></p>
+        <button class="maw-btn maw-btn-danger" id="fin-yes" type="button"></button>
+        <button class="maw-btn maw-btn-ghost" id="fin-no" type="button"></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="act-footer">
+  <img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" />
+  <span>OLS Digital Skills</span>
+</footer>
+
+<script src="assets/vendor/d3.v7.min.js"></script>
+<script src="assets/vendor/topojson-client.min.js"></script>
+<script src="data.js"></script>
+<script src="strings.js"></script>
+<script src="judge.js"></script>
+<script src="engine.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>

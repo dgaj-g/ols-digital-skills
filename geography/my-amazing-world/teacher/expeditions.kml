@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>My Amazing World — Expedition stops</name>
+    <Placemark>
+      <name>Leg 1 — Oceans</name>
+      <description>Open Google Earth over the Arctic Ocean. It shows the real sea photographed from space — something this globe cannot show you. Question: In the photo, what covers most of the Arctic Ocean? Answer: White sea ice.</description>
+      <LookAt><longitude>0</longitude><latitude>85</latitude><altitude>0</altitude><range>9000000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>0,85,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 2 — Continents</name>
+      <description>Open Google Earth over the north of Africa. Look at the colour of the land from space. Question: What colour is most of the land there, and why? Answer: Sandy yellow — the Sahara Desert.</description>
+      <LookAt><longitude>12</longitude><latitude>23</latitude><altitude>0</altitude><range>6000000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>12,23,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 3 — Europe</name>
+      <description>Open Google Earth over the Alps, tilted so you see the mountains in 3D. Country names show on the map. Question: The Alps run through which of these? Answer: Italy and Switzerland.</description>
+      <LookAt><longitude>10.5</longitude><latitude>46.5</latitude><altitude>0</altitude><range>600000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>10.5,46.5,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 4 — Northern Ireland</name>
+      <description>Open Google Earth right over the Giant's Causeway. Zoom in as close as you can. Question: What shape are the stones? Answer: Six-sided columns.</description>
+      <LookAt><longitude>-6.5116</longitude><latitude>55.2408</latitude><altitude>0</altitude><range>400</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>-6.5116,55.2408,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 5 — Ireland</name>
+      <description>Open Google Earth over the middle of Ireland. Ireland is called the Emerald Isle. Question: From above, what colour is most of the land? Answer: Green — fields and grass.</description>
+      <LookAt><longitude>-7.8</longitude><latitude>53.3</latitude><altitude>0</altitude><range>400000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>-7.8,53.3,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 6 — Types of geography</name>
+      <description>Open Google Earth over Rondônia, a state in Brazil in the Amazon rainforest. Zoom in. Question: What pattern is cut into the forest? Answer: Straight lines like a fishbone — roads with cleared farmland.</description>
+      <LookAt><longitude>-63</longitude><latitude>-10.5</latitude><altitude>0</altitude><range>300000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>-63,-10.5,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Leg 7 — Explorer Challenge</name>
+      <description>Open Google Earth over Manhattan, in New York City. Question: What is the big green rectangle in the middle of the city? Answer: A park.</description>
+      <LookAt><longitude>-73.96</longitude><latitude>40.78</latitude><altitude>0</altitude><range>12000</range><tilt>0</tilt><heading>0</heading></LookAt>
+      <Point><coordinates>-73.96,40.78,0</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>
