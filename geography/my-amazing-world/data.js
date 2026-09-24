@@ -197,8 +197,9 @@ window.MAW_DATA = {
       points: 2
     },
     ni: {
-      text: "Open Google Earth right over the Giant's Causeway. Zoom in as close as you can.",
-      url: 'https://earth.google.com/web/@55.2408,-6.5116,0a,400d,35y,0h,0t,0r', at: [-6.5116, 55.2408],
+      text: "Open Street View at the Giant's Causeway. You are standing on the stones. Look down at your feet, then drag to look around.",
+      /* Street View, not Google Earth: from above, the columns do not show (issue 39 feedback). */
+      url: 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=55.2408,-6.5116&heading=0&pitch=-45&fov=90', streetView: true, at: [-6.5116, 55.2408],
       question: 'What shape are the stones?',
       options: ['Six-sided columns', 'Round pebbles', 'Flat sand', 'Square bricks'],
       answer: 'Six-sided columns',

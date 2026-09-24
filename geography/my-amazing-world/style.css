@@ -96,6 +96,7 @@ button { font-family: inherit; }
 .globe-card canvas#map { border-radius: var(--radius-sm); cursor: crosshair; }
 .tiles { position: absolute; left: 0; top: 0; pointer-events: none; }
 .tiles .tile, .tiles .letter-mark { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; }
+.tiles.locked .tile { pointer-events: none; }
 .tray { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; margin-bottom: 10px; border: 2px dashed rgba(255,255,255,.45); border-radius: var(--radius-sm); min-height: 48px; }
 .tile { font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 999px; border: 2px solid var(--ols-gold); background: var(--paper); color: var(--ols-blue); cursor: grab; touch-action: none; user-select: none; }
 .tile[aria-pressed=true] { background: var(--ols-gold); box-shadow: 0 0 0 3px #fff; }
