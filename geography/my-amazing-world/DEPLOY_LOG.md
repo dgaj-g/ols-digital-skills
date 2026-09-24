@@ -11,6 +11,7 @@ Nothing merged or published. Gates run on the final commit against `python3 -m h
 | G4 data (`tests/data.test.js`) | 32 counties, 4 provinces, 7 expeditions, 3 real credited photos, maxima total 232 | 99 / 0 | drop a county → FAILS |
 | G5 pixels (`tests/pixels.test.js`) | every screen at 375 / 768 / 1280: no sideways spill, card above the fold, map inked, photo showing, stamp visible | 300 / 0 | `MAW_BLANK=1` (maps hidden) → 21 FAIL |
 | A12 teacher (`tests/teacher.test.js`) | passcode gate, 3 pasted tokens → 2 rows + 1 red, sort, CSV, KML, GeoGuessr link | 13 / 0 | gate forced open → FAILS; verifier fooled → FAILS |
+| G6 feedback (`tests/feedback.test.js`) | the teacher's first-use report (24 Sep 2026): loughs still water with every county painted, provinces board says provinces, tap a placed name to take it off, fast drags never leave a name stuck, nothing over Cork | 20 / 0 | the published build before the fix → 9 FAIL (loughs hidden, names stuck in the page, no undo) |
 
 Hand checks: Leg 6 photos tapped inside and outside each hotspot at 1280 → 2 / 0 each, wrong tap shows red dot and gold outline. Cold read of strings.js (one packet, round 1): 2 flags (Lough article, ruler step order) — both agreed and fixed; no round 2 needed.
 

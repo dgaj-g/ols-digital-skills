@@ -90,6 +90,7 @@ window.MAW_STRINGS = {
   expedition: {
     title: 'Expedition',
     open: 'Open Google Earth',
+    openStreetView: 'Open Street View',
     opens: '(opens in a new tab)',
     then: 'Then come back and answer the question.',
     right: function (p) { return 'Right. ' + p + (p === 1 ? ' point.' : ' points.'); },
@@ -114,7 +115,7 @@ window.MAW_STRINGS = {
     sub: {
       tap: 'Drag the map to move it and pinch or scroll to zoom. Your first tap counts.',
       pin: 'Tap the map to drop your pin. You get one pin, so zoom in first if you need to.',
-      drag: 'Drag a name onto the map, or tap a name and then tap the map. Place them all, then check.',
+      drag: 'Drag a name onto the map, or tap a name and then tap the map. To move a name, drag it again. To take it off, tap it. Place them all, then check.',
       choice: 'Choose one answer. You get one try.',
       globePin: 'Spin the globe and tap to drop your pin. You get one pin.',
       ruler: 'Spin the globe so you can see both cities. Then press Use the ruler and drag from one city to the other.'
@@ -142,6 +143,7 @@ window.MAW_STRINGS = {
     /* Leg 2 */
     continents: 'Drag each name onto its continent',
     continentsDone: function (p) { return 'All seven continents placed. ' + p + (p === 1 ? ' point.' : ' points.'); },
+    provincesDone: function (p) { return 'All four provinces placed. ' + p + (p === 1 ? ' point.' : ' points.'); },
     tileWrong: function (tile, on) { return tile + ' was on ' + on + '.'; },
     tilesBack: 'The names in the tray were in the wrong place. Place them again, then check again for 1 point each.',
     tilesShown: 'The last ones are now shown in the right place. 0 points for those.',

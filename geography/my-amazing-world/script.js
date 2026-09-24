@@ -114,7 +114,7 @@
     show(task.screen);
     $('fact').hidden = true; $('sort-fact').hidden = true;
     $('task-go').hidden = true; $('task-go').disabled = false; $('clue-next').hidden = true; $('clues').hidden = true; $('tools').hidden = true;
-    $('choices').hidden = true; $('tray').hidden = true; $('tiles').innerHTML = ''; $('list').innerHTML = '';
+    $('choices').hidden = true; $('tray').hidden = true; $('tiles').innerHTML = ''; $('tiles').classList.remove('locked'); document.querySelectorAll('body > .tile').forEach(function (x) { x.remove(); }); $('list').innerHTML = '';
     fb(null);
     if (sort) { SETUP[task.type](task); return; }
     $('play-count').textContent = S.play.part(task.part, task.n, task.of);
@@ -362,29 +362,40 @@
     $('task-sub').textContent = left > 0 ? S.play.sub.drag + ' ' + S.play.placeAll(left) : S.play.sub.drag;
     layoutTiles(t);
   }
+  /* Moves and the drop are heard on window: a quick drag outruns the tile, and a drop heard only on the tile
+     left it stuck on the page, over the next task's map (issue 39 feedback). */
   function tileDrag(t, b, name) {
     var st = null;
     b.addEventListener('pointerdown', function (e) {
-      if (t.done[name] || t.locked) return;
-      st = { x: e.clientX, y: e.clientY, moved: false }; b.setPointerCapture(e.pointerId);
+      if (t.done[name] || t.locked || st) return;
+      e.preventDefault();
+      st = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
     });
-    b.addEventListener('pointermove', function (e) {
-      if (!st) return;
+    function move(e) {
+      if (!st || e.pointerId !== st.id) return;
       if (!st.moved && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 6) { st.moved = true; b.classList.add('dragging'); document.body.appendChild(b); }
       if (st.moved) { b.style.left = (e.clientX - b.offsetWidth / 2) + 'px'; b.style.top = (e.clientY - b.offsetHeight / 2) + 'px'; }
-    });
+    }
     function end(e) {
-      if (!st) return; var moved = st.moved; st = null;
-      if (!moved) { selectTile(t, name); return; }
+      if (!st || e.pointerId !== st.id) return;
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', end); window.removeEventListener('pointercancel', end);
+      var moved = st.moved; st = null;
+      if (!moved) { if (e.type === 'pointerup') tapTile(t, name); return; }
       b.classList.remove('dragging'); b.style.left = b.style.top = '';
       var r = $('map').getBoundingClientRect();
-      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+      if (e.type === 'pointerup' && !t.locked && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
         var ll = map.invert([e.clientX - r.left, e.clientY - r.top]), reg = ll && t.regionOf(ll);
         if (reg && t.anchors[reg]) { place(t, name, reg); return; }
       }
       delete t.placed[name]; dragStatus(t);
     }
-    b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
+  }
+  /* Tapping a name on the map takes it off, back to the tray; tapping one in the tray picks it up. */
+  function tapTile(t, name) {
+    if (t.locked || t.done[name]) return;
+    if (t.placed[name]) { delete t.placed[name]; t.sel = null; Object.keys(t.el).forEach(function (n) { t.el[n].setAttribute('aria-pressed', 'false'); }); dragStatus(t); return; }
+    selectTile(t, name);
   }
   function selectTile(t, name) {
     t.sel = t.sel === name ? null : name;
@@ -423,7 +434,7 @@
     var r = J.judgePlacement(open, t.round, 2);
     award(r.points);
     r.right.forEach(function (n) { t.done[n] = true; t.el[n].classList.add('right'); t.el[n].disabled = true; });
-    if (!r.wrong.length) { fb(S.tasks.continentsDone(run.points), 'good'); dragEnd(t); return; }
+    if (!r.wrong.length) { fb((t.doneLine || S.tasks.continentsDone)(run.points), 'good'); dragEnd(t); return; }
     var lines = r.wrong.map(function (n) { return S.tasks.tileWrong(n, t.placed[n]); }).join(' ');
     if (t.round === 1) {
       r.wrong.forEach(function (n) { delete t.placed[n]; });
@@ -432,7 +443,7 @@
     r.wrong.forEach(function (n) { t.placed[n] = n; t.done[n] = true; t.el[n].classList.add('shown'); t.el[n].disabled = true; });
     fb(lines + ' ' + S.tasks.tilesShown, 'info'); dragEnd(t);
   }
-  function dragEnd(t) { $('task-go').hidden = true; layoutTiles(t); resolved(t.kicker, t.fact); }
+  function dragEnd(t) { $('task-go').hidden = true; $('tiles').classList.add('locked'); layoutTiles(t); resolved(t.kicker, t.fact); }
 
   /* ---------- Leg 6: sorting board ---------- */
   function sortSetup(t) {
@@ -457,21 +468,27 @@
   }
   function chipDrag(t, b, w) {
     var st = null;
-    b.addEventListener('pointerdown', function (e) { if (t.done[w] || t.locked) return; st = { x: e.clientX, y: e.clientY, moved: false }; b.setPointerCapture(e.pointerId); });
-    b.addEventListener('pointermove', function (e) {
-      if (!st) return;
+    b.addEventListener('pointerdown', function (e) {
+      if (t.done[w] || t.locked || st) return;
+      e.preventDefault();
+      st = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+    });
+    function move(e) {
+      if (!st || e.pointerId !== st.id) return;
       if (!st.moved && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 6) { st.moved = true; b.classList.add('dragging'); document.body.appendChild(b); }
       if (st.moved) { b.style.left = (e.clientX - b.offsetWidth / 2) + 'px'; b.style.top = (e.clientY - b.offsetHeight / 2) + 'px'; }
-    });
-    function end(e) {
-      if (!st) return; var moved = st.moved; st = null;
-      if (!moved) { t.sel = t.sel === w ? null : w; sortLayout(t); return; }
-      b.classList.remove('dragging'); b.style.left = b.style.top = ''; b.style.visibility = 'hidden';
-      var under = document.elementFromPoint(e.clientX, e.clientY); b.style.visibility = '';
-      var z = under && under.closest && under.closest('.zone');
-      if (z) sortPlace(t, w, z.dataset.zone); else { delete t.placed[w]; sortLayout(t); }
     }
-    b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end);
+    function end(e) {
+      if (!st || e.pointerId !== st.id) return;
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', end); window.removeEventListener('pointercancel', end);
+      var moved = st.moved; st = null;
+      if (!moved) { if (e.type === 'pointerup') { t.sel = t.sel === w ? null : w; sortLayout(t); } return; }
+      b.classList.remove('dragging'); b.style.left = b.style.top = ''; b.style.visibility = 'hidden';
+      var under = e.type === 'pointerup' && document.elementFromPoint(e.clientX, e.clientY); b.style.visibility = '';
+      var z = under && under.closest && under.closest('.zone');
+      if (z && !t.locked) sortPlace(t, w, z.dataset.zone); else { delete t.placed[w]; sortLayout(t); }
+    }
   }
   function sortPlace(t, w, z) { t.placed[w] = z; t.sel = null; sortLayout(t); }
   function sortLayout(t) {
@@ -522,7 +539,7 @@
     ni: function () {
       var ni = W.irl.counties.filter(function (f) { return f.properties.country === 'Northern Ireland'; }), roi = W.irl.counties.filter(function (f) { return f.properties.country !== 'Northern Ireland'; });
       return { key: 'ni', projection: d3.geoConicConformal().rotate([6.7, 0]).parallels([54, 55.5]), fit: box(-8.3, 53.95, -5.3, 55.45), aspect: 0.78, zoomMax: 3,
-        fills: [{ features: roi, fill: CONTEXT, stroke: '#B8AE93', lw: 0.6 }, { features: ni, fill: LAND, stroke: EDGE, lw: 1 }, { features: W.irl.loughs, fill: WATER, stroke: '#1F4F8F', lw: 0.6 }],
+        fills: [{ features: roi, fill: CONTEXT, stroke: '#B8AE93', lw: 0.6 }, { features: ni, fill: LAND, stroke: EDGE, lw: 1 }, { features: W.irl.loughs, fill: WATER, stroke: '#1F4F8F', lw: 0.6, over: true }],
         lines: [{ features: W.irl.rivers, stroke: WATER, lw: 2.4 }] };
     },
     ireland: function () { return irlScene('ireland', false); },
@@ -530,7 +547,7 @@
   };
   function irlScene(key, fixed) {
     return { key: key, projection: d3.geoConicConformal().rotate([8, 0]).parallels([52, 55]), fit: { type: 'FeatureCollection', features: W.irl.counties }, aspect: 1.22, zoomMax: 3, fixed: fixed,
-      fills: [{ features: W.irl.counties, fill: LAND, stroke: EDGE, lw: 0.7 }, { features: W.irl.countries, fill: 'rgba(0,0,0,0)', stroke: '#5A4A2A', lw: 1.8 }, { features: W.irl.loughs, fill: WATER, stroke: '#1F4F8F', lw: 0.6 }],
+      fills: [{ features: W.irl.counties, fill: LAND, stroke: EDGE, lw: 0.7 }, { features: W.irl.countries, fill: 'rgba(0,0,0,0)', stroke: '#5A4A2A', lw: 1.8 }, { features: W.irl.loughs, fill: WATER, stroke: '#1F4F8F', lw: 0.6, over: true }],
       lines: [{ features: W.irl.rivers, stroke: WATER, lw: 2 }] };
   }
 
@@ -599,7 +616,7 @@
         region('Republic of Ireland', T.south, function (f) { return f.properties.name === 'Republic of Ireland'; }, X.south, countryNames, W.irl.countries)
       ];
       D.ireland.capitals.forEach(function (c) { list.push({ type: 'pin', scene: 'ireland', target: c.name, at: c.at, bands: J.IRELAND_BANDS, text: T.pin(c.name, c.of), sub: S.play.sub.pin, pool: cityNames.concat(I.capitals.map(function (x) { return x.name; })) }); });
-      list.push({ type: 'drag', scene: 'irelandFixed', tiles: D.ireland.provinces.map(function (p) { return p.name; }), anchors: anchors, text: T.provinces, kicker: T.provinces, regionOf: function (ll) { var f = J.regionAt(W.irl.provinces, ll); return f ? f.properties.name : null; } });
+      list.push({ type: 'drag', scene: 'irelandFixed', tiles: D.ireland.provinces.map(function (p) { return p.name; }), anchors: anchors, text: T.provinces, kicker: T.provinces, doneLine: S.tasks.provincesDone, regionOf: function (ll) { var f = J.regionAt(W.irl.provinces, ll); return f ? f.properties.name : null; } });
       var carr = I.hills[0];
       list.push({ type: 'feature', scene: 'ireland', target: carr.name, text: T.carrauntoohil, sub: S.play.sub.tap, hills: hills, candidates: D.ireland.hills.map(function (h) { return { name: h.name, at: h.at, r: h.r }; }), fact: X.carrauntoohil, pool: I.hills.map(function (h) { return h.name; }) });
       list.push(region(carr.county, T.kerry, function (f) { return f.properties.name === carr.county; }, null));
@@ -649,7 +666,7 @@
     $('done-next').onclick = function () { if (next) startLeg(next.id); else finish(); };
     $('expedition').hidden = false; $('done-next').hidden = true;
     $('done-points').textContent = S.legDone.points(points, L.max - exp.points);
-    $('exp-text').textContent = exp.text; $('exp-link').textContent = S.expedition.open; $('exp-link').href = exp.url; $('exp-q').textContent = exp.question;
+    $('exp-text').textContent = exp.text; $('exp-link').textContent = (exp.streetView ? S.expedition.openStreetView : S.expedition.open); $('exp-link').href = exp.url; $('exp-q').textContent = exp.question;
     var box = $('exp-options'); box.innerHTML = ''; var chosen = null;
     shuffle(exp.options.slice()).forEach(function (opt) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'option'; b.textContent = opt; b.setAttribute('aria-pressed', 'false');
@@ -763,7 +780,7 @@
         task.km = Math.round(J.km(r.a, r.b)); $('ruler-read').textContent = S.tasks.rulerLive(task.km); $('task-go').disabled = false;
       } });
       map = new window.MAW_FlatMap($('map'), { onTap: onMapTap, onView: function () { if (task && task.type === 'drag') layoutTiles(task); } });
-      if (/[?&]test=1/.test(location.search)) window.MAW_TEST = { show: testShow };
+      if (/[?&]test=1/.test(location.search)) window.MAW_TEST = { show: testShow, map: map, task: function () { return task; } };
       door();
     });
   }

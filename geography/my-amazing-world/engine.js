@@ -259,11 +259,14 @@
     ctx.fillStyle = g; ctx.fillRect(0, 0, this.w, this.h);
     ctx.setTransform(this.dpr * k, 0, 0, this.dpr * k, this.dpr * this.tx, this.dpr * this.ty);
     if (sc.sphere) { ctx.beginPath(); p({ type: 'Sphere' }); ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill(); }
-    (sc.fills || []).forEach(function (L) {
+    function fill(L) {
       L.features.forEach(function (f) { ctx.beginPath(); p(f); ctx.fillStyle = L.fill; ctx.fill(); });
       ctx.beginPath(); L.features.forEach(function (f) { p(f); }); ctx.lineWidth = (L.lw || 0.8) / k; ctx.strokeStyle = L.stroke; ctx.stroke();
-    });
+    }
+    /* Water (over: true) goes on top of painted counties, or a found county would hide its loughs. */
+    (sc.fills || []).forEach(function (L) { if (!L.over) fill(L); });
     this.painted.forEach(function (x) { ctx.beginPath(); p(x.feature); ctx.fillStyle = x.fill; ctx.fill(); ctx.lineWidth = 1 / k; ctx.strokeStyle = '#fff'; ctx.stroke(); });
+    (sc.fills || []).forEach(function (L) { if (L.over) fill(L); });
     (sc.lines || []).forEach(function (L) { ctx.beginPath(); L.features.forEach(function (f) { p(f); }); ctx.lineWidth = (L.lw || 2) / k; ctx.strokeStyle = L.stroke; ctx.lineJoin = 'round'; ctx.stroke(); });
     if (this.highlight) {
       ctx.beginPath(); p(this.highlight);
