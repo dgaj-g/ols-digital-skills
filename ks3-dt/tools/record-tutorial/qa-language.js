@@ -656,7 +656,7 @@ function readFirstCandidates(rawText) {
    from a list somebody keeps (DFM 271). Every string under a key that did not
    exist then is a candidate, because a surface nobody has ever read is exactly
    where an unjudged sentence hides. */
-const NEW_SURFACE_BASE = process.env.KS3DT_SURFACE_BASE || '7d9c274';
+const NEW_SURFACE_BASE = process.env.KS3DT_SURFACE_BASE || '64b65d9';  /* V58's content — re-pinned after the 23 Sep 2026 history purge (was 7d9c274; ks3-dt/content identical across 64b65d9..98bf33d) */
 /* THE PACKER TRANSFORMS TWO SUBTREES, so comparing them across the two sides
    would report the transformation as new surfaces: `keys` is encrypted into
    `keysEnc` (every answer-key id would read as brand new), and `teacherBrief` is

@@ -97,7 +97,7 @@ timer never fired, the only consequence is a highlight that stays on screen.
 | `engines.js :: left :: 1500` | How long the case-closed toast stays up. | A toast; the board behind it is live. |
 | `engines.js :: short :: 1000` | Clearing the flash on the studio note box. | Cosmetic. |
 | `engines.js :: short :: 700` | The beat before the studio desk is redrawn after shipping. | Cosmetic. |
-| `engines.js :: tries :: 900` | The stagger on the ship animation. | Cosmetic. |
+| `engines.js :: shipWayOut :: 900` | The stagger on the ship animation. | Cosmetic. |
 | `engines.js :: bad :: 1000` | Clearing the flash on a wrong Rally score. | Cosmetic. |
 | `engines.js :: kc :: 600` | The beat before the kit desk is redrawn. | Cosmetic. |
 | `engines.js :: head :: 1500` | Adventure relay (j2-04): when a room's code cannot be fetched the "broken" note stays on screen 1.5 s before the relay steps to the next room. | A pause she reads, never a decision she makes; the story moves on by itself, as the relay always does. |

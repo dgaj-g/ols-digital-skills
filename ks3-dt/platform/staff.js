@@ -1285,6 +1285,14 @@
      Both denominators are read from the pupil's OWN string rather than assumed,
      so a lesson with three cases or five QA checks needs no code change here. */
   function detailOf(a) { return String((a && a[2]) || ''); }
+  /* V68 (DFM 290): a pupil who carried on past a Drive check that would not run
+     writes `skipped=<why>`; no parsed cell shows it, so it gets its own chip. */
+  function skipChip(a) {
+    var m = /(?:^|;)skipped=([a-z0-9-]{1,20})(?:;|$)/.exec(detailOf(a));
+    if (!m) return '';
+    return ' <span class="lc-skip" title="She pressed the way out after the Drive check failed twice">' +
+      'carried on without the check &middot; ' + App.esc(m[1] === '1' ? 'no reason saved' : m[1]) + '</span>';
+  }
   function dFlag(s, k) { return new RegExp('(?:^|;)' + k + '=1(?:;|$)').test(s); }
   function dNum(s, k) {
     var m = new RegExp('(?:^|;)' + k + '=([0-9]+)(?:;|$)').exec(s);
@@ -1606,7 +1614,7 @@
         '<td>' + App.esc(r.codename) + '</td>' +
         '<td>' + Number(r.xp || 0) + '</td>' +
         '<td' + (blTitle ? ' title="' + blTitle + '"' : '') + '>' + (baselineDisplay(r, l1) || '&mdash;') + '</td>' +
-        '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
+        '<td><span class="pill ' + pillClass + '">' + pillText + '</span>' + skipChip(a) + '</td>' +
         '<td>' + warm + '</td>' +
         cells + '</tr>';
     }).join('');

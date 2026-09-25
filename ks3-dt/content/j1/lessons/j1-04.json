@@ -285,7 +285,9 @@
        "text": "The website looks in your Drive for a freshly-saved .sb3 — then the players get their game back."
       }
      ],
-     "checkLabel": "Check my Drive"
+     "checkLabel": "Check my Drive",
+     "skipLabel": "Sign off without the Drive copy",
+     "skipText": "If HQ still cannot see your Drive, you can sign off without the copy. Tell your teacher in class — they can look in your Drive with you."
     },
     "boardTip": "Lost your game? Nothing is broken — reload <b>scratch.mit.edu</b>, then File &rarr; Load from your computer, and pick the .sb3 again.",
     "help": "The board is your home screen. Its pins are: the film, Evidence Intake (where you get the broken game), the four cases, and the release desk where the fixed game goes back to the players. Start with Evidence Intake, then the TRAINING case. Inside a case you always do the same five things: see the bug happen, read the code, fix one thing, write your log, then re-play to prove it. Stuck on a case? Open the help steps on the card — re-reading the ticket is always free. Chapter 3 of the film is the one worth re-watching while you work.",

@@ -8575,7 +8575,7 @@
             lastWhy = whyOf(r);
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
               esc(r && r.error === 'locked'
-                ? (cfg.lockedText || 'Your teacher has not opened this lesson yet \u2014 check with them.')
+                ? (cfg.lockedText || 'Your teacher has not opened this lesson yet \u2014 ask them.')
                 : (cfg.errorText || 'The check could not reach your Drive \u2014 try again in a moment.')) + '</span></div>';
             wayOut();
             return;
@@ -9553,8 +9553,8 @@
               if (!res || !res.ok) {
                 box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
                   (res && res.error === 'locked'
-                    ? esc((cfg.ship && cfg.ship.lockedText) || 'Your teacher has not opened this lesson yet \u2014 check with them.')
-                    : 'The line to HQ dropped &mdash; try again in a moment.') + '</span></div>';
+                    ? esc((cfg.ship && cfg.ship.lockedText) || 'Your teacher has not opened this lesson yet \u2014 ask them.')
+                    : esc((cfg.ship && cfg.ship.errorText) || 'The line to HQ dropped \u2014 try again in a moment.')) + '</span></div>';
                 shipWayOut();
                 return;
               }

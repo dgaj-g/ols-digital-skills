@@ -232,7 +232,7 @@ function runDrive(pg, chunk, answers) {
     console.log('\n=== (d) locked has its own sentence ===');
     const dN = await runArtifact(pgNow, bank, [{ ok: false, error: 'locked' }], false);
     const dO = await runArtifact(pgOld, bank, [{ ok: false, error: 'locked' }], false);
-    const LOCKED = (bank.config.lockedText || 'Your teacher has not opened this lesson yet — check with them.');
+    const LOCKED = (bank.config.lockedText || 'Your teacher has not opened this lesson yet — ask them.');
     const lockedEsc = LOCKED.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     check(dN.snaps[0].result.indexOf(lockedEsc) !== -1, 'locked reads: "' + LOCKED + '"');
     control(/could not reach your Drive/.test(dO.snaps[0].result), 'the pre-change engine told a locked pupil it "could not reach your Drive"');

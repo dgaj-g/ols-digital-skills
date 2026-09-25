@@ -42,7 +42,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const BASE_REF = '7d9c274';
+const BASE_REF = '64b65d9';     /* V58's content, re-pinned after the 23 Sep 2026 history purge (was 7d9c274; ks3-dt/content identical across 64b65d9..98bf33d). */
 const REPO = path.resolve(__dirname, '..', '..', '..');
 const SRC = process.env.KS3DT_SRC ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');

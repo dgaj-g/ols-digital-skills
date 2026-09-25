@@ -38,7 +38,7 @@ const { execFileSync } = require('child_process');
 const SRC = process.env.KS3DT_SRC ||
   path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const REPO = path.resolve(__dirname, '..', '..', '..');
-const BASE_REF = '7d9c274';
+const BASE_REF = '64b65d9';     /* V58's content, re-pinned after the 23 Sep 2026 history purge (was 7d9c274; ks3-dt/content identical across 64b65d9..98bf33d). */
 const UNDER_REVIEW = (process.env.KS3DT_REVIEW || 'j2-03,j3-03').split(',').map(s => s.trim()).filter(Boolean);
 const SHRINK = 0.62;   /* a string now under this fraction of its base length has lost a paragraph,
                           not a clause — every real rewrite this round sat well above it */
