@@ -1794,6 +1794,23 @@
     var cls = realClass_(s, p.classCode);
     if (!cls) return Promise.resolve({ ok: false, error: 'unknown-class' });
     var kind = (Array.isArray(p.kinds) && p.kinds.length) ? str_(p.kinds[0]) : 'hex';
+    /* THE FAILED BANK/RIG/SHIP INSPECTION, STAGEABLE IN PREVIEW (DFM 290, 24 Sep
+       2026) — the doDriveCheck `sim` pattern. `sim.artifactFail` is a COUNTDOWN:
+       it answers `sim.artifactMode` that many times, then the found answer.
+       error → could-not-run; noFolder / notFound → the two not-found lines;
+       hang → a call that never answers (the timeout's case). Preview-only; with
+       no flag set the answer is the found one it always was. */
+    var sim = s.sim || {};
+    if (num_(sim.artifactFail) > 0) {
+      sim.artifactFail = num_(sim.artifactFail) - 1;
+      s.sim = sim;
+      save_(s);
+      var mode = str_(sim.artifactMode || 'error');
+      if (mode === 'hang') return new Promise(function () {});
+      if (mode === 'noFolder') return Promise.resolve({ ok: true, found: false, noFolder: true, simulated: true });
+      if (mode === 'notFound') return Promise.resolve({ ok: true, found: false, simulated: true });
+      return Promise.resolve({ ok: false, error: 'drive-error' });
+    }
     return Promise.resolve({ ok: true, found: true, name: 'my-first-build.' + kind, ageMin: 2, simulated: true });
   }
 

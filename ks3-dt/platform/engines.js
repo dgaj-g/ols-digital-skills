@@ -70,6 +70,28 @@
       ctx.awardBadge(b, detail).then(function () { ctx.next(); });
     } else ctx.next();
   }
+  /* DFM 290: a server call that never answers is a failure like any other —
+     it must count towards the way out, not spin for ever. Local to the
+     inspection cards; App.call itself is untouched (its saves queue to the
+     outbox and must not be raced). Timer cleared on settle so a harness does
+     not sit on a 25 s timer. */
+  function callWithin(ctx, action, params) {
+    if (typeof setTimeout !== 'function') return ctx.call(action, params);
+    var ms = Number(global.OLS_CALL_TIMEOUT_MS) || 25000;
+    var timer;
+    return Promise.race([
+      ctx.call(action, params),
+      new Promise(function (resolve) {
+        timer = setTimeout(function () { resolve({ ok: false, error: 'timeout' }); }, ms);
+      })
+    ]).then(function (r) { clearTimeout(timer); return r; },
+            function () { clearTimeout(timer); return { ok: false, error: 'transport' }; });
+  }
+  /* the skip event names what the check answered — short, lower-case, safe */
+  function whyOf(r) {
+    var w = (r && r.error) ? String(r.error) : 'transport';
+    return w.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 20) || 'unknown';
+  }
   /* mirror of the server's vhash_ - the vault placement check compares salted
      hashes so the answer map never reaches the client in plaintext */
   function vhash(s) {
@@ -3269,7 +3291,7 @@
       function run() {
         host.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
           esc(cfg.checking || 'Looking inside your Drive…') + '</span></div>';
-        ctx.call('driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
+        callWithin(ctx, 'driveCheck', { lessonNum: String(ctx.lessonEntry.num) }).then(function (r) {
           host.innerHTML = '';
           if (!r || !r.ok) {
             tries++;
@@ -8504,7 +8526,7 @@
            where HQ is taught; Lesson 1's Vault engine is REPORTED in 254 and NOT
            ruled on, so it is untouched. */
         '<button class="primary-btn" type="button">' + esc(cfg.checkLabel || 'Run the inspection') + '</button>' +
-        '<button class="ghost-btn" type="button" hidden>Continue without banking (ask your teacher)</button>' +
+        '<button class="ghost-btn" type="button" hidden>' + esc(cfg.skipLabel || 'Carry on without the check') + '</button>' +
         '</div><div class="af-result"></div></div>');
       host.appendChild(c);
       wireDemo(c);
@@ -8525,17 +8547,37 @@
       var skipBtn = c.querySelector('.rung-actions .ghost-btn');
       var box = c.querySelector('.af-result');
       var tries = 0;
-      skipBtn.onclick = function () { ctx.next(); };
+      var lastWhy = '';
+      /* DFM 290 (a teacher's report, 24 Sep 2026): from the SECOND failure of
+         ANY kind — could-not-run included, which was the dead end she saw — the
+         way out appears under the result. It earns nothing: no badge, a zero-XP
+         event `skipped=<why>` so the Live tab shows who carried on unproved and
+         what the check answered. Words are content-owned (skipText/skipLabel,
+         DFM 190d/192g); the fallbacks are neutral. The FIRST failure and the
+         found path render byte-for-byte what they always did (qa-artifact-wayout). */
+      skipBtn.onclick = function () { finishChunk(ctx, 'skipped=' + (lastWhy || 'unknown'), 0, false); };
+      function wayOut() {
+        if (tries < 2) return;
+        box.insertAdjacentHTML('beforeend', '<p class="dc-skip-note af-skip-note">' +
+          esc(cfg.skipText || 'If the check still will not run, you can carry on without it and tell your teacher in class.') + '</p>');
+        skipBtn.hidden = false;
+      }
       runBtn.onclick = function () {
         runBtn.disabled = true;
+        skipBtn.disabled = true;
         box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>' +
           esc(cfg.checking || 'Looking inside your Drive for your file\u2026') + '</span></div>';
-        ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: cfg.kinds || ['hex'], hours: cfg.hours || 3 }).then(function (r) {
+        callWithin(ctx, 'artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: cfg.kinds || ['hex'], hours: cfg.hours || 3 }).then(function (r) {
           runBtn.disabled = false;
+          skipBtn.disabled = false;
           tries++;
           if (!r || !r.ok) {
+            lastWhy = whyOf(r);
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
-              esc(cfg.errorText || 'The check could not reach your Drive \u2014 try again in a moment.') + '</span></div>';
+              esc(r && r.error === 'locked'
+                ? (cfg.lockedText || 'Your teacher has not opened this lesson yet \u2014 check with them.')
+                : (cfg.errorText || 'The check could not reach your Drive \u2014 try again in a moment.')) + '</span></div>';
+            wayOut();
             return;
           }
           if (r.found) {
@@ -8548,11 +8590,12 @@
             runBtn.onclick = function () { finishChunk(ctx, 'bank=1'); };
             skipBtn.hidden = true;
           } else {
+            lastWhy = r.noFolder ? 'no-folder' : 'not-found';
             box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
               (r.noFolder ? esc(cfg.noFolderText || 'The website could not find your School > DT Work folder. Build it right now in Drive \u2014 + New \u2192 Folder \u2192 "School", then "DT Work" inside it \u2014 and press the check button again. (The Files That Follow You side quest walks you through it too.)')
                 : 'No freshly-saved build found in DT Work yet.') + '</span></div>' +
               '<p>' + esc(cfg.failText || 'Check each step above, then press ' + (cfg.checkLabel || 'Run the inspection') + ' again.') + '</p>';
-            if (tries >= 2) skipBtn.hidden = false;
+            wayOut();
           }
         });
       };
@@ -9483,21 +9526,36 @@
             '<ol class="af-steps">' + steps + '</ol>' +
             '<div class="rung-actions">' +
             '<button class="primary-btn case-ship-btn" type="button">' + esc((cfg.ship && cfg.ship.checkLabel) || 'Run the HQ Inspection') + '</button>' +
-            '<button class="ghost-btn case-ship-skip" type="button" hidden>Sign off without the Drive copy (ask your teacher first)</button>' +
+            '<button class="ghost-btn case-ship-skip" type="button" hidden>' + esc((cfg.ship && cfg.ship.skipLabel) || 'Sign off without the Drive copy') + '</button>' +
             '</div><div class="af-result"></div>';
           var runBtn = shipBox.querySelector('.case-ship-btn');
           var skipBtn = shipBox.querySelector('.case-ship-skip');
           var box = shipBox.querySelector('.af-result');
           var tries = 0;
+          /* DFM 290: the same way out as the artifact engine, from the SECOND
+             failure of any kind. The skip keeps its existing path (`sk` in the
+             draft, ship=0 in the badge) — the draft's key set is not extended. */
+          function shipWayOut() {
+            if (tries < 2) return;
+            box.insertAdjacentHTML('beforeend', '<p class="dc-skip-note af-skip-note">' +
+              esc((cfg.ship && cfg.ship.skipText) || 'If HQ still cannot see your Drive, you can sign off without the copy and tell your teacher in class.') + '</p>');
+            skipBtn.hidden = false;
+          }
           skipBtn.onclick = function () { shipSkipped = true; saveBoard(); paintShip(); };
           runBtn.onclick = function () {
             runBtn.disabled = true;
+            skipBtn.disabled = true;
             box.innerHTML = '<div class="panel-loading"><span class="panel-spinner"></span><span>HQ is looking inside your Drive&hellip;</span></div>';
-            ctx.call('artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: sh.kinds || ['sb3'], hours: sh.hours || 3 }).then(function (res) {
+            callWithin(ctx, 'artifactCheck', { lessonNum: String(ctx.lessonEntry.num), kinds: sh.kinds || ['sb3'], hours: sh.hours || 3 }).then(function (res) {
               runBtn.disabled = false;
+              skipBtn.disabled = false;
               tries++;
               if (!res || !res.ok) {
-                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>The line to HQ dropped &mdash; try again in a moment.</span></div>';
+                box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
+                  (res && res.error === 'locked'
+                    ? esc((cfg.ship && cfg.ship.lockedText) || 'Your teacher has not opened this lesson yet \u2014 check with them.')
+                    : 'The line to HQ dropped &mdash; try again in a moment.') + '</span></div>';
+                shipWayOut();
                 return;
               }
               if (res.found) {
@@ -9510,7 +9568,7 @@
                 box.innerHTML = '<div class="dc-row miss"><span class="dc-mark">&#10007;</span><span>' +
                   (res.noFolder ? 'HQ could not find your School &gt; DT Work folder in Drive &mdash; build it (+ New &rarr; Folder), then inspect again.'
                     : 'No freshly-saved .sb3 found in DT Work yet &mdash; check the save and the drag, then inspect again.') + '</span></div>';
-                if (tries >= 2) skipBtn.hidden = false;
+                shipWayOut();
               }
             });
           };
