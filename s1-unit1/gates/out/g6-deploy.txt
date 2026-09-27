@@ -1,0 +1,6 @@
+G6 deploy log + token · 2026-09-27T17:40:57.922Z
+PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
+INFO newest row: | 27 Sep 2026 18:38 | 3 | 785c4a9f9c-0e1c3ba2 | v3 S1 Unit 1 785c4a9f9c-0e1c3ba2 | build code hidden (only /exec?build shows it) and Topics tab added (open or l
+PASS CONTROL newest row names another build: fails
+PASS CONTROL seen token from another build: fails
+GREEN · 3 pass · 0 fail

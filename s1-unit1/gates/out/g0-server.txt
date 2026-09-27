@@ -1,0 +1,72 @@
+G0 server GREEN · 2026-09-27T17:35:19.578Z · build 785c4a9f9c-0e1c3ba2
+PASS A pack->unpack->judge == judge on 3280 answers across 82 questions (0 mismatches)
+PASS A cleaning drops duplicate and unknown picks (S2-10)
+PASS A no view carries keys, accept lists, distractor lists or pair keys
+PASS B boot with no class is the staff door
+PASS B unknown class refused (unknown-class)
+PASS B non-c2ken account refused (domain)
+PASS B staff door: stranger without passcode not admitted
+PASS B staff ops refused before the passcode
+PASS B wrong passcode refused
+PASS B right passcode admits
+PASS B passcode remembered for that account
+PASS B owner admitted by email
+PASS B class made: 11A DT -> 11a-dt
+PASS B same class name refused
+PASS B blank class name refused
+PASS B a new class starts with Digital Data locked
+PASS B pupil boot says the topic is locked
+PASS B locked: a stage will not load (locked)
+PASS B locked: nothing is marked (locked)
+PASS B locked: no stage card is saved (locked)
+PASS B locked: typed writing is still saved as a draft
+PASS B a pupil cannot open a topic
+PASS B a topic not built yet cannot be opened
+PASS B passcode staff open Digital Data
+PASS B the class list shows it open
+PASS B locked again: the stage refuses again
+PASS B opened again: the stage loads with the writing typed while locked
+PASS B a class made before topic locking stays open
+PASS B pupil boot: name from the account, round 1, four stages
+PASS B no readable name -> needName
+PASS B name typed and kept
+PASS B a name with markup refused
+PASS B stage 1: 27 views in the seeded order
+PASS B stage views carry no keys; nothing marked yet
+PASS B an incomplete answer is refused, not marked 0
+PASS B marked: result + mark scheme come back
+PASS B repeat submission returns the stored result unchanged
+PASS B cannot flag an unmarked question
+PASS B flag a marked question
+PASS B stage card refused before the stage is finished
+PASS B draft kept; marked question and its flag restore
+PASS B drafts deleted once marked
+PASS B topic card refused before the four stage cards
+PASS B stage card needs a rating
+PASS B four stage cards saved -> allCards
+PASS B first save wins on a stage card
+PASS B topic card saved; "fine" is exclusive
+PASS B round 1 done: 82 answered, totals 32 = node judge 32
+PASS B flag shows on the round summary
+PASS B one pupil-round costs 3327 bytes of Script Properties (budget 4096)
+PASS B largest single value 858 bytes (< 9 KB)
+PASS B open round 2 for one pupil
+PASS B only that pupil moved (pupil1 2, pupil2 1, pupil3 1)
+PASS B round 1 intact after round 2 opens
+PASS B round 2 is a new draw with nothing marked
+PASS B round 1 looks back read-only with all 27 answers
+PASS B open round 2 for the class
+PASS B a closed round cannot be marked (round-closed)
+PASS B pupil2 now on round 2; round 1 keeps its 5 answers
+PASS B a pupil ahead of the class goes one further (3)
+PASS B flag "Thinks it's fine, isn't" fires (rating 3-4, under 50%)
+PASS B flag "Doing fine, doesn't think so" fires (rating 1-2, 75% or more)
+PASS B control record: rating 3 at 50%, rating 2 at 74%, rating 4 at 100%, rating 1 at 0% -> no flags
+PASS B tracker lists every pupil; max round 3
+PASS B flagged questions shown by paper reference
+PASS B CSV columns in order
+PASS B CSV: 4 rows per pupil, ticks "2 of 4" (padded to the outcomes), unsure spelled out
+PASS B pupil drawer: 82 marked items with the writing
+PASS B rounds tab: class round 2, pupil1 on 3
+PASS B classes tab lists the class with its pupils
+PASS B clearMe removes only the caller's record

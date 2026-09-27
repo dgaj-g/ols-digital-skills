@@ -1,0 +1,41 @@
+G4 scripted sit on the dev deployment · 2026-09-27 17:18 BST (last pupil call 17:18:37 on the Apps Script Executions page)
+URL: https://script.google.com/a/macros/c2ken.net/s/AKfycbzgJEZBoed1zoW0Ks2l0QBOrmsDZb3C4IaB808EVf1G/dev?class=11a-dt&sit=1
+Account: the owner (school account), class "11A DT", Chrome foreground tab, 1200x785 viewport
+Lines read off #sitReport (platform/sit.js):
+SIT PASS started · s1u1-50d29029f7-4827878d
+SIT PASS fresh record · round 1
+SIT PASS home line · Round 1 · not started
+SIT PASS stage 1 button · Start
+SIT PASS stage 1 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 2 button · Start
+SIT PASS reload shows Carry on · Carry on
+SIT PASS reload lands on question 6 · Stage 2 of 4 · Representing images · Question 6 of 19
+SIT PASS stage 2 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 3 button · Start
+SIT PASS stage 3 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 4 button · Start
+SIT PASS stage 4 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS 82 questions answered · 82
+SIT PASS summary total · You scored 35 of 126 marks (28%)
+SIT PASS summary flagged · 11 of 11
+TOTAL 35 of 126
+SIT PASS all marked questions restore · 82 seen
+SIT PASS home line done · Round 1 · done · 35 of 126 marks
+SIT PASS repeat mark keeps the first · repeat true · 0 vs 0
+SIT PASS teacher opens round 2 · 2
+SIT PASS round 1 kept · 35 vs 35
+SIT PASS round 2 current
+SIT PASS home line round 2 · Round 2 open · not started
+SIT PASS round 2 new order
+SIT PASS no page errors
+MARKS# a6eb5c62 · 82 questions · flags 11
+SIT RESULT PASS
+Node recompute (judge.js + bank + sitpolicy.js, seed dgartland021@c2ken.net|1|qid): TOTAL 35 of 126 · MARKS# a6eb5c62 · 82 questions
+PASS live marks = judge marks (hash equal on all 82 questions)
+PASS no SIT FAIL line (layout checks on every question, before and after Check, incl. drop-down text in full)
+Afterwards: the sit's class and records were wiped from the live store (a temporary editor function removed 7 keys and left only the empty class list; it was taken out of Code.gs and saved before version 1). 11A DT was then made fresh on /exec: 0 pupils, round 1.
+GREEN · 3 pass · 0 fail

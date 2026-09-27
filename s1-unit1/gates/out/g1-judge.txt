@@ -1,0 +1,9 @@
+G1 judge controls · 2026-09-27T17:35:20.753Z
+PASS controls.js GREEN on the real judge
+INFO S1 Unit 1 judge controls — 12822 checks
+INFO exact agreement with his 2024 marking: 22/22 (within 1: 22)
+INFO chance (adapted, must be ≤ 0.333): max 0.340
+PASS the built Code.gs carries judge.js and the bank unchanged
+PASS CONTROL every answer full marks: controls.js goes RED
+PASS CONTROL every answer no marks: controls.js goes RED
+GREEN · 4 pass · 0 fail
