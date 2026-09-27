@@ -1,0 +1,452 @@
+/* OLS Unit 1 Revision - server (Apps Script, V8). Built by tools/build-server.js: the private bank (BANK_DIGITAL_DATA) and
+ * the judge (globalThis.Judge) are prepended; the placeholders below are filled. Runs as the user accessing the web app
+ * (DOMAIN access), so Session.getActiveUser() is the pupil. Records live in Script Properties (ARCH.md "Storage").
+ * The pupil path never touches a Sheet: the archive runs only on the owner's staff visit. */
+
+var OWNER_EMAIL = '@@OWNER_EMAIL@@';
+var STAFF_SALT = '@@STAFF_SALT@@';
+var STAFF_HASH = '@@STAFF_HASH@@';
+var BUILD = '@@BUILD@@';
+var TITLE = '@@TITLE@@';
+var DOMAIN = 'c2ken.net';
+var TOPIC = 'digital-data';
+var ARCHIVE_AT = 350 * 1024;
+var FLAG_HIGH = "Thinks it's fine, isn't";
+var FLAG_LOW = "Doing fine, doesn't think so";
+
+// ---------- the bank, indexed ----------
+var BANK = BANK_DIGITAL_DATA;
+var QBY = {};
+var STAGES = BANK.stages.map(function (s) {
+  var x = 0;
+  s.questions.forEach(function (q) { QBY[q.id] = { q: q, st: s.n }; x += q.marks; });
+  return { n: s.n, title: s.title, outcomes: s.outcomes || [], ids: s.questions.map(function (q) { return q.id; }), x: x };
+});
+function stageOf_(n) { return STAGES[Number(n) - 1] || null; }
+
+// ---------- helpers (A2) ----------
+function sp_() { return PropertiesService.getScriptProperties(); }
+function up_() { return PropertiesService.getUserProperties(); }
+function str_(v) { return String(v == null ? '' : v); }
+function tmin_() { return Math.floor((Date.now() - 1767225600000) / 60000); }
+function tminIso_(t) { return t ? new Date(1767225600000 + t * 60000).toISOString() : ''; }
+function userEmail_() { try { return String(Session.getActiveUser().getEmail() || '').toLowerCase(); } catch (e) { return ''; } }
+function jget_(store, key, fallback) { try { var raw = store.getProperty(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
+function jset_(store, key, obj) { store.setProperty(key, JSON.stringify(obj)); }
+function withLock_(fn) { var lock = LockService.getScriptLock(); lock.waitLock(10000); try { return fn(); } finally { lock.releaseLock(); } }
+function sha256hex_(s) { var b = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8); return b.map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join(''); }
+function ok_(o) { o = o || {}; o.ok = true; o.v = BUILD; return o; }
+function err_(code) { return { ok: false, error: code, v: BUILD }; }
+function domainOk_(email) { return !!email && email.slice(-(DOMAIN.length + 1)) === '@' + DOMAIN; }
+function isOwner_(email) { return !!email && email === OWNER_EMAIL; }
+function slug_(v) { return str_(v).replace(/[^A-Za-z0-9-]/g, '').toLowerCase().slice(0, 40); }
+function autoName_() {
+  try {
+    var res = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) return '';
+    var j = JSON.parse(res.getContentText() || '{}');
+    return str_(j.given_name || str_(j.name).split(' ')[0]).trim().slice(0, 40);
+  } catch (e) { return ''; }
+}
+function hodList_() { return (jget_(sp_(), 'hods', []) || []).map(function (x) { return str_(x).toLowerCase(); }); }
+function isHod_(email) { return hodList_().indexOf(email) !== -1; }
+function classList_() { return jget_(sp_(), 'classes', []) || []; }
+function ownsAnyClass_(email) { return classList_().some(function (s) { var c = jget_(sp_(), 'cls:' + s, null); return c && c.o === email; }); }
+function safe_(fn) { return function (req) { try { return fn(req || {}); } catch (e) { var m = str_(e && e.message); return { ok: false, error: /lock/i.test(m) ? 'busy' : 'server', detail: m.slice(0, 200), v: BUILD }; } }; }
+
+// ---------- web app ----------
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  var t = HtmlService.createTemplateFromFile('Index');
+  t.classCode = p['class'] ? String(p['class']).replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) : '';
+  t.baseUrl = ScriptApp.getService().getUrl();
+  t.sit = p.sit === '1' ? '1' : '';
+  return t.evaluate().setTitle(TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover').setSandboxMode(HtmlService.SandboxMode.IFRAME);
+}
+
+// ---------- draw, pack, unpack ----------
+function viewFor_(email, round, q) { return Judge.draw(q, email + '|' + round + '|' + q.id); }
+function orderFor_(email, round, st) { return Judge.shuffle(stageOf_(st).ids, Judge.rng(email + '|' + round + '|' + st)); }
+function idxs_(arr, picks) {
+  var out = [];
+  (Array.isArray(picks) ? picks : []).forEach(function (t) { var i = arr.indexOf(str_(t)); if (i >= 0 && out.indexOf(i) === -1) out.push(i); });
+  return out;
+}
+function pack_(v, a) {
+  a = a || {};
+  var f = v.form, i;
+  if (f === 'pick1' || f === 'pickN') return { p: idxs_(v.options, a.picks) };
+  if (f === 'writepick') return { t: str_(a.text).slice(0, 200), k: a.skipped ? 1 : 0, p: v.parts.map(function (pt, k) { return idxs_(pt.options, ((a.parts || [])[k] || {}).picks); }) };
+  if (f === 'type') return { x: v.items.map(function (_, k) { return str_((a.texts || [])[k]).slice(0, 80); }) };
+  if (f === 'pairs') return { m: v.left.map(function (_, k) { var g = (a.map || [])[k]; return g ? v.right.indexOf(str_(g)) : -1; }) };
+  if (f === 'choose') return { c: v.items.map(function (it, k) { var g = (a.choices || [])[k]; return g == null ? -1 : it.opts.indexOf(str_(g)); }) };
+  if (f === 'gaps') {
+    var fills = a.fills || [], out = [];
+    for (i = 0; i < v.gapCount; i++) out.push(v.pool ? (fills[i] ? v.pool.indexOf(str_(fills[i])) : -1) : str_(fills[i]).slice(0, 30));
+    return v.pool ? { g: out } : { x: out };
+  }
+  return {};
+}
+function unpack_(v, p) {
+  p = p || {};
+  var f = v.form;
+  if (f === 'pick1' || f === 'pickN') return { picks: (p.p || []).map(function (i) { return v.options[i]; }) };
+  if (f === 'writepick') return { text: str_(p.t), skipped: !!p.k, parts: v.parts.map(function (pt, k) { return { picks: ((p.p || [])[k] || []).map(function (i) { return pt.options[i]; }) }; }) };
+  if (f === 'type') return { texts: (p.x || []).map(str_) };
+  if (f === 'pairs') return { map: (p.m || []).map(function (j) { return j >= 0 ? v.right[j] : ''; }) };
+  if (f === 'choose') return { choices: (p.c || []).map(function (j, k) { return j >= 0 ? v.items[k].opts[j] : null; }) };
+  if (f === 'gaps') return { fills: v.pool ? (p.g || []).map(function (j) { return j >= 0 ? v.pool[j] : ''; }) : (p.x || []).map(str_) };
+  return {};
+}
+
+// ---------- records ----------
+function pKey_(slug, email) { return 'p:' + slug + ':' + email; }
+function qKey_(slug, email, round, st) { return 'q:' + slug + ':' + email + ':' + round + ':' + st; }
+function dKey_(slug, round, qid) { return 'd:' + slug + ':' + TOPIC + ':' + round + ':' + qid; }
+function hdrGet_(slug, email) { var h = jget_(sp_(), pKey_(slug, email), null); if (h) { h.o = h.o || {}; h.R = h.R || {}; } return h; }
+function curRound_(c, hdr) { return Math.max((c.r || {})[TOPIC] || 1, ((hdr && hdr.o) || {})[TOPIC] || 1); }
+function rnd_(hdr, k) { k = String(k); if (!hdr.R[k]) hdr.R[k] = { s: {} }; if (!hdr.R[k].s) hdr.R[k].s = {}; return hdr.R[k]; }
+function stg_(rh, st) { st = String(st); if (!rh.s[st]) rh.s[st] = { a: 0, m: 0, f: [] }; if (!rh.s[st].f) rh.s[st].f = []; return rh.s[st]; }
+function eOut_(e) { return e ? { rating: e.r, ticks: e.t || [], stageNote: e.x || '' } : null; }
+function EOut_(E) { return E ? { rating: E.r, unsure: E.u || [], note: E.x || '' } : null; }
+function roundSum_(rh) {
+  var s = {};
+  STAGES.forEach(function (S) {
+    var g = (rh && rh.s && rh.s[S.n]) || { a: 0, m: 0, f: [] };
+    s[S.n] = { a: g.a || 0, m: g.m || 0, n: S.ids.length, x: S.x, e: !!g.e, f: (g.f || []).map(function (id) { return { id: id, src: QBY[id] ? QBY[id].q.src : id }; }) };
+  });
+  return { s: s, E: !!(rh && rh.E), done: !!(rh && rh.d), z: !!(rh && rh.z) };
+}
+function pupilCtx_(req) {
+  var email = userEmail_();
+  if (!email) return { err: 'not-signed-in' };
+  if (!domainOk_(email)) return { err: 'domain' };
+  var slug = slug_(req.cls);
+  var c = slug ? jget_(sp_(), 'cls:' + slug, null) : null;
+  if (!c) return { err: 'unknown-class' };
+  return { email: email, slug: slug, c: c };
+}
+function roundArg_(req) { var r = Math.floor(Number(req.round)); return r >= 1 && r <= 99 ? r : 0; }
+
+// ---------- pupil API ----------
+function apiBoot(req) { return safe_(apiBoot_)(req); }
+function apiBoot_(req) {
+  var email = userEmail_();
+  if (!email) return err_('not-signed-in');
+  if (!domainOk_(email)) return err_('domain');
+  if (!slug_(req.cls)) return ok_({ staff: true, email: email });
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var hdr = hdrGet_(x.slug, email);
+  if (!hdr) {
+    var nm = autoName_();
+    hdr = withLock_(function () {
+      var h = hdrGet_(x.slug, email);
+      if (!h) { h = { n: nm, j: tmin_(), o: {}, R: {} }; jset_(sp_(), pKey_(x.slug, email), h); }
+      return h;
+    });
+  }
+  sp_().setProperty('s:' + x.slug + ':' + email, String(tmin_()));
+  var cur = curRound_(x.c, hdr), rounds = {};
+  Object.keys(hdr.R).forEach(function (k) { rounds[k] = roundSum_(hdr.R[k]); });
+  if (!rounds[cur]) rounds[cur] = roundSum_(null);
+  return ok_({
+    email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email),
+    topic: { id: TOPIC, title: BANK.title, round: cur, rounds: rounds,
+      stages: STAGES.map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) }
+  });
+}
+
+function apiName(req) { return safe_(apiName_)(req); }
+function apiName_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var name = str_(req.name).replace(/\s+/g, ' ').trim();
+  if (!name || name.length > 40 || !/^[A-Za-zÀ-ɏ' ’-]+$/.test(name)) return err_('bad-name');
+  return withLock_(function () {
+    var h = hdrGet_(x.slug, x.email) || { n: '', j: tmin_(), o: {}, R: {} };
+    h.n = name; jset_(sp_(), pKey_(x.slug, x.email), h);
+    return ok_({ name: name });
+  });
+}
+
+function apiStage(req) { return safe_(apiStage_)(req); }
+function apiStage_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var S = stageOf_(req.stage); if (!S) return err_('bad-stage');
+  var hdr = hdrGet_(x.slug, x.email) || { o: {}, R: {} };
+  var cur = curRound_(x.c, hdr), round = roundArg_(req);
+  if (!round || round > cur) return err_('bad-round');
+  var rh = hdr.R[round] || { s: {} }, g = (rh.s || {})[S.n] || {};
+  var order = orderFor_(x.email, round, S.n), views = [], src = [], done = {}, drafts = {};
+  var shard = rh.z ? {} : jget_(sp_(), qKey_(x.slug, x.email, round, S.n), {});
+  order.forEach(function (id) {
+    var q = QBY[id].q, v = viewFor_(x.email, round, q);
+    views.push(v); src.push(q.src);
+    if (shard[id]) { var a = unpack_(v, shard[id][1]); done[id] = { a: a, r: Judge.judge(q, a, v), f: (g.f || []).indexOf(id) !== -1 }; }
+  });
+  if (round === cur) {
+    var all = up_().getProperties(), pre = 'd:' + x.slug + ':' + TOPIC + ':' + round + ':';
+    Object.keys(all).forEach(function (k) { if (k.indexOf(pre) === 0) { var id = k.slice(pre.length); if (S.ids.indexOf(id) !== -1 && !done[id]) drafts[id] = all[k]; } });
+  }
+  return ok_({ stage: { n: S.n, title: S.title, outcomes: S.outcomes, q: S.ids.length, x: S.x }, order: order, views: views, src: src,
+    done: done, drafts: drafts, e: eOut_(g.e), readOnly: round < cur, archived: !!rh.z });
+}
+
+function apiMark(req) { return safe_(apiMark_)(req); }
+function apiMark_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var qid = str_(req.qid), hit = QBY[qid]; if (!hit) return err_('bad-question');
+  var round = roundArg_(req); if (!round) return err_('bad-round');
+  return withLock_(function () {
+    var hdr = hdrGet_(x.slug, x.email) || { n: '', j: tmin_(), o: {}, R: {} };
+    var cur = curRound_(x.c, hdr), q = hit.q, v = viewFor_(x.email, round, q);
+    var key = qKey_(x.slug, x.email, round, hit.st), shard = jget_(sp_(), key, {});
+    var rh = hdr.R[round], g = rh && rh.s && rh.s[hit.st];
+    if (shard[qid]) {
+      var a0 = unpack_(v, shard[qid][1]);
+      return ok_({ r: Judge.judge(q, a0, v), a: a0, f: !!(g && (g.f || []).indexOf(qid) !== -1), repeat: true });
+    }
+    if (round !== cur) return err_('round-closed');
+    var a = unpack_(v, pack_(v, req.answer || {}));
+    if (v.form === 'type' && req.idk) a.texts = v.items.map(function () { return ''; });
+    else if (!Judge.complete(v, a)) return err_('incomplete');
+    var r = Judge.judge(q, a, v);
+    shard[qid] = [r.marks, pack_(v, a)];
+    jset_(sp_(), key, shard);
+    rh = rnd_(hdr, round); g = stg_(rh, hit.st);
+    g.a = (g.a || 0) + 1; g.m = (g.m || 0) + r.marks;
+    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    try { up_().deleteProperty(dKey_(x.slug, round, qid)); } catch (e) {}
+    return ok_({ r: r, a: a, f: false, repeat: false });
+  });
+}
+
+function apiFlag(req) { return safe_(apiFlag_)(req); }
+function apiFlag_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var qid = str_(req.qid), hit = QBY[qid]; if (!hit) return err_('bad-question');
+  var round = roundArg_(req); if (!round) return err_('bad-round');
+  return withLock_(function () {
+    var hdr = hdrGet_(x.slug, x.email); if (!hdr || !hdr.R[round]) return err_('not-marked');
+    var rh = hdr.R[round];
+    if (!rh.z && !jget_(sp_(), qKey_(x.slug, x.email, round, hit.st), {})[qid]) return err_('not-marked');
+    var g = stg_(rh, hit.st), at = g.f.indexOf(qid);
+    if (req.on && at === -1) g.f.push(qid);
+    if (!req.on && at !== -1) g.f.splice(at, 1);
+    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    return ok_({ f: g.f.indexOf(qid) !== -1 });
+  });
+}
+
+function apiEval(req) { return safe_(apiEval_)(req); }
+function apiEval_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var round = roundArg_(req); if (!round) return err_('bad-round');
+  var p = req.payload || {}, rating = Math.floor(Number(p.rating));
+  return withLock_(function () {
+    var hdr = hdrGet_(x.slug, x.email); if (!hdr) return err_('not-finished');
+    var cur = curRound_(x.c, hdr), rh = rnd_(hdr, round);
+    function allCards() { return STAGES.every(function (S) { return !!(rh.s[S.n] && rh.s[S.n].e); }); }
+    if (req.stage === 'topic') {
+      if (rh.E) return ok_({ e: EOut_(rh.E), allCards: true, done: true, repeat: true });
+      if (round !== cur) return err_('round-closed');
+      if (!allCards()) return err_('not-finished');
+      if (!(rating >= 1 && rating <= 4)) return err_('no-rating');
+      var u = []; (Array.isArray(p.unsure) ? p.unsure : []).forEach(function (n) { n = Math.floor(Number(n)); if (n >= 0 && n <= 4 && u.indexOf(n) === -1) u.push(n); });
+      if (u.indexOf(0) !== -1) u = [0];
+      rh.E = { r: rating, u: u.sort(), x: str_(p.note).trim().slice(0, 100) }; rh.d = tmin_();
+      jset_(sp_(), pKey_(x.slug, x.email), hdr);
+      return ok_({ e: EOut_(rh.E), allCards: true, done: true });
+    }
+    var S = stageOf_(req.stage); if (!S) return err_('bad-stage');
+    var g = stg_(rh, S.n);
+    if (g.e) return ok_({ e: eOut_(g.e), allCards: allCards(), done: !!rh.d, repeat: true });
+    if (round !== cur) return err_('round-closed');
+    if ((g.a || 0) < S.ids.length) return err_('not-finished');
+    if (!(rating >= 1 && rating <= 4)) return err_('no-rating');
+    var ticks = S.outcomes.map(function (_, k) { return (p.ticks || [])[k] ? 1 : 0; });
+    g.e = { r: rating, t: ticks, x: str_(p.stageNote).trim().slice(0, 100) };
+    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    return ok_({ e: eOut_(g.e), allCards: allCards(), done: !!rh.d });
+  });
+}
+
+function apiDraft(req) { return safe_(apiDraft_)(req); }
+function apiDraft_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var qid = str_(req.qid), round = roundArg_(req);
+  if (!QBY[qid] || !round) return err_('bad-question');
+  var t = str_(req.text).slice(0, 400);
+  if (t) up_().setProperty(dKey_(x.slug, round, qid), t); else up_().deleteProperty(dKey_(x.slug, round, qid));
+  return ok_({});
+}
+
+function apiPing(req) { return safe_(apiPing_)(req); }
+function apiPing_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  sp_().setProperty('s:' + x.slug + ':' + x.email, String(tmin_()));
+  return ok_({});
+}
+
+// ---------- staff ----------
+function passOk_(pass) { var plain = str_(sp_().getProperty('staffPasscode')); var given = str_(pass).trim(); if (!given) return false; if (plain) return given === plain; return sha256hex_(STAFF_SALT + given) === STAFF_HASH; }
+function passMark_() { return sha256hex_(STAFF_SALT + 'ok:' + (str_(sp_().getProperty('staffPasscode')) || STAFF_HASH)); }
+function staffIn_(email) { if (!email) return false; if (isOwner_(email) || isHod_(email) || ownsAnyClass_(email)) return true; return up_().getProperty('s1staff') === passMark_(); }
+function pupilsOf_(slug, keys) {
+  var pre = 'p:' + slug + ':';
+  return keys.filter(function (k) { return k.indexOf(pre) === 0; }).map(function (k) { return k.slice(pre.length); }).sort();
+}
+function flagsFor_(rating, m, x) {
+  var f = [];
+  if (rating >= 3 && x && m / x < 0.5) f.push(FLAG_HIGH);
+  if (rating && rating <= 2 && x && m / x >= 0.75) f.push(FLAG_LOW);
+  return f;
+}
+function trackRow_(slug, c, email, round, all) {
+  var hdr = jget_(sp_(), pKey_(slug, email), null) || { o: {}, R: {} };
+  var rh = (hdr.R || {})[round] || { s: {} }, s = {};
+  STAGES.forEach(function (S) {
+    var g = (rh.s || {})[S.n] || { a: 0, m: 0, f: [] }, e = eOut_(g.e);
+    s[S.n] = { m: g.m || 0, x: S.x, a: g.a || 0, n: S.ids.length, e: e, flags: e ? flagsFor_(e.rating, g.m || 0, S.x) : [],
+      fl: (g.f || []).map(function (id) { return QBY[id] ? QBY[id].q.src : id; }) };
+  });
+  var seen = Number(all['s:' + slug + ':' + email] || 0);
+  return { email: email, name: hdr.n || email.split('@')[0], seen: tminIso_(seen), round: curRound_(c, hdr), s: s, E: EOut_(rh.E), done: !!rh.d };
+}
+function csvCell_(v) { v = str_(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function storeSize_(all) { return Object.keys(all).reduce(function (n, k) { return n + k.length + str_(all[k]).length; }, 0); }
+function archive_(all) {
+  // Owner's staff visit only. Moves the answer shards of finished rounds (topic card saved), oldest first, to the named
+  // Sheet until the store is back under the line; marks those rounds z:1 (totals, cards and flags stay in the header).
+  var size = storeSize_(all); if (size < ARCHIVE_AT) return 0;
+  var cands = [];
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf('p:') !== 0) return;
+    var hdr = jget_(sp_(), k, null); if (!hdr || !hdr.R) return;
+    Object.keys(hdr.R).forEach(function (r) { var rh = hdr.R[r]; if (rh.d && !rh.z) cands.push({ k: k, r: r, d: rh.d }); });
+  });
+  cands.sort(function (a, b) { return a.d - b.d; });
+  if (!cands.length) return 0;
+  var id = sp_().getProperty('archiveId'), ss;
+  try { ss = id ? SpreadsheetApp.openById(id) : null; } catch (e) { ss = null; }
+  if (!ss) { ss = SpreadsheetApp.create('OLS Unit 1 Revision — Archive'); sp_().setProperty('archiveId', ss.getId()); }
+  var sheet = ss.getSheets()[0], moved = 0;
+  for (var i = 0; i < cands.length && size >= ARCHIVE_AT * 0.8; i++) {
+    var cd = cands[i], rest = cd.k.slice(2), rows = [];
+    STAGES.forEach(function (S) {
+      var qk = 'q:' + rest + ':' + cd.r + ':' + S.n, v = all[qk];
+      if (v) { rows.push([new Date(), qk, v]); size -= qk.length + v.length; }
+    });
+    if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 3).setValues(rows);
+    rows.forEach(function (row) { sp_().deleteProperty(row[1]); });
+    var hdr = jget_(sp_(), cd.k, null); hdr.R[cd.r].z = 1; jset_(sp_(), cd.k, hdr); moved++;
+  }
+  return moved;
+}
+
+function apiStaff(req) { return safe_(apiStaff_)(req); }
+function apiStaff_(req) {
+  var email = userEmail_();
+  if (!email) return err_('not-signed-in');
+  if (!domainOk_(email)) return err_('domain');
+  var op = str_(req.op);
+  if (op === 'check') {
+    if (staffIn_(email)) return ok_({ admitted: true, owner: isOwner_(email), email: email });
+    if (req.pass == null || req.pass === '') return ok_({ admitted: false, owner: false, email: email });
+    if (!passOk_(req.pass)) return err_('bad-pass');
+    up_().setProperty('s1staff', passMark_());
+    return ok_({ admitted: true, owner: false, email: email });
+  }
+  if (!staffIn_(email)) return err_('not-staff');
+  var all = sp_().getProperties(), keys = Object.keys(all);
+  if (op === 'classes') {
+    var archived = isOwner_(email) ? withLock_(function () { return archive_(all); }) : 0;
+    if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
+    return ok_({ archived: archived, classes: classList_().map(function (s) {
+      var c = jget_(sp_(), 'cls:' + s, null) || {};
+      return { slug: s, name: c.name || s, pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, mine: c.o === email };
+    }) });
+  }
+  if (op === 'create') {
+    var name = str_(req.name).replace(/\s+/g, ' ').trim();
+    var slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    if (!name || name.length > 30 || !slug) return err_('bad-name');
+    return withLock_(function () {
+      var list = classList_();
+      if (list.indexOf(slug) !== -1 || sp_().getProperty('cls:' + slug)) return err_('taken');
+      jset_(sp_(), 'cls:' + slug, { name: name, o: email, c: tmin_(), r: { 'digital-data': 1 } });
+      list.push(slug); jset_(sp_(), 'classes', list);
+      return ok_({ slug: slug, name: name });
+    });
+  }
+  var slugC = slug_(req.cls), c = slugC ? jget_(sp_(), 'cls:' + slugC, null) : null;
+  if (!c) return err_('unknown-class');
+  var pupils = pupilsOf_(slugC, keys);
+  if (op === 'rounds') {
+    return ok_({ round: (c.r || {})[TOPIC] || 1, className: c.name, pupils: pupils.map(function (em) {
+      var hdr = jget_(sp_(), pKey_(slugC, em), null) || {};
+      return { email: em, name: hdr.n || em.split('@')[0], round: curRound_(c, hdr) };
+    }) });
+  }
+  if (op === 'openClass') {
+    return withLock_(function () {
+      var cc = jget_(sp_(), 'cls:' + slugC, null); cc.r = cc.r || {}; cc.r[TOPIC] = (cc.r[TOPIC] || 1) + 1;
+      jset_(sp_(), 'cls:' + slugC, cc);
+      return ok_({ round: cc.r[TOPIC] });
+    });
+  }
+  if (op === 'openPupil') {
+    var em = str_(req.email).toLowerCase();
+    return withLock_(function () {
+      var hdr = jget_(sp_(), pKey_(slugC, em), null); if (!hdr) return err_('unknown-pupil');
+      hdr.o = hdr.o || {}; var next = curRound_(c, hdr) + 1; hdr.o[TOPIC] = next;
+      jset_(sp_(), pKey_(slugC, em), hdr);
+      return ok_({ round: next });
+    });
+  }
+  var maxRound = pupils.reduce(function (m, em) { return Math.max(m, curRound_(c, jget_(sp_(), pKey_(slugC, em), null))); }, (c.r || {})[TOPIC] || 1);
+  var round = roundArg_(req) || ((c.r || {})[TOPIC] || 1);
+  if (op === 'tracker') {
+    return ok_({ className: c.name, round: round, maxRound: maxRound, stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x }; }),
+      rows: pupils.map(function (em) { return trackRow_(slugC, c, em, round, all); }) });
+  }
+  if (op === 'pupil') {
+    var pe = str_(req.email).toLowerCase(), hdrP = jget_(sp_(), pKey_(slugC, pe), null);
+    if (!hdrP) return err_('unknown-pupil');
+    var rhP = (hdrP.R || {})[round] || { s: {} }, items = [];
+    STAGES.forEach(function (S) {
+      var g = (rhP.s || {})[S.n] || { f: [] }, shard = jget_(sp_(), qKey_(slugC, pe, round, S.n), {});
+      orderFor_(pe, round, S.n).forEach(function (id) {
+        if (!shard[id]) return;
+        var q = QBY[id].q, v = viewFor_(pe, round, q), a = unpack_(v, shard[id][1]);
+        var text = v.form === 'writepick' ? a.text : v.form === 'type' ? a.texts.filter(Boolean).join(' · ') : '';
+        items.push({ st: S.n, id: id, src: q.src, m: shard[id][0], max: q.marks, text: text, words: text ? text.trim().split(/\s+/).length : 0, f: (g.f || []).indexOf(id) !== -1 });
+      });
+    });
+    return ok_({ name: hdrP.n || pe.split('@')[0], round: round, archived: !!rhP.z, items: items });
+  }
+  if (op === 'csv') {
+    var head = ['class', 'pupil', 'email', 'round', 'stage', 'marks', 'max', 'rating', 'ticks', 'stageNote', 'topicRating', 'unsure', 'note', 'flags', 'flagged'];
+    var lines = [head.join(',')];
+    pupils.forEach(function (em) {
+      var row = trackRow_(slugC, c, em, round, all);
+      STAGES.forEach(function (S) {
+        var g = row.s[S.n], e = g.e, E = row.E;
+        var ticks = e ? e.ticks.filter(function (t) { return t; }).length + ' of ' + e.ticks.length : '';
+        var unsure = E ? E.unsure.map(function (u) { return u ? stageOf_(u).title : "No, I'm fine with all of it"; }).join('; ') : '';
+        lines.push([c.name, row.name, em, round, S.n + ' ' + S.title, g.m, g.x, e ? e.rating : '', ticks, e ? e.stageNote : '',
+          E ? E.rating : '', unsure, E ? E.note : '', g.flags.join('; '), g.fl.join('; ')].map(csvCell_).join(','));
+      });
+    });
+    return ok_({ filename: slugC + '-digital-data-round-' + round + '.csv', csv: lines.join('\r\n') + '\r\n' });
+  }
+  if (op === 'clearMe') {
+    return withLock_(function () {
+      var pre = ':' + slugC + ':' + email;
+      keys.forEach(function (k) { if (k === 'p' + pre || k === 's' + pre || k.indexOf('q' + pre + ':') === 0) sp_().deleteProperty(k); });
+      var mine = up_().getProperties(), dp = 'd:' + slugC + ':';
+      Object.keys(mine).forEach(function (k) { if (k.indexOf(dp) === 0) up_().deleteProperty(k); });
+      return ok_({});
+    });
+  }
+  return err_('bad-op');
+}

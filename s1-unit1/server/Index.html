@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base target="_top">
+<title>OLS Unit 1 Revision</title>
+<style>
+:root{--ink:#1c2430;--mute:#5c6774;--line:#d9dee5;--bg:#f3f5f8;--card:#fff;--navy:#1a3a6b;--gold:#e4b824;--ok:#1b7f3b;--bad:#b3261e;--tint:#f4f6fa;--okbg:#e6f4ea;--badbg:#fbe9e7;--sans:-apple-system,"Segoe UI",Calibri,Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;background:#dfe4ea}
+body{font:15px/1.45 var(--sans);color:var(--ink)}
+.app{width:min(1280px,100%);height:100vh;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;border:1px solid var(--line)}
+header.bar{height:52px;background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 20px;gap:14px;flex:none}
+header.bar .title{font-weight:700;font-size:17px}header.bar .crumb{font-size:14px;opacity:.9}header.bar .crumb a{color:#fff;text-decoration:underline;cursor:pointer}
+header.bar .who{margin-left:auto;font-size:14px}header.bar .staff{color:#fff;opacity:.85;font-size:13px;text-decoration:underline;cursor:pointer;margin-left:16px}
+.stagebar{flex:none;background:var(--card);border-bottom:1px solid var(--line);padding:10px 26px 0}
+.stagebar .t{font-size:14px;color:var(--mute)}.stagebar .t b{color:var(--navy)}
+.stagebar .line{height:4px;background:var(--line);margin:8px -26px 0}.stagebar .line i{display:block;height:100%;background:var(--gold);transition:width .3s}
+.work{overflow:auto;padding:22px 26px 60px;flex:1}
+.cols{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+h1{font-size:26px;margin:0 0 6px;color:var(--navy)}h2{font-size:20px;margin:0 0 10px;color:var(--navy)}.sub{color:var(--mute);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.card.tight{padding:14px 18px}
+.btn{display:inline-block;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer}
+.btn:disabled{background:#b8c0cc;cursor:default}.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}.btn.sm{padding:6px 12px;font-size:13px}
+.link{color:var(--navy);text-decoration:underline;cursor:pointer;font-size:14px}
+.help{font-size:13px;color:var(--mute);margin-top:8px}.err{font-size:13px;color:var(--bad);margin-top:8px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-height:118px;display:flex;flex-direction:column}
+.topic .n{font-size:12px;color:var(--mute);letter-spacing:.05em}.topic .name{font-weight:700;font-size:17px;margin:2px 0 6px;color:var(--navy)}.topic .meta{font-size:13px;color:var(--mute);margin-bottom:auto}
+.topic.off{opacity:.55}.topic .foot{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--mute)}
+.stages .row{display:grid;grid-template-columns:1fr 200px 110px;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.stages .row:first-child{border-top:0}.stages .row .st{font-weight:700;color:var(--navy)}.stages .row small{display:block;font-weight:400;color:var(--mute)}
+.status{font-size:14px}.status.done{color:var(--ok);font-weight:700}.status.now{color:var(--navy);font-weight:700}
+.qhead{display:flex;align-items:center;gap:10px;margin-bottom:10px}.marks{background:var(--gold);color:var(--ink);font-weight:700;font-size:12px;padding:2px 8px;border-radius:99px}.src{font-size:12px;color:var(--mute)}
+.qtext{font-size:17px;margin:0 0 16px;white-space:pre-line}.qtext.stem{font-size:16px;margin:8px 0 8px}
+.lead{font-weight:700;margin:14px 0 8px;font-size:14px;color:var(--navy)}
+.opts{display:grid;gap:8px}.opt{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;background:#fff;display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.opt:hover{border-color:var(--navy)}.opt.on{border-color:var(--navy);background:#e8f0fb}.opt i{width:18px;height:18px;border-radius:50%;border:2px solid #9aa4b0;flex:none;margin-top:2px}.opt.on i{background:var(--navy);border-color:var(--navy)}
+.opt.hit{border-color:var(--ok);background:var(--okbg)}.opt.miss{border-color:var(--bad);background:var(--badbg)}.opt.key{border-color:var(--ok);border-style:dashed}
+.opt .mk{margin-left:auto;font-weight:700;flex:none}.opt.hit .mk,.opt.key .mk{color:var(--ok)}.opt.miss .mk{color:var(--bad)}
+.opt.locked{cursor:default}
+textarea,input[type=text],select{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
+textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{padding:6px 8px}
+.items .item{margin-bottom:10px}.items label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:700}
+.pairs .pr{display:grid;grid-template-columns:1fr 24px 230px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.pairs .pr:first-child{border-top:0}
+.pairs .arrow{color:var(--mute);text-align:center}
+.choose .ch{padding:8px 0;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}.choose .ch:first-child{border-top:0}
+.tog{border:1.5px solid var(--line);border-radius:8px;padding:5px 12px;background:#fff;cursor:pointer;font:inherit}.tog.on{border-color:var(--navy);background:#e8f0fb;font-weight:700}
+.gapsent{font-size:16px;line-height:2.1}.gapsent select,.gapsent input{display:inline-block;width:auto;min-width:110px;margin:0 3px;padding:4px 8px;vertical-align:baseline}
+.result{margin:16px 0 0;font-size:17px;font-weight:700}.result.ok{color:var(--ok)}.result.bad{color:var(--bad)}.result.part{color:#8a6d00}
+.scheme{background:var(--tint)}.scheme h3{margin:0 0 8px;font-size:15px;color:var(--navy)}.scheme ul{margin:0;padding-left:20px}.scheme li{margin:3px 0}.scheme .note{font-size:13px;color:var(--mute);margin-top:8px;font-style:italic}
+.wrote{white-space:pre-wrap;background:#fff;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font-size:14px;min-height:34px}
+.flag{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--mute);user-select:none}.flag i{width:16px;height:16px;border:2px solid #9aa4b0;border-radius:4px;display:inline-block}.flag.on{color:var(--bad)}.flag.on i{background:var(--bad);border-color:var(--bad)}
+.actions{display:flex;align-items:center;gap:16px;margin-top:18px;flex-wrap:wrap}
+.figure{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}.figure h4{margin:0;padding:8px 12px;font-size:13px;letter-spacing:.04em;background:var(--tint);border-bottom:1px solid var(--line);color:var(--navy)}
+.figure table{border-collapse:collapse;width:100%;font-size:14px}.figure th{text-align:left;padding:6px 10px;background:#fff;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.figure td{padding:5px 10px;border-bottom:1px solid #eef1f4}
+.rate .opt{padding:9px 14px}.ticks label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.ticks input{margin-top:4px}
+.sumrows .r{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}.sumrows .r:first-child{border-top:0}
+table.track{border-collapse:collapse;width:100%;font-size:13px}.track th{background:var(--tint);text-align:left;padding:6px 8px;border:1px solid var(--line)}.track td{padding:6px 8px;border:1px solid var(--line);vertical-align:top}
+.chip{display:inline-block;background:var(--badbg);color:var(--bad);border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700;margin:1px 0}.chip.blue{background:#e8f0fb;color:var(--navy)}
+.toast{position:absolute;left:50%;transform:translateX(-50%);top:70px;background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;display:none}
+.app{position:relative}
+/* ---- build additions (not in the prototype): guard, system line, saving card, staff tabs, drawer, footer token ---- */
+header.bar a.staff{color:#fff}
+.guard{max-width:640px;margin:60px auto 0}.guard p{font-size:17px;margin:0 0 14px}.guard input[type=text]{max-width:320px;display:block;margin-bottom:12px}
+.sysbar{flex:none;display:flex;align-items:center;gap:14px;padding:8px 26px;font-size:14px;background:#fff4d6;border-bottom:1px solid #e9d38a}.sysbar.bad{background:var(--badbg);border-color:#f0c4bf;color:var(--bad)}
+.saving{position:absolute;right:24px;bottom:20px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;color:var(--navy);box-shadow:0 4px 14px rgba(0,0,0,.08);display:none}
+.build{font-size:11px;color:#8a94a0;margin-top:26px}
+.tabs{display:flex;gap:8px;margin:0 0 16px}.tabs .tab{border:1.5px solid var(--line);border-radius:8px;padding:6px 14px;background:#fff;cursor:pointer;font:inherit;font-size:14px;font-weight:700;color:var(--navy)}.tabs .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.srow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}.srow label{font-weight:700;font-size:14px;color:var(--navy)}.srow input[type=text],.srow input[type=password]{width:260px}
+input[type=password]{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
+table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.list td{padding:7px 8px;border-bottom:1px solid #eef1f4;vertical-align:top}
+.cls-link{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.track td .link{font-size:13px}.track small{color:var(--mute)}
+.drawer .it{padding:8px 0;border-top:1px solid var(--line);font-size:14px}.drawer .it:first-child{border-top:0}.drawer .it b{color:var(--navy)}.drawer .it .w{white-space:pre-wrap;color:var(--ink);margin-top:3px}
+.pairs select{max-width:100%}.pairs.wide .pr{grid-template-columns:minmax(80px,1fr) 24px minmax(0,4fr)}.pairs.wide select{width:100%}.pairs.wide .mk{display:block;margin-top:4px}
+
+</style>
+</head>
+<body data-build="s1u1-50d29029f7-4827878d">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", build: "s1u1-50d29029f7-4827878d" };</script>
+<div class="app" id="app"></div>
+<script>
+/* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
+ * system and staff lines (SPEC \u00a73.1, \u00a73.8, \u00a73.9 / ARCH). G3 (gates/g3-strings.js) proves both word for word. */
+var S1S = {
+  S: { // every pupil string, verbatim from the prototype (SPEC \u00a73); G3 checks it
+    app: "OLS Unit 1 Revision", hello: "Hello, ", staff: "Staff", home: "Unit 1 revision", later: "Comes later", open: "Open",
+    liveMeta: "4 stages \u00b7 82 questions \u00b7 126 marks", back: "Back to my topics",
+    topicLine: "Answer every question in each stage. You see the mark scheme straight after each answer.",
+    earlier: "Earlier rounds", lookback: "Look back", start: "Start", carry: "Carry on", openedBy: " \u00b7 opened by your teacher",
+    notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", done: "Done \u00b7 {m} of {x} marks",
+    stagebar: "Stage {s} of 4 \u00b7 {name} \u00b7 Question {i} of {n}",
+    pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", only2: "You can only pick two.", only3: "You can only pick three.",
+    writeFirst: "Write your answer in your own words first.", writeNote: "This writing is not marked. The marked parts come next.", writeDone: "I've written my answer", writeKept: "Your writing is kept. Now answer the marked parts below.", wroteHint: "Compare it with the mark scheme above.", writePh: "Type your answer here.", skipWrite: "I'd rather skip the writing",
+    typeIt: "Type your answer.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose\u2026",
+    chooseLine: "Pick the right word in each line.", gapsPool: "Fill each gap with a word from the list.", gapsType: "Fill each gap.",
+    check: "Check my answer", help: "Answer every part first.", got: "You got {m} of {x} {w}.", mark: "mark", marks: "marks",
+    scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage",
+    howGo: "How did it go?", closest: "Pick the one that is closest:", rates: ["I couldn't do most of these", "I got some, but I'm not sure why", "I got most of these", "I could explain these to someone else"],
+    tick: "Tick what you can do now:", added: "Is there anything else you'd like to add?", addPh: "Type it here, in a few words.",
+    saveCarry: "Save and carry on", wholeTopic: "Digital Data \u2014 the whole topic", unsure: "Is there any part you are still unsure about?", fine: "No, I'm fine with all of it",
+    anything: "Anything else your teacher should know?", saveSee: "Save and see my marks", scored: "You scored {m} of {x} marks ({p}%)", flagged: "Questions you flagged", noFlag: "You flagged nothing.",
+    round: "Round ", rateErr: "Pick the one that is closest before you carry on."
+  },
+  TOPICS: ["Digital data", "Software", "Database applications", "Spreadsheet applications", "Computer hardware", "Network technologies", "Cyberspace, network security and data transfer", "Cloud computing", "Ethical, legal and environmental impact"],
+  X: {
+    signing: "Signing you in with your school account\u2026",
+    nameAsk: "We could not read your name from your account. Type your first name so your teacher can see it:", nameGo: "Continue",
+    domain: "This site is for Our Lady's pupils and staff signed in with a C2k account.",
+    noClass: "This link is not for a class. Ask your teacher for the class link.",
+    saving: "Saving\u2026", offline: "We can't reach the server. Check the Wi-Fi, then press Try again.", retry: "Try again",
+    expired: "Your sign-in has expired. Reload the page.",
+    pass: "Staff passcode", enter: "Enter", badPass: "Passcode not recognised.",
+    tabs: ["Classes", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
+    roundOpen: "Digital Data \u00b7 Round {n} open", openClass: "Open round {n} for the class", openPupil: "Open round {n} for one pupil",
+    csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so"
+  }
+};
+
+</script>
+<script>
+/* sitpolicy.js \u2014 the scripted pupil's answers for the sit run (G2 on the harness, G4 on /dev). Deterministic and key-free:
+ * it sees only the drawn view, never a mark scheme, so it mixes right and wrong answers the way a real pupil would.
+ * The same file runs in node (gates compare the page's marks with the judge on the same seed and policy) and in the page. */
+(function (root) {
+  'use strict';
+  var WORDS = ['binary', '8', '1024', 'lossy', 'pixel', 'bit', 'byte', 'integer', 'ASCII', 'sample rate', '2', 'Unicode', 'resolution', 'hexadecimal'];
+  function h32(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function pickN(options, n, seed) {
+    var ranked = options.map(function (o, i) { return { o: o, k: h32(seed + '|' + i + '|' + o) }; }).sort(function (a, b) { return a.k - b.k; });
+    return ranked.slice(0, n).map(function (x) { return x.o; });
+  }
+  function answer(v, seed) {
+    var s = String(seed) + '|' + v.id, h = h32(s);
+    if (v.form === 'pick1' || v.form === 'pickN') return { picks: pickN(v.options, v.n, s) };
+    if (v.form === 'writepick') {
+      var skip = h % 3 === 0;
+      return { text: skip ? '' : 'It uses bits to store the data so the computer can work with it', skipped: skip,
+        parts: v.parts.map(function (p, k) { return { picks: pickN(p.options, p.n, s + '|' + k) }; }) };
+    }
+    if (v.form === 'type') {
+      if (h % 5 === 0) return { texts: v.items.map(function () { return ''; }), idk: true };
+      return { texts: v.items.map(function (_, k) { return WORDS[h32(s + '|t' + k) % WORDS.length]; }) };
+    }
+    if (v.form === 'pairs') return { map: v.left.map(function (_, k) { return v.right[(h + k * 7) % v.right.length]; }) };
+    if (v.form === 'choose') return { choices: v.items.map(function (it, k) { return it.opts[h32(s + '|c' + k) % it.opts.length]; }) };
+    if (v.form === 'gaps') {
+      var fills = [];
+      for (var i = 0; i < v.gapCount; i++) fills.push(v.pool ? v.pool[h32(s + '|g' + i) % v.pool.length] : WORDS[h32(s + '|g' + i) % WORDS.length]);
+      return { fills: fills };
+    }
+    return {};
+  }
+  var API = { answer: answer, h32: h32, flagEvery: 7 };
+  if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SitPolicy = API;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+/* app.js \u2014 the pupil page. The prototype's app.js (DESIGN/prototype, passed his look 27 Sep 2026) with its local record
+ * swapped for the server (build/ARCH.md): apiBoot gives the rounds, apiStage the drawn views of one stage (no keys),
+ * apiMark the marks and the mark scheme. Layout, strings and behaviour are the prototype's. */
+var App = (function () {
+  var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
+  var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
+  function h(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
+  function el(html) { var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
+  // ---- server ----
+  var SYS = { msg: "", retry: null }, saving = 0, savingT = null;
+  function paintSys() {
+    var x = document.getElementById("sys"); if (!x) return;
+    if (SYS.msg === "expired") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.expired) + '</span>'; }
+    else if (SYS.msg === "offline") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.offline) + '</span><button class="btn sm" id="retry">' + X.retry + '</button>'; document.getElementById("retry").onclick = function () { var f = SYS.retry; SYS.msg = ""; SYS.retry = null; paintSys(); if (f) f(); }; }
+    else { x.className = ""; x.innerHTML = ""; }
+  }
+  function paintSaving() { var x = document.getElementById("saving"); if (x) x.style.display = saving > 0 && savingT === "shown" ? "block" : "none"; }
+  function savingOn() { saving++; if (saving === 1) { savingT = setTimeout(function () { if (saving > 0) { savingT = "shown"; paintSaving(); } }, 300); } }
+  function savingOff() { saving = Math.max(0, saving - 1); if (!saving) { if (savingT && savingT !== "shown") clearTimeout(savingT); savingT = null; paintSaving(); } }
+  function gs(fn, req) { return new Promise(function (res, rej) { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](req); }); }
+  function call(fn, req, opt) { // resolves with {ok:true,\u2026}; rejects with e.code; a lost connection waits for Try again
+    req = Object.assign({ cls: BOOT.cls, topic: TOPIC }, req || {}); opt = opt || {};
+    return new Promise(function (resolve, reject) {
+      function failed() { if (opt.quiet) { var e = new Error("offline"); e.code = "offline"; return reject(e); } SYS.msg = "offline"; SYS.retry = attempt; paintSys(); }
+      function attempt() {
+        if (opt.save) savingOn();
+        gs(fn, req).then(function (r) {
+          if (opt.save) savingOff();
+          if (r && r.ok === false && (r.error === "server" || r.error === "busy")) return failed();
+          if (SYS.msg === "offline") { SYS.msg = ""; paintSys(); }
+          if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); } var e = new Error(code); e.code = code; return reject(e); }
+          resolve(r);
+        }, function () { if (opt.save) savingOff(); failed(); });
+      }
+      attempt();
+    });
+  }
+  // ---- record (from apiBoot / apiStage) ----
+  function roundNo() { return ME.topic.round; }
+  function RS(n) {
+    n = n || roundNo(); var r = ME.topic.rounds[n];
+    if (!r) { r = ME.topic.rounds[n] = { s: {}, E: false, done: false, z: false }; ME.topic.stages.forEach(function (t) { r.s[t.n] = { a: 0, m: 0, n: t.q, x: t.x, e: false, f: [] }; }); }
+    return r;
+  }
+  function stage(st) { return ME.topic.stages[st - 1]; }
+  function TOT() { return ME.topic.stages.reduce(function (t, s) { return t + s.x; }, 0); }
+  function QN() { return ME.topic.stages.reduce(function (t, s) { return t + s.q; }, 0); }
+  function stageTotals(st, n) { var g = RS(n).s[st]; return { a: g.a, m: g.m, n: g.n, x: g.x }; }
+  function loadStage(n, st, fresh) {
+    var k = n + "|" + st; if (CACHE[k] && !fresh) return Promise.resolve(CACHE[k]);
+    if (PROM[k] && !fresh) return PROM[k];
+    PROM[k] = call("apiStage", { round: n, stage: st }).then(function (r) { CACHE[k] = r; delete PROM[k]; return r; }, function (e) { delete PROM[k]; throw e; });
+    return PROM[k];
+  }
+  function reboot() { return call("apiBoot", {}).then(function (r) { ME = r; CACHE = {}; PROM = {}; return r; }); }
+  function closed(e) { if (e && e.code === "round-closed") reboot().then(topic).catch(function () {}); }
+  // ---- shell ----
+  function shell(crumb, body, bar) {
+    app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '<span class="who">' + S.hello + h(ME.name) + '</span><a class="staff" id="staffLink" href="' + h(BOOT.base) + '" target="_top">' + S.staff + '</a></header><div id="sys"></div>' + (bar || '') + '<div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
+    document.getElementById("work").appendChild(body); paintSys(); paintSaving();
+  }
+  function bare(crumb, body) { // guard, name and staff screens: no pupil name, the build token at the foot
+    app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '</header><div id="sys"></div><div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
+    body.appendChild(el('<div class="build">' + h(BOOT.build) + '</div>'));
+    document.getElementById("work").appendChild(body); paintSys(); paintSaving();
+  }
+  function guard(line) { CUR = { screen: "guard", line: line }; bare("", el('<div class="guard"><div class="card"><p>' + h(line) + '</p></div></div>')); }
+  function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(function () { x.style.display = "none"; }, 1800); }
+  function crumbHome() { return '<a id="cHome">' + S.home + '</a>'; }
+  function wire(id, fn) { var e = document.getElementById(id); if (e) e.onclick = fn; }
+  // ---- name ----
+  function nameScreen() { // as A2: Continue waits for a name; a refused name leaves the box for another try
+    CUR = { screen: "name" };
+    bare("", el('<div class="guard"><div class="card"><p>' + h(X.nameAsk) + '</p><input type="text" id="nm" maxlength="40" autocomplete="given-name"><button class="btn" id="go" disabled>' + X.nameGo + '</button></div></div>'));
+    var nm = document.getElementById("nm"), b = document.getElementById("go");
+    function send() { var v = nm.value.trim(); if (!v || b.disabled) return; b.disabled = true; call("apiName", { name: v }, { save: true }).then(function (r) { ME.name = r.name; ME.needName = false; home(); }, function () { b.disabled = false; }); }
+    nm.oninput = function () { b.disabled = !nm.value.trim(); }; nm.onkeydown = function (ev) { if (ev.key === "Enter") send(); }; b.onclick = send; nm.focus();
+  }
+  // ---- home ----
+  function home() {
+    CUR = { screen: "home" };
+    var n = roundNo(), r = RS(n), a = 0, m = 0; [1, 2, 3, 4].forEach(function (st) { var t = stageTotals(st, n); a += t.a; m += t.m; });
+    var line = S.round + n + (n > 1 ? " open" : "") + " \u00b7 " + (r.done ? "done \u00b7 " + m + " of " + TOT() + " marks" : a ? a + " of " + QN() + " questions done" : "not started");
+    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? '' : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>' : S.later) + '</div></div>'; }).join("");
+    shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>')); wire("openLive", topic);
+  }
+  // ---- topic front ----
+  function topic() {
+    CUR = { screen: "topic" };
+    var n = roundNo(), rows = [1, 2, 3, 4].map(function (st) {
+      var t = stageTotals(st, n), s = RS(n).s[st], status, cls, btn;
+      if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
+      else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
+      else { status = S.notStarted; cls = ""; btn = S.start; }
+      return '<div class="row"><div class="st">Stage ' + st + ' \u00b7 ' + h(stage(st).title) + '<small>' + t.n + ' questions \u00b7 ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
+    }).join("");
+    var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; [1, 2, 3, 4].forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' \u00b7 ' + m + ' of ' + TOT() + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
+    var body = el('<div><h1>Digital Data</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
+    shell(crumbHome(), body); wire("cHome", home); wire("seeSum", function () { summary(n); });
+    body.querySelectorAll("button[data-st]").forEach(function (b) {
+      b.onclick = function () {
+        var st = +b.dataset.st; b.disabled = true;
+        loadStage(n, st).then(function (D) { var ids = D.order, s = RS(n).s[st]; if (s.e) return lookback(n, st, 0); var i = 0; while (i < ids.length && D.done[ids[i]]) i++; if (i >= ids.length) return stagecard(st); question(st, i); }, function () { b.disabled = false; });
+      };
+    });
+    body.querySelectorAll("[data-lb]").forEach(function (x) { x.onclick = function () { summary(+x.dataset.lb); }; });
+    [1, 2, 3, 4].forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
+  }
+  // ---- question ----
+  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar"><div class="t">' + fmt(S.stagebar, { s: st, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%"></i></div></div>'; }
+  function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
+  function tiles(options, n, lead, partIdx) { return '<div class="lead">' + lead + '</div><div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
+  function leadFor(n) { return n === 1 ? S.pick1 : n === 2 ? S.pick2 : S.pick3; }
+  function complete(view, answer) { // the judge's complete(), key-free: Check waits for every part
+    answer = answer || {};
+    function picksOk(n, picks) { return Array.isArray(picks) && picks.length === n; }
+    if (view.form === "pick1" || view.form === "pickN") return picksOk(view.n, answer.picks);
+    if (view.form === "writepick") return view.parts.every(function (p, i) { return picksOk(p.n, ((answer.parts || [])[i] || {}).picks); });
+    if (view.form === "type") return view.items.every(function (_, i) { return !!((answer.texts || [])[i] || "").trim(); });
+    if (view.form === "pairs") return view.left.every(function (_, i) { return !!(answer.map || [])[i]; });
+    if (view.form === "choose") return view.items.every(function (_, i) { return (answer.choices || [])[i] != null; });
+    if (view.form === "gaps") { var f = answer.fills || []; for (var i = 0; i < view.gapCount; i++) if (!(f[i] || "").trim()) return false; return true; }
+    return false;
+  }
+  function question(st, i, replay, n) {
+    n = n || roundNo(); clearTimeout(draftT);
+    var D = CACHE[n + "|" + st], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
+    CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
+    if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
+    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
+    else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
+    else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">\u2192</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select> <span class="mk"></span></span></div>'; }).join("") + '</div>';
+    else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
+    else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text" maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
+    var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
+    var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
+    var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
+    function refresh() { var a = collect(); document.getElementById("check").disabled = sending || !complete(v, a); }
+    function collect() {
+      var a = {};
+      if (v.form === "pick1" || v.form === "pickN") a.picks = ans.picks.slice();
+      if (v.form === "writepick") { a.text = (document.getElementById("wtext") || {}).value || ""; a.parts = ans.parts.map(function (p) { return { picks: p.picks.slice() }; }); a.skipped = !!ans.skipped; }
+      if (v.form === "type") a.texts = [].map.call(body.querySelectorAll("input[data-k]"), function (x) { return x.value; });
+      if (v.form === "pairs") a.map = [].map.call(body.querySelectorAll("select[data-k]"), function (x) { return x.value; });
+      if (v.form === "choose") a.choices = ans.choices.slice();
+      if (v.form === "gaps") a.fills = [].map.call(body.querySelectorAll("[data-k]"), function (x) { return x.value; });
+      return a;
+    }
+    function draft() { // the writing she has typed so far survives a reload (ARCH: UserProperties, deleted once marked)
+      if (stored || replay || (v.form !== "writepick" && v.form !== "type")) return;
+      var a = collect(), t = v.form === "writepick" ? a.text : (a.texts.some(function (x) { return x.trim(); }) ? JSON.stringify(a.texts) : "");
+      if (t) D.drafts[qid] = t; else delete D.drafts[qid];
+      clearTimeout(draftT); draftT = setTimeout(function () { call("apiDraft", { round: n, qid: qid, text: t }, { quiet: true }).catch(function () {}); }, 1200);
+    }
+    body.querySelectorAll(".opts").forEach(function (grp) {
+      var nn = +grp.dataset.n, part = grp.dataset.part === "" ? null : +grp.dataset.part, bucket = part == null ? ans : ans.parts[part];
+      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(nn === 2 ? S.only2 : S.only3); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
+    });
+    body.querySelectorAll(".ch").forEach(function (ch) { var k = +ch.dataset.k; ch.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { if (ch.classList.contains("locked")) return; ans.choices[k] = b.dataset.t; ch.querySelectorAll(".tog").forEach(function (x) { x.classList.toggle("on", x === b); }); refresh(); }; }); });
+    body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
+    function reveal(skipped) { var w = document.getElementById("wtext"); w.readOnly = true; if (!skipped) document.getElementById("wnote").textContent = S.writeKept; document.getElementById("wdone").style.display = "none"; document.getElementById("skipW").style.display = "none"; document.getElementById("parts").style.display = ""; ans.skipped = !!skipped; ans.revealed = true; refresh(); }
+    wire("wdone", function () { reveal(false); });
+    wire("skipW", function () { reveal(true); });
+    wire("idk", function () { if (sending || stored) return; body.querySelectorAll("input[data-k]").forEach(function (x) { x.value = ""; }); submit(true); });
+    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; };
+    function submit(idk) {
+      if (sending) return;
+      var a = collect(); if (idk) a.texts = a.texts.map(function () { return ""; });
+      if (stored) return show(stored.r, stored.a);
+      sending = true; clearTimeout(draftT); document.getElementById("check").disabled = true;
+      call("apiMark", { round: n, qid: qid, answer: a, idk: !!idk }, { save: true }).then(function (res) {
+        var g = RS(n).s[st];
+        if (!D.done[qid]) { g.a++; g.m += res.r.marks; }
+        D.done[qid] = stored = { a: res.a, r: res.r, f: !!res.f }; delete D.drafts[qid];
+        if (CUR.qid === qid) show(res.r, res.a);
+      }, function (e) { sending = false; if (e.code === "round-closed") return closed(e); refresh(); });
+    }
+    function show(r, a) {
+      CUR.r = r;
+      body.querySelectorAll(".opts,.ch").forEach(function (g) { g.classList.add("locked"); });
+      body.querySelectorAll("input,select,textarea,.tog").forEach(function (x) { x.disabled = true; });
+      var parts = r.parts ? r.parts : [r];
+      parts.forEach(function (pr, k) { var grp = body.querySelector('.opts[data-part="' + (r.parts ? k : '') + '"]'); if (!grp || !pr.options) return; pr.options.forEach(function (o) { var t = grp.querySelector('.opt[data-t="' + h(o.text).replace(/"/g, '&quot;') + '"]'); if (!t) return; var picked = t.classList.contains("on"); t.classList.remove("on"); if (picked && o.key) { t.classList.add("hit"); t.querySelector(".mk").textContent = "\u2713"; } else if (picked) { t.classList.add("miss"); t.querySelector(".mk").textContent = "\u2717"; } else if (o.key) { t.classList.add("key"); t.querySelector(".mk").textContent = "\u2713"; } }); });
+      if (v.form === "type") body.querySelectorAll(".item").forEach(function (it, k) { var p = r.per[k]; it.querySelector(".mk").textContent = p && p.hit ? " \u2713" : " \u2717"; it.querySelector(".mk").style.color = p && p.hit ? "var(--ok)" : "var(--bad)"; });
+      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.want) + '</span>'; });
+      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.gaps ? p.want[j] : p.want) + '</span>'; }); });
+      var cls = r.marks === r.max ? "ok" : r.marks ? "part" : "bad";
+      var lines = r.scheme.lines.map(function (l) { return '<li>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
+      var wrote = (v.form === "writepick" || v.form === "type") ? '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" \u00b7 ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
+      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : S.finish) + '</button></div>';
+      document.getElementById("check").parentNode.style.display = "none";
+      wire("flag", function () { // saved at once; put back if the server says no
+        var on = !stored.f, box = document.getElementById("flag"); stored.f = on; box.classList.toggle("on", on);
+        call("apiFlag", { round: n, qid: qid, on: on }, { save: true }).then(function (res) {
+          stored.f = !!res.f; if (box.isConnected) box.classList.toggle("on", stored.f);
+          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src });
+        }, function () { stored.f = !on; if (box.isConnected) box.classList.toggle("on", stored.f); });
+      });
+      wire("next", function () { if (replay) return i + 1 < ids.length ? lookback(n, st, i + 1) : topic(); i + 1 < ids.length ? question(st, i + 1) : stagecard(st); });
+    }
+    wire("check", function () { submit(false); });
+    if (stored) { // refresh or look back: restore the picks then show the marked state
+      var a = stored.a; ans.picks = a.picks || []; ans.choices = a.choices || []; if (a.parts) ans.parts = a.parts.map(function (p) { return { picks: p.picks.slice() }; });
+      body.querySelectorAll(".opts").forEach(function (grp) { var part = grp.dataset.part === "" ? null : +grp.dataset.part, picks = (part == null ? a.picks : a.parts[part].picks) || []; grp.querySelectorAll(".opt").forEach(function (o) { if (picks.indexOf(o.dataset.t) !== -1) o.classList.add("on"); }); });
+      if (a.text != null && document.getElementById("wtext")) { document.getElementById("wtext").value = a.text; document.getElementById("wtext").readOnly = true; document.getElementById("wdone").style.display = "none"; document.getElementById("skipW").style.display = "none"; document.getElementById("parts").style.display = ""; }
+      if (a.texts) body.querySelectorAll("input[data-k]").forEach(function (x, k) { x.value = a.texts[k] || ""; });
+      if (a.map) body.querySelectorAll("select[data-k]").forEach(function (x, k) { x.value = a.map[k] || ""; });
+      if (a.fills) body.querySelectorAll("[data-k]").forEach(function (x, k) { x.value = a.fills[k] || ""; });
+      body.querySelectorAll(".ch").forEach(function (ch, k) { ch.querySelectorAll(".tog").forEach(function (b) { b.classList.toggle("on", b.dataset.t === (a.choices || [])[k]); }); });
+      show(stored.r, a);
+    } else if (D.drafts[qid] && !replay) { // her unmarked writing comes back; nothing is revealed until she says she has finished
+      var d = D.drafts[qid];
+      if (v.form === "writepick") { document.getElementById("wtext").value = d; document.getElementById("wdone").disabled = !d.trim(); document.getElementById("skipW").style.display = d.trim() ? "none" : ""; }
+      if (v.form === "type") { try { var t = JSON.parse(d); body.querySelectorAll("input[data-k]").forEach(function (x, k) { x.value = t[k] || ""; }); } catch (e) {} }
+      refresh();
+    }
+  }
+  function lookback(n, st, i) { var D = CACHE[n + "|" + st]; while (i < D.order.length && !D.done[D.order[i]]) i++; if (i >= D.order.length) return topic(); question(st, i, true, n); }
+  // ---- cards ----
+  function rateHtml(id) { return '<div class="lead">' + S.closest + '</div><div class="opts rate" id="' + id + '">' + S.rates.map(function (t, k) { return '<div class="opt" data-r="' + (k + 1) + '"><i></i><span>' + t + '</span></div>'; }).join("") + '</div>'; }
+  function wireRate(box, cb) { box.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { box.querySelectorAll(".opt").forEach(function (x) { x.classList.toggle("on", x === o); }); cb(+o.dataset.r); }; }); }
+  function stagecard(st) {
+    CUR = { screen: "stagecard", st: st };
+    var n = roundNo(), t = stage(st), D = CACHE[n + "|" + st], rating = 0;
+    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' \u00b7 ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
+    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    wire("save", function () {
+      var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
+      b.disabled = true;
+      call("apiEval", { round: n, stage: st, payload: { rating: rating, ticks: [].map.call(body.querySelectorAll("input[type=checkbox]"), function (x) { return x.checked ? 1 : 0; }), stageNote: conf } }, { save: true }).then(function (res) {
+        var r = RS(n); r.s[st].e = true; D.e = res.e; if (res.done) r.done = true; res.allCards && !r.E ? topiccard() : topic();
+      }, function (e) { b.disabled = false; if (e.code === "round-closed") return closed(e); if (e.code === "no-rating") err.textContent = S.rateErr; else if (e.code === "not-finished") topic(); });
+    });
+  }
+  function topiccard() {
+    CUR = { screen: "topiccard" };
+    var n = roundNo(), rating = 0;
+    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + S.wholeTopic + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + [1, 2, 3, 4].map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body); wire("cHome", home); wire("cTopic", topic);
+    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
+    wire("save", function () {
+      var err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
+      b.disabled = true;
+      call("apiEval", { round: n, stage: "topic", payload: { rating: rating, unsure: [].filter.call(body.querySelectorAll("input[data-u]"), function (x) { return x.checked; }).map(function (x) { return +x.dataset.u; }), note: document.getElementById("note").value.trim() } }, { save: true }).then(function () {
+        var r = RS(n); r.E = true; r.done = true; summary(n);
+      }, function (e) { b.disabled = false; if (e.code === "round-closed") return closed(e); if (e.code === "no-rating") err.textContent = S.rateErr; else if (e.code === "not-finished") topic(); });
+    });
+  }
+  function summary(n) {
+    CUR = { screen: "summary", n: n };
+    var R = RS(n), m = 0, rows = [1, 2, 3, 4].map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b></div>'; }).join("");
+    var flagged = []; [1, 2, 3, 4].forEach(function (st) {
+      var D = CACHE[n + "|" + st], f = R.s[st].f.slice();
+      if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
+      f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' \u00b7 Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' \u00b7 Stage ' + st + '</span>') + '</div>'); });
+    });
+    var tot = TOT();
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 Digital Data</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
+    shell(crumbHome(), body); wire("cHome", home); wire("back", home);
+    body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
+  }
+  // ---- boot ----
+  function boot() {
+    app = document.getElementById("app");
+    guard(X.signing);
+    call("apiBoot", {}).then(function (r) {
+      if (r.staff) { ME = r; return Staff.start(r, T); }
+      ME = r; r.needName ? nameScreen() : home();
+      if (!pingT) pingT = setInterval(function () { call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000);
+      if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
+    }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
+  }
+  var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
+    me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
+    reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary };
+  return { boot: boot, t: T };
+})();
+
+</script>
+<script>
+/* staff.js \u2014 the staff page at the bare link (no class). Door (passcode, or let in by email), then four tabs:
+ * Classes (make a class, its link), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
+ * table, pupil x stage, rating, flags, notes, flagged questions, topic card, last seen) and Export (CSV). */
+var Staff = (function () {
+  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false;
+  var W = { none: "No classes yet. Add one below.", pupils: "Pupils", link: "Class link", round: "Round", cls: "Class",
+    noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
+    copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
+    cleared: "Your own record in this class is cleared.", opened: "Round {n} is open.", pupil: "Pupil", topic: "Topic", flagged: "Flagged",
+    seen: "Last seen", close: "Close", notDone: "{a} of {n} done", unsure: "unsure: ", rating: "rating " };
+  function h(s) { return T.h(s); }
+  function fail(e) { var c = e && e.code; if (c === "not-staff") return door(""); if (c === "unknown-class") { CLS = ""; TAB = 0; return tabs(); } }
+  function page(body) { CUR(); T.bare(S.staff, body); }
+  function CUR() { try { T.cur().screen = "staff"; } catch (e) {} }
+  function start(boot, t) { T = t; check(""); }
+  function check(pass) {
+    return T.call("apiStaff", { op: "check", pass: pass }).then(function (r) { if (r.admitted) return tabs(); door(pass ? X.badPass : ""); },
+      function (e) { if (e.code === "bad-pass") return door(X.badPass); page(T.el('<div class="guard"><div class="card"><p>' + h(X.domain) + '</p></div></div>')); });
+  }
+  function door(msg) {
+    var body = T.el('<div class="guard"><div class="card"><div class="srow"><label for="pw">' + X.pass + '</label><input type="password" id="pw" maxlength="60" autocomplete="off"><button class="btn sm" id="enter">' + X.enter + '</button></div><div class="err" id="err">' + h(msg || "") + '</div></div></div>');
+    page(body);
+    var pw = document.getElementById("pw"), go = function () { var v = pw.value.trim(); if (!v) return; document.getElementById("enter").disabled = true; check(v); };
+    T.wire("enter", go); pw.onkeydown = function (ev) { if (ev.key === "Enter") go(); }; pw.focus();
+  }
+  function bar() { return '<div class="tabs">' + X.tabs.map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>'; }).join("") + '</div>'; }
+  function clsPick() { return CLASSES.length > 1 ? '<label for="cp">' + W.cls + '</label><select id="cp">' + CLASSES.map(function (c) { return '<option value="' + h(c.slug) + '"' + (c.slug === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>'; }).join("") + '</select>' : '<b>' + h((CLASSES[0] || {}).name || "") + '</b>'; }
+  function wireCommon(body) {
+    body.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { TAB = +b.dataset.tab; armed = false; tabs(); }; });
+    var cp = body.querySelector("#cp"); if (cp) cp.onchange = function () { CLS = cp.value; ROUND = 0; armed = false; tabs(); };
+  }
+  function tabs() {
+    return T.call("apiStaff", { op: "classes" }).then(function (r) {
+      CLASSES = r.classes; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
+      if (TAB && !CLS) TAB = 0;
+      [classes, rounds, tracker, exporter][TAB]();
+    }).catch(fail);
+  }
+  function link(slug) { return T.boot.base + "?class=" + slug; }
+  // ---- Classes ----
+  function classes() {
+    var rows = CLASSES.map(function (c) { return '<tr><td><b>' + h(c.name) + '</b></td><td><span class="cls-link" data-copy="' + h(link(c.slug)) + '">' + h(link(c.slug)) + '</span></td><td>' + c.pupils + '</td><td>' + c.round + '</td></tr>'; }).join("");
+    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div></div></div>');
+    page(body); wireCommon(body);
+    body.querySelectorAll("[data-copy]").forEach(function (x) { x.onclick = function () { var s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents(x); s.removeAllRanges(); s.addRange(rg); try { navigator.clipboard.writeText(x.dataset.copy).then(function () { T.toast(W.copied); }, function () {}); } catch (e) {} }; });
+    var cn = document.getElementById("cn"), make = function () {
+      var v = cn.value.trim(), err = document.getElementById("err"), b = document.getElementById("make"); if (!v) return; b.disabled = true;
+      T.call("apiStaff", { op: "create", name: v }).then(function (r) { CLS = r.slug; tabs(); }, function (e) { b.disabled = false; err.textContent = e.code === "taken" ? W.taken : e.code === "bad-name" ? W.rule : ""; });
+    };
+    T.wire("make", make); cn.onkeydown = function (ev) { if (ev.key === "Enter") make(); };
+  }
+  // ---- Rounds ----
+  function rounds() {
+    T.call("apiStaff", { op: "rounds", cls: CLS }).then(function (r) {
+      var pup = r.pupils.map(function (p, k) { return '<option value="' + k + '">' + h(p.name) + ' \u00b7 ' + S.round + p.round + '</option>'; }).join("");
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + T.fmt(X.roundOpen, { n: r.round }) + '</h2><div class="actions"><button class="btn" id="oc">' + T.fmt(X.openClass, { n: r.round + 1 }) + '</button></div></div><div class="card">' + (r.pupils.length ? '<div class="srow"><select id="pp">' + pup + '</select><button class="btn sm ghost" id="op"></button></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><span class="link" id="clr">' + W.clearMine + '</span></div>');
+      page(body); wireCommon(body);
+      var pp = document.getElementById("pp"), op = document.getElementById("op");
+      function label() { if (op) op.textContent = T.fmt(X.openPupil, { n: r.pupils[+pp.value].round + 1 }); }
+      if (pp) { pp.onchange = label; label(); }
+      T.wire("oc", function () { this.disabled = true; T.call("apiStaff", { op: "openClass", cls: CLS }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }).catch(fail); });
+      T.wire("op", function () { var p = r.pupils[+pp.value]; op.disabled = true; T.call("apiStaff", { op: "openPupil", cls: CLS, email: p.email }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }, function () { op.disabled = false; }); });
+      T.wire("clr", function () {
+        var x = document.getElementById("clr");
+        if (!armed) { armed = true; x.textContent = T.fmt(W.clearConfirm, { name: r.className }); return; }
+        armed = false; T.call("apiStaff", { op: "clearMe", cls: CLS }).then(function () { T.toast(W.cleared); rounds(); }).catch(fail);
+      });
+    }).catch(fail);
+  }
+  // ---- Tracker ----
+  function roundPick(max) { var o = ""; for (var k = 1; k <= max; k++) o += '<option' + (k === ROUND ? ' selected' : '') + '>' + k + '</option>'; return '<label for="rp">' + W.round + '</label><select id="rp">' + o + '</select>'; }
+  function seen(iso) { if (!iso) return '\u2014'; var d = new Date(iso); return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function tracker() {
+    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+      ROUND = r.round;
+      var title = function (n) { return r.stages[n - 1].title; };
+      var rows = r.rows.map(function (p, k) {
+        var cells = r.stages.map(function (st) {
+          var c = p.s[st.n], e = c.e;
+          if (!c.a && !e) return '<td>\u2014</td>';
+          return '<td>' + c.m + '/' + c.x + (c.a < c.n ? '<br><small>' + T.fmt(W.notDone, { a: c.a, n: c.n }) + '</small>' : '') + (e ? '<br><span class="chip blue">' + W.rating + e.rating + '</span>' : '') + (e && e.stageNote ? '<br><small>' + h(e.stageNote) + '</small>' : '') + c.flags.map(function (f) { return '<br><span class="chip">' + h(f) + '</span>'; }).join("") + '</td>';
+        }).join("");
+        var E = p.E, fl = [];
+        r.stages.forEach(function (st) { fl = fl.concat(p.s[st.n].fl); });
+        return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td>' + cells + '<td>' + (E ? W.rating + E.rating + (E.unsure.length ? '<br>' + W.unsure + E.unsure.map(function (u) { return h(u ? title(u) : S.fine); }).join(", ") : '') + (E.note ? '<br><small>' + h(E.note) + '</small>' : '') : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td><td>' + seen(p.seen) + '</td></tr>';
+      }).join("");
+      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 Digital Data \u00b7 ' + S.round + r.round + '</h1><div class="card">' + (r.rows.length ? '<table class="track"><tr><th>' + W.pupil + '</th>' + r.stages.map(function (st) { return '<th>' + h(st.title) + '</th>'; }).join("") + '<th>' + W.topic + '</th><th>' + W.flagged + '</th><th>' + W.seen + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><div id="drawer"></div></div>');
+      page(body); wireCommon(body);
+      var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; tracker(); };
+      body.querySelectorAll("[data-p]").forEach(function (x) { x.onclick = function () { drawer(r.rows[+x.dataset.p]); }; });
+    }).catch(fail);
+  }
+  function drawer(p) {
+    T.call("apiStaff", { op: "pupil", cls: CLS, email: p.email, round: ROUND }).then(function (r) {
+      var d = document.getElementById("drawer"); if (!d) return;
+      d.innerHTML = '<div class="card drawer"><h2>' + h(r.name) + ' \u00b7 ' + S.round + r.round + '</h2>' + r.items.map(function (it) { return '<div class="it"><b>Stage ' + it.st + ' \u00b7 ' + h(it.src) + '</b> \u00b7 ' + it.m + '/' + it.max + (it.f ? ' <span class="chip">' + S.flag + '</span>' : '') + (it.text ? '<div class="w">' + h(it.text) + '</div>' : '') + '</div>'; }).join("") + '<div class="actions"><button class="btn sm ghost" id="shut">' + W.close + '</button></div></div>';
+      T.wire("shut", function () { d.innerHTML = ""; }); d.scrollIntoView({ block: "start" });
+    }).catch(fail);
+  }
+  // ---- Export ----
+  function exporter() {
+    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+      ROUND = r.round;
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><div class="actions"><button class="btn" id="csv">' + X.csv + '</button></div></div></div>');
+      page(body); wireCommon(body);
+      var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; };
+      T.wire("csv", function () {
+        var b = document.getElementById("csv"); b.disabled = true;
+        T.call("apiStaff", { op: "csv", cls: CLS, round: ROUND }).then(function (x) {
+          b.disabled = false;
+          var blob = new Blob(["\ufeff" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+          a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+        }, function () { b.disabled = false; });
+      });
+    }).catch(fail);
+  }
+  return { start: start, flags: [X.flagHigh, X.flagLow] };
+})();
+
+</script>
+<script>
+/* sit.js \u2014 the scripted sit (G2 on the harness, G4 on the live /dev link). Runs only with ?sit=1 for the owner (or the
+ * harness's dev user). It clears the owner's own record in the class, then plays all four stages through the page itself
+ * (tiles, boxes, lists, toggles, Check, Next) with SitPolicy's answers, flags every 7th question, reloads mid-stage, saves
+ * every card, checks the summary, restores all 82 marked questions, tries a repeat mark, and opens round 2 for itself.
+ * The report is a <pre id="sitReport"> (SIT PASS/FAIL lines, MARKS, a MARKS# hash the gate recomputes in node). */
+var Sit = (function () {
+  var T, S = S1S.S, lines = [], fails = 0, errors = [];
+  function ok(name, good, detail) { if (!good) fails++; lines.push("SIT " + (good ? "PASS " : "FAIL ") + name + (detail ? " \u00b7 " + detail : "")); paint(); }
+  function paint() {
+    var p = document.getElementById("sitReport");
+    if (!p) { p = document.createElement("pre"); p.id = "sitReport"; p.style.cssText = "position:fixed;right:8px;top:60px;z-index:9;max-width:520px;max-height:70vh;overflow:auto;background:#fff;border:2px solid #1A3A6B;padding:8px;font:12px/1.35 ui-monospace,Menlo,monospace;white-space:pre-wrap;margin:0"; document.body.appendChild(p); }
+    p.textContent = lines.join("\n");
+  }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function until(fn, ms, what) {
+    var t0 = Date.now(); ms = ms || 30000;
+    return new Promise(function (res, rej) { (function go() { var v; try { v = fn(); } catch (e) { v = false; } if (v) return res(v); if (Date.now() - t0 > ms) return rej(new Error("timeout: " + (what || ""))); setTimeout(go, 60); })(); });
+  }
+  function $(sel) { return document.querySelector(sel); }
+  function all(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+  function cur() { return T.cur(); }
+  function set(x, v) { x.value = v; x.dispatchEvent(new Event("input", { bubbles: true })); x.dispatchEvent(new Event("change", { bubbles: true })); }
+  function tile(part, text) { var t = all('.opts[data-part="' + part + '"] .opt').filter(function (o) { return o.dataset.t === text; })[0]; if (t) t.click(); return !!t; }
+  function layout(where) { // nothing spills sideways and nothing is cut off
+    var bad = [], work = $("#work");
+    if (work && work.scrollWidth > work.clientWidth + 1) bad.push("work scrolls sideways");
+    all("header.bar, .stagebar, .card, .opt, .figure, .items .item, .pairs .pr, .choose .ch, .gapsent, .scheme, .wrote, .actions, .sumrows .r, .row, .figure td, .figure th, .ticks label, .item label, .opt span, .tog, .btn, .qtext, .lead").forEach(function (e) {
+      if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) bad.push((e.className || e.tagName) + " " + e.scrollWidth + ">" + e.clientWidth);
+    });
+    all("select").forEach(function (x) { // the chosen words must show whole in the closed list
+      if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
+      cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
+      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 > x.clientWidth) bad.push("list text cut off: " + x.value.slice(0, 30));
+    });
+    if (document.documentElement.scrollWidth > window.innerWidth + 1) bad.push("page scrolls sideways");
+    if (document.documentElement.scrollHeight > window.innerHeight + 1) bad.push("the frame scrolls");
+    if (bad.length) ok("layout " + where, false, bad.slice(0, 3).join("; "));
+    return !bad.length;
+  }
+  function rendered(v) { // every part the question asks about is on screen
+    var miss = [], qt = $("#qcard > .qtext");
+    if (v.q && !(qt && qt.textContent === v.q)) miss.push("wording");
+    if (v.figure && !($(".figure table") && $(".figure table").offsetHeight)) miss.push("figure");
+    if (v.form === "pairs") { var sels = all("select[data-k]"); if (sels.length !== v.left.length) miss.push("pairs"); sels.forEach(function (s) { if (s.options.length !== v.right.length + 1) miss.push("spare"); }); }
+    if (v.form === "gaps" && all("[data-k]").length !== v.gapCount) miss.push("gaps");
+    if (v.form === "type") v.items.forEach(function (it, k) { if (it.label && !all(".item label")[k]) miss.push("label " + k); });
+    if (v.form === "choose" && all(".ch").length !== v.items.length) miss.push("choose");
+    if ((v.form === "pick1" || v.form === "pickN") && all('.opts[data-part=""] .opt').length !== v.options.length) miss.push("tiles");
+    return miss;
+  }
+  var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n;
+  function answerOne() { // fills the question on screen the way a pupil would, then presses Check (or I don't know)
+    var c = cur(), v = c.v, a = SitPolicy.answer(v, email + "|" + n), miss = rendered(v);
+    if (miss.length) ok("rendered " + c.qid, false, miss.join(","));
+    layout("before " + c.qid);
+    if (v.form === "pick1" || v.form === "pickN") a.picks.forEach(function (p) { tile("", p); });
+    if (v.form === "writepick") {
+      if (a.skipped) $("#skipW").click(); else { set($("#wtext"), a.text); $("#wdone").click(); }
+      a.parts.forEach(function (p, k) { p.picks.forEach(function (t) { tile(k, t); }); });
+    }
+    if (v.form === "type") { if (a.idk) { $("#idk").click(); return; } all("input[data-k]").forEach(function (x, k) { set(x, a.texts[k]); }); }
+    if (v.form === "pairs") all("select[data-k]").forEach(function (x, k) { set(x, a.map[k]); });
+    if (v.form === "choose") all(".ch").forEach(function (ch, k) { var b = [].filter.call(ch.querySelectorAll(".tog"), function (t) { return t.dataset.t === a.choices[k]; })[0]; if (b) b.click(); });
+    if (v.form === "gaps") all("[data-k]").forEach(function (x, k) { set(x, a.fills[k]); });
+    var chk = $("#check");
+    if (chk.disabled) ok("check enabled " + c.qid, false, v.form);
+    chk.click();
+  }
+  function playStage(st) {
+    var b = $('button[data-st="' + st + '"]');
+    ok("stage " + st + " button", b && b.textContent === S.start, b && b.textContent);
+    b.click();
+    return until(function () { return cur().screen === "question" && cur().st === st; }, 30000, "stage " + st).then(function loop() {
+      if (cur().screen !== "question") return;
+      var c = cur(); G++;
+      answerOne();
+      return until(function () { return $("#after .result") && cur().r; }, 45000, "marks " + c.qid).then(function () {
+        var r = cur().r; MARKS[c.qid] = r.marks;
+        var want = T.fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks });
+        if ($("#after .result").textContent !== want) ok("result line " + c.qid, false, $("#after .result").textContent);
+        if (!$(".scheme li")) ok("scheme " + c.qid, false, "no mark scheme lines");
+        layout("after " + c.qid);
+        var flag = G % SitPolicy.flagEvery === 0 ? (function () {
+          $("#flag").click(); FLAGS.push(c.qid);
+          return until(function () { return T.me().topic.rounds[n].s[st].f.some(function (x) { return x.id === c.qid; }); }, 30000, "flag " + c.qid);
+        })() : Promise.resolve();
+        return flag.then(function () {
+          if (st === 2 && c.i === 4 && !reloaded) { // a reload in the middle of a stage: Carry on lands on question 6
+            reloaded = true;
+            return T.reboot().then(function () {
+              T.topic(); var b2 = $('button[data-st="2"]');
+              ok("reload shows Carry on", b2 && b2.textContent === S.carry, b2 && b2.textContent);
+              b2.click();
+              return until(function () { return cur().screen === "question"; }, 30000, "reload").then(function () {
+                ok("reload lands on question 6", cur().i === 5 && /Question 6 of/.test($(".stagebar .t").textContent), $(".stagebar .t").textContent);
+                return loop();
+              });
+            });
+          }
+          $("#next").click();
+          return loop();
+        });
+      });
+    }).then(function () {
+      ok("stage " + st + " card", cur().screen === "stagecard", cur().screen);
+      layout("stage card " + st);
+      $("#save").click(); // no rating yet: the card must refuse
+      ok("stage card needs a rating", $("#err").textContent === S.rateErr && cur().screen === "stagecard");
+      var rating = 1 + SitPolicy.h32(email + "|" + st) % 4;
+      $('.rate .opt[data-r="' + rating + '"]').click();
+      var tick = $('.ticks input[type=checkbox]'); if (tick) tick.click();
+      set($("#conf"), "sit run " + st);
+      $("#save").click();
+      return until(function () { return cur().screen === (st < 4 ? "topic" : "topiccard"); }, 30000, "card " + st);
+    });
+  }
+  function run(t) {
+    T = t; window.addEventListener("error", function (e) { errors.push(String(e.message)); });
+    window.addEventListener("unhandledrejection", function (e) { errors.push("promise: " + String(e.reason && (e.reason.code || e.reason.message) || e.reason)); });
+    ok("started", true, T.boot.build);
+    var me = T.me(); email = me.email;
+    var fresh = me.topic.round === 1 && Object.keys(me.topic.rounds).every(function (k) { var r = me.topic.rounds[k]; return Object.keys(r.s).every(function (s) { return !r.s[s].a && !r.s[s].e; }); });
+    (fresh ? Promise.resolve() : T.call("apiStaff", { op: "clearMe", cls: T.boot.cls }).then(T.reboot)).then(function () {
+      me = T.me(); n = me.topic.round;
+      ok("fresh record", n === 1 && !me.needName, "round " + n);
+      T.home(); layout("home");
+      ok("home line", (($(".topic .foot span") || {}).textContent || "") === S.round + "1 \u00b7 not started", ($(".topic .foot span") || {}).textContent);
+      $("#openLive").click(); layout("topic");
+      return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
+    }).then(function () {
+      layout("topic card");
+      $('.rate .opt[data-r="2"]').click(); $('input[data-u="0"]').click(); set($("#note"), "sit run");
+      $("#save").click();
+      return until(function () { return cur().screen === "summary"; }, 30000, "summary");
+    }).then(function () {
+      var tot = 0, qs = Object.keys(MARKS); qs.forEach(function (k) { tot += MARKS[k]; });
+      var x = me.topic.stages.reduce(function (s, st) { return s + st.x; }, 0);
+      ok("82 questions answered", qs.length === 82, qs.length);
+      ok("summary total", $(".card h2").textContent === T.fmt(S.scored, { m: tot, x: x, p: Math.round(100 * tot / x) }), $(".card h2").textContent);
+      ok("summary flagged", all(".sumrows .link[data-id]").length === FLAGS.length, all(".sumrows .link[data-id]").length + " of " + FLAGS.length);
+      layout("summary");
+      lines.push("TOTAL " + tot + " of " + x);
+      // every marked question comes back after a reload
+      return T.reboot().then(function () {
+        var bad = [], seen = 0;
+        return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
+          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); });
+        }); }); }, Promise.resolve()).then(function () {
+          ok("all marked questions restore", seen === 82 && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          T.home();
+          ok("home line done", $(".topic .foot span").textContent === S.round + "1 \u00b7 done \u00b7 " + tot + " of " + x + " marks", $(".topic .foot span").textContent);
+          return tot;
+        });
+      });
+    }).then(function (tot) { // first answer wins
+      var D = T.cache()[n + "|1"], qid = D.order[0], v = D.views[0];
+      return T.call("apiMark", { round: n, qid: qid, answer: SitPolicy.answer(v, "another pupil") }).then(function (r) {
+        ok("repeat mark keeps the first", r.repeat === true && r.r.marks === MARKS[qid], "repeat " + r.repeat + " \u00b7 " + r.r.marks + " vs " + MARKS[qid]);
+        return T.call("apiStaff", { op: "openPupil", cls: T.boot.cls, email: email });
+      }).then(function (x) {
+        ok("teacher opens round 2", x.round === 2, x.round);
+        return T.reboot();
+      }).then(function () {
+        var m2 = T.me();
+        var r1 = [1, 2, 3, 4].reduce(function (s, st) { return s + m2.topic.rounds[1].s[st].m; }, 0);
+        ok("round 1 kept", r1 === tot, r1 + " vs " + tot);
+        ok("round 2 current", m2.topic.round === 2);
+        T.home();
+        ok("home line round 2", $(".topic .foot span").textContent === S.round + "2 open \u00b7 not started", $(".topic .foot span").textContent);
+        return T.loadStage(2, 1).then(function (D2) { ok("round 2 new order", D2.order.join() !== D.order.join()); T.topic(); layout("topic round 2"); });
+      });
+    }).catch(function (e) { ok("run", false, e && (e.code || e.message)); }).then(function () {
+      ok("no page errors", !errors.length, errors.slice(0, 3).join(" | "));
+      var ms = Object.keys(MARKS).sort().map(function (k) { return k + ":" + MARKS[k]; }).join(",");
+      lines.push("MARKS " + ms);
+      lines.push("MARKS# " + SitPolicy.h32(ms).toString(16) + " \u00b7 " + Object.keys(MARKS).length + " questions \u00b7 flags " + FLAGS.length);
+      lines.push("SIT RESULT " + (fails ? "FAIL (" + fails + ")" : "PASS"));
+      paint(); window.__SIT = { done: true, pass: !fails, lines: lines.slice() };
+    });
+  }
+  return { run: run };
+})();
+
+</script>
+<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>
+</body>
+</html>

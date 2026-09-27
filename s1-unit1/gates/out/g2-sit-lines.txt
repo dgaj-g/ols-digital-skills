@@ -1,0 +1,33 @@
+SIT PASS started · s1u1-50d29029f7-c47b5cf0
+SIT PASS fresh record · round 1
+SIT PASS home line · Round 1 · not started
+SIT PASS stage 1 button · Start
+SIT PASS stage 1 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 2 button · Start
+SIT PASS reload shows Carry on · Carry on
+SIT PASS reload lands on question 6 · Stage 2 of 4 · Representing images · Question 6 of 19
+SIT PASS stage 2 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 3 button · Start
+SIT PASS stage 3 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS stage 4 button · Start
+SIT PASS stage 4 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS 82 questions answered · 82
+SIT PASS summary total · You scored 35 of 126 marks (28%)
+SIT PASS summary flagged · 11 of 11
+TOTAL 35 of 126
+SIT PASS all marked questions restore · 82 seen
+SIT PASS home line done · Round 1 · done · 35 of 126 marks
+SIT PASS repeat mark keeps the first · repeat true · 0 vs 0
+SIT PASS teacher opens round 2 · 2
+SIT PASS round 1 kept · 35 vs 35
+SIT PASS round 2 current
+SIT PASS home line round 2 · Round 2 open · not started
+SIT PASS round 2 new order
+SIT PASS no page errors
+MARKS S1-01:0,S1-02:0,S1-03:0,S1-04:0,S1-05:1,S1-06:0,S1-07:0,S1-08:0,S1-09:0,S1-10:1,S1-11:0,S1-12:1,S1-13:0,S1-14:0,S1-15:1,S1-16:0,S1-17:1,S1-18:0,S1-19:0,S1-20:0,S1-N1:1,S1-N2:0,S1-N3:0,S1-N4:0,S1-N5:0,S1-N6:0,S1-N7:0,S2-01:0,S2-02:0,S2-03:1,S2-04:0,S2-05:3,S2-06:0,S2-07:1,S2-08:0,S2-09:0,S2-10:1,S2-11:1,S2-12:0,S2-13:3,S2-14:1,S2-15:0,S2-N1:0,S2-N2:0,S2-N3:1,S2-N4:0,S3-01:0,S3-02:1,S3-03:0,S3-04:1,S3-05:0,S3-06:0,S3-07:0,S3-08:0,S3-N1:0,S3-N2:1,S3-N3:0,S3-N4:0,S3-N5:0,S3-N6:0,S4-01:0,S4-02:0,S4-03:0,S4-04:0,S4-05:0,S4-06:0,S4-07:1,S4-08:2,S4-09:0,S4-10:0,S4-11:0,S4-12:2,S4-13:1,S4-14:0,S4-15:3,S4-N1:2,S4-N2:2,S4-N3:0,S4-N4:0,S4-N5:0,S4-N6:1,S4-N7:0
+MARKS# a6eb5c62 · 82 questions · flags 11
+SIT RESULT PASS

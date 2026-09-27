@@ -1,0 +1,9 @@
+G3 strings · 2026-09-27T15:59:12.887Z
+PASS strings.js = prototype S, TOPICS, SPEC §3 / A2 lines; every used key exists
+INFO 64 pupil strings · 9 topics · 22 guard/system/staff lines
+PASS the served Index.html carries strings.js unchanged
+PASS cold read on file (two readers, not rerun)
+PASS CONTROL one changed word in S is caught
+PASS CONTROL one changed word in X is caught
+PASS CONTROL a page using a missing string is caught
+GREEN · 6 pass · 0 fail

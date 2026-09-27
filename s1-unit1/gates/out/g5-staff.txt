@@ -1,0 +1,20 @@
+G5 staff page · 2026-09-27T16:01:20.712Z
+PASS records made (class, pupil stage 1 7/34, card)
+PASS door: passcode box, no tabs; build token on the page
+PASS wrong passcode refused: "Passcode not recognised." and no tabs
+PASS right passcode opens the four tabs
+PASS Classes shows 11A DT and its link ?class=11a-dt
+PASS Classes: nothing wider than its box
+PASS Rounds: "Digital Data · Round 1 open" and the two open buttons
+PASS Rounds: nothing wider than its box
+PASS Tracker: the real pupil shows 7/34, rating 2 and the note
+PASS Tracker: "Thinks it's fine, isn't" fires on the High record
+PASS Tracker: "Doing fine, doesn't think so" fires on the Low record
+PASS Tracker: the control record (rating 3 at 50%, 2 at 74%, 4 at 100%, 1 at 0%) shows no flag
+PASS Tracker: nothing wider than its box
+PASS Export: the CSV has exactly SPEC §3.8 columns, with a BOM
+PASS Export: one row per pupil per stage (4 pupils x 4 stages)
+PASS no console errors or failed requests
+PASS CONTROL the control record made flag-worthy (rating 4 at 20%) shows the flag
+PASS CONTROL a widened tracker is caught by the layout check
+GREEN · 18 pass · 0 fail
