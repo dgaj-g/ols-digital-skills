@@ -1,0 +1,6 @@
+G6 deploy log + token · 2026-09-27T16:27:12.317Z
+PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
+INFO newest row: | 27 Sep 2026 17:25 | 1 | 50d29029f7-4827878d | v1 S1 Unit 1 50d29029f7-4827878d | token found in /exec; the G4 sit ran on the test deployment first and its rec
+PASS CONTROL newest row names another build: fails
+PASS CONTROL seen token from another build: fails
+GREEN · 3 pass · 0 fail
