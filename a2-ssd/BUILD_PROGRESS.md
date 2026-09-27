@@ -36,3 +36,10 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 - Punctuation fixes F24–F28; D27–D33. Booklet mark lists now come from the judge's labels.
 - clusters.json written; G1 step 7 (wrong-kind line) + step 8 (lesson exists; no practice question re-serves its lesson's table). G1 FAILS 9 on purpose until the lessons exist: CREATE-RULES, ALTER, UPDATE, LEFT-NULL, AGGREGATES, CLOZE, PROSE missing; INSERT lesson on STOCKORDER.
 - Next: INSERT lesson → SESSIONBOOKING; write the seven lessons; quick checks for every part; {today}; strike re-mark; strings.json; cold reads; pack-content; server; client; G3–G6; deploy.
+
+## Checkpoint 8 — 27 Sep 2026
+- 25 lessons written in src/content/lessons/*.js (one set each; steps with grids, highlights with a plain line, quick checks on the EXAM design for every step of every served part). build-lessons.js writes lessons.json + clusters.json lessonFor (every one of the 41 parts served by exactly one lesson).
+- platform/lessonview.js renders a lesson for a part (tokens for the real date, step visibility by skill, grid variants, answer kind).
+- G1 step 10 = lesson gate (tools/g1-lessons.js): stale-build check, every grid on ten dates, every step statement runs, marks sum, checks name real exam fields, highlights real, no unfilled token, detector (SQL + cloze blank-by-blank + written), leads; ten planted-fault controls all caught. G1 PASS 12190 checks; G2 PASS 488.
+- F42–F50, D34–D53 logged. Commit 858a256.
+- Next: strings.json + cold reads; client (from prototype; twin queue, strike re-mark, grids, cloze/prose/rows UIs, answer:'text', field answer as list, lessonFor); pack-content.js; Code.gs.template; G3–G6; deploy (claude-in-chrome, ?authuser=1); PR; README; SIT_REPORT.
