@@ -13,6 +13,6 @@ CCEA A2 Software Systems Development, SQL past papers 2015–2026, marked to the
 - server/Index.html: the built page Apps Script serves
 - tools/: pack, build, dev harness, gates G1–G2
 - probes/: gate reports (G3 sizes, G4 strings, G5 acceptance)
-- DECISIONS.md, FOUND.md, DEPLOY_LOG.md: what was decided, what was found and fixed, what went live
+- DEPLOY_LOG.md: what went live. The decision and fault logs are kept privately in Claude Work/A2 SSD Platform/logs/ because they quote mark schemes
 
 The mark schemes, model answers and judge are private and never enter this repo.
