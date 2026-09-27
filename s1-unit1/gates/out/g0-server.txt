@@ -1,4 +1,4 @@
-G0 server GREEN · 2026-09-27T17:05:52.231Z · build 50d29029f7-b699f68f
+G0 server GREEN · 2026-09-27T17:35:19.578Z · build 785c4a9f9c-0e1c3ba2
 PASS A pack->unpack->judge == judge on 3280 answers across 82 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
@@ -14,6 +14,19 @@ PASS B owner admitted by email
 PASS B class made: 11A DT -> 11a-dt
 PASS B same class name refused
 PASS B blank class name refused
+PASS B a new class starts with Digital Data locked
+PASS B pupil boot says the topic is locked
+PASS B locked: a stage will not load (locked)
+PASS B locked: nothing is marked (locked)
+PASS B locked: no stage card is saved (locked)
+PASS B locked: typed writing is still saved as a draft
+PASS B a pupil cannot open a topic
+PASS B a topic not built yet cannot be opened
+PASS B passcode staff open Digital Data
+PASS B the class list shows it open
+PASS B locked again: the stage refuses again
+PASS B opened again: the stage loads with the writing typed while locked
+PASS B a class made before topic locking stays open
 PASS B pupil boot: name from the account, round 1, four stages
 PASS B no readable name -> needName
 PASS B name typed and kept

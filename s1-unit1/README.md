@@ -6,6 +6,7 @@ CCEA GCSE Digital Technology Unit 1 revision for S1 (Year 11), past-paper questi
 - Pupils: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec?class=11a-dt
   (swap 11a-dt for the class name made on the staff page)
 - Staff: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec
+- Topics: on the staff page, the Topics tab opens or locks each topic for a class. A new class starts with its topics locked; pupils see a locked topic as "Not opened yet".
 - The staff passcode is kept in Claude Work/S1 Unit 1 Platform/STAFF_PASSCODE.txt, never in this repo. The owner account gets in by email with no passcode.
 
 ## Folders

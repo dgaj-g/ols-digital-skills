@@ -1,5 +1,6 @@
-G2 render coverage + sit on the harness · 2026-09-27T17:06:20.135Z
+G2 render coverage + sit on the harness · 2026-09-27T17:35:47.479Z
 PASS class made
+PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
 PASS no console errors or failed requests
 PASS page marks = judge marks on all 82 questions
@@ -16,4 +17,4 @@ PASS PHONE 390x844 · MARKS# hash matches node
 INFO PHONE 390x844 · round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 29 sit checks passed
 PASS CONTROL phone with the desktop columns: sit reports layout failures
 PASS CONTROL phone with the chosen-words line hidden: sit reports list text cut off
-GREEN · 15 pass · 0 fail
+GREEN · 16 pass · 0 fail

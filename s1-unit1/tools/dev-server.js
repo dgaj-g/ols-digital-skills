@@ -114,7 +114,7 @@ function page(q) {
     "      .catch(function (e) { (bad || function () {})(e); }); };\n" +
     '  } }); }\n  return runner(null, null);\n})() } };</script>';
   const sit = q.get('sit') === '1' ? '1' : '';
-  const html = fs.readFileSync(INDEX, 'utf8').replace('<?= classCode ?>', cls).replace('<?= baseUrl ?>', 'http://localhost:' + PORT + '/').replace('<?= sit ?>', sit);
+  const html = fs.readFileSync(INDEX, 'utf8').replace('<?= classCode ?>', cls).replace('<?= baseUrl ?>', 'http://localhost:' + PORT + '/').replace('<?= sit ?>', sit).replace('<?= showBuild ?>', q.has('build') ? '1' : '');
   return html.replace('<script>window.S1BOOT', shim + '\n<script>window.S1BOOT');
 }
 http.createServer((req, res) => {

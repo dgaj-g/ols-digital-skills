@@ -70,6 +70,7 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .topic:not(.off) .n{color:var(--ember);font-weight:700}
 .topic.off{background:rgba(255,250,243,.62);border-style:dashed;border-color:#e6cfba;box-shadow:none}.topic.off .name{color:#7d6659}.topic.off .n,.topic.off .foot{color:#7d6659}
 .topic .foot{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--mute);position:relative}
+.topic.shut .foot{flex-wrap:wrap;row-gap:6px}.lk{display:inline-block;padding:3px 11px;border-radius:999px;background:#f6e7d6;border:1px solid #ecd2b8;color:var(--plum);font-weight:700;font-size:12px;white-space:nowrap}
 .stages .row{display:grid;grid-template-columns:1fr 200px 110px;align-items:center;gap:14px;padding:12px 0 12px 16px;border-top:1px solid var(--line);position:relative}
 .stages .row::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;border-radius:99px;background:linear-gradient(180deg,var(--acc2),var(--acc))}
 .stages .row:first-child{border-top:0}.stages .row .st{font-weight:700;color:var(--accd)}.stages .row small{display:block;font-weight:400;color:var(--mute)}
@@ -153,6 +154,9 @@ header.bar a.staff{color:#fff}
 .srow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}.srow label{font-weight:700;font-size:14px;color:var(--plum)}.srow input[type=text],.srow input[type=password]{width:260px}
 input[type=password]{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
 table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.list td{padding:7px 8px;border-bottom:1px solid #f3e7da;vertical-align:top}
+.hint{font-size:13px;color:var(--mute);margin:0 0 10px}.card .err+.hint{margin:6px 0 0}
+.tlist{max-width:760px}.tlist .trow{display:grid;grid-template-columns:40px minmax(0,1fr) 90px 84px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.tlist .trow:first-child{border-top:0}
+.trow .tn{font-size:12px;color:var(--mute)}.trow b{color:var(--plum)}.ts{font-size:13px;font-weight:700}.ts.on{color:#2f7d4f}.ts.off{color:var(--ember)}.ts.later{font-weight:400;color:var(--mute)}
 .cls-link{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--berry)}
 .track td .link{font-size:13px}.track small{color:var(--mute)}
 .drawer .it{padding:8px 0;border-top:1px solid var(--line);font-size:14px}.drawer .it:first-child{border-top:0}.drawer .it b{color:var(--plum)}.drawer .it .w{white-space:pre-wrap;color:var(--ink);margin-top:3px}
@@ -183,6 +187,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .gapsent select,.gapsent input{max-width:100%}
   .guard{margin:24px auto 0}
   .tabs{flex-wrap:wrap}
+  .tlist .trow{grid-template-columns:32px minmax(0,1fr) auto;row-gap:2px}.trow .ts{grid-column:2;grid-row:2}.trow .ts+*{grid-column:3;grid-row:1/3}
   table.track,table.list{display:block;overflow-x:auto}
   .srow input[type=text],.srow input[type=password]{width:100%;max-width:260px}
   .toast{top:96px;max-width:calc(100% - 28px)}

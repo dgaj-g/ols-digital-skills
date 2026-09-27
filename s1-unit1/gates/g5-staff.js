@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /* G5 — the staff page (SPEC §7, §3.8), driven through the page on the harness at 1280x800.
- * A teacher who is not the script owner opens the staff link (the owner is let in without the door). A wrong passcode is refused and shows no tabs; the right one opens Classes / Rounds / Tracker / Export; the class link
- * is shown; the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
+ * A teacher who is not the script owner opens the staff link (the owner is let in without the door). A wrong passcode is refused and shows no tabs; the right one opens Classes / Topics / Rounds / Tracker / Export; the class link
+ * is shown; Topics locks Digital Data (the pupil's tile then says "Not opened yet" and has no Open) and opens it again (DECISIONS §16); the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
  * on a control record; the CSV the Export button downloads has exactly SPEC §3.8's columns; nothing is wider than its box;
- * the build token is on the page; no console errors.
- * CONTROLS (must fail): the control record made flag-worthy must show a flag (so silence is real), and a stylesheet that
- * widens the tracker must be caught by the layout check.
+ * the build token is on the body but its footer shows only with ?build in the link (his ruling, 27 Sep 2026); no console errors.
+ * CONTROLS (must fail): the control record made flag-worthy must show a flag (so silence is real), a stylesheet that
+ * widens the tracker must be caught by the layout check, and the locked-tile check run on an open topic must not pass.
  * Run: node s1-unit1/gates/g5-staff.js  (exit 0 = GREEN). Output: gates/out/g5-staff.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
@@ -43,6 +43,9 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
   try {
     // ---- records: a class, one real pupil through stage 1 with a card, three synthetic pupils
     const made = await api('apiStaff', { op: 'create', name: '11A DT' });
+    const born = await api('apiStaff', { op: 'topics', cls: CLS });
+    check('a new class starts with Digital Data locked', born.ok && born.topics[0].open === false, JSON.stringify(born));
+    await api('apiStaff', { op: 'setTopic', cls: CLS, topic: T, open: true });
     const P = 'pupil1@c2ken.net';
     await api('apiName', { cls: CLS, name: 'Aoife' }, P);
     await api('apiBoot', { cls: CLS }, P);
@@ -65,17 +68,46 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await page.goto(BASE + '/?as=' + encodeURIComponent(TEACHER), { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#pw', { timeout: 15000 });
     const tok = await page.evaluate(() => ({ b: document.body.dataset.build, f: (document.querySelector('.build') || {}).innerText || '' }));
-    check('door: passcode box, no tabs; build token on the page', !(await page.$('.tabs')) && tok.b && tok.f.indexOf(tok.b) !== -1, JSON.stringify(tok));
+    check('door: passcode box, no tabs; build token on the body, no build footer', !(await page.$('.tabs')) && /^s1u1-/.test(tok.b || '') && tok.f === '', JSON.stringify(tok));
+    const pb = await browser.newPage(); await pb.goto(BASE + '/?build&as=' + encodeURIComponent(TEACHER), { waitUntil: 'domcontentloaded' }); await pb.waitForSelector('#pw', { timeout: 15000 });
+    const tokB = await pb.evaluate(() => (document.querySelector('.build') || {}).innerText || ''); await pb.close();
+    check('with ?build in the link the footer shows the token', tokB.trim() === tok.b, tokB);
     await page.type('#pw', 'not-the-passcode'); await page.click('#enter'); await wait(700);
     const err1 = await page.evaluate(() => (document.getElementById('err') || {}).innerText || '');
     check('wrong passcode refused: "Passcode not recognised." and no tabs', err1.trim() === 'Passcode not recognised.' && !(await page.$('.tabs')), err1);
     await page.click('#pw', { clickCount: 3 }); await page.type('#pw', PASS); await page.click('#enter');
     await page.waitForSelector('.tabs', { timeout: 10000 });
     const tabs = await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].map((b) => b.innerText.trim()).join('|'));
-    check('right passcode opens the four tabs', tabs === 'Classes|Rounds|Tracker|Export', tabs);
+    check('right passcode opens the five tabs', tabs === 'Classes|Topics|Rounds|Tracker|Export', tabs);
     const clsText = await page.evaluate(() => document.getElementById('app').innerText);
     check('Classes shows 11A DT and its link ?class=11a-dt', /11A DT/.test(clsText) && /\?class=11a-dt/.test(clsText), clsText.slice(0, 200));
+    check('Classes: says a new class starts locked', clsText.indexOf('A new class starts with its topics locked. Open them on the Topics tab.') !== -1, clsText.slice(-200));
     let lay = await page.evaluate(LAYOUT); check('Classes: nothing wider than its box', lay.length === 0, lay.join(' | '));
+    // ---- Topics: lock, see the pupil's tile, open again
+    const topicRows = () => page.evaluate(() => [...document.querySelectorAll('.tlist .trow')].map((r) => r.innerText.replace(/\s+/g, ' ').trim()));
+    const pupilTile = async () => { const pp = await browser.newPage(); await pp.setViewport({ width: 1280, height: 800 }); pp.on('pageerror', (e) => errs.push('pupil pageerror: ' + e.message));
+      await pp.goto(BASE + '/?class=' + CLS + '&as=' + encodeURIComponent(P), { waitUntil: 'domcontentloaded' }); await pp.waitForFunction(() => App.t.cur().screen === 'home', { timeout: 15000 });
+      const t = await pp.evaluate(() => ({ text: document.querySelector('.tiles .topic').innerText.replace(/\s+/g, ' '), open: !!document.getElementById('openLive') })); await pp.close(); return t; };
+    const lockedTile = (t) => /Not opened yet/.test(t.text) && /Your teacher opens topics in class\./.test(t.text) && !t.open;
+    await clickTab(page, 'Topics'); await page.waitForSelector('.tlist', { timeout: 10000 });
+    let tr = await topicRows();
+    check('Topics: nine rows; Digital Data "Open" with a Lock button; the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && tr.slice(1).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 1, tr.join(' | '));
+    const tText = await page.evaluate(() => document.getElementById('app').innerText);
+    check('Topics: the note "Pupils see locked topics as “Not opened yet”."', tText.indexOf('Pupils see locked topics as “Not opened yet”.') !== -1, tText.slice(0, 300));
+    lay = await page.evaluate(LAYOUT); check('Topics: nothing wider than its box', lay.length === 0, lay.join(' | '));
+    const openTile = await pupilTile();
+    check('CONTROL the locked-tile check, run on the open topic, does not pass', !lockedTile(openTile) && openTile.open, JSON.stringify(openTile));
+    await page.click('[data-t="digital-data"]'); await page.waitForFunction(() => /Locked/.test((document.querySelector('.tlist .trow') || {}).innerText || ''), { timeout: 10000 });
+    tr = await topicRows();
+    check('Topics: Lock pressed -> "Locked" with an Open button', /^1\.1 Digital data Locked Open$/.test(tr[0]), tr[0]);
+    try { await page.screenshot({ path: path.join(OUT, 'g5-topics.png') }); } catch (e) {}
+    const shutTile = await pupilTile();
+    check('pupil home: the locked tile says "Not opened yet" / "Your teacher opens topics in class." and has no Open', lockedTile(shutTile), JSON.stringify(shutTile));
+    const refused = await api('apiStage', { cls: CLS, topic: T, round: 1, stage: 1 }, P);
+    check('pupil: a stage of the locked topic is refused', !refused.ok && refused.error === 'locked', JSON.stringify(refused).slice(0, 120));
+    await page.click('[data-t="digital-data"]'); await page.waitForFunction(() => /Open Lock$/.test(((document.querySelector('.tlist .trow') || {}).innerText || '').replace(/\s+/g, ' ').trim()), { timeout: 10000 });
+    const backTile = await pupilTile();
+    check('Topics: Open pressed -> the pupil tile has Open again', !lockedTile(backTile) && backTile.open, JSON.stringify(backTile));
     await clickTab(page, 'Rounds');
     const rText = await page.evaluate(() => document.getElementById('app').innerText);
     check('Rounds: "Digital Data · Round 1 open" and the two open buttons', /Digital Data · Round 1 open/.test(rText) && /Open round 2 for the class/.test(rText) && /Open round 2 for one pupil/.test(rText), rText.slice(0, 300));

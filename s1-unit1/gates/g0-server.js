@@ -144,6 +144,39 @@ async function flows() {
   ok(!r.ok && r.error === 'bad-name', 'B blank class name refused');
   const cls = '11a-dt';
 
+  // topic locking (DECISIONS §16): a new class starts locked; staff open and lock it; a class made before locking stays open
+  r = await api('apiStaff', { op: 'topics', cls }, OWNER);
+  ok(r.ok && r.topics.length === 1 && r.topics[0].id === T && r.topics[0].open === false, 'B a new class starts with Digital Data locked');
+  r = await api('apiBoot', { cls }, 'early@c2ken.net');
+  ok(r.ok && r.topic.open === false, 'B pupil boot says the topic is locked');
+  r = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
+  ok(!r.ok && r.error === 'locked', 'B locked: a stage will not load (' + r.error + ')');
+  r = await api('apiMark', { cls, topic: T, round: 1, qid: BANK.stages[0].questions[0].id, answer: {} }, 'early@c2ken.net');
+  ok(!r.ok && r.error === 'locked', 'B locked: nothing is marked (' + r.error + ')');
+  r = await api('apiEval', { cls, topic: T, round: 1, stage: 1, payload: { rating: 3 } }, 'early@c2ken.net');
+  ok(!r.ok && r.error === 'locked', 'B locked: no stage card is saved (' + r.error + ')');
+  const q1 = BANK.stages[0].questions[0].id;
+  r = await api('apiDraft', { cls, topic: T, round: 1, qid: q1, text: 'kept while locked' }, 'early@c2ken.net');
+  ok(r.ok, 'B locked: typed writing is still saved as a draft');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, 'early@c2ken.net');
+  ok(!r.ok && r.error === 'not-staff', 'B a pupil cannot open a topic');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: 'networks', open: true }, OWNER);
+  ok(!r.ok && r.error === 'bad-topic', 'B a topic not built yet cannot be opened');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, 'teacher2@c2ken.net');
+  ok(r.ok && r.open === true, 'B passcode staff open Digital Data');
+  r = await api('apiStaff', { op: 'classes' }, OWNER);
+  ok(r.ok && r.classes.filter((c) => c.slug === cls)[0].open === true, 'B the class list shows it open');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: false }, OWNER);
+  const relock = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
+  ok(r.ok && r.open === false && !relock.ok && relock.error === 'locked', 'B locked again: the stage refuses again');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, OWNER);
+  const reopen = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
+  ok(r.ok && reopen.ok && reopen.views.length === 27 && reopen.drafts[q1] === 'kept while locked', 'B opened again: the stage loads with the writing typed while locked');
+  await post('/__set', { script: { 'cls:old-9z': JSON.stringify({ name: 'Old 9Z', o: OWNER, c: 1, r: { 'digital-data': 1 } }) } });
+  r = await api('apiBoot', { cls: 'old-9z' }, 'early@c2ken.net');
+  const oldSt = await api('apiStage', { cls: 'old-9z', topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
+  ok(r.ok && r.topic.open === true && oldSt.ok, 'B a class made before topic locking stays open');
+
   r = await api('apiBoot', { cls });
   ok(r.ok && r.name === 'Aoife' && !r.needName && r.topic.round === 1 && r.topic.stages.length === 4, 'B pupil boot: name from the account, round 1, four stages');
   const nn = await api('apiBoot', { cls }, 'noname7@c2ken.net');

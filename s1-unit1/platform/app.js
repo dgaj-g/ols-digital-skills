@@ -12,6 +12,7 @@ var App = (function () {
   function paintSys() {
     var x = document.getElementById("sys"); if (!x) return;
     if (SYS.msg === "expired") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.expired) + '</span>'; }
+    else if (SYS.msg === "locked") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.lockedMark) + '</span>'; }
     else if (SYS.msg === "offline") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.offline) + '</span><button class="btn sm" id="retry">' + X.retry + '</button>'; document.getElementById("retry").onclick = function () { var f = SYS.retry; SYS.msg = ""; SYS.retry = null; paintSys(); if (f) f(); }; }
     else { x.className = ""; x.innerHTML = ""; }
   }
@@ -29,7 +30,9 @@ var App = (function () {
           if (opt.save) savingOff();
           if (r && r.ok === false && (r.error === "server" || r.error === "busy")) return failed();
           if (SYS.msg === "offline") { SYS.msg = ""; paintSys(); }
-          if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); } var e = new Error(code); e.code = code; return reject(e); }
+          if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); }
+            if (code === "locked") { if (fn === "apiMark") SYS.msg = "locked"; reboot().then(home).catch(function () {}); } // the teacher locked the topic: back home, where the tile says so
+            var e = new Error(code); e.code = code; return reject(e); }
           resolve(r);
         }, function () { if (opt.save) savingOff(); failed(); });
       }
@@ -60,9 +63,9 @@ var App = (function () {
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">· ' + crumb + '</span>' : '') + '<span class="who">' + S.hello + h(ME.name) + '</span><a class="staff" id="staffLink" href="' + h(BOOT.base) + '" target="_top">' + S.staff + '</a></header><div id="sys"></div>' + (bar || '') + '<div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
     document.getElementById("work").appendChild(body); paintSys(); paintSaving();
   }
-  function bare(crumb, body) { // guard, name and staff screens: no pupil name, the build token at the foot
+  function bare(crumb, body) { // guard, name and staff screens: no pupil name; the build token at the foot only when the link carries ?build
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">· ' + crumb + '</span>' : '') + '</header><div id="sys"></div><div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
-    body.appendChild(el('<div class="build">' + h(BOOT.build) + '</div>'));
+    if (BOOT.sb === "1") body.appendChild(el('<div class="build">' + h(BOOT.build) + '</div>'));
     document.getElementById("work").appendChild(body); paintSys(); paintSaving();
   }
   function guard(line) { CUR = { screen: "guard", line: line }; bare("", el('<div class="guard"><div class="card"><p>' + h(line) + '</p></div></div>')); }
@@ -82,7 +85,9 @@ var App = (function () {
     CUR = { screen: "home" };
     var n = roundNo(), r = RS(n), a = 0, m = 0; [1, 2, 3, 4].forEach(function (st) { var t = stageTotals(st, n); a += t.a; m += t.m; });
     var line = S.round + n + (n > 1 ? " open" : "") + " · " + (r.done ? "done · " + m + " of " + TOT() + " marks" : a ? a + " of " + QN() + " questions done" : "not started");
-    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? '' : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>' : S.later) + '</div></div>'; }).join("");
+    if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
+    var shut = !ME.topic.open, foot = shut ? '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>' : '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>';
+    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? (shut ? ' shut' : '') : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? foot : S.later) + '</div></div>'; }).join("");
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>')); wire("openLive", topic);
   }
   // ---- topic front ----
@@ -177,7 +182,7 @@ var App = (function () {
         if (!D.done[qid]) { g.a++; g.m += res.r.marks; }
         D.done[qid] = stored = { a: res.a, r: res.r, f: !!res.f }; delete D.drafts[qid];
         if (CUR.qid === qid) show(res.r, res.a);
-      }, function (e) { sending = false; if (e.code === "round-closed") return closed(e); refresh(); });
+      }, function (e) { sending = false; if (e.code === "round-closed") return closed(e); if (e.code === "locked") return draft(); refresh(); });
     }
     function show(r, a) {
       CUR.r = r;

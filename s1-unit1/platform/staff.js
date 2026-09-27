@@ -1,5 +1,5 @@
-/* staff.js — the staff page at the bare link (no class). Door (passcode, or let in by email), then four tabs:
- * Classes (make a class, its link), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
+/* staff.js — the staff page at the bare link (no class). Door (passcode, or let in by email), then five tabs:
+ * Classes (make a class, its link), Topics (open or lock each topic for the class; DECISIONS §16), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
  * table, pupil x stage, rating, flags, notes, flagged questions, topic card, last seen) and Export (CSV). */
 var Staff = (function () {
   var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false;
@@ -33,14 +33,14 @@ var Staff = (function () {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
       CLASSES = r.classes; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
-      [classes, rounds, tracker, exporter][TAB]();
+      [classes, topics, rounds, tracker, exporter][TAB]();
     }).catch(fail);
   }
   function link(slug) { return T.boot.base + "?class=" + slug; }
   // ---- Classes ----
   function classes() {
     var rows = CLASSES.map(function (c) { return '<tr><td><b>' + h(c.name) + '</b></td><td><span class="cls-link" data-copy="' + h(link(c.slug)) + '">' + h(link(c.slug)) + '</span></td><td>' + c.pupils + '</td><td>' + c.round + '</td></tr>'; }).join("");
-    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div></div></div>');
+    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
     page(body); wireCommon(body);
     body.querySelectorAll("[data-copy]").forEach(function (x) { x.onclick = function () { var s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents(x); s.removeAllRanges(); s.addRange(rg); try { navigator.clipboard.writeText(x.dataset.copy).then(function () { T.toast(W.copied); }, function () {}); } catch (e) {} }; });
     var cn = document.getElementById("cn"), make = function () {
@@ -48,6 +48,19 @@ var Staff = (function () {
       T.call("apiStaff", { op: "create", name: v }).then(function (r) { CLS = r.slug; tabs(); }, function (e) { b.disabled = false; err.textContent = e.code === "taken" ? W.taken : e.code === "bad-name" ? W.rule : ""; });
     };
     T.wire("make", make); cn.onkeydown = function (ev) { if (ev.key === "Enter") make(); };
+  }
+  // ---- Topics: open or lock each built topic for the class; a topic not built yet says so and has no button ----
+  function topics() {
+    T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
+      var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
+      var rows = S1S.TOPICS.map(function (name, i) {
+        var id = i === 0 ? "digital-data" : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
+        return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
+      }).join("");
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + h(r.className) + '</h2><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
+      page(body); wireCommon(body);
+      body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
+    }).catch(fail);
   }
   // ---- Rounds ----
   function rounds() {

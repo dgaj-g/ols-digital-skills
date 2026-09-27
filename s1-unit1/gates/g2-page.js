@@ -74,6 +74,8 @@ function sitChecks(R, user, tag) {
   try {
     const made = await api('apiStaff', { op: 'create', name: '11A DT' }, OWNER);
     check('class made', made.ok && made.slug === '11a-dt', JSON.stringify(made));
+    const opened = await api('apiStaff', { op: 'setTopic', cls: '11a-dt', topic: 'digital-data', open: true }, OWNER);
+    check('Digital Data opened for the class (a new class starts locked, DECISIONS §16)', opened.ok && opened.open === true, JSON.stringify(opened));
     browser = await puppeteer.launch({ headless: 'shell', protocolTimeout: 60000 });
     // ---- the real run
     const R = await sit(browser, OWNER, '11a-dt', false);

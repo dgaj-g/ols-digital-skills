@@ -37,7 +37,7 @@ function guardAscii(name, text) {
   if (m) { console.error(name + ': non-ASCII U+' + m[0].charCodeAt(0).toString(16) + ' at line ' + text.slice(0, text.indexOf(m[0])).split('\n').length); process.exit(1); }
 }
 function guardScriptlets(name, text) {
-  const clean = text.replace(/<\?= classCode \?>/g, '').replace(/<\?= baseUrl \?>/g, '').replace(/<\?= sit \?>/g, '');
+  const clean = text.replace(/<\?= classCode \?>/g, '').replace(/<\?= baseUrl \?>/g, '').replace(/<\?= sit \?>/g, '').replace(/<\?= showBuild \?>/g, '');
   const n = (clean.match(/<\?/g) || []).length + (clean.match(/\?>/g) || []).length;
   if (n) { console.error(name + ': ' + n + ' stray <? or ?>'); process.exit(1); }
 }
@@ -96,7 +96,7 @@ if (!bodyOpen) { console.error('index.html: no <body>'); process.exit(1); }
 let body = index.slice(index.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.lastIndexOf('</body>') > -1 ? body.lastIndexOf('</body>') : body.length).replace(/<script[\s\S]*?<\/script>/gi, '');
 const TOKEN = 's1u1-' + BUILD;
-const boot = '<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", build: ' + JSON.stringify(TOKEN) + ' };</script>';
+const boot = '<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: ' + JSON.stringify(TOKEN) + ' };</script>';
 const frags = [boot].concat(scripts.map(([n, s]) => { const b = jsBlock(s); if (/<\/script/i.test(b)) { console.error(n + ': </script left'); process.exit(1); } return '<script>\n' + b + '\n</script>'; }))
   .concat(["<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>"]);
 const out = `<!DOCTYPE html>

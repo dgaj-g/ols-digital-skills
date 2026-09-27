@@ -1,10 +1,21 @@
-G5 staff page · 2026-09-27T17:06:23.158Z
+G5 staff page · 2026-09-27T17:35:15.280Z
+PASS a new class starts with Digital Data locked
 PASS records made (class, pupil stage 1 7/34, card)
-PASS door: passcode box, no tabs; build token on the page
+PASS door: passcode box, no tabs; build token on the body, no build footer
+PASS with ?build in the link the footer shows the token
 PASS wrong passcode refused: "Passcode not recognised." and no tabs
-PASS right passcode opens the four tabs
+PASS right passcode opens the five tabs
 PASS Classes shows 11A DT and its link ?class=11a-dt
+PASS Classes: says a new class starts locked
 PASS Classes: nothing wider than its box
+PASS Topics: nine rows; Digital Data "Open" with a Lock button; the rest "Comes later"
+PASS Topics: the note "Pupils see locked topics as “Not opened yet”."
+PASS Topics: nothing wider than its box
+PASS CONTROL the locked-tile check, run on the open topic, does not pass
+PASS Topics: Lock pressed -> "Locked" with an Open button
+PASS pupil home: the locked tile says "Not opened yet" / "Your teacher opens topics in class." and has no Open
+PASS pupil: a stage of the locked topic is refused
+PASS Topics: Open pressed -> the pupil tile has Open again
 PASS Rounds: "Digital Data · Round 1 open" and the two open buttons
 PASS Rounds: nothing wider than its box
 PASS Tracker: the real pupil shows 7/34, rating 2 and the note
@@ -17,4 +28,4 @@ PASS Export: one row per pupil per stage (4 pupils x 4 stages)
 PASS no console errors or failed requests
 PASS CONTROL the control record made flag-worthy (rating 4 at 20%) shows the flag
 PASS CONTROL a widened tracker is caught by the layout check
-GREEN · 18 pass · 0 fail
+GREEN · 29 pass · 0 fail

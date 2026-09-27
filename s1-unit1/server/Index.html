@@ -78,6 +78,7 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .topic:not(.off) .n{color:var(--ember);font-weight:700}
 .topic.off{background:rgba(255,250,243,.62);border-style:dashed;border-color:#e6cfba;box-shadow:none}.topic.off .name{color:#7d6659}.topic.off .n,.topic.off .foot{color:#7d6659}
 .topic .foot{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--mute);position:relative}
+.topic.shut .foot{flex-wrap:wrap;row-gap:6px}.lk{display:inline-block;padding:3px 11px;border-radius:999px;background:#f6e7d6;border:1px solid #ecd2b8;color:var(--plum);font-weight:700;font-size:12px;white-space:nowrap}
 .stages .row{display:grid;grid-template-columns:1fr 200px 110px;align-items:center;gap:14px;padding:12px 0 12px 16px;border-top:1px solid var(--line);position:relative}
 .stages .row::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;border-radius:99px;background:linear-gradient(180deg,var(--acc2),var(--acc))}
 .stages .row:first-child{border-top:0}.stages .row .st{font-weight:700;color:var(--accd)}.stages .row small{display:block;font-weight:400;color:var(--mute)}
@@ -161,6 +162,9 @@ header.bar a.staff{color:#fff}
 .srow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}.srow label{font-weight:700;font-size:14px;color:var(--plum)}.srow input[type=text],.srow input[type=password]{width:260px}
 input[type=password]{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
 table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.list td{padding:7px 8px;border-bottom:1px solid #f3e7da;vertical-align:top}
+.hint{font-size:13px;color:var(--mute);margin:0 0 10px}.card .err+.hint{margin:6px 0 0}
+.tlist{max-width:760px}.tlist .trow{display:grid;grid-template-columns:40px minmax(0,1fr) 90px 84px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.tlist .trow:first-child{border-top:0}
+.trow .tn{font-size:12px;color:var(--mute)}.trow b{color:var(--plum)}.ts{font-size:13px;font-weight:700}.ts.on{color:#2f7d4f}.ts.off{color:var(--ember)}.ts.later{font-weight:400;color:var(--mute)}
 .cls-link{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--berry)}
 .track td .link{font-size:13px}.track small{color:var(--mute)}
 .drawer .it{padding:8px 0;border-top:1px solid var(--line);font-size:14px}.drawer .it:first-child{border-top:0}.drawer .it b{color:var(--plum)}.drawer .it .w{white-space:pre-wrap;color:var(--ink);margin-top:3px}
@@ -191,6 +195,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .gapsent select,.gapsent input{max-width:100%}
   .guard{margin:24px auto 0}
   .tabs{flex-wrap:wrap}
+  .tlist .trow{grid-template-columns:32px minmax(0,1fr) auto;row-gap:2px}.trow .ts{grid-column:2;grid-row:2}.trow .ts+*{grid-column:3;grid-row:1/3}
   table.track,table.list{display:block;overflow-x:auto}
   .srow input[type=text],.srow input[type=password]{width:100%;max-width:260px}
   .toast{top:96px;max-width:calc(100% - 28px)}
@@ -200,8 +205,8 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
 
 </style>
 </head>
-<body data-build="s1u1-50d29029f7-b699f68f">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", build: "s1u1-50d29029f7-b699f68f" };</script>
+<body data-build="s1u1-785c4a9f9c-0e1c3ba2">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-785c4a9f9c-0e1c3ba2" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -235,9 +240,13 @@ var S1S = {
     saving: "Saving\u2026", offline: "We can't reach the server. Check the Wi-Fi, then press Try again.", retry: "Try again",
     expired: "Your sign-in has expired. Reload the page.",
     pass: "Staff passcode", enter: "Enter", badPass: "Passcode not recognised.",
-    tabs: ["Classes", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
+    tabs: ["Classes", "Topics", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
     roundOpen: "Digital Data \u00b7 Round {n} open", openClass: "Open round {n} for the class", openPupil: "Open round {n} for one pupil",
-    csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so"
+    csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so",
+    locked: "Not opened yet", lockedSub: "Your teacher opens topics in class.",
+    lockedMark: "This topic is locked for now, so it cannot be marked. Anything you typed is kept; ask your teacher to open the topic.",
+    topicsNote: "Pupils see locked topics as \u201cNot opened yet\u201d.", isOpen: "Open", isLocked: "Locked", lock: "Lock", openT: "Open",
+    newLocked: "A new class starts with its topics locked. Open them on the Topics tab."
   }
 };
 
@@ -295,6 +304,7 @@ var App = (function () {
   function paintSys() {
     var x = document.getElementById("sys"); if (!x) return;
     if (SYS.msg === "expired") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.expired) + '</span>'; }
+    else if (SYS.msg === "locked") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.lockedMark) + '</span>'; }
     else if (SYS.msg === "offline") { x.className = "sysbar bad"; x.innerHTML = '<span>' + h(X.offline) + '</span><button class="btn sm" id="retry">' + X.retry + '</button>'; document.getElementById("retry").onclick = function () { var f = SYS.retry; SYS.msg = ""; SYS.retry = null; paintSys(); if (f) f(); }; }
     else { x.className = ""; x.innerHTML = ""; }
   }
@@ -312,7 +322,9 @@ var App = (function () {
           if (opt.save) savingOff();
           if (r && r.ok === false && (r.error === "server" || r.error === "busy")) return failed();
           if (SYS.msg === "offline") { SYS.msg = ""; paintSys(); }
-          if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); } var e = new Error(code); e.code = code; return reject(e); }
+          if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); }
+            if (code === "locked") { if (fn === "apiMark") SYS.msg = "locked"; reboot().then(home).catch(function () {}); } // the teacher locked the topic: back home, where the tile says so
+            var e = new Error(code); e.code = code; return reject(e); }
           resolve(r);
         }, function () { if (opt.save) savingOff(); failed(); });
       }
@@ -343,9 +355,9 @@ var App = (function () {
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '<span class="who">' + S.hello + h(ME.name) + '</span><a class="staff" id="staffLink" href="' + h(BOOT.base) + '" target="_top">' + S.staff + '</a></header><div id="sys"></div>' + (bar || '') + '<div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
     document.getElementById("work").appendChild(body); paintSys(); paintSaving();
   }
-  function bare(crumb, body) { // guard, name and staff screens: no pupil name, the build token at the foot
+  function bare(crumb, body) { // guard, name and staff screens: no pupil name; the build token at the foot only when the link carries ?build
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '</header><div id="sys"></div><div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
-    body.appendChild(el('<div class="build">' + h(BOOT.build) + '</div>'));
+    if (BOOT.sb === "1") body.appendChild(el('<div class="build">' + h(BOOT.build) + '</div>'));
     document.getElementById("work").appendChild(body); paintSys(); paintSaving();
   }
   function guard(line) { CUR = { screen: "guard", line: line }; bare("", el('<div class="guard"><div class="card"><p>' + h(line) + '</p></div></div>')); }
@@ -365,7 +377,9 @@ var App = (function () {
     CUR = { screen: "home" };
     var n = roundNo(), r = RS(n), a = 0, m = 0; [1, 2, 3, 4].forEach(function (st) { var t = stageTotals(st, n); a += t.a; m += t.m; });
     var line = S.round + n + (n > 1 ? " open" : "") + " \u00b7 " + (r.done ? "done \u00b7 " + m + " of " + TOT() + " marks" : a ? a + " of " + QN() + " questions done" : "not started");
-    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? '' : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>' : S.later) + '</div></div>'; }).join("");
+    if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
+    var shut = !ME.topic.open, foot = shut ? '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>' : '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>';
+    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? (shut ? ' shut' : '') : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? foot : S.later) + '</div></div>'; }).join("");
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>')); wire("openLive", topic);
   }
   // ---- topic front ----
@@ -460,7 +474,7 @@ var App = (function () {
         if (!D.done[qid]) { g.a++; g.m += res.r.marks; }
         D.done[qid] = stored = { a: res.a, r: res.r, f: !!res.f }; delete D.drafts[qid];
         if (CUR.qid === qid) show(res.r, res.a);
-      }, function (e) { sending = false; if (e.code === "round-closed") return closed(e); refresh(); });
+      }, function (e) { sending = false; if (e.code === "round-closed") return closed(e); if (e.code === "locked") return draft(); refresh(); });
     }
     function show(r, a) {
       CUR.r = r;
@@ -567,8 +581,8 @@ var App = (function () {
 
 </script>
 <script>
-/* staff.js \u2014 the staff page at the bare link (no class). Door (passcode, or let in by email), then four tabs:
- * Classes (make a class, its link), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
+/* staff.js \u2014 the staff page at the bare link (no class). Door (passcode, or let in by email), then five tabs:
+ * Classes (make a class, its link), Topics (open or lock each topic for the class; DECISIONS \u00a716), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
  * table, pupil x stage, rating, flags, notes, flagged questions, topic card, last seen) and Export (CSV). */
 var Staff = (function () {
   var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false;
@@ -602,14 +616,14 @@ var Staff = (function () {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
       CLASSES = r.classes; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
-      [classes, rounds, tracker, exporter][TAB]();
+      [classes, topics, rounds, tracker, exporter][TAB]();
     }).catch(fail);
   }
   function link(slug) { return T.boot.base + "?class=" + slug; }
   // ---- Classes ----
   function classes() {
     var rows = CLASSES.map(function (c) { return '<tr><td><b>' + h(c.name) + '</b></td><td><span class="cls-link" data-copy="' + h(link(c.slug)) + '">' + h(link(c.slug)) + '</span></td><td>' + c.pupils + '</td><td>' + c.round + '</td></tr>'; }).join("");
-    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div></div></div>');
+    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
     page(body); wireCommon(body);
     body.querySelectorAll("[data-copy]").forEach(function (x) { x.onclick = function () { var s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents(x); s.removeAllRanges(); s.addRange(rg); try { navigator.clipboard.writeText(x.dataset.copy).then(function () { T.toast(W.copied); }, function () {}); } catch (e) {} }; });
     var cn = document.getElementById("cn"), make = function () {
@@ -617,6 +631,19 @@ var Staff = (function () {
       T.call("apiStaff", { op: "create", name: v }).then(function (r) { CLS = r.slug; tabs(); }, function (e) { b.disabled = false; err.textContent = e.code === "taken" ? W.taken : e.code === "bad-name" ? W.rule : ""; });
     };
     T.wire("make", make); cn.onkeydown = function (ev) { if (ev.key === "Enter") make(); };
+  }
+  // ---- Topics: open or lock each built topic for the class; a topic not built yet says so and has no button ----
+  function topics() {
+    T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
+      var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
+      var rows = S1S.TOPICS.map(function (name, i) {
+        var id = i === 0 ? "digital-data" : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
+        return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
+      }).join("");
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + h(r.className) + '</h2><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
+      page(body); wireCommon(body);
+      body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
+    }).catch(fail);
   }
   // ---- Rounds ----
   function rounds() {

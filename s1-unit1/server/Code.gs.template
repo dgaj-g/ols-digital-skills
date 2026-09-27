@@ -61,6 +61,7 @@ function doGet(e) {
   t.classCode = p['class'] ? String(p['class']).replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) : '';
   t.baseUrl = ScriptApp.getService().getUrl();
   t.sit = p.sit === '1' ? '1' : '';
+  t.showBuild = p.build !== undefined ? '1' : '';
   return t.evaluate().setTitle(TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover').setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
@@ -104,6 +105,8 @@ function pKey_(slug, email) { return 'p:' + slug + ':' + email; }
 function qKey_(slug, email, round, st) { return 'q:' + slug + ':' + email + ':' + round + ':' + st; }
 function dKey_(slug, round, qid) { return 'd:' + slug + ':' + TOPIC + ':' + round + ':' + qid; }
 function hdrGet_(slug, email) { var h = jget_(sp_(), pKey_(slug, email), null); if (h) { h.o = h.o || {}; h.R = h.R || {}; } return h; }
+// a topic is open to pupils when the class lists it; a class made before topic locking (no list) keeps it open
+function topicOpen_(c) { return !c.op || c.op.indexOf(TOPIC) !== -1; }
 function curRound_(c, hdr) { return Math.max((c.r || {})[TOPIC] || 1, ((hdr && hdr.o) || {})[TOPIC] || 1); }
 function rnd_(hdr, k) { k = String(k); if (!hdr.R[k]) hdr.R[k] = { s: {} }; if (!hdr.R[k].s) hdr.R[k].s = {}; return hdr.R[k]; }
 function stg_(rh, st) { st = String(st); if (!rh.s[st]) rh.s[st] = { a: 0, m: 0, f: [] }; if (!rh.s[st].f) rh.s[st].f = []; return rh.s[st]; }
@@ -151,7 +154,7 @@ function apiBoot_(req) {
   if (!rounds[cur]) rounds[cur] = roundSum_(null);
   return ok_({
     email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email),
-    topic: { id: TOPIC, title: BANK.title, round: cur, rounds: rounds,
+    topic: { id: TOPIC, title: BANK.title, open: topicOpen_(x.c), round: cur, rounds: rounds,
       stages: STAGES.map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) }
   });
 }
@@ -171,6 +174,7 @@ function apiName_(req) {
 function apiStage(req) { return safe_(apiStage_)(req); }
 function apiStage_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (!topicOpen_(x.c)) return err_('locked');
   var S = stageOf_(req.stage); if (!S) return err_('bad-stage');
   var hdr = hdrGet_(x.slug, x.email) || { o: {}, R: {} };
   var cur = curRound_(x.c, hdr), round = roundArg_(req);
@@ -194,6 +198,7 @@ function apiStage_(req) {
 function apiMark(req) { return safe_(apiMark_)(req); }
 function apiMark_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (!topicOpen_(x.c)) return err_('locked');
   var qid = str_(req.qid), hit = QBY[qid]; if (!hit) return err_('bad-question');
   var round = roundArg_(req); if (!round) return err_('bad-round');
   return withLock_(function () {
@@ -240,6 +245,7 @@ function apiFlag_(req) {
 function apiEval(req) { return safe_(apiEval_)(req); }
 function apiEval_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (!topicOpen_(x.c)) return err_('locked');
   var round = roundArg_(req); if (!round) return err_('bad-round');
   var p = req.payload || {}, rating = Math.floor(Number(p.rating));
   return withLock_(function () {
@@ -363,7 +369,7 @@ function apiStaff_(req) {
     if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
     return ok_({ archived: archived, classes: classList_().map(function (s) {
       var c = jget_(sp_(), 'cls:' + s, null) || {};
-      return { slug: s, name: c.name || s, pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, mine: c.o === email };
+      return { slug: s, name: c.name || s, pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email };
     }) });
   }
   if (op === 'create') {
@@ -373,13 +379,24 @@ function apiStaff_(req) {
     return withLock_(function () {
       var list = classList_();
       if (list.indexOf(slug) !== -1 || sp_().getProperty('cls:' + slug)) return err_('taken');
-      jset_(sp_(), 'cls:' + slug, { name: name, o: email, c: tmin_(), r: { 'digital-data': 1 } });
+      jset_(sp_(), 'cls:' + slug, { name: name, o: email, c: tmin_(), r: { 'digital-data': 1 }, op: [] });
       list.push(slug); jset_(sp_(), 'classes', list);
       return ok_({ slug: slug, name: name });
     });
   }
   var slugC = slug_(req.cls), c = slugC ? jget_(sp_(), 'cls:' + slugC, null) : null;
   if (!c) return err_('unknown-class');
+  if (op === 'topics') return ok_({ className: c.name, topics: [{ id: TOPIC, open: topicOpen_(c) }] });
+  if (op === 'setTopic') {
+    if (str_(req.topic) !== TOPIC) return err_('bad-topic');
+    return withLock_(function () {
+      var cc = jget_(sp_(), 'cls:' + slugC, null), on = req.open === true;
+      cc.op = (cc.op || [TOPIC]).filter(function (t) { return t !== TOPIC; });
+      if (on) cc.op.push(TOPIC);
+      jset_(sp_(), 'cls:' + slugC, cc);
+      return ok_({ id: TOPIC, open: on });
+    });
+  }
   var pupils = pupilsOf_(slugC, keys);
   if (op === 'rounds') {
     return ok_({ round: (c.r || {})[TOPIC] || 1, className: c.name, pupils: pupils.map(function (em) {

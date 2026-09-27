@@ -16,4 +16,4 @@
 1. Build: node s1-unit1/tools/build-server.js (the private Code.gs is written to Claude Work/S1 Unit 1 Platform/deploy/, never to this repo).
 2. Paste Code.gs and server/Index.html into the editor and save.
 3. Deploy → Manage deployments → edit (pencil) → Description first ("v<N> S1 Unit 1 <build>") → Version: New version (check it says New version) → Deploy.
-4. Read the confirmation panel for the new version number, open /exec and find the new token, add a row above, update gates/out/g6-exec-seen.txt, then run node s1-unit1/gates/g6-deploy.js.
+4. Read the confirmation panel for the new version number, open /exec?build&authuser=1 and find the new token at the foot (from version 3 the footer shows only with ?build; the token is always on the body tag), add a row to the table (newest last), update gates/out/g6-exec-seen.txt, then run node s1-unit1/gates/g6-deploy.js.

@@ -29,8 +29,12 @@ var S1S = {
     saving: "Saving…", offline: "We can't reach the server. Check the Wi-Fi, then press Try again.", retry: "Try again",
     expired: "Your sign-in has expired. Reload the page.",
     pass: "Staff passcode", enter: "Enter", badPass: "Passcode not recognised.",
-    tabs: ["Classes", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
+    tabs: ["Classes", "Topics", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
     roundOpen: "Digital Data · Round {n} open", openClass: "Open round {n} for the class", openPupil: "Open round {n} for one pupil",
-    csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so"
+    csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so",
+    locked: "Not opened yet", lockedSub: "Your teacher opens topics in class.",
+    lockedMark: "This topic is locked for now, so it cannot be marked. Anything you typed is kept; ask your teacher to open the topic.",
+    topicsNote: "Pupils see locked topics as “Not opened yet”.", isOpen: "Open", isLocked: "Locked", lock: "Lock", openT: "Open",
+    newLocked: "A new class starts with its topics locked. Open them on the Topics tab."
   }
 };
