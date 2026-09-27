@@ -11,7 +11,12 @@
  * 6. The answer space: every reader control (gates/answerspace/answers-N.json, enumerated per mark point) agrees with the
  *    engine, or is settled by a recorded ruling in adjudicated.json. One disagreement fails the gate.
  * 7. Every wrong-kind line has one article, the right one (F24).
- * 8. No practice question writes the table its cluster's lesson builds (F6); every lesson a cluster names exists.
+ * 8. No practice question writes the table its part's lesson builds, in the same database (F6); every part names a lesson that exists.
+ * 9. A hint that names a table never puts a design field in the wrong table (F41).
+ * 10. The lessons (tools/g1-lessons.js): built from their sources; every grid holds on ten dates; every step statement runs;
+ *     marks lines sum to the part's marks; quick checks name real exam tables and fields; highlights name lesson-table fields;
+ *     no token left unfilled; the detector — each lesson's finished statement scores at most half on every part and practice
+ *     question (D47 exceptions named); the parts that lean on an earlier part print its lead (F36).
  * The answers live in the private src (D2): A2SSD_SRC points at it. The detail report goes there too, never into the repo. */
 const path = require('path');
 const fs = require('fs');
@@ -147,20 +152,72 @@ for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) {
   });
 }
 
-// 8. no practice question re-serves its lesson's worked table (F6), and every lesson a cluster names exists
+// 8. no practice question re-serves its lesson's worked table (F6), and every part names a lesson that exists
 {
   const C = require(path.join(SRC, 'content/clusters.json'));
   const L = require(path.join(SRC, 'content/lessons.json'));
+  const LV = require(path.join(__dirname, '..', 'platform', 'lessonview.js'));
+  const P8 = {}; for (const p of require(path.join(SRC, 'content/papers.json')).papers) for (const q of p.parts || []) P8[q.id] = q;
+  const TF8 = require(path.join(SRC, 'content/twins-fable.json')).twins;
+  const twinSet = (tid) => { const b = /^B-(\d+)/.exec(tid); if (b) return +b[1]; const t = TF8.find((x) => x.id === tid) || {}; return t.tables ? null : t.set; };
   const target = (sql) => { const m = /\b(?:create\s+table|insert\s+into|update|alter\s+table)\s+\[?(\w+)/i.exec(sql || ''); return m ? m[1].toLowerCase() : null; };
-  const lessonTable = (name) => { const l = L[name]; if (!l) return null; const w = (l.steps || []).find((s) => s.whole) || {}; return target(w.sql); };
+  const lessonTable = (name, pid) => { const l = L[name]; if (!l || l.answer === 'text') return null; const v = LV.view(l, P8[pid], new Date(2026, 8, 27)); const w = v.steps.find((s) => s.whole) || {}; return target(w.sql); };
   for (const [cname, c] of Object.entries(C.clusters)) {
-    const lessons = new Set([c.lesson, ...c.parts.map((p) => C.lessonFor[p]).filter(Boolean)]);
-    for (const ln of lessons) {
+    for (const pid of c.parts) {
       checks++;
-      if (!L[ln]) { fail('lesson missing', cname, ln); continue; }
-      const lt = lessonTable(ln); if (!lt) continue;
-      c.twins.forEach((tid) => { checks++; const tt = target(twinModels[tid]); if (tt && tt === lt && !/^select/i.test(twinModels[tid].trim())) fail('practice question re-serves the lesson table', tid, ln + ' builds ' + lt.toUpperCase()); });
+      const ln = C.lessonFor[pid];
+      if (!ln || !L[ln]) { fail('lesson missing', cname, pid + ' → ' + (ln || 'none')); continue; }
+      const lt = lessonTable(ln, pid); if (!lt) continue;
+      // the same table in the same database: a B practice question is on set n; a T one on its set, or on tables of its own
+      c.twins.forEach((tid) => { checks++; const tt = target(twinModels[tid]); if (tt && tt === lt && twinSet(tid) === L[ln].set && !/^select/i.test(twinModels[tid].trim())) fail('practice question re-serves the lesson table', tid, ln + ' builds ' + lt.toUpperCase()); });
     }
+  }
+}
+
+// 9. a hint that names a table and a design field never puts the field in the wrong table (F41): every field a hint names
+//    belongs to at least one table the same hint names
+{
+  const P = require(path.join(SRC, 'content/papers.json')).papers, TJ = require(path.join(SRC, 'content/twins.json')), TF = require(path.join(SRC, 'content/twins-fable.json')).twins;
+  const design = {};   // part id -> [[TABLE, [field...]]]
+  for (const p of P) for (const q of p.parts || []) design[q.id] = (p.tables || []).map((t) => [t.name, t.cols.map((c) => c.f)]);
+  for (const b of TJ) for (const q of b.questions || []) design['B-' + b.n + q.label] = b.tables.map((t) => [t[0], t[1].map((f) => f[0])]);
+  for (const t of TF) design[t.id] = (t.tables || (TJ.find((x) => x.n === t.set) || { tables: [] }).tables).map((x) => [x[0], x[1].map((f) => f[0])]);   // no tables of its own: its set's
+  for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) ids.forEach((id) => {
+    const d = design[id]; if (!d) return;
+    (parts[id].points || []).forEach((pt, i) => {
+      checks++;
+      // only the sentences that say where a field lives ("JOB gives ...", "The name lives in GUEST"); a join line names both ends
+      const h = (pt.hint || '').split(/(?<=\.)\s+/).filter((x) => /\b(gives|holds|lives in|is in|comes from)\b/.test(x)).join(' ');
+      const named = d.filter(([t]) => new RegExp('\\b' + t + '\\b').test(h)).map(([t]) => t);
+      if (!named.length) return;
+      const fields = [...new Set(d.flatMap(([, fs]) => fs))].filter((f) => new RegExp('\\b' + f + '\\b').test(h) && !d.some(([t]) => t === f));
+      fields.forEach((f) => { if (!d.some(([t, fs]) => named.includes(t) && fs.includes(f))) fail('hint puts a field in the wrong table', id, 'P' + (i + 1) + ': ' + f + ' is not in ' + named.join('/') + ' — ' + h); });
+    });
+  });
+}
+
+// 10. the lessons
+{
+  const gate = require('./g1-lessons.js');
+  const r = gate({ SRC, J, M, T }); checks += r.checks; r.fails.forEach((f) => fail(...f));
+  // controls: each planted fault must be caught
+  const step = (l, id) => l.steps.find((s) => s.id === id);
+  const CONTROLS = [
+    ['grid does not hold', 'PROSE-DESIGN', (L) => { step(L['PROSE-DESIGN'], 'link').grid.rows[0][2] = 55; }],
+    ['marks lines do not add up to the part', 'CREATE', (L) => { step(L.CREATE, 'whole').marks.pop(); }],
+    ['quick check answer is not in the exam design', 'AGG-WEEK', (L) => { L['AGG-WEEK'].checks['2025-b'].where.answer = 'BOOKING.LessonDate'; }],
+    ['step has no quick check', 'AGG-WEEK', (L) => { delete L['AGG-WEEK'].checks['2025-b'].group; }],
+    ['choose check needs exactly one right option', 'AGG-WEEK', (L) => { L['AGG-WEEK'].checks['2025-b'].order.opts[1].ok = true; }],
+    ['highlight names a field that is not there', 'PROSE-KEYS', (L) => { step(L['PROSE-KEYS'], 'pk').hl.f = ['CHILD.ChildNo']; }],
+    ['token or tag left unfilled', 'JOIN-TODAY', (L) => { L['JOIN-TODAY'].title += ' ⟪x|y⟫'; }],
+    ['step statement fails on the lesson database', 'UPDATE', (L) => { L.UPDATE.src = String(L.UPDATE.src).replace(/SESSIONBOOKING/g, 'SESSIONBOOKINGS'); }],
+    ['lesson hands over more than half', 'SELECT-JOIN', (L) => { L['SELECT-JOIN'].src = model('2016-2'); }],
+    ['lesson hands over more than half', 'PROSE-DESIGN', (L) => { L['PROSE-DESIGN'].src = 'Because each site keeps a different reorder level for each item of stock, so it depends on the site as well as the stock.'; }],
+  ];
+  for (const [want, name, mutate] of CONTROLS) {
+    checks++;
+    const c = gate({ SRC, J, M, T, mutate, only: [name] });
+    if (!c.fails.some((f) => f[0] === want)) fail('lesson-gate control not caught', name, want + (c.fails.length ? ' (caught instead: ' + c.fails[0][0] + ')' : ''));
   }
 }
 

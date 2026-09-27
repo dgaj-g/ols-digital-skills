@@ -102,6 +102,9 @@ const SHIM = [
   ["DATEADD(day, -23, '2026-03-01')", '2026-02-06'], ["DATEADD(week, 2, '2026-12-25')", '2027-01-08'], ["DATEADD(dd, 1, CAST('2026-12-31' AS DATE))", '2027-01-01'],
   ["DATEDIFF(day, '2026-02-20', '2026-03-02')", 10], ["DATEDIFF(month, '2025-11-30', '2026-01-01')", 2], ["DATEDIFF(year, '2025-12-31', '2026-01-01')", 1],
   ["MONTH(DATEADD(month, -1, '2026-03-31'))", 2], ["YEAR('2026-09-27')", 2026], ["DAY(CONVERT(DATE, '2026-09-07'))", 7], ["DATEPART(month, '2026-09-27')", 9],
+  ["DATEDIFF(MINUTE, '08:00', '12:00')", 240], ["DATEDIFF(minute, '13:00', '16:30')", 210], ["DATEDIFF(HOUR, '09:59', '10:01')", 1], ["DATEDIFF(hh, '09:30', '13:30')", 4],
+  ["DATEDIFF(week, '2026-09-26', '2026-09-27')", 1], ["DATEDIFF(wk, '2026-09-27', '2026-10-03')", 0], ["DATEDIFF(week, '2026-09-20', '2026-10-04')", 2],
+  ["DATEADD(MINUTE, 150, '09:00')", '11:30'], ["DATEADD(minute, 30, '17:00:00')", '17:30'], ["DATEADD(HOUR, 4, '08:00')", '12:00'], ["DATEADD(mi, -45, '13:00')", '12:15'],
   ["LEN('Tinies')", 6], ["ISNULL(NULL, 'x')", 'x'], ["'A' + 'B'", 'AB'],
 ];
 for (const [t, want] of SHIM) {

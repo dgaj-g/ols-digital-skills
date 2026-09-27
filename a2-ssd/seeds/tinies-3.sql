@@ -4,6 +4,11 @@
 -- C-049 three unnotified last month, C-050 three unnotified in this month last year. The day has four session slots, so
 -- early in a month (when this month's absences fall on one day) no child is ever absent twice from the same session.
 -- C-052's absence on 22/04/2026 is still recorded as unexplained; C-041's attendance on 21/04/2026 is not recorded yet.
+-- Contracts K-112 (four months ago) and K-113 (20 days ago) have no child linked yet: the LEFT JOIN lesson. K-111 is T-INSERT-1's.
+-- The NULL-OR lesson: C-053 (yesterday) and C-050 (15 days ago) have a register not marked yet (AttendedYN NULL);
+-- C-041 was off sick 4 days ago (listed) and C-042 12 days ago (a trap: more than seven days).
+-- The JOIN-TODAY lesson: C-041, C-052 and C-053 attend today; yesterday C-052 (Holiday) and C-049 (Appointment) were absent,
+-- both notified with a reason, so no count of unnotified or unexplained absences changes.
 PRAGMA foreign_keys = ON;
 CREATE TABLE CONTRACT (ContractID TEXT COLLATE NOCASE PRIMARY KEY, ContractStartDate DATE, ContractType TEXT COLLATE NOCASE, MonthlySessions INTEGER, ParentID TEXT COLLATE NOCASE);
 CREATE TABLE CHILD (ChildID TEXT COLLATE NOCASE PRIMARY KEY, ChildFName TEXT COLLATE NOCASE, ChildSName TEXT COLLATE NOCASE, AgeGroup TEXT COLLATE NOCASE, ContractID TEXT COLLATE NOCASE REFERENCES CONTRACT);
@@ -18,7 +23,9 @@ INSERT INTO CONTRACT VALUES
  ('K-107','2026-03-02','Part-time',16,'P-007'),
  ('K-108','2026-04-06','Flexible',8,'P-008'),
  ('K-109',date('now','-12 days'),'Part-time',20,'P-009'),
- ('K-110',date('now','-5 days'),'Full-time',40,'P-010');
+ ('K-110',date('now','-5 days'),'Full-time',40,'P-010'),
+ ('K-112',date('now','start of month','-4 months','+3 days'),'Part-time',20,'P-012'),
+ ('K-113',date('now','-20 days'),'Full-time',40,'P-013');
 INSERT INTO CHILD VALUES
  ('C-041','Niamh','Murphy','Toddler','K-101'),
  ('C-042','Sean','Boyle','Preschool','K-102'),
@@ -61,4 +68,13 @@ INSERT INTO ATTENDANCE (ChildID, AttendanceDate, SessionSlot, AttendedYN, Absenc
  ('C-050',date('now','start of month','-1 year','+2 days'),1,'N',NULL,'N'),
  ('C-050',date('now','start of month','-1 year','+3 days'),2,'N',NULL,'N'),
  ('C-050',date('now','start of month','-1 year','+4 days'),3,'N',NULL,'N'),
- ('C-050',max(date('now','-1 days'),date('now','start of month')),2,'Y',NULL,NULL);
+ ('C-050',max(date('now','-1 days'),date('now','start of month')),2,'Y',NULL,NULL),
+ ('C-053',date('now','-1 days'),1,NULL,NULL,NULL),
+ ('C-050',date('now','-15 days'),4,NULL,NULL,NULL),
+ ('C-041',date('now','-4 days'),2,'N','Sickness','Y'),
+ ('C-042',date('now','-12 days'),1,'N','Sickness','Y'),
+ ('C-041',date('now'),3,'Y',NULL,NULL),
+ ('C-052',date('now'),2,'Y',NULL,NULL),
+ ('C-053',date('now'),1,'Y',NULL,NULL),
+ ('C-052',date('now','-1 days'),3,'N','Holiday','Y'),
+ ('C-049',date('now','-1 days'),2,'N','Appointment','Y');

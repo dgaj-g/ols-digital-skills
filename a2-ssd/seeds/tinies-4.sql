@@ -4,6 +4,8 @@
 -- Emergency revenue at Tinies 2 this calendar month: Monday 08:00 £84 and Wednesday 08:00 £56; traps: Friday 13:00 £30,
 -- a Tinies 1 slot with £112, non-emergency bookings on Monday 08:00, and Friday 13:00 emergencies last month.
 -- The Tinies 2 09:30 morning slots do not exist yet.
+-- Last calendar month (AGG-SUM): emergency bookings total £60 for C-043 and £58 for C-044, £30 for C-036; C-045's
+-- booking is not an emergency. Early in a month C-031's £28 from eight days ago also falls in last month.
 PRAGMA foreign_keys = ON;
 CREATE TABLE CRECHE (CrecheID INTEGER PRIMARY KEY, CrecheName TEXT COLLATE NOCASE);
 CREATE TABLE CHILD (ChildID TEXT COLLATE NOCASE PRIMARY KEY, ChildFName TEXT COLLATE NOCASE, ChildSName TEXT COLLATE NOCASE, AgeGroup TEXT COLLATE NOCASE, CrecheID INTEGER REFERENCES CRECHE);
@@ -51,9 +53,9 @@ INSERT INTO SESSIONBOOKING (ChildID, SlotID, BookingDate, EmergencyYN, AmountPai
  ('C-047',7,date('now','start of month','weekday 3','+21 days'),'Y',28.00),
  ('C-043',9,date('now','start of month','weekday 5','+14 days'),'Y',30.00),
  ('C-034',6,date('now','start of month','weekday 1','+7 days'),'N',22.00),
- ('C-045',6,date('now','start of month','weekday 1','+14 days'),'N',22.00),
- ('C-047',6,date('now','start of month','weekday 1','+21 days'),'N',22.00),
- ('C-038',8,date('now','start of month','weekday 3','+14 days'),'N',22.00),
+ ('C-045',6,date('now','start of month','-1 month','weekday 1','+14 days'),'N',22.00),
+ ('C-044',6,date('now','start of month','-1 month','weekday 1','+7 days'),'Y',28.00),
+ ('C-043',8,date('now','start of month','-1 month','weekday 3','+7 days'),'Y',30.00),
  ('C-032',2,date('now','start of month','weekday 2','+7 days'),'Y',28.00),
  ('C-041',2,date('now','start of month','weekday 2','+14 days'),'Y',28.00),
  ('C-048',2,date('now','start of month','weekday 2','+21 days'),'Y',28.00),

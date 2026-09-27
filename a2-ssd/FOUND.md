@@ -32,3 +32,111 @@ F27 · src/judge/markpoints.js nextDays · DATEADD(day 7 GETDATE()) with the com
 F28 · src/judge/twinpoints.js is/txt · O'Neill typed with one quote, or a value with its quotes missing, lost the value mark · values compare quote-blind · controls
 F29 · content/lessons.json INSERT · the INSERT lesson built STOCKORDER, the table B-2b asks for, so the lesson handed over that answer · lesson moved to SESSIONBOOKING · G1 step 8
 F30 · content/lessons.json INSERT · (a) worked rows overlapped a practice question's values; (b) a line told pupils quoting marks cost marks (ruling 13 says they never do); (c) a quick-check option '3' was marked wrong though it is right; (d) the worked date was a literal that went stale · rewritten (D34), {today} token, strike re-mark in lesson.js · cold reads + G4
+F31 · src/judge/markpoints.js 2018-a + judge.js parseCreate · one CHECK holding both date rules joined by AND, e.g. CHECK ((StartDate >= GETDATE()) AND (EndDate > StartDate)), scored 0 for both rules though it enforces both · checkBodies/conjuncts split every CHECK at its top-level AND (BETWEEN kept whole); 2018-a, 2023-a and 2026-b read the split rules · controls (AND earns both; OR, which enforces neither, must lose both)
+
+## F32 — lesson statements lost the comma before a field whose name starts with a keyword
+Found while rendering CREATE-RULES: `OrderNo INT,` followed by `OrderDate DATE,` rendered as `OrderNo INT` with no comma, because the comma repair in platform/lessonview.js treated any line starting ORDER (or SET, LEFT, VALUES, …) as a clause keyword. OrderDate, Settings, Leftover and similar field names all triggered it, giving a statement that would not run.
+Fix: CLOSER now matches the keyword only as a whole word. Gate: G1's lesson gate runs every step's statement on the seed, so a dropped comma fails the build.
+
+## F33 — 2024-c-i refused DATETIME for the new StartDate field
+MARK_POINTS §2015·1 accepts DATETIME for DATE, and the judge accepts it in 2015-1, 2023-a and 2026-b, but the 2024-c-i type point was written `date(?!time)`, so `ADD StartDate DATETIME DEFAULT GETDATE()` scored 3/4. Under ruling 13 a date type for a date field is not a wrong field.
+Fix: the point accepts DATE, DATETIME, DATETIME2 and SMALLDATETIME. Controls: DATETIME → 4; VARCHAR(10) → 3.
+
+## F34 · An INSERT with the word VALUES left out lost every row (inherited judge)
+- Found: 27 Sep 2026, while probing 2024-a and 2025-a-ii for the two-row INSERT lesson.
+- Fault: `INSERT INTO LSLOT_INSTRUCT (15, 18), (15, 27)` scored 1 of 3: the parser read (15, 18) as a column list, so neither row was seen. MARK_POINTS.md says "deduct 1 (floor 0) if VALUES is missing" → 2. Same for 2024-a (2 instead of 3: only the VALUES mark should go), 2015-3, 2017-1, 2026-c and every twin INSERT.
+- Fix: parseInsert reads brackets holding a number, a quoted value or today's date as rows when VALUES is missing, and flags `noValues`. Points named VALUES (2015-3 P2, 2024-a P3, 2017-1 P4 and one slip on P2, 2026-c P3 and P6) need VALUES present; the rows points still read the rows. A new part-level `deduct` shows a scheme's "deduct 1" as its own line worth 0 or −1; totals never go below 0. 2025-a-ii and every twin INSERT carry the VALUES deduction.
+- Gate: eight WX controls (2025-a-ii ×3, 2024-a, 2015-3, 2026-c, 2017-1, T-INSERT-1). Client must print a deduct line as "−1" (pending, client step).
+
+## F35 — the examiners' own 2017 model answer scored 3 of 5
+- Fault: the 2017 Q1 mark scheme leaves BookingStatus as an empty place in the VALUES row (`5,,2,2`) so the field takes its DEFAULT. The normaliser folded every `,,` into one comma, so the empty place vanished and every later value shifted one field left: BookingStatus got 2, NoOfChildren got '1004'. 3/5 for the model itself.
+- Fix: judge.js gains one more reading, `emptySlot` (tried only when the answer holds `,,`): inside a VALUES row an empty place becomes DEFAULT. The best reading wins, so a doubled comma typed by mistake (2015-3 `(23,,3,…)`) still reads as one comma and keeps its 4.
+- Gate: three controls in controls.js — the raw mark-scheme model → 5; the empty place with no column list → 5; two empty places where only one field has a default → 4. Controls 691, GREEN.
+
+## F36 — two questions asked about something the pupil could not see
+- Fault: 2026-c is marked on leaving out every field except SupplierID and EstDeliveryDate, but on the platform the SUPPLIERSTOCKORDER design shows plain types: the identity and the two defaults were set in part (b), which a pupil opening (c) on its own never sees. 2024-c-ii asks about "this change" without saying what the change was.
+- Fix: papers.json parts gain a `lead` line, printed above the question as "From part (b): …" in the exam's own words (2026-c, 2024-c-ii). The question text itself stays verbatim.
+- Gate: G1 checks every part whose marks depend on an earlier part (2026-c, 2024-c-ii) carries a `lead`, and G4 reads the lead with the other strings. The client prints it (A-test in G5).
+
+## F37 — a test joined by OR in place of AND kept its mark (inherited judge)
+- Found: 27 Sep 2026, probing 2016-2 for the joins lesson.
+- Fault: `WHERE LocationName='Outlet' AND SalesDate='2016-01-29' OR SalesTime BETWEEN '13:00' AND '15:00'` scored 7/7. The date and time points only looked for the condition somewhere in the WHERE, so a row from any day between 1 and 3 pm would pass and the answer still earned both. Same shape in 2017-2 and 2017-3 (BookingNo), 2019-b (the <= reorder test) and 2024-b (SpecialID = 2).
+- Fix: ctx gains `req(src)`: the condition sits on every OR branch of the WHERE, or is joined by AND into a JOIN's ON. A point that needs a test every row must pass uses `must()`: held → mark; present but only on one OR branch → 0 with the note "This test is joined to the others by OR, so a row can pass without it…"; missing → 0. Brackets that keep the tests together still earn the marks. Points that only ask for a clause to be present (2016-2 "WHERE LocationName", 2019-b "WHERE SupplierNo=12") and 2021-b's own AND point are unchanged.
+- Gate: controls — 2016-2 date OR time → 5; the tests bracketed together → 7; the date test inside JOIN … ON → 7; 2017-2 second booking by OR, 2019-b OR for the reorder test. Controls 699, GREEN.
+
+## F38 — '29/01/16' and '1pm' lost marks (inherited judge)
+- Found: 27 Sep 2026, same probe.
+- Fault: literal() read dd/mm/yyyy but not dd/mm/yy, and read 13:00 but not 1pm / 3 p.m. Both are clear to an examiner, so under ruling 13 neither may cost.
+- Fix: literal() reads dd/mm/yy as 20yy, and h[:mm] am/pm (with or without dots and a space) as 24-hour time. '1:00' and '3:00' stay the morning and keep losing the time mark.
+- Gate: controls — '29/01/16' → 7; '1pm' AND '3 p.m.' → 7; '1:00' AND '3:00' → 6.
+
+## F39 — a percentage rise was checked at one value only (inherited judge)
+- Found: 27 Sep 2026, probing 2016-3 for the UPDATE lesson.
+- Fault: 2016-3, 2019-a, B-2a and T-UPDATE-1 worked the SET expression out at Price = 100 and compared it with 110 (or 105). At 100, `Price + 10` is 110, and so is a bare `110`, so "add ten pounds" and "set every price to 110" both earned the 10 % mark.
+- Fix: `J.scaledBy(expr, field, factor)` works the expression out at 100, 37 and 250 and needs field × factor at all three. The four points call it in place of their one-value test.
+- Gate: controls (F39 block) — + 10 and a bare 110 lose the mark on 2016-3; + 5 loses it on 2019-a and B-2a; + 10 loses it on T-UPDATE-1; * 110 / 100 and + x * 0.05 keep it; 2024-b's two tests in either order → 4, StaffID alone → 3. Controls 708, GREEN.
+
+## F40 — "IS NULL AND" earned the "IS NULL, joined by OR" mark (inherited judge)
+- Found: 27 Sep 2026, probing 2018-b-i for the NULL-OR lesson.
+- Fault: point 7 needed "DateLastCarriedOut IS NULL" and the word OR anywhere in the WHERE. `DateLastCarriedOut IS NULL AND Frequency = 'W' OR ...` lists a never-done job only when it is weekly, yet scored 11 / 11. The scheme says "or (required)" at exactly that place.
+- Fix: `orAlone(where, test)` needs the IS NULL test to be a whole branch of an OR, at the top level or inside any bracket. An outer AND round the whole OR group (comma-FROM joins) keeps the mark, and so does a bracket in the wrong place (ruling 13: brackets never cost).
+- Gate: controls (F40 block, 10 rows) — IS NULL AND → 10; = NULL → 10; no brackets → 11; the never-done test last → 11; M OR date → 10; a bare 'M' → 10; DATEDIFF >= 23 → 11; DATEDIFF reversed → 10; date test the wrong way → 10; GETDATE() - 23 → 11. Controls 718, GREEN.
+
+## F41 — two mark-point hints named a field in the wrong table (inherited judge)
+- Found: writing the NULL-OR lesson, reading 2018-b-i's points against the printed design.
+- Fault: the 2018-b-i hint "JOB gives JobType and DateLastCarriedOut" is false: DateLastCarriedOut is in CONTRACTJOB. The 2017-3 hint "ROOM gives the room number and its type" suggests ROOM holds the type; it holds only TypeNo. A pupil who missed the point would be sent to the wrong table.
+- Fix: "JOB gives JobType, and the SkillNo that leads to SKILL." and "ROOM links each room to its TypeNo, which leads to ROOMTYPE."
+- Gate: G1 gains a hint check: every design field name a hint mentions must belong to a table the same hint names, or to no printed table at all (tools/g1-judge.js, hint-field rule).
+
+## F42 — the detector never ran on lessons with a statement per part, so the joins lesson handed over 4 of 7 marks of a practice question
+- Found: extending the detector for the counting lesson; it crashed on SELECT-JOIN's per-part src list ("src.split is not a function"), so that lesson had never been checked.
+- Fault: SELECT-JOIN's 2015-2 statement (both B-4b joins + ORDER BY BookingDate ascending) and its 2019-b statement (both joins + four fields with AmountPaid) each scored 4/7 on B-4b, a practice question in the same SELECT-JOIN cluster (SPEC §9). A pupil could copy the lesson into the practice question for more than half the marks.
+- Fix: det.js loops over every src variant with every step reached. 2015-2's lesson task now asks for the most recent session first (ORDER BY BookingDate DESC), and the order step teaches both directions, so the exam check (earliest first = ascending) is a real transfer. 2019-b's SELECT no longer shows AmountPaid (it is tested, not shown; the select step says so). Both now score 3/7 on B-4b. Every lesson re-run: none over half.
+- Gate: G1's detector check runs over every src variant of every lesson and fails any statement scoring more than half on any SQL part or practice question (tools/g1-judge.js, detector check).
+
+## F43 — the practice database counted a four-hour session as 239 minutes, and weeks by sevens
+- Found: before writing the weekly-hours lesson, a probe of the SQL Server → SQLite converter on DATEDIFF(MINUTE, '08:00', '12:00').
+- Fault: minutes and hours came from a floating-point day fraction truncated to an integer, so 08:00–12:00 gave 239 and 09:30–13:30 gave 3 hours. SQL Server counts boundaries crossed: 240 minutes, 4 hours, and DATEDIFF(HOUR, '09:59', '10:01') is 1. Weeks were whole sevens of days, where SQL Server counts Sunday boundaries (Saturday to Sunday is 1 week).
+- Fix: minutes and hours are whole-second epoch values divided by 60 or 3600 and subtracted (boundary count); weeks count Sundays crossed from a Sunday reference (31/12/1899).
+- Gate: G2 shim controls — MINUTE 08:00–12:00 = 240, 13:00–16:30 = 210, HOUR 09:59–10:01 = 1, hh 09:30–13:30 = 4, week Sat→Sun = 1, Sun→Sat = 0, two Sundays = 2. Four of the seven fail on the old converter.
+
+## F44 — one wrong COUNT field cost two marks on 2022·d
+- Found: before writing the orders-by-month lesson, probing the judge with COUNT(cakeOrderID) in place of COUNT(cakeTypeID).
+- Fault: the HAVING point demanded COUNT(cakeTypeID) or COUNT(*) inside HAVING, so the same field choice lost the COUNT mark and the HAVING mark. MARK_POINTS 2022·d row 6 is "HAVING COUNT(…) > 1": any argument.
+- Fix: the HAVING point accepts COUNT of any field (> 1 or >= 2). The COUNT point in the SELECT is unchanged (row 2: cakeTypeID, * fine).
+- Gate: G1 control "2022-d COUNT(cakeOrderID) twice" expects 6/7; the old judge gave 5/7.
+
+## F45 — the practice database lost the time when adding minutes
+- Found: before writing the add-a-slot lesson, converting DATEADD(MINUTE, 150, '09:00').
+- Fault: every DATEADD went through date( ), which keeps only the date, so adding minutes or hours to a time gave '2000-01-01', never '11:30'.
+- Fix: DATEADD with MINUTE or HOUR keeps the time: a time stays a time (HH:MM), a date-time stays a date-time.
+- Gate: G2 shim controls DATEADD(MINUTE, 150, '09:00') = 11:30, (minute, 30, '17:00:00') = 17:30, (HOUR, 4, '08:00') = 12:00, (mi, -45, '13:00') = 12:15. All four fail on the old converter.
+
+## F46 — the table name SITE_STOCK earned the "depends on the site" mark
+- Found: checking the written-answer lessons against 2026·a and its practice question.
+- Fault: the test looked for the word "site" anywhere, and found it inside SITE_STOCK. "Because it is in the SITE_STOCK table for each item" scored 1 of 1 without saying anything about sites.
+- Fix: the table name (SITE_STOCK or "site stock") is taken out before the test reads the answer, on 2026·a and on T-PROSE-1.
+- Gate: controls pin "Because it is in the SITE_STOCK table for each item." = 0 (2026·a and T-PROSE-1), "It is stored in site stock for each item." = 0, and "Each site uses different amounts, so SITE_STOCK holds a level for each site." = 1. The first two fail on the old test. controls 723 GREEN.
+
+## F47 — a lesson step with no quick question (AGG-WEEK, 2025·b)
+- Found: the new lesson gate (G1 step 10), first run.
+- Fault: the SELECT step of the weekly-hours lesson had no quick question for 2025·b, so the pupil moved on without checking anything against the exam tables.
+- Fix: a quick question asks which table holds the instructors' names (INSTRUCTOR, named in the question's note, not drawn).
+- Gate: G1 step 10 fails any shown step without a quick question for every part the lesson serves; control "step has no quick check" must be caught.
+
+## F48 — a wrong-click reason for a table the pupil cannot click (INSERT-ROWS, 2025·a·ii)
+- Found: G1 step 10, first run.
+- Fault: the table question had a reason for clicking INSTRUCTOR, which the 2025 design never draws. Dead text, and a sign the question was written from memory, not from the drawn tables.
+- Fix: removed.
+- Gate: every wrong key of a field or table question must be a table or field of the part's exam design.
+
+## F49 — the practice-question check compared table names across databases
+- Found: G1 step 8 after lessonFor replaced the one-lesson-per-cluster field.
+- Fault: B-1a (INSERT into CHILD, Tinies set 1) was flagged against INSERT-LINKED (CHILD in set 4): same name, different table.
+- Fix: step 8 flags a practice question only when it writes the table the lesson builds in the same database.
+- Gate: G1 step 8.
+
+## F50 — a CREATE lesson could not be run on its own database
+- Found: G1 step 10 running every step statement.
+- Fault: none in the lessons; the gate first ran CREATE TABLE on a seed that already had the table. The gate now drops that table first (foreign keys off), so every CREATE step is proved to run.
+- Gate: G1 step 10.

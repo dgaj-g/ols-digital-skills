@@ -5,6 +5,7 @@
 -- Glue sticks (G0021) and hand soap (H0033) have never been ordered. Orders 41, 44, 45 and 46 are not yet delivered
 -- (supplier 12 has two). Suppliers 17 and 19 average 4 days from order to delivery; the rest 3 or fewer.
 -- Supplier 12 placed 5 orders in the last six months; no other supplier more than 2. OrderDate defaults to today.
+-- Order 45 (the first of this month) has two lines, so every calendar year holds an order with more than one item (AGG-MONTH).
 PRAGMA foreign_keys = ON;
 CREATE TABLE SUPPLIER (SupplierID INTEGER PRIMARY KEY, SupplierName TEXT COLLATE NOCASE, SupplierTel TEXT COLLATE NOCASE, SupplierEmail TEXT COLLATE NOCASE);
 CREATE TABLE CRECHE (CrecheID INTEGER PRIMARY KEY, CrecheName TEXT COLLATE NOCASE, CrecheLocation TEXT COLLATE NOCASE);
@@ -70,5 +71,5 @@ INSERT INTO ORDERLINE VALUES
  (42,'T0005',40),(42,'K0045',60),
  (43,'B0012',12),
  (44,'P0310',20),
- (45,'N0102',30),
+ (45,'N0102',30),(45,'W0044',20),
  (46,'C0031',12);

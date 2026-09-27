@@ -83,6 +83,8 @@
     // MONTH/YEAR clamp to the month's last day as SQL Server does (31 Mar − 1 month = 28 Feb); SQLite alone would roll on to 3 Mar
     sql = rewriteCalls(sql, 'DATEADD', (a) => {
       const u = UNIT[(a[0] || '').toLowerCase()] || 'day'; const n = a[1] || '0'; const d = asDate(a[2] || "date('now')");
+      // MINUTE/HOUR keep the time: a time ('17:00', '17:00:00') stays a time, a date-time stays a date-time
+      if (u === 'minute' || u === 'hour') { const x = a[2] || "datetime('now')"; return "(CASE WHEN length(" + x + ") <= 8 THEN strftime('%H:%M', " + x + ", (" + n + ") || ' " + u + "s') ELSE datetime(" + x + ", (" + n + ") || ' " + u + "s') END)"; }
       if (u === 'week') return 'date(' + d + ", ((" + n + ") * 7) || ' days')";
       if (u === 'month' || u === 'year') {
         const k = u === 'year' ? '((' + n + ') * 12)' : '(' + n + ')';
@@ -91,7 +93,7 @@
       return 'date(' + d + ', (' + n + ") || ' " + u + "s')";
     });
     // DATEDIFF(unit, a, b)
-    sql = rewriteCalls(sql, 'DATEDIFF', (a) => { const u = UNIT[(a[0] || '').toLowerCase()] || 'day'; const x = a[1], y = a[2]; if (u === 'day') return 'CAST(julianday(' + asDate(y) + ') - julianday(' + asDate(x) + ') AS INTEGER)'; if (u === 'week') return 'CAST((julianday(' + asDate(y) + ') - julianday(' + asDate(x) + ')) / 7 AS INTEGER)'; if (u === 'month') return "((CAST(strftime('%Y'," + y + ") AS INTEGER) - CAST(strftime('%Y'," + x + ") AS INTEGER)) * 12 + CAST(strftime('%m'," + y + ") AS INTEGER) - CAST(strftime('%m'," + x + ") AS INTEGER))"; if (u === 'year') return "(CAST(strftime('%Y'," + y + ") AS INTEGER) - CAST(strftime('%Y'," + x + ") AS INTEGER))"; if (u === 'minute') return 'CAST((julianday(' + y + ') - julianday(' + x + ')) * 1440 AS INTEGER)'; return 'CAST((julianday(' + y + ') - julianday(' + x + ')) * 24 AS INTEGER)'; });
+    sql = rewriteCalls(sql, 'DATEDIFF', (a) => { const u = UNIT[(a[0] || '').toLowerCase()] || 'day'; const x = a[1], y = a[2]; if (u === 'day') return 'CAST(julianday(' + asDate(y) + ') - julianday(' + asDate(x) + ') AS INTEGER)'; if (u === 'week') return "(CAST((julianday(" + asDate(y) + ") - julianday('1899-12-31')) / 7 AS INTEGER) - CAST((julianday(" + asDate(x) + ") - julianday('1899-12-31')) / 7 AS INTEGER))"; if (u === 'month') return "((CAST(strftime('%Y'," + y + ") AS INTEGER) - CAST(strftime('%Y'," + x + ") AS INTEGER)) * 12 + CAST(strftime('%m'," + y + ") AS INTEGER) - CAST(strftime('%m'," + x + ") AS INTEGER))"; if (u === 'year') return "(CAST(strftime('%Y'," + y + ") AS INTEGER) - CAST(strftime('%Y'," + x + ") AS INTEGER))"; if (u === 'minute') return "(CAST(strftime('%s'," + y + ") AS INTEGER) / 60 - CAST(strftime('%s'," + x + ") AS INTEGER) / 60)"; return "(CAST(strftime('%s'," + y + ") AS INTEGER) / 3600 - CAST(strftime('%s'," + x + ") AS INTEGER) / 3600)"; });
     // YEAR/MONTH/DAY(d), DATEPART(unit, d)
     sql = rewriteCalls(sql, 'YEAR', (a) => "CAST(strftime('%Y'," + a[0] + ') AS INTEGER)');
     sql = rewriteCalls(sql, 'MONTH', (a) => "CAST(strftime('%m'," + a[0] + ') AS INTEGER)');
