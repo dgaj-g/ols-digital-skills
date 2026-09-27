@@ -28,7 +28,7 @@
   else root.LessonView = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  const TAG = /⟪(<?)([\w-]+)\|([^⟪⟫\n]*)⟫/g;
+  const TAG = /⟪([<]?)([\w-]+)\|([^⟪⟫\n]*)⟫/g;
   const GUARD = /⟪@([\w,-]+)⟫/g;
   // a keyword only when it is a whole word: OrderDate and Settings are field names, not ORDER and SET (F32)
   const CLOSER = /^(?:(?:FROM|WHERE|GROUP|ORDER|HAVING|JOIN|LEFT|RIGHT|INNER|FULL|OUTER|VALUES|SET|INSERT|SELECT|UPDATE|CREATE|ALTER)\b|\))/i;

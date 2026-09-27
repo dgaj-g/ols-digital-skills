@@ -140,3 +140,51 @@ Fix: the point accepts DATE, DATETIME, DATETIME2 and SMALLDATETIME. Controls: DA
 - Found: G1 step 10 running every step statement.
 - Fault: none in the lessons; the gate first ran CREATE TABLE on a seed that already had the table. The gate now drops that table first (foreign keys off), so every CREATE step is proved to run.
 - Gate: G1 step 10.
+
+## F51 — the rows label named the answer (2021-a, T-PROSE-2)
+- Found: reading the practice-question labels for the rows input.
+- Fault: "AnimalID: PRIMARY KEY, with the reason" printed the constraint the pupil must name.
+- Fix: the public label becomes "AnimalID: the constraint, with the reason" (D55); the judge's label shows only after marking.
+- Gate: G4 fails if any public label matches a constraint keyword followed by ", with the reason".
+
+## F52 — the prototype's quick check read "outside" before the wrong pick's own line
+- Found: re-reading prototype/lesson.js for the port.
+- Fault: a wrong field with its own reason in wrong{} got the generic "That field is in another table" line.
+- Fix: order is wrong[picked], then outside, then '*' (D62).
+- Gate: G5 A-lesson clicks a field with its own wrong line and reads that line.
+
+## F53 — build guard tripped by its own comment
+- Found: first run of tools/build-server.js.
+- Fault: the Code.gs.template header comment listed the @@…@@ markers, so the unfilled-placeholder guard refused the build.
+- Fix: the comment names the settings in words.
+- Gate: build-server placeholder guard (every @@X@@ anywhere in the filled template refuses the build).
+
+## F54 — lesson tag regex read as an Apps Script scriptlet
+- Found: first run of tools/build-server.js.
+- Fault: lessonview.js held `⟪(<?)`, which HtmlService would read as a scriptlet opener.
+- Fix: `([<]?)`.
+- Gate: build-server stray `<?` / `?>` guard.
+
+## F55 — "Different rows" when the query did not run
+- Found: full-part walk (walk2) at 1280×800.
+- Fault: a query that would not run here showed the badge "Different rows" beside the run error.
+- Fix: the badge says "Did not run" (result.noRun).
+- Gate: G5 A7 reads the badge for a query that errors.
+
+## F56 — a fill-in answer that runs into the next blank scored nothing
+- Found: marking 2026-d with the whole HAVING line in blank 3 and blank 4 left empty.
+- Fault: 0/1 on both blanks, where the written paper gives both marks for an answer that runs across the two printed lines.
+- Fix: judge.js clozeSpill re-splits a run-on answer between a blank and its empty neighbour when both halves earn their points (ruling 13).
+- Gate: controls.js — run-on forward (4/4), run-on backward (4/4), run-on with the wrong test (2/4, must fail the extra marks).
+
+## F57 — two pupils on one browser shared drafts, doors and cached marks
+- Found: G5 A7 — a fresh pupil opened a part and met no doors, because the pupil before them on the same browser had already opened its lesson.
+- Fault: browser storage keys (drafts, lesson state, door, last verdict, evaluation outbox) were not keyed by the signed-in account; on a shared school PC the next pupil would see the last pupil's draft and mark.
+- Fix: every app.js storage key is prefixed with the signed-in email (LS.key).
+- Gate: G5 A6/A7 run several pupils in one browser; a fresh pupil must meet both doors.
+
+## F58 — two pupils with the same first name looked identical on Live
+- Found: G3 staff screenshot — five dev pupils all read "Dev".
+- Fault: the Live pupil column showed the first name only; two Aoifes in one class could not be told apart.
+- Fix: a shared first name adds the account name (the part before @) in small grey type.
+- Gate: G3 staff probe; G5 A13 Live.

@@ -1,0 +1,6 @@
+G4 PASS — 239 keys used, 297 strings, 0 failures
+WARN staff.doorLearn uses an internal word: Door: Learn it first
+WARN staff.doorCold uses an internal word: Door: Write it now
+WARN staff.flagAt uses an internal word: Flag · Part {label} · {beat}
+WARN staff.beat.door uses an internal word: Doors
+WARN unused keys (43): _note, _sources, app.signOut, door.learnSub, door.learnSubText, lesson.soFar, lesson.soFarNew, lesson.whole, lesson.soFarText, lesson.soFarTextNew, lesson.wholeText, result.same
