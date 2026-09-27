@@ -25,3 +25,8 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 - Tinies seeds 1–4 written (traps beside the wanted rows). Shim fixes F14–F17; D12–D22 logged.
 - Answer-space readers: 1 (465 controls), 3 (570), 6 (285) done; 2, 4, 5 running.
 - Next: 2023-c CLEAN decision; adjudicate answer space when readers land; content (quick checks, lessons, F twins); pack-content; server; client; G3–G5; deploy.
+
+## Checkpoint 6 — 27 Sep 2026
+- Answer space settled: six reader sets, 3,135 controls, 0 disagreements; 40 recorded rulings in gates/answerspace/adjudicated.json (private). G1 step 6 runs it; control (adjudications removed) turns G1 FAIL.
+- controls 543 GREEN (EX block pins each engine change); G1 PASS 4793 checks. F18–F23, D23–D26 logged.
+- Next: content — quick checks, lessons, twins, {today}, strings.json, cold reads; then pack-content, server, client, G3–G5, deploy.

@@ -8,6 +8,8 @@
  * 3. Partial answers: an answer cut off after any line never scores less than a shorter cut (read as far as it goes).
  * 4. Must-cost: a missing WHERE, a wrong table, a missing ORDER BY, a changed INSERT number, a wrong CREATE name lose marks.
  * 5. No mark point's label or hint promises punctuation or syntax.
+ * 6. The answer space: every reader control (gates/answerspace/answers-N.json, enumerated per mark point) agrees with the
+ *    engine, or is settled by a recorded ruling in adjudicated.json. One disagreement fails the gate.
  * The answers live in the private src (D2): A2SSD_SRC points at it. The detail report goes there too, never into the repo. */
 const path = require('path');
 const fs = require('fs');
@@ -116,6 +118,19 @@ for (const [id, part, t] of sqlModels) {
 const PUNCT = /bracket|semicolon|comma|quot|punctuat|syntax|capital|apostroph/i;
 for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) {
   ids.forEach((id) => (parts[id].points || []).forEach((p, i) => { checks++; if (PUNCT.test(p.label) || PUNCT.test(p.hint || '')) fail('mark point promises punctuation', id, 'P' + (i + 1) + ': ' + p.label + ' / ' + p.hint); }));
+}
+
+// 6. the answer space
+{
+  const run = path.join(SRC, '..', 'gates', 'answerspace', 'run.js');
+  const r = spawnSync(process.execPath, [run], { encoding: 'utf8' });
+  const lines = (r.stdout || '').split('\n').filter((l) => /^answers-\d+:/.test(l));
+  if (!lines.length) fail('answer space did not run', '-', (r.stderr || '').slice(0, 300));
+  for (const l of lines) {
+    checks += +(l.match(/(\d+) controls/) || [0, 0])[1];
+    const d = +(l.match(/disagree (\d+)/) || [0, 1])[1], b = +(l.match(/broken (\d+)/) || [0, 1])[1];
+    if (d || b) fail('answer space disagrees', l.split(':')[0], l);
+  }
 }
 
 const report = fails.map(([w, id, d]) => w + '  ' + id + '  ' + d).join('\n');
