@@ -476,7 +476,7 @@ function pupilsOf_(props, cls) {
 }
 function classRow_(props, name, email) {
   var c = readClass_(name) || {};
-  return { name: name, o: c.o || '', c: num_(c.c), n: pupilsOf_(props, name).length, mine: c.o === email,
+  return { name: name, o: c.o || '', c: num_(c.c), n: pupilsOf_(props, name).filter(function (p) { return p.email !== email; }).length, mine: c.o === email, // the viewer's own test record is not a pupil (F59, D57)
     canManage: canManage_(name, email), order: c.order || A2META.order, open: c.open || [] };
 }
 function csvCell_(v) { var s = str_(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
