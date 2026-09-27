@@ -47,3 +47,7 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 ## 27 Sep 2026 — deployed
 - Version 1 live (build f309a5fa51-d2d1d70f). G3 52/52, G4 pass, G5 35/35 re-run on the final build. Deploy branch deleted. DEPLOY_LOG.md and README.md written.
 - Waiting on: the owner's Google permission click on first open, then the live smoke and the sit report.
+- Owner permission click done; live smoke on version 1 passed (staff admission by email, class U6-SSD created, pupil page, live marking, Live view, clear-own-record).
+- Sit walk 2 (fresh cold reader, live site, foreground tab) CLEAN — report kept privately in Claude Work/A2 SSD Platform/SIT_REPORT.md (it quotes mark-point labels, so it never enters the repo). Walk 1 void (background-tab artefact, D92).
+- F59 fixed; version 2 live (build f309a5fa51-79b672b1), token checked, F59 passed live, owner's test record cleared. Deploy branch deleted.
+- Left for Damien: the pupil smoke test on a real pupil account (C2k may need to trust the project's Google permission).
