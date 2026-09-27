@@ -208,7 +208,8 @@ for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) {
     ['token or tag left unfilled', 'JOIN-TODAY', (L) => { L['JOIN-TODAY'].title += ' ⟪x|y⟫'; }],
     ['step statement fails on the lesson database', 'UPDATE', (L) => { L.UPDATE.src = String(L.UPDATE.src).replace(/SESSIONBOOKING/g, 'SESSIONBOOKINGS'); }],
     ['lesson hands over more than half', 'SELECT-JOIN', (L) => { L['SELECT-JOIN'].src = model('2016-2'); }],
-    ['lesson hands over more than half', 'PROSE-DESIGN', (L) => { L['PROSE-DESIGN'].src = 'Because each site keeps a different reorder level for each item of stock, so it depends on the site as well as the stock.'; }],
+    // the PROSE-DESIGN text echoes a model answer, so it is read from the private src (D2)
+    ['lesson hands over more than half', 'PROSE-DESIGN', (L) => { L['PROSE-DESIGN'].src = require(path.join(SRC, 'judge/g1-controls.json')).proseDesignHandover; }],
   ];
   for (const [want, name, mutate] of CONTROLS) {
     checks++;
