@@ -83,11 +83,7 @@ function mustCost(t) {
   return v;
 }
 // must-cost exemptions: only where the CCEA mark scheme itself gives no mark for the thing removed (never invent marks CCEA does not give)
-const EXEMPT = {
-  '2016-1:CREATE name wrong': 'the 2016 Q1 scheme gives no mark for the table name',
-  '2016-2:FROM table wrong': 'the 2016 Q2 scheme has no FROM mark; its marks are the fields, the join and the WHERE values',
-  '2019-c:ORDER BY removed': 'the 2019 (c) scheme gives its mark for GROUP BY or ORDER BY, and the model keeps GROUP BY',
-};
+const EXEMPT = require(path.join(SRC, 'judge/exempt.json')); // the reasons quote the schemes, so they stay private (D2)
 const sqlModels = [];
 M.ids.filter((id) => M.parts[id].type === 'sql').forEach((id) => sqlModels.push([id, M.parts[id], model(id)]));
 Object.keys(twinModels).forEach((id) => sqlModels.push([id, T.twins[id], twinModels[id]]));

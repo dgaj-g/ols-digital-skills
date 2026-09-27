@@ -94,3 +94,4 @@ D89 · The encrypted deploy bundle is fetched by commit sha, never by branch nam
 D90 · The web app's execute-as and access come from the manifest (USER_ACCESSING, DOMAIN), so the deploy dialog opened already set and was checked, not changed.
 D91 · G3 reads the class and papers that G5 sets up in the dev store, so the gate order is G5 then G3. A store reset between them empties every G3 page.
 D92 · Sit walks drive the live site only in the foreground Chrome tab. The browser tool's clicks do not reach the Apps Script frame in a background tab, so walk 1 was void.
+- D93 (27 Sep 2026): the pre-merge leak check also reads gate tools' comments and reason strings, not only file names; anything that says what a scheme gives marks for lives in the private src.

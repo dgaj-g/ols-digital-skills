@@ -193,3 +193,8 @@ Fix: the point accepts DATE, DATETIME, DATETIME2 and SMALLDATETIME. Controls: DA
 - Fault: on the live site, opening the pupil link as the owner made Classes read "U6-SSD · 1 pupil" with no pupils in the class.
 - Fix: the count leaves out the viewer's own record, as the CSV already does (D57). Shipped in version 2.
 - Gate: dev harness (teacher alone = 0 pupils; one pupil = 1); live Classes row after version 2 read "U6-SSD · 0 pupils" with the owner's record present — passed 27 Sep 2026 11:17.
+
+## F60 — the judge gate's exemption notes quoted three mark schemes in the public repo
+- Fault: tools/g1-judge.js carried the reasons for its three must-cost exemptions, and the reasons described what those mark schemes give marks for (D2 keeps schemes private).
+- Fix: the list moved to the private src (judge/exempt.json); the tool reads it from there. Nothing served changed, so no redeploy.
+- Gate: G1 PASS 12190 checks; control (empty list) turns G1 FAIL with 3 failures.
