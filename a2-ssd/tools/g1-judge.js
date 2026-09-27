@@ -10,6 +10,8 @@
  * 5. No mark point's label or hint promises punctuation or syntax.
  * 6. The answer space: every reader control (gates/answerspace/answers-N.json, enumerated per mark point) agrees with the
  *    engine, or is settled by a recorded ruling in adjudicated.json. One disagreement fails the gate.
+ * 7. Every wrong-kind line has one article, the right one (F24).
+ * 8. No practice question writes the table its cluster's lesson builds (F6); every lesson a cluster names exists.
  * The answers live in the private src (D2): A2SSD_SRC points at it. The detail report goes there too, never into the repo. */
 const path = require('path');
 const fs = require('fs');
@@ -130,6 +132,35 @@ for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) {
     checks += +(l.match(/(\d+) controls/) || [0, 0])[1];
     const d = +(l.match(/disagree (\d+)/) || [0, 1])[1], b = +(l.match(/broken (\d+)/) || [0, 1])[1];
     if (d || b) fail('answer space disagrees', l.split(':')[0], l);
+  }
+}
+
+// 7. wrong-kind lines read as English (F24): "asks for a CREATE TABLE; this is an UPDATE" — one article, the right one
+{
+  const other = { select: 'UPDATE STOCK SET x = 1', create: 'SELECT a FROM b', insert: 'SELECT a FROM b', update: 'SELECT a FROM b', alter: 'SELECT a FROM b' };
+  for (const [parts, ids] of [[M.parts, M.ids], [T.twins, T.ids]]) ids.forEach((id) => {
+    const part = parts[id]; if (part.type !== 'sql' || !other[part.kind]) return;
+    checks++;
+    const v = J.judge(part, other[part.kind]); const n = v.kindNote || '';
+    const bad = !n || /\b(a|an) (a|an)\b/i.test(n) || [...n.matchAll(/\b(a|an) ([A-Z]\w*)/g)].some((m) => (m[1] === 'an') !== /^[AEIOU]/.test(m[2]));
+    if (bad) fail('wrong-kind line', id, n || '(no line)');
+  });
+}
+
+// 8. no practice question re-serves its lesson's worked table (F6), and every lesson a cluster names exists
+{
+  const C = require(path.join(SRC, 'content/clusters.json'));
+  const L = require(path.join(SRC, 'content/lessons.json'));
+  const target = (sql) => { const m = /\b(?:create\s+table|insert\s+into|update|alter\s+table)\s+\[?(\w+)/i.exec(sql || ''); return m ? m[1].toLowerCase() : null; };
+  const lessonTable = (name) => { const l = L[name]; if (!l) return null; const w = (l.steps || []).find((s) => s.whole) || {}; return target(w.sql); };
+  for (const [cname, c] of Object.entries(C.clusters)) {
+    const lessons = new Set([c.lesson, ...c.parts.map((p) => C.lessonFor[p]).filter(Boolean)]);
+    for (const ln of lessons) {
+      checks++;
+      if (!L[ln]) { fail('lesson missing', cname, ln); continue; }
+      const lt = lessonTable(ln); if (!lt) continue;
+      c.twins.forEach((tid) => { checks++; const tt = target(twinModels[tid]); if (tt && tt === lt && !/^select/i.test(twinModels[tid].trim())) fail('practice question re-serves the lesson table', tid, ln + ' builds ' + lt.toUpperCase()); });
+    }
   }
 }
 

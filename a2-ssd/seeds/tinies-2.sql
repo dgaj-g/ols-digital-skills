@@ -2,11 +2,14 @@
 -- Re-order list: four Tinies 1 items at or below their reorder level (one exactly at it); traps: low items at Tinies 2.
 -- Last calendar month: supplier 12 ordered 130 units and supplier 10 110; traps: supplier 14 exactly 100, supplier 15 80,
 -- supplier 17 150 two months ago, supplier 12 again this month. OrderNo 46 is the latest, so the next order is 47.
+-- Glue sticks (G0021) and hand soap (H0033) have never been ordered. Orders 41, 44, 45 and 46 are not yet delivered
+-- (supplier 12 has two). Suppliers 17 and 19 average 4 days from order to delivery; the rest 3 or fewer.
+-- Supplier 12 placed 5 orders in the last six months; no other supplier more than 2. OrderDate defaults to today.
 PRAGMA foreign_keys = ON;
 CREATE TABLE SUPPLIER (SupplierID INTEGER PRIMARY KEY, SupplierName TEXT COLLATE NOCASE, SupplierTel TEXT COLLATE NOCASE, SupplierEmail TEXT COLLATE NOCASE);
 CREATE TABLE CRECHE (CrecheID INTEGER PRIMARY KEY, CrecheName TEXT COLLATE NOCASE, CrecheLocation TEXT COLLATE NOCASE);
 CREATE TABLE STOCK (StockID TEXT COLLATE NOCASE PRIMARY KEY, StockDesc TEXT COLLATE NOCASE, UnitCost REAL, ReorderLevel INTEGER, QtyInStock INTEGER, SupplierID INTEGER REFERENCES SUPPLIER, CrecheID INTEGER REFERENCES CRECHE);
-CREATE TABLE STOCKORDER (OrderNo INTEGER PRIMARY KEY AUTOINCREMENT, OrderDate DATE, DateDelivered DATE, SupplierID INTEGER REFERENCES SUPPLIER, CrecheID INTEGER REFERENCES CRECHE);
+CREATE TABLE STOCKORDER (OrderNo INTEGER PRIMARY KEY AUTOINCREMENT, OrderDate DATE DEFAULT (date('now')), DateDelivered DATE, SupplierID INTEGER REFERENCES SUPPLIER, CrecheID INTEGER REFERENCES CRECHE);
 CREATE TABLE ORDERLINE (OrderNo INTEGER REFERENCES STOCKORDER, StockID TEXT COLLATE NOCASE REFERENCES STOCK, QtyOrdered INTEGER, PRIMARY KEY (OrderNo, StockID));
 INSERT INTO SUPPLIER VALUES
  (10,'Mourne Baby Foods','028 4176 2210','orders@mournebaby.example'),
@@ -32,7 +35,9 @@ INSERT INTO STOCK VALUES
  ('S0117','Snack boxes',4.80,8,14,15,2),
  ('F0188','Formula milk',9.75,5,9,10,2),
  ('K0045','Kitchen roll',6.30,6,2,14,2),
- ('P0310','Poster paint',7.40,4,9,17,2);
+ ('P0310','Poster paint',7.40,4,9,17,2),
+ ('G0021','Glue sticks',0.95,6,10,17,1),
+ ('H0033','Hand soap',2.60,5,7,14,2);
 INSERT INTO STOCKORDER (OrderNo, OrderDate, DateDelivered, SupplierID, CrecheID) VALUES
  (31,date('now','start of month','-4 months','+3 days'),date('now','start of month','-4 months','+6 days'),12,1),
  (32,date('now','start of month','-4 months','+10 days'),date('now','start of month','-4 months','+14 days'),19,1),
@@ -44,9 +49,9 @@ INSERT INTO STOCKORDER (OrderNo, OrderDate, DateDelivered, SupplierID, CrecheID)
  (38,date('now','start of month','-1 month','+6 days'),date('now','start of month','-1 month','+9 days'),12,2),
  (39,date('now','start of month','-1 month','+9 days'),date('now','start of month','-1 month','+12 days'),10,1),
  (40,date('now','start of month','-1 month','+12 days'),date('now','start of month','-1 month','+14 days'),15,2),
- (41,date('now','start of month','-1 month','+16 days'),date('now','start of month','-1 month','+19 days'),12,1),
+ (41,date('now','start of month','-1 month','+16 days'),NULL,12,1),
  (42,date('now','start of month','-1 month','+19 days'),date('now','start of month','-1 month','+22 days'),14,2),
- (43,date('now','start of month','-1 month','+22 days'),date('now','start of month','-1 month','+25 days'),19,1),
+ (43,date('now','start of month','-1 month','+22 days'),date('now','start of month','-1 month','+26 days'),19,1),
  (44,date('now','start of month','-1 month','+25 days'),NULL,17,2),
  (45,date('now','start of month'),NULL,12,1),
  (46,date('now'),NULL,11,1);

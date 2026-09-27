@@ -30,3 +30,9 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 - Answer space settled: six reader sets, 3,135 controls, 0 disagreements; 40 recorded rulings in gates/answerspace/adjudicated.json (private). G1 step 6 runs it; control (adjudications removed) turns G1 FAIL.
 - controls 543 GREEN (EX block pins each engine change); G1 PASS 4793 checks. F18–F23, D23–D26 logged.
 - Next: content — quick checks, lessons, twins, {today}, strings.json, cold reads; then pack-content, server, client, G3–G5, deploy.
+
+## Checkpoint 7 — 27 Sep 2026
+- 18 design-window practice questions written (src/content/twins-fable.json) + judges for all 34 (twinpoints.js); model per twin (twinmodels.js); controls 676 GREEN (every SQL twin: model full, wrong field, missing clause, wrong number; cloze/rows/prose).
+- Punctuation fixes F24–F28; D27–D33. Booklet mark lists now come from the judge's labels.
+- clusters.json written; G1 step 7 (wrong-kind line) + step 8 (lesson exists; no practice question re-serves its lesson's table). G1 FAILS 9 on purpose until the lessons exist: CREATE-RULES, ALTER, UPDATE, LEFT-NULL, AGGREGATES, CLOZE, PROSE missing; INSERT lesson on STOCKORDER.
+- Next: INSERT lesson → SESSIONBOOKING; write the seven lessons; quick checks for every part; {today}; strike re-mark; strings.json; cold reads; pack-content; server; client; G3–G6; deploy.
