@@ -43,3 +43,7 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 - G1 step 10 = lesson gate (tools/g1-lessons.js): stale-build check, every grid on ten dates, every step statement runs, marks sum, checks name real exam fields, highlights real, no unfilled token, detector (SQL + cloze blank-by-blank + written), leads; ten planted-fault controls all caught. G1 PASS 12190 checks; G2 PASS 488.
 - F42–F50, D34–D53 logged. Commit 858a256.
 - Next: strings.json + cold reads; client (from prototype; twin queue, strike re-mark, grids, cloze/prose/rows UIs, answer:'text', field answer as list, lessonFor); pack-content.js; Code.gs.template; G3–G6; deploy (claude-in-chrome, ?authuser=1); PR; README; SIT_REPORT.
+
+## 27 Sep 2026 — deployed
+- Version 1 live (build f309a5fa51-d2d1d70f). G3 52/52, G4 pass, G5 35/35 re-run on the final build. Deploy branch deleted. DEPLOY_LOG.md and README.md written.
+- Waiting on: the owner's Google permission click on first open, then the live smoke and the sit report.

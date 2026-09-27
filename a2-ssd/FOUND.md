@@ -188,3 +188,8 @@ Fix: the point accepts DATE, DATETIME, DATETIME2 and SMALLDATETIME. Controls: DA
 - Fault: the Live pupil column showed the first name only; two Aoifes in one class could not be told apart.
 - Fix: a shared first name adds the account name (the part before @) in small grey type.
 - Gate: G3 staff probe; G5 A13 Live.
+
+## F59 — the class count included the teacher who opened the class link
+- Fault: on the live site, opening the pupil link as the owner made Classes read "U6-SSD · 1 pupil" with no pupils in the class.
+- Fix: pending, to go out with the sit-report fixes in one version. The count leaves out the viewer's own record, as the CSV already does (D57).
+- Gate: live smoke, 27 Sep 2026.

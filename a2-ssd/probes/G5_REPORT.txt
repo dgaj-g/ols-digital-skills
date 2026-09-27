@@ -1,5 +1,5 @@
 G5 PASS — 35 checks, 0 failures
-PASS A1 first name within 4 s — 1619 ms incl. load
+PASS A1 first name within 4 s — 1873 ms incl. load
 PASS A1 blank name shows the type-once box
 PASS A1 typed name used
 PASS A1 wrong domain shows the guard line — This site is for Our Lady’s pupils and staff signed in with a C2k account.

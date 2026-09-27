@@ -88,3 +88,7 @@ D83 · How did it go? asks about at most five skill groups, taken from the paper
 D84 · The door choice and the lesson's progress are kept per pupil per part in her own user storage (with a local copy), so they follow her to another machine.
 D85 · The last verdict for each part is kept in the browser so a returning pupil sees her marks at once; the server's record is still what counts.
 D86 · Staff Live cells show the first total for the parts marked so far, with "n of m parts" while a paper is unfinished; the drawer loads attempts only when asked.
+D87 · No cold-read checklist existed for this platform, so each packet carries its own COLD_READ_CHECKLIST.md (closed questions: plain words, one action per line, shows what it asks).
+D88 · Gate screenshots (probes/*.png) are gitignored; the text reports are committed so the repo stays small.
+D89 · The encrypted deploy bundle is fetched by commit sha, never by branch name (the raw CDN served a stale copy by branch); the throwaway branch was deleted after the deploy.
+D90 · The web app's execute-as and access come from the manifest (USER_ACCESSING, DOMAIN), so the deploy dialog opened already set and was checked, not changed.
