@@ -1,4 +1,4 @@
-G4 scripted sit on the dev deployment · 2026-09-27 17:31 BST
+G4 scripted sit on the dev deployment · 2026-09-27 17:18 BST (last pupil call 17:18:37 on the Apps Script Executions page)
 URL: https://script.google.com/a/macros/c2ken.net/s/AKfycbzgJEZBoed1zoW0Ks2l0QBOrmsDZb3C4IaB808EVf1G/dev?class=11a-dt&sit=1
 Account: the owner (school account), class "11A DT", Chrome foreground tab, 1200x785 viewport
 Lines read off #sitReport (platform/sit.js):
