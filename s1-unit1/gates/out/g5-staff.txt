@@ -1,4 +1,4 @@
-G5 staff page · 2026-09-27T16:01:20.712Z
+G5 staff page · 2026-09-27T17:06:23.158Z
 PASS records made (class, pupil stage 1 7/34, card)
 PASS door: passcode box, no tabs; build token on the page
 PASS wrong passcode refused: "Passcode not recognised." and no tabs

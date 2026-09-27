@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-09-27T15:57:05.858Z
+G2 render coverage + sit on the harness · 2026-09-27T17:06:20.135Z
 PASS class made
 PASS sit run PASS (7 s)
 PASS no console errors or failed requests
@@ -8,4 +8,12 @@ PASS MARKS# hash matches node
 INFO round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 29 sit checks passed
 PASS CONTROL wide cards: sit reports layout failures
 PASS CONTROL thrown error: the gate sees it
-GREEN · 8 pass · 0 fail
+PASS PHONE 390x844 · sit run PASS (7 s)
+PASS PHONE 390x844 · no console errors or failed requests
+PASS PHONE 390x844 · page marks = judge marks on all 82 questions
+PASS PHONE 390x844 · total line
+PASS PHONE 390x844 · MARKS# hash matches node
+INFO PHONE 390x844 · round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 29 sit checks passed
+PASS CONTROL phone with the desktop columns: sit reports layout failures
+PASS CONTROL phone with the chosen-words line hidden: sit reports list text cut off
+GREEN · 15 pass · 0 fail

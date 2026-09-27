@@ -1,6 +1,6 @@
 # Sit report: S1 Unit 1 Revision, Digital Data (27 Sep 2026)
 
-Where it ran: the live test deployment, signed in with the owner's school account, class 11A DT, Chrome at 1200×785 (G4). It also ran on the harness at 1280×800 (G2). One scripted pupil answered all 82 questions with a mix of right and wrong answers, flagged 11 of them, then moved into a round 2 opened by the teacher. The full line-by-line record is in g4-sit.txt.
+Where it ran: the live test deployment, signed in with the owner's school account, class 11A DT, Chrome at 1200×785 (G4). It also ran on the harness at 1280×800 and, from version 2, at phone size 390×844 (G2). One scripted pupil answered all 82 questions with a mix of right and wrong answers, flagged 11 of them, then moved into a round 2 opened by the teacher. The full line-by-line record is in g4-sit.txt.
 
 ## What a pupil sees
 1. They open the class link. The page shows "Signing you in with your school account…". Their first name comes from the school account. The name box appears only if Google does not supply it, and Continue waits for a typed name.
@@ -23,7 +23,8 @@ Where it ran: the live test deployment, signed in with the owner's school accoun
 - **Writing first.** The writing box locks after "I've written my answer", so a pupil cannot go back and edit it. This is by design (ruling 13.10, from the prototype look).
 
 ## Checked, no stall found
-- Layout was checked on all 82 questions, before and after Check: no text wider than its box, no card that scrolls, and drop-down text shown in full.
+- Layout was checked on all 82 questions, before and after Check, on a desktop window (1280×800) and on a phone (390×844, from version 2): no text wider than its box, no card that scrolls, no page that scrolls sideways, and drop-down text shown in full. On a phone a long drop-down choice is repeated in full on the line under the list.
+- On a phone the page is one column: the table or picture comes above the question, and the stage rows stack. The staff tracker table scrolls sideways inside its card on a phone (staff use only).
 - Live marks equal the judge's marks on all 82 questions (hash a6eb5c62, 35 of 126).
 - A repeat Check keeps the first mark.
 - Round 2 opens with a new question order and keeps round 1.

@@ -93,7 +93,7 @@ var App = (function () {
       if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
       else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
       else { status = S.notStarted; cls = ""; btn = S.start; }
-      return '<div class="row"><div class="st">Stage ' + st + ' · ' + h(stage(st).title) + '<small>' + t.n + ' questions · ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
+      return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' · ' + h(stage(st).title) + '<small>' + t.n + ' questions · ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
     var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; [1, 2, 3, 4].forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' · ' + m + ' of ' + TOT() + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
     var body = el('<div><h1>Digital Data</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
@@ -108,7 +108,9 @@ var App = (function () {
     [1, 2, 3, 4].forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
   }
   // ---- question ----
-  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar"><div class="t">' + fmt(S.stagebar, { s: st, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%"></i></div></div>'; }
+  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
+  // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
+  function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
   function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
   function tiles(options, n, lead, partIdx) { return '<div class="lead">' + lead + '</div><div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
   function leadFor(n) { return n === 1 ? S.pick1 : n === 2 ? S.pick2 : S.pick3; }
@@ -130,7 +132,7 @@ var App = (function () {
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
     else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
     else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
-    else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">→</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select> <span class="mk"></span></span></div>'; }).join("") + '</div>';
+    else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">→</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select><span class="said"></span> <span class="mk"></span></span></div>'; }).join("") + '</div>';
     else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
     else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text" maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
@@ -159,7 +161,7 @@ var App = (function () {
       grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(nn === 2 ? S.only2 : S.only3); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
     });
     body.querySelectorAll(".ch").forEach(function (ch) { var k = +ch.dataset.k; ch.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { if (ch.classList.contains("locked")) return; ans.choices[k] = b.dataset.t; ch.querySelectorAll(".tog").forEach(function (x) { x.classList.toggle("on", x === b); }); refresh(); }; }); });
-    body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
+    body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { said(body); if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
     function reveal(skipped) { var w = document.getElementById("wtext"); w.readOnly = true; if (!skipped) document.getElementById("wnote").textContent = S.writeKept; document.getElementById("wdone").style.display = "none"; document.getElementById("skipW").style.display = "none"; document.getElementById("parts").style.display = ""; ans.skipped = !!skipped; ans.revealed = true; refresh(); }
     wire("wdone", function () { reveal(false); });
     wire("skipW", function () { reveal(true); });
@@ -206,7 +208,7 @@ var App = (function () {
       body.querySelectorAll(".opts").forEach(function (grp) { var part = grp.dataset.part === "" ? null : +grp.dataset.part, picks = (part == null ? a.picks : a.parts[part].picks) || []; grp.querySelectorAll(".opt").forEach(function (o) { if (picks.indexOf(o.dataset.t) !== -1) o.classList.add("on"); }); });
       if (a.text != null && document.getElementById("wtext")) { document.getElementById("wtext").value = a.text; document.getElementById("wtext").readOnly = true; document.getElementById("wdone").style.display = "none"; document.getElementById("skipW").style.display = "none"; document.getElementById("parts").style.display = ""; }
       if (a.texts) body.querySelectorAll("input[data-k]").forEach(function (x, k) { x.value = a.texts[k] || ""; });
-      if (a.map) body.querySelectorAll("select[data-k]").forEach(function (x, k) { x.value = a.map[k] || ""; });
+      if (a.map) { body.querySelectorAll("select[data-k]").forEach(function (x, k) { x.value = a.map[k] || ""; }); said(body); }
       if (a.fills) body.querySelectorAll("[data-k]").forEach(function (x, k) { x.value = a.fills[k] || ""; });
       body.querySelectorAll(".ch").forEach(function (ch, k) { ch.querySelectorAll(".tog").forEach(function (b) { b.classList.toggle("on", b.dataset.t === (a.choices || [])[k]); }); });
       show(stored.r, a);
@@ -252,14 +254,14 @@ var App = (function () {
   }
   function summary(n) {
     CUR = { screen: "summary", n: n };
-    var R = RS(n), m = 0, rows = [1, 2, 3, 4].map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b></div>'; }).join("");
+    var R = RS(n), m = 0, rows = [1, 2, 3, 4].map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r" data-hue="' + st + '"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b><div class="bar"><i style="--p:' + Math.round(100 * t.m / t.x) + '%"></i></div></div>'; }).join("");
     var flagged = []; [1, 2, 3, 4].forEach(function (st) {
       var D = CACHE[n + "|" + st], f = R.s[st].f.slice();
       if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
       f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' · Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' · Stage ' + st + '</span>') + '</div>'); });
     });
     var tot = TOT();
-    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · Digital Data</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · Digital Data</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
     shell(crumbHome(), body); wire("cHome", home); wire("back", home);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
@@ -276,6 +278,6 @@ var App = (function () {
   }
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
-    reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary };
+    reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
   return { boot: boot, t: T };
 })();

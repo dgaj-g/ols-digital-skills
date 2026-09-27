@@ -30,7 +30,10 @@ var Sit = (function () {
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 > x.clientWidth) bad.push("list text cut off: " + x.value.slice(0, 30));
+      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 <= x.clientWidth) return;
+      var said = x.parentNode.querySelector(".said"); // on a phone the chosen words may show whole in the line under the list instead
+      if (said && said.clientWidth && said.textContent === x.options[x.selectedIndex].text && said.scrollWidth <= said.clientWidth + 1) return;
+      bad.push("list text cut off: " + x.value.slice(0, 30));
     });
     if (document.documentElement.scrollWidth > window.innerWidth + 1) bad.push("page scrolls sideways");
     if (document.documentElement.scrollHeight > window.innerHeight + 1) bad.push("the frame scrolls");

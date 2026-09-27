@@ -63,7 +63,12 @@ const STAFF = JSON.parse(fs.readFileSync(STAFF_JSON, 'utf8'));
 const scriptNames = ['strings.js', 'sitpolicy.js', 'app.js', 'staff.js', 'sit.js'];
 const pageReady = fs.existsSync(path.join(PLATFORM, 'index.html'));
 const index = pageReady ? need(path.join(PLATFORM, 'index.html')) : '';
-const style = pageReady ? need(path.join(PLATFORM, 'style.css')) : '';
+// fonts: each url("fonts/<file>.woff2") in style.css becomes a data URI, so the served page loads no outside file
+const fontFiles = [];
+const style = pageReady ? need(path.join(PLATFORM, 'style.css')).replace(/url\("fonts\/([\w.-]+\.woff2)"\)/g, (_, f) => {
+  const b = fs.readFileSync(path.join(PLATFORM, 'fonts', f)); fontFiles.push(f + ' ' + (b.length / 1024).toFixed(1) + ' KB');
+  return 'url(data:font/woff2;base64,' + b.toString('base64') + ')';
+}) : '';
 const scripts = pageReady ? scriptNames.map((n) => [n, need(path.join(PLATFORM, n))]) : [];
 const pageHash = sha(style + index + scripts.map((s) => s[1]).join('\n')).slice(0, 8);
 
@@ -120,5 +125,6 @@ if (closes !== frags.length) { console.error('Index.html: ' + closes + ' </scrip
 const leak = ['BANK_DIGITAL_DATA', 'markTyped', 'keys:', '"keys"', 'dis:', STAFF.hash, STAFF.salt].find((t) => out.indexOf(t) !== -1);
 if (leak) { console.error('Index.html: leak guard tripped on ' + JSON.stringify(leak.slice(0, 12))); process.exit(1); }
 fs.writeFileSync(path.join(SERVER, 'Index.html'), out);
+if (fontFiles.length) console.log('fonts      ' + fontFiles.join(', ') + ' (inlined)');
 console.log('Index.html ' + (out.length / 1024).toFixed(1) + ' KB, ' + closes + ' script blocks -> s1-unit1/server/Index.html');
 console.log('build ' + BUILD + ' · ground-truth token ' + TOKEN);
