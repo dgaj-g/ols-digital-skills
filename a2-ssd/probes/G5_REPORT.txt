@@ -1,0 +1,40 @@
+G5 PASS — 35 checks, 0 failures
+PASS A1 first name within 4 s — 1624 ms incl. load
+PASS A1 blank name shows the type-once box
+PASS A1 typed name used
+PASS A1 wrong domain shows the guard line — This site is for Our Lady’s pupils and staff signed in with a C2k account.
+PASS A2 three tiles, SQL a button, others not focusable
+PASS A2 greeting uses first name — Hello, Aoife.
+PASS A3 locked paper shows the locked line and is not a link — ["Summer 2026 — Tinies\nYour teacher opens "]
+PASS A3 open papers are links
+PASS A4 every part ask shown verbatim
+PASS A4 no evaluation button before the parts are done
+PASS A6 first visit shows both doors
+PASS A5 figure in view on every beat at 1280×800 —  rail=0
+PASS A5 figure in view on every beat at 1024×768 —  rail=4
+PASS A8 SSMS colours per span
+PASS A8 Tab inserts four spaces and keeps focus
+PASS A10 Run button present on a SELECT part
+PASS A14 draft typed then abandoned is restored — "SELEC * FRM nowhere"
+PASS A14 browser Back returns to the paper page
+PASS A14 breadcrumb returns up a level
+PASS A9 first stands; second raises attempts only — {"d":1,"f":0,"b":0,"a":2}
+PASS A9 showing the examiner answer sets seen — {"d":1,"f":0,"b":0,"a":2,"s":1}
+PASS A9 controls.js GREEN — CONTROLS: 726 checks, 0 failures — GREEN
+PASS A7 checklist labels equal the mark-point labels — 4 vs 4
+PASS A6 door stored with the first mark — {"d":1,"f":0,"b":0,"a":1}
+PASS A11 a practice question is served — twin,part,ok,v
+PASS A12 send disabled until every row chosen; 60-char cap — {"dis":true,"max":60,"segs":6}
+PASS A12 enabled once chosen; comment capped at 60 with a live count — {"dis":false,"len":60,"cnt":"The box is full — 0 characters left."}
+PASS A12 second visit shows the review card, not the form — How did it go?
+
+Summer 2015 — Deeper Dives
+
+Already sent. Your answers went to y
+PASS A13 non-owner staff meets the passcode gate
+PASS A13 wrong passcode refused
+PASS A13 owner admitted by email, classes listed
+PASS A13 CSV has a header and one row per pupil-part — class,pupil,email,paper,part,door,first,best,proved,attempts,seen,flag,eval,comment,lastSeen
+PASS A13 Live lists pupils with records
+PASS A13 class create and delete
+PASS ALL no page errors

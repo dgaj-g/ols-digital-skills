@@ -27,6 +27,7 @@ Each activity folder is self-contained: no build step, no framework, pure HTML +
 | Department | Activity | Topic |
 |---|---|---|
 | Chemistry (GCSE) | [Mendeleev's Cards](chemistry/mendeleev-cards/) | Drag-drop sorting of 22 elements into the Mendeleev periodic-table grid |
+| Computing (A2 SSD) | [A2 SSD Platform](a2-ssd/) | SQL past papers 2015–2026 with lessons, marking and a staff view |
 
 ## Adding a new activity
 
