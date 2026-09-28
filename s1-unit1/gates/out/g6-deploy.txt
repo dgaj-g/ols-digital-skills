@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-09-28T19:21:57.123Z
+G6 deploy log + token · 2026-09-28T19:43:42.986Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 28 Sep 2026 20:20 | 4 | bce5082dd8-801b0f7f | v4 S1 Unit 1 bce5082dd8-801b0f7f | Classes tab like A2 (Copy class link and Delete class buttons, no long link),
+INFO newest row: | 28 Sep 2026 20:42 | 5 | fc41c997cb-a423e1de | v5 S1 Unit 1 fc41c997cb-a423e1de | Named teachers get in with their school account (private list); every teacher
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
