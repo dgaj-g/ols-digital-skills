@@ -19,6 +19,12 @@ var App = (function () {
   function paintSaving() { var x = document.getElementById("saving"); if (x) x.style.display = saving > 0 && savingT === "shown" ? "block" : "none"; }
   function savingOn() { saving++; if (saving === 1) { savingT = setTimeout(function () { if (saving > 0) { savingT = "shown"; paintSaving(); } }, 300); } }
   function savingOff() { saving = Math.max(0, saving - 1); if (!saving) { if (savingT && savingT !== "shown") clearTimeout(savingT); savingT = null; paintSaving(); } }
+  // v4 (his ruling 28 Sep 2026): the button or link that started a server call pulses until the answer is back, so a click never looks ignored
+  var TAP = null, BUSY = null, PEND = 0;
+  document.addEventListener("click", function (ev) { var b = ev.target && ev.target.closest ? ev.target.closest("button, .tab, .link") : null; TAP = b; setTimeout(function () { if (TAP === b) TAP = null; }, 0); }, true);
+  function unbusy() { if (BUSY) { BUSY.classList.remove("busy"); BUSY.removeAttribute("aria-busy"); BUSY = null; } }
+  function busyOn() { PEND++; if (TAP && TAP !== BUSY) { unbusy(); BUSY = TAP; BUSY.classList.add("busy"); BUSY.setAttribute("aria-busy", "true"); } } // the latest click always pulses
+  function busyOff() { PEND = Math.max(0, PEND - 1); if (!PEND) setTimeout(function () { if (!PEND) unbusy(); }, 60); }
   function gs(fn, req) { return new Promise(function (res, rej) { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](req); }); }
   function call(fn, req, opt) { // resolves with {ok:true,…}; rejects with e.code; a lost connection waits for Try again
     req = Object.assign({ cls: BOOT.cls, topic: TOPIC }, req || {}); opt = opt || {};
@@ -26,15 +32,17 @@ var App = (function () {
       function failed() { if (opt.quiet) { var e = new Error("offline"); e.code = "offline"; return reject(e); } SYS.msg = "offline"; SYS.retry = attempt; paintSys(); }
       function attempt() {
         if (opt.save) savingOn();
+        if (!opt.quiet) busyOn();
         gs(fn, req).then(function (r) {
           if (opt.save) savingOff();
+          if (!opt.quiet) busyOff();
           if (r && r.ok === false && (r.error === "server" || r.error === "busy")) return failed();
           if (SYS.msg === "offline") { SYS.msg = ""; paintSys(); }
           if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); }
             if (code === "locked") { if (fn === "apiMark") SYS.msg = "locked"; reboot().then(home).catch(function () {}); } // the teacher locked the topic: back home, where the tile says so
             var e = new Error(code); e.code = code; return reject(e); }
           resolve(r);
-        }, function () { if (opt.save) savingOff(); failed(); });
+        }, function () { if (opt.save) savingOff(); if (!opt.quiet) busyOff(); failed(); });
       }
       attempt();
     });
@@ -277,7 +285,8 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; r.needName ? nameScreen() : home();
-      if (!pingT) pingT = setInterval(function () { call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000);
+      if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
+        pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }

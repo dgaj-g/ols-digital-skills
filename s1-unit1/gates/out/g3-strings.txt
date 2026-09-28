@@ -1,4 +1,4 @@
-G3 strings · 2026-09-27T17:35:15.309Z
+G3 strings · 2026-09-28T19:39:45.326Z
 PASS strings.js = prototype S, TOPICS, SPEC §3 / A2 lines; every used key exists
 INFO 64 pupil strings · 9 topics · 31 guard/system/staff lines
 PASS the served Index.html carries strings.js unchanged

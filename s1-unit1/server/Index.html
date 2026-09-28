@@ -166,7 +166,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
 .tlist{max-width:760px}.tlist .trow{display:grid;grid-template-columns:40px minmax(0,1fr) 90px 84px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.tlist .trow:first-child{border-top:0}
 .trow .tn{font-size:12px;color:var(--mute)}.trow b{color:var(--plum)}.ts{font-size:13px;font-weight:700}.ts.on{color:#2f7d4f}.ts.off{color:var(--ember)}.ts.later{font-weight:400;color:var(--mute)}
 .cls-link{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--berry)}
-.track td .link{font-size:13px}.track small{color:var(--mute)}
+.track td .link{font-size:13px}.track small{color:var(--mute)}.track td.seen{white-space:nowrap}
 .drawer .it{padding:8px 0;border-top:1px solid var(--line);font-size:14px}.drawer .it:first-child{border-top:0}.drawer .it b{color:var(--plum)}.drawer .it .w{white-space:pre-wrap;color:var(--ink);margin-top:3px}
 .pairs select{max-width:100%}.pairs .said{display:none}.pairs.wide .pr{grid-template-columns:minmax(80px,1fr) 24px minmax(0,4fr)}.pairs.wide select{width:100%}.pairs.wide .mk{display:block;margin-top:4px}
 /* ---- smaller screens (his question, 27 Sep 2026): the same page in one column; only the layout changes ---- */
@@ -201,12 +201,34 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .toast{top:96px;max-width:calc(100% - 28px)}
   .saving{right:14px;bottom:14px}
 }
+/* v4 staff: A2 class list, two-press delete, charts, ratings in words, the pupil page (DECISIONS \a7 17) */
+.clist{list-style:none;padding:0;margin:0 0 16px}.clist li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;box-shadow:var(--lift)}.clist li b{margin-right:auto;color:var(--plum)}
+.btn.arm,.btn.ghost.arm{background:var(--bad);color:#fff;border-color:var(--bad)}
+.sc{font-weight:700;white-space:nowrap}.sc.hi{color:var(--ok)}.sc.mid{color:var(--accd)}.sc.lo{color:var(--bad)}
+.rchip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700;margin:2px 4px 2px 0;line-height:1.35}
+.rchip.r1,.hb i.r1,.key i.r1{background:#fbe0dc;color:#8d1d16}.rchip.r2,.hb i.r2,.key i.r2{background:#fde7c8;color:#7a4200}.rchip.r3,.hb i.r3,.key i.r3{background:#dcefd9;color:#1d5e2c}.rchip.r4,.hb i.r4,.key i.r4{background:#bfe3c4;color:#0f4a1f}
+.charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}h3.sh{font-size:15px;color:var(--plum);margin:6px 0 10px}
+.hb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) auto;gap:8px;align-items:center;font-size:13px;margin:0 0 8px}.hb .hl{color:var(--ink)}.hb .hv{color:var(--mute);white-space:nowrap}
+.hb .ht{display:flex;height:16px;background:#f3e7da;border-radius:6px;overflow:hidden}.hb .ht i{display:block;height:100%;font-style:normal;font-size:11px;font-weight:700;text-align:center;line-height:16px}
+.hb .ht i.hi,.cb i.hi{background:linear-gradient(90deg,#2f9a57,#1b7f3b)}.hb .ht i.mid,.cb i.mid{background:linear-gradient(90deg,#f2b544,#e88a3a)}.hb .ht i.lo,.cb i.lo{background:linear-gradient(90deg,#e0574c,#b3261e)}
+.key{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:6px}.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.cols4{display:flex;gap:10px;align-items:flex-end;height:150px}.cb{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;font-size:12px}.cb .cv{font-weight:700;color:var(--plum)}.cb .ct{flex:1;width:70%;display:flex;align-items:flex-end;border-bottom:2px solid var(--line)}.cb .ct i{display:block;width:100%;border-radius:6px 6px 0 0}.cb .cl{color:var(--mute);margin-top:4px;white-space:nowrap}
+.tscroll{overflow-x:auto}.ev{padding:9px 0;border-top:1px solid var(--line);font-size:14px}.said h3+.ev{border-top:0}.ev>b{margin-right:8px;color:var(--plum)}.ev .nt{margin-top:3px;color:var(--bad);font-size:13px}.ev .nt.ok{color:var(--ok)}.ev .nq{margin-top:3px;font-style:italic}
+.phead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.phead h2{margin:0 auto 0 0}.big{font-size:16px;margin:8px 0 12px}.big small{color:var(--mute);font-size:13px;margin-left:6px}
+ul.oc{margin:6px 0 0;padding:0;list-style:none;font-size:13px}ul.oc li{padding:2px 0 2px 22px;position:relative}ul.oc li.y::before{content:"\2713 ";position:absolute;left:4px;color:var(--ok);font-weight:700}ul.oc li.n::before{content:"\2717 ";position:absolute;left:4px;color:var(--bad);font-weight:700}ul.oc li.n{color:var(--mute)}
+table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);font-size:12px;margin:2px 0 4px}.qs tr.fl td{background:#fff3ea}
+/* v4: the control that started a server call pulses until the answer is back; under reduced motion it dims instead */
+.busy{cursor:progress;animation:busy 1.1s ease-in-out infinite}
+@keyframes busy{0%,100%{box-shadow:0 0 0 0 rgba(143,45,86,.5);opacity:1}50%{box-shadow:0 0 0 7px rgba(143,45,86,0);opacity:.7}}
+@media (max-width:900px){.charts{grid-template-columns:1fr}}
+@media (max-width:640px){.hb{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.hb .hv{grid-column:1/-1;margin-top:-4px}.clist li b{flex-basis:100%}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.busy{opacity:.55;outline:2px dashed var(--berry);outline-offset:2px}}
 
 </style>
 </head>
-<body data-build="s1u1-785c4a9f9c-0e1c3ba2">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-785c4a9f9c-0e1c3ba2" };</script>
+<body data-build="s1u1-fc41c997cb-a423e1de">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-fc41c997cb-a423e1de" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -311,6 +333,12 @@ var App = (function () {
   function paintSaving() { var x = document.getElementById("saving"); if (x) x.style.display = saving > 0 && savingT === "shown" ? "block" : "none"; }
   function savingOn() { saving++; if (saving === 1) { savingT = setTimeout(function () { if (saving > 0) { savingT = "shown"; paintSaving(); } }, 300); } }
   function savingOff() { saving = Math.max(0, saving - 1); if (!saving) { if (savingT && savingT !== "shown") clearTimeout(savingT); savingT = null; paintSaving(); } }
+  // v4 (his ruling 28 Sep 2026): the button or link that started a server call pulses until the answer is back, so a click never looks ignored
+  var TAP = null, BUSY = null, PEND = 0;
+  document.addEventListener("click", function (ev) { var b = ev.target && ev.target.closest ? ev.target.closest("button, .tab, .link") : null; TAP = b; setTimeout(function () { if (TAP === b) TAP = null; }, 0); }, true);
+  function unbusy() { if (BUSY) { BUSY.classList.remove("busy"); BUSY.removeAttribute("aria-busy"); BUSY = null; } }
+  function busyOn() { PEND++; if (TAP && TAP !== BUSY) { unbusy(); BUSY = TAP; BUSY.classList.add("busy"); BUSY.setAttribute("aria-busy", "true"); } } // the latest click always pulses
+  function busyOff() { PEND = Math.max(0, PEND - 1); if (!PEND) setTimeout(function () { if (!PEND) unbusy(); }, 60); }
   function gs(fn, req) { return new Promise(function (res, rej) { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](req); }); }
   function call(fn, req, opt) { // resolves with {ok:true,\u2026}; rejects with e.code; a lost connection waits for Try again
     req = Object.assign({ cls: BOOT.cls, topic: TOPIC }, req || {}); opt = opt || {};
@@ -318,15 +346,17 @@ var App = (function () {
       function failed() { if (opt.quiet) { var e = new Error("offline"); e.code = "offline"; return reject(e); } SYS.msg = "offline"; SYS.retry = attempt; paintSys(); }
       function attempt() {
         if (opt.save) savingOn();
+        if (!opt.quiet) busyOn();
         gs(fn, req).then(function (r) {
           if (opt.save) savingOff();
+          if (!opt.quiet) busyOff();
           if (r && r.ok === false && (r.error === "server" || r.error === "busy")) return failed();
           if (SYS.msg === "offline") { SYS.msg = ""; paintSys(); }
           if (!r || r.ok === false) { var code = (r && r.error) || "error"; if (code === "not-signed-in") { SYS.msg = "expired"; paintSys(); }
             if (code === "locked") { if (fn === "apiMark") SYS.msg = "locked"; reboot().then(home).catch(function () {}); } // the teacher locked the topic: back home, where the tile says so
             var e = new Error(code); e.code = code; return reject(e); }
           resolve(r);
-        }, function () { if (opt.save) savingOff(); failed(); });
+        }, function () { if (opt.save) savingOff(); if (!opt.quiet) busyOff(); failed(); });
       }
       attempt();
     });
@@ -569,7 +599,8 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; r.needName ? nameScreen() : home();
-      if (!pingT) pingT = setInterval(function () { call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000);
+      if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
+        pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }
@@ -582,22 +613,35 @@ var App = (function () {
 </script>
 <script>
 /* staff.js \u2014 the staff page at the bare link (no class). Door (passcode, or let in by email), then five tabs:
- * Classes (make a class, its link), Topics (open or lock each topic for the class; DECISIONS \u00a716), Rounds (open the next round for the class or one pupil), Tracker (the prototype's
- * table, pupil x stage, rating, flags, notes, flagged questions, topic card, last seen) and Export (CSV). */
+ * Classes (A2's list: copy the link, delete a class; v4), Topics (open or lock each topic for the class; DECISIONS \u00a716), Rounds (open the next round for the class
+ * or one pupil), Tracker (v4, DECISIONS \u00a717: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
+ * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false;
-  var W = { none: "No classes yet. Add one below.", pupils: "Pupils", link: "Class link", round: "Round", cls: "Class",
+  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false;
+  var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
     cleared: "Your own record in this class is cleared.", opened: "Round {n} is open.", pupil: "Pupil", topic: "Topic", flagged: "Flagged",
-    seen: "Last seen", close: "Close", notDone: "{a} of {n} done", unsure: "unsure: ", rating: "rating " };
+    seen: "Last used", today: "Today", yesterday: "Yesterday", daysAgo: "{n} days ago", lastUsed: "Last used: {when}", close: "Close", notDone: "{a} of {n} done",
+    classLine: "{name} \u00b7 {n} pupils \u00b7 created {date}", classLine1: "{name} \u00b7 1 pupil \u00b7 created {date}", by: "made by {who}", add: "Add class",
+    copy: "Copy class link", del: "Delete class", delConfirm: "Delete {name} and every record in it? Press again to confirm.",
+    glance: "Class at a glance", avgStage: "Average score in each stage", rated: "How pupils rated each stage", spread: "Spread of total scores",
+    pupilsN: "{n} pupils", pupils1: "1 pupil", nobody: "No answers yet", noCards: "No cards saved yet",
+    soFar: "Scores count the questions a pupil has answered so far. Click a name to see every answer.", total: "Total",
+    said: "What pupils said", saidNote: "Every card a pupil saved at the end of a stage and of the topic, in their own words.",
+    whole: "The whole topic", notTicked: "Did not tick: ", allTicked: "Ticked all of these", note: "Note: ", stillUnsure: "Still unsure about: ",
+    back: "Back to the tracker", marksPc: "{m} of {x} marks \u00b7 {p}%", answered: "{a} of {n} questions answered",
+    theirCard: "Their card", notSaved: "Not saved yet", practice: "Practice question", question: "Question", answer: "Their answer", marks: "Marks",
+    notYet: "Not answered yet: {n} questions.", skipped: "Skipped the writing", wrote: "Wrote: ", flaggedQ: "Flagged: I still don't get this one",
+    archived: "This round's answers are in the archive Sheet; the marks and cards are below." };
+  var RC = ["r1", "r2", "r3", "r4"]; // rating colours, 1 (couldn't do most) to 4 (could explain)
   function h(s) { return T.h(s); }
   function fail(e) { var c = e && e.code; if (c === "not-staff") return door(""); if (c === "unknown-class") { CLS = ""; TAB = 0; return tabs(); } }
   function page(body) { CUR(); T.bare(S.staff, body); }
   function CUR() { try { T.cur().screen = "staff"; } catch (e) {} }
   function start(boot, t) { T = t; check(""); }
   function check(pass) {
-    return T.call("apiStaff", { op: "check", pass: pass }).then(function (r) { if (r.admitted) return tabs(); door(pass ? X.badPass : ""); },
+    return T.call("apiStaff", { op: "check", pass: pass }).then(function (r) { if (r.admitted) { OWN = !!r.owner; return tabs(); } door(pass ? X.badPass : ""); },
       function (e) { if (e.code === "bad-pass") return door(X.badPass); page(T.el('<div class="guard"><div class="card"><p>' + h(X.domain) + '</p></div></div>')); });
   }
   function door(msg) {
@@ -620,12 +664,30 @@ var Staff = (function () {
     }).catch(fail);
   }
   function link(slug) { return T.boot.base + "?class=" + slug; }
-  // ---- Classes ----
+  // ---- Classes (A2's list, v4): one line per class, Copy class link, Delete class with a second press ----
+  function dateOf(iso) { return iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : ""; }
+  function twoPress(btn, confirmText, act) { // a destructive button asks once, in its own words, then acts on the second press (A2)
+    var on = false, t = null, orig = btn.textContent;
+    btn.onclick = function () {
+      if (!on) { on = true; btn.textContent = confirmText; btn.classList.add("arm"); t = setTimeout(function () { on = false; btn.textContent = orig; btn.classList.remove("arm"); }, 5000); return; }
+      clearTimeout(t); btn.disabled = true; act(function () { btn.disabled = false; on = false; btn.textContent = orig; btn.classList.remove("arm"); });
+    };
+  }
   function classes() {
-    var rows = CLASSES.map(function (c) { return '<tr><td><b>' + h(c.name) + '</b></td><td><span class="cls-link" data-copy="' + h(link(c.slug)) + '">' + h(link(c.slug)) + '</span></td><td>' + c.pupils + '</td><td>' + c.round + '</td></tr>'; }).join("");
-    var body = T.el('<div>' + bar() + '<div class="card">' + (CLASSES.length ? '<table class="list"><tr><th>' + W.cls + '</th><th>' + W.link + '</th><th>' + W.pupils + '</th><th>' + W.round + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.none + '</p>') + '</div><div class="card"><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
+    var list = CLASSES.length ? '<ul class="clist">' + CLASSES.map(function (c) {
+      return '<li data-s="' + h(c.slug) + '"><b>' + h(T.fmt(c.pupils === 1 ? W.classLine1 : W.classLine, { name: c.name, n: c.pupils, date: dateOf(c.made) }) + (c.by ? ' \u00b7 ' + T.fmt(W.by, { who: c.by }) : '')) + '</b>' +
+        '<button class="btn sm ghost" data-copy>' + W.copy + '</button>' + (c.mine || OWN ? '<button class="btn sm ghost" data-del>' + W.del + '</button>' : '') + '</li>';
+    }).join("") + '</ul>' : '<p class="sub">' + W.none + '</p>';
+    var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
     page(body); wireCommon(body);
-    body.querySelectorAll("[data-copy]").forEach(function (x) { x.onclick = function () { var s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents(x); s.removeAllRanges(); s.addRange(rg); try { navigator.clipboard.writeText(x.dataset.copy).then(function () { T.toast(W.copied); }, function () {}); } catch (e) {} }; });
+    body.querySelectorAll("[data-copy]").forEach(function (b) { b.onclick = function () {
+      var url = link(b.closest("li").dataset.s), done = function () { T.toast(W.copied); };
+      try { navigator.clipboard.writeText(url).then(done, function () { window.prompt(W.copy, url); }); } catch (e) { window.prompt(W.copy, url); }
+    }; });
+    body.querySelectorAll("[data-del]").forEach(function (b) {
+      var slug = b.closest("li").dataset.s, c = CLASSES.filter(function (x) { return x.slug === slug; })[0];
+      twoPress(b, T.fmt(W.delConfirm, { name: c.name }), function (reset) { T.call("apiStaff", { op: "delete", cls: slug }).then(function () { if (CLS === slug) CLS = ""; tabs(); }, function (e) { reset(); fail(e); }); });
+    });
     var cn = document.getElementById("cn"), make = function () {
       var v = cn.value.trim(), err = document.getElementById("err"), b = document.getElementById("make"); if (!v) return; b.disabled = true;
       T.call("apiStaff", { op: "create", name: v }).then(function (r) { CLS = r.slug; tabs(); }, function (e) { b.disabled = false; err.textContent = e.code === "taken" ? W.taken : e.code === "bad-name" ? W.rule : ""; });
@@ -663,34 +725,96 @@ var Staff = (function () {
       });
     }).catch(fail);
   }
-  // ---- Tracker ----
+  // ---- Tracker (v4, DECISIONS \u00a717) ----
   function roundPick(max) { var o = ""; for (var k = 1; k <= max; k++) o += '<option' + (k === ROUND ? ' selected' : '') + '>' + k + '</option>'; return '<label for="rp">' + W.round + '</label><select id="rp">' + o + '</select>'; }
-  function seen(iso) { if (!iso) return '\u2014'; var d = new Date(iso); return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function seen(iso, flat) { // Today 14:05 \u00b7 Yesterday 09:12 \u00b7 Mon 22 Sept 14:05 (6 days ago)
+    if (!iso) return '\u2014'; var d = new Date(iso), now = new Date(), day = function (x) { return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
+    var n = Math.round((day(now) - day(d)) / 864e5), hm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    if (n <= 0) return W.today + ' ' + hm; if (n === 1) return W.yesterday + ' ' + hm;
+    var s = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }).replace(",", "") + ' ' + hm, ago = T.fmt(W.daysAgo, { n: n });
+    return flat ? s + ' (' + ago + ')' : s + '<br><small>' + ago + '</small>'; }
+  function pc(m, x) { return x ? Math.round(100 * m / x) : 0; }
+  function band(p) { return p >= 75 ? "hi" : p >= 50 ? "mid" : "lo"; }
+  function score(m, x) { if (!x) return '<span class="sc">' + m + '</span>'; var p = pc(m, x); return '<span class="sc ' + band(p) + '">' + m + '/' + x + ' \u00b7 ' + p + '%</span>'; } // every score has its percentage
+  function rateChip(r) { return r ? '<span class="rchip ' + RC[r - 1] + '">' + h(S.rates[r - 1]) + '</span>' : ''; }
+  function stTitle(st) { return st.n + ' \u00b7 ' + st.title; }
+  function tot(p, stages) { var m = 0, ax = 0, a = 0, n = 0; stages.forEach(function (st) { var c = p.s[st.n]; m += c.m; ax += c.ax; a += c.a; n += c.n; }); return { m: m, ax: ax, a: a, n: n }; }
+  function hbar(label, p, tail) { return '<div class="hb"><span class="hl">' + h(label) + '</span><span class="ht">' + (p == null ? '' : '<i class="' + band(p) + '" style="width:' + Math.max(p, 1) + '%"></i>') + '</span><span class="hv">' + tail + '</span></div>'; } // p null = nothing to draw yet: an empty track, not a red sliver
+  function graphs(r) {
+    var avg = r.stages.map(function (st) {
+      var ps = r.rows.filter(function (p) { return p.s[st.n].a && p.s[st.n].ax; }).map(function (p) { return pc(p.s[st.n].m, p.s[st.n].ax); });
+      return hbar(stTitle(st), ps.length ? Math.round(ps.reduce(function (a, b) { return a + b; }, 0) / ps.length) : null, ps.length ? Math.round(ps.reduce(function (a, b) { return a + b; }, 0) / ps.length) + '% \u00b7 ' + (ps.length === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: ps.length })) : W.nobody);
+    }).join("");
+    var rate = r.stages.map(function (st) {
+      var k = [0, 0, 0, 0], n = 0; r.rows.forEach(function (p) { var e = p.s[st.n].e; if (e && e.rating) { k[e.rating - 1]++; n++; } });
+      return '<div class="hb"><span class="hl">' + h(stTitle(st)) + '</span><span class="ht stack">' + (n ? k.map(function (c, i) { return c ? '<i class="' + RC[i] + '" style="width:' + (100 * c / n) + '%" title="' + h(S.rates[i]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + (n ? (n === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: n })) : W.noCards) + '</span></div>';
+    }).join("") + '<div class="key">' + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+    var bands = [0, 0, 0, 0], names = ["0\u201324%", "25\u201349%", "50\u201374%", "75\u2013100%"], any = 0;
+    r.rows.forEach(function (p) { var t = tot(p, r.stages); if (t.ax) { var q = pc(t.m, t.ax); bands[q >= 75 ? 3 : q >= 50 ? 2 : q >= 25 ? 1 : 0]++; any++; } });
+    var top = Math.max(1, Math.max.apply(null, bands));
+    var cols = '<div class="cols4">' + bands.map(function (c, i) { return '<div class="cb"><span class="cv">' + c + '</span><span class="ct"><i class="' + ["lo", "lo", "mid", "hi"][i] + '" style="height:' + (c ? Math.max(6, 100 * c / top) : 0) + '%"></i></span><span class="cl">' + names[i] + '</span></div>'; }).join("") + '</div>';
+    return '<div class="card"><h2>' + W.glance + '</h2><div class="charts"><div><h3 class="sh">' + W.avgStage + '</h3>' + avg + '</div><div><h3 class="sh">' + W.rated + '</h3>' + rate + '</div><div><h3 class="sh">' + W.spread + '</h3>' + (any ? cols : '<p class="hint">' + W.nobody + '</p>') + '</div></div></div>';
+  }
+  function ticksLine(e, st) {
+    var miss = st.outcomes.filter(function (_, k) { return !e.ticks[k]; });
+    return miss.length ? '<div class="nt">' + W.notTicked + h(miss.join("; ")) + '</div>' : '<div class="nt ok">' + W.allTicked + '</div>';
+  }
+  function saidCard(r) { // every evaluation, stage by stage, then the topic card, in the pupils' words
+    var title = function (n) { return r.stages[n - 1].title; };
+    var parts = r.stages.map(function (st) {
+      var ps = r.rows.filter(function (p) { return p.s[st.n].e; });
+      return '<h3 class="sh">' + h(stTitle(st)) + '</h3>' + (ps.length ? ps.map(function (p) { var e = p.s[st.n].e;
+        return '<div class="ev"><b>' + h(p.name) + '</b>' + rateChip(e.rating) + p.s[st.n].flags.map(function (f) { return '<span class="chip">' + h(f) + '</span>'; }).join("") + ticksLine(e, st) + (e.stageNote ? '<div class="nq">' + W.note + '\u201c' + h(e.stageNote) + '\u201d</div>' : '') + '</div>'; }).join("") : '<p class="hint">' + W.noCards + '</p>');
+    }).join("");
+    var ts = r.rows.filter(function (p) { return p.E; });
+    parts += '<h3 class="sh">' + W.whole + '</h3>' + (ts.length ? ts.map(function (p) { var E = p.E;
+      return '<div class="ev"><b>' + h(p.name) + '</b>' + rateChip(E.rating) + '<div class="nt' + (E.unsure.length && E.unsure[0] ? '' : ' ok') + '">' + (E.unsure.length && E.unsure[0] ? W.stillUnsure + h(E.unsure.map(function (u) { return u + ' \u00b7 ' + title(u); }).join("; ")) : h(S.fine)) + '</div>' + (E.note ? '<div class="nq">' + W.note + '\u201c' + h(E.note) + '\u201d</div>' : '') + '</div>'; }).join("") : '<p class="hint">' + W.noCards + '</p>');
+    return '<div class="card said"><h2>' + W.said + '</h2><p class="hint">' + W.saidNote + '</p>' + parts + '</div>';
+  }
   function tracker() {
     T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
       ROUND = r.round;
-      var title = function (n) { return r.stages[n - 1].title; };
       var rows = r.rows.map(function (p, k) {
+        var t = tot(p, r.stages), fl = [];
+        r.stages.forEach(function (st) { fl = fl.concat(p.s[st.n].fl); });
         var cells = r.stages.map(function (st) {
           var c = p.s[st.n], e = c.e;
           if (!c.a && !e) return '<td>\u2014</td>';
-          return '<td>' + c.m + '/' + c.x + (c.a < c.n ? '<br><small>' + T.fmt(W.notDone, { a: c.a, n: c.n }) + '</small>' : '') + (e ? '<br><span class="chip blue">' + W.rating + e.rating + '</span>' : '') + (e && e.stageNote ? '<br><small>' + h(e.stageNote) + '</small>' : '') + c.flags.map(function (f) { return '<br><span class="chip">' + h(f) + '</span>'; }).join("") + '</td>';
+          return '<td>' + score(c.m, c.ax) + (c.a < c.n ? '<br><small>' + T.fmt(W.notDone, { a: c.a, n: c.n }) + '</small>' : '') + (e ? '<br>' + rateChip(e.rating) : '') + c.flags.map(function (f) { return '<br><span class="chip">' + h(f) + '</span>'; }).join("") + '</td>';
         }).join("");
-        var E = p.E, fl = [];
-        r.stages.forEach(function (st) { fl = fl.concat(p.s[st.n].fl); });
-        return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td>' + cells + '<td>' + (E ? W.rating + E.rating + (E.unsure.length ? '<br>' + W.unsure + E.unsure.map(function (u) { return h(u ? title(u) : S.fine); }).join(", ") : '') + (E.note ? '<br><small>' + h(E.note) + '</small>' : '') : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td><td>' + seen(p.seen) + '</td></tr>';
+        return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td><td class="seen">' + seen(p.seen) + '</td><td>' + (t.a ? score(t.m, t.ax) + (t.a < t.n ? '<br><small>' + T.fmt(W.notDone, { a: t.a, n: t.n }) + '</small>' : '') : '\u2014') + '</td>' + cells + '<td>' + (p.E ? rateChip(p.E.rating) : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td></tr>';
       }).join("");
-      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 Digital Data \u00b7 ' + S.round + r.round + '</h1><div class="card">' + (r.rows.length ? '<table class="track"><tr><th>' + W.pupil + '</th>' + r.stages.map(function (st) { return '<th>' + h(st.title) + '</th>'; }).join("") + '<th>' + W.topic + '</th><th>' + W.flagged + '</th><th>' + W.seen + '</th></tr>' + rows + '</table>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><div id="drawer"></div></div>');
+      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 Digital Data \u00b7 ' + S.round + r.round + '</h1>' +
+        (r.rows.length ? graphs(r) : '') + '<div class="card">' + (r.rows.length ? '<p class="hint">' + W.soFar + '</p><div class="tscroll"><table class="track"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th><th>' + W.total + '</th>' + r.stages.map(function (st) { return '<th>' + h(stTitle(st)) + '</th>'; }).join("") + '<th>' + W.whole + '</th><th>' + W.flagged + '</th></tr>' + rows + '</table></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div>' +
+        (r.rows.length ? saidCard(r) : '') + '</div>');
       page(body); wireCommon(body);
       var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; tracker(); };
-      body.querySelectorAll("[data-p]").forEach(function (x) { x.onclick = function () { drawer(r.rows[+x.dataset.p]); }; });
+      body.querySelectorAll("[data-p]").forEach(function (x) { x.onclick = function () { pupilPage(r.rows[+x.dataset.p]); }; });
     }).catch(fail);
   }
-  function drawer(p) {
+  // ---- One pupil (v4): totals and a chart, the topic card, then each stage with its card and every answered question in words ----
+  function pupilPage(p) {
     T.call("apiStaff", { op: "pupil", cls: CLS, email: p.email, round: ROUND }).then(function (r) {
-      var d = document.getElementById("drawer"); if (!d) return;
-      d.innerHTML = '<div class="card drawer"><h2>' + h(r.name) + ' \u00b7 ' + S.round + r.round + '</h2>' + r.items.map(function (it) { return '<div class="it"><b>Stage ' + it.st + ' \u00b7 ' + h(it.src) + '</b> \u00b7 ' + it.m + '/' + it.max + (it.f ? ' <span class="chip">' + S.flag + '</span>' : '') + (it.text ? '<div class="w">' + h(it.text) + '</div>' : '') + '</div>'; }).join("") + '<div class="actions"><button class="btn sm ghost" id="shut">' + W.close + '</button></div></div>';
-      T.wire("shut", function () { d.innerHTML = ""; }); d.scrollIntoView({ block: "start" });
+      var row = r.row, t = tot(row, r.stages), E = row.E, title = function (n) { return r.stages[n - 1].title; };
+      var head = '<div class="card"><div class="phead"><h2>' + h(r.name) + ' \u00b7 ' + S.round + r.round + '</h2><button class="btn sm ghost" id="back">' + W.back + '</button></div>' +
+        '<p class="sub seen">' + T.fmt(W.lastUsed, { when: seen(row.seen, true) }) + '</p>' +
+        '<p class="big">' + W.total + ': ' + (t.ax ? score(t.m, t.ax) : '\u2014') + ' <small>' + T.fmt(W.answered, { a: t.a, n: t.n }) + '</small></p>' +
+        r.stages.map(function (st) { var c = row.s[st.n]; return hbar(stTitle(st), c.a && c.ax ? pc(c.m, c.ax) : null, c.a ? pc(c.m, c.ax) + '% \u00b7 ' + T.fmt(W.notDone, { a: c.a, n: c.n }) : W.nobody); }).join("") +
+        '<h3 class="sh">' + W.whole + '</h3>' + (E ? '<div class="ev">' + rateChip(E.rating) + '<div class="nt' + (E.unsure.length && E.unsure[0] ? '' : ' ok') + '">' + (E.unsure.length && E.unsure[0] ? W.stillUnsure + h(E.unsure.map(function (u) { return u + ' \u00b7 ' + title(u); }).join("; ")) : h(S.fine)) + '</div>' + (E.note ? '<div class="nq">' + W.note + '\u201c' + h(E.note) + '\u201d</div>' : '') + '</div>' : '<p class="hint">' + W.notSaved + '</p>') +
+        (r.archived ? '<p class="hint">' + W.archived + '</p>' : '') + '</div>';
+      var stages = r.stages.map(function (st) {
+        var c = row.s[st.n], e = c.e, its = r.items.filter(function (it) { return it.st === st.n; });
+        var card = '<div class="ev"><b>' + W.theirCard + '</b>' + (e ? rateChip(e.rating) + c.flags.map(function (f) { return '<span class="chip">' + h(f) + '</span>'; }).join("") + '<ul class="oc">' + st.outcomes.map(function (o, k) { return '<li class="' + (e.ticks[k] ? 'y' : 'n') + '">' + h(o) + '</li>'; }).join("") + '</ul>' + (e.stageNote ? '<div class="nq">' + W.note + '\u201c' + h(e.stageNote) + '\u201d</div>' : '') : ' <span class="hint">' + W.notSaved + '</span>') + '</div>';
+        var tbl = its.length ? '<div class="tscroll"><table class="track qs"><tr><th>' + W.question + '</th><th>' + W.answer + '</th><th>' + W.marks + '</th></tr>' + its.map(function (it) {
+          return '<tr' + (it.f ? ' class="fl"' : '') + '><td><b>' + it.i + ' \u00b7 ' + h(it.src === 'new' ? W.practice : it.src) + '</b>' + (it.q ? '<div class="qq">' + h(it.q) + '</div>' : '') + (it.f ? '<span class="chip">' + W.flaggedQ + '</span>' : '') + '</td><td>' + (it.skipped ? '<div class="qq">' + W.skipped + '</div>' : it.text ? '<div class="qq">' + W.wrote + '\u201c' + h(it.text) + '\u201d</div>' : '') + h(it.ans) + '</td><td>' + score(it.m, it.max) + '</td></tr>';
+        }).join("") + '</table></div>' : '';
+        var left = c.n - its.length;
+        return '<div class="card"><h2>' + h(stTitle(st)) + '</h2><p class="big">' + (c.a ? score(c.m, c.ax) + ' <small>' + T.fmt(W.notDone, { a: c.a, n: c.n }) + '</small>' : W.nobody) + '</p>' + card + tbl + (left > 0 && !r.archived ? '<p class="hint">' + T.fmt(W.notYet, { n: left }) + '</p>' : '') + '</div>';
+      }).join("");
+      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + '</div>' + head + stages + '</div>');
+      page(body); wireCommon(body);
+      T.wire("back", tracker);
+      window.scrollTo(0, 0); var w = document.getElementById("work"); if (w) w.scrollTop = 0;
     }).catch(fail);
   }
   // ---- Export ----

@@ -1,11 +1,15 @@
-G5 staff page · 2026-09-27T17:35:15.280Z
+G5 staff page · 2026-09-28T19:40:05.218Z
 PASS a new class starts with Digital Data locked
 PASS records made (class, pupil stage 1 7/34, card)
 PASS door: passcode box, no tabs; build token on the body, no build footer
 PASS with ?build in the link the footer shows the token
 PASS wrong passcode refused: "Passcode not recognised." and no tabs
 PASS right passcode opens the five tabs
-PASS Classes shows 11A DT and its link ?class=11a-dt
+PASS Classes: a passcode teacher who has made no class sees "No classes yet. Add one below." and not the owner's 11A DT
+PASS a passcode teacher asking for the owner's tracker gets "unknown-class"
+PASS Classes: one line "11A DT · 4 pupils · created <date>" with Copy class link; the long link is not printed
+PASS Classes: the owner's own class has Delete and no "made by"
+PASS Classes: Copy class link puts …?class=11a-dt on the clipboard and says "Class link copied."
 PASS Classes: says a new class starts locked
 PASS Classes: nothing wider than its box
 PASS Topics: nine rows; Digital Data "Open" with a Lock button; the rest "Comes later"
@@ -18,14 +22,35 @@ PASS pupil: a stage of the locked topic is refused
 PASS Topics: Open pressed -> the pupil tile has Open again
 PASS Rounds: "Digital Data · Round 1 open" and the two open buttons
 PASS Rounds: nothing wider than its box
-PASS Tracker: the real pupil shows 7/34, rating 2 and the note
+PASS Tracker: the second column is "Last used"
+PASS Tracker: Aoife, who used it just now, reads "Today hh:mm"
+PASS Tracker: High, last used 6 days ago, reads "<day> <date> <month> hh:mm 6 days ago"
+PASS Tracker: a pupil never seen reads "—"
+PASS Tracker: the real pupil shows 7/34 · 21% and her rating in words, never "rating 2"
+PASS Tracker: "What pupils said" shows Aoife's card: her rating words, the ticks she left, her note "bit rate"
+PASS Tracker: the graphs card has its three charts (average by stage, ratings, spread) with bars drawn
+PASS Tracker: the table fits a desktop window without scrolling sideways
 PASS Tracker: "Thinks it's fine, isn't" fires on the High record
 PASS Tracker: "Doing fine, doesn't think so" fires on the Low record
 PASS Tracker: the control record (rating 3 at 50%, 2 at 74%, 4 at 100%, 1 at 0%) shows no flag
 PASS Tracker: nothing wider than its box
+PASS Pupil page: "Aoife · Round 1", Back to the tracker, her total with its %, "Their card" with her rating words
+PASS Pupil page: one row per answered stage 1 question (27), each with the question, her answer and "m/x · p%"
+PASS Pupil page: "Last used: Today hh:mm" under the heading
+PASS Pupil page: stages not started say "Not answered yet: n questions."
+PASS Pupil page: nothing wider than its box
+PASS Pupil page: Back to the tracker returns to the tracker
+PASS Pulse: during a slow call the Rounds tab pulses (class busy, animation "busy", aria-busy)
+PASS Pulse: gone once the call lands
 PASS Export: the CSV has exactly SPEC §3.8 columns, with a BOM
 PASS Export: one row per pupil per stage (4 pupils x 4 stages)
 PASS no console errors or failed requests
 PASS CONTROL the control record made flag-worthy (rating 4 at 20%) shows the flag
+PASS CONTROL Delete: a single press deletes nothing and asks "Delete Del Test and every record in it? Press again to confirm."
+PASS Delete: the second press removes Del Test (its link now says unknown class); 11A DT keeps its 4 pupils
+PASS named teacher: straight in with no passcode box, and sees no classes yet
+PASS named teacher: makes 12B DT and sees only it, with its Delete and no "made by"
+PASS owner: sees both classes; 12B DT reads "12B DT · 0 pupils · created <date> · made by Orla"
+PASS CONTROL a teacher not on the named list meets the passcode door
 PASS CONTROL a widened tracker is caught by the layout check
-GREEN · 29 pass · 0 fail
+GREEN · 54 pass · 0 fail

@@ -25,6 +25,8 @@ const DEPLOY = path.join(DESIGN, 'deploy');
 const BANK = path.join(DESIGN, 'content', 'bank_digital_data.js');
 const JUDGE = path.join(DESIGN, 'judge', 'judge.js');
 const OWNER_EMAIL = 'dgartland021@c2ken.net';
+const TEACHERS_FILE = path.join(DESIGN, 'TEACHERS.txt'); // private: one school address per line, # starts a comment; never in the repo
+const TEACHERS = fs.existsSync(TEACHERS_FILE) ? fs.readFileSync(TEACHERS_FILE, 'utf8').split('\n').map((l) => l.replace(/#.*/, '').trim().toLowerCase()).filter(Boolean) : [];
 const TITLE = 'OLS Unit 1 Revision';
 
 const need = (p) => { if (!fs.existsSync(p)) { console.error('missing: ' + p); process.exit(1); } return fs.readFileSync(p, 'utf8'); };
@@ -78,7 +80,7 @@ if (!/var BANK_DIGITAL_DATA = /.test(bank)) { console.error('bank file is not BA
 if (!/root\.Judge = API/.test(judge)) { console.error('judge.js lost its UMD root'); process.exit(1); }
 const BUILD = sha(bank + judge + tpl).slice(0, 10) + '-' + pageHash;
 const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).replace("'@@STAFF_SALT@@'", JSON.stringify(STAFF.salt))
-  .replace("'@@STAFF_HASH@@'", JSON.stringify(STAFF.hash)).replace("'@@BUILD@@'", JSON.stringify(BUILD)).replace("'@@TITLE@@'", JSON.stringify(TITLE));
+  .replace("'@@STAFF_HASH@@'", JSON.stringify(STAFF.hash)).replace("'@@BUILD@@'", JSON.stringify(BUILD)).replace("'@@TITLE@@'", JSON.stringify(TITLE)).replace("'@@TEACHERS@@'", JSON.stringify(TEACHERS));
 if (/@@[A-Z_]+@@/.test(filled)) { console.error('Code.gs.template: unfilled placeholder ' + filled.match(/@@[A-Z_]+@@/)[0]); process.exit(1); }
 const code = asciiJs(['/* OLS Unit 1 Revision - Code.gs - build ' + BUILD + ' - PRIVATE: holds the bank and the mark schemes. Never commit. */',
   '/* ---- bank_digital_data.js ---- */\n' + bank.trim(), '/* ---- judge.js ---- */\n' + judge.trim(), filled].join('\n\n'));

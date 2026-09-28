@@ -1,4 +1,4 @@
-G0 server GREEN · 2026-09-27T17:35:19.578Z · build 785c4a9f9c-0e1c3ba2
+G0 server GREEN · 2026-09-28T19:39:48.243Z · build fc41c997cb-a423e1de
 PASS A pack->unpack->judge == judge on 3280 answers across 82 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
@@ -22,7 +22,8 @@ PASS B locked: no stage card is saved (locked)
 PASS B locked: typed writing is still saved as a draft
 PASS B a pupil cannot open a topic
 PASS B a topic not built yet cannot be opened
-PASS B passcode staff open Digital Data
+PASS B control (v5): passcode staff cannot open a topic on a class they did not make
+PASS B the owner opens Digital Data
 PASS B the class list shows it open
 PASS B locked again: the stage refuses again
 PASS B opened again: the stage loads with the writing typed while locked
@@ -66,7 +67,25 @@ PASS B tracker lists every pupil; max round 3
 PASS B flagged questions shown by paper reference
 PASS B CSV columns in order
 PASS B CSV: 4 rows per pupil, ticks "2 of 4" (padded to the outcomes), unsure spelled out
-PASS B pupil drawer: 82 marked items with the writing
+PASS B pupil page: 82 marked items, each with its question and the answer in words, and the writing
+PASS B pupil page: a finished pupil's percentage base is the whole stage; stage outcomes sent
+PASS B pupil page: a matching answer reads "left → right" (5 items; "I don't know" on 2)
 PASS B rounds tab: class round 2, pupil1 on 3
 PASS B classes tab lists the class with its pupils
 PASS B clearMe removes only the caller's record
+PASS B part-done stage: the percentage base is the 3 marks answered so far, not the stage's 34
+PASS B a v3-shaped record opens on the pupil page (cards kept, no answers to list)
+PASS B control: another teacher cannot delete a class they did not make (to them it is not there)
+PASS B Delete class removes the class and its 3 records
+PASS B control: the other class keeps every record, byte for byte (22 keys)
+PASS B a deleted class link says it is not a class
+PASS B named teacher admitted with no passcode
+PASS B control: a teacher not on the list and with no passcode is not admitted
+PASS B named teacher with no class sees no classes (not the owner's 11a-dt)
+PASS B named teacher makes 12B DT
+PASS B named teacher sees only 12B DT, as hers
+PASS B the owner sees 11A DT and 12B DT, "made by Orla" on hers
+PASS B passcode staff who made no class see no classes
+PASS B control: every staff op on the owner's class is refused to the named teacher (10 of 10) and its records are unchanged
+PASS B the owner opens the named teacher's tracker
+PASS B a head of department sees every class
