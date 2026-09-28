@@ -101,6 +101,7 @@ input.txt{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius
 .confirm{margin-top:10px;padding:10px 14px;background:#fff8e1;border:1px solid #f1dc9a;border-radius:8px}
 .marks{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
 .score{font-size:40px;font-weight:700;line-height:1;margin-bottom:10px}.score small{font-size:16px;color:var(--mute);font-weight:400}
+.spell{margin:8px 0;padding:6px 12px;border-left:4px solid var(--gold);background:#fffbea;font-size:14px;border-radius:0 6px 6px 0}
 .pts{list-style:none;padding:0;margin:0}.pts li{padding:6px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:22px 1fr 40px;gap:8px}.pts li .hint,.pts li .note{grid-column:2/4;color:var(--mute);font-size:13px}
 .pts .yes{color:var(--ok);font-weight:700}.pts .no{color:var(--bad);font-weight:700}.pts .m{color:var(--mute);text-align:right}
 .result .scroll{overflow-x:auto}.result table{border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-bottom:10px}.result th{text-align:left;background:var(--tint);padding:3px 6px;border:1px solid var(--line)}.result td{padding:2px 6px;border:1px solid var(--line);white-space:nowrap}
