@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-09-27T17:40:57.922Z
+G6 deploy log + token · 2026-09-28T19:21:57.123Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 27 Sep 2026 18:38 | 3 | 785c4a9f9c-0e1c3ba2 | v3 S1 Unit 1 785c4a9f9c-0e1c3ba2 | build code hidden (only /exec?build shows it) and Topics tab added (open or l
+INFO newest row: | 28 Sep 2026 20:20 | 4 | bce5082dd8-801b0f7f | v4 S1 Unit 1 bce5082dd8-801b0f7f | Classes tab like A2 (Copy class link and Delete class buttons, no long link),
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
