@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 /* G5 — the staff page (SPEC §7, §3.8), driven through the page on the harness at 1280x800.
  * A teacher who is not the script owner opens the staff link (the owner is let in without the door). A wrong passcode is refused and shows no tabs; the right one opens Classes / Topics / Rounds / Tracker / Export; the class link
- * is shown; Topics locks Digital Data (the pupil's tile then says "Not opened yet" and has no Open) and opens it again (DECISIONS §16); the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
- * on a control record; the CSV the Export button downloads has exactly SPEC §3.8's columns; nothing is wider than its box;
+ * is copied by its "Copy class link" button (the long link is not printed, v4) and a class the teacher made is deleted only on a second press (a class
+ * they did not make has no Delete); Topics locks Digital Data (the pupil's tile then says "Not opened yet" and has no Open) and opens it again (DECISIONS §16); the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
+ * on a control record; every score carries its percentage and ratings show in the pupils' words; the graphs card and "What pupils said"
+ * are drawn; a name opens that pupil's page (every answered question with its marks and percentage) and "Back to the tracker" returns;
+ * a slow call pulses the button that started it, and the pulse is gone when it lands (v4); the CSV the Export button downloads has exactly SPEC §3.8's columns; nothing is wider than its box;
  * the build token is on the body but its footer shows only with ?build in the link (his ruling, 27 Sep 2026); no console errors.
  * CONTROLS (must fail): the control record made flag-worthy must show a flag (so silence is real), a stylesheet that
- * widens the tracker must be caught by the layout check, and the locked-tile check run on an open topic must not pass.
+ * widens the tracker (and removes its scroll box) must be caught by the layout check, a single press of Delete must delete nothing, and the locked-tile check run on an open topic must not pass.
  * Run: node s1-unit1/gates/g5-staff.js  (exit 0 = GREEN). Output: gates/out/g5-staff.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
@@ -64,6 +67,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     page.on('console', (c) => { if (c.type() === 'error') errs.push('console: ' + c.text()); });
     page.on('pageerror', (e) => errs.push('pageerror: ' + e.message));
     page.on('response', (r) => { if (r.status() >= 400) errs.push('HTTP ' + r.status() + ' ' + r.url()); });
+    await page.evaluateOnNewDocument(() => { window.__clip = null; try { Object.defineProperty(navigator, 'clipboard', { value: { writeText: (t) => { window.__clip = t; return Promise.resolve(); } } }); } catch (e) {} window.prompt = (a, b) => { window.__clip = b; return null; }; });
     await page.evaluateOnNewDocument(() => { const o = URL.createObjectURL; URL.createObjectURL = (b) => { window.__blob = b; return o.call(URL, b); }; });
     await page.goto(BASE + '/?as=' + encodeURIComponent(TEACHER), { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#pw', { timeout: 15000 });
@@ -80,7 +84,12 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const tabs = await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].map((b) => b.innerText.trim()).join('|'));
     check('right passcode opens the five tabs', tabs === 'Classes|Topics|Rounds|Tracker|Export', tabs);
     const clsText = await page.evaluate(() => document.getElementById('app').innerText);
-    check('Classes shows 11A DT and its link ?class=11a-dt', /11A DT/.test(clsText) && /\?class=11a-dt/.test(clsText), clsText.slice(0, 200));
+    const li = await page.evaluate(() => [...document.querySelectorAll('ul.clist li')].map((l) => ({ s: l.dataset.s, b: l.querySelector('b').innerText, copy: !!l.querySelector('[data-copy]'), del: !!l.querySelector('[data-del]') })));
+    check('Classes: one line "11A DT · 4 pupils · created <date>" with Copy class link; the long link is not printed', li.length === 1 && /^11A DT · 4 pupils · created \d{1,2} \w{3,4} \d{4}$/.test(li[0].b) && li[0].copy && !/\?class=/.test(clsText), JSON.stringify(li) + ' · ' + clsText.slice(0, 200));
+    check('Classes: no Delete on a class this teacher did not make', li.length === 1 && !li[0].del, JSON.stringify(li));
+    await page.click('ul.clist li [data-copy]'); await wait(300);
+    const clip = await page.evaluate(() => ({ c: window.__clip, t: (document.getElementById('toast') || {}).innerText || '' }));
+    check('Classes: Copy class link puts …?class=11a-dt on the clipboard and says "Class link copied."', /^http:\/\/localhost:\d+\/?.*\?class=11a-dt$/.test(clip.c || '') && clip.t.trim() === 'Class link copied.', JSON.stringify(clip));
     check('Classes: says a new class starts locked', clsText.indexOf('A new class starts with its topics locked. Open them on the Topics tab.') !== -1, clsText.slice(-200));
     let lay = await page.evaluate(LAYOUT); check('Classes: nothing wider than its box', lay.length === 0, lay.join(' | '));
     // ---- Topics: lock, see the pupil's tile, open again
@@ -115,12 +124,42 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await clickTab(page, 'Tracker');
     await page.waitForSelector('table.track', { timeout: 10000 });
     let rows = await trackerRows(page); const row = (n) => rows.find((r) => r.name === n) || { text: '' };
-    check('Tracker: the real pupil shows ' + m + '/' + x[0] + ', rating 2 and the note', row('Aoife').text.indexOf(m + '/' + x[0]) !== -1 && /rating 2/.test(row('Aoife').text) && /bit rate/.test(row('Aoife').text), row('Aoife').text.replace(/\s+/g, ' ').slice(0, 200));
+    const pcA = Math.round(100 * m / x[0]), RATE2 = "I got some, but I'm not sure why";
+    check('Tracker: the real pupil shows ' + m + '/' + x[0] + ' · ' + pcA + '% and her rating in words, never "rating 2"', row('Aoife').text.indexOf(m + '/' + x[0] + ' · ' + pcA + '%') !== -1 && row('Aoife').text.indexOf(RATE2) !== -1 && !/rating \d/i.test(row('Aoife').text), row('Aoife').text.replace(/\s+/g, ' ').slice(0, 200));
+    const said = await page.evaluate(() => { const c = document.querySelector('.card.said'); return c ? [...c.querySelectorAll('.ev')].map((e) => e.innerText.replace(/\s+/g, ' ')) : null; });
+    check('Tracker: "What pupils said" shows Aoife\'s card: her rating words, the ticks she left, her note "bit rate"', !!said && said.some((e) => /^Aoife/.test(e) && e.indexOf(RATE2) !== -1 && /Did not tick: |Ticked all of these/.test(e) && /Note: “bit rate”/.test(e)), JSON.stringify(said).slice(0, 400));
+    const gr = await page.evaluate(() => { const c = document.querySelector('.charts'); return c ? { h: [...c.querySelectorAll('h3')].map((x) => x.innerText.trim()), bars: c.querySelectorAll('.hb').length, cols: c.querySelectorAll('.cb').length, text: c.innerText.replace(/\s+/g, ' ') } : null; });
+    check('Tracker: the graphs card has its three charts (average by stage, ratings, spread) with bars drawn', !!gr && gr.h.join('|') === 'Average score in each stage|How pupils rated each stage|Spread of total scores' && gr.bars >= 4 && gr.cols >= 1 && /\d+%/.test(gr.text), JSON.stringify(gr).slice(0, 300));
+    const fits = await page.evaluate(() => { const t = document.querySelector('.tscroll'); return t ? t.scrollWidth <= t.clientWidth + 1 : false; });
+    check('Tracker: the table fits a desktop window without scrolling sideways', fits);
     check('Tracker: "' + HIGH + '" fires on the High record', row('High').text.indexOf(HIGH) !== -1 && row('High').text.indexOf(LOW) === -1, row('High').text.replace(/\s+/g, ' ').slice(0, 200));
     check('Tracker: "' + LOW + '" fires on the Low record', row('Low').text.indexOf(LOW) !== -1 && row('Low').text.indexOf(HIGH) === -1, row('Low').text.replace(/\s+/g, ' ').slice(0, 200));
     check('Tracker: the control record (rating 3 at 50%, 2 at 74%, 4 at 100%, 1 at 0%) shows no flag', row('Control').text && row('Control').text.indexOf(HIGH) === -1 && row('Control').text.indexOf(LOW) === -1, row('Control').text.replace(/\s+/g, ' ').slice(0, 200));
     lay = await page.evaluate(LAYOUT); check('Tracker: nothing wider than its box', lay.length === 0, lay.join(' | '));
     try { await page.screenshot({ path: path.join(OUT, 'g5-tracker.png') }); } catch (e) {}
+    try { await page.evaluate(() => document.querySelector('.card.said').scrollIntoView()); await wait(300); await page.screenshot({ path: path.join(OUT, 'g5-said.png') }); await page.evaluate(() => window.scrollTo(0, 0)); } catch (e) {}
+    // ---- one pupil's page
+    await page.evaluate(() => [...document.querySelectorAll('table.track [data-p]')].find((x) => x.innerText.trim() === 'Aoife').click());
+    await page.waitForSelector('#back', { timeout: 10000 });
+    const pp = await page.evaluate(() => ({ text: document.getElementById('app').innerText, qrows: [...document.querySelectorAll('table.qs tr')].slice(1).map((tr) => [...tr.children].map((td) => td.innerText.replace(/\s+/g, ' ').trim())) }));
+    check('Pupil page: "Aoife · Round 1", Back to the tracker, her total with its %, "Their card" with her rating words', /Aoife · Round 1/.test(pp.text) && /Back to the tracker/.test(pp.text) && pp.text.indexOf('Total: ' + m + '/' + x[0] + ' · ' + pcA + '%') !== -1 && /Their card/.test(pp.text) && pp.text.indexOf(RATE2) !== -1, pp.text.replace(/\s+/g, ' ').slice(0, 300));
+    check('Pupil page: one row per answered stage 1 question (' + nq[0] + '), each with the question, her answer and "m/x · p%"', pp.qrows.length === nq[0] && pp.qrows.every((r) => r.length === 3 && r[0].length > 8 && r[1].length > 0 && /^\d+\/\d+ · \d+%$/.test(r[2])), JSON.stringify(pp.qrows.filter((r) => !(r.length === 3 && /^\d+\/\d+ · \d+%$/.test(r[2]))).slice(0, 3)));
+    check('Pupil page: stages not started say "Not answered yet: n questions."', (pp.text.match(/Not answered yet: \d+ questions\./g) || []).length === 3, (pp.text.match(/Not answered yet[^\n]*/g) || []).join(' | '));
+    lay = await page.evaluate(LAYOUT); check('Pupil page: nothing wider than its box', lay.length === 0, lay.join(' | '));
+    await wait(900); try { // the pupil page shows right answers: its pictures stay in the private folder, never the repo
+      await page.screenshot({ path: path.join(DESIGN, 'gates', 'g5-pupil.png') }); await page.evaluate(() => { const q = document.querySelector('table.qs'); if (q) q.scrollIntoView(); }); await wait(300); await page.screenshot({ path: path.join(DESIGN, 'gates', 'g5-pupil-answers.png') }); } catch (e) {}
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.click('#back'); await page.waitForSelector('table.track:not(.qs)', { timeout: 10000 });
+    check('Pupil page: Back to the tracker returns to the tracker', (await trackerRows(page)).length === 4);
+    // ---- the busy pulse: a slow call pulses the button that started it, and stops when the call lands
+    await page.evaluate(() => { window.__f = window.fetch; window.fetch = (...a) => new Promise((r) => setTimeout(() => r(window.__f(...a)), 1500)); });
+    await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].find((b) => b.innerText.trim() === 'Rounds').click()); await wait(400);
+    const busy = await page.evaluate(() => { const b = document.querySelector('.busy'); return b ? { t: b.innerText.trim(), a: getComputedStyle(b).animationName, aria: b.getAttribute('aria-busy') } : null; });
+    check('Pulse: during a slow call the Rounds tab pulses (class busy, animation "busy", aria-busy)', !!busy && busy.t === 'Rounds' && busy.a === 'busy' && busy.aria === 'true', JSON.stringify(busy));
+    await page.waitForFunction(() => /Digital Data · Round 1 open/.test(document.getElementById('app').innerText), { timeout: 15000 }); await wait(300);
+    const after = await page.evaluate(() => document.querySelectorAll('.busy, [aria-busy]').length);
+    check('Pulse: gone once the call lands', after === 0, after + ' still pulsing');
+    await page.evaluate(() => { window.fetch = window.__f; });
     await clickTab(page, 'Export');
     await page.click('#csv'); await page.waitForFunction('window.__blob', { timeout: 10000 });
     const csv = await page.evaluate(() => window.__blob.text());
@@ -134,7 +173,21 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await clickTab(page, 'Tracker'); await page.waitForSelector('table.track');
     rows = await trackerRows(page);
     check('CONTROL the control record made flag-worthy (rating 4 at 20%) shows the flag', row('Control').text.indexOf(HIGH) !== -1, row('Control').text.replace(/\s+/g, ' ').slice(0, 200));
-    await page.addStyleTag({ content: 'table.track{min-width:1800px}' });
+    // ---- delete a class the teacher made: one press asks, the second deletes; 11A DT is untouched
+    await clickTab(page, 'Classes');
+    await page.type('#cn', 'Del Test'); await page.click('#make');
+    await page.waitForFunction(() => document.querySelector('ul.clist li[data-s="del-test"] [data-del]'), { timeout: 10000 });
+    await api('apiName', { cls: 'del-test', name: 'Dara' }, 'dara@c2ken.net'); await api('apiBoot', { cls: 'del-test' }, 'dara@c2ken.net');
+    await page.click('ul.clist li[data-s="del-test"] [data-del]'); await wait(700);
+    const armed = await page.evaluate(() => { const b = document.querySelector('ul.clist li[data-s="del-test"] [data-del]'); return b ? { t: b.innerText.trim(), arm: b.classList.contains('arm') } : null; });
+    const still = (await api('apiStaff', { op: 'classes' }, TEACHER)).classes.map((c) => c.slug).join(',');
+    check('CONTROL Delete: a single press deletes nothing and asks "Delete Del Test and every record in it? Press again to confirm."', !!armed && armed.arm && armed.t === 'Delete Del Test and every record in it? Press again to confirm.' && /del-test/.test(still), JSON.stringify(armed) + ' · ' + still);
+    await page.click('ul.clist li[data-s="del-test"] [data-del]');
+    await page.waitForFunction(() => !document.querySelector('ul.clist li[data-s="del-test"]'), { timeout: 10000 });
+    const gone = await api('apiBoot', { cls: 'del-test' }, 'dara@c2ken.net'), keep = await api('apiStaff', { op: 'tracker', cls: CLS }, TEACHER);
+    check('Delete: the second press removes Del Test (its link now says unknown class); 11A DT keeps its 4 pupils', !gone.ok && gone.error === 'unknown-class' && keep.ok && keep.rows.length === 4, JSON.stringify(gone).slice(0, 100) + ' · ' + (keep.rows || []).length);
+    await clickTab(page, 'Tracker'); await page.waitForSelector('table.track');
+    await page.addStyleTag({ content: '.tscroll{overflow:visible} table.track{min-width:1800px}' });
     lay = await page.evaluate(LAYOUT);
     check('CONTROL a widened tracker is caught by the layout check', lay.length > 0);
   } catch (e) { check('run', false, e.stack || e.message); }

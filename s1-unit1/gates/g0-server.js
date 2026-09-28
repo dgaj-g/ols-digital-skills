@@ -5,6 +5,9 @@
  *      (incomplete refused, repeat returns the stored result), cards (rating needed, first save wins, order enforced),
  *      rounds (one pupil only; closed round refused; round 1 intact), flags on the tracker (two fire, a control stays
  *      silent), CSV columns, drafts, clearMe, and the storage cost of one pupil-round.
+ *   v4 (DECISIONS §17): the pupil page lists every answered question in words; the tracker's percentage base (ax) is the
+ *      marks of the questions answered so far; a record written before v4 still loads; Delete class refuses anyone but
+ *      the class's maker or the owner, and removes that class only (controls: the other class's records are untouched).
  * The bank and judge are read from the private DESIGN folder at run time; nothing private is written into this repo.
  * Output: gates/out/g0-server.txt. Exit 1 on any failure. */
 'use strict';
@@ -289,7 +292,10 @@ async function flows() {
   if (!(p1rows.length === 4 && p1rows[0].indexOf(tk) !== -1)) lines.push('  csv: ' + p1rows.join(' // ').slice(0, 600));
   ok(p1rows.length === 4 && p1rows[0].indexOf(tk) !== -1 && /No, I'm fine with all of it/.test(p1rows[0]), 'B CSV: 4 rows per pupil, ticks "2 of ' + BANK.stages[0].outcomes.length + '" (padded to the outcomes), unsure spelled out');
   r = await api('apiStaff', { op: 'pupil', cls, email: 'pupil1@c2ken.net', round: 1 }, OWNER);
-  ok(r.ok && r.items.length === 82 && r.items.some((it) => it.text && it.words > 0), 'B pupil drawer: 82 marked items with the writing');
+  ok(r.ok && r.items.length === 82 && r.items.some((it) => it.text) && r.items.every((it) => it.ans && typeof it.ans === 'string' && it.q && it.i >= 1 && it.max >= 1), 'B pupil page: 82 marked items, each with its question and the answer in words, and the writing');
+  ok(r.ok && r.row && [1, 2, 3, 4].every((k) => r.row.s[k].ax === x[k - 1] && r.row.s[k].a === BANK.stages[k - 1].questions.length) && r.stages.every((st, k) => st.outcomes.length === BANK.stages[k].outcomes.length), 'B pupil page: a finished pupil\'s percentage base is the whole stage; stage outcomes sent');
+  const typed = r.items.filter((it) => /I don't know/.test(it.ans)).length, pairs = r.items.filter((it) => / → /.test(it.ans)).length;
+  ok(pairs > 0, 'B pupil page: a matching answer reads "left → right" (' + pairs + ' items; "I don\'t know" on ' + typed + ')');
   r = await api('apiStaff', { op: 'rounds', cls }, OWNER);
   ok(r.ok && r.round === 2 && r.pupils.find((p) => p.email === 'pupil1@c2ken.net').round === 3, 'B rounds tab: class round 2, pupil1 on 3');
   r = await api('apiStaff', { op: 'classes' }, OWNER);
@@ -299,5 +305,32 @@ async function flows() {
   r = await api('apiStaff', { op: 'clearMe', cls }, OWNER);
   const st2 = await post('/__store', {});
   ok(r.ok && !Object.keys(st2.script).some((k) => k.indexOf(':' + OWNER) !== -1) && Object.keys(st2.script).some((k) => k.indexOf(':pupil1@c2ken.net') !== -1), 'B clearMe removes only the caller\'s record');
+  // v4: part-done percentage base
+  await api('apiBoot', { cls }, 'part@c2ken.net'); await playStage('part@c2ken.net', cls, 2, 1, { limit: 3 });
+  const st3 = await post('/__store', {}), sh = JSON.parse(st3.script['q:' + cls + ':part@c2ken.net:2:1'] || '{}');
+  const want = Object.keys(sh).reduce((t, id) => t + allQ.find((y) => y.q.id === id).q.marks, 0);
+  r = await api('apiStaff', { op: 'tracker', cls, round: 2 }, OWNER);
+  const pr = r.rows.find((w) => w.email === 'part@c2ken.net');
+  ok(pr && pr.s[1].a === 3 && pr.s[1].ax === want && want > 0 && want < x[0] && pr.s[2].ax === 0, 'B part-done stage: the percentage base is the ' + want + ' marks answered so far, not the stage\'s ' + x[0]);
+  // v4: a record written before v4 (no new fields anywhere) still loads on the tracker and the pupil page
+  r = await api('apiStaff', { op: 'pupil', cls, email: 'control@c2ken.net', round: 2 }, OWNER);
+  ok(r.ok && r.items.length === 0 && r.row && r.row.s[3].e && r.row.s[3].e.rating === 4 && r.row.E === null, 'B a v3-shaped record opens on the pupil page (cards kept, no answers to list)');
+  // v4: Delete class
+  await api('apiStaff', { op: 'check', pass: PASS }, 'maker@c2ken.net'); await api('apiStaff', { op: 'check', pass: PASS }, 'other@c2ken.net');
+  r = await api('apiStaff', { op: 'create', name: 'Del Test' }, 'maker@c2ken.net');
+  const dc = r.slug; await api('apiBoot', { cls: dc }, 'pd@c2ken.net');
+  await api('apiStaff', { op: 'setTopic', cls: dc, topic: 'digital-data', open: true }, 'maker@c2ken.net'); await playStage('pd@c2ken.net', dc, 1, 1, { limit: 2 });
+  const before = await post('/__store', {}), keep = Object.keys(before.script).filter((k) => k.indexOf(':' + cls + ':') !== -1 || k === 'cls:' + cls).sort();
+  const had = Object.keys(before.script).filter((k) => k.indexOf(':' + dc + ':') !== -1).length;
+  r = await api('apiStaff', { op: 'delete', cls: dc }, 'other@c2ken.net');
+  ok(!r.ok && r.error === 'owner-only', 'B control: another teacher cannot delete a class they did not make (owner-only)');
+  r = await api('apiStaff', { op: 'delete', cls: dc }, 'maker@c2ken.net');
+  const after = await post('/__store', {}), left = Object.keys(after.script).filter((k) => k.indexOf(':' + dc + ':') !== -1 || k === 'cls:' + dc);
+  const kept = Object.keys(after.script).filter((k) => k.indexOf(':' + cls + ':') !== -1 || k === 'cls:' + cls).sort();
+  const list = JSON.parse(after.script.classes || '[]');
+  ok(r.ok && had >= 3 && left.length === 0 && list.indexOf(dc) === -1 && list.indexOf(cls) !== -1, 'B Delete class removes the class and its ' + had + ' records');
+  ok(JSON.stringify(kept) === JSON.stringify(keep) && keep.every((k) => after.script[k] === before.script[k]), 'B control: the other class keeps every record, byte for byte (' + keep.length + ' keys)');
+  r = await api('apiBoot', { cls: dc }, 'pd@c2ken.net');
+  ok(!r.ok && r.error === 'unknown-class', 'B a deleted class link says it is not a class');
 }
 main();

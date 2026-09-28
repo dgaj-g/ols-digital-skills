@@ -6,6 +6,8 @@ CCEA GCSE Digital Technology Unit 1 revision for S1 (Year 11), past-paper questi
 - Pupils: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec?class=11a-dt
   (swap 11a-dt for the class name made on the staff page)
 - Staff: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec
+- Classes: on the staff page each class has a "Copy class link" button (paste it to pupils) and a "Delete class" button (press twice; it removes that class and every pupil record in it). Only the teacher who made a class, or the owner, can delete it.
+- Tracker: every score shows its percentage, ratings show in the pupils' own words, graphs sit at the top and "What pupils said" at the foot. Click a pupil's name to see every answer they gave.
 - Topics: on the staff page, the Topics tab opens or locks each topic for a class. A new class starts with its topics locked; pupils see a locked topic as "Not opened yet".
 - The staff passcode is kept in Claude Work/S1 Unit 1 Platform/STAFF_PASSCODE.txt, never in this repo. The owner account gets in by email with no passcode.
 

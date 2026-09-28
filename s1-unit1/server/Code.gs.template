@@ -100,6 +100,18 @@ function unpack_(v, p) {
   return {};
 }
 
+// a marked answer in plain words for the staff page (v4): picks, typed words, matches, chosen words, filled gaps
+function answerWords_(v, a) {
+  var f = v.form, dash = '—';
+  if (f === 'pick1' || f === 'pickN') return (a.picks || []).join(' · ') || dash;
+  if (f === 'writepick') return (a.parts || []).map(function (p) { return p.picks.join(' · ') || dash; }).join(' | ');
+  if (f === 'type') { var t = (a.texts || []).filter(function (x) { return str_(x).trim(); }); return t.length ? (a.texts || []).map(function (x) { return str_(x).trim() || dash; }).join(' · ') : "I don't know"; }
+  if (f === 'pairs') return (v.left || []).map(function (l, k) { return l + ' → ' + ((a.map || [])[k] || dash); }).join(' · ');
+  if (f === 'choose') return (a.choices || []).map(function (x) { return x || dash; }).join(' · ');
+  if (f === 'gaps') return (a.fills || []).map(function (x) { return str_(x).trim() || dash; }).join(' · ');
+  return dash;
+}
+
 // ---------- records ----------
 function pKey_(slug, email) { return 'p:' + slug + ':' + email; }
 function qKey_(slug, email, round, st) { return 'q:' + slug + ':' + email + ':' + round + ':' + st; }
@@ -311,8 +323,11 @@ function trackRow_(slug, c, email, round, all) {
   var hdr = jget_(sp_(), pKey_(slug, email), null) || { o: {}, R: {} };
   var rh = (hdr.R || {})[round] || { s: {} }, s = {};
   STAGES.forEach(function (S) {
-    var g = (rh.s || {})[S.n] || { a: 0, m: 0, f: [] }, e = eOut_(g.e);
-    s[S.n] = { m: g.m || 0, x: S.x, a: g.a || 0, n: S.ids.length, e: e, flags: e ? flagsFor_(e.rating, g.m || 0, S.x) : [],
+    var g = (rh.s || {})[S.n] || { a: 0, m: 0, f: [] }, e = eOut_(g.e), sh = null;
+    if (!rh.z) { try { sh = JSON.parse(all[qKey_(slug, email, round, S.n)] || '{}'); } catch (x) { sh = {}; } }
+    // ax = marks on offer in the questions answered so far, so a part-done stage still gets a fair percentage (v4)
+    var ax = sh && Object.keys(sh).length ? Object.keys(sh).reduce(function (t, id) { return t + (QBY[id] ? QBY[id].q.marks : 0); }, 0) : ((g.a || 0) >= S.ids.length ? S.x : 0);
+    s[S.n] = { m: g.m || 0, x: S.x, ax: ax, a: g.a || 0, n: S.ids.length, e: e, flags: e ? flagsFor_(e.rating, g.m || 0, S.x) : [],
       fl: (g.f || []).map(function (id) { return QBY[id] ? QBY[id].q.src : id; }) };
   });
   var seen = Number(all['s:' + slug + ':' + email] || 0);
@@ -369,7 +384,7 @@ function apiStaff_(req) {
     if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
     return ok_({ archived: archived, classes: classList_().map(function (s) {
       var c = jget_(sp_(), 'cls:' + s, null) || {};
-      return { slug: s, name: c.name || s, pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email };
+      return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email };
     }) });
   }
   if (op === 'create') {
@@ -386,6 +401,16 @@ function apiStaff_(req) {
   }
   var slugC = slug_(req.cls), c = slugC ? jget_(sp_(), 'cls:' + slugC, null) : null;
   if (!c) return err_('unknown-class');
+  if (op === 'delete') {
+    if (c.o !== email && !isOwner_(email)) return err_('owner-only');
+    return withLock_(function () {
+      var store = sp_(), pres = ['p:' + slugC + ':', 'q:' + slugC + ':', 's:' + slugC + ':'];
+      store.getKeys().forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
+      store.deleteProperty('cls:' + slugC);
+      jset_(store, 'classes', classList_().filter(function (x) { return x !== slugC; }));
+      return ok_({});
+    });
+  }
   if (op === 'topics') return ok_({ className: c.name, topics: [{ id: TOPIC, open: topicOpen_(c) }] });
   if (op === 'setTopic') {
     if (str_(req.topic) !== TOPIC) return err_('bad-topic');
@@ -423,7 +448,7 @@ function apiStaff_(req) {
   var maxRound = pupils.reduce(function (m, em) { return Math.max(m, curRound_(c, jget_(sp_(), pKey_(slugC, em), null))); }, (c.r || {})[TOPIC] || 1);
   var round = roundArg_(req) || ((c.r || {})[TOPIC] || 1);
   if (op === 'tracker') {
-    return ok_({ className: c.name, round: round, maxRound: maxRound, stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x }; }),
+    return ok_({ className: c.name, round: round, maxRound: maxRound, stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
       rows: pupils.map(function (em) { return trackRow_(slugC, c, em, round, all); }) });
   }
   if (op === 'pupil') {
@@ -431,15 +456,17 @@ function apiStaff_(req) {
     if (!hdrP) return err_('unknown-pupil');
     var rhP = (hdrP.R || {})[round] || { s: {} }, items = [];
     STAGES.forEach(function (S) {
-      var g = (rhP.s || {})[S.n] || { f: [] }, shard = jget_(sp_(), qKey_(slugC, pe, round, S.n), {});
-      orderFor_(pe, round, S.n).forEach(function (id) {
+      var g = (rhP.s || {})[S.n] || { f: [] }, shard = rhP.z ? {} : jget_(sp_(), qKey_(slugC, pe, round, S.n), {});
+      orderFor_(pe, round, S.n).forEach(function (id, i) {
         if (!shard[id]) return;
         var q = QBY[id].q, v = viewFor_(pe, round, q), a = unpack_(v, shard[id][1]);
-        var text = v.form === 'writepick' ? a.text : v.form === 'type' ? a.texts.filter(Boolean).join(' · ') : '';
-        items.push({ st: S.n, id: id, src: q.src, m: shard[id][0], max: q.marks, text: text, words: text ? text.trim().split(/\s+/).length : 0, f: (g.f || []).indexOf(id) !== -1 });
+        items.push({ st: S.n, i: i + 1, id: id, src: q.src, q: str_(v.q || v.text).slice(0, 240), m: shard[id][0], max: q.marks, ans: answerWords_(v, a),
+          text: v.form === 'writepick' && !a.skipped ? a.text : '', skipped: v.form === 'writepick' && !!a.skipped, f: (g.f || []).indexOf(id) !== -1 });
       });
     });
-    return ok_({ name: hdrP.n || pe.split('@')[0], round: round, archived: !!rhP.z, items: items });
+    return ok_({ name: hdrP.n || pe.split('@')[0], round: round, archived: !!rhP.z, items: items,
+      stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
+      row: trackRow_(slugC, c, pe, round, all) });
   }
   if (op === 'csv') {
     var head = ['class', 'pupil', 'email', 'round', 'stage', 'marks', 'max', 'rating', 'ticks', 'stageNote', 'topicRating', 'unsure', 'note', 'flags', 'flagged'];
