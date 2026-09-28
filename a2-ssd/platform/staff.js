@@ -191,6 +191,7 @@
       return '<div class="part" data-part="' + q.id + '"><b>' + h(T('staff.drawerPart', { label: label(q) })) + '</b> <span class="note">' + h(q.ask) + '</span>' +
         (r.f != null ? '<p>' + h(T(r.d === 1 ? 'staff.doorCold' : 'staff.doorLearn')) + ' · ' + h(T('staff.firstAnswer', { t: r.f, of: q.marks })) + (r.b > r.f ? ' · ' + h(T('staff.bestAnswer', { t: r.b, of: q.marks })) : '') + ' · ' + h(r.a === 1 ? T('staff.attempts1') : T('staff.attempts', { n: r.a })) + '</p>'
           : '<p class="note">' + h(T('staff.noAnswer')) + '</p>') +
+        (r.rm || []).map((c) => '<p class="note">' + h(T('staff.remarked', { date: dateOf(c[0]), which: T('staff.rm.' + c[1]), from: c[2], to: c[3] })) + '</p>').join('') +
         (r.s ? '<p class="note">' + h(T('staff.sawAnswer')) + '</p>' : '') +
         (tw && r.tf != null ? '<p>' + h(T('staff.aqAnswer', { id: tw.id, t: r.tf, of: tw.marks })) + (r.tb > r.tf ? ' · ' + h(T('staff.aqBest', { t: r.tb, of: tw.marks })) : '') + '</p>' : '') +
         (r.fl ? '<p><span class="tg red">' + h(T('staff.flagAt', { label: label(q), beat: T('staff.beat.' + r.fl.b) })) + '</span> <button class="btn sec" data-ack>' + h(T('staff.ack')) + '</button></p>' : '') +
@@ -211,9 +212,12 @@
       b.disabled = true;
       call({ op: 'scripts', name: CLS, email, part }).then((r) => {
         const tw = r.part.t && C.twins[r.part.t];
-        const one = (a, i, of, list) => '<p>' + h(T('staff.attemptN', { n: i + 1, t: a.total, of })) + ' · <span class="note">' + h(dateOf(a.m)) + '</span></p>' + (a.script != null ? '<pre>' + h(a.script) + '</pre>' : '') +
-          (a.verdict ? '<ul class="check">' + a.verdict.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']</span></li>').join('') + '</ul>' : '');
-        box.innerHTML = (r.a.length ? r.a.map((a, i) => one(a, i, q.marks)).join('') : '<p class="note">' + h(T(r.archived ? 'staff.archived' : 'staff.nothing')) + '</p>') +
+        // each attempt: the mark given at the time; today's re-judge beside it where it differs (D97); the ticks are today's marking
+        const why = (pt) => (pt.missing ? ' · ' + T('staff.missing', { names: pt.missing.join(', ') }) : '') + (pt.nofield ? ' · ' + T('staff.nofield', { names: pt.nofield.join(', ') }) : '');
+        const one = (a, i, of) => '<p>' + h(a.verdict && a.verdict.total !== a.total ? T('staff.attemptThen', { n: i + 1, t: a.total, of, now: a.verdict.total }) : T('staff.attemptN', { n: i + 1, t: a.total, of })) + ' · <span class="note">' + h(dateOf(a.m)) + '</span></p>' + (a.script != null ? '<pre>' + h(a.script) + '</pre>' : '') +
+          (a.verdict && a.verdict.spell ? a.verdict.spell.map((x) => '<p class="spell">' + h(T('staff.spell', x)) + '</p>').join('') : '') +
+          (a.verdict ? '<ul class="check">' + a.verdict.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']' + h(why(pt)) + '</span></li>').join('') + '</ul>' : '');
+        box.innerHTML = '<p class="note">' + h(T('staff.allNote')) + '</p>' + (r.a.length ? r.a.map((a, i) => one(a, i, q.marks)).join('') : '<p class="note">' + h(T(r.archived ? 'staff.archived' : 'staff.nothing')) + '</p>') +
           (tw && r.t.length ? '<p><b>' + h(T('staff.aqAnswer', { id: tw.id, t: r.part.tf, of: tw.marks })) + '</b></p>' + r.t.map((a, i) => one(a, i, tw.marks)).join('') : '');
         b.remove();
       }, (e) => { b.disabled = false; fail(e); });

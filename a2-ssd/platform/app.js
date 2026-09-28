@@ -369,11 +369,26 @@
   }
 
   // ---------- the marks card ----------
-  function marksHtml(v, line) {
-    return '<div class="score">' + v.total + ' <small>/ ' + v.of + '</small></div>' + (v.kind && v.kind !== 'ok' && v.kindNote ? '<p><b>' + h(v.kindNote) + '</b></p>' : '') +
+  // spell: names read one letter off (his ruling 28 Sep 2026); missing / nofield: the names a lost point needed; extra: re-mark lines
+  function marksHtml(v, line, extra) {
+    const names = (list) => ({ names: list.join(', ') });
+    return (extra && extra.top ? extra.top : '') + '<div class="score">' + v.total + ' <small>/ ' + v.of + '</small></div>' + (v.kind && v.kind !== 'ok' && v.kindNote ? '<p><b>' + h(v.kindNote) + '</b></p>' : '') +
+      (v.spell ? v.spell.map((x) => '<p class="spell">' + h(T('verdict.spell', x)) + '</p>').join('') : '') +
       '<ul class="pts">' + v.points.map((p) => '<li><span class="' + (p.awarded >= p.of ? 'yes' : 'no') + '">' + (p.awarded >= p.of ? '✓' : '✗') + '</span><span>' + h(p.label) + '</span><span class="m">[' +
-        (p.awarded > 0 && p.awarded < p.of ? p.awarded + '/' + p.of : p.of) + ']</span>' + (p.hint ? '<span class="hint">' + h(p.hint) + '</span>' : '') + (p.note ? '<span class="note">' + h(p.note) + '</span>' : '') + '</li>').join('') + '</ul>' +
-      (line ? '<p class="note">' + h(line) + '</p>' : '');
+        (p.awarded > 0 && p.awarded < p.of ? p.awarded + '/' + p.of : p.of) + ']</span>' + (p.hint ? '<span class="hint">' + h(p.hint) + '</span>' : '') +
+        (p.missing ? '<span class="hint">' + h(T('verdict.missing', names(p.missing))) + '</span>' : '') + (p.nofield ? '<span class="hint">' + h(T('verdict.nofield', names(p.nofield))) + '</span>' : '') +
+        (p.note ? '<span class="note">' + h(p.note) + '</span>' : '') + '</li>').join('') + '</ul>' +
+      (line ? '<p class="note">' + h(line) + '</p>' : '') + (extra && extra.end ? extra.end : '');
+  }
+  // re-mark lines (D97) for one side of a part (f/b or tf/tb): above the marks when the ticks shown were saved before the re-mark, else a note below
+  const EPOCH = 1767225600000;
+  function remarkHtml(r, fields, of, savedAt) {
+    const list = (r.rm || []).filter((c) => fields.indexOf(c[1]) !== -1);
+    if (!list.length) return null;
+    const d = (m) => { const x = new Date(EPOCH + m * 60000); return ('0' + x.getDate()).slice(-2) + '/' + ('0' + (x.getMonth() + 1)).slice(-2) + '/' + x.getFullYear(); };
+    const lines = list.map((c) => h(T('verdict.remarked', { date: d(c[0]), which: T('verdict.rm.' + c[1]), from: c[2], to: c[3], of })));
+    if (savedAt == null || savedAt < EPOCH + list[list.length - 1][0] * 60000) return { top: '<p class="spell">' + lines.join('<br>') + '<br>' + h(T('verdict.remarkedTicks')) + '</p>' };
+    return { end: lines.map((x) => '<p class="note">' + x + '</p>').join('') };
   }
   function msBox(box, r) {
     box.innerHTML = '<div class="card"><h3>' + h(T('verdict.msTitle')) + '</h3><div data-msbody></div>' + (r.walk && r.walk.length ? '<ol class="walk">' + r.walk.map((w) => '<li>' + h(w) + '</li>').join('') + '</ol>' : '') +
@@ -515,7 +530,7 @@
       vbox.innerHTML = '<p class="note">' + h(T('turn.marking')) + '</p>';
       const L = lessonState(id), text = input.get();
       call('apiMark', { part: id, input: text, door: L.door === 'cold' ? 1 : 0, today: today() }).then((r) => {
-        const out = { verdict: r.verdict, first: r.first, expected: r.expected || null, yours: null, err: null };
+        const out = { verdict: r.verdict, first: r.first, expected: r.expected || null, yours: null, err: null, at: Date.now() };
         const finish = () => { LS.set(vkey, out); showVerdict(p, part, out, input); sub.disabled = false; vbox.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
         if (part.kind === 'select' && r.expected) {
           sqlReady().then(() => { try { out.yours = runSql(p.id, text); } catch (e) { out.err = String((e && e.message) || e).split('\n')[0]; } finish(); }, finish);
@@ -547,7 +562,7 @@
       resCard = '<div class="card result"><h3>' + h(T('result.title')) + ' <span class="' + (same ? 'same' : 'diff') + '">' + h(T(same ? 'result.same' : out.err ? 'result.noRun' : 'result.diff')) + '</span></h3>' +
         (out.err ? '<p><b>' + h(T('result.yours')) + '</b></p><p>' + h(T('result.err', { err: out.err })) + '</p>' : gridHtml(out.yours, T('result.yours'))) + gridHtml(exp, T('result.expected')) + '<p class="note">' + h(T('result.expectedNote')) + '</p></div>';
     }
-    let html = '<div class="' + (resCard ? 'marks' : '') + '"><div class="card"><h3>' + h(T('verdict.title')) + '</h3>' + marksHtml(v, line) + '</div>' + resCard + '</div>' +
+    let html = '<div class="' + (resCard ? 'marks' : '') + '"><div class="card"><h3>' + h(T('verdict.title')) + '</h3>' + marksHtml(v, line, remarkHtml(r, ['f', 'b'], v.of, out.at)) + '</div>' + resCard + '</div>' +
       '<div class="row"><button class="btn" data-again>' + h(T('verdict.again')) + '</button><button class="btn sec" data-showms>' + h(T('verdict.showMs')) + '</button><button class="btn" data-beat="another">' + h(T('verdict.nextQ')) + '</button></div><div id="ms-box"></div>';
     if (cold) html += '<div class="card"><h3>' + h(T('verdict.wasMarking')) + '</h3><ul class="check">' + v.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']</span></li>').join('') + '</ul></div>' +
       '<div class="card"><h3>' + h(T('verdict.lesson')) + '</h3><p class="note">' + h(T(isText(part) ? 'verdict.lessonNoteText' : 'verdict.lessonNote')) + '</p><button class="btn sec" data-beat="lesson">' + h(T('verdict.openLesson')) + '</button></div>';
@@ -592,10 +607,10 @@
         box.innerHTML = '<div class="card result">' + html + '</div>';
       }, () => { box.innerHTML = '<div class="card result"><p class="err">' + h(T('guard.dbFail')) + '</p></div>'; });
     });
-    const show = (v) => {
+    const show = (v, at) => {
       const r = P(id), line = (r.ta || 1) <= 1 ? T('aq.line', { t: v.total, of: v.of }) : T('aq.lineBest', { t: v.total, of: v.of, best: r.tb });
       const box = document.getElementById('verdict');
-      box.innerHTML = '<div class="card"><h3>' + h(T('verdict.title')) + '</h3>' + marksHtml(v, line) + '</div><div class="row"><button class="btn" data-again>' + h(T('verdict.again')) + '</button><button class="btn sec" data-showms>' + h(T('verdict.showMs')) + '</button>' + back + '</div><div id="ms-box"></div>';
+      box.innerHTML = '<div class="card"><h3>' + h(T('verdict.title')) + '</h3>' + marksHtml(v, line, remarkHtml(r, ['tf', 'tb'], v.of, at)) + '</div><div class="row"><button class="btn" data-again>' + h(T('verdict.again')) + '</button><button class="btn sec" data-showms>' + h(T('verdict.showMs')) + '</button>' + back + '</div><div id="ms-box"></div>';
       box.querySelector('[data-again]').addEventListener('click', () => { input.focus(); document.getElementById('aq-in').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       box.querySelector('[data-showms]').addEventListener('click', (e) => {
         const b = e.currentTarget; b.disabled = true;
@@ -603,12 +618,12 @@
       });
     };
     const cached = LS.get(vkey);
-    if (P(id).tf != null && cached && cached.verdict) show(cached.verdict);
+    if (P(id).tf != null && cached && cached.verdict) show(cached.verdict, cached.at);
     sub.addEventListener('click', () => {
       if (isEmpty(tw, input.get())) return;
       sub.disabled = true;
       document.getElementById('verdict').innerHTML = '<p class="note">' + h(T('turn.marking')) + '</p>';
-      call('apiTwinMark', { part: id, input: input.get() }).then((r) => { LS.set(vkey, { verdict: r.verdict }); show(r.verdict); document.getElementById('verdict').scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      call('apiTwinMark', { part: id, input: input.get() }).then((r) => { const at = Date.now(); LS.set(vkey, { verdict: r.verdict, at }); show(r.verdict, at); document.getElementById('verdict').scrollIntoView({ behavior: 'smooth', block: 'start' }); },
         (e) => { document.getElementById('verdict').innerHTML = e.code === 'empty' ? '<p class="err">' + h(T('turn.typeFirst')) + '</p>' : ''; }).then(() => { sub.disabled = false; });
     });
   }

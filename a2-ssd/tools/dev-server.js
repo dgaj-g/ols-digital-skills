@@ -135,7 +135,7 @@ http.createServer((req, res) => {
       if (u.pathname === '/__store') { res.end(JSON.stringify(db)); return; }
       if (u.pathname === '/__set') { const j = JSON.parse(body || '{}'); Object.assign(db.script, j.script || {}); Object.entries(j.user || {}).forEach(([k, v]) => { db.user[k] = Object.assign(db.user[k] || {}, v); }); save(); res.end('{"ok":true}'); return; }
       const fn = u.pathname.replace(/^\/api\//, '');
-      if (!/^api[A-Z]\w+$/.test(fn) || typeof sandbox[fn] !== 'function') { res.end(JSON.stringify({ __error: 'unknown ' + fn })); return; }
+      if (!/^(api[A-Z]\w+|remarkDryRun|remarkApply)$/.test(fn) || typeof sandbox[fn] !== 'function') { res.end(JSON.stringify({ __error: 'unknown ' + fn })); return; }
       current = String(req.headers['x-dev-user'] || 'pupil1@c2ken.net').toLowerCase();
       try {
         const out = sandbox[fn](JSON.parse(body || '{}'));

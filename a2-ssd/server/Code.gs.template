@@ -175,8 +175,10 @@ function inputEmpty_(part, input) {
   return str_(input).replace(/\s/g, '').length < 3;
 }
 function verdictOut_(v) {
-  return { total: v.total, of: v.of, kind: v.kind, kindNote: v.kindNote || null,
-    points: (v.points || []).map(function (p) { return { label: p.label, of: p.of, awarded: p.awarded, hint: p.hint || null, note: p.note || null }; }) };
+  // spell: names read one letter off (his ruling 28 Sep 2026, D95); missing / nofield: the design names a lost point needed (F62)
+  return { total: v.total, of: v.of, kind: v.kind, kindNote: v.kindNote || null, spell: v.spell && v.spell.length ? v.spell : null,
+    points: (v.points || []).map(function (p) { return { label: p.label, of: p.of, awarded: p.awarded, hint: p.hint || null, note: p.note || null,
+      missing: p.missing && p.missing.length ? p.missing : null, nofield: p.nofield && p.nofield.length ? p.nofield : null }; }) };
 }
 function judge_(markable, input) {
   try { return Judge.judge(markable, input); }
@@ -644,4 +646,62 @@ function archive_(props) {
   if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 5).setValues(rows);
   dead.forEach(function (k) { sp_().deleteProperty(k); });
   return dead.length;
+}
+
+/* ---------- re-mark (his ruling 28 Sep 2026, D97): every stored answer re-judged under today's marking; marks only ever go up ----------
+   The owner runs these from the Apps Script editor: remarkDryRun() lists what would change and changes nothing;
+   remarkApply() makes the same changes. Each attempt keeps the mark it was given at the time; a change is recorded
+   in p.rm as [tmin, field, from, to] so the drawer and the pupil can see it. Archived scripts are not re-marked. */
+function remarkDryRun() { return remark_(false); }
+function remarkApply() { return remark_(true); }
+function remark_(apply) {
+  if (!isOwner_(userEmail_())) throw new Error('The re-mark is run by the owner only.');
+  var keys = sp_().getKeys().filter(function (k) { return k.indexOf('p:') === 0; });
+  var lines = [], stats = { pupils: 0, parts: 0, attempts: 0, archived: 0, odd: 0, changes: 0 };
+  var up = function (markable, list, p, fields, now, rm) {
+    if (!markable || !list.length) return;
+    var totals = list.map(function (a) { stats.attempts += a[2] == null ? 0 : 1; return a[2] == null ? a[1] : judge_(markable, scriptInput_(markable, a[2])).total; });
+    var out = [];
+    if (list[0][2] != null && list[0][1] === p[fields[0]] && totals[0] > p[fields[0]]) out.push([now, fields[0], p[fields[0]], totals[0]]);
+    else if (list[0][1] !== p[fields[0]]) stats.odd++;
+    var nb = Math.max.apply(null, totals.concat([num_(p[fields[1]])]));
+    if (nb > num_(p[fields[1]])) out.push([now, fields[1], num_(p[fields[1]]), nb]);
+    out.forEach(function (c) { rm.push(c); });
+  };
+  keys.forEach(function (k) {
+    var bits = k.split(':'), cls = bits[1], email = bits.slice(2).join(':');
+    var work = function () {
+      var rec = readPupil_(cls, email); if (!rec) return;
+      stats.pupils++;
+      var now = tmin_(), dirty = false;
+      Object.keys(rec.P || {}).forEach(function (partId) {
+        var p = rec.P[partId], mp = markPart_(partId);
+        if (!p || p.f == null || !mp) return;
+        stats.parts++;
+        if (!sp_().getProperty(dKey_(cls, email, partId))) { stats.archived++; return; }
+        var sc = readScripts_(cls, email, partId), rm = [];
+        up(mp, sc.a, p, ['f', 'b'], now, rm);
+        if (p.t && p.tf != null) up(markTwin_(p.t), sc.t, p, ['tf', 'tb'], now, rm);
+        rm.forEach(function (c) {
+          stats.changes++;
+          lines.push(cls + ' · ' + (rec.n || email) + ' · ' + email + ' · ' + partId + (c[1].charAt(0) === 't' ? ' · another question ' + p.t : '') +
+            ' · ' + ({ f: 'first', b: 'best', tf: 'first', tb: 'best' })[c[1]] + ' ' + c[2] + ' → ' + c[3]);
+          p[c[1]] = c[3];
+        });
+        if (rm.length) {
+          if (p.sb && p.b === p.f) delete p.sb; // the best now came first time, before the answer was seen
+          p.rm = (p.rm || []).concat(rm);
+          dirty = true;
+        }
+      });
+      if (apply && dirty) writePupil_(cls, email, rec);
+    };
+    if (apply) withLock_(work); else work();
+  });
+  var head = (apply ? 'RE-MARK APPLIED' : 'RE-MARK DRY RUN (nothing changed)') + ' · build ' + BUILD + ' · ' + stats.pupils + ' records · ' + stats.parts + ' parts · ' +
+    stats.attempts + ' attempts re-judged · ' + stats.archived + ' archived (skipped) · ' + stats.odd + ' first-attempt mismatches (left alone) · ' + stats.changes + ' changes';
+  console.log(head);
+  lines.forEach(function (l) { console.log(l); });
+  if (!lines.length) console.log('No mark goes up.');
+  return { head: head, lines: lines };
 }
