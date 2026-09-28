@@ -166,7 +166,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
 .tlist{max-width:760px}.tlist .trow{display:grid;grid-template-columns:40px minmax(0,1fr) 90px 84px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.tlist .trow:first-child{border-top:0}
 .trow .tn{font-size:12px;color:var(--mute)}.trow b{color:var(--plum)}.ts{font-size:13px;font-weight:700}.ts.on{color:#2f7d4f}.ts.off{color:var(--ember)}.ts.later{font-weight:400;color:var(--mute)}
 .cls-link{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--berry)}
-.track td .link{font-size:13px}.track small{color:var(--mute)}
+.track td .link{font-size:13px}.track small{color:var(--mute)}.track td.seen{white-space:nowrap}
 .drawer .it{padding:8px 0;border-top:1px solid var(--line);font-size:14px}.drawer .it:first-child{border-top:0}.drawer .it b{color:var(--plum)}.drawer .it .w{white-space:pre-wrap;color:var(--ink);margin-top:3px}
 .pairs select{max-width:100%}.pairs .said{display:none}.pairs.wide .pr{grid-template-columns:minmax(80px,1fr) 24px minmax(0,4fr)}.pairs.wide select{width:100%}.pairs.wide .mk{display:block;margin-top:4px}
 /* ---- smaller screens (his question, 27 Sep 2026): the same page in one column; only the layout changes ---- */
@@ -227,8 +227,8 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 
 </style>
 </head>
-<body data-build="s1u1-bce5082dd8-801b0f7f">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-bce5082dd8-801b0f7f" };</script>
+<body data-build="s1u1-fc41c997cb-a423e1de">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-fc41c997cb-a423e1de" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -599,7 +599,8 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; r.needName ? nameScreen() : home();
-      if (!pingT) pingT = setInterval(function () { call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000);
+      if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
+        pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }
@@ -621,8 +622,8 @@ var Staff = (function () {
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
     cleared: "Your own record in this class is cleared.", opened: "Round {n} is open.", pupil: "Pupil", topic: "Topic", flagged: "Flagged",
-    seen: "Last seen", close: "Close", notDone: "{a} of {n} done",
-    classLine: "{name} \u00b7 {n} pupils \u00b7 created {date}", classLine1: "{name} \u00b7 1 pupil \u00b7 created {date}", add: "Add class",
+    seen: "Last used", today: "Today", yesterday: "Yesterday", daysAgo: "{n} days ago", lastUsed: "Last used: {when}", close: "Close", notDone: "{a} of {n} done",
+    classLine: "{name} \u00b7 {n} pupils \u00b7 created {date}", classLine1: "{name} \u00b7 1 pupil \u00b7 created {date}", by: "made by {who}", add: "Add class",
     copy: "Copy class link", del: "Delete class", delConfirm: "Delete {name} and every record in it? Press again to confirm.",
     glance: "Class at a glance", avgStage: "Average score in each stage", rated: "How pupils rated each stage", spread: "Spread of total scores",
     pupilsN: "{n} pupils", pupils1: "1 pupil", nobody: "No answers yet", noCards: "No cards saved yet",
@@ -674,7 +675,7 @@ var Staff = (function () {
   }
   function classes() {
     var list = CLASSES.length ? '<ul class="clist">' + CLASSES.map(function (c) {
-      return '<li data-s="' + h(c.slug) + '"><b>' + h(T.fmt(c.pupils === 1 ? W.classLine1 : W.classLine, { name: c.name, n: c.pupils, date: dateOf(c.made) })) + '</b>' +
+      return '<li data-s="' + h(c.slug) + '"><b>' + h(T.fmt(c.pupils === 1 ? W.classLine1 : W.classLine, { name: c.name, n: c.pupils, date: dateOf(c.made) }) + (c.by ? ' \u00b7 ' + T.fmt(W.by, { who: c.by }) : '')) + '</b>' +
         '<button class="btn sm ghost" data-copy>' + W.copy + '</button>' + (c.mine || OWN ? '<button class="btn sm ghost" data-del>' + W.del + '</button>' : '') + '</li>';
     }).join("") + '</ul>' : '<p class="sub">' + W.none + '</p>';
     var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
@@ -726,7 +727,12 @@ var Staff = (function () {
   }
   // ---- Tracker (v4, DECISIONS \u00a717) ----
   function roundPick(max) { var o = ""; for (var k = 1; k <= max; k++) o += '<option' + (k === ROUND ? ' selected' : '') + '>' + k + '</option>'; return '<label for="rp">' + W.round + '</label><select id="rp">' + o + '</select>'; }
-  function seen(iso) { if (!iso) return '\u2014'; var d = new Date(iso); return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function seen(iso, flat) { // Today 14:05 \u00b7 Yesterday 09:12 \u00b7 Mon 22 Sept 14:05 (6 days ago)
+    if (!iso) return '\u2014'; var d = new Date(iso), now = new Date(), day = function (x) { return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
+    var n = Math.round((day(now) - day(d)) / 864e5), hm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    if (n <= 0) return W.today + ' ' + hm; if (n === 1) return W.yesterday + ' ' + hm;
+    var s = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }).replace(",", "") + ' ' + hm, ago = T.fmt(W.daysAgo, { n: n });
+    return flat ? s + ' (' + ago + ')' : s + '<br><small>' + ago + '</small>'; }
   function pc(m, x) { return x ? Math.round(100 * m / x) : 0; }
   function band(p) { return p >= 75 ? "hi" : p >= 50 ? "mid" : "lo"; }
   function score(m, x) { if (!x) return '<span class="sc">' + m + '</span>'; var p = pc(m, x); return '<span class="sc ' + band(p) + '">' + m + '/' + x + ' \u00b7 ' + p + '%</span>'; } // every score has its percentage
@@ -776,10 +782,10 @@ var Staff = (function () {
           if (!c.a && !e) return '<td>\u2014</td>';
           return '<td>' + score(c.m, c.ax) + (c.a < c.n ? '<br><small>' + T.fmt(W.notDone, { a: c.a, n: c.n }) + '</small>' : '') + (e ? '<br>' + rateChip(e.rating) : '') + c.flags.map(function (f) { return '<br><span class="chip">' + h(f) + '</span>'; }).join("") + '</td>';
         }).join("");
-        return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td><td>' + (t.a ? score(t.m, t.ax) + (t.a < t.n ? '<br><small>' + T.fmt(W.notDone, { a: t.a, n: t.n }) + '</small>' : '') : '\u2014') + '</td>' + cells + '<td>' + (p.E ? rateChip(p.E.rating) : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td><td>' + seen(p.seen) + '</td></tr>';
+        return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td><td class="seen">' + seen(p.seen) + '</td><td>' + (t.a ? score(t.m, t.ax) + (t.a < t.n ? '<br><small>' + T.fmt(W.notDone, { a: t.a, n: t.n }) + '</small>' : '') : '\u2014') + '</td>' + cells + '<td>' + (p.E ? rateChip(p.E.rating) : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td></tr>';
       }).join("");
       var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 Digital Data \u00b7 ' + S.round + r.round + '</h1>' +
-        (r.rows.length ? graphs(r) : '') + '<div class="card">' + (r.rows.length ? '<p class="hint">' + W.soFar + '</p><div class="tscroll"><table class="track"><tr><th>' + W.pupil + '</th><th>' + W.total + '</th>' + r.stages.map(function (st) { return '<th>' + h(stTitle(st)) + '</th>'; }).join("") + '<th>' + W.whole + '</th><th>' + W.flagged + '</th><th>' + W.seen + '</th></tr>' + rows + '</table></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div>' +
+        (r.rows.length ? graphs(r) : '') + '<div class="card">' + (r.rows.length ? '<p class="hint">' + W.soFar + '</p><div class="tscroll"><table class="track"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th><th>' + W.total + '</th>' + r.stages.map(function (st) { return '<th>' + h(stTitle(st)) + '</th>'; }).join("") + '<th>' + W.whole + '</th><th>' + W.flagged + '</th></tr>' + rows + '</table></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div>' +
         (r.rows.length ? saidCard(r) : '') + '</div>');
       page(body); wireCommon(body);
       var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; tracker(); };
@@ -791,6 +797,7 @@ var Staff = (function () {
     T.call("apiStaff", { op: "pupil", cls: CLS, email: p.email, round: ROUND }).then(function (r) {
       var row = r.row, t = tot(row, r.stages), E = row.E, title = function (n) { return r.stages[n - 1].title; };
       var head = '<div class="card"><div class="phead"><h2>' + h(r.name) + ' \u00b7 ' + S.round + r.round + '</h2><button class="btn sm ghost" id="back">' + W.back + '</button></div>' +
+        '<p class="sub seen">' + T.fmt(W.lastUsed, { when: seen(row.seen, true) }) + '</p>' +
         '<p class="big">' + W.total + ': ' + (t.ax ? score(t.m, t.ax) : '\u2014') + ' <small>' + T.fmt(W.answered, { a: t.a, n: t.n }) + '</small></p>' +
         r.stages.map(function (st) { var c = row.s[st.n]; return hbar(stTitle(st), c.a && c.ax ? pc(c.m, c.ax) : null, c.a ? pc(c.m, c.ax) + '% \u00b7 ' + T.fmt(W.notDone, { a: c.a, n: c.n }) : W.nobody); }).join("") +
         '<h3 class="sh">' + W.whole + '</h3>' + (E ? '<div class="ev">' + rateChip(E.rating) + '<div class="nt' + (E.unsure.length && E.unsure[0] ? '' : ' ok') + '">' + (E.unsure.length && E.unsure[0] ? W.stillUnsure + h(E.unsure.map(function (u) { return u + ' \u00b7 ' + title(u); }).join("; ")) : h(S.fine)) + '</div>' + (E.note ? '<div class="nq">' + W.note + '\u201c' + h(E.note) + '\u201d</div>' : '') + '</div>' : '<p class="hint">' + W.notSaved + '</p>') +

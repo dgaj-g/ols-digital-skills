@@ -285,7 +285,8 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; r.needName ? nameScreen() : home();
-      if (!pingT) pingT = setInterval(function () { call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000);
+      if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
+        pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }

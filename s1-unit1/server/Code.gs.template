@@ -6,6 +6,7 @@
 var OWNER_EMAIL = '@@OWNER_EMAIL@@';
 var STAFF_SALT = '@@STAFF_SALT@@';
 var STAFF_HASH = '@@STAFF_HASH@@';
+var TEACHERS = '@@TEACHERS@@'; // named teachers (private list, filled at build): straight in with their school account, no passcode
 var BUILD = '@@BUILD@@';
 var TITLE = '@@TITLE@@';
 var DOMAIN = 'c2ken.net';
@@ -50,6 +51,9 @@ function autoName_() {
 }
 function hodList_() { return (jget_(sp_(), 'hods', []) || []).map(function (x) { return str_(x).toLowerCase(); }); }
 function isHod_(email) { return hodList_().indexOf(email) !== -1; }
+function teacherList_() { return TEACHERS.concat(jget_(sp_(), 'teachers', []) || []).map(function (x) { return str_(x).toLowerCase(); }); }
+function isTeacher_(email) { return teacherList_().indexOf(email) !== -1; }
+function seesAll_(email) { return isOwner_(email) || isHod_(email); } // everyone else sees only the classes they made (v5)
 function classList_() { return jget_(sp_(), 'classes', []) || []; }
 function ownsAnyClass_(email) { return classList_().some(function (s) { var c = jget_(sp_(), 'cls:' + s, null); return c && c.o === email; }); }
 function safe_(fn) { return function (req) { try { return fn(req || {}); } catch (e) { var m = str_(e && e.message); return { ok: false, error: /lock/i.test(m) ? 'busy' : 'server', detail: m.slice(0, 200), v: BUILD }; } }; }
@@ -308,7 +312,7 @@ function apiPing_(req) {
 // ---------- staff ----------
 function passOk_(pass) { var plain = str_(sp_().getProperty('staffPasscode')); var given = str_(pass).trim(); if (!given) return false; if (plain) return given === plain; return sha256hex_(STAFF_SALT + given) === STAFF_HASH; }
 function passMark_() { return sha256hex_(STAFF_SALT + 'ok:' + (str_(sp_().getProperty('staffPasscode')) || STAFF_HASH)); }
-function staffIn_(email) { if (!email) return false; if (isOwner_(email) || isHod_(email) || ownsAnyClass_(email)) return true; return up_().getProperty('s1staff') === passMark_(); }
+function staffIn_(email) { if (!email) return false; if (isOwner_(email) || isHod_(email) || isTeacher_(email) || ownsAnyClass_(email)) return true; return up_().getProperty('s1staff') === passMark_(); }
 function pupilsOf_(slug, keys) {
   var pre = 'p:' + slug + ':';
   return keys.filter(function (k) { return k.indexOf(pre) === 0; }).map(function (k) { return k.slice(pre.length); }).sort();
@@ -382,25 +386,28 @@ function apiStaff_(req) {
   if (op === 'classes') {
     var archived = isOwner_(email) ? withLock_(function () { return archive_(all); }) : 0;
     if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
-    return ok_({ archived: archived, classes: classList_().map(function (s) {
-      var c = jget_(sp_(), 'cls:' + s, null) || {};
-      return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email };
+    return ok_({ archived: archived, classes: classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null) || {}]; })
+      .filter(function (x) { return seesAll_(email) || x[1].o === email; }).map(function (x) {
+      var s = x[0], c = x[1];
+      return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email,
+        by: c.o && c.o !== email ? (c.on || c.o.split('@')[0]) : '' };
     }) });
   }
   if (op === 'create') {
     var name = str_(req.name).replace(/\s+/g, ' ').trim();
     var slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
     if (!name || name.length > 30 || !slug) return err_('bad-name');
+    var maker = autoName_(); // the maker's first name, shown to the owner as "made by …"
     return withLock_(function () {
       var list = classList_();
       if (list.indexOf(slug) !== -1 || sp_().getProperty('cls:' + slug)) return err_('taken');
-      jset_(sp_(), 'cls:' + slug, { name: name, o: email, c: tmin_(), r: { 'digital-data': 1 }, op: [] });
+      jset_(sp_(), 'cls:' + slug, { name: name, o: email, on: maker, c: tmin_(), r: { 'digital-data': 1 }, op: [] });
       list.push(slug); jset_(sp_(), 'classes', list);
       return ok_({ slug: slug, name: name });
     });
   }
   var slugC = slug_(req.cls), c = slugC ? jget_(sp_(), 'cls:' + slugC, null) : null;
-  if (!c) return err_('unknown-class');
+  if (!c || (!seesAll_(email) && c.o !== email)) return err_('unknown-class'); // another teacher's class is not there for you
   if (op === 'delete') {
     if (c.o !== email && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
@@ -469,7 +476,7 @@ function apiStaff_(req) {
       row: trackRow_(slugC, c, pe, round, all) });
   }
   if (op === 'csv') {
-    var head = ['class', 'pupil', 'email', 'round', 'stage', 'marks', 'max', 'rating', 'ticks', 'stageNote', 'topicRating', 'unsure', 'note', 'flags', 'flagged'];
+    var head = ['class', 'pupil', 'email', 'round', 'stage', 'marks', 'max', 'rating', 'ticks', 'stageNote', 'topicRating', 'unsure', 'note', 'flags', 'flagged', 'lastUsed'];
     var lines = [head.join(',')];
     pupils.forEach(function (em) {
       var row = trackRow_(slugC, c, em, round, all);
@@ -478,7 +485,7 @@ function apiStaff_(req) {
         var ticks = e ? e.ticks.filter(function (t) { return t; }).length + ' of ' + e.ticks.length : '';
         var unsure = E ? E.unsure.map(function (u) { return u ? stageOf_(u).title : "No, I'm fine with all of it"; }).join('; ') : '';
         lines.push([c.name, row.name, em, round, S.n + ' ' + S.title, g.m, g.x, e ? e.rating : '', ticks, e ? e.stageNote : '',
-          E ? E.rating : '', unsure, E ? E.note : '', g.flags.join('; '), g.fl.join('; ')].map(csvCell_).join(','));
+          E ? E.rating : '', unsure, E ? E.note : '', g.flags.join('; '), g.fl.join('; '), row.seen || ''].map(csvCell_).join(','));
       });
     });
     return ok_({ filename: slugC + '-digital-data-round-' + round + '.csv', csv: lines.join('\r\n') + '\r\n' });

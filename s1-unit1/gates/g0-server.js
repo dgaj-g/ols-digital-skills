@@ -166,7 +166,9 @@ async function flows() {
   r = await api('apiStaff', { op: 'setTopic', cls, topic: 'networks', open: true }, OWNER);
   ok(!r.ok && r.error === 'bad-topic', 'B a topic not built yet cannot be opened');
   r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, 'teacher2@c2ken.net');
-  ok(r.ok && r.open === true, 'B passcode staff open Digital Data');
+  ok(!r.ok && r.error === 'unknown-class', 'B control (v5): passcode staff cannot open a topic on a class they did not make');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, OWNER);
+  ok(r.ok && r.open === true, 'B the owner opens Digital Data');
   r = await api('apiStaff', { op: 'classes' }, OWNER);
   ok(r.ok && r.classes.filter((c) => c.slug === cls)[0].open === true, 'B the class list shows it open');
   r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: false }, OWNER);
@@ -286,7 +288,7 @@ async function flows() {
   ok(hi.s[4].fl.join() === 'new' || hi.s[4].fl.length === 1, 'B flagged questions shown by paper reference');
   r = await api('apiStaff', { op: 'csv', cls, round: 1 }, OWNER);
   const head = r.csv.split('\r\n')[0];
-  ok(head === 'class,pupil,email,round,stage,marks,max,rating,ticks,stageNote,topicRating,unsure,note,flags,flagged', 'B CSV columns in order');
+  ok(head === 'class,pupil,email,round,stage,marks,max,rating,ticks,stageNote,topicRating,unsure,note,flags,flagged,lastUsed', 'B CSV columns in order');
   const p1rows = r.csv.split('\r\n').filter((l) => l.indexOf('pupil1@c2ken.net') !== -1);
   const tk = ',2 of ' + BANK.stages[0].outcomes.length + ',';
   if (!(p1rows.length === 4 && p1rows[0].indexOf(tk) !== -1)) lines.push('  csv: ' + p1rows.join(' // ').slice(0, 600));
@@ -323,7 +325,7 @@ async function flows() {
   const before = await post('/__store', {}), keep = Object.keys(before.script).filter((k) => k.indexOf(':' + cls + ':') !== -1 || k === 'cls:' + cls).sort();
   const had = Object.keys(before.script).filter((k) => k.indexOf(':' + dc + ':') !== -1).length;
   r = await api('apiStaff', { op: 'delete', cls: dc }, 'other@c2ken.net');
-  ok(!r.ok && r.error === 'owner-only', 'B control: another teacher cannot delete a class they did not make (owner-only)');
+  ok(!r.ok && r.error === 'unknown-class', 'B control: another teacher cannot delete a class they did not make (to them it is not there)');
   r = await api('apiStaff', { op: 'delete', cls: dc }, 'maker@c2ken.net');
   const after = await post('/__store', {}), left = Object.keys(after.script).filter((k) => k.indexOf(':' + dc + ':') !== -1 || k === 'cls:' + dc);
   const kept = Object.keys(after.script).filter((k) => k.indexOf(':' + cls + ':') !== -1 || k === 'cls:' + cls).sort();
@@ -332,5 +334,36 @@ async function flows() {
   ok(JSON.stringify(kept) === JSON.stringify(keep) && keep.every((k) => after.script[k] === before.script[k]), 'B control: the other class keeps every record, byte for byte (' + keep.length + ' keys)');
   r = await api('apiBoot', { cls: dc }, 'pd@c2ken.net');
   ok(!r.ok && r.error === 'unknown-class', 'B a deleted class link says it is not a class');
+
+  // v5: named teachers (DECISIONS §18). Straight in with their school account; they see and touch only the classes they made; the owner sees all.
+  const NT = 'teacher3@c2ken.net', STR = 'teacher4@c2ken.net';
+  await post('/__set', { script: { teachers: JSON.stringify(['Teacher3@c2ken.net']) } });
+  r = await api('apiStaff', { op: 'check' }, NT);
+  ok(r.ok && r.admitted === true && r.owner === false, 'B named teacher admitted with no passcode');
+  r = await api('apiStaff', { op: 'check' }, STR);
+  ok(r.ok && r.admitted === false, 'B control: a teacher not on the list and with no passcode is not admitted');
+  r = await api('apiStaff', { op: 'classes' }, NT);
+  ok(r.ok && r.classes.length === 0, 'B named teacher with no class sees no classes (not the owner\'s ' + cls + ')');
+  r = await api('apiStaff', { op: 'create', name: '12B DT' }, NT);
+  ok(r.ok && r.slug === '12b-dt', 'B named teacher makes 12B DT');
+  r = await api('apiStaff', { op: 'classes' }, NT);
+  ok(r.ok && r.classes.map((c) => c.slug).join() === '12b-dt' && r.classes[0].mine === true && r.classes[0].by === '', 'B named teacher sees only 12B DT, as hers');
+  r = await api('apiStaff', { op: 'classes' }, OWNER);
+  const o12 = r.classes.filter((c) => c.slug === '12b-dt')[0], o11 = r.classes.filter((c) => c.slug === cls)[0];
+  ok(r.ok && o12 && o11 && o12.by === 'Orla' && o12.mine === false && o11.by === '' && o11.mine === true, 'B the owner sees 11A DT and 12B DT, "made by Orla" on hers');
+  r = await api('apiStaff', { op: 'classes' }, 'teacher2@c2ken.net');
+  ok(r.ok && r.classes.length === 0, 'B passcode staff who made no class see no classes');
+  const snap = async () => { const st = await post('/__store', {}); return JSON.stringify(Object.keys(st.script).filter((k) => k.indexOf(':' + cls + ':') !== -1 || k === 'cls:' + cls).sort().map((k) => [k, st.script[k]])); };
+  const was = await snap(), refused = [];
+  for (const q of [{ op: 'topics' }, { op: 'setTopic', topic: T, open: false }, { op: 'rounds' }, { op: 'openClass' }, { op: 'openPupil', email: 'pupil1@c2ken.net' },
+    { op: 'tracker' }, { op: 'pupil', email: 'pupil1@c2ken.net', round: 1 }, { op: 'csv', round: 1 }, { op: 'clearMe' }, { op: 'delete' }]) {
+    const x = await api('apiStaff', Object.assign({ cls }, q), NT); if (!x.ok && x.error === 'unknown-class') refused.push(q.op);
+  }
+  ok(refused.length === 10 && (await snap()) === was, 'B control: every staff op on the owner\'s class is refused to the named teacher (' + refused.length + ' of 10) and its records are unchanged');
+  r = await api('apiStaff', { op: 'tracker', cls: '12b-dt' }, OWNER);
+  ok(r.ok && r.className === '12B DT', 'B the owner opens the named teacher\'s tracker');
+  await post('/__set', { script: { hods: JSON.stringify(['hod@c2ken.net']) } });
+  r = await api('apiStaff', { op: 'classes' }, 'hod@c2ken.net');
+  ok(r.ok && r.classes.length >= 2, 'B a head of department sees every class');
 }
 main();

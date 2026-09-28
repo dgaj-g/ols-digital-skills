@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 /* G5 — the staff page (SPEC §7, §3.8), driven through the page on the harness at 1280x800.
- * A teacher who is not the script owner opens the staff link (the owner is let in without the door). A wrong passcode is refused and shows no tabs; the right one opens Classes / Topics / Rounds / Tracker / Export; the class link
+ * A teacher who is not the script owner opens the staff link (the owner is let in without the door); after the passcode they see no classes, because a
+ * passcode teacher sees only the classes they made (v5, DECISIONS §18). The rest runs as the owner, who sees every class. A wrong passcode is refused and shows no tabs; the right one opens Classes / Topics / Rounds / Tracker / Export; the class link
  * is copied by its "Copy class link" button (the long link is not printed, v4) and a class the teacher made is deleted only on a second press (a class
- * they did not make has no Delete); Topics locks Digital Data (the pupil's tile then says "Not opened yet" and has no Open) and opens it again (DECISIONS §16); the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
+ * they did not make is not in their list at all, v5); Topics locks Digital Data (the pupil's tile then says "Not opened yet" and has no Open) and opens it again (DECISIONS §16); the tracker shows a real pupil's marks and rating, and the two flags fire on synthetic records and stay silent
  * on a control record; every score carries its percentage and ratings show in the pupils' words; the graphs card and "What pupils said"
  * are drawn; a name opens that pupil's page (every answered question with its marks and percentage) and "Back to the tracker" returns;
  * a slow call pulses the button that started it, and the pulse is gone when it lands (v4); the CSV the Export button downloads has exactly SPEC §3.8's columns; nothing is wider than its box;
  * the build token is on the body but its footer shows only with ?build in the link (his ruling, 27 Sep 2026); no console errors.
+ * v5: a named teacher goes straight in with no passcode, makes a class and sees only it; the owner sees it marked "made by <first name>";
+ * the tracker's second column is "Last used" (Today hh:mm, or the date and "n days ago"), and the pupil page says "Last used: …".
  * CONTROLS (must fail): the control record made flag-worthy must show a flag (so silence is real), a stylesheet that
- * widens the tracker (and removes its scroll box) must be caught by the layout check, a single press of Delete must delete nothing, and the locked-tile check run on an open topic must not pass.
+ * widens the tracker (and removes its scroll box) must be caught by the layout check, a single press of Delete must delete nothing, and the locked-tile check run on an open topic must not pass;
+ * a teacher not on the named list must meet the passcode door.
  * Run: node s1-unit1/gates/g5-staff.js  (exit 0 = GREEN). Output: gates/out/g5-staff.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
@@ -17,7 +21,7 @@ const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude 
 const puppeteer = require(path.join(execSync('npm root -g').toString().trim(), 'puppeteer'));
 const Policy = require(path.join(ROOT, 'platform', 'sitpolicy.js'));
 const BANK = require(path.join(DESIGN, 'content', 'bank_digital_data.js'));
-const PORT = 8770, BASE = 'http://localhost:' + PORT, OWNER = 'dgartland021@c2ken.net', TEACHER = 'mcolleague@c2ken.net', CLS = '11a-dt', T = 'digital-data';
+const PORT = 8770, BASE = 'http://localhost:' + PORT, OWNER = 'dgartland021@c2ken.net', TEACHER = 'mcolleague@c2ken.net', NAMED = 'teacher3@c2ken.net', CLS = '11a-dt', T = 'digital-data';
 const STORE = path.join(DESIGN, 'gates', 'g5-store.json');
 const PASS = fs.readFileSync(path.join(DESIGN, 'STAFF_PASSCODE.txt'), 'utf8').split('\n').map((l) => l.trim()).filter(Boolean)[1];
 const SPEC = fs.readFileSync(path.join(DESIGN, 'SPEC.md'), 'utf8');
@@ -60,6 +64,8 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await setRec('flaghigh@c2ken.net', 'High', syn([{ r: 4, t: [1] }, { r: 3, t: [1] }, null, null], [Math.floor(x[0] * 0.49), Math.floor(x[1] * 0.2), 0, 0]));
     await setRec('flaglow@c2ken.net', 'Low', syn([{ r: 1, t: [0] }, { r: 2, t: [0] }, null, null], [Math.ceil(x[0] * 0.75), x[1], 0, 0]));
     await setRec('control@c2ken.net', 'Control', CONTROL_OK);
+    const sixAgo = new Date(); sixAgo.setDate(sixAgo.getDate() - 6); sixAgo.setHours(10, 5, 0, 0); // "last used" 6 days ago, for the date form
+    await post('/__set', { script: { ['s:' + CLS + ':flaghigh@c2ken.net']: String(Math.floor((sixAgo.getTime() - 1767225600000) / 60000)) } });
     // ---- the page
     browser = await puppeteer.launch({ headless: 'shell', protocolTimeout: 60000 });
     const page = await browser.newPage(), errs = [];
@@ -83,10 +89,17 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await page.waitForSelector('.tabs', { timeout: 10000 });
     const tabs = await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].map((b) => b.innerText.trim()).join('|'));
     check('right passcode opens the five tabs', tabs === 'Classes|Topics|Rounds|Tracker|Export', tabs);
+    const tNone = await page.evaluate(() => ({ t: document.getElementById('app').innerText, n: document.querySelectorAll('ul.clist li').length }));
+    check('Classes: a passcode teacher who has made no class sees "No classes yet. Add one below." and not the owner\'s 11A DT', tNone.n === 0 && tNone.t.indexOf('No classes yet. Add one below.') !== -1 && tNone.t.indexOf('11A DT') === -1, JSON.stringify(tNone).slice(0, 200));
+    const tTrack = await api('apiStaff', { op: 'tracker', cls: CLS }, TEACHER);
+    check('a passcode teacher asking for the owner\'s tracker gets "unknown-class"', !tTrack.ok && tTrack.error === 'unknown-class', JSON.stringify(tTrack).slice(0, 120));
+    // ---- the owner: straight in, sees every class
+    await page.goto(BASE + '/?as=' + encodeURIComponent(OWNER), { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.tabs', { timeout: 15000 });
     const clsText = await page.evaluate(() => document.getElementById('app').innerText);
     const li = await page.evaluate(() => [...document.querySelectorAll('ul.clist li')].map((l) => ({ s: l.dataset.s, b: l.querySelector('b').innerText, copy: !!l.querySelector('[data-copy]'), del: !!l.querySelector('[data-del]') })));
     check('Classes: one line "11A DT · 4 pupils · created <date>" with Copy class link; the long link is not printed', li.length === 1 && /^11A DT · 4 pupils · created \d{1,2} \w{3,4} \d{4}$/.test(li[0].b) && li[0].copy && !/\?class=/.test(clsText), JSON.stringify(li) + ' · ' + clsText.slice(0, 200));
-    check('Classes: no Delete on a class this teacher did not make', li.length === 1 && !li[0].del, JSON.stringify(li));
+    check('Classes: the owner\'s own class has Delete and no "made by"', li.length === 1 && li[0].del && !/made by/.test(li[0].b), JSON.stringify(li));
     await page.click('ul.clist li [data-copy]'); await wait(300);
     const clip = await page.evaluate(() => ({ c: window.__clip, t: (document.getElementById('toast') || {}).innerText || '' }));
     check('Classes: Copy class link puts …?class=11a-dt on the clipboard and says "Class link copied."', /^http:\/\/localhost:\d+\/?.*\?class=11a-dt$/.test(clip.c || '') && clip.t.trim() === 'Class link copied.', JSON.stringify(clip));
@@ -124,6 +137,12 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await clickTab(page, 'Tracker');
     await page.waitForSelector('table.track', { timeout: 10000 });
     let rows = await trackerRows(page); const row = (n) => rows.find((r) => r.name === n) || { text: '' };
+    const lu = await page.evaluate(() => ({ th: [...document.querySelectorAll('table.track th')].map((t) => t.innerText.trim()), td: [...document.querySelectorAll('table.track tr')].slice(1).map((tr) => [tr.children[0].innerText.trim(), tr.children[1].innerText.replace(/\s+/g, ' ').trim()]) }));
+    const luOf = (n) => (lu.td.find((r) => r[0] === n) || [])[1] || '';
+    check('Tracker: the second column is "Last used"', lu.th[1] === 'Last used' && lu.th.filter((t) => t === 'Last used').length === 1, lu.th.join('|'));
+    check('Tracker: Aoife, who used it just now, reads "Today hh:mm"', /^Today \d\d:\d\d$/.test(luOf('Aoife')), luOf('Aoife'));
+    check('Tracker: High, last used 6 days ago, reads "<day> <date> <month> hh:mm 6 days ago"', /^\w{3} \d{1,2} \w{3,4} \d\d:\d\d 6 days ago$/.test(luOf('High')), luOf('High'));
+    check('Tracker: a pupil never seen reads "—"', luOf('Low') === '—', luOf('Low'));
     const pcA = Math.round(100 * m / x[0]), RATE2 = "I got some, but I'm not sure why";
     check('Tracker: the real pupil shows ' + m + '/' + x[0] + ' · ' + pcA + '% and her rating in words, never "rating 2"', row('Aoife').text.indexOf(m + '/' + x[0] + ' · ' + pcA + '%') !== -1 && row('Aoife').text.indexOf(RATE2) !== -1 && !/rating \d/i.test(row('Aoife').text), row('Aoife').text.replace(/\s+/g, ' ').slice(0, 200));
     const said = await page.evaluate(() => { const c = document.querySelector('.card.said'); return c ? [...c.querySelectorAll('.ev')].map((e) => e.innerText.replace(/\s+/g, ' ')) : null; });
@@ -144,6 +163,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const pp = await page.evaluate(() => ({ text: document.getElementById('app').innerText, qrows: [...document.querySelectorAll('table.qs tr')].slice(1).map((tr) => [...tr.children].map((td) => td.innerText.replace(/\s+/g, ' ').trim())) }));
     check('Pupil page: "Aoife · Round 1", Back to the tracker, her total with its %, "Their card" with her rating words', /Aoife · Round 1/.test(pp.text) && /Back to the tracker/.test(pp.text) && pp.text.indexOf('Total: ' + m + '/' + x[0] + ' · ' + pcA + '%') !== -1 && /Their card/.test(pp.text) && pp.text.indexOf(RATE2) !== -1, pp.text.replace(/\s+/g, ' ').slice(0, 300));
     check('Pupil page: one row per answered stage 1 question (' + nq[0] + '), each with the question, her answer and "m/x · p%"', pp.qrows.length === nq[0] && pp.qrows.every((r) => r.length === 3 && r[0].length > 8 && r[1].length > 0 && /^\d+\/\d+ · \d+%$/.test(r[2])), JSON.stringify(pp.qrows.filter((r) => !(r.length === 3 && /^\d+\/\d+ · \d+%$/.test(r[2]))).slice(0, 3)));
+    check('Pupil page: "Last used: Today hh:mm" under the heading', /Last used: Today \d\d:\d\d/.test(pp.text), (pp.text.match(/Last used[^\n]*/) || [''])[0]);
     check('Pupil page: stages not started say "Not answered yet: n questions."', (pp.text.match(/Not answered yet: \d+ questions\./g) || []).length === 3, (pp.text.match(/Not answered yet[^\n]*/g) || []).join(' | '));
     lay = await page.evaluate(LAYOUT); check('Pupil page: nothing wider than its box', lay.length === 0, lay.join(' | '));
     await wait(900); try { // the pupil page shows right answers: its pictures stay in the private folder, never the repo
@@ -180,12 +200,28 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await api('apiName', { cls: 'del-test', name: 'Dara' }, 'dara@c2ken.net'); await api('apiBoot', { cls: 'del-test' }, 'dara@c2ken.net');
     await page.click('ul.clist li[data-s="del-test"] [data-del]'); await wait(700);
     const armed = await page.evaluate(() => { const b = document.querySelector('ul.clist li[data-s="del-test"] [data-del]'); return b ? { t: b.innerText.trim(), arm: b.classList.contains('arm') } : null; });
-    const still = (await api('apiStaff', { op: 'classes' }, TEACHER)).classes.map((c) => c.slug).join(',');
+    const still = (await api('apiStaff', { op: 'classes' }, OWNER)).classes.map((c) => c.slug).join(',');
     check('CONTROL Delete: a single press deletes nothing and asks "Delete Del Test and every record in it? Press again to confirm."', !!armed && armed.arm && armed.t === 'Delete Del Test and every record in it? Press again to confirm.' && /del-test/.test(still), JSON.stringify(armed) + ' · ' + still);
     await page.click('ul.clist li[data-s="del-test"] [data-del]');
     await page.waitForFunction(() => !document.querySelector('ul.clist li[data-s="del-test"]'), { timeout: 10000 });
-    const gone = await api('apiBoot', { cls: 'del-test' }, 'dara@c2ken.net'), keep = await api('apiStaff', { op: 'tracker', cls: CLS }, TEACHER);
+    const gone = await api('apiBoot', { cls: 'del-test' }, 'dara@c2ken.net'), keep = await api('apiStaff', { op: 'tracker', cls: CLS }, OWNER);
     check('Delete: the second press removes Del Test (its link now says unknown class); 11A DT keeps its 4 pupils', !gone.ok && gone.error === 'unknown-class' && keep.ok && keep.rows.length === 4, JSON.stringify(gone).slice(0, 100) + ' · ' + (keep.rows || []).length);
+    // ---- v5 named teacher: straight in, makes a class, sees only it; the owner sees "made by Orla"
+    await post('/__set', { script: { teachers: JSON.stringify([NAMED]) } });
+    const nt = await browser.newPage(); await nt.setViewport({ width: 1280, height: 800 }); nt.on('pageerror', (e) => errs.push('named pageerror: ' + e.message));
+    await nt.goto(BASE + '/?as=' + encodeURIComponent(NAMED), { waitUntil: 'domcontentloaded' }); await nt.waitForSelector('.tabs, #pw', { timeout: 15000 });
+    const ntIn = await nt.evaluate(() => ({ pw: !!document.getElementById('pw'), tabs: !!document.querySelector('.tabs'), t: document.getElementById('app').innerText, n: document.querySelectorAll('ul.clist li').length }));
+    check('named teacher: straight in with no passcode box, and sees no classes yet', !ntIn.pw && ntIn.tabs && ntIn.n === 0 && ntIn.t.indexOf('No classes yet. Add one below.') !== -1, JSON.stringify(ntIn).slice(0, 200));
+    await nt.type('#cn', '12B DT'); await nt.click('#make');
+    await nt.waitForFunction(() => document.querySelector('ul.clist li[data-s="12b-dt"]'), { timeout: 10000 });
+    const ntLi = await nt.evaluate(() => [...document.querySelectorAll('ul.clist li')].map((l) => ({ s: l.dataset.s, b: l.querySelector('b').innerText, del: !!l.querySelector('[data-del]') })));
+    check('named teacher: makes 12B DT and sees only it, with its Delete and no "made by"', ntLi.length === 1 && ntLi[0].s === '12b-dt' && ntLi[0].del && !/made by/.test(ntLi[0].b), JSON.stringify(ntLi)); await nt.close();
+    await clickTab(page, 'Classes'); await page.waitForFunction(() => document.querySelector('ul.clist li[data-s="12b-dt"]'), { timeout: 10000 });
+    const oLi = await page.evaluate(() => [...document.querySelectorAll('ul.clist li')].map((l) => l.querySelector('b').innerText));
+    check('owner: sees both classes; 12B DT reads "12B DT · 0 pupils · created <date> · made by Orla"', oLi.length === 2 && oLi.some((b) => /^11A DT · 4 pupils · created [^·]+$/.test(b)) && oLi.some((b) => /^12B DT · 0 pupils · created \d{1,2} \w{3,4} \d{4} · made by Orla$/.test(b)), JSON.stringify(oLi));
+    const nn = await browser.newPage(); await nn.goto(BASE + '/?as=' + encodeURIComponent('teacher4@c2ken.net'), { waitUntil: 'domcontentloaded' }); await nn.waitForSelector('.tabs, #pw', { timeout: 15000 });
+    const nnIn = await nn.evaluate(() => ({ pw: !!document.getElementById('pw'), tabs: !!document.querySelector('.tabs') })); await nn.close();
+    check('CONTROL a teacher not on the named list meets the passcode door', nnIn.pw && !nnIn.tabs, JSON.stringify(nnIn));
     await clickTab(page, 'Tracker'); await page.waitForSelector('table.track');
     await page.addStyleTag({ content: '.tscroll{overflow:visible} table.track{min-width:1800px}' });
     lay = await page.evaluate(LAYOUT);
