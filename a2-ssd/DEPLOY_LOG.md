@@ -5,6 +5,7 @@
 | 27 Sep 2026 10:33 | 1 | f309a5fa51-d2d1d70f | v1 A2 SSD f309a5fa51-d2d1d70f | token found in /exec after the owner's permission click; live smoke passed |
 | 27 Sep 2026 11:15 | 2 | f309a5fa51-79b672b1 | v2 A2 SSD f309a5fa51-79b672b1 | /exec carries the v2 token and not v1's; Classes reads "U6-SSD · 0 pupils" with the owner's record present (F59); owner's test record cleared |
 | 28 Sep 2026 15:04 | 3 | b50b28c59f-aa1a6edc | v3 A2 SSD b50b28c59f-aa1a6edc spelling rule + re-mark | /exec carries the v3 token and not v2's; pupils' calls land on Version 3 in Executions; the owner-only re-mark dry run ran on live (11 records, 194 attempts re-judged, 10 marks would go up, nothing changed) |
+| 29 Sep 2026 15:59 | 4 | 1faf886c6a-bb8ebc49 | v4 A2 SSD 1faf886c6a-bb8ebc49 activity tracking | deployed after the class had finished; /exec carries the v4 token; encrypted bundle branch deleted |
 
 - Project: OLS A2 SSD Platform (owner dgartland021@c2ken.net)
 - Script ID: 1B53FthiVBjLCQYsDCtKimL2ueSD7qpNbZBx26W4O-eFPRtKwNXbWsF1X
