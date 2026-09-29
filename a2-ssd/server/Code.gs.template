@@ -17,11 +17,12 @@
  *   classes                      ["U6-SSD-2026", ...]
  *   cls:<class>                  {o owner, c created (tmin), order [paper ids], open [paper ids]}
  *   p:<class>:<email>            {n name, j joined, P {partId: part}, E {paperId: eval}}
- *       part = {d door 0 learn/1 cold, f first, b best, a attempts, s seen, sb best after seen,
+ *       part = {d door 0 learn/1 cold, f first, b best, a attempts, s seen (tmin; 1 before v4), sb best after seen,
  *               t practice question id, tf, tb, ta, ts (its first, best, attempts, seen), fl {b beat, m tmin}}
  *       eval = {l {group: 0 I can/1 getting/2 not yet}, f feel 0/1/2, c comment, t tmin}
  *   d:<class>:<email>:<part>     gzip+base64 of {a [[tmin, total, script]...], t [[tmin, total, script]...]}
- *   s:<class>:<email>            last seen (tmin), written without the lock
+ *   s:<class>:<email>            activity (D100): {l last active, q last call, S [[start, end, active minutes, answers marked]...]}
+ *                                written without the lock; a bare number is the pre-v4 last seen (tmin)
  *   hods                         optional JSON list of heads of department (let in by email)
  *   staffPasscode                optional plain passcode that overrides the built-in hash
  *   archiveId                    the owner's "A2 SSD - Archive" spreadsheet, once made
@@ -36,6 +37,9 @@ var DOMAIN = 'c2ken.net';
 var SCRIPT_CAP = 2000;        // characters kept of one script (D58)
 var RECORD_CAP = 8000;        // bytes of one d: record before middle attempts are dropped (D67)
 var ARCHIVE_AT = 350 * 1024;  // store size at which the owner's staff visit archives finished papers (D58)
+var SESSION_GAP = 10;         // minutes without activity that end a session (D100)
+var ACTIVE_STEP = 3;          // most minutes one active call can add: the page pings once a minute
+var SESSIONS_KEPT = 60;       // sessions kept per pupil, oldest dropped first
 
 /* ---------- tiny helpers (KS3) ---------- */
 function sp_() { return PropertiesService.getScriptProperties(); }
@@ -109,8 +113,8 @@ function writePupil_(cls, email, rec) { jset_(sp_(), pKey_(cls, email), rec); }
 function freshPupil_() { return { n: '', j: tmin_(), P: {}, E: {} }; }
 
 // scripts: gzip + base64 so a class's year of answers fits the 500 KB store
-function readScripts_(cls, email, part) {
-  var raw = sp_().getProperty(dKey_(cls, email, part));
+function readScripts_(cls, email, part) { return decodeScripts_(sp_().getProperty(dKey_(cls, email, part))); }
+function decodeScripts_(raw) {
   if (!raw) return { a: [], t: [] };
   try {
     if (raw.charAt(0) === '{') return JSON.parse(raw);
@@ -154,6 +158,31 @@ function scriptInput_(part, s) {
   if (s == null) return null;
   if (part && (part.type === 'cloze' || part.type === 'rows')) { try { return JSON.parse(s); } catch (e) { return part.type === 'cloze' ? [] : []; } }
   return s;
+}
+
+/* ---------- activity (D100): sessions, active minutes, answers marked ----------
+   act = the pupil typed, clicked or scrolled in the last 3 minutes with the page on screen (a mark always counts).
+   A minute counts once; a call more than SESSION_GAP minutes after the last active one starts a new session.
+   Written without the lock: a lost update costs a minute of the record, never a mark. */
+function sKey_(cls, email) { return 's:' + cls + ':' + email; }
+function readSeen_(raw) {
+  var s = str_(raw);
+  if (/^\d+$/.test(s)) return { l: +s, q: +s, S: [] };
+  try { var o = JSON.parse(s); return { l: num_(o.l), q: num_(o.q), S: Array.isArray(o.S) ? o.S : [] }; }
+  catch (e) { return { l: 0, q: 0, S: [] }; }
+}
+function touch_(cls, email, act, marked) {
+  try {
+    var store = sp_(), key = sKey_(cls, email), now = tmin_(), o = readSeen_(store.getProperty(key)), S = o.S, cur = S[S.length - 1];
+    if (act) {
+      if (!cur || now - num_(cur[1]) > SESSION_GAP) { cur = [now, now, 1, 0]; S.push(cur); }
+      else { cur[2] = num_(cur[2]) + Math.min(Math.max(now - Math.max(o.q, num_(cur[1])), 0), ACTIVE_STEP); cur[1] = now; }
+      if (marked) cur[3] = num_(cur[3]) + 1;
+      if (S.length > SESSIONS_KEPT) S.splice(0, S.length - SESSIONS_KEPT);
+      o.l = now;
+    }
+    store.setProperty(key, JSON.stringify({ l: o.l, q: now, S: S }));
+  } catch (e) {}
 }
 
 /* ---------- inputs ---------- */
@@ -247,7 +276,7 @@ function apiBoot(req) {
       return r;
     });
   }
-  try { sp_().setProperty('s:' + cls + ':' + email, String(tmin_())); } catch (e) {}
+  touch_(cls, email, 1, 0);
   return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(readClass_(cls)) });
 }
 
@@ -289,6 +318,7 @@ function apiMark(req) {
     writeScripts_(w.cls, w.email, partId, sc);
     return { first: first, part: p };
   });
+  touch_(w.cls, w.email, 1, 1);
   var out = { verdict: verdictOut_(v), first: res.first, part: res.part };
   if (meta.kind === 'select') out.expected = expectedFor_(partId, req.today);
   return ok_(out);
@@ -301,17 +331,18 @@ function apiAnswer(req) {
   var partId = str_(req.part);
   if (!partMeta_(partId)) return err_('unknown-part');
   var twin = req.which === 'twin';
+  touch_(w.cls, w.email, 1, 0);
   return withLock_(function () {
     var rec = readPupil_(w.cls, w.email) || freshPupil_();
     var p = rec.P[partId] || {};
     if (twin) {
       if (!p.t || p.tf == null) return err_('no-first');
-      if (!p.ts) { p.ts = 1; rec.P[partId] = p; writePupil_(w.cls, w.email, rec); }
+      if (!p.ts) { p.ts = tmin_(); rec.P[partId] = p; writePupil_(w.cls, w.email, rec); }
       var wk = A2PRIVATE.worked[p.t];
       return ok_({ text: wk ? wk.text : '', sql: wk ? !!wk.sql : true, walk: wk ? wk.walk : [], part: p });
     }
     if (p.f == null) return err_('no-first');
-    if (!p.s) { p.s = 1; rec.P[partId] = p; writePupil_(w.cls, w.email, rec); }
+    if (!p.s) { p.s = tmin_(); rec.P[partId] = p; writePupil_(w.cls, w.email, rec); }
     var an = A2PRIVATE.answers[partId];
     return ok_({ text: an ? an.text : '', sql: an ? !!an.sql : true, part: p });
   });
@@ -370,6 +401,7 @@ function apiTwinMark(req) {
     return { first: first, part: p };
   });
   if (!res) return err_('no-twin');
+  touch_(w.cls, w.email, 1, 1);
   return ok_({ verdict: verdictOut_(v), first: res.first, part: res.part, twin: p0.t });
 }
 
@@ -380,6 +412,7 @@ function apiFlag(req) {
   if (!partMeta_(partId)) return err_('unknown-part');
   var beats = ['door', 'ask', 'lesson', 'turn', 'another'];
   var beat = beats.indexOf(req.beat) === -1 ? 'turn' : req.beat;
+  touch_(w.cls, w.email, 1, 0);
   return withLock_(function () {
     var rec = readPupil_(w.cls, w.email) || freshPupil_();
     var p = rec.P[partId] || {};
@@ -401,6 +434,7 @@ function apiEval(req) {
   var f = num_(req.f);
   if (!Object.keys(l).length || f < 0 || f > 2) return err_('incomplete');
   var c = str_(req.c).replace(/[\u0000-\u001f]/g, ' ').slice(0, 60);
+  touch_(w.cls, w.email, 1, 0);
   return withLock_(function () {
     var rec = readPupil_(w.cls, w.email) || freshPupil_();
     if (rec.E[pid]) return ok_({ already: true, rec: pupilView_(rec) });
@@ -414,7 +448,7 @@ function apiEval(req) {
 
 function apiPing(req) {
   var w = who_(req); if (w.error) return err_(w.error);
-  try { sp_().setProperty('s:' + w.cls + ':' + w.email, String(tmin_())); } catch (e) {}
+  touch_(w.cls, w.email, req && req.act === 0 ? 0 : 1, 0); // a page from before v4 sends no act: it pinged only while on screen
   return ok_({});
 }
 
@@ -471,7 +505,8 @@ function pupilsOf_(props, cls) {
     if (k.indexOf(pre) !== 0) return;
     var email = k.slice(pre.length), rec;
     try { rec = JSON.parse(props[k]); } catch (e) { return; }
-    out.push({ email: email, n: str_(rec.n), P: rec.P || {}, E: rec.E || {}, seen: num_(props['s:' + cls + ':' + email]) || num_(rec.j) });
+    var sn = readSeen_(props[sKey_(cls, email)]);
+    out.push({ email: email, n: str_(rec.n), P: rec.P || {}, E: rec.E || {}, seen: sn.l || num_(rec.j), last: sn.S.length ? sn.S[sn.S.length - 1] : null });
   });
   out.sort(function (a, b) { return (a.n || a.email).toLowerCase() < (b.n || b.email).toLowerCase() ? -1 : 1; });
   return out;
@@ -562,6 +597,26 @@ function apiStaff(req) {
     };
     var archived = !sp_().getProperty(dKey_(name, pe, partId)) && p.f != null;
     return ok_({ part: p, a: remark(mp, sc.a), t: tp ? remark(tp, sc.t) : [], archived: archived });
+  }
+  // one pupil's timeline (D100): sessions plus every timed event - marks, the answers opened, flags, evaluations; never the scripts
+  if (op === 'activity') {
+    var ue = str_(req.email).toLowerCase(), ur = readPupil_(name, ue);
+    if (!ur) return err_('unknown-pupil');
+    props = allProps_();
+    var evs = [], UP = ur.P || {}, untimed = 0;
+    Object.keys(UP).forEach(function (pid) {
+      var q = UP[pid] || {}, sc = decodeScripts_(props[dKey_(name, ue, pid)]);
+      if (!sc.a.length && q.f != null) untimed++;
+      sc.a.forEach(function (a, i) { evs.push({ m: a[0], k: 'a', part: pid, t: a[1], n: i, d: i ? null : (q.d === 1 ? 1 : 0) }); });
+      sc.t.forEach(function (a, i) { evs.push({ m: a[0], k: 't', part: pid, t: a[1], n: i, id: q.t || '' }); });
+      if (num_(q.s) > 1) evs.push({ m: q.s, k: 's', part: pid });
+      if (num_(q.ts) > 1) evs.push({ m: q.ts, k: 'w', part: pid, id: q.t || '' });
+      if (q.fl && q.fl.m) evs.push({ m: q.fl.m, k: 'f', part: pid, b: q.fl.b });
+    });
+    Object.keys(ur.E || {}).forEach(function (pid) { var e = ur.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'e', paper: pid }); });
+    if (ur.j) evs.push({ m: ur.j, k: 'j' });
+    evs.sort(function (x, y) { return x.m - y.m; });
+    return ok_({ sessions: readSeen_(props[sKey_(name, ue)]).S, events: evs, untimed: untimed, now: tmin_() });
   }
   if (op === 'ack') {
     var ae = str_(req.email).toLowerCase(), ap = str_(req.part);

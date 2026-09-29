@@ -712,7 +712,10 @@
     ME = { email: r.email, cls: r.cls, name: r.name || '' };
     REC = r.rec || REC; CFG = r.cfg || CFG;
     sqlReady().then(repaintData, repaintData);
-    setInterval(() => { if (!document.hidden) call('apiPing').catch(() => {}); }, 60000);
+    // activity (D100): once a minute while the page is on screen; act = typed, clicked or scrolled in the last 3 minutes
+    let lastAct = Date.now();
+    ['keydown', 'pointerdown', 'input', 'wheel', 'scroll', 'touchstart'].forEach((t) => window.addEventListener(t, () => { lastAct = Date.now(); }, { capture: true, passive: true }));
+    setInterval(() => { if (!document.hidden) call('apiPing', { act: Date.now() - lastAct < 180000 ? 1 : 0 }).catch(() => {}); }, 60000);
     flushOutbox();
     route();
   }

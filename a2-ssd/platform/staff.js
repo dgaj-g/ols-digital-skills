@@ -9,6 +9,16 @@
   const EPOCH = 1767225600000;
   const pad = (n) => (n < 10 ? '0' : '') + n;
   const dateOf = (m) => { const d = new Date(EPOCH + m * 60000); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); };
+  const at = (m) => new Date(EPOCH + m * 60000), hm = (m) => { const d = at(m); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  const dayKey = (d) => d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate();
+  function dayName(m, now) {
+    const d = at(m), t = at(now), y = at(now - 1440);
+    if (dayKey(d) === dayKey(t)) return T('staff.today');
+    if (dayKey(d) === dayKey(y)) return T('staff.yesterday');
+    return T('staff.day', { day: T('staff.days').split(',')[d.getDay()], date: d.getDate(), month: T('staff.months').split(',')[d.getMonth()] });
+  }
+  const mins = (n) => (n < 60 ? T('staff.act.min', { n }) : T('staff.act.hm', { h: Math.floor(n / 60), m: n % 60 }));
+  const marked = (n) => T(n === 1 ? 'staff.act.marked1' : 'staff.act.marked', { n });
   let app, ME = '', OWNER = false, TAB = 'live', CLS = '', CLASSES = [], timer = null;
   const sel = (k) => { try { return localStorage.getItem('a2staff:' + k) || ''; } catch (e) { return ''; } };
   const keep = (k, v) => { try { localStorage.setItem('a2staff:' + k, v); } catch (e) {} };
@@ -156,7 +166,9 @@
       (cold && n === p.parts.length ? '<span class="tg">' + h(T('staff.tagUnaided')) + '</span>' : '') + (seen ? '<span class="tg">' + h(T('staff.tagSeen')) + '</span>' : '') +
       (flag ? '<span class="tg red">' + h(T('staff.tagFlag')) + '</span>' : '') + (amber ? '<span class="amber" aria-label="' + h(T('staff.eval')) + '"></span>' : '') + '</td>';
   }
-  function ago(now, m) { const d = now - m; return !m ? '—' : d < 1 ? T('staff.justNow') : d < 120 ? T('staff.minAgo', { n: d }) : dateOf(m); }
+  function ago(now, m) { const d = now - m; return !m ? '—' : d < 1 ? T('staff.justNow') : d < 60 ? T('staff.minAgo', { n: d }) : dayName(m, now) + ' ' + hm(m); }
+  // the Last seen cell's second line (D100): the last session's working time and answers marked
+  const lastLine = (s) => (s ? [s[2] ? mins(s[2]) : '', s[3] ? marked(s[3]) : ''].filter(Boolean).join(' · ') : '');
   function vLive() {
     const load = () => call({ op: 'live', name: CLS }).then((r) => {
       LIVE = r;
@@ -164,7 +176,7 @@
       const order = r.order;
       pane().innerHTML = '<div class="row" style="margin-bottom:10px"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span></div>' +
         (r.pupils.length ? '<div class="scroll"><table class="grid"><tr><th>' + h(T('staff.pupil')) + '</th><th>' + h(T('staff.lastSeen')) + '</th>' + order.map((id) => '<th>' + h(PAPERS[id].year) + '</th>').join('') + '</tr>' +
-          r.pupils.map((pu) => '<tr' + (pu.me ? ' class="me"' : '') + '><td>' + h(pu.n || pu.email) + (pu.n && r.pupils.filter((x) => x.n === pu.n).length > 1 ? ' <small class="note">' + h(pu.email.split('@')[0]) + '</small>' : '') + (pu.me ? ' ' + h(T('staff.you')) : '') + '</td><td>' + h(ago(r.now, pu.seen)) + '</td>' + order.map((id) => paperCell(pu, id)).join('') + '</tr>').join('') + '</table></div>'
+          r.pupils.map((pu) => '<tr' + (pu.me ? ' class="me"' : '') + '><td><button class="who" data-act="' + h(pu.email) + '" title="' + h(T('staff.act.open')) + '">' + h(pu.n || pu.email) + '</button>' + (pu.n && r.pupils.filter((x) => x.n === pu.n).length > 1 ? ' <small class="note">' + h(pu.email.split('@')[0]) + '</small>' : '') + (pu.me ? ' ' + h(T('staff.you')) : '') + '</td><td class="seen">' + h(ago(r.now, pu.seen)) + (lastLine(pu.last) ? '<small>' + h(lastLine(pu.last)) + '</small>' : '') + '</td>' + order.map((id) => paperCell(pu, id)).join('') + '</tr>').join('') + '</table></div>'
           : '<p class="note">' + h(T('staff.nothing')) + '</p>') +
         '<p class="note" style="margin-top:10px">' + h(T('staff.legend')) + '</p>' + (r.pupils.some((pu) => pu.me) ? '<button class="btn ghost" data-clear>' + h(T('staff.clearMine')) + '</button>' : '');
       pane().querySelector('[data-refresh]').addEventListener('click', load);
@@ -173,6 +185,7 @@
         td.addEventListener('click', openIt);
         td.addEventListener('keydown', (e) => { if (e.key === 'Enter') openIt(); });
       });
+      pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
       const clr = pane().querySelector('[data-clear]');
       if (clr) twoPress(clr, T('staff.clearConfirm', { name: CLS }), (reset) => call({ op: 'clearMine', name: CLS }).then(load, (e) => { reset(); fail(e); }));
     }, fail);
@@ -222,6 +235,55 @@
         b.remove();
       }, (e) => { b.disabled = false; fail(e); });
     }));
+  }
+
+  // ---------- one pupil's activity (D100): sessions newest first, each with its timed events ----------
+  const PART = {}; C.papers.forEach((p) => p.parts.forEach((q) => { PART[q.id] = { p, q }; }));
+  function activity(email) {
+    const pu = LIVE.pupils.find((x) => x.email === email); if (!pu) return;
+    const old = app.querySelector('.drawer'); if (old) old.remove();
+    app.insertAdjacentHTML('beforeend', '<aside class="drawer" role="dialog" aria-label="' + h(pu.n || pu.email) + '"><div class="row" style="justify-content:space-between"><h3>' + h(T('staff.act.title', { name: pu.n || pu.email })) + '</h3>' +
+      '<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div><div data-acts><p class="note">' + h(T('staff.act.loading')) + '</p></div></aside>');
+    const dr = app.querySelector('.drawer'), box = dr.querySelector('[data-acts]');
+    dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
+    call({ op: 'activity', name: CLS, email }).then((r) => { box.innerHTML = timeline(r); }, (e) => { box.innerHTML = ''; fail(e); });
+  }
+  function evText(e) {
+    if (e.k === 'j') return T('staff.ev.joined');
+    if (e.k === 'e') return T('staff.ev.eval', { paper: PAPERS[e.paper] ? PAPERS[e.paper].year : e.paper });
+    const x = PART[e.part]; if (!x) return e.part;
+    const part = T('staff.ev.part', { year: x.p.year, label: label(x.q) }), tw = e.id && C.twins[e.id];
+    if (e.k === 'a') return e.n === 0 ? T('staff.ev.first', { part, t: e.t, of: x.q.marks, door: T(e.d === 1 ? 'door.cold' : 'door.learn') }) : T('staff.ev.again', { part, t: e.t, of: x.q.marks });
+    if (e.k === 't') return T(e.n === 0 ? 'staff.ev.aq' : 'staff.ev.aqAgain', { part, id: tw ? tw.id : e.id, t: e.t, of: tw ? tw.marks : '' });
+    if (e.k === 's') return T('staff.ev.sawAnswer', { part });
+    if (e.k === 'w') return T('staff.ev.sawWorked', { part, id: tw ? tw.id : e.id });
+    if (e.k === 'f') return T('staff.ev.flag', { part, beat: T('staff.beat.' + e.b) });
+    return '';
+  }
+  function timeline(r) {
+    // recorded sessions take the events inside them; the rest (before time was recorded) group by gaps of over 30 minutes, marked "about"
+    const ses = r.sessions.map((s) => ({ a: s[0], b: s[1], act: s[2], ev: [] })), loose = [];
+    r.events.forEach((e) => { const s = ses.find((x) => e.m >= x.a - 1 && e.m <= x.b + 1); if (s) s.ev.push(e); else loose.push(e); });
+    let g = null;
+    loose.forEach((e) => { if (!g || e.m - g.b > 30) { g = { a: e.m, b: e.m, ev: [], rough: true }; ses.push(g); } g.ev.push(e); g.b = e.m; });
+    ses.sort((x, y) => y.a - x.a);
+    const d = at(r.now); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    const ws = Math.floor((d.getTime() - EPOCH) / 60000), wk = ses.filter((s) => s.a >= ws);
+    const isMark = (e) => e.k === 'a' || e.k === 't';
+    const time = wk.reduce((t, s) => t + (s.rough ? 0 : s.act), 0), nMarked = r.events.filter((e) => isMark(e) && e.m >= ws).length;
+    const stat = (v, k) => '<div class="stat"><b>' + h(v) + '</b><span>' + h(T(k)) + '</span></div>';
+    const head = (s) => {
+      const day = dayName(s.a, r.now), n = s.ev.filter(isMark).length;
+      const t = s.rough ? (s.a === s.b ? T('staff.act.headAboutAt', { day, at: hm(s.a) }) : T('staff.act.headAbout', { day, from: hm(s.a), to: hm(s.b) }))
+        : T('staff.act.head', { day, from: hm(s.a), to: hm(s.b), time: mins(s.act) });
+      return t + (n ? ' · ' + marked(n) : '');
+    };
+    return '<div class="stats">' + stat(time ? mins(time) : '—', 'staff.act.weekTime') + stat(String(wk.length), 'staff.act.weekSessions') + stat(String(nMarked), 'staff.act.weekMarked') + '</div>' +
+      '<p class="note">' + h(T('staff.act.note')) + '</p>' +
+      (ses.length ? ses.map((s, i) => '<details class="sess' + (s.rough ? ' rough' : '') + '"' + (i === 0 ? ' open' : '') + '><summary>' + h(head(s)) + '</summary>' +
+        (s.ev.length ? '<ul class="evs">' + s.ev.map((e) => '<li><span class="at">' + h(hm(e.m)) + '</span><span>' + h(evText(e)) + '</span></li>').join('') + '</ul>' : '<p class="note">' + h(T('staff.act.nothingMarked')) + '</p>') +
+        '</details>').join('') : '<p class="note">' + h(T('staff.act.none')) + '</p>') +
+      (r.untimed ? '<p class="note">' + h(T('staff.act.archived')) + '</p>' : '');
   }
 
   // ---------- Export ----------
