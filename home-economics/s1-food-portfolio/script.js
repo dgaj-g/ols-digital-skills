@@ -1196,7 +1196,7 @@
         clearBusy(msg, '');
         hide($('entry')); show($('home'));
         renderHome();
-        openHooray(r.preview ? spec : null);
+        openHooray(r.preview ? spec : null, summary);
       })
       .catch(function (e) {
         if (e && e.message === 'not-signed-in') {
@@ -1231,7 +1231,7 @@
     }
   }
   var previewSpec = null;
-  function openHooray(specForPreview) {
+  function openHooray(specForPreview, summary) {
     previewSpec = specForPreview || null;
     var a = $('hooray-open');
     if (previewSpec) {
@@ -1243,7 +1243,11 @@
       a.textContent = 'Open my portfolio';
       a.setAttribute('target', '_blank');
       a.href = state.docUrl || '#';
-      $('hooray-text').textContent = 'Your reflection has been added to your portfolio document, with your photos — and your teacher can see it too.';
+      var m = summary || {}, bits = [];
+      if (m.photos) bits.push(m.photos === 1 ? 'your photo' : 'your photos');
+      if (m.videos) bits.push(m.videos === 1 ? 'your video' : 'your videos');
+      $('hooray-text').textContent = 'Your reflection has been added to your portfolio document' +
+        (bits.length ? ', with ' + bits.join(' and ') : '') + ' — and your teacher can see it too.';
     }
     confettiBurst();
     show($('hooray'));
