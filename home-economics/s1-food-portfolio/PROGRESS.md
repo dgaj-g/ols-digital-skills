@@ -19,3 +19,10 @@ After his pick: collapse palettes to the chosen one (keep data-palette attr), re
 - Version 1 deployed (User accessing, Anyone within c2ken):
   https://script.google.com/a/macros/c2ken.net/s/AKfycbwDKOZrTm5Qj0wXk_BsXUakBhb5_8jWlYz5nTfEf5EOtzmpmYBkTYTosottXgNFd8q2sw/exec
 - NEXT: his consent click → live test (staff add class, pupil entry with photo) → guide + email → draft PR.
+
+## 30 Sep 2026 — Version 2 live + tested + handed over
+- V2 deployed at the same /exec URL (success text now names photos/videos only when present).
+- Live test on his account: consent, auto-name, staff class add, dashboard, class-link entry, draft save, submit, portfolio Doc created and shared, Script Properties record correct.
+- Not proven live here: photo/video upload (same code as KS3, proven on C2k 16 Jun) — needs the pupil test account.
+- Teacher guide (docx + 10-page PDF) and email in Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Home Economics/S1 Food Portfolio/.
+- Owed by him: pupil-account photo/video check; C2k trust request for the new app; delete test class TEST-S1-FN and his test Doc; send the email.
