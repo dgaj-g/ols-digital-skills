@@ -1531,8 +1531,6 @@
       var qs = location.search;   // capture before ?reset strips the query string
       var ym = /[?&]year=(J[123])/.exec(qs);
       if (ym) previewYear = ym[1];
-      var pm = /[?&]palette=([abc])/.exec(qs);
-      if (pm) document.body.setAttribute('data-palette', pm[1]);
       // ?name=Aoife%20Murphy simulates the C2k auto-name so the zero-typing path
       // (guard screen -> shelf, no form) can be reviewed offline.
       var nm = /[?&]name=([^&]+)/.exec(qs);
@@ -1541,7 +1539,6 @@
         try { localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_THUMBS); } catch (e) {}
         var keep = [];
         if (previewYear) keep.push('year=' + previewYear);
-        if (pm) keep.push('palette=' + pm[1]);
         if (previewName) keep.push('name=' + encodeURIComponent(previewName));
         if (window.history && history.replaceState) history.replaceState({}, '', location.pathname + (keep.length ? '?' + keep.join('&') : ''));
       }

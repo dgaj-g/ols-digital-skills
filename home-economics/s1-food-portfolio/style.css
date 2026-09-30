@@ -902,8 +902,7 @@ textarea {
 
 /* ============================================================
    S1 FOOD & NUTRITION SKIN - a calmer, more elegant sibling of the
-   KS3 kitchen. One palette per data-palette (preview a/b/c; the
-   chosen one stays). Soft light drifts behind the page, screens rise
+   KS3 kitchen. Palette: Blush & Stone (chosen 30 Sep 2026). Soft light drifts behind the page, screens rise
    in gently, the header ribbon has a slow sheen. No control ever
    pulses; everything stops under prefers-reduced-motion.
    ============================================================ */
@@ -913,26 +912,8 @@ textarea {
   font-weight: 400; font-style: normal; font-display: swap;
 }
 
-/* a - Sea Glass: pearl, soft teal, a breath of sand */
-html:has(> body[data-palette="a"]), html body[data-palette="a"] {
-  --kp-ink: #23363a; --kp-muted: #5c7176; --kp-bg: #eef5f3; --kp-card: #fbfdfc;
-  --kp-acc: #4a9a93; --kp-deep: #1f5c58; --kp-btn: #2b706b; --kp-soft: #d9ede9;
-  --kp-soft2: #f2f9f7; --kp-line: #cfe2de;
-  --kp-shadow: 0 8px 24px rgba(31, 92, 88, 0.10);
-  --kp-shadow-lg: 0 18px 48px rgba(31, 92, 88, 0.16);
-  --s1-c1: #a8dcd3; --s1-c2: #c6def0; --s1-c3: #f1e2c2;
-}
-/* b - Lavender Mist: violet dusk, blush, pale sky */
-html:has(> body[data-palette="b"]), html body[data-palette="b"] {
-  --kp-ink: #2e2a3a; --kp-muted: #686280; --kp-bg: #f3f1f8; --kp-card: #fdfcff;
-  --kp-acc: #8b78c0; --kp-deep: #4a3b78; --kp-btn: #5f4c93; --kp-soft: #e7e1f4;
-  --kp-soft2: #f7f4fc; --kp-line: #ddd6ec;
-  --kp-shadow: 0 8px 24px rgba(74, 59, 120, 0.10);
-  --kp-shadow-lg: 0 18px 48px rgba(74, 59, 120, 0.16);
-  --s1-c1: #d6cbf2; --s1-c2: #f3d6e3; --s1-c3: #cfe0f5;
-}
 /* c - Blush & Stone: rose quartz, warm stone, pale honey */
-html:has(> body[data-palette="c"]), html body[data-palette="c"] {
+html:has(> body[data-palette]), html body[data-palette] {
   --kp-ink: #3a2f31; --kp-muted: #76686a; --kp-bg: #f8f3f2; --kp-card: #fffcfb;
   --kp-acc: #c08287; --kp-deep: #74414a; --kp-btn: #8f535c; --kp-soft: #f3e2e2;
   --kp-soft2: #fbf5f4; --kp-line: #eadbd9;
