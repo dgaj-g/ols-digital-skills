@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calming the Storm (Mark 4: 35-41)</title>
+<meta name="description" content="Put the seven parts of the story in the right order.">
+<meta name="theme-color" content="#060d12">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calming the Storm (Mark 4: 35-41)">
+<meta property="og:description" content="Put the seven parts of the story in the right order.">
+<link rel="stylesheet" href="../../style.css">
+<link rel="icon" type="image/png" href="../../assets/crest.png">
+<link rel="preload" href="fonts/marcellus-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/literata-wght-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="storm" data-screen="title">
+
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<noscript><p class="noscript">This activity will not work in this browser. Please open the link in Chrome or Safari.</p></noscript>
+
+<main id="app">
+
+  <!-- ============ the opening screen ============ -->
+  <section id="title" class="screen screen-title" aria-labelledby="t-h">
+    <div class="title-block">
+      <h1 id="t-h" data-s="title"></h1>
+      <p class="ref" data-s="ref"></p>
+      <p class="lead" id="t-lead"></p>
+      <p class="note" id="t-note" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn-gold" id="btn-begin"></button>
+        <button type="button" class="btn btn-ghost" id="btn-fresh" hidden></button>
+        <button type="button" class="btn btn-ghost" id="btn-harder-t" hidden></button>
+      </div>
+      <p class="note small" id="t-harder-about" hidden></p>
+      <div class="switches">
+        <button type="button" class="switch" id="sw-sound-t"></button>
+        <button type="button" class="switch" id="sw-flash-t"></button>
+      </div>
+    </div>
+    <div class="stagewin" data-stage></div>
+  </section>
+
+  <!-- ============ the game ============ -->
+  <section id="play" class="screen screen-play" hidden aria-labelledby="p-h">
+    <div class="side">
+      <div class="side-head">
+        <h2 id="p-h" class="mini"><span data-s="title"></span> <small data-s="ref"></small></h2>
+        <div class="tools">
+          <button type="button" class="tool" id="sw-sound">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-fill" d="M4 9.5h3.4L12 5.6v12.8l-4.6-3.9H4z"/><path class="i-on" d="M15.2 8.6a4.8 4.8 0 0 1 0 6.8M17.8 6a8.4 8.4 0 0 1 0 12"/><path class="i-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>
+            <span class="tool-text"></span>
+          </button>
+          <button type="button" class="tool" id="sw-flash">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-fill" d="M13.2 2.5L5.5 13.4h5l-1.2 8.1 8.2-11.6h-5.2z"/><path class="i-off i-slash" d="M4 4l16 16"/></svg>
+            <span class="tool-text"></span>
+          </button>
+          <button type="button" class="tool" id="btn-restart">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-line" d="M5.2 12a6.8 6.8 0 1 0 2.2-5"/><path class="i-fill" d="M4.2 3.6l.5 5.6 5.4-1.4z"/></svg>
+            <span class="tool-text"></span>
+          </button>
+        </div>
+      </div>
+      <div class="stagewin" data-stage>
+        <div class="lampbar">
+          <div class="lamps" id="lamps" aria-hidden="true"></div>
+          <p class="lampcap" id="lampcap"></p>
+        </div>
+      </div>
+      <div class="statusbox">
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <p class="keyhelp" id="keyhelp"></p>
+      </div>
+    </div>
+    <div class="main">
+      <ol class="list" id="list"></ol>
+      <div class="checkbar">
+        <span class="checks" id="checks"></span>
+        <button type="button" class="btn btn-gold" id="btn-check"></button>
+      </div>
+    </div>
+    <div class="confirm" id="confirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="confirm-q">
+      <div class="confirm-card">
+        <p id="confirm-q"></p>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost-dark" id="btn-confirm-no"></button>
+          <button type="button" class="btn btn-gold" id="btn-confirm-yes"></button>
+          <button type="button" class="btn btn-ghost-dark" id="btn-confirm-first" hidden></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ the calm ============ -->
+  <section id="finale" class="screen screen-finale" hidden>
+    <p class="quote" id="quote" aria-live="polite"></p>
+    <div class="stagewin" data-stage></div>
+    <button type="button" class="skip" id="btn-skip"></button>
+  </section>
+
+  <!-- ============ the end screen ============ -->
+  <section id="result" class="screen screen-result" hidden aria-labelledby="r-h">
+    <div class="title-block">
+      <h2 id="r-h" class="result-head" tabindex="-1"></h2>
+      <p class="lead" id="r-line"></p>
+      <p class="note" id="r-best"></p>
+      <div class="actions">
+        <button type="button" class="btn btn-gold" id="btn-read"></button>
+        <button type="button" class="btn btn-ghost" id="btn-again"></button>
+        <button type="button" class="btn btn-ghost" id="btn-other"></button>
+      </div>
+      <p class="note small" id="r-harder-about" hidden></p>
+    </div>
+    <div class="stagewin" data-stage></div>
+  </section>
+
+  <!-- ============ the story, in order (only ever opened from the end screen) ============ -->
+  <div class="sheet" id="story" hidden role="dialog" aria-modal="true" aria-labelledby="story-h">
+    <div class="sheet-card">
+      <h2 id="story-h" tabindex="-1"></h2>
+      <div class="sheet-body" id="story-body"></div>
+      <div class="actions"><button type="button" class="btn btn-gold" id="btn-close"></button></div>
+    </div>
+  </div>
+
+  <p class="sr-only" id="announce" role="status" aria-live="assertive"></p>
+  <div class="rotate" id="rotate"><p data-s="rotate"></p></div>
+</main>
+
+<footer class="act-footer"><img src="../../assets/crest.png" alt="" class="footer-crest" aria-hidden="true" /><span>OLS Digital Skills</span></footer>
+
+<script src="content.js"></script>
+<script src="judge.js"></script>
+<script src="scene.js"></script>
+<script src="sound.js"></script>
+<script src="script.js"></script>
+<script src="../../assets/intro-loader.js"></script>
+</body>
+</html>
