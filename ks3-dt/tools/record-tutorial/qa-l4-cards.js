@@ -16,7 +16,7 @@
  *        is called, the PUBLISHED card names her number (server n + the house
  *        rooms), and its button carries on to the twist's offer
  *      · extras job 2: fixedBlanks — one key fills both gaps of the fixed question
- *   J3 · machine-1: the bloat meter's two counts are the two programs' lengths
+ *   (the J3 · machine-1 checks were retired 7 Oct 2026 with Function Factory)
  *      · machine-3: check.kind calls — the floor's three product cards; a wrong
  *        slot name → NameError per order in the reject bin → NOT YET
  *      · factory: the spec card on both faces; the empty starter → all-None
@@ -39,7 +39,7 @@ function lesson(id) {
   const inSrc = path.join(SRC, y, 'lessons', id + '.json');
   return JSON.parse(fs.readFileSync(fs.existsSync(inSrc) ? inSrc : path.join(DRAFTS, id + '.json'), 'utf8'));
 }
-const J2 = lesson('j2-04'), J3 = lesson('j3-04');
+const J2 = lesson('j2-04');
 const chunkOf = (L, id) => L.chunks.find(c => c.id === id);
 
 let failures = 0;
@@ -259,80 +259,9 @@ const setEditor = (page, code) => page.evaluate((c) => { const ta = document.que
   const ticked = await page.evaluate(() => Array.from(document.querySelectorAll('.pyrun-hub .pyrun-job')).map(j => !!j.querySelector('.pyrun-job-tick')));
   check(ticked[3] === true && ticked.filter(Boolean).length === 1, 'back on the hub, job 4 is ticked and the others are not', JSON.stringify(ticked));
 
-  /* ───────────── J3 extras job 1: the swap — a gap that ARRIVES wrong ───────────── */
-  console.log('\n-- j3-04 extras job 1 (the swap: fixedTop + a pre-filled gap) --');
-  await mount(page, J3, 'extras');
-  await sleep(200);
-  await page.evaluate(() => { const jobs = document.querySelectorAll('.pyrun-hub .pyrun-job'); jobs[0].click(); });
-  await sleep(300);
-  const swapTop = await page.evaluate(() => document.querySelectorAll('.pyp-fixed-list li, .pyp-fixed .pyrun-line').length);
-  check(swapTop === 3, 'the machine and the first call are locked at the top (three fixed lines)', String(swapTop));
-  await placeSi(page, 0);
-  const arrived = await page.evaluate(() => (document.querySelector('.pyp-list .pyrun-blank[data-key="swap"]') || {}).value);
-  check(arrived === '2, "Aoife"', 'the gap ARRIVES with the orders the wrong way round (pre)', JSON.stringify(arrived));
-  v = await run(page, []);
-  const swapCon = await page.evaluate(() => (document.querySelector('.chunk-host .pyc') || {}).textContent || '');
-  check(/is-notyet/.test(v) && /TypeError|line 4/.test(swapCon), 'run as it is: Python stops at the last line (the point of the job), NOT YET', v + ' ' + swapCon.slice(0, 160));
-  await setBlank(page, 'swap', '"Aoife", 2');
-  v = await run(page, []);
-  check(/is-matched/.test(v), 'orders the right way round: it runs clean and the job is done', v);
-  const tick = await page.evaluate(() => { const b = document.querySelector('.pyrun-card .pyrun-back'); return b ? b.className : ''; });
-  check(/primary-btn/.test(tick), 'the way back to the hub is the primary button once the job is done', tick);
-
-  /* ───────────── J3 machine-1: the meter ───────────── */
-  console.log('\n-- j3-04 machine-1 (the bloat meter) --');
-  await mount(page, J3, 'machine-1');
-  await clickText(page, /Open the machine/);
-  await sleep(300);
-  const M = chunkOf(J3, 'machine-1').config.meter;
-  const meter = await page.evaluate(() => Array.from(document.querySelectorAll('.fac-meter-row b')).map(b => b.textContent));
-  check(meter.length === 2 && meter[0] === M.linesWord.replace('{n}', String(M.before.lines.length)) && meter[1] === M.linesWord.replace('{n}', String(M.after.lines.length)),
-    'the meter\'s two counts are the two programs\' lengths (' + M.before.lines.length + ' / ' + M.after.lines.length + ')', JSON.stringify(meter));
-  await setBlank(page, 'm1a', 'return');
-  v = await run(page, []);
-  check(/is-matched/.test(v), 'return in the gap: three signs, IT WORKS', v);
-
-  /* ───────────── J3 machine-3: calls ───────────── */
-  console.log('\n-- j3-04 machine-3 (the floor on an assembly card) --');
-  await mount(page, J3, 'machine-3');
-  await clickText(page, /Open the machine/);
-  await sleep(300);
-  await placeSi(page, 0); await placeSi(page, 1);
-  await setBlank(page, 'm3a', 'seats'); await setBlank(page, 'm3b', 'x');
-  v = await run(page, []);
-  const bin = await text(page, '.fac-reject');
-  check(/is-notyet/.test(v) && /NameError/.test(bin), 'a wrong slot name inside the machine: NameError per order in the reject bin, NOT YET', v + ' ' + bin.slice(0, 100));
-  await setBlank(page, 'm3b', 'seats');
-  v = await run(page, []);
-  const prods = await page.evaluate(() => Array.from(document.querySelectorAll('.fac-order .fac-product')).map(x => x.textContent));
-  check(/is-matched/.test(v) && JSON.stringify(prods) === '["8","20","4"]', 'the right machine: 8 / 20 / 4 on three product cards, IT WORKS', v + ' ' + JSON.stringify(prods));
-
-  /* ───────────── J3 factory: spec, floor, chain ───────────── */
-  console.log('\n-- j3-04 factory (spec card, the floor, the chain) --');
-  await mount(page, J3, 'factory');
-  await sleep(300);
-  const S = chunkOf(J3, 'factory').config.spec;
-  const specRows = await page.evaluate(() => document.querySelectorAll('.pye-plan .fac-spec tbody tr').length);
-  check(specRows === S.rows.length && (await text(page, '.pye-plan .fac-spec-note')) === S.note, 'the PLAN face carries the whole spec card');
-  await click(page, '.pye-start'); await sleep(300);
-  check(await page.evaluate(() => document.querySelectorAll('.pye-bench .fac-spec tbody tr').length) === S.rows.length, 'the BENCH carries the compact spec');
-  await click(page, '.pye-starter-btn');
-  v = await run(page, []);
-  const allNone = await text(page, '.fac-reject-all');
-  check(/is-notyet/.test(v) && allNone.indexOf('None') !== -1, 'the empty starter: every product None collapses to one sentence naming return', allNone.slice(0, 100));
-  const F = chunkOf(J3, 'factory').config.builds[0].features;
-  await setEditor(page, F[0].reference + '\n' + F[1].reference + '\nprint(label("Aoife", 2))');
-  v = await run(page, []);
-  check(/is-matched/.test(v) && (await text(page, '.pyrun-vtag')) === chunkOf(J3, 'factory').config.matchedAllLabel && await page.evaluate(() => document.querySelectorAll('.fac').length === 2),
-    'two correct machines: BOTH MACHINES WORK, two floors drawn', v);
-  await page.evaluate(() => document.querySelector('.pyrun-verdict .primary-btn').click()); await sleep(300);
-  check(await has(page, '.py-offer-card'), 'the verdict\'s Continue offers the chain');
-  await clickText(page, /Build the chain/); await sleep(300);
-  const chainCode = await page.evaluate(() => (document.querySelector('.pye-code') || {}).value || '');
-  check(/def label/.test(chainCode) && /def cost/.test(chainCode), 'the chain starts from her saved factory (from: l4factory)');
-  await setEditor(page, chainCode + '\ndef receipt(name, seats):\n    return label(name, seats) + " - " + str(cost(seats)) + " pounds"');
-  v = await run(page, []);
-  check(/is-matched/.test(v), 'the receipt machine matches on the chain\'s three orders', v);
+  /* The j3-04 sections (extras job 1, machine-1, machine-3, factory) were RETIRED on 7 Oct 2026: J3 Lesson 4
+     is now The Rescue (one `rescue` step, no pyrun cards). Its gates: probes/rescue/ (qa-rescue-platform.js
+     and the story gates). The j2-04 sections above are unchanged. */
 
   check(errs.length === 0, 'no page errors', errs.join(' | '));
   await page.close();

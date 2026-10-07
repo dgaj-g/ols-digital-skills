@@ -54,6 +54,15 @@
      Leaving early still WORKS — the way out is never a trap (DFM 265c) — it
      simply does not pay, it says so before she commits, and the detail is still
      recorded so the Live tab shows how far she really got. */
+  /* An explain is one sentence for every answer, or (J3 L4 The Rescue) a JSON list with one line per
+     option, in option order: she reads the line for the option she clicked. */
+  function explainFor(ex, i) {
+    if (typeof ex === 'string' && ex.charAt(0) === '[') {
+      try { var a = JSON.parse(ex); if (Array.isArray(a)) return a[Number(i)] || ''; } catch (e) { /* plain text */ }
+    }
+    return ex;
+  }
+
   function finishChunk(ctx, detail, bonus, earned) {
     if (ctx._finished) return;
     ctx._finished = true;
@@ -727,6 +736,12 @@
         '<div class="card q-card">' +
         progress() +
         (it.topic ? '<span class="q-topic">' + esc(it.topic) + '</span>' : '') +
+        /* J3 L4 The Rescue: a question can name what she saw (seen), show the code it is about (code) and
+           say one thing about that code (codeNote). Each only when the item has it, so every other lesson
+           renders as before. */
+        (it.seen ? '<p class="q-seen">' + esc(it.seen) + '</p>' : '') +
+        (it.code ? '<pre class="q-pre">' + esc(it.code) + '</pre>' : '') +
+        (it.codeNote ? '<p class="q-code-note">' + esc(it.codeNote) + '</p>' : '') +
         '<h2 class="q-stem">' + stemHtml(it.stem) + '</h2>' +
         '<div class="q-options">' + curOrd.map(function (oi, i) {
           return '<button class="q-opt" type="button" data-i="' + i + '"><span class="q-letter">' +
@@ -854,7 +869,7 @@
           fb.hidden = false;
           fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
-            (r.explain ? '<p class="q-explain">' + esc(r.explain) + '</p>' : '') +
+            (explainFor(r.explain, srcIdx) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx)) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
           fb.querySelector('button').focus();
@@ -3399,9 +3414,125 @@
   };
 
   /* ================= exit check + self-eval ================= */
+  /* ================= the rescue (J3 Lesson 4 "The Rescue") =================
+     The whole hour is a story in its own page (assets/rescue/hour.html), shown full width in a frame.
+     The story tells the platform what happened with postMessage; this engine is the only listener.
+       save   her place (step, the hedgehog's name, the work so far) goes into HER lesson draft only.
+              No teacher screen reads a draft, so the hedgehog's name never reaches one.
+       badge  a story badge (b10/b11/b12) is recorded on the lesson with its XP. The server pays XP only
+              for a detail key it has not seen, so a badge sent twice pays once. The story draws its own
+              badge card, so the platform draws none.
+       done   'quiz': she chose the 5 questions before the end. The exit check opens; the story is NOT
+              marked finished, and the exit check offers the way back to it.
+              'end': the story is over. The refusable EXTRA CHALLENGE card (cfg.stretch), then on.
+     Her place goes back IN on the frame's address after the #, so the story reads it before its first
+     frame, and nothing is fetched after load. */
+  Engines.rescue = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var place = draft.rescue ? JSON.parse(JSON.stringify(draft.rescue)) : null;
+      if (place && draft.exitAnswers) { place.data = place.data || {}; place.data.quizDone = 1; }
+      var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+        '<iframe class="rescue-frame" title="' + esc(chunk.title || 'The story') + '" allow="autoplay"></iframe></div>');
+      host.appendChild(wrap);
+      /* the story sits under the lesson's top bar (its title, help and way out stay in view) and fills the rest */
+      function fit() {
+        if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+        var bar = document.querySelector('#player .player-top');
+        wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+      }
+      fit(); window.addEventListener('resize', fit);
+      var frame = wrap.querySelector('iframe');
+      frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+      frame.src = App.asset(cfg.page) + (place ? '#' + encodeURIComponent(JSON.stringify(place)) : '');
+      var paid = {};
+      function onMsg(e) {
+        if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+        var m = e.data;
+        if (e.source !== frame.contentWindow || !m || m.rescue !== 1) return;
+        if (m.type === 'save' && m.save && !ctx.review) {
+          draft.rescue = m.save;
+          ctx.saveEvent({ draft: draft });
+        } else if (m.type === 'badge') {
+          var b = (cfg.badges || {})[m.id];
+          if (!b || paid[b.id] || ctx.review) return;
+          paid[b.id] = 1;
+          ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+        } else if (m.type === 'done') {
+          window.removeEventListener('message', onMsg);
+          if (m.why === 'quiz') {
+            var at = s.chunks.findIndex(function (c) { return c.engine === 'exitcheck'; });
+            if (at !== -1) { s.chunkIdx = at; App.remountChunk(); return; }
+          }
+          ending();
+        }
+      }
+      window.addEventListener('message', onMsg);
+
+      function ending() {
+        var st = cfg.stretch;
+        if (!st || ctx.review || draft.rescueStretch) { ctx.next(); return; }
+        host.innerHTML = '';
+        var c = el('<div class="card intro-card">' +
+          (st.kicker ? '<span class="intro-kicker">' + esc(st.kicker) + '</span>' : '') +
+          '<h2>' + esc(st.title || '') + '</h2>' +
+          String(st.text || '').split(/\n\s*\n/).map(function (p) {
+            return '<p class="intro-lead">' + esc(p.trim()) + '</p>';
+          }).join('') +
+          '<div class="stretch-actions"><button class="primary-btn stretch-go" type="button">' + esc(st.goLabel) + '</button>' +
+          '<button class="ghost-btn stretch-skip" type="button">' + esc(st.skipLabel) + '</button></div></div>');
+        host.appendChild(c);
+        App.armButton(c.querySelector('.stretch-go'), function () {
+          host.innerHTML = '';
+          itemRunner(host, {
+            items: st.items, mode: 'feedback',
+            markFn: function (it, i) { return ctx.markItem(it.id, i); },
+            onDone: function () {
+              draft.rescueStretch = 1;
+              var q = ctx.saveEvent({ xp: Number(st.xp || 0), detail: 'stretch=1', draft: draft });
+              if (q && q.then) q.then(function () { ctx.next(); }, function () { ctx.next(); });
+              else ctx.next();
+            }
+          });
+        });
+        App.armButton(c.querySelector('.stretch-skip'), function () { ctx.next(); });
+      }
+    }
+  };
+
+  /* The exit check after a story (cfg.storyChunk, J3 L4): she can reach the 5 questions before the story
+     ends. Then, after her answers, she chooses: back to the story at her place, or on to the last screen.
+     The story is finished only when its own end says so (draft.done holds its id). */
+  function storyDone(name) {
+    var d = App.state.draft || {};
+    return !name || (d.done || []).indexOf(name) !== -1;
+  }
+  function goToChunk(id) {
+    var at = App.state.chunks.findIndex(function (c) { return c.id === id; });
+    if (at !== -1) { App.state.chunkIdx = at; App.remountChunk(); }
+  }
+  function storyBackCard(host, cfg, ctx) {
+    var sb = cfg.storyBack || {};
+    host.innerHTML = '';
+    var c = el('<div class="card intro-card"><h2>' + esc(sb.title || '') + '</h2><p class="intro-lead">' + esc(sb.text || '') + '</p>' +
+      '<div class="stretch-actions"><button class="primary-btn story-back" type="button">' + esc(sb.back || '') + '</button>' +
+      '<button class="ghost-btn story-on" type="button">' + esc(sb.on || '') + '</button></div></div>');
+    host.appendChild(c);
+    App.armButton(c.querySelector('.story-back'), function () { goToChunk(cfg.storyChunk); });
+    App.armButton(c.querySelector('.story-on'), function () { ctx.next(); });
+  }
+
   Engines.exitcheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      if (cfg.storyChunk && !ctx.review && App.state.draft && App.state.draft.exitAnswers) {
+        App.state._exitAnswers = App.state.draft.exitAnswers;
+        App.state._exitItems = cfg.items;
+        if (storyDone(cfg.storyChunk)) { ctx.next(); return; }
+        storyBackCard(host, cfg, ctx);
+        return;
+      }
       /* "Before you clock off…" was a raw engine literal on the exit check of
          EVERY lesson, and no gate has ever read it. Clocking off is workplace
          idiom (138.1.9): a twelve-year-old has never clocked off anything.
@@ -3425,6 +3556,7 @@
               App.state.draft.exitAnswers = App.state._exitAnswers;
               ctx.saveEvent({ draft: App.state.draft });
             }
+            if (cfg.storyChunk && !ctx.review && !storyDone(cfg.storyChunk)) { storyBackCard(host, cfg, ctx); return; }
             ctx.next();
           }
         });
@@ -3461,8 +3593,12 @@
            stamp (DFM 192f), on the one screen nobody may skip. */
         '<p class="case-locked-note se-locked-note">' + esc(cfg.lockedNote ||
           'Answer every sentence above — and how it felt — and this button wakes up.') + '</p>' +
-        '<button class="primary-btn se-submit" type="button" disabled>Send &amp; finish</button></div>');
+        '<button class="primary-btn se-submit" type="button" disabled>Send &amp; finish</button>' +
+        (cfg.storyChunk && cfg.storyBackLabel && !ctx.review && !storyDone(cfg.storyChunk)
+          ? '<button class="ghost-btn se-story-back" type="button">' + esc(cfg.storyBackLabel) + '</button>' : '') + '</div>');
       host.appendChild(c);
+      var sbk = c.querySelector('.se-story-back');
+      if (sbk) App.armButton(sbk, function () { goToChunk(cfg.storyChunk); });
       var rows = c.querySelector('.se-rows');
       cfg.statements.forEach(function (st, i) {
         conf.push(null);
@@ -3535,12 +3671,18 @@
             return;
           }
           var items = App.state._exitItems || [];
+          if (!items.length) {
+            var ex = App.state.chunks.find(function (x) { return x.engine === 'exitcheck'; });
+            items = ex ? ex.config.items : [];
+          }
           var fbHtml = (r.feedback || []).map(function (f, i) {
             var it = items[i] || { stem: '', options: [] };
+            var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i]) : f.explain;
             return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
               '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
+              (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + esc(it.stem) + '</p>' : '') +
               (!f.correct && it.options[f.correctIdx] ? '<p class="exit-fb-ans">The answer: ' + esc(it.options[f.correctIdx]) + '</p>' : '') +
-              (f.explain ? '<p class="exit-fb-why">' + esc(f.explain) + '</p>' : '') + '</div>';
+              (why ? '<p class="exit-fb-why">' + esc(why) + '</p>' : '') + '</div>';
           }).join('');
           /* THE LAST CARD OF THE LESSON, and until 22 Aug 2026 it could say
              nothing a lesson had written for it. Config-gated: a lesson that
@@ -3549,7 +3691,9 @@
              (DFM 176's config-gate precedent). Verified rather than assumed:
              this card IS the final surface a pupil sees - the drivecheck pass,
              the exit items and the self-eval all run before it. */
-          var done = el('<div class="card exit-done"><h2>' + (r.right === r.total ? 'Nailed it.' : 'Report filed.') + '</h2>' + fbHtml +
+          var title = cfg.doneTitle || (r.right === r.total ? 'Nailed it.' : 'Report filed.');
+          var score = cfg.scoreLine ? '<p class="exit-score">' + esc(cfg.scoreLine.replace('{n}', r.right).replace('{total}', r.total)) + '</p>' : '';
+          var done = el('<div class="card exit-done"><h2>' + esc(title) + '</h2>' + score + fbHtml +
             (cfg.closingNote ? '<p class="exit-closing-note">' + esc(cfg.closingNote) + '</p>' : '') +
             '<button class="primary-btn" type="button">Finish the lesson</button></div>');
           host.appendChild(done);

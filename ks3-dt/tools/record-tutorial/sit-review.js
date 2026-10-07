@@ -49,6 +49,11 @@ const LD = require('./lib/ledger.js');
 const RD = require('./lib/rendered-debt.js');
 
 const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
+
+/* J3 Lesson 4 is The Rescue since 7 Oct 2026: one story step in a frame, typed lines judged by the story's own
+   judge. This walker presses platform buttons and cannot walk it; its old j3-4 numbers were Function Factory's.
+   The Rescue is walked by probes/rescue/hour-walk.js (the story) and probes/rescue/qa-rescue-platform.js (the shell). */
+if (/^j3-4$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
    keeps its bare-number legacy keys). `j2-1` is J2's Lesson 1; '1' is J1's. */
 const YEAR = /^j2-/.test(NUM) ? 'j2' : /^j3-/.test(NUM) ? 'j3' : 'j1';

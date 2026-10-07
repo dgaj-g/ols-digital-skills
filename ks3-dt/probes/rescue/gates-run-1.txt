@@ -1,0 +1,90 @@
+GATE 1. the words law at its worst
+  ok  d_def: help comes a rung at a time by story seconds 30, 60 and 90: "The pattern is def name(gap):" / "Type def rescue(who):" / "Type def rescue(who):"
+  ok  d_body: help comes a rung at a time by story seconds 30, 60 and 90: "Start with the door. Which word opens it?" / "The pattern is print("a word") or print(who)." / "Print the word open first. Print who next, with no speech marks. Print the word shut last."
+  ok  d_loop: help comes a rung at a time by story seconds 30, 60 and 90: "In Lesson 3 your loop was for song in playlist: with print(song) underneath." / "The pattern is for name in gang:" / "Type for who in gang:Type rescue(who)"
+  ok  r_hog: the help line comes by itself 12 story seconds into the clock
+  ok  door retry: a fault in her function sends her back to the function, a fault in her calls sends her back to the calls
+  ok  63 worst-case screens: none over 40 words of prose, none with a sentence over 14 words, none over 60 with feedback
+  ok  no sentence on those screens ends on a number without its thing
+  ..  r_make: most prose 12, most with feedback 25, longest sentence 10
+  ..  r_call1: most prose 23, most with feedback 37, longest sentence 8
+  ..  r_bobby: most prose 23, most with feedback 39, longest sentence 9
+  ..  r_gap: most prose 20, most with feedback 33, longest sentence 10
+  ..  r_call2: most prose 20, most with feedback 32, longest sentence 8
+  ..  r_hog: most prose 30, most with feedback 50, longest sentence 8
+  ..  l_make: most prose 24, most with feedback 36, longest sentence 6
+  ..  l_plan: most prose 32, most with feedback 44, longest sentence 8
+  ..  l_mend: most prose 37, most with feedback 55, longest sentence 7
+  ..  d_def: most prose 29, most with feedback 47, longest sentence 9
+  ..  d_body: most prose 33, most with feedback 54, longest sentence 10
+  ..  d_loop: most prose 35, most with feedback 58, longest sentence 12
+  ..  d_body retry: most prose 29, most with feedback 42, longest sentence 10
+  ..  d_loop retry: most prose 37, most with feedback 60, longest sentence 11
+  ok  control: a planted sentence of 15 words is caught (the screen was clean before it)
+  ok  control: a planted screen over 40 words is caught, with no sentence over 14 words
+  ok  control: 40 words and 14 words pass, 41 words and 15 words do not
+  ok  control: help lines that take a screen past 60 words are caught, though its prose is under 40
+  ok  control: "You had time for 9." is caught and "9 lines" is not
+GATE 3. honest fails
+  ok  the river: the clock has not started before her first key (7.5 story seconds passed, the water did not rise)
+  ok  the river: with no valid line the hedgehog step is lost
+  ok  the river: it is lost at story second 35 of 35 after her first key (measured 35.01)
+  ok  the river: the fail ends at Blink's turned head
+  ok  the river: the storm rewinds to the same step
+  ok  the river: her function is still on the panel after the rewind
+  ok  the river: the second try opens with the help line, and the clock waits for her first key again
+  ok  the river: a wrong line does not stop the clock
+  ok  the river: the right line finished at story second 33.66 of 35 carries the hedgehog over
+  ok  the lane: with no line the mend step is lost
+  ok  the lane: it is lost at story second 40 of 40 after her first key (measured 40)
+  ok  the lane: the fail ends at Blink's turned head
+  ok  the lane: the storm rewinds to the same step
+  ok  the lane: her plan is still on the panel after the rewind, and the exact line is given
+  ok  the lane: the right line with Run never pressed is still lost. Only Run stops the clock.
+  ok  the lane: Run pressed at story second 38.77 of 40 gets everyone to the gate
+  ok  the door: of 97650 programs she can write, 2534 get everyone in and 95116 do not
+  ok  the door: no right program is beaten by the clock. The slowest right one takes 10.5 of 12 seconds (print("open") ; print("open") ; print("open") ; print("open") ; print(who) ; print("shut"))
+  ok  the door: 4 different fail lines can really be reached
+  ..  7883 programs: The door never asked for NAME, so NAME stayed outside.
+  ..  8891 programs: Everyone was inside, but the door was still open.
+  ..  27625 programs: The door asked for NAME. Nobody has that name.
+  ..  50717 programs: The door was shut when NAME ran at it.
+  ok  control: with the door clock cut to 2 seconds the right program is lost, so the clock is real
+  ok  control: with the story clock stopped, this gate reports that the hedgehog step can never be lost
+GATE 6. no shortcuts
+  ..  the box is marked off,off,off,false (autocomplete, autocorrect, autocapitalize, spellcheck)
+  ok  paste, drop and suggested text are refused in all 12 typing steps, and ordinary typing is not
+  ok  a real paste from the clipboard into the timed box leaves it empty (the same key press fills it once a paste handler is planted)
+  ok  control: a planted paste handler that fills the box is caught
+  ok  control: a box with its refusals taken off is caught (6 of 6 ways open)
+  ok  r_lesson: 18 stray keys change nothing (0.2 story seconds in 0.2 real seconds, same step)
+  ok  r_hogfilm: 18 stray keys change nothing (0.2 story seconds in 0.2 real seconds, same step)
+  ok  filmB: 18 stray keys change nothing (0.2 story seconds in 0.2 real seconds, same step)
+  ok  d_open: 18 stray keys change nothing (0.2 story seconds in 0.2 real seconds, same step)
+  ok  the lane: after her line, Enter presses the lit Run button
+  ok  the door: after her loop, Enter presses the lit Run button
+  ..  the prototype menu and the h= jumps in the address are for judging only. The build has neither.
+GATE 7. faces match the story
+  ok  92 faces across 33 held frames match the story: nobody in danger smiles, and everyone smiles once a chapter is won
+  ok  control: a planted smile on the hedgehog on its rock is caught
+  ok  control: a smile with tears, and a smile with fear, are caught at a chapter close
+GATE 8. gauges
+  ok  the river gauge is a whole outlined bar 296 pixels wide with its label above it: "Time left before the river covers the rock"
+  ok  the river gauge shows what is left: 10 of 35 seconds used, 71 in 100 of the bar still lit
+  ok  the door gauge is a whole outlined bar 296 pixels wide with its label above it: "Time left before the storm reaches the house"
+  ok  the door gauge has started to run down while her code runs (80 in 100 still lit)
+  ok  the lane strip is a whole outlined track 608 pixels wide, labelled "Time left before the storm catches them", with its two ends named
+  ok  the lane strip shows the storm coming: its front moved 124 pixels between second 2 and second 30
+  ok  control: a gauge with a bare number for a label is caught
+  ok  control: a gauge with no outline is caught
+  ok  control: a gauge with its label hidden is caught
+A13. a slow computer
+  ..  full speed: 60 frames a second, middle frame 16.7 ms, detail step 0, 1.000 story seconds for each real second
+  ok  at full speed the picture stays at full detail and the clock keeps real time
+  ..  processor slowed 6 times: 16 frames a second, middle frame 67.8 ms, detail step 1, 1.002 story seconds for each real second
+  ok  on a slowed processor the picture detail drops by itself (step 1, detail 0.75)
+  ok  the 35-second clock still keeps real time on the slowed processor (1.002 story seconds for each real second)
+  ok  the gauge still shows the true time left on the slowed processor
+  ok  the lowest detail step still draws the scene and the story still runs (picture 1366 pixels wide down to 820)
+60 checks, 0 failed. No page errors.
+ALL PASS

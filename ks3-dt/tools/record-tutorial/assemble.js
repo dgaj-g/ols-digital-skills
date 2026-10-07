@@ -39,10 +39,7 @@ const HALVES = {
     { file: 'j2-l4-a.mp4', ids: ['ch1', 'ch2', 'ch3'], label: 'The fork in the road' },
     { file: 'j2-l4-b.mp4', ids: ['ch4', 'ch5'], label: 'Writing your own room' }
   ],
-  'j3-l4': [
-    { file: 'j3-l4-a.mp4', ids: ['ch1', 'ch2', 'ch3'], label: 'Build it once' },
-    { file: 'j3-l4-b.mp4', ids: ['ch4', 'ch5'], label: 'The spec card, the floor and the reject bin' }
-  ]
+  /* 'j3-l4' retired 7 Oct 2026 */
 };
 
 function ffprobeDuration(file) {

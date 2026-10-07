@@ -35,6 +35,11 @@
  *
  * It writes to the dev store only (Demo-10A, two seeded demo pupils).
  */
+/* RETIRED 7 Oct 2026: this gate tested J3 Lesson 4 "Function Factory", which J3 Lesson 4 "The Rescue" replaced
+   (DFM 291-301, K58). Its chunks no longer exist. The Rescue's gates live in probes/rescue/. Kept for history. */
+console.log('qa-rush-paired.js: RETIRED. J3 Lesson 4 is now The Rescue; see probes/rescue/.');
+process.exit(0);
+
 'use strict';
 const RT = __dirname;
 const { chromium } = require(RT + '/node_modules/playwright');

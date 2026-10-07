@@ -128,6 +128,18 @@ function lessonFiles() {
 }
 
 /* --------------------------------------------- 1. THE REPEATED-CLAUSE SWEEP */
+function repeatsAcross(v) {
+  if (/^\s*\[/.test(v)) {
+    try {
+      const a = JSON.parse(v);
+      if (Array.isArray(a) && a.every(x => typeof x === 'string')) {
+        for (const line of a) { const r = repeatsIn(line); if (r) return r; }
+        return null;
+      }
+    } catch (e) { /* not a list: read it whole */ }
+  }
+  return repeatsIn(v);
+}
 function repeatsIn(text) {
   const t = String(text).replace(/<[^>]+>/g, ' ');
   const w = t.match(/[A-Za-z’']+/g) || [];
@@ -197,7 +209,11 @@ console.log('=== 1. NO PUPIL STRING SAYS THE SAME SIX WORDS TWICE ===');
       /* THREE SHAPES, ONE EXEMPTION LIST. Each finding is waived only by an entry
          that names the exact text it waives, and every waiver is printed. */
       const found = [];
-      const run = repeatsIn(v);   if (run)  found.push(['repeats "' + run + '"', run]);
+      /* A LIST OF LINES IS READ ONE LINE AT A TIME. An explain stored as a JSON array
+         holds one line per wrong option, and the pupil sees only the line for the option
+         she chose, so two lines naming the same code line are not a repeat she ever reads
+         (J3 L4, j3x4-7). Each line is still held to the six-word rule on its own. */
+      const run = repeatsAcross(v);   if (run)  found.push(['repeats "' + run + '"', run]);
       const stut = stutterIn(v);  if (stut) found.push(['says "' + stut + '"', stut]);
       /* THE PARAPHRASE TEST IS SCOPED TO THE LESSONS UNDER REVIEW. It answers the
          question "did an edit leave a shortened restatement behind?", and a lesson
@@ -391,6 +407,10 @@ console.log('\n--- CONTROLS: each detector proved against the real damage of 27 
 control(repeatsIn('Your program was still going after a few seconds, so it was stopped. ' +
   'Something in it is repeating and never finishing. Something in it is repeating and never finishing.') !== null,
   'the duplicated timelimit message that shipped on two cards IS caught');
+control(repeatsAcross(JSON.stringify(['The line go("Al") runs go one time here.', 'The line go("Al") runs go, and then it stops.'])) === null,
+  'a list of option lines that each name the same code line is read one line at a time (over-tightening guard)');
+control(repeatsAcross(JSON.stringify(['one two three four five six and then one two three four five six again', 'fine'])) !== null,
+  'a six-word run repeated INSIDE one line of a list is still caught');
 control(repeatsIn('Read what it says back to you. When it has finished, the report button underneath turns on.') === null,
   'and an ordinary two-sentence line is not (over-tightening guard)');
 {

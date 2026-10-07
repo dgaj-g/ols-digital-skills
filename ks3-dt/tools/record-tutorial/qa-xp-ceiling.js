@@ -101,6 +101,18 @@ function audit(L) {
   const chunks = L.json.chunks || [];
   let total = 0;
   chunks.forEach(ch => {
+    /* J3 L4 The Rescue: the story's badges live in config.badges, each its OWN save event, and its
+       optional stretch is a separate 5 XP event. Every one is counted against both caps. */
+    if (ch.engine === 'rescue') {
+      const cfg = ch.config || {};
+      const evs = Object.values(cfg.badges || {}).map(x => ({ xp: Number(x.xp || 0), what: 'badge ' + x.id }));
+      if (cfg.stretch) evs.push({ xp: Number(cfg.stretch.xp || 0), what: 'the stretch' });
+      evs.forEach(e => {
+        total += e.xp;
+        if (e.xp > EVENT_CAP) fails.push(L.id + ' › ' + ch.id + ': ' + e.what + ' carries ' + e.xp + ' XP, over the ' + EVENT_CAP + ' per event the server stores.');
+      });
+      return;
+    }
     if (!ch.badge) return;
     const b = badgeMax(ch);
     total += b.max;
@@ -161,6 +173,10 @@ function controls() {
   res.push(say(audit(atCap).fails.length === 0, 'a badge of exactly 40 passes — the cap is a ceiling, not a wall'));
 
   /* (3) one over the cap is caught */
+  const rescueOver = { id: 'control-rescue', json: { chunks: [{ id: 'r', engine: 'rescue', config: { badges: { b: { id: 'x', xp: 41 } } } }] } };
+  res.push(say(audit(rescueOver).fails.length === 1, 'a story badge of 41 in config.badges is caught'));
+  const rescueSum = { id: 'control-rescue-sum', json: { chunks: [{ id: 'r', engine: 'rescue', config: { badges: { a: { id: 'a', xp: 12 }, b: { id: 'b', xp: 12 } }, stretch: { xp: 5 } } }] } };
+  res.push(say(audit(rescueSum).total === 29, 'the story badges and the stretch are all added to the lesson total'));
   const overCap = { id: 'control-over', json: { chunks: [{ id: 'c', engine: 'items', badge: { xp: 41 } }] } };
   res.push(say(audit(overCap).fails.length === 1, 'a badge of 41 is caught'));
 
