@@ -53,7 +53,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('./node_modules/playwright');
 
-const BASE_REF = '7d9c274';          /* V58 — the engine he sat. PINNED. */
+const BASE_REF = '64b65d9';          /* V58's twin (7d9c274 was erased by the 23 Sep history purge) — the engine he sat. PINNED. */
 const REPO = path.resolve(__dirname, '..', '..', '..');
 const ENGINES = path.join(REPO, 'ks3-dt', 'platform', 'engines.js');
 const STYLE = path.join(REPO, 'ks3-dt', 'platform', 'style.css');

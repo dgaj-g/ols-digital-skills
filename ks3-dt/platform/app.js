@@ -1469,6 +1469,10 @@
     s.advancing = false;          // a chunk is on screen again: advancing is allowed
     var ch = s.chunks[s.chunkIdx];
     var host = $('#chunk-host');
+    /* a drag copy lives on the PAGE, not the card: anything a drag left behind
+       is swept before the next card opens, so nothing ever crosses a card
+       (Orla's photo, 7 Oct 2026 — DragKit in engines.js) */
+    if (global.DragKit) global.DragKit.sweep();
     host.innerHTML = '';
     /* DFM 175, his 9 Aug instruction: "The layout of the cards should also be
        upgraded to be more aesthetically pleasing in this lesson - be inventive in

@@ -109,6 +109,110 @@
     return h.toString(16);
   }
 
+  /* ================= DragKit — ONE DRAG, ENDED EXACTLY ONCE ==================
+     ORLA'S PHOTO, 7 Oct 2026 (J2 Lesson 3, "a number of students across the
+     lesson series"): copies of code lines frozen over the card, and carried on
+     to the NEXT card. Each drag engine ended its gesture on ONE signal only —
+     "the button was let go", delivered to the very line being dragged. When that
+     signal never came (the window lost focus mid-drag, a second finger landed,
+     the line was redrawn or the card changed under the pointer) nothing else
+     ever removed the floating copy, and because the copy lives on the PAGE, not
+     the card, it followed her from card to card. The same lost ending left the
+     line itself half-faded and still wired to the old drag, so it would not pick
+     up properly again — "stuck", "won't follow the mouse".
+     Every drag engine now starts its gesture here, and the gesture ends exactly
+     once, on WHICHEVER comes first:
+       - the release (pointerup) — the only ending that DROPS;
+       - pointercancel, lost pointer capture (the line left the page), the window
+         losing focus, the tab being hidden, the mouse moving with no button
+         held (the release happened somewhere this page never heard), or a new
+         drag starting — all of which put the line back where it was.
+     The listeners sit on the WINDOW, in the capture phase, so they hear this
+     pointer whatever element it is over and whether or not capture held.
+     ONE DRAG AT A TIME: a second finger is ignored, and a new press cancels
+     anything left over. SCROLLING IS PART OF THE DRAG: the page scrolls itself
+     when she holds a line at the top or bottom edge, and each engine re-measures
+     its drop zones when the page moves (it caches them, for smoothness).
+     `qa-drag-ends` drives all of this with real mouse and touch input on every
+     drag card in every lesson, with Version 69 as the control that must fail. */
+  var DragKit = global.DragKit = {
+    active: null,
+    /* everything a drag can leave on the page; App.mountChunk calls this on
+       every card change, and every new drag calls it first */
+    sweep: function () {
+      if (DragKit.active) DragKit.active.cancel();
+      Array.prototype.forEach.call(
+        document.querySelectorAll('[data-drag-ghost], body > .parsons-ghost, body > .pyrun-ghost'),
+        function (g) { if (g.parentNode) g.parentNode.removeChild(g); });
+    },
+    /* h.move(ev) -> true once the engine counts it as a real drag;
+       h.end(released, x, y) — released is true ONLY for a real pointerup;
+       h.scroll() (optional) — the page moved under the drag */
+    start: function (node, e, h) {
+      if (e.isPrimary === false) return null;
+      DragKit.sweep();
+      var pid = e.pointerId, done = false, live = false, lastY = e.clientY, edgeRaf = 0;
+      var EDGE = 56, MAXV = 22;
+      var g = { cancel: function () { finish(false, NaN, NaN); } };
+      function finish(released, x, y) {
+        if (done) return;
+        done = true;
+        if (DragKit.active === g) DragKit.active = null;
+        window.removeEventListener('pointermove', onMove, true);
+        window.removeEventListener('pointerup', onUp, true);
+        window.removeEventListener('pointercancel', onUp, true);
+        window.removeEventListener('lostpointercapture', onLost, true);
+        window.removeEventListener('blur', g.cancel);
+        document.removeEventListener('visibilitychange', onHide);
+        document.removeEventListener('scroll', onScroll, true);
+        if (edgeRaf) { cancelAnimationFrame(edgeRaf); edgeRaf = 0; }
+        try { node.releasePointerCapture(pid); } catch (err) { /* already gone */ }
+        h.end(released, x, y);
+      }
+      function onMove(ev) {
+        if (ev.pointerId !== pid) return;
+        /* a mouse moving with no button down: the release happened where this
+           page never heard it, so the drag is over */
+        if (ev.pointerType === 'mouse' && ev.buttons === 0) { finish(false, ev.clientX, ev.clientY); return; }
+        lastY = ev.clientY;
+        if (h.move(ev)) { live = true; if (!edgeRaf) edgeRaf = requestAnimationFrame(edge); }
+      }
+      function onUp(ev) {
+        if (ev.pointerId !== pid) return;
+        finish(ev.type === 'pointerup', ev.clientX, ev.clientY);
+      }
+      /* fires AFTER pointerup on a normal drop (already finished by then), so
+         reaching here means capture went without a release: the line was
+         removed or redrawn under the pointer */
+      function onLost(ev) { if (ev.pointerId === pid) finish(false, NaN, NaN); }
+      function onHide() { if (document.hidden) finish(false, NaN, NaN); }
+      function onScroll() { if (live && h.scroll) h.scroll(); }
+      /* holding a line near the top or bottom edge scrolls the page, faster the
+         closer she is, so a box below the fold can be reached mid-drag */
+      function edge() {
+        edgeRaf = 0;
+        if (done || !live) return;
+        var H = window.innerHeight, v = 0;
+        if (lastY > H - EDGE) v = Math.min(MAXV, Math.ceil((lastY - (H - EDGE)) / EDGE * MAXV));
+        else if (lastY < EDGE) v = -Math.min(MAXV, Math.ceil((EDGE - lastY) / EDGE * MAXV));
+        if (!v) return;
+        var before = window.pageYOffset;
+        window.scrollBy(0, v);
+        if (window.pageYOffset !== before) edgeRaf = requestAnimationFrame(edge);
+      }
+      try { node.setPointerCapture(pid); } catch (err) { /* the window listeners still hear it */ }
+      window.addEventListener('pointermove', onMove, true);
+      window.addEventListener('pointerup', onUp, true);
+      window.addEventListener('pointercancel', onUp, true);
+      window.addEventListener('lostpointercapture', onLost, true);
+      window.addEventListener('blur', g.cancel);
+      document.addEventListener('visibilitychange', onHide);
+      document.addEventListener('scroll', onScroll, true);
+      DragKit.active = g;
+      return g;
+    }
+  };
+
   /* ================= PairKit (ARCHITECTURE section 12) ======================
      Auto-pairing + the monitored "Comms Channel". Any engine can gate its
      activity on PairKit.ensure(): the callback gets 'social' (auto-pairing
@@ -2835,37 +2939,47 @@
           return c;
         }
 
-        /* Lag-free pointer drag: transform only, no transition while dragging. */
+        /* Lag-free pointer drag: transform only, no transition while dragging,
+           one write per frame. THE GESTURE IS DragKit's (Orla's photo, 7 Oct
+           2026): a drag whose release the page never heard used to leave the
+           file lifted, half-moved and still listening — it now goes home. */
         function makeDraggable(node, f) {
-          var startX, startY, dx, dy, dragging = false;
           node.addEventListener('pointerdown', function (e) {
             if (placed[f.id]) return;
+            if (e.button != null && e.button !== 0) return;
             if (mode === 'paired' && !myTurn()) {
               App.toast('Not your drop — Agent ' + driverCn() + ' is at the controls.');
               return;
             }
-            dragging = true;
-            node.setPointerCapture(e.pointerId);
+            var startX = e.clientX, startY = e.clientY, px = startX, py = startY, raf = 0;
+            /* the file moves WITH the page when it scrolls, so the scroll is
+               added back or it slides out from under the pointer */
+            var sx0 = window.pageXOffset, sy0 = window.pageYOffset;
+            function paint() {
+              raf = 0;
+              var dx = px - startX + (window.pageXOffset - sx0), dy = py - startY + (window.pageYOffset - sy0);
+              node.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(1.06)';
+              hoverFolder(px, py);
+            }
+            var gest = DragKit.start(node, e, {
+              move: function (ev) {
+                px = ev.clientX; py = ev.clientY;
+                if (!raf) raf = requestAnimationFrame(paint);
+                return true;
+              },
+              scroll: function () { if (!raf) raf = requestAnimationFrame(paint); },
+              end: function (released, x, y) {
+                if (raf) { cancelAnimationFrame(raf); raf = 0; }
+                node.classList.remove('dragging');
+                var folder = released ? folderAt(x, y) : null;
+                clearHover();
+                if (folder) drop(node, f, folder);
+                else snapBack(node);
+              }
+            });
+            if (!gest) return;
+            node.classList.remove('snapback');
             node.classList.add('dragging');
-            startX = e.clientX; startY = e.clientY; dx = 0; dy = 0;
-          });
-          node.addEventListener('pointermove', function (e) {
-            if (!dragging) return;
-            dx = e.clientX - startX; dy = e.clientY - startY;
-            node.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(1.06)';
-            hoverFolder(e.clientX, e.clientY);
-          });
-          node.addEventListener('pointerup', function (e) {
-            if (!dragging) return;
-            dragging = false;
-            node.classList.remove('dragging');
-            var folder = folderAt(e.clientX, e.clientY);
-            clearHover();
-            if (folder) drop(node, f, folder);
-            else snapBack(node);
-          });
-          node.addEventListener('pointercancel', function () {
-            dragging = false; node.classList.remove('dragging'); snapBack(node); clearHover();
           });
         }
         function folderAt(x, y) {
@@ -4430,11 +4544,13 @@
 
         var ghost = null;
         var suppressClick = false;   // set by a completed drag, eaten by its own click
+        var dragEndAt = 0;           // ...and only within a moment of that drag (see the click handler)
 
         function makeGhost(node, x, y) {
           var r = node.getBoundingClientRect();
           var g = node.cloneNode(true);
           g.className = 'parsons-block parsons-ghost';
+          g.setAttribute('data-drag-ghost', '');
           g.style.width = r.width + 'px';
           g.style.height = r.height + 'px';
           g.dataset.dx = String(r.left - x);
@@ -4579,7 +4695,6 @@
           node.addEventListener('pointerdown', function (e) {
             if (locked || (e.button !== undefined && e.button !== 0)) return;
             var sx = e.clientX, sy = e.clientY, moved = false;
-            try { node.setPointerCapture(e.pointerId); } catch (err) { /* older engines */ }
 
             /* one write per frame, and the marker only when the target moves */
             function paint() {
@@ -4592,42 +4707,55 @@
               lastTarget = key;
               drawTarget(t, geo);
             }
-            function onMove(ev) {
-              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 5) return;
-              if (!moved) {
-                moved = true; dragSi = si;
-                node.classList.add('dragging');
-                ghost = makeGhost(node, ev.clientX, ev.clientY);
-                /* `.dragging` only changes opacity, so nothing has moved and
-                   these are the rects a live read would return */
+            /* THE GESTURE IS DragKit's (Orla's photo, 7 Oct 2026): it ends exactly
+               once however it ends, and only a real release drops. */
+            var gest = DragKit.start(node, e, {
+              move: function (ev) {
+                if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 5) return false;
+                if (!moved) {
+                  moved = true; dragSi = si;
+                  node.classList.add('dragging');
+                  /* picked up where she PRESSED, so the copy sits under the
+                     pointer exactly where she took hold of it */
+                  ghost = makeGhost(node, sx, sy);
+                  /* `.dragging` only changes opacity, so nothing has moved and
+                     these are the rects a live read would return */
+                  geo = snapGeometry();
+                  lastTarget = '';
+                }
+                ev.preventDefault();
+                ptrX = ev.clientX; ptrY = ev.clientY;
+                if (!raf) raf = requestAnimationFrame(paint);
+                return true;
+              },
+              /* the page scrolled under the drag: the cached zones moved with it */
+              scroll: function () {
+                if (!moved) return;
                 geo = snapGeometry();
                 lastTarget = '';
+                if (!raf) raf = requestAnimationFrame(paint);
+              },
+              end: function (released, x, y) {
+                if (raf) { cancelAnimationFrame(raf); raf = 0; }
+                if (ghost) { ghost.remove(); ghost = null; }
+                node.classList.remove('dragging');
+                clearMarks();
+                lastTarget = '';
+                var g = geo; geo = null;
+                /* A drag ends here. A press that never moved is left to the CLICK
+                   handler below, so that keyboard activation (Enter or Space fires
+                   click with no pointer events at all) keeps working - handling it
+                   here instead locked out anyone not using a mouse. A drag that
+                   ended WITHOUT a release drops nothing: the line stays where it
+                   was. */
+                if (moved && released) { suppressClick = true; dragEndAt = Date.now(); commitDrop(si, x, y, g); }
+                dragSi = null;
               }
-              ev.preventDefault();
-              ptrX = ev.clientX; ptrY = ev.clientY;
-              if (!raf) raf = requestAnimationFrame(paint);
-            }
-            function onUp(ev) {
-              node.removeEventListener('pointermove', onMove);
-              node.removeEventListener('pointerup', onUp);
-              node.removeEventListener('pointercancel', onUp);
-              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-              if (raf) { cancelAnimationFrame(raf); raf = 0; }
-              if (ghost) { ghost.remove(); ghost = null; }
-              node.classList.remove('dragging');
-              clearMarks();
-              lastTarget = '';
-              var g = geo; geo = null;
-              /* A drag ends here. A press that never moved is left to the CLICK
-                 handler below, so that keyboard activation (Enter or Space fires
-                 click with no pointer events at all) keeps working - handling it
-                 here instead locked out anyone not using a mouse. */
-              if (moved) { suppressClick = true; commitDrop(si, ev.clientX, ev.clientY, g); }
-              dragSi = null;
-            }
-            node.addEventListener('pointermove', onMove);
-            node.addEventListener('pointerup', onUp);
-            node.addEventListener('pointercancel', onUp);
+            });
+            /* a fresh press: whatever click an earlier drag meant to swallow has
+               gone (when the drop redraws the line, that click never arrives, and
+               the flag used to eat her NEXT real click instead) */
+            if (gest) suppressClick = false;
           });
 
           /* ENTER STAYS A DELIBERATE ACT (DFM 272). Where the body click no
@@ -4643,7 +4771,8 @@
           }
           node.addEventListener('click', function () {
             if (locked) return;
-            if (suppressClick) { suppressClick = false; return; }   // the tail of a drag
+            /* the tail of a drag — but only its own, a moment after it */
+            if (suppressClick) { suppressClick = false; if (Date.now() - dragEndAt < 800) return; }
             /* A SINGLE CLICK NEVER DESTROYS PLACED WORK (DFM 272) — the same law
                and the same gate as the pyrun tray, because it is the same fault:
                one gesture that both builds and unbuilds. */
@@ -6739,7 +6868,7 @@
            the mouse's report rate. `qa-drag-smooth` counts both, on both
            engines, with the engine he sat as the failing control, and proves in
            the same run that the row still lands in exactly the same place. */
-        var ghost = null, suppressClick = false;
+        var ghost = null, suppressClick = false, dragEndAt = 0;
         var geo = null, raf = 0, ptrX = 0, ptrY = 0, lastZone = '';
         function inRect(r, x, y) {
           return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -6805,7 +6934,6 @@
             if (outOfService(node)) return;
             if (e.button != null && e.button !== 0) return;
             var sx = e.clientX, sy = e.clientY, moved = false;
-            try { node.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
             /* ONE WRITE PER FRAME, and the zone highlight only when the zone
                actually changes — a class written on every event is a style
                invalidation on every event, for a screen that already looks
@@ -6822,52 +6950,68 @@
               progZone.classList.toggle('drop-here', zone === 'prog');
               trayZone.classList.toggle('drop-back', zone === 'tray');
             }
-            function onMove(ev) {
-              if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return;
-              if (!moved) {
-                moved = true;
-                node.classList.add('dragging');
-                var r = node.getBoundingClientRect();
-                ghost = node.cloneNode(true);
-                ghost.className = 'pyrun-line pyrun-ghost';
-                ghost.style.width = r.width + 'px';
-                ghost.dataset.dx = String(r.left - ev.clientX);
-                ghost.dataset.dy = String(r.top - ev.clientY);
-                document.body.appendChild(ghost);
-                /* `.dragging` only changes opacity, so nothing has moved and
-                   these rects are the same ones a live read would return */
+            /* THE GESTURE IS DragKit's (Orla's photo, 7 Oct 2026): it ends exactly
+               once however it ends, and only a real release drops. */
+            var gest = DragKit.start(node, e, {
+              move: function (ev) {
+                if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return false;
+                if (!moved) {
+                  moved = true;
+                  node.classList.add('dragging');
+                  var r = node.getBoundingClientRect();
+                  ghost = node.cloneNode(true);
+                  ghost.className = 'pyrun-line pyrun-ghost';
+                  ghost.setAttribute('data-drag-ghost', '');
+                  ghost.style.width = r.width + 'px';
+                  /* held where she PRESSED, not where the pointer had got to by
+                     the time the drag counted — or the copy jumps sideways by
+                     that distance the moment it lifts */
+                  ghost.dataset.dx = String(r.left - sx);
+                  ghost.dataset.dy = String(r.top - sy);
+                  ghost.style.transform = 'translate(' + r.left + 'px,' + r.top + 'px)';
+                  document.body.appendChild(ghost);
+                  /* `.dragging` only changes opacity, so nothing has moved and
+                     these rects are the same ones a live read would return */
+                  geo = snapGeometry();
+                  lastZone = '';
+                }
+                ptrX = ev.clientX; ptrY = ev.clientY;
+                if (!raf) raf = requestAnimationFrame(paint);
+                return true;
+              },
+              /* the page scrolled under the drag: the cached zones moved with it */
+              scroll: function () {
+                if (!moved) return;
                 geo = snapGeometry();
                 lastZone = '';
+                if (!raf) raf = requestAnimationFrame(paint);
+              },
+              end: function (released, x, y) {
+                if (raf) { cancelAnimationFrame(raf); raf = 0; }
+                if (ghost) { ghost.remove(); ghost = null; }
+                node.classList.remove('dragging');
+                progZone.classList.remove('drop-here'); trayZone.classList.remove('drop-back');
+                lastZone = '';
+                var g = geo; geo = null;
+                /* a drag that ended WITHOUT a release drops nothing */
+                if (!moved || !released) return;
+                suppressClick = true; dragEndAt = Date.now();
+                if (inRect(g && g.tray, x, y)) take(si);
+                else if (inRect(g && g.prog, x, y)) {
+                  put(si, g ? indexFromMids(g.mids, y) : dropIndexAt(y));
+                }
               }
-              ptrX = ev.clientX; ptrY = ev.clientY;
-              if (!raf) raf = requestAnimationFrame(paint);
-            }
-            function onUp(ev) {
-              node.removeEventListener('pointermove', onMove);
-              node.removeEventListener('pointerup', onUp);
-              node.removeEventListener('pointercancel', onUp);
-              try { node.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-              if (raf) { cancelAnimationFrame(raf); raf = 0; }
-              if (ghost) { ghost.remove(); ghost = null; }
-              node.classList.remove('dragging');
-              progZone.classList.remove('drop-here'); trayZone.classList.remove('drop-back');
-              lastZone = '';
-              var g = geo; geo = null;
-              if (!moved) return;
-              suppressClick = true;
-              if (inRect(g && g.tray, ev.clientX, ev.clientY)) take(si);
-              else if (inRect(g && g.prog, ev.clientX, ev.clientY)) {
-                put(si, g ? indexFromMids(g.mids, ev.clientY) : dropIndexAt(ev.clientY));
-              }
-            }
-            node.addEventListener('pointermove', onMove);
-            node.addEventListener('pointerup', onUp);
-            node.addEventListener('pointercancel', onUp);
+            });
+            /* a fresh press: whatever click an earlier drag meant to swallow has
+               gone (when the drop redraws the line, that click never arrives, and
+               the flag used to eat her NEXT real click instead) */
+            if (gest) suppressClick = false;
           });
           node.addEventListener('click', function (e) {
             if (e.target && /input/i.test(e.target.tagName)) return;
             if (outOfService(node)) return;
-            if (suppressClick) { suppressClick = false; return; }
+            /* the tail of a drag — but only its own, a moment after it */
+            if (suppressClick) { suppressClick = false; if (Date.now() - dragEndAt < 800) return; }
             /* ---- A SINGLE CLICK NEVER DESTROYS PLACED WORK — DFM 272 -------
                His find, 27 Aug 2026, on training build 3b: "the third line was
                put back over to the left". He was typing into the gaps on the
