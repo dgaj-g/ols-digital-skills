@@ -28,6 +28,8 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('./node_modules/playwright');
+const { execFileSync } = require('child_process');
+const REPO = path.resolve(__dirname, '..', '..', '..');
 
 const SRC = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const ENGINES = path.join(__dirname, '..', '..', 'platform', 'engines.js');
@@ -64,6 +66,22 @@ function engineTidyRule() {
   const m = engSrc.match(/tidy: function \(s\) \{[\s\S]*?\n    \},/);
   return m ? m[0] : null;
 }
+/* The error KIND is the engine's too (7 Oct 2026). This file carried its own
+   copy of the coarse rule, so when J2 L4 moved to the fine kinds (`badinput`,
+   `eof`, `unindent` — PyRun.errKind2, tried first by PyRun.plain) the copy kept
+   saying `syntax` and condemned a lesson that does have the words. Both rules
+   are now lifted out of engines.js, and the kind recorded is the one whose words
+   a pupil really reads: PyRun.plain's own order, fine first, coarse second. */
+function engineFn(name) {
+  const m = engSrc.match(new RegExp('\\n    ' + name + ': (function \\(errText\\) \\{[\\s\\S]*?\\n    \\}),'));
+  return m ? eval('(' + m[1] + ')') : null;
+}
+const errKind = engineFn('errKind');
+const errKind2 = engineFn('errKind2');
+const wordKind = (err, words) => {
+  const fine = errKind2(err), coarse = errKind(err);
+  return (words || {})[fine] ? fine : coarse;
+};
 
 (async () => {
   const found = lessons();
@@ -71,6 +89,9 @@ function engineTidyRule() {
   check(found.length > 0, 'at least one lesson uses pyrun/snap (found ' + found.length + ': ' +
     found.map(x => x.lesson.id).join(', ') + ')');
   check(!!engineTidyRule(), 'the engine still owns the tidy/compare rule this gate reads');
+  check(!!errKind && !!errKind2 && errKind2('SyntaxError: bad input on line 1') === 'badinput' &&
+    errKind('SyntaxError: bad input on line 1') === 'syntax',
+    'the engine still owns both error-kind rules this gate reads (errKind + errKind2)');
 
   /* ---- 1/2/3: run real Python in a real browser ---------------------- */
   const page = await (await chromium.launch({ headless: true })).newPage();
@@ -102,21 +123,28 @@ function engineTidyRule() {
   const run = (code, limit) => page.evaluate(([c, l]) => window.RUN(c, l), [code, limit || 5000]);
   const tidy = (s) => page.evaluate((x) => window.TIDY(x), s);
 
-  function assemble(lines, order, blanks) {
-    return order.map(si => {
-      let t = String(lines[si].t || '');
-      (lines[si].blanks || []).forEach(bl => {
-        t = t.replace(bl.slot || '____', String((blanks || {})[bl.key] == null ? '' : blanks[bl.key]));
+  /* The program a build really runs, put together the way the engine's codeOf()
+     does it (7 Oct 2026): `fixedTop` — the lines J2 L4 shows LOCKED above Your
+     program — goes first with every slot of a `fixedBlanks` gap filled, then the
+     placed lines with each blank filled once. Before this the gate ran only the
+     tray lines, so a card whose tray starts at `elif` "failed" with a
+     SyntaxError on line 1 that no pupil can ever meet. */
+  function assemble(b, order, blanks) {
+    const val = k => String((blanks || {})[k] == null ? '' : blanks[k]);
+    const top = (b.fixedTop || []).map(t => {
+      let line = String(t);
+      (b.fixedBlanks || []).forEach(bl => {
+        const slot = bl.slot || '____';
+        while (line.indexOf(slot) !== -1) line = line.replace(slot, val(bl.key));
       });
+      return line;
+    });
+    return top.concat(order.map(si => {
+      let t = String(b.lines[si].t || '');
+      (b.lines[si].blanks || []).forEach(bl => { t = t.replace(bl.slot || '____', val(bl.key)); });
       return t;
-    }).join('\n');
+    })).join('\n');
   }
-  const ERRKIND = (s) => /TimeLimitError/i.test(s) ? 'timelimit'
-    : /IndentationError|TabError/i.test(s) ? 'indent'
-    : /NameError/i.test(s) ? 'name'
-    : /SyntaxError/i.test(s) ? 'syntax'
-    : /TypeError/i.test(s) ? 'type'
-    : /ValueError/i.test(s) ? 'value' : 'other';
 
   /* which error kinds each chunk's own decoys really raise, filled by section 2
      and spent by section 5 */
@@ -148,7 +176,7 @@ function engineTidyRule() {
           continue;
         }
         if (!k || !k.order) { check(false, b.id + ': no answer key with an `order` — no machine can walk this build'); continue; }
-        const code = assemble(b.lines, k.order, k.blanks);
+        const code = assemble(b, k.order, k.blanks);
         const res = await run(code, Number(cfg.limitMs) || 5000);
         const want = await tidy((b.target || []).join('\n'));
         const got = await tidy(res.out);
@@ -169,6 +197,9 @@ function engineTidyRule() {
         (b.lines || []).forEach(ln => (ln.blanks || []).forEach(bl => {
           check(k.blanks && k.blanks[bl.key] != null, b.id + ': the key supplies a value for blank "' + bl.key + '"');
         }));
+        (b.fixedBlanks || []).forEach(bl => {
+          check(k.blanks && k.blanks[bl.key] != null, b.id + ': the key supplies a value for the locked lines\' blank "' + bl.key + '"');
+        });
 
         log('--- 2. its decoys are REAL slips, and every one has plain words waiting');
         const used = new Set(k.order);
@@ -181,15 +212,38 @@ function engineTidyRule() {
            Its fail state is proved by the control two lines below. A gate that
            reports a fault the lesson does not have is worse than no gate
            (DFM 146a), so the rule is the one that was actually meant. */
-        const hasBlanks = (b.lines || []).some(l => (l.blanks || []).length);
+        const hasBlanks = (b.lines || []).some(l => (l.blanks || []).length) || (b.fixedBlanks || []).length > 0;
+        /* the build's renderer, chosen by the engine's own rule (startBuild) */
+        const mode = String(b.mode || cfg.mode || 'assemble');
         /* A WORKED BUILD IS READ, NOT BUILT (28 Aug 2026, when the extras and the
            worked example were given keys and RUN for the first time). Its card
            says in so many words that nothing on it is for her to write, so it has
            no decoys and no boxes and cannot have a fail state — demanding one is
            the gate reporting a fault the lesson does not have (DFM 146a). */
-        if (b.mode === 'worked') {
-          check(decoys.length === 0 && !hasBlanks,
-            b.id + ': a worked example, so there is nothing on it to get wrong');
+        /* ...UNTIL J2 L4 GAVE ITS WORKED EXAMPLE ONE BOX (7 Oct 2026). `t1` shows
+           `if choice = "trolley":` with the box holding a single `=`, and the one
+           thing she does is make it the sign that ASKS. So a worked build still
+           carries no decoy LINES, but a box whose starting value (`pre`) is not
+           the key is a genuine fail state: it is run exactly as it starts, it
+           must really fail, and its error must have plain words like a decoy's. */
+        if (mode === 'worked') {
+          check(decoys.length === 0,
+            b.id + ': a worked example, so it carries no decoy lines' + (hasBlanks ? ' (its box is the one thing she does)' : ''));
+          for (const ln of (b.lines || [])) for (const bl of (ln.blanks || [])) {
+            if (bl.pre == null || String(bl.pre) === String((k.blanks || {})[bl.key])) continue;
+            const asIs = Object.assign({}, k.blanks, { [bl.key]: String(bl.pre) });
+            const pres = await run(assemble(b, k.order, asIs), Number(cfg.limitMs) || 5000);
+            const pgot = await tidy(pres.out);
+            check(!pres.ok || pgot !== want,
+              b.id + ': left as it starts (' + JSON.stringify(String(bl.pre)) + '), its box really fails');
+            if (!pres.ok) {
+              const kind = wordKind(pres.err, cfg.errorWords);
+              const rk = L.lesson.id + '·' + ch.id;
+              (raised[rk] || (raised[rk] = [])).push(kind);
+              check(!!(cfg.errorWords && cfg.errorWords[kind]),
+                b.id + ' box left as it starts raises ' + kind + ' — and this lesson has plain words for it');
+            }
+          }
         } else
         check(decoys.length > 0 || hasBlanks,
           b.id + ': carries a genuine fail state (' + decoys.length + ' decoy line(s)' +
@@ -198,12 +252,12 @@ function engineTidyRule() {
           /* substitute the decoy for the LAST correct line, which is the one a
              decoy is written to be confused with, and require a real failure */
           const swapped = k.order.slice(0, -1).concat([d]);
-          const dres = await run(assemble(b.lines, swapped, k.blanks), Number(cfg.limitMs) || 5000);
+          const dres = await run(assemble(b, swapped, k.blanks), Number(cfg.limitMs) || 5000);
           const dgot = await tidy(dres.out);
           const failed = !dres.ok || dgot !== want;
           check(failed, b.id + ' decoy [' + String(b.lines[d].t).slice(0, 46) + ']: really fails');
           if (!dres.ok) {
-            const kind = ERRKIND(dres.err);
+            const kind = wordKind(dres.err, cfg.errorWords);
             const rk = L.lesson.id + '·' + ch.id;
             (raised[rk] || (raised[rk] = [])).push(kind);
             check(!!(cfg.errorWords && cfg.errorWords[kind]),
@@ -214,7 +268,7 @@ function engineTidyRule() {
         log('--- 3. CONTROLS');
         if (k.order.length > 1) {
           const rev = k.order.slice().reverse();
-          const rres = await run(assemble(b.lines, rev, k.blanks), Number(cfg.limitMs) || 5000);
+          const rres = await run(assemble(b, rev, k.blanks), Number(cfg.limitMs) || 5000);
           const rgot = await tidy(rres.out);
           /* SOME PROGRAMS READ THE SAME BACKWARDS. The J2 extra that prints a
              line of dashes, a sentence, and a line of dashes prints exactly the
@@ -225,14 +279,14 @@ function engineTidyRule() {
              swapped for one that can: dropping the last line must change the
              output. The substitution is PRINTED, never silent (DFM 221). */
           if (rres.ok && rgot === want) {
-            const short = await run(assemble(b.lines, k.order.slice(0, -1), k.blanks), Number(cfg.limitMs) || 5000);
+            const short = await run(assemble(b, k.order.slice(0, -1), k.blanks), Number(cfg.limitMs) || 5000);
             const sgot = await tidy(short.out);
             control(!short.ok || sgot !== want,
               b.id + ': its output reads the same backwards, so the control is DROPPING a line instead — and that does NOT match');
           } else
           control(!rres.ok || rgot !== want, b.id + ': the reversed order does NOT match');
         } else {
-          const empty = await run(assemble(b.lines, k.order, {}), Number(cfg.limitMs) || 5000);
+          const empty = await run(assemble(b, k.order, {}), Number(cfg.limitMs) || 5000);
           const egot = await tidy(empty.out);
           control(egot !== want, b.id + ': an unfilled blank does NOT match');
         }
@@ -277,8 +331,18 @@ function engineTidyRule() {
        targetLead                                     only where a build has a target
        matchedLabel                                   any verdict, unless the chunk is
                                                       staged and supplies matchedAllLabel
-       runLabel / notYetLabel / notYetSay / consoleLabels / errorWords   every pyrun */
-  const ALWAYS_PYRUN = ['runLabel', 'notYetLabel', 'notYetSay', 'consoleLabels', 'errorWords'];
+       runLabel / notYetLabel / consoleLabels / errorWords   every pyrun
+       notYetSay   PER BUILD, where its renderer really reads it (below) */
+  const ALWAYS_PYRUN = ['runLabel', 'notYetLabel', 'consoleLabels', 'errorWords'];
+  /* THE NOT-YET SENTENCE IS A BUILD'S OWN WHERE ITS RENDERER READS ONE (7 Oct
+     2026). The worked, editor and staged renderers show `b.notYetSay` first and
+     the chunk's sentence second, so J2 L4 — which writes one per card and none
+     for the chunk — was "missing" a sentence no pupil could ever have read. The
+     tray's verdict is read AT SOURCE, never assumed: if it shows only the
+     chunk's sentence, a tray card's own sentence is dead config and is reported
+     as the fault it is, because the pupil reads something else. */
+  const settleSrc = (engSrc.match(/function settleAssemble\(ok, usesMissing\) \{[\s\S]*?'<\/p>';/) || [''])[0];
+  const trayReadsOwn = /\bb\.notYetSay\b/.test(settleSrc);
   const needPyrun = (cfg) => {
     const builds = cfg.builds || [];
     /* a WORKED build has lines on it, but she reads them: no tray, no drop zone,
@@ -309,7 +373,24 @@ function engineTidyRule() {
           'the engine\'s own words are a fallback no pupil reads');
       }
       if (ch.engine === 'pyrun') {
-        const hasBlank = (cfg.builds || []).some(b => (b.lines || []).some(l => (l.blanks || []).length));
+        check(!!settleSrc, 'the tray\'s verdict can be read at source (settleAssemble)');
+        for (const b of (cfg.builds || [])) {
+          const mode = String(b.mode || cfg.mode || 'assemble');
+          const tray = mode !== 'worked' && mode !== 'editor';
+          const who = L.lesson.id + ' · ' + ch.id + ' · ' + b.id;
+          if (tray && !trayReadsOwn) {
+            check(!!cfg.notYetSay, who + ': a tray card, and the tray shows only the chunk\'s notYetSay — so the chunk supplies one');
+            check(b.notYetSay == null, who + ': its own notYetSay is the sentence a pupil reads' +
+              (b.notYetSay == null ? '' : '  [DEAD: the tray verdict reads only the chunk\'s, so she reads ' +
+                (cfg.notYetSay ? JSON.stringify(String(cfg.notYetSay).slice(0, 60) + '…') : 'the engine\'s own default') + ']'));
+          } else {
+            check(!!(b.notYetSay || cfg.notYetSay), who + ': supplies a not-yet sentence (its own, or the chunk\'s)');
+          }
+        }
+        /* a box in the LOCKED lines is refused with the same sentence (emptyBlank
+           tries the fixed gaps first); the editor's empty program is `emptySay` */
+        const hasBlank = (cfg.builds || []).some(b => (b.lines || []).some(l => (l.blanks || []).length) ||
+          (b.fixedBlanks || []).length > 0);
         if (hasBlank) check(!!cfg.blankEmptySay, L.lesson.id + ' · ' + ch.id + ': uses blanks, so it must supply blankEmptySay');
         /* PLAIN WORDS FOR EVERY KIND THIS CHUNK CAN REALLY RAISE, AND NO MORE.
            The first version of this rule demanded all seven kinds on every
@@ -615,22 +696,37 @@ function engineTidyRule() {
        (3) a for-loop printing 10,000 lines STILL completes — the budget was not
            accidentally shrunk while it was being reset.
      THE CONTROL (DFM 196): every one of these is run a second time against the
-     ENGINE HE SAT, taken from the pinned worktree of `7d9c274`, in the same
+     ENGINE HE SAT, pulled out of git at the pinned `64b65d9`, in the same
      browser, driven the same way. (1) must FAIL there and (2) must still pass
-     there, or this gate is not measuring what it claims to. The worktree path
-     is env-overridable, and if it is not present the gate says so IN ITS OWN
+     there, or this gate is not measuring what it claims to. The source is
+     env-overridable, and if it cannot be read the gate says so IN ITS OWN
      OUTPUT and fails, rather than crediting the fix on an unrun control (the
      DFM 200 rule: a checker that cannot run reports nothing, and nobody may
      know that and still ship). */
   log('\n=== 8. THE RUN CLOCK — A TIME BUDGET MEASURES THE PROGRAM, NEVER HER TYPING (DFM 269) ===');
   {
-    const PREFIX_REF = process.env.KS3DT_PREFIX_ENGINES ||
-      path.join(process.env.HOME, 'Sites', 'ols-wt-j2l3sit', 'ks3-dt', 'platform', 'engines.js');
+    /* THE CONTROL ENGINE COMES OUT OF GIT, PINNED (7 Oct 2026). It used to be
+       read from a worktree that has since been removed, so the control could
+       not run at all and the gate failed on its own plumbing. It is now pulled
+       the way qa-drag-smooth and qa-click-safety pull theirs. The env var still
+       overrides, with a file path. */
+    const BASE_REF = '64b65d9';  /* V58's twin (7d9c274 was erased by the 23 Sep history purge) — the engine he sat. PINNED. */
+    let PREFIX_REF, preSrc = null;
+    if (process.env.KS3DT_PREFIX_ENGINES) {
+      PREFIX_REF = process.env.KS3DT_PREFIX_ENGINES;
+      try { preSrc = fs.readFileSync(PREFIX_REF, 'utf8'); } catch (e) { /* reported below */ }
+    } else {
+      PREFIX_REF = 'git ' + BASE_REF + ':ks3-dt/platform/engines.js';
+      try {
+        preSrc = execFileSync('git', ['-C', REPO, 'show', BASE_REF + ':ks3-dt/platform/engines.js'],
+          { encoding: 'utf8', maxBuffer: 40 * 1024 * 1024 });
+      } catch (e) { /* reported below */ }
+    }
 
     /* one page per engine build, with the REAL PyRun on it. Skulpt is loaded up
        front and `PyRun._p` short-circuited, so `load()` never fetches — the
        thing under test is `start()`, not the script tag. */
-    const clockPage = async (br, enginePath) => {
+    const clockPage = async (br, engineText) => {
       const pg = await br.newPage();
       const errs = [];
       pg.on('pageerror', e => errs.push(String(e.message)));
@@ -641,7 +737,7 @@ function engineTidyRule() {
           armButton: (b, fn) => { if (b) b.onclick = fn; }, toast: () => {}
         };
       });
-      await pg.addScriptTag({ content: fs.readFileSync(enginePath, 'utf8') });
+      await pg.addScriptTag({ content: engineText });
       await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt.min.js') });
       await pg.addScriptTag({ path: path.join(SKULPT, 'skulpt-stdlib.js') });
       await pg.evaluate(() => { window.PyRun._p = Promise.resolve(true); });
@@ -674,8 +770,8 @@ function engineTidyRule() {
     })`;
 
     const br8 = await chromium.launch({ headless: true });
-    const drive = async (enginePath, what) => {
-      const { pg, errs } = await clockPage(br8, enginePath);
+    const drive = async (engineText, what) => {
+      const { pg, errs } = await clockPage(br8, engineText);
       const t0 = Date.now();
       const human = await pg.evaluate(([src, d]) =>
         (new Function('return (' + src + ')')())(d), [HUMAN, [6500, 2500]]);
@@ -689,7 +785,7 @@ function engineTidyRule() {
     };
 
     const WANT = 'Hello, Sorcha.\nSorcha likes Sorcha.';
-    const fixed = await drive(ENGINES, 'the fixed engine');
+    const fixed = await drive(engSrc, 'the fixed engine');
     check(fixed.human.ok, '(1) a two-input program answered after 6.5 s and 2.5 s COMPLETES' +
       (fixed.human.ok ? ' (' + Math.round(fixed.humanMs / 100) / 10 + ' s of wall clock)'
         : '  [' + String(fixed.human.err).slice(0, 90) + ']'));
@@ -706,12 +802,13 @@ function engineTidyRule() {
       (fixed.errs.length ? '  [' + fixed.errs.slice(0, 2).join(' | ') + ']' : ''));
 
     log('--- 8b. CONTROLS, against the engine he sat (' + PREFIX_REF + ')');
-    if (!fs.existsSync(PREFIX_REF)) {
+    check(!preSrc || !/DFM 269/.test(preSrc), 'the control engine predates the clock fix (it never mentions DFM 269)');
+    if (!preSrc) {
       check(false, 'THE CONTROL COULD NOT RUN: no pre-fix engine at ' + PREFIX_REF +
-        ' — serve the DFM 196 worktree of 7d9c274, or set KS3DT_PREFIX_ENGINES. ' +
+        ' — fetch the history, or set KS3DT_PREFIX_ENGINES to a file. ' +
         'An unrun control credits nothing (DFM 200).');
     } else {
-      const pre = await drive(PREFIX_REF, 'the engine he sat');
+      const pre = await drive(preSrc, 'the engine he sat');
       control(!pre.human.ok && /TimeLimitError/i.test(String(pre.human.err)),
         'the pre-fix engine KILLS his own conversation at human pace' +
         '  [' + String(pre.human.err || 'it completed').slice(0, 70) + ']');

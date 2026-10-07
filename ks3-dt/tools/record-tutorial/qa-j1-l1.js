@@ -324,6 +324,21 @@ async function dragTo(page, fileId, folderId) {
 
 /* ================================ THE SUITE ============================== */
 (async () => {
+  /* THE PREVIEW MUST BE ABLE TO MARK (7 Oct 2026). The Vault is marked out of
+     the git-ignored content/dev-keys.json, which a fresh worktree does not have.
+     Without it the door reports "stuck", every walk stops at the briefing, and
+     this file printed sixteen failures that looked like a broken lesson. A
+     checker that cannot run says so once, in its own words (DFM 200). */
+  try {
+    const r = await fetch(new URL('/ks3-dt/content/dev-keys.json', BASE));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+  } catch (e) {
+    console.log('  FAIL THIS CHECK COULD NOT RUN: the preview has no answer keys (ks3-dt/content/dev-keys.json, ' +
+      String(e.message) + '). Copy the git-ignored file in from the main clone, or pack one to a scratch ' +
+      'folder (KS3DT_OUT=<dir> KS3DT_STAMP=<dir>/stamp.json node ks3-dt/tools/pack-content.js --walk-build) ' +
+      'and copy its dev-keys.json in, then run again. An unrun check credits nothing.');
+    process.exit(1);
+  }
   const browser = await chromium.launch({ headless: true });
 
   /* ---------- 1. HAPPY PATH: whole of L1, exact XP ---------- */

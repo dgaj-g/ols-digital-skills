@@ -38,11 +38,12 @@ function check(cond, msg) {
 }
 
 /* mount the real Lesson 2 puzzle and step past its intro card */
-async function mountPuzzle(page) {
-  await page.evaluate(async () => {
+async function mountPuzzle(page, override) {
+  await page.evaluate(async (override) => {
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const lesson = await (await fetch('/ks3-dt/content/j1/lessons/j1-02.json')).json();
     const par = lesson.chunks.find(c => c.engine === 'parsons');
+    if (override) Object.assign(par.config, override);
     document.body.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.style.cssText = 'padding:22px;max-width:820px;margin:0 auto';
@@ -56,7 +57,7 @@ async function mountPuzzle(page) {
     await sleep(400);
     host.querySelector('button.primary-btn').click();
     await sleep(450);
-  });
+  }, override || null);
   await sleep(250);
 }
 
@@ -166,12 +167,26 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
   await page.evaluate(() => document.querySelector('.pt-list .parsons-block').click());
   await sleep(250);
 
-  /* ---------- click still works, in both directions ---------- */
+  /* ---------- click adds; a click on placed work never takes it away ----------
+     DFM 272 (27 Aug 2026): "A SINGLE CLICK NEVER DESTROYS PLACED WORK". This card
+     ships trayClickEject:false, so a click on a placed block leaves it where it
+     is and the labelled "Put this block back" button is the way back. (This
+     section used to expect the click to send it back - the behaviour 272 removed -
+     and every drag check below inherited the wrong count; tidied 7 Oct 2026.) */
   console.log('\n== clicking ==');
   check((await placed(page)).length === 1, 'clicking a block in the tray moves it across');
   await page.evaluate(() => document.querySelector('.pp-list .parsons-block').click());
   await sleep(250);
-  check((await placed(page)).length === 0, 'clicking it again sends it back');
+  check((await placed(page)).length === 1, 'clicking the placed block again leaves it placed (DFM 272)');
+  const takeBack = await page.evaluate(() => {
+    const b = document.querySelector('.pp-list li:not(.pp-empty) .take-back');
+    return b ? b.textContent.trim() : '';
+  });
+  check(/put this block back/i.test(takeBack), 'a labelled way back sits beside it ("' + takeBack + '")');
+  await page.click('.pp-list li:not(.pp-empty) .take-back');
+  await sleep(250);
+  check((await placed(page)).length === 0 && (await trayList(page)).length === 4,
+    'pressing it sends the block back to the tray');
 
   /* ---------- dragging, with a real mouse ---------- */
   console.log('\n== dragging (real mouse input) ==');
@@ -193,7 +208,7 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
   check(afterDrag[1] === seeded, 'the block already there was pushed down, not replaced');
 
   /* reorder: drag the top one below the second */
-  const topBox = await centreOf(page, '.pp-list li:not(.pp-empty)', 0);
+  const topBox = await centreOf(page, '.pp-list li:not(.pp-empty) .parsons-block', 0);
   const belowSecond = await page.evaluate(() => {
     const r = document.querySelectorAll('.pp-list li:not(.pp-empty)')[1].getBoundingClientRect();
     return { x: Math.round(r.x + r.width / 2), y: Math.round(r.bottom - 3) };
@@ -209,7 +224,7 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
     const r = document.querySelector('.parsons-tray').getBoundingClientRect();
     return { x: Math.round(r.x + r.width / 2), y: Math.round(r.bottom - 14) };
   });
-  const backOut = await centreOf(page, '.pp-list li:not(.pp-empty)', 0);
+  const backOut = await centreOf(page, '.pp-list li:not(.pp-empty) .parsons-block', 0);
   const beforeOut = (await placed(page)).length;
   await dragBox(page, backOut, trayEmptySpace);
   const afterOut = await placed(page);
@@ -253,6 +268,22 @@ const centreOf = (page, sel, nth) => page.evaluate(([sel, nth]) => {
   check(!skewed.every(v => v === skewed[0]),
     'control: a number knocked out of the column really does fail the check ' + JSON.stringify(skewed));
   await c3.close();
+
+  /* ---------- CONTROL 4: the click-ejects tray must fail the DFM 272 check ----------
+     Same card with the old switch (trayClickEject:true): the body click DOES
+     take the block away, so "leaves it placed" would have caught it. */
+  console.log('\n== CONTROL 4: a tray whose click ejects must fail the DFM 272 check ==');
+  const c4 = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await c4.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await sleep(2200);
+  await mountPuzzle(c4, { trayClickEject: true });
+  await c4.evaluate(() => document.querySelector('.pt-list .parsons-block').click());
+  await sleep(250);
+  await c4.evaluate(() => document.querySelector('.pp-list .parsons-block').click());
+  await sleep(250);
+  check((await placed(c4)).length === 0,
+    'control: with click-to-eject switched back on, the body click really does remove it');
+  await c4.close();
 
   /* ---------- CONTROL 2: move the how-to line back below the blocks ---------- */
   console.log('\n== CONTROL 2: the how-to line below the blocks must fail ==');
