@@ -760,7 +760,7 @@ ol { text-align: left; }
   box-shadow: 0 3px 10px rgba(23, 34, 59, 0.08);
 }
 .vault-file .vf-icon { font-size: 1.2rem; }
-.vault-file.dragging { cursor: grabbing; box-shadow: 0 16px 34px rgba(23, 34, 59, 0.3); z-index: 40; position: relative; }
+.vault-file.dragging { cursor: grabbing; box-shadow: 0 16px 34px rgba(23, 34, 59, 0.3); z-index: 40; position: relative; transition: none; will-change: transform; }
 .vault-file.snapback { transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
 .vault-file.returned { animation: flutter 0.6s ease; }
 .vault-file.filed { cursor: default; font-size: 0.78rem; padding: 5px 9px; box-shadow: none; border-color: var(--line-l); }
@@ -2077,6 +2077,13 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   padding: 9px 12px; transition: border-color 0.15s, transform 0.15s;
 }
 .parsons-block:hover { border-color: var(--gold); }
+/* ORLA'S PHOTO, 7 Oct 2026 — THE COPY TRAILED THE POINTER. The copy is ALSO a
+   .parsons-block, and the rule above (same weight, written later) gave it
+   `transform 0.15s`, beating `.parsons-ghost { transition: none }`: every
+   position written to it was animated towards instead of jumped to, so it
+   chased the mouse — "lags and freezes" on a slow machine. Both class names
+   together outweigh either alone, whatever the order. Measured in qa-drag-ends. */
+.parsons-block.parsons-ghost, .pyrun-line.pyrun-ghost { transition: none; will-change: transform; }
 .parsons-block.placed { background: rgba(var(--gold-rgb), 0.1); border-color: rgba(var(--gold-rgb), 0.55); }
 .parsons-block:disabled { cursor: default; opacity: 0.75; }
 .parsons-answer { margin: 8px 0; padding-left: 22px; }
