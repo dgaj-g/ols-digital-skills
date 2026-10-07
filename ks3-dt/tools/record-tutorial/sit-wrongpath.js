@@ -64,6 +64,11 @@ const PUPIL = { j1: 'anya', j2: 'aoife', j3: 'orla' }[YEAR];
 const PUPIL_KEY = { j1: 'anya.murphy@demo', j2: 'aoife.mcgrath@demo', j3: 'orla.mccann@demo' }[YEAR];
 const PUPIL_NAME = { j1: 'Anya Murphy', j2: 'Aoife McGrath', j3: 'Orla McCann' }[YEAR];
 const LESSON_NUM = LESSON.replace(/^j[23]-/, '');
+
+/* J3 Lesson 4 is The Rescue since 7 Oct 2026: one story step in a frame, typed lines judged by the story's own
+   judge. This walker presses platform buttons and cannot walk it; its old j3-4 numbers were Function Factory's.
+   The Rescue is walked by probes/rescue/hour-walk.js (the story) and probes/rescue/qa-rescue-platform.js (the shell). */
+if (/^j3-4$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first

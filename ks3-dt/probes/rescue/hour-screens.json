@@ -1,0 +1,5949 @@
+[
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 8,
+  "longest": 8,
+  "prose": [
+   "Billy and Bobby are down from the tree."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Billy and Bobby are down from the tree."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 5,
+  "longest": 5,
+  "prose": [
+   "They are not home yet."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "They are not home yet."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 7,
+  "longest": 7,
+  "prose": [
+   "The storm has washed the bridge away."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The storm has washed the bridge away."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 8,
+  "longest": 8,
+  "prose": [
+   "Home is the lit window across the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Home is the lit window across the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 9,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "This winch pulls a bucket across the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "This winch pulls a bucket across the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmA",
+  "page": -1,
+  "words": 9,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "It takes typed instructions, like the ladder did."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "It takes typed instructions, like the ladder did."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 12,
+  "longest": 10,
+  "prose": [
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[next]  def cross():",
+      "            print(\"Billy\")",
+      "            print(\"pull\")",
+      "            print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 14,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [
+   "def is short for define. You are defining a function called cross."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed] def cross():",
+      "[next]      print(\"Billy\")",
+      "            print(\"pull\")",
+      "            print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 14,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [
+   "The winch will ask for Billy. Billy will come to the bucket."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed] def cross():",
+      "[typed]     print(\"Billy\")",
+      "[next]      print(\"pull\")",
+      "            print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 14,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [
+   "pull will haul the bucket across the river."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed] def cross():",
+      "[typed]     print(\"Billy\")",
+      "[typed]     print(\"pull\")",
+      "[next]      print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 14,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [
+   "tip will set Billy down on the far bank."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed] def cross():",
+      "[typed]     print(\"Billy\")",
+      "[typed]     print(\"pull\")",
+      "[next]      print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call1",
+  "page": -1,
+  "words": 23,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "Nothing moved. A function waits until you use its name.",
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross() to carry Billy over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Nothing moved. A function waits until you use its name.",
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross()` to carry Billy over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call1",
+  "page": -1,
+  "words": 12,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross() to carry Billy over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross()` to carry Billy over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call1",
+  "page": -1,
+  "words": 12,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross() to carry Billy over the river."
+  ],
+  "feedback": [
+   "cross() ran all 3 of its lines. Billy is across."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross()` to carry Billy over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_bobby",
+  "page": -1,
+  "words": 23,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "Now it is Bobby's turn. Use your function again.",
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Use your function to carry Bobby over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Now it is Bobby's turn. Use your function again.",
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Use your function to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_bobby",
+  "page": -1,
+  "words": 13,
+  "longest": 9,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Use your function to carry Bobby over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Use your function to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_bobby",
+  "page": -1,
+  "words": 13,
+  "longest": 9,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Use your function to carry Bobby over the river."
+  ],
+  "feedback": [
+   "The winch asked for Billy again. Bobby is still on this bank."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Use your function to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 0,
+  "words": 20,
+  "longest": 7,
+  "prose": [
+   "BLINK",
+   "Look inside cross. The name Billy is written inside it. So cross can only ever carry Billy.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Look inside cross. The name Billy is written inside it. So cross can only ever carry Billy.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 1,
+  "words": 28,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "Bobby needs the same pull and the same tip. Only the name is different. A second function would take too long. The river is rising.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Bobby needs the same pull and the same tip. Only the name is different. A second function would take too long. The river is rising.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 2,
+  "words": 18,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "So we take the name out of cross. We leave a gap where Billy was.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "So we take the name out of cross. We leave a gap where Billy was.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 3,
+  "words": 40,
+  "longest": 13,
+  "prose": [
+   "BLINK",
+   "The gap needs a name. I call the gap who. So who is written where Billy was. An animal's name will come in through the brackets of the def line. So who goes in those brackets too.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(____)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "The gap needs a name. I call the gap who. So who is written where Billy was. An animal's name will come in through the brackets of the `def` line. So who goes in those brackets too.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 4,
+  "words": 25,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "Now watch. cross(\"Bobby\") sends the name Bobby in through the brackets. Every who becomes Bobby. So the winch prints Bobby, pull, tip.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")",
+      "cross(\"Bobby\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Now watch. `cross(\"Bobby\")` sends the name Bobby in through the brackets. Every who becomes Bobby. So the winch prints Bobby, pull, tip.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_lesson",
+  "page": 5,
+  "words": 19,
+  "longest": 6,
+  "prose": [
+   "BLINK",
+   "The same function carries Billy too. cross(\"Billy\") sends Billy in. One function can carry any name.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")",
+      "cross(\"Billy\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Now make the gap [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "The same function carries Billy too. `cross(\"Billy\")` sends Billy in. One function can carry any name.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 20,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the def line again with who in its brackets."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the `def` line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 20,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the def line again with who in its brackets."
+  ],
+  "feedback": [
+   "The brackets are empty. Put the name of the gap in them."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the `def` line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 20,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the def line again with who in its brackets."
+  ],
+  "feedback": [
+   "The def line needs a colon at the end."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[next]  def cross(who):"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the `def` line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 21,
+  "longest": 11,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the first print line again with who in its brackets."
+  ],
+  "feedback": [
+   "cross now has a gap called who."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the first print line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 21,
+  "longest": 11,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the first print line again with who in its brackets."
+  ],
+  "feedback": [
+   "With speech marks the winch would ask for someone named who. Take them away."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the first print line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_gap",
+  "page": -1,
+  "words": 21,
+  "longest": 11,
+  "prose": [
+   "YOUR FUNCTION",
+   "pull and tip stay the same.",
+   "THE RIVER",
+   "Type the first print line again with who in its brackets."
+  ],
+  "feedback": [
+   "The winch will ask for whatever name is in the gap."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "pull and tip stay the same.",
+    "THE RIVER",
+    "Type the first print line again with who in its brackets."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call2",
+  "page": -1,
+  "words": 20,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "Now fill the gap with Bobby's name.",
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross(\"Bobby\") to carry Bobby over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Now fill the gap with Bobby's name.",
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross(\"Bobby\")` to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call2",
+  "page": -1,
+  "words": 12,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross(\"Bobby\") to carry Bobby over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross(\"Bobby\")` to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_call2",
+  "page": -1,
+  "words": 12,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type cross(\"Bobby\") to carry Bobby over the river."
+  ],
+  "feedback": [
+   "\"Bobby\" went into the gap. Bobby is across."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type `cross(\"Bobby\")` to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hogfilm",
+  "page": -1,
+  "words": 9,
+  "longest": 9,
+  "prose": [
+   "A squeak comes from a rock in the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "A squeak comes from a rock in the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hogfilm",
+  "page": -1,
+  "words": 9,
+  "longest": 5,
+  "prose": [
+   "A baby hedgehog is trapped. The river is rising."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "A baby hedgehog is trapped. The river is rising."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hogfilm",
+  "page": -1,
+  "words": 16,
+  "longest": 7,
+  "prose": [
+   "BLINK",
+   "The winch can reach the rock. It needs a name to ask for.",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "The winch can reach the rock. It needs a name to ask for.",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 30,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The clock starts when you type.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The clock starts when you type.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 28,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The river is rising.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The river is rising.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 28,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The river is rising.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [
+   "cross(\"Conker\") carried Conker. You used the same function with a new name."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The river is rising.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": -1,
+  "words": 6,
+  "longest": 2,
+  "prose": [
+   "Badge earned",
+   "Winch Hand",
+   "+12 XP"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Onward"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Badge earned",
+    "Winch Hand",
+    "+12 XP"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 0,
+  "words": 33,
+  "longest": 10,
+  "prose": [
+   "One function can do the same job for different names.",
+   "YOUR CALLS",
+   "YOUR FUNCTION",
+   "Bobby",
+   "Conker",
+   "The same function carried Bobby and Conker. Only the name changed.",
+   "Conker needed only 1 new line."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CALLS",
+     "lines": [
+      "cross(\"Bobby\")",
+      "cross(\"Conker\")"
+     ]
+    },
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "One function can do the same job for different names.",
+    "YOUR CALLS",
+    "YOUR FUNCTION",
+    "Bobby",
+    "Conker",
+    "The same function carried Bobby and Conker. Only the name changed.",
+    "Conker needed only 1 new line."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 1,
+  "words": 38,
+  "longest": 12,
+  "prose": [
+   "That gap is called a parameter.",
+   "who is a gap for a name.",
+   "This line uses the gap.",
+   "The name in the brackets fills the gap.",
+   "A parameter is a gap you fill when you call the function."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "That gap is called a parameter.",
+    "who is a gap for a name.",
+    "This line uses the gap.",
+    "The name in the brackets fills the gap.",
+    "A parameter is a gap you fill when you call the function."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 2,
+  "words": 25,
+  "longest": 10,
+  "prose": [
+   "You saw this: cross(\"Conker\") made the winch ask for Conker.",
+   "A fox arrives. You type cross(\"Rusty\"). Which name does the winch ask for?",
+   "Billy",
+   "Rusty"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [
+    "who"
+   ],
+   "prints": "",
+   "marked": [
+    "You saw this: `cross(\"Conker\")` made the winch ask for Conker.",
+    "A fox arrives. You type `cross(\"Rusty\")`. Which name does the winch ask for?",
+    "Billy",
+    "Rusty"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 2,
+  "words": 25,
+  "longest": 10,
+  "prose": [
+   "You saw this: cross(\"Conker\") made the winch ask for Conker.",
+   "A fox arrives. You type cross(\"Rusty\"). Which name does the winch ask for?",
+   "Billy",
+   "Rusty"
+  ],
+  "feedback": [
+   "Billy is not stuck inside any more. The gap takes the name you type."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [
+    "who"
+   ],
+   "prints": "",
+   "marked": [
+    "You saw this: `cross(\"Conker\")` made the winch ask for Conker.",
+    "A fox arrives. You type `cross(\"Rusty\")`. Which name does the winch ask for?",
+    "Billy",
+    "Rusty"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 2,
+  "words": 25,
+  "longest": 10,
+  "prose": [
+   "You saw this: cross(\"Conker\") made the winch ask for Conker.",
+   "A fox arrives. You type cross(\"Rusty\"). Which name does the winch ask for?",
+   "Billy",
+   "Rusty"
+  ],
+  "feedback": [
+   "who is the name of the gap. The winch asks for the name you put into it."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [
+    "who"
+   ],
+   "prints": "",
+   "marked": [
+    "You saw this: `cross(\"Conker\")` made the winch ask for Conker.",
+    "A fox arrives. You type `cross(\"Rusty\")`. Which name does the winch ask for?",
+    "Billy",
+    "Rusty"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_close",
+  "page": 2,
+  "words": 25,
+  "longest": 10,
+  "prose": [
+   "You saw this: cross(\"Conker\") made the winch ask for Conker.",
+   "A fox arrives. You type cross(\"Rusty\"). Which name does the winch ask for?",
+   "Billy",
+   "Rusty"
+  ],
+  "feedback": [
+   "Yes. Rusty goes into the gap, so the winch asks for Rusty."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [
+    "who"
+   ],
+   "prints": "",
+   "marked": [
+    "You saw this: `cross(\"Conker\")` made the winch ask for Conker.",
+    "A fox arrives. You type `cross(\"Rusty\")`. Which name does the winch ask for?",
+    "Billy",
+    "Rusty"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmB",
+  "page": -1,
+  "words": 8,
+  "longest": 8,
+  "prose": [
+   "Billy, Bobby and Conker are over the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Billy, Bobby and Conker are over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmB",
+  "page": -1,
+  "words": 9,
+  "longest": 9,
+  "prose": [
+   "The storm is coming across the water after them."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The storm is coming across the water after them."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmB",
+  "page": -1,
+  "words": 15,
+  "longest": 9,
+  "prose": [
+   "The lane home climbs the hill in 5 stretches.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The lane home climbs the hill in 5 stretches.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmB",
+  "page": -1,
+  "words": 6,
+  "longest": 3,
+  "prose": [
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "filmB",
+  "page": -1,
+  "words": 19,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "I will tell you what the lane needs. You write the code.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "I will tell you what the lane needs. You write the code.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mode",
+  "page": -1,
+  "words": 6,
+  "longest": 3,
+  "prose": [
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mode",
+  "page": -1,
+  "words": 19,
+  "longest": 7,
+  "prose": [
+   "BLINK",
+   "This time, type all your lines first. Those lines are your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "This time, type all your lines first. Those lines are your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mode",
+  "page": -1,
+  "words": 15,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "I will hold the storm while you write.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "I will hold the storm while you write.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_make",
+  "page": -1,
+  "words": 24,
+  "longest": 6,
+  "prose": [
+   "THE LANE",
+   "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "THE LANE",
+    "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_make",
+  "page": -1,
+  "words": 26,
+  "longest": 6,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "You are defining a function called dash."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_make",
+  "page": -1,
+  "words": 26,
+  "longest": 6,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "Your first print line is inside dash now. Type the second print line."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_make",
+  "page": -1,
+  "words": 26,
+  "longest": 6,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "dash is made. Each time you call dash, it prints the word run 2 times."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Make a function called dash. Put 2 lines inside it. Both lines print the word run.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "0 of 5 dashes are in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "0 of 5 dashes are in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "1 of 5 dashes is in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "1 of 5 dashes is in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "2 of 5 dashes are in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "2 of 5 dashes are in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "3 of 5 dashes are in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "3 of 5 dashes are in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "4 of 5 dashes are in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "4 of 5 dashes are in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_plan",
+  "page": -1,
+  "words": 32,
+  "longest": 8,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Type dash() 5 times. Then press Run the plan. The lane has 5 stretches.",
+   "5 of 5 dashes are in your plan.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run the plan"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Type `dash()` 5 times. Then press Run the plan. The lane has 5 stretches.",
+    "5 of 5 dashes are in your plan.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_run1",
+  "page": -1,
+  "words": 18,
+  "longest": 4,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Your plan is running.",
+   "WHAT YOUR CODE PRINTS",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Your plan is running.",
+    "WHAT YOUR CODE PRINTS",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_run1",
+  "page": -1,
+  "words": 26,
+  "longest": 8,
+  "prose": [
+   "Lightning drops 3 trees across the lane ahead.",
+   "YOUR PLAN",
+   "THE LANE",
+   "Your plan is running.",
+   "WHAT YOUR CODE PRINTS",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "run run run run",
+   "marked": [
+    "Lightning drops 3 trees across the lane ahead.",
+    "YOUR PLAN",
+    "THE LANE",
+    "Your plan is running.",
+    "WHAT YOUR CODE PRINTS",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_run1",
+  "page": -1,
+  "words": 38,
+  "longest": 13,
+  "prose": [
+   "Your plan only prints the word run. Printing the word run does not get the animals past a fallen tree.",
+   "YOUR PLAN",
+   "THE LANE",
+   "Your plan has stopped.",
+   "WHAT YOUR CODE PRINTS",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "The plan stopped at the first fallen tree."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "run run run run run run",
+   "marked": [
+    "Your plan only prints the word run. Printing the word run does not get the animals past a fallen tree.",
+    "YOUR PLAN",
+    "THE LANE",
+    "Your plan has stopped.",
+    "WHAT YOUR CODE PRINTS",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 6,
+  "longest": 3,
+  "prose": [
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 18,
+  "longest": 6,
+  "prose": [
+   "BLINK",
+   "I am holding the storm. It will not hold for long.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "I am holding the storm. It will not hold for long.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 16,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "3 trees block the 3 dashes still to run.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "3 trees block the 3 dashes still to run.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 29,
+  "longest": 11,
+  "prose": [
+   "BLINK",
+   "To get past a tree, each dash needs a jump line. Without a function, you would add that line in 3 places.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "THE LONG WAY",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "WITH YOUR FUNCTION",
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "To get past a tree, each dash needs a jump line. Without a function, you would add that line in 3 places.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 20,
+  "longest": 13,
+  "prose": [
+   "BLINK",
+   "With your function dash, you add that line in 1 place, inside dash.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "THE LONG WAY",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "WITH YOUR FUNCTION",
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "With your function dash, you add that line in 1 place, inside dash.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_lesson",
+  "page": -1,
+  "words": 21,
+  "longest": 8,
+  "prose": [
+   "BLINK",
+   "Add 1 line between the 2 run lines. The line prints the word jump.",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "THE LONG WAY",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "WITH YOUR FUNCTION",
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Add 1 line between the 2 run lines. The line prints the word jump.",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 36,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The clock starts when you type.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The clock starts when you type.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 37,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The storm is coming down the lane.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The storm is coming down the lane.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 37,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The storm is coming down the lane.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "Your new line is inside dash now. Press Run the plan."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [
+    "Run the plan"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The storm is coming down the lane.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_run2",
+  "page": -1,
+  "words": 18,
+  "longest": 4,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Your plan is running.",
+   "WHAT YOUR CODE PRINTS",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Your plan is running.",
+    "WHAT YOUR CODE PRINTS",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_run2",
+  "page": -1,
+  "words": 18,
+  "longest": 4,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Your plan has finished.",
+   "WHAT YOUR CODE PRINTS",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "You added 1 line. All 3 dashes ahead jumped."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "run jump run run jump run run jump run",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Your plan has finished.",
+    "WHAT YOUR CODE PRINTS",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": -1,
+  "words": 6,
+  "longest": 2,
+  "prose": [
+   "Badge earned",
+   "Lane Runner",
+   "+12 XP"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Onward"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Badge earned",
+    "Lane Runner",
+    "+12 XP"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 0,
+  "words": 39,
+  "longest": 12,
+  "prose": [
+   "You changed dash once. Every call to dash then used the change.",
+   "THE LONG WAY",
+   "Without a function, you would add the new line in 3 places.",
+   "WITH YOUR FUNCTION",
+   "You added 1 line. All 3 dashes ahead jumped."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "THE LONG WAY",
+     "lines": [
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")",
+      "print(\"run\")"
+     ]
+    },
+    {
+     "k": "WITH YOUR FUNCTION",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You changed dash once. Every call to dash then used the change.",
+    "THE LONG WAY",
+    "Without a function, you would add the new line in 3 places.",
+    "WITH YOUR FUNCTION",
+    "You added 1 line. All 3 dashes ahead jumped."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 1,
+  "words": 40,
+  "longest": 11,
+  "prose": [
+   "You saw this: 1 new line inside dash changed 3 dashes.",
+   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "3 lines",
+   "1 line",
+   "20 lines"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: 1 new line inside dash changed 3 dashes.",
+    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "3 lines",
+    "1 line",
+    "20 lines"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 1,
+  "words": 40,
+  "longest": 11,
+  "prose": [
+   "You saw this: 1 new line inside dash changed 3 dashes.",
+   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "3 lines",
+   "1 line",
+   "20 lines"
+  ],
+  "feedback": [
+   "3 was the number of trees. The new line goes inside dash once."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: 1 new line inside dash changed 3 dashes.",
+    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "3 lines",
+    "1 line",
+    "20 lines"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 1,
+  "words": 40,
+  "longest": 11,
+  "prose": [
+   "You saw this: 1 new line inside dash changed 3 dashes.",
+   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "3 lines",
+   "1 line",
+   "20 lines"
+  ],
+  "feedback": [
+   "Yes. Add it once inside dash. All 20 dashes will swim."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: 1 new line inside dash changed 3 dashes.",
+    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "3 lines",
+    "1 line",
+    "20 lines"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 1,
+  "words": 40,
+  "longest": 11,
+  "prose": [
+   "You saw this: 1 new line inside dash changed 3 dashes.",
+   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "3 lines",
+   "1 line",
+   "20 lines"
+  ],
+  "feedback": [
+   "20 lines is the long way. You would add 1 line at every call. Add the line once, inside dash."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: 1 new line inside dash changed 3 dashes.",
+    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "3 lines",
+    "1 line",
+    "20 lines"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_open",
+  "page": -1,
+  "words": 8,
+  "longest": 4,
+  "prose": [
+   "They reach the house. The door is shut."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "They reach the house. The door is shut."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_open",
+  "page": -1,
+  "words": 17,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "The door has a box beside it. The box takes typed instructions, like the winch did."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "The door has a box beside it. The box takes typed instructions, like the winch did."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_open",
+  "page": -1,
+  "words": 28,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "You will write the function for the door yourself. I will not show you the lines.",
+   "YOUR CODE",
+   "The list called gang is already written for you."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "You will write the function for the door yourself. I will not show you the lines.",
+    "YOUR CODE",
+    "The list called gang is already written for you."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_open",
+  "page": -1,
+  "words": 11,
+  "longest": 9,
+  "prose": [
+   "YOUR CODE",
+   "The list called gang is already written for you."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "The list called gang is already written for you."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_open",
+  "page": -1,
+  "words": 20,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "I will hold the storm while you write.",
+   "YOUR CODE",
+   "The list called gang is already written for you."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "I will hold the storm while you write.",
+    "YOUR CODE",
+    "The list called gang is already written for you."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_def",
+  "page": -1,
+  "words": 29,
+  "longest": 9,
+  "prose": [
+   "YOUR CODE",
+   "The list called gang is already written for you.",
+   "THE DOOR",
+   "Write the def line. Give the function the name rescue. Give its gap the name who."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "The list called gang is already written for you.",
+    "THE DOOR",
+    "Write the `def` line. Give the function the name `rescue`. Give its gap the name `who`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_def",
+  "page": -1,
+  "words": 20,
+  "longest": 6,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write the def line. Give the function the name rescue. Give its gap the name who."
+  ],
+  "feedback": [
+   "rescue has a gap called who."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write the `def` line. Give the function the name `rescue`. Give its gap the name `who`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 33,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "Line 1 prints the word open. Line 2 prints the name in the gap called who. Line 3 prints the word shut."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "Line 1 prints the word `open`. Line 2 prints the name in the gap called `who`. Line 3 prints the word `shut`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 33,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "Line 1 prints the word open. Line 2 prints the name in the gap called who. Line 3 prints the word shut."
+  ],
+  "feedback": [
+   "The door will open."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "Line 1 prints the word `open`. Line 2 prints the name in the gap called `who`. Line 3 prints the word `shut`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 33,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "Line 1 prints the word open. Line 2 prints the name in the gap called who. Line 3 prints the word shut."
+  ],
+  "feedback": [
+   "The door will ask for the name in the gap."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "Line 1 prints the word `open`. Line 2 prints the name in the gap called `who`. Line 3 prints the word `shut`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 33,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "Line 1 prints the word open. Line 2 prints the name in the gap called who. Line 3 prints the word shut."
+  ],
+  "feedback": [
+   "The door will shut."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "Line 1 prints the word `open`. Line 2 prints the name in the gap called `who`. Line 3 prints the word `shut`."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_remind",
+  "page": 0,
+  "words": 31,
+  "longest": 13,
+  "prose": [
+   "BLINK",
+   "gang is a list. It holds three names in a row: Billy, Bobby and Conker. A list is like a rack of numbered boxes, one name in each.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "gang is a list. It holds three names in a row: Billy, Bobby and Conker. A list is like a rack of numbered boxes, one name in each.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_remind",
+  "page": 1,
+  "words": 29,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "In Lesson 3 you wrote a loop like this. The line underneath runs once for each song. The four spaces push it inside the loop.",
+   "FROM LESSON 3"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "FROM LESSON 3",
+     "lines": [
+      "playlist = [\"Opening Night\", \"Curtain Up\", \"Last Bus Home\"]",
+      "for song in playlist:",
+      "    print(song)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "In Lesson 3 you wrote a loop like this. The line underneath runs once for each song. The four spaces push it inside the loop.",
+    "FROM LESSON 3"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_remind",
+  "page": 2,
+  "words": 40,
+  "longest": 12,
+  "prose": [
+   "BLINK",
+   "Now write a loop through gang the same way. Each name goes into the gap of rescue, one at a time. Try hard yourself first. If you stay stuck, help appears under the box bit by bit.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Write my loop [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Now write a loop through gang the same way. Each name goes into the gap of rescue, one at a time. Try hard yourself first. If you stay stuck, help appears under the box bit by bit.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [
+   "The loop will take the names in gang one at a time."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "Run my code [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [
+   "Each name will go into the gap of rescue."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [
+    "Run my code"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 12,
+  "longest": 9,
+  "prose": [
+   "BLINK",
+   "I cannot hold the storm while your code runs.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "I cannot hold the storm while your code runs.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 20,
+  "longest": 8,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your code is running.",
+   "Time left before the storm reaches the house",
+   "WHAT YOUR CODE PRINTS"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):      [a label beside the line: who = \"Billy\"]",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "open",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your code is running.",
+    "Time left before the storm reaches the house",
+    "WHAT YOUR CODE PRINTS"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 20,
+  "longest": 8,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your code has finished.",
+   "Time left before the storm reaches the house",
+   "WHAT YOUR CODE PRINTS"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "open Billy shut open Bobby shut open Conker shut",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your code has finished.",
+    "Time left before the storm reaches the house",
+    "WHAT YOUR CODE PRINTS"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 12,
+  "longest": 4,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your code has finished.",
+   "WHAT YOUR CODE PRINTS"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "open Billy shut open Bobby shut open Conker shut",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your code has finished.",
+    "WHAT YOUR CODE PRINTS"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 12,
+  "longest": 4,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your code has finished.",
+   "WHAT YOUR CODE PRINTS"
+  ],
+  "feedback": [
+   "Your loop called rescue 3 times. Everyone is home."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "open Billy shut open Bobby shut open Conker shut",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your code has finished.",
+    "WHAT YOUR CODE PRINTS"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": -1,
+  "words": 6,
+  "longest": 2,
+  "prose": [
+   "Badge earned",
+   "Door Keeper",
+   "+15 XP"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Onward"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Badge earned",
+    "Door Keeper",
+    "+15 XP"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 0,
+  "words": 36,
+  "longest": 12,
+  "prose": [
+   "You can write your own function, and other code can use it.",
+   "YOUR LOOP",
+   "YOUR FUNCTION",
+   "Billy",
+   "Bobby",
+   "Conker",
+   "Nobody showed you these lines. You wrote the function rescue yourself.",
+   "Your loop called rescue 3 times."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR LOOP",
+     "lines": [
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    },
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You can write your own function, and other code can use it.",
+    "YOUR LOOP",
+    "YOUR FUNCTION",
+    "Billy",
+    "Bobby",
+    "Conker",
+    "Nobody showed you these lines. You wrote the function `rescue` yourself.",
+    "Your loop called `rescue` 3 times."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 1,
+  "words": 33,
+  "longest": 13,
+  "prose": [
+   "You saw this: the loop called rescue once for each name in gang.",
+   "The gang grows to 10 animals. How many times does the loop call rescue?",
+   "1 time",
+   "10 times",
+   "3 times"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: the loop called `rescue` once for each name in `gang`.",
+    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
+    "1 time",
+    "10 times",
+    "3 times"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 1,
+  "words": 33,
+  "longest": 13,
+  "prose": [
+   "You saw this: the loop called rescue once for each name in gang.",
+   "The gang grows to 10 animals. How many times does the loop call rescue?",
+   "1 time",
+   "10 times",
+   "3 times"
+  ],
+  "feedback": [
+   "rescue is written once. The loop calls it once for every name."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: the loop called `rescue` once for each name in `gang`.",
+    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
+    "1 time",
+    "10 times",
+    "3 times"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 1,
+  "words": 33,
+  "longest": 13,
+  "prose": [
+   "You saw this: the loop called rescue once for each name in gang.",
+   "The gang grows to 10 animals. How many times does the loop call rescue?",
+   "1 time",
+   "10 times",
+   "3 times"
+  ],
+  "feedback": [
+   "Yes. The loop calls rescue once for every name in the list."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: the loop called `rescue` once for each name in `gang`.",
+    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
+    "1 time",
+    "10 times",
+    "3 times"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 1,
+  "words": 33,
+  "longest": 13,
+  "prose": [
+   "You saw this: the loop called rescue once for each name in gang.",
+   "The gang grows to 10 animals. How many times does the loop call rescue?",
+   "1 time",
+   "10 times",
+   "3 times"
+  ],
+  "feedback": [
+   "There were 3 names in gang tonight. The loop calls rescue once for every name."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: the loop called `rescue` once for each name in `gang`.",
+    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
+    "1 time",
+    "10 times",
+    "3 times"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "fire",
+  "page": -1,
+  "words": 11,
+  "longest": 6,
+  "prose": [
+   "Billy, Bobby and Conker are home. They are safe and dry."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Billy, Bobby and Conker are home. They are safe and dry."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "fire",
+  "page": -1,
+  "words": 9,
+  "longest": 9,
+  "prose": [
+   "The storm is loud outside the door you shut."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The storm is loud outside the door you shut."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "fire",
+  "page": -1,
+  "words": 4,
+  "longest": 4,
+  "prose": [
+   "It cannot get in."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "It cannot get in."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "fire",
+  "page": -1,
+  "words": 10,
+  "longest": 5,
+  "prose": [
+   "BLINK",
+   "You wrote 4 functions tonight. Each one saved them."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "You wrote 4 functions tonight. Each one saved them."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "recap",
+  "page": 0,
+  "words": 38,
+  "longest": 9,
+  "prose": [
+   "Your 4 functions brought them home.",
+   "A function saves writing the same lines again.",
+   "One function does the same job for different names.",
+   "Change a function once. Every call uses the change.",
+   "You can write your own function."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Your 4 functions brought them home.",
+    "A function saves writing the same lines again.",
+    "One function does the same job for different names.",
+    "Change a function once. Every call uses the change.",
+    "You can write your own function."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 28,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The river is rising.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [
+   "You typed cross(\"Bobby\") before. Put a new name in the speech marks."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The river is rising.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_fail",
+  "page": -1,
+  "words": 24,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_retry",
+  "page": -1,
+  "words": 2,
+  "longest": 2,
+  "prose": [
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_retry",
+  "page": -1,
+  "words": 10,
+  "longest": 5,
+  "prose": [
+   "BLINK",
+   "Your function is still here. Try again!",
+   "YOUR FUNCTION"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Your function is still here. Try again!",
+    "YOUR FUNCTION"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 30,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The clock starts when you type.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [
+   "You typed cross(\"Bobby\") before. Put a new name in the speech marks."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The clock starts when you type.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_hog",
+  "page": -1,
+  "words": 28,
+  "longest": 8,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Choose a name for the hedgehog. Use cross to carry it over.",
+   "The river is rising.",
+   "Time left before the river covers the rock"
+  ],
+  "feedback": [
+   "cross(\"Pip\") carried Pip. You used the same function with a new name.",
+   "You typed cross(\"Bobby\") before. Put a new name in the speech marks."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross(who):",
+      "    print(who)",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Choose a name for the hedgehog. Use cross to carry it over.",
+    "The river is rising.",
+    "Time left before the river covers the rock"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_bobby",
+  "page": -1,
+  "words": 13,
+  "longest": 9,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Use your function to carry Bobby over the river."
+  ],
+  "feedback": [
+   "Good thinking. cross cannot take a name in its brackets yet."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")",
+      "    print(\"pull\")",
+      "    print(\"tip\")"
+     ]
+    }
+   ],
+   "box": ">>> (the box is waiting)",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Use your function to carry Bobby over the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_fail",
+  "page": -1,
+  "words": 30,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_retry",
+  "page": -1,
+  "words": 8,
+  "longest": 3,
+  "prose": [
+   "YOUR PLAN",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_retry",
+  "page": -1,
+  "words": 16,
+  "longest": 5,
+  "prose": [
+   "BLINK",
+   "Your plan is still here. Try again!",
+   "YOUR PLAN",
+   "The lane home",
+   "The river",
+   "Home"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Your plan is still here. Try again!",
+    "YOUR PLAN",
+    "The lane home",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 36,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The clock starts when you type.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "Type print(\"jump\")"
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The clock starts when you type.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 37,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The storm is coming down the lane.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "Type print(\"jump\")"
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    ____",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "Run the plan [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The storm is coming down the lane.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_mend",
+  "page": -1,
+  "words": 37,
+  "longest": 7,
+  "prose": [
+   "YOUR PLAN",
+   "THE LANE",
+   "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+   "The storm is coming down the lane.",
+   "Time left before the storm catches them",
+   "The river",
+   "Home"
+  ],
+  "feedback": [
+   "Your new line is inside dash now. Press Run the plan.",
+   "Type print(\"jump\")"
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR PLAN",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()",
+      "dash()"
+     ]
+    }
+   ],
+   "box": "... (the box is waiting)",
+   "btn": [
+    "Run the plan"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR PLAN",
+    "THE LANE",
+    "Add 1 line inside dash. The line prints the word jump. Then press Run the plan.",
+    "The storm is coming down the lane.",
+    "Time left before the storm catches them",
+    "The river",
+    "Home"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_remind",
+  "page": 0,
+  "words": 31,
+  "longest": 13,
+  "prose": [
+   "BLINK",
+   "gang is a list. It holds three names in a row: Billy, Bobby and Spike. A list is like a rack of numbered boxes, one name in each.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back [asleep]",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "gang is a list. It holds three names in a row: Billy, Bobby and Spike. A list is like a rack of numbered boxes, one name in each.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_fail",
+  "page": -1,
+  "words": 8,
+  "longest": 4,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your code has finished."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your code has finished."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_fail",
+  "page": -1,
+  "words": 9,
+  "longest": 9,
+  "prose": [
+   "Everyone was inside, but the door was still open."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Everyone was inside, but the door was still open."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_retry",
+  "page": -1,
+  "words": 2,
+  "longest": 2,
+  "prose": [
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_retry",
+  "page": -1,
+  "words": 14,
+  "longest": 6,
+  "prose": [
+   "BLINK",
+   "Your code is still here. Mend it and run it again.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Your code is still here. Mend it and run it again.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 29,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "Everyone was inside, but the door was still open."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")      [faded: from her last try]",
+      "    print(who)      [faded: from her last try]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "welcome",
+  "page": -1,
+  "words": 9,
+  "longest": 7,
+  "prose": [
+   "Welcome back. You are at chapter 4, the door."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Carry on"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Welcome back. You are at chapter 4, the door."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_fail",
+  "page": -1,
+  "words": 9,
+  "longest": 9,
+  "prose": [
+   "The door was shut when Billy ran at it."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The door was shut when Billy ran at it."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 29,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door was shut when Billy ran at it."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(who)      [faded: from her last try]",
+      "    print(\"open\")      [faded: from her last try]",
+      "    print(\"shut\")      [faded: from her last try]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [
+   "\"Billy\" will go into the gap of rescue."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "rescue(\"Billy\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [
+   "\"Bobby\" will go into the gap of rescue."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "rescue(\"Billy\")",
+      "rescue(\"Bobby\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_fail",
+  "page": -1,
+  "words": 10,
+  "longest": 10,
+  "prose": [
+   "The door never asked for Spike, so Spike stayed outside."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The door never asked for Spike, so Spike stayed outside."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 37,
+  "longest": 11,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door never asked for Spike, so Spike stayed outside."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "rescue(\"Billy\")      [faded: from her last try]",
+      "rescue(\"Bobby\")      [faded: from her last try]"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 35,
+  "longest": 12,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+  ],
+  "feedback": [
+   "\"Spik\" will go into the gap of rescue."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "rescue(\"Billy\")",
+      "rescue(\"Bobby\")",
+      "rescue(\"Spik\")"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "Try hard yourself first. If you stay stuck, help appears under the box bit by bit."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_fail",
+  "page": -1,
+  "words": 9,
+  "longest": 5,
+  "prose": [
+   "The door asked for Spik. Nobody has that name."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "The door asked for Spik. Nobody has that name."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 37,
+  "longest": 11,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Now use your function. Write a loop that calls rescue for every name in gang.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door asked for Spik. Nobody has that name."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "rescue(\"Billy\")      [faded: from her last try]",
+      "rescue(\"Bobby\")      [faded: from her last try]",
+      "rescue(\"Spik\")      [faded: from her last try]"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Run my code [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Now use your function. Write a loop that calls `rescue` for every name in `gang`.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 29,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door will open."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)      [faded: from her last try]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 29,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door will ask for the name in the gap."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_loop",
+  "page": -1,
+  "words": 13,
+  "longest": 5,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Your loop is still here. Run your code again."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Run my code"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Your loop is still here. Run your code again."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_run",
+  "page": -1,
+  "words": 2,
+  "longest": 2,
+  "prose": [
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_retry",
+  "page": -1,
+  "words": 23,
+  "longest": 7,
+  "prose": [
+   "BLINK",
+   "Try this order. Print the word open first. Print who next, with no speech marks. Print the word shut last.",
+   "YOUR CODE"
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "BLINK",
+    "Try this order. Print the word open first. Print who next, with no speech marks. Print the word shut last.",
+    "YOUR CODE"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 11,
+  "longest": 7,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function."
+  ],
+  "feedback": [
+   "Everyone was inside, but the door was still open.",
+   "Print the word open first. Print who next, with no speech marks. Print the word shut last."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")      [faded: from her last try]",
+      "    print(who)      [faded: from her last try]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 11,
+  "longest": 7,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function."
+  ],
+  "feedback": [
+   "The door will open.",
+   "Print the word open first. Print who next, with no speech marks. Print the word shut last."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)      [faded: from her last try]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 11,
+  "longest": 7,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function."
+  ],
+  "feedback": [
+   "The door will ask for the name in the gap.",
+   "Print the word open first. Print who next, with no speech marks. Print the word shut last."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_body",
+  "page": -1,
+  "words": 29,
+  "longest": 10,
+  "prose": [
+   "YOUR CODE",
+   "THE DOOR",
+   "Write 3 print lines inside your function.",
+   "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+  ],
+  "feedback": [
+   "The door will shut."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]",
+      "def rescue(who):",
+      "    print(\"open\")",
+      "    print(who)",
+      "    print(\"shut\")",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed]     print(\"open\")",
+      "[typed]     print(who)",
+      "[typed]     print(\"shut\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [
+    "My function is finished"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "THE DOOR",
+    "Write 3 print lines inside your function.",
+    "The faded lines are the lines you typed last time. Type them again and mend any wrong one."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "welcome",
+  "page": -1,
+  "words": 9,
+  "longest": 7,
+  "prose": [
+   "Welcome back. You are at chapter 2, the river."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Carry on"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Welcome back. You are at chapter 2, the river."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "r_make",
+  "page": -1,
+  "words": 14,
+  "longest": 10,
+  "prose": [
+   "YOUR FUNCTION",
+   "THE RIVER",
+   "Type these 4 lines to make a function called cross."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR FUNCTION",
+     "lines": [
+      "def cross():",
+      "    print(\"Billy\")"
+     ]
+    },
+    {
+     "k": "LINES TO TYPE",
+     "lines": [
+      "[typed] def cross():",
+      "[typed]     print(\"Billy\")",
+      "[next]      print(\"pull\")",
+      "            print(\"tip\")"
+     ]
+    }
+   ],
+   "box": "...",
+   "btn": [],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR FUNCTION",
+    "THE RIVER",
+    "Type these 4 lines to make a function called cross."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "welcome",
+  "page": -1,
+  "words": 9,
+  "longest": 7,
+  "prose": [
+   "Welcome back. You are at chapter 3, the lane."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [],
+   "box": "",
+   "btn": [
+    "Carry on"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "Welcome back. You are at chapter 3, the lane."
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_def",
+  "page": -1,
+  "words": 16,
+  "longest": 12,
+  "prose": [
+   "The story is paused.",
+   "The clock and the storm stand still until you press Carry on."
+  ],
+  "feedback": [],
+  "x": {
+   "code": [
+    {
+     "k": "YOUR CODE",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Spike\"]"
+     ]
+    }
+   ],
+   "box": ">>>",
+   "btn": [
+    "Carry on"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "YOUR CODE",
+    "The list called gang is already written for you.",
+    "THE DOOR",
+    "Write the `def` line. Give the function the name `rescue`. Give its gap the name `who`.",
+    "The story is paused.",
+    "The clock and the storm stand still until you press Carry on."
+   ],
+   "platform": ""
+  }
+ }
+]

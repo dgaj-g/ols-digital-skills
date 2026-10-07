@@ -143,6 +143,10 @@ const MACHINE_KEYS = new Set([
      which is walked in full. */
   'id', 'src', 'video', 'href', 'url', 'file', 'poster', 'img', 'icon', 'engine', 'phase',
   'mode', 'year', 'kind', 'kinds', 'logTerms', 'skin', 'clearToast_dev',
+  /* THE RESCUE'S TWO MACHINE FIELDS (J3 Lesson 4, 7 Oct 2026): `page` is the story's file path,
+     exactly like `src`, and `storyChunk` is the id of the chunk the 5 questions go back to. Neither
+     reaches a screen. */
+  'page', 'storyChunk',
   /* THE INSPECT ENGINE'S TWO MACHINE FIELDS (16 Aug 2026, found while writing
      J2 Lesson 1's ledger records). `art` is a file path exactly like `src`, and
      `breaks` never reaches a screen at all: the engine reads it as the flag that
@@ -1271,9 +1275,9 @@ const FILM_MAP = {
      part A on `film-a`, part B on the PLAN face of the card where she builds
      (`myroom` / `factory`), as its introVideo. */
   'j2-l4': { lesson: 'j2-04', chunkId: 'film-a' },
-  'j2-l4-b': { lesson: 'j2-04', chunkId: 'myroom', sceneOf: 'j2-l4' },
-  'j3-l4': { lesson: 'j3-04', chunkId: 'film-a' },
-  'j3-l4-b': { lesson: 'j3-04', chunkId: 'factory', sceneOf: 'j3-l4' }
+  'j2-l4-b': { lesson: 'j2-04', chunkId: 'myroom', sceneOf: 'j2-l4' }
+  /* J3 Lesson 4's two films ('j3-l4', 'j3-l4-b') retired with Function Factory on 7 Oct 2026:
+     The Rescue's films are drawn inside the story page and are judged by its own gates. */
 };
 /* Extra constants the extractor may resolve, beyond the ones it harvests
    from the file itself. Extend this the day a scene needs one. */

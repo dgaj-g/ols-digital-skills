@@ -1,0 +1,195 @@
+A2. the join from chapter 1
+  ok  the fast typist is offered "Watch the other ending"
+  ok  that button plays the slow ending, which leads to Blink and the function
+  ok  from the safe ending the film of the ground starts
+  ok  no chapter 1 screen is left visible
+  ok  no chapter 1 key is still live
+A3. the river: make and call
+  ok  the film of the ground ends at the river
+  ok  four typed lines make cross
+  ok  the winch screen shows Billy, pull, tip
+  ok  Billy is carried over
+  ok  Billy is on the far bank (x 124 to 922)
+A4. the river: the empty bucket
+  ok  the winch calls Billy again, because Billy is written inside cross
+  ok  cross() is carried out as written
+  ok  Bobby is still on the near bank: the bucket crossed empty
+A5. the river: Blink explains the gap, then the gap
+  ok  gap page 1 opens Next after its reading time
+  ok  gap page 2 opens Next after its reading time
+  ok  Back returns to the first page
+  ok  gap page 3 opens Next after its reading time
+  ok  gap page 4 opens Next after its reading time
+  ok  gap page 5 opens Next after its reading time
+  ok  gap page 6 opens Next after its reading time
+  ok  the six pages tell the gap: Look inside cross / Bobby needs the same pull and the same tip / So we take the name out of cross / The gap needs a name / Now watch / The same function carries Billy too
+  ok  Blink's lesson ends at the gap
+  ok  the old def line is refused: The brackets are empty. Put the name of the gap in them.
+  ok  no colon is refused: The def line needs a colon at the end.
+  ok  def cross(who): passes
+  ok  print("who") is refused: With speech marks the winch would ask for someone named who. Take them away.
+  ok  print(who) passes
+  ok  cross("Bobby") carries Bobby
+  ok  Bobby is on the far bank beside Billy
+A6. the river: the hedgehog, a right name in time
+  ok  the squeak leads to the timed call
+  ok  the gauge has its label and waits for her first key
+  ok  the winch screen shows the name she chose: Conker, pull, tip
+  ok  the hedgehog crosses inside 35 seconds
+  ok  her name for the hedgehog is kept
+A9. the river: closing screens
+  ok  the badge card comes up: Winch Hand
+  ok  the card names the badge and its XP: Winch Hand +12 XP
+  ok  the badge is sent to the platform to record: Winch Hand
+  ok  Onward closes the card
+  ok  the first closing screen uses her name
+  ok  river question: 3 options and Next is off before an answer
+  ok  river question: exactly one option is right
+  ok  river question: Next opens only once the right option has been tapped
+  ok  river question: each wrong option shows its own line
+A7. the lane
+  ok  the film and Blink lead to the lane
+  ok  three typed lines make dash
+  ok  with 4 calls the Run button cannot be pressed yet
+  ok  five calls give a Run button
+  ok  the first run hits a fallen tree
+  ok  the bonk is in the third dash, at printed word 6 of 6
+  ok  Blink's lesson ends at the mend
+  ok  the mended plan prints jump 3 times, once in each dash ahead
+  ok  print("jump") then Run reaches the gate
+A9. the lane: closing screens
+  ok  the badge card comes up: Lane Runner
+  ok  the card names the badge and its XP: Lane Runner +12 XP
+  ok  the badge is sent to the platform to record: Lane Runner
+  ok  Onward closes the card
+  ok  lane question: 3 options and Next is off before an answer
+  ok  lane question: exactly one option is right
+  ok  lane question: Next opens only once the right option has been tapped
+  ok  lane question: each wrong option shows its own line
+A8. the door: the right function and loop
+  ok  the film leads to the door
+  ok  the def line passes
+  ok  the button My function is finished is lit after her lines
+  ok  the button My function is finished leads to the reminder of lists and loops
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  Run starts her code
+  ok  the right function and loop finish inside 12 seconds
+  ok  her hedgehog is in the gang
+A9. the door: closing screens
+  ok  the badge card comes up: Door Keeper
+  ok  the card names the badge and its XP: Door Keeper +15 XP
+  ok  the badge is sent to the platform to record: Door Keeper
+  ok  Onward closes the card
+  ok  door question: 3 options and Next is off before an answer
+  ok  door question: exactly one option is right
+  ok  door question: Next opens only once the right option has been tapped
+  ok  door question: each wrong option shows its own line
+A10. the close
+  ok  the fire follows the door
+  ok  the fire ends at the recap
+  ok  the recap has four rows (4)
+  ok  the recap's Next tells the platform the story is over (done)
+A6. the river: the clock runs out
+  ok  before her first key the river does not rise
+  ok  with no call typed the river covers the rock
+  ok  the 35 second clock took 35.0 story seconds
+  ok  the fail ends at Blink's turned head
+  ok  the storm rewinds to the same step
+  ok  the second attempt shows the help line: You typed cross("Bobby") before. Put a new name in the speech marks.
+  ok  the fail is counted
+  ok  the second attempt succeeds
+A4. the river: she thinks ahead
+  ok  cross("Bobby") before the gap gets its own line: Good thinking. cross cannot take a name in its brackets yet.
+  ok  it is not carried out: Bobby has not moved, and the lesson starts
+A7. the lane: the storm catches them
+  ok  waiting past 40 seconds fails
+  ok  the 40 second clock took 40.2 story seconds
+  ok  the fail ends at Blink's turned head
+  ok  the storm rewinds to the same step
+  ok  her function and her 5 calls are still there
+  ok  the second attempt reaches the gate
+A8. the door: each fail line comes from a real wrong program
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  no shut: the run fails and ends at Blink's turned head
+  ok  no shut: she goes back to her function
+  ok  no shut: the line is "Everyone was inside, but the door was still open."
+  ok  A11 door: the Carry on card says "Welcome back. You are at chapter 4, the door."
+  ok  A11 door: she is back at her function with the same line
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  who before open: the run fails and ends at Blink's turned head
+  ok  who before open: she goes back to her function
+  ok  who before open: the line is "The door was shut when Billy ran at it."
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  two calls: the run fails and ends at Blink's turned head
+  ok  two calls: she goes back to the code that uses it
+  ok  two calls: the line is "The door never asked for Spike, so Spike stayed outside."
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  a wrong name: the run fails and ends at Blink's turned head
+  ok  a wrong name: she goes back to the code that uses it
+  ok  a wrong name: the line is "The door asked for Spik. Nobody has that name."
+A8. the door: three failed runs in a row, then the right lines
+  ok  reminder page 1 opens Next after its reading time
+  ok  reminder page 2 opens Next after its reading time
+  ok  reminder page 3 opens Next after its reading time
+  ok  the three pages: the list, Lesson 3's loop, then Write my loop
+  ok  the reminder ends at her loop and is marked seen
+  ok  after one failed run her last lines are shown faded
+  ok  failed run 2: the reminder does not come a second time
+  ok  after two failed runs Blink adds the order: Print the word open first. Print who next, with no speech marks. Print the word shut last.
+  ok  failed run 3: the reminder does not come a second time
+  ok  after three failed runs the exact lines are shown: print("open") / print(who) / print("shut")
+  ok  her kept loop and the mended function get everyone inside
+A11. her place
+  ok  river: the Carry on card says "Welcome back. You are at chapter 2, the river."
+  ok  river: her two typed lines are still there: def cross(): /     print("Billy")
+  ok  river end: the Carry on card says "Welcome back. You are at chapter 2, the river."
+  ok  the hedgehog's name is restored
+  ok  lane: the Carry on card says "Welcome back. You are at chapter 3, the lane."
+  ok  lane: her 3 calls are still in the plan: 3 of 5 dashes are in your plan.
+A12. the last minutes
+  ok  at minute 47 there is no button
+  ok  at minute 48 the button appears: Running out of time? Go to the 5 questions Blink asks at the end.
+  ok  the button hands her to the platform's 5 questions, with her place kept at l_plan
+A12. the pause button
+  ok  the pause button is on the page while she types
+  ok  paused: the curtain is up, the clock stands still, typed letters change nothing, Carry on holds the keys: "The story is paused."
+  ok  Enter is Carry on: the clock moves again, her half line is still in the box and the box has the keys
+  ok  the finished line passes after the pause
+  ok  chapter 1 is running and shows the pause button
+  ok  chapter 1 paused: its clock stands at 100.23 seconds
+  ok  Carry on: chapter 1 runs again
+A14. size and network
+  ok  nothing is asked of the internet (399 file requests in all)
+  ok  nothing is requested after the page has loaded
+  ok  the lesson is 19 files, 498 KB in all (limit 1024 KB)
+A15. sound off
+  ok  every step above was completed with the sound switched off
+WORDS GATE (DFM 292) on every screen met
+  ok  158 distinct screens were counted, across 35 steps
+  ok  no screen is over 40 words of prose, no sentence is over 14 words, and prose with feedback is never over 60
+  most words with feedback: 60 (l_close)
+  ok  no sentence ends on a number without its thing
+  most words on one screen: 40 (r_lesson, closing screen 4)
+  longest sentence: 13 words: "An animal's name will come in through the brackets of the def line." (r_lesson)
+168 checks, 0 failed. No page errors.
+ALL PASS

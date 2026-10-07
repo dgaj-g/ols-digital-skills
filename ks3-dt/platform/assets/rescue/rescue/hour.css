@@ -1,0 +1,287 @@
+/* The Rescue, the later chapters. Every value here matches chapter 1's own card, bubble, caption
+   and panel, so the hour looks like one piece. Sizes are in rem: chapter 1 sets the root size
+   from the window, so everything scales with the picture. */
+
+/* chapter 1's art-test buttons are not part of the hour */
+#again, #retype, #lesson { display: none !important; }
+body:not(.h-win) #end { display: none !important; }
+body.h-on #end, body.h-on #cap, body.h-on #l1, body.h-on #l2, body.h-on #speech, body.h-on #p32, body.h-on #fn,
+body.h-on #card, body.h-on #why, body.h-on #nav, body.h-on #call, body.h-on #bang { display: none !important; }
+
+.hcode { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+/* the four chapters */
+#hstrip { position: fixed; left: 50%; top: 0.9rem; transform: translateX(-50%); display: flex; gap: 0.5rem; z-index: 6;
+  opacity: 0; transition: opacity 0.6s; pointer-events: none; }
+#hstrip.on { opacity: 1; }
+#hstrip span { padding: 0.3rem 0.85rem; border-radius: 99rem; font-size: 0.86rem; font-weight: 500; white-space: nowrap;
+  color: #93a0b8; background: rgba(5, 8, 16, 0.72); border: 0.08rem solid rgba(190, 210, 255, 0.2); }
+#hstrip span.now { color: #10131c; background: #ffd27a; border-color: #ffd27a; font-weight: 700; }
+#hstrip span.done { color: #7fe0a0; border-color: rgba(127, 224, 160, 0.45); }
+#hstrip span.done::before { content: "\2713\00a0"; }
+
+/* the caption */
+#hcap { position: fixed; left: 50%; bottom: 7.5%; transform: translateX(-50%); max-width: 46rem; padding: 0.7rem 1.5rem;
+  border-radius: 0.8rem; background: rgba(5, 8, 16, 0.74); color: #fff; font-size: 1.62rem; font-weight: 500;
+  white-space: nowrap; opacity: 0; transition: opacity 0.35s; z-index: 5; pointer-events: none; }
+#hcap.on { opacity: 1; }
+body.h-card #hcap { left: 36%; }
+
+/* Blink's speech */
+#hsay { position: fixed; max-width: 25rem; padding: 0.95rem 1.4rem 1.05rem; border-radius: 1.1rem;
+  background: rgba(12, 10, 6, 0.9); border: 0.14rem solid #ffb02e; box-shadow: 0 0 2.2rem rgba(255, 170, 40, 0.26);
+  color: #fff; opacity: 0; transition: opacity 0.3s; z-index: 7; pointer-events: none; }
+#hsay.on { opacity: 1; }
+#hsay::before { content: ""; position: absolute; left: -0.78rem; top: 2.3rem; width: 1.3rem; height: 1.3rem;
+  background: rgba(12, 10, 6, 0.96); border-left: 0.14rem solid #ffb02e; border-bottom: 0.14rem solid #ffb02e; transform: rotate(45deg); }
+#hsay.flip::before { left: auto; right: -0.78rem; border: 0; border-right: 0.14rem solid #ffb02e; border-top: 0.14rem solid #ffb02e; }
+#hsay.under::before { left: 2.4rem; top: -0.78rem; border: 0; border-left: 0.14rem solid #ffb02e; border-top: 0.14rem solid #ffb02e; }
+#hsay .who { display: block; font-size: 0.86rem; font-weight: 700; letter-spacing: 0.26em; color: #ffb02e; margin-bottom: 0.25rem; }
+#hsayt { display: block; font-size: 1.7rem; font-weight: 700; line-height: 1.22; }
+
+/* the card she types in */
+#hcard { position: fixed; right: 2.2rem; top: 50%; width: 21.5rem; padding: 1.35rem 1.45rem 1.25rem; border-radius: 1.1rem;
+  background: rgba(8, 12, 22, 0.93); border: 0.09rem solid rgba(190, 210, 255, 0.24); box-shadow: 0 1.4rem 3.6rem rgba(0, 0, 0, 0.6);
+  color: #fff; transform: translate(130%, -50%); transition: transform 0.5s; z-index: 8; }
+#hcard.on { transform: translate(0, -50%); }
+#hcard.jolt { animation: hjolt 0.28s; }
+@keyframes hjolt { 0% { transform: translate(0, -50%); } 30% { transform: translate(-0.5rem, -50%); } 65% { transform: translate(0.4rem, -50%); } 100% { transform: translate(0, -50%); } }
+#hcard .k { font-size: 0.86rem; font-weight: 700; letter-spacing: 0.24em; color: #ffd27a; margin: 0; }
+#hcard h2 { font-size: 1.32rem; font-weight: 700; line-height: 1.24; margin: 0.45rem 0 0.7rem; }
+#hlines { list-style: none; margin: 0 0 0.6rem; padding: 0; }
+#hlines li { white-space: pre; padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 1.16rem; color: #93a0b8;
+  border: 0.08rem solid transparent; position: relative; }
+#hlines li.now { color: #fff; background: rgba(255, 210, 122, 0.13); border-color: rgba(255, 210, 122, 0.7); }
+#hlines li.now::after { content: "\25B8"; position: absolute; right: 0.6rem; color: #ffd27a; }
+#hlines li.done { color: #7fe0a0; }
+#hlines li.done::after { content: "\2713"; position: absolute; right: 0.6rem; }
+#hsub { font-size: 1rem; color: #c3ccdc; margin: 0 0 0.6rem; line-height: 1.35; }
+#hsub:empty, #hlines:empty, #hhelp:empty, #hk:empty { display: none; }
+#hprompt { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: #020409;
+  border: 0.12rem solid #ffd27a; font-size: 1.15rem; }
+#hprompt.wait { border-color: #4a5368; opacity: 0.55; }
+#hprompt span { color: #ffd27a; }
+#hinp { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #fff; caret-color: #ffd27a; font: inherit;
+  user-select: text; -webkit-user-select: text; }
+#hfb { min-height: 4.1rem; margin: 0.5rem 0 0; font-size: 0.98rem; line-height: 1.38; color: #c3ccdc; }
+#hfb.bad { color: #ff9a8f; }
+#hfb.good { color: #7fe0a0; }
+#hfb.short { min-height: 2.7rem; }
+#hhelp { margin: 0.2rem 0 0.5rem; padding: 0.5rem 0.7rem; border-radius: 0.5rem; background: rgba(255, 210, 122, 0.1);
+  border: 0.08rem solid rgba(255, 210, 122, 0.45); font-size: 0.98rem; line-height: 1.38; color: #ffe6b0; }
+#hhelp code, #hfb code, #hsub code, #hcard h2 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.96em; color: #fff; }
+#hgauge { display: none; margin-top: 0.3rem; }
+#hgauge.on { display: block; }
+#hgauge .tl { font-size: 0.9rem; color: #c3ccdc; margin: 0 0 0.35rem; }
+.hbar { height: 1rem; padding: 0.16rem; border-radius: 99rem; background: #020409; border: 0.1rem solid rgba(255, 255, 255, 0.45); box-sizing: border-box; }
+.hbar i { display: block; height: 100%; width: 100%; min-width: 0.5rem; border-radius: 99rem; background: #ffd27a; }
+.hbar.low i { background: #ff5a4d; }
+.hbtn { display: none; margin-top: 0.7rem; width: 100%; padding: 0.7rem 1rem; border-radius: 0.7rem; border: 0; cursor: pointer;
+  background: #ffd27a; color: #10131c; font: inherit; font-size: 1.15rem; font-weight: 700; }
+.hbtn.on { display: block; }
+.hbtn:disabled { background: #4a5368; color: #aab3c5; cursor: default; }
+.hbtn:focus-visible, .hpill:focus-visible, .hopt:focus-visible { outline: 0.2rem solid #fff; outline-offset: 0.15rem; }
+
+/* her function, kept in view */
+#hfn { position: fixed; left: 4.2rem; top: 4.3rem; padding: 0.75rem 1.1rem 0.85rem; border-radius: 0.8rem;
+  background: rgba(6, 10, 20, 0.92); border: 0.12rem solid #ffd27a; box-shadow: 0 0 1.6rem rgba(255, 210, 122, 0.22);
+  color: #fff; opacity: 0; transition: opacity 0.5s; z-index: 6; pointer-events: none; min-width: 15rem; }
+#hfn.on { opacity: 1; }
+#hfn .k { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.22em; color: #ffd27a; margin-bottom: 0.3rem; }
+#hfnl { font-size: 1rem; line-height: 1.6; white-space: pre; color: #f2f5fc; }
+#hfnl .dim { color: #4f5b75; }
+#hfnl .hot { color: #9dffb4; text-shadow: 0 0 0.6rem rgba(120, 255, 160, 0.55); }
+#hfnl .ring { outline: 0.14rem solid #ff7a6e; outline-offset: 0.12rem; border-radius: 0.3rem; }
+#hfnl .ring.pulse { animation: hpulse 0.9s 1; }
+@keyframes hpulse { 0% { outline-offset: 0.12rem; } 40% { outline-offset: 0.5rem; outline-color: #ffd27a; } 100% { outline-offset: 0.12rem; } }
+#hfnl .gap { display: inline-block; min-width: 2.6em; text-align: center; border: 0.12rem dashed #ffd27a; border-radius: 0.3rem;
+  padding: 0 0.25em; margin: 0 0.05em; line-height: 1.25; color: #10131c; }
+#hfnl .gap.named { color: #ffd27a; border-style: solid; }
+#hfnl .gap.full { background: #ffd27a; color: #10131c; border-style: solid; }
+#hfnl .lift { display: inline-block; transition: transform 0.9s, opacity 0.9s; }
+#hfnl .lift.up { transform: translateY(-1.6rem); opacity: 0; }
+#hfnl .callrow { display: block; margin-top: 0.5rem; padding-top: 0.45rem; border-top: 0.08rem solid rgba(255, 210, 122, 0.35); }
+#hfnnote { margin: 0.45rem 0 0; font-size: 0.9rem; color: #c3ccdc; white-space: normal; }
+#hfnnote:empty { display: none; }
+#hfnl .now { color: #ffd27a; }
+#hfnl .now::before { content: "\25B8"; position: absolute; margin-left: -0.9rem; color: #ffd27a; }
+/* Blink's lesson: the panel is the picture, so it is large and beside her */
+#hfn.big { left: auto; right: 5rem; top: 4.6rem; padding: 1.2rem 1.9rem 1.4rem 2rem; }
+#hfn.big .k { font-size: 0.95rem; }
+#hfn.big #hfnl { font-size: 1.75rem; line-height: 1.7; }
+
+/* a word that travels from her call into the gap */
+#hfly { position: fixed; left: 0; top: 0; padding: 0.1rem 0.45rem; border-radius: 0.35rem; background: #ffd27a; color: #10131c;
+  font-size: 1.05rem; font-weight: 700; opacity: 0; z-index: 11; pointer-events: none; will-change: transform; }
+
+/* the closing screens */
+#hover { position: fixed; inset: 0; background: rgba(4, 8, 18, 0.9); display: none; align-items: center; justify-content: center;
+  z-index: 10; color: #fff; }
+#hover.on { display: flex; }
+.hp { width: min(64rem, 92vw); }
+.hp h2 { font-size: 2.1rem; font-weight: 700; text-align: center; max-width: 44rem; margin: 0 auto 1.7rem; line-height: 1.2; }
+.hp .cols { display: flex; gap: 2.4rem; align-items: center; justify-content: center; }
+.hp .k { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.22em; color: #aab3c5; margin-bottom: 0.4rem; }
+.hp .hstack { padding: 0.7rem 0.95rem; border-radius: 0.7rem; background: #05080f; border: 0.1rem solid rgba(190, 210, 255, 0.22);
+  font-size: 1.05rem; line-height: 1.7; white-space: pre; }
+.hp .hstack.mine { border-color: #ffd27a; box-shadow: 0 0 1.6rem rgba(255, 210, 122, 0.22); }
+.hp .hstack b { background: #ffd27a; color: #10131c; padding: 0 0.3em; border-radius: 0.25rem; font-weight: 700; }
+.hp .hstack u { text-decoration: none; border: 0.1rem solid #ffd27a; color: #ffd27a; padding: 0 0.3em; border-radius: 0.25rem; }
+.hp .lines { text-align: center; margin-top: 1.6rem; font-size: 1.4rem; line-height: 1.5; }
+.hp .lines p { margin: 0.2rem 0; }
+.hp .lines strong { color: #ffd27a; }
+.hp .faces { display: flex; gap: 1.2rem; }
+.hp .faces figure { margin: 0; text-align: center; }
+.hp .faces canvas { position: static; width: 8.5rem; height: 8.5rem; display: block; border-radius: 1rem; background: #0b1322; border: 0.1rem solid rgba(190, 210, 255, 0.22); }
+.hp .faces figcaption { margin-top: 0.35rem; font-size: 1.05rem; font-weight: 700; }
+.hp .arrow { width: 5rem; height: 0.16rem; background: #ffd27a; position: relative; flex: none; }
+.hp .arrow::after { content: ""; position: absolute; right: -0.1rem; top: -0.38rem; border-left: 0.8rem solid #ffd27a; border-top: 0.45rem solid transparent; border-bottom: 0.45rem solid transparent; }
+.hp .lab { display: grid; grid-template-columns: auto 1fr; gap: 0.55rem 1.4rem; align-items: center; max-width: 46rem; margin: 0 auto; }
+.hp .lab code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.3rem; white-space: pre; padding: 0.35rem 0.8rem; border-radius: 0.5rem;
+  background: #05080f; border: 0.1rem solid rgba(190, 210, 255, 0.22); }
+.hp .lab code b { background: #ffd27a; color: #10131c; padding: 0 0.25em; border-radius: 0.25rem; }
+.hp .lab span { font-size: 1.3rem; }
+.hp .boxed { max-width: 40rem; margin: 1.7rem auto 0; padding: 0.9rem 1.4rem; border-radius: 0.8rem; border: 0.14rem solid #ffd27a;
+  background: rgba(255, 210, 122, 0.1); font-size: 1.5rem; font-weight: 700; text-align: center; line-height: 1.3; }
+.hp .seen { text-align: center; font-size: 1.25rem; color: #c3ccdc; margin: 0 0 0.9rem; }
+.hp .q { text-align: center; font-size: 1.7rem; font-weight: 700; line-height: 1.28; max-width: 44rem; margin: 0 auto 1.2rem; }
+.hp .opts { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.hopt { padding: 0.75rem 1.7rem; border-radius: 0.8rem; border: 0.12rem solid rgba(190, 210, 255, 0.4); background: #05080f; color: #fff;
+  font: inherit; font-size: 1.35rem; font-weight: 700; cursor: pointer; }
+.hopt.code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+.hopt.right { border-color: #7fe0a0; background: rgba(127, 224, 160, 0.16); color: #7fe0a0; }
+.hopt.wrong { border-color: #ff9a8f; color: #ff9a8f; opacity: 0.75; }
+.hp .qfb { min-height: 3.4rem; margin: 1.1rem auto 0; max-width: 40rem; text-align: center; font-size: 1.3rem; line-height: 1.35; }
+.hp .qfb.good { color: #7fe0a0; } .hp .qfb.bad { color: #ff9a8f; }
+#hnav { position: fixed; left: 0; right: 0; bottom: 2rem; display: none; justify-content: center; gap: 1rem; z-index: 11; }
+#hnav.on { display: flex; }
+.hpill { padding: 0.55rem 1.1rem; border-radius: 99rem; border: 0.09rem solid #4a5368; color: #d5dbe8; font: inherit; font-size: 0.95rem;
+  background: rgba(8, 12, 22, 0.6); cursor: pointer; }
+.hpill.go { background: #ffd27a; border-color: #ffd27a; color: #10131c; font-weight: 700; font-size: 1.1rem; padding: 0.6rem 1.9rem; }
+.hpill:disabled { opacity: 0.35; cursor: default; }
+
+/* what her code prints, and the lane gauge */
+#hprints { position: fixed; left: 9.4rem; bottom: 2rem; max-width: 50rem; display: none; z-index: 6; padding: 0.6rem 0.9rem 0.7rem; border-radius: 0.8rem;
+  background: rgba(6, 10, 20, 0.92); border: 0.09rem solid rgba(190, 210, 255, 0.24); color: #fff; }
+#hprints.on { display: block; }
+#hprints .k { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.22em; color: #ffd27a; margin-bottom: 0.35rem; }
+#hprints .row { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+#hprints .row span { padding: 0.12rem 0.5rem; border-radius: 0.35rem; font-size: 0.95rem; background: #05080f; border: 0.08rem solid rgba(190, 210, 255, 0.22); color: #93a0b8; }
+#hprints .row span.hot { color: #10131c; background: #ffd27a; border-color: #ffd27a; }
+#hprints .row span.done { color: #7fe0a0; }
+#hprints .row span.bad { color: #ff9a8f; border-color: #ff9a8f; }
+#hlane { position: fixed; left: 9.4rem; bottom: 2rem; width: 38rem; display: none; z-index: 6; color: #fff; }
+#hlane.on { display: block; }
+#hlane .tl { font-size: 0.9rem; color: #c3ccdc; margin: 0 0 0.35rem; text-shadow: 0 0.1rem 0.4rem #000; }
+#hlane.up { bottom: 7.6rem; }
+#hlane .trk { position: relative; height: 1.6rem; border: 0.12rem solid rgba(255, 255, 255, 0.85); border-radius: 0.5rem; background: rgba(6, 10, 20, 0.92); overflow: hidden; }
+#hlane.low .trk { border-color: #ff7a6e; box-shadow: 0 0 0.9rem rgba(255, 122, 110, 0.5); }
+#hlane .riv { position: absolute; left: 0; top: 0; bottom: 0; width: 2.2rem; background: #2f5488; }
+#hlane .hm { position: absolute; right: 0; top: 0; bottom: 0; width: 2.4rem; background: #3a2c16; }
+#hlane .hm::after { content: ""; position: absolute; left: 0.8rem; top: 0.36rem; width: 0.75rem; height: 0.75rem; border-radius: 0.1rem; background: #ffd27a; box-shadow: 0 0 0.7rem #ffd27a; }
+#hlane .ln { position: absolute; left: 2.2rem; right: 2.4rem; top: 0; bottom: 0; }
+#hlane .st { position: absolute; top: 0; bottom: 0; width: 20%; border-left: 0.09rem solid rgba(190, 210, 255, 0.5); }
+#hlane .st.pl { background: rgba(255, 210, 122, 0.3); }
+#hlane .lg { position: absolute; top: 0.18rem; bottom: 0.18rem; width: 0.42rem; margin-left: -0.21rem; border-radius: 0.2rem; background: #a07a4e; display: none; }
+#hlane.logs .lg { display: block; }
+#hlane.lit .lg { background: #ff8a7e; box-shadow: 0 0 0.7rem #ff7a6e; }
+#hlane .sto { position: absolute; left: -2.2rem; top: 0; bottom: 0; background: linear-gradient(90deg, #04050a 0, #04050a calc(100% - 1.1rem), #46508a 100%); border-right: 0.14rem solid #b4c2ff; }
+#hlane .gg { position: absolute; top: 50%; width: 1.5rem; height: 0.8rem; margin: -0.4rem 0 0 -0.75rem; border-radius: 0.4rem; background: #ffd27a; box-shadow: 0 0 0.5rem rgba(255, 210, 122, 0.8); }
+#hlane .ends { display: flex; justify-content: space-between; margin-top: 0.2rem; font-size: 0.8rem; color: #c3ccdc; text-shadow: 0 0.1rem 0.4rem #000; }
+#hprints .row { min-height: 1.7rem; margin: 0; }
+body.h-lane #hcap { bottom: 7.4rem; }
+body.h-prints #hcap { bottom: 12.6rem; }
+/* the lane lesson: the long way beside her function */
+#hfnl .duo { display: flex; gap: 2.4rem; align-items: flex-start; font-size: 1.22rem; line-height: 1.55; }
+#hfnl .duo .k { margin-bottom: 0.35rem; }
+#hfnl .duo .kk { color: #aab3c5; }
+#hfnl .duo .pane { opacity: 0.16; transition: opacity 0.5s; }
+#hfnl .duo .pane.lit { opacity: 1; }
+#hfnl .miss { display: block; height: 0.5rem; margin: 0.14rem 0 0.14rem 0; width: 9.2rem; border-radius: 0.2rem; border: 0.1rem dashed #ff7a6e; background: rgba(255, 122, 110, 0.18); }
+#hfnl .tick { color: #7fe0a0; }
+#hfnl .tick::after { content: "  \2713"; }
+#hfnl .stop { color: #ff9a8f; }
+#hfnk:empty { display: none; }
+#hfnl .gap.wide { min-width: 8.6em; }
+#hfnl .gap.pulse { animation: hgap 1.2s 1; }
+@keyframes hgap { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } 40% { box-shadow: 0 0 0 0.55rem rgba(255, 210, 122, 0.55); background: rgba(255, 210, 122, 0.3); } }
+/* the lane's closing screen: the long way beside her function */
+.hp .pair { display: flex; flex-direction: column; align-items: center; }
+.hp .pair .under { margin: 0.8rem 0 0; font-size: 1.2rem; line-height: 1.35; max-width: 17rem; text-align: center; }
+.hp .hstack .miss { display: block; height: 0.5rem; margin: 0.14rem 0; width: 9.2rem; border-radius: 0.2rem; border: 0.1rem dashed #ff7a6e; background: rgba(255, 122, 110, 0.18); }
+.hp .hstack .tick { color: #7fe0a0; }
+.hp .hstack .tick::after { content: "  \2713"; }
+.hp .hstack .new { color: #10131c; background: #ffd27a; border-radius: 0.25rem; padding: 0 0.3em; margin-left: -0.3em; font-weight: 700; }
+.hp .hstack .sep { display: block; margin-top: 0.45rem; padding-top: 0.4rem; border-top: 0.08rem solid rgba(255, 210, 122, 0.35); }
+
+/* welcome back, the last-minutes button, the prototype menu */
+#hwelcome { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(4, 8, 18, 0.92); z-index: 20; color: #fff; }
+#hwelcome.on { display: flex; }
+#hwelcome div { text-align: center; }
+#hwelcome p { font-size: 2rem; font-weight: 700; margin: 0 0 1.4rem; }
+#hwelcome .hbtn { display: inline-block; width: auto; padding: 0.8rem 2.6rem; font-size: 1.4rem; }
+#hlast { position: fixed; right: 2.2rem; bottom: 1.2rem; display: none; z-index: 9; }
+#hlast.on { display: block; }
+#hmenu { position: fixed; left: 0.6rem; top: 0.6rem; z-index: 30; font-size: 0.8rem; color: #aab3c5; }
+#hmenu summary { cursor: pointer; padding: 0.3rem 0.7rem; border-radius: 99rem; border: 0.08rem dashed #4a5368; background: rgba(8, 12, 22, 0.75); list-style: none; }
+#hmenu[open] summary { margin-bottom: 0.3rem; }
+#hmenu div { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.5rem; border-radius: 0.6rem; background: rgba(8, 12, 22, 0.95); border: 0.08rem dashed #4a5368; }
+#hmenu a { color: #d5dbe8; text-decoration: none; padding: 0.15rem 0.4rem; border-radius: 0.3rem; }
+#hmenu a:hover { background: rgba(255, 210, 122, 0.18); }
+body:not(.h-on) #hmenu { opacity: 0.55; }
+#snd { z-index: 12; }
+body.h-on #snd { visibility: visible !important; opacity: 0.7 !important; }
+
+/* a frozen picture for the tests: nothing is caught half way through a move */
+body.h-still *, body.h-still *::before, body.h-still *::after { transition: none !important; animation: none !important; }
+
+/* chapter 4, the door, and the end of the story */
+#hfnl .chip { margin-left: 0.9rem; padding: 0.05rem 0.5rem; border-radius: 0.35rem; border: 0.08rem solid #ffd27a; color: #ffd27a; font-size: 0.88em; }
+.hp .faces.three { gap: 0.8rem; }
+.hp .faces.three canvas { width: 6.4rem; height: 6.4rem; }
+.hp .lines code, .hp .seen code, .hp .q code, .hp .qfb code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; color: #ffd27a; }
+.hp .rec { display: grid; gap: 0.9rem; max-width: 50rem; margin: 0 auto; }
+.hp .recrow { display: grid; grid-template-columns: 4.4rem 12.5rem 1fr; gap: 1.3rem; align-items: center; padding: 0.55rem 1.2rem; border-radius: 0.9rem; background: #05080f; border: 0.1rem solid rgba(190, 210, 255, 0.22); }
+.hp .recrow canvas { position: static; width: 4.4rem; height: 4.4rem; display: block; }
+.hp .recrow code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.45rem; color: #ffd27a; }
+.hp .recrow span { font-size: 1.35rem; line-height: 1.3; }
+.hp .qzn { text-align: center; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.22em; color: #aab3c5; margin: 0 0 1rem; text-transform: uppercase; }
+.hopt:disabled { cursor: default; }
+/* THE PAUSE (his ruling, 6 Oct 2026): a small pill above the sound pill, a curtain that stops everything */
+#hpause { position: fixed; left: 1.1rem; bottom: 3.9rem; z-index: 12; visibility: hidden; opacity: 0; font-size: 0.86rem; cursor: pointer; }
+body.h-on #hpause { visibility: visible !important; opacity: 0.7 !important; }
+body.h-on #hpause:hover, body.h-on #hpause:focus-visible { opacity: 1 !important; }
+#hpaused { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(4, 8, 18, 0.97); z-index: 25; color: #fff; text-align: center; }
+#hpaused.on { display: flex; }
+#hpaused p { font-size: 2rem; font-weight: 700; margin: 0 0 0.5rem; }
+#hpaused p.sub { font-size: 1.15rem; font-weight: 400; color: #aab3c5; margin: 0 0 1.6rem; }
+#hpaused .hbtn { display: inline-block; width: auto; padding: 0.8rem 2.6rem; font-size: 1.4rem; }
+/* THE BADGE POP: the platform's own badge-pop, mirrored (dark veil, centred card, gold glow, spinning picture) */
+#hbadge { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(4, 9, 26, 0.8); backdrop-filter: blur(8px); z-index: 22; }
+#hbadge.on { display: flex; }
+#hbadge .card { text-align: center; padding: 36px 40px; width: min(430px, 100%); box-sizing: border-box; border-radius: 1.2rem; background: #141b2e; border: 0.09rem solid #ffd27a;
+  box-shadow: 0 0 3rem rgba(255, 210, 122, 0.45); color: #fff; animation: hbadgeIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1); }
+@keyframes hbadgeIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+#hhelp.beat { animation: hhelpBeat 0.9s ease-out; }
+@keyframes hhelpBeat { 0% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } 30% { box-shadow: 0 0 0 4px rgba(255, 210, 122, 0.6); } 100% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } }
+#hbicon { position: static; display: block; margin: 0 auto; width: 116px; height: 116px; animation: hbadgeSpin 1.2s ease-out; }
+@keyframes hbadgeSpin { from { transform: rotateY(360deg); } to { transform: rotateY(0deg); } }
+#hbadge h2 { margin: 0.6rem 0 0.2rem; font-size: 1.2rem; font-weight: 600; color: #aab3c5; }
+#hbname { margin: 0; font-size: 1.9rem; font-weight: 700; color: #ffd27a; }
+#hbxp { margin: 0.3rem 0 0; font-size: 1.2rem; font-weight: 700; color: #9dffb4; }
+#hbadge .hbtn { display: inline-block; width: auto; padding: 0.7rem 2.4rem; font-size: 1.15rem; margin-top: 1.2rem; }
+/* BARE PAGES (Blink's river explanation): the scene shows, Back and Next sit bottom right, clear of the prints */
+#hnav.bare { left: auto; right: 2.2rem; justify-content: flex-end; }
+/* HOW DID IT GO? the platform's own self-evaluation step, mirrored in the last page */
+.hp .se { text-align: left; }
+.hp .se h2 { font-size: 1.7rem; margin: 0 0 0.6rem; }
+.hp .se .st { margin: 0.45rem 0; padding: 0.55rem 0.9rem; border-radius: 0.8rem; background: rgba(255, 255, 255, 0.05); }
+.hp .se .st p { margin: 0 0 0.4rem; font-size: 1.05rem; line-height: 1.35; }
+.hp .se .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.hp .se .chip { padding: 0.35rem 0.9rem; border-radius: 99rem; border: 0.09rem solid #4a5368; background: transparent; color: #d5dbe8; font: inherit; font-size: 0.95rem; cursor: pointer; }
+.hp .se .chip.pick { background: #ffd27a; color: #10131c; border-color: #ffd27a; font-weight: 700; }
+.hp .se .chip:focus-visible { outline: 0.2rem solid #fff; outline-offset: 0.15rem; }
+.hp .se textarea { width: 100%; box-sizing: border-box; min-height: 3.6rem; margin-top: 0.5rem; padding: 0.55rem 0.8rem; border-radius: 0.7rem; border: 0.09rem solid #4a5368;
+  background: rgba(8, 12, 22, 0.6); color: #fff; font: inherit; font-size: 1rem; resize: vertical; }
+.hp .se .se-count { font-size: 0.85rem; color: #aab3c5; margin: 0.15rem 0 0; text-align: right; }
+.hp .se .note { font-size: 0.95rem; color: #aab3c5; margin: 0.6rem 0 0; }

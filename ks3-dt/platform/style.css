@@ -4600,3 +4600,26 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pth-publish-note.pth-fail, .pth-publish-note.pth-changed { padding: 10px 12px; border-radius: 9px; background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), .75); }
 .ord-card-own, .ord-form-card, .ord-run-card, .ord-check-card { position: relative; }
 .ord-side { margin: 12px 0 0; }
+
+/* ===== J3 Lesson 4 "The Rescue": the story fills the screen under the lesson's top bar ===== */
+.rescue-wrap { min-height: 60vh; }
+.rescue-frame {
+  position: fixed; left: 0; right: 0; bottom: 0; top: var(--rescue-top, 64px);
+  width: 100vw; height: calc(100vh - var(--rescue-top, 64px)); border: 0; z-index: 5; background: #0d1b2a;
+}
+.rescue-loading { text-align: center; color: var(--muted); margin-top: 30vh; position: relative; z-index: 6; }
+.stretch-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+.q-seen { color: var(--muted); margin: 8px 0 4px; }
+.q-pre {
+  margin: 10px 0; padding: 12px 16px; text-align: left; white-space: pre; overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.95rem;
+  background: var(--field); border: 1.5px solid var(--line-l); border-radius: var(--r-md); color: var(--ols-blue);
+}
+.q-code-note { font-size: 0.9rem; color: var(--muted); margin: 0 0 6px; }
+.exit-score { font-weight: 700; margin: 4px 0 12px; }
+.exit-fb-q { font-weight: 600; margin: 2px 0; }
+.se-story-back { display: block; margin: 12px auto 0; }
+/* The Rescue: the story fills the window under the lesson bar and has its own Next at the bottom right, where
+   the help button lives. While the story is on screen the help button moves up into the band beside the
+   lesson bar, so neither covers the other (found by the shell sit walk, 7 Oct 2026). */
+body:has(.rescue-frame) .help-beacon { bottom: auto; top: 80px; }

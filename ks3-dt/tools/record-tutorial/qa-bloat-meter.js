@@ -17,6 +17,11 @@
  *
  *   node qa-bloat-meter.js
  */
+/* RETIRED 7 Oct 2026: this gate tested J3 Lesson 4 "Function Factory", which J3 Lesson 4 "The Rescue" replaced
+   (DFM 291-301, K58). Its chunks no longer exist. The Rescue's gates live in probes/rescue/. Kept for history. */
+console.log('qa-bloat-meter.js: RETIRED. J3 Lesson 4 is now The Rescue; see probes/rescue/.');
+process.exit(0);
+
 'use strict';
 const fs = require('fs');
 const path = require('path');

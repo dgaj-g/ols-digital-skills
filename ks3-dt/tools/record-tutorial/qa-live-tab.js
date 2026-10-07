@@ -840,8 +840,9 @@ async function readTab(page) {
      count and the room's lines read-only, and the CSV carries the columns.
      ============================================================ */
   for (const Y of [
-    { year: 'j2', lesson: 'j2-04', cols: ['Your room', 'The class adventure'], detail: ['myroom=1/1;classadventure=5/5', 'myroom=1/1;classadventure=3/5'], rooms: true },
-    { year: 'j3', lesson: 'j3-04', cols: ['Your factory', 'The Rush'], detail: ['factory=2/2;rush=4/4', 'factory=1/2;rush=2/4'], rooms: false }
+    { year: 'j2', lesson: 'j2-04', cols: ['Your room', 'The class adventure'], detail: ['myroom=1/1;classadventure=5/5', 'myroom=1/1;classadventure=3/5'], rooms: true }
+    /* the j3-04 row (factory= / rush=) was RETIRED on 7 Oct 2026: J3 Lesson 4 is now The Rescue, which has no
+       build column. Its badges and exit answers show in the ordinary columns. */
   ]) {
     section('VI. THE LIVE TAB ON A ' + Y.year.toUpperCase() + ' LESSON 4 CLASS');
     await page.evaluate(() => localStorage.clear());
