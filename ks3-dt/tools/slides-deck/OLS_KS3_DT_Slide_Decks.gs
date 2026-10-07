@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-07 from contentVersion 2026-09-25a.
+ * Built 2026-10-07 from contentVersion 2026-10-07b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3254,30 +3254,51 @@ var DECKS = {
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
       "heading": "Lesson 4 · The Rescue",
       "sub": "J3 · Lesson 4 of 17",
-      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now, a short set of questions from earlier lessons that mark themselves.\n\nSAY: \"Log in, open the class link, and work through the warm-up questions on your own screen. When the screen hands you over to the story, stop and look up.\"\n\nWHEN TO MOVE: when most of the room is on the story's first screen."
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now, a short set of questions from earlier lessons that mark themselves. Take the register while it runs.\n\nSAY: \"Log in, open the class link and do the warm-up questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the warm-up. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
      },
      {
       "kind": "objectives",
       "bg": "section",
-      "heading": "In this lesson you will…",
+      "heading": "Today you meet functions",
       "bullets": [
-       "Say why a function is better than typing the same lines again.",
-       "Write a function with a gap (a parameter) and call it with different names.",
-       "Write your own function and call it from a loop."
+       "A function is a set of lines with a name. You write it once and use it as often as you like.",
+       "You will write your own functions in Python.",
+       "You are guided the whole way. Every step shows you what to do, and more help appears if a line is not right."
       ],
-      "notes": "SAY these as they are written. Each one is something every pupil will have done by the end of the story."
+      "notes": "SAY these as they are written. Do not explain functions now: the lesson teaches them step by step."
      },
      {
       "kind": "bullets",
       "bg": "section",
-      "heading": "Today is one story",
+      "heading": "Headphones on",
       "bullets": [
-       "A storm is coming. Three small animals need to get home.",
-       "You get them home by writing Python.",
-       "When your line is right, the story moves. When it is not, the card tells you what to change.",
-       "You play it on your own screen, on your own."
+       "Put your headphones on now.",
+       "Sound is part of this lesson.",
+       "No headphones? Every step still works with the sound off."
       ],
-      "notes": "SAY: \"Today is one story, and you play it on your own. A storm is coming, and three small animals need to get home. Every part of the story moves when you type the right line. If a line is wrong, nothing bad happens: the card tells you what to change.\"\n\nHeadphones help if pupils have them. The story works with the sound off."
+      "notes": "SAY: \"Headphones on now, please. Sound is part of today. If you have no headphones, every step still works with the sound off.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "On your own",
+      "bullets": [
+       "Work on your own screen, on your own.",
+       "Do not talk to anyone about what you see, today or afterwards. Let everyone find it for themselves.",
+       "Stuck? Put your hand up."
+      ],
+      "notes": "SAY: \"Today you work completely on your own. No talking, and no telling anyone what you see, today or at break. Let everybody find it for themselves. If you are stuck, put your hand up.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Read every screen",
+      "bullets": [
+       "Read everything that appears on your screen before you type.",
+       "Try your best at every step. If a line is not right, the screen tells you what to change.",
+       "Your place is saved at every step."
+      ],
+      "notes": "SAY: \"Read every word on your screen before you type. Try your best. If a line is not right, the screen tells you what to change. Your place is saved at every step.\""
      }
     ]
    },
@@ -3290,14 +3311,14 @@ var DECKS = {
       "kind": "stop",
       "bg": "stop",
       "beacon": "1",
-      "heading": "Start the story",
+      "heading": "Start now",
       "bullets": [
-       "Read what Blink says before you type.",
-       "More help appears each time a line is not right. Keep trying.",
-       "Need to leave the room? Press Pause the story, bottom left.",
-       "Your place is saved at every step."
+       "Headphones on.",
+       "On your own, no talking.",
+       "Read everything on your screen.",
+       "Need to leave the room? Press Pause, bottom left."
       ],
-      "notes": "SAY: \"Start the story now. Read what Blink says before you type. If a line is wrong, the card says what to change, and more help appears each time. If you need to leave the room, press Pause the story at the bottom left.\"\n\nTHEN: circulate for the rest of the hour. The river (chapter 2) and the door (chapter 4) are where pupils most often slow down."
+      "notes": "SAY: \"Start now. Headphones on, on your own, and read everything on your screen.\"\n\nTHEN: circulate for the rest of the hour. Chapter 2 and chapter 4 are where pupils most often slow down. A stuck pupil should read the card again: help grows each time a line is wrong."
      }
     ]
    },
@@ -3310,11 +3331,11 @@ var DECKS = {
       "bg": "section",
       "heading": "The last screens",
       "bullets": [
-       "When the story ends, Blink asks 5 questions. They are marked.",
+       "At the end there are 5 questions. They are marked.",
        "Then comes the How did it go? screen. Everybody does it.",
-       "Ten minutes left and still in the story? Press the button at the bottom: Go to the 5 questions. You can go back to the story afterwards."
+       "Ten minutes left and not at the end yet? Press the button at the bottom to go to the 5 questions. You can go back afterwards."
       ],
-      "notes": "SAY: \"With about ten minutes to go, if you are still in the story, press the button at the bottom that takes you to Blink's 5 questions. After them you can go back to the story. Everybody finishes the How did it go? screen.\""
+      "notes": "SAY: \"With about ten minutes to go, if you are not at the end yet, press the button at the bottom that takes you to the 5 questions. You can go back afterwards. Everybody finishes the How did it go? screen.\""
      }
     ]
    },
@@ -3330,9 +3351,10 @@ var DECKS = {
       "bullets": [
        "Finish the How did it go? screen. Nobody leaves until it is done.",
        "Sign out every time. If you do not, the next person at this computer is still signed in as you.",
-       "Your place in the story is saved."
+       "Your place is saved.",
+       "Remember: tell nobody what you saw today."
       ],
-      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most."
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most. Remind them to keep today a surprise for other classes."
      }
     ]
    }
