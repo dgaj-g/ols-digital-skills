@@ -112,7 +112,7 @@
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
-    "waitingSay": "The room has stopped and is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "waitingSay": "The room has stopped and is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -224,7 +224,8 @@
      }
     ],
     "help": "This room has nine lines and one mistake.\n\n1. Read the lines.\n2. Press RUN my room.\n3. Python stops and shows what it said in the console, with a plain line under it.\n4. Fix the fork line — the one that starts with if — and press RUN again.\n5. When the room asks, type trolley in the box and press Send. Then run it again and try window.",
-    "chatPrints": true
+    "chatPrints": true,
+    "blankEmptySay": "The gap on the fork line is still empty. The fork line is the one that starts with if. In that gap, type the sign that asks the question: is what the player typed the same as trolley? Then press RUN."
    }
   },
   {
@@ -282,7 +283,7 @@
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
-    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -467,7 +468,7 @@
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
-    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -959,7 +960,7 @@
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said, fix that line, and press RUN again.",
-    "waitingSay": "The room is waiting for the player to type. Type your choice in the box above the RUN button and press Send.",
+    "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -1183,7 +1184,8 @@
        "kind": "clean",
        "usesReplies": [
         0
-       ]
+       ],
+       "repliesSay": "The room ran to the end, but the name the player typed never came back out. Look for a line where name is inside speech marks: that line prints the word name, not the player's name. Put it back on the left and use the line where name has no speech marks."
       },
       "matchedSay": "It works, and the room used the name the player typed.",
       "notYetSay": "Not yet. If the room printed the word name instead of the name you typed, look for a line where name is inside speech marks — that line is the mistake.",

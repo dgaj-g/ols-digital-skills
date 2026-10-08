@@ -410,7 +410,7 @@
       "notYetSay": "Not yet. Read the console and the four lines above it side by side, and find the first line that is not the same."
      }
     ],
-    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "runDiedSay": "The program stopped before it got to the end, so nothing could be checked. Nothing on this card was typed by you, so this is not your mistake. Read the console underneath to see what Python said, then press RUN once more.",
     "notCheckedLabel": "could not be checked"
    }
@@ -583,7 +583,7 @@
       "notYetSay": "Not yet. Read the message in the console. If it says Python does not know that word, look at the word you typed straight after the dot on the line that takes a title out."
      }
     ],
-    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
@@ -742,7 +742,7 @@
       "planLabel": "The five jobs your engine has to do"
      }
     ],
-    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "matchedAllLabel": "EVERY JOB DONE",
     "doneLabel": "done",
     "startLabel": "Start writing",
@@ -892,7 +892,7 @@
       "matchedSay": "Three lines printed, and one of them is a number. A list will hold anything — but ask for a position that is not there and the program stops."
      }
     ],
-    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Type it into the strip just above this button. RUN switches back on as soon as your program has finished.",
+    "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",

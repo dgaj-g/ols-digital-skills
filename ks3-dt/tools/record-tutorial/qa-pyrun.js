@@ -341,7 +341,7 @@ const wordKind = (err, words) => {
      tray's verdict is read AT SOURCE, never assumed: if it shows only the
      chunk's sentence, a tray card's own sentence is dead config and is reported
      as the fault it is, because the pupil reads something else. */
-  const settleSrc = (engSrc.match(/function settleAssemble\(ok, usesMissing\) \{[\s\S]*?'<\/p>';/) || [''])[0];
+  const settleSrc = (engSrc.match(/function settleAssemble\(ok, usesMissing(?:, repliesMissing)?\) \{[\s\S]*?'<\/p>';/) || [''])[0];
   const trayReadsOwn = /\bb\.notYetSay\b/.test(settleSrc);
   const needPyrun = (cfg) => {
     const builds = cfg.builds || [];

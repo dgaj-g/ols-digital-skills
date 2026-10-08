@@ -4909,6 +4909,11 @@
     progEmpty: 'Nothing here yet — drag or click a line across.',
     matchedSay: 'The console said exactly what the target asked for.',
     notYetSay: 'The console did not say what the target asked for. Read what it really printed, change your program, and run it again.',
+    /* HIS CLASS, 8 Oct 2026 (J2 L3, the colour card). A program that ran CLEAN
+       but never printed an answer she typed was told "read the console" — and
+       the console held no error to read. That state gets its own sentence:
+       check.repliesSay on the build, then cfg.repliesSay, then this. */
+    repliesSay: 'Your program ran to the end, but it did not print an answer you typed. Find the line that is meant to print your answer: the box name on that line must be outside the speech marks. Then look at every line after the input( ) line. A line that starts with that same box name and an = sign puts new words into the box and replaces your answer, so take that line out.',
     takeBack: 'Put this line back'
   };
 
@@ -5533,7 +5538,8 @@
                 esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
                 '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
                                                   : (judge.usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
-                                                                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+                                                   : judge.repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
+                                                                          : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
               if (!ok) { runBtn.disabled = false; return; }
               if (attempts === 1 && !b.optional) cleanFirst++;
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
@@ -5568,13 +5574,19 @@
               }
             }
             judge.usesMissing = false;
+            judge.repliesMissing = false;
             if (kind === 'target') return PyRun.matches(res.out, b.target || []);
             if (b.check && b.check.usesReplies) {
-              if (!replies.length) return false;
+              if (!replies.length) return false;        /* never asked: the generic line still fits */
               var text = String(res.out || '');
               var must = PyRun.repliesToEcho(b.check.usesReplies, replies);
               if (!must.length) return false;
-              return must.every(function (r) { return text.indexOf(r) !== -1; });
+              /* HIS CLASS, 8 Oct 2026: it ran clean, she was asked, and what she
+                 typed never came back out — the colour card with two input( )
+                 lines in it, or a line that refills the box after the question.
+                 The flag picks the swallowed-answer sentence (check.repliesSay). */
+              judge.repliesMissing = !must.every(function (r) { return text.indexOf(r) !== -1; });
+              return !judge.repliesMissing;
             }
             return true;
           }
@@ -7218,10 +7230,20 @@
               judge.then(function (okL4) { settleAssemble(okL4, false); });
               return;
             }
+            var repliesMissing = false;
             if (kindB === 'clean') {
-              ok = res.ok && (!(b.check && b.check.usesReplies) ||
-                (repliesB.length > 0 && PyRun.repliesToEcho(b.check.usesReplies, repliesB).length > 0 &&
-                  PyRun.repliesToEcho(b.check.usesReplies, repliesB).every(function (r) { return String(res.out || '').indexOf(r) !== -1; })));
+              ok = res.ok;
+              if (ok && b.check && b.check.usesReplies) {
+                var mustB = PyRun.repliesToEcho(b.check.usesReplies, repliesB);
+                if (!repliesB.length || !mustB.length) ok = false;   /* never asked: the generic line still fits */
+                else {
+                  /* HIS CLASS, 8 Oct 2026: ran clean, asked, and a typed answer never
+                     came back out — its own sentence (check.repliesSay), as at the
+                     first marking site. */
+                  repliesMissing = !mustB.every(function (r) { return String(res.out || '').indexOf(r) !== -1; });
+                  if (repliesMissing) ok = false;
+                }
+              }
             } else ok = res.ok && PyRun.matches(res.out, b.target || []);
             /* HIS FIND, 31 Aug 2026, sitting the len card: the target is "3",
                and the two-line program — build the list, print len of it —
@@ -7239,15 +7261,19 @@
               usesMissing = b.check.uses.some(function (frag) { return codeNow.indexOf(frag) === -1; });
               if (usesMissing) ok = false;
             }
-            settleAssemble(ok, usesMissing);
-            function settleAssemble(ok, usesMissing) {
+            settleAssemble(ok, usesMissing, repliesMissing);
+            /* the card's own sentence first, then the chunk's, then the engine's,
+               as every other pyrun renderer reads it (DFM 303; his "yes, fix them
+               and deploy version 71", 7 Oct 2026) */
+            function settleAssemble(ok, usesMissing, repliesMissing) {
             verdict.hidden = false;
             verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
             verdict.innerHTML = '<p class="pyrun-vtag">' +
               esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
               '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
-                : (usesMissing ? ((b.check && b.check.usesSay) || cfg.notYetSay || PY_SAY.notYetSay)
-                               : (cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+                : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
+                 : repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
+                                  : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
             if (ok) {
               /* the extras zone counts nothing: no first-try score, no bonus, no
                  record (DFM 265a). The tick a finished job earns is on the hub, for
