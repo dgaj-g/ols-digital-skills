@@ -654,6 +654,17 @@
   }
 
   var mediaBusy = false;   // blocks Next/submit while photos or a video are still saving
+  /* A save that has not answered in time is let go, so a stuck upload can
+     never trap the pupil on this step (Next and Submit wait while busy). */
+  var PHOTO_WAIT_MS = 90000, CALL_WAIT_MS = 60000, CHUNK_WAIT_MS = 180000;
+  var CARRY_ON = 'Photos and videos are optional, so you can still tap Next and finish your reflection.';
+  function withinTime(p, ms) {
+    var timer;
+    return Promise.race([p, new Promise(function (_, reject) {
+      timer = setTimeout(function () { reject(new Error('slow')); }, ms);
+    })]).then(function (v) { clearTimeout(timer); return v; },
+              function (e) { clearTimeout(timer); throw e; });
+  }
   function setBusyMedia(busy, label) {
     mediaBusy = busy;
     $('add-photo').disabled = busy;
@@ -714,7 +725,7 @@
       msg.className = 'sv-msg bad';
       return;
     }
-    var done = 0, failed = 0, unreadable = 0, driveStop = false, lastWhy = '';
+    var done = 0, failed = 0, unreadable = 0, slow = 0, driveStop = false, lastWhy = '';
     setBusyMedia(true, 'Saving your photo' + (list.length > 1 ? 's' : '') + ' into your Drive — this can take a few seconds…');
     function one(i) {
       if (state.draft !== d) { setBusyMedia(false); return; }   // entry was submitted/closed mid-upload
@@ -730,16 +741,21 @@
           var other = failed - unreadable;
           if (unreadable) parts.push((unreadable === 1 ? 'One photo' : unreadable + ' photos') + ' could not be opened on this phone, so ' +
             (unreadable === 1 ? 'it was' : 'they were') + ' not saved. Choose ' + (unreadable === 1 ? 'it' : 'them') + ' again, or take a new photo with the camera.');
+          if (slow) parts.push((slow === 1 ? 'One photo' : slow + ' photos') + ' took too long to save, so ' +
+            (slow === 1 ? 'it was' : 'they were') + ' skipped. Try again when the wifi is better.');
+          other -= slow;
           if (other) parts.push((other === 1 ? 'Your photo' : other + ' photos') + ' could not be saved into your Drive — try ' + (other === 1 ? 'it' : 'them') + ' again.' +
             (/\s/.test(lastWhy) ? ' (Google said: ' + lastWhy + ')' : ''));
         }
         if (dropped) parts.push('Only ' + MAX_PHOTOS + ' photos fit on one practical, so ' + dropped + ' of your selection ' + (dropped === 1 ? 'was' : 'were') + ' not added.');
+        if (failed && !driveStop) parts.push(CARRY_ON);
         msg.textContent = parts.join(' ');
         msg.className = (failed || dropped) ? 'sv-msg bad' : 'sv-msg good';
         persistSoon();
         return;
       }
-      processPhoto(list[i])
+      var late = false, timer;
+      var work = processPhoto(list[i])
         .then(function (ph) {
           return call('uploadPhoto', {
             b64: ph.b64, w: ph.w, h: ph.h,
@@ -752,19 +768,27 @@
             if (r.folderId) d.folderId = r.folderId;
             saveThumb(r.id, ph.thumb);
             if (state.draft !== d) return;   // submitted while this photo was in flight
+            if (late && mediaCounts().p >= MAX_PHOTOS) return;
             d.media.push({ k: 'p', id: r.id, w: ph.w, h: ph.h });
-            done++;
             renderMediaStrip();
+            if (!late) { done++; return; }
+            // it landed after we stopped waiting: keep it and say so
+            persistSoon();
+            if (!mediaBusy) { msg.textContent = 'Your photo saved after all ✓'; msg.className = 'sv-msg good'; }
           });
-        })
+        });
+      Promise.race([work, new Promise(function (_, reject) {
+        timer = setTimeout(function () { late = true; reject(new Error('slow')); }, PHOTO_WAIT_MS);
+      })])
         .catch(function (e) {
           failed++;
           var why = String((e && e.message) || e || '');
           if (why === 'needs-drive') driveStop = true;
+          else if (why === 'slow') slow++;
           else if (why === 'empty' || why === 'unreadable') unreadable++;
           else if (why) lastWhy = why.slice(0, 160);
         })
-        .then(function () { one(i + 1); });
+        .then(function () { clearTimeout(timer); one(i + 1); });
     }
     one(0);
   }
@@ -804,13 +828,15 @@
           } else reject(new Error('chunk ' + xhr.status));
         };
         xhr.onerror = function () { reject(new Error('network')); };
+        xhr.timeout = CHUNK_WAIT_MS;
+        xhr.ontimeout = function () { reject(new Error('slow')); };
         xhr.send(file.slice(start, end));
       }
       sendFrom(0);
     });
   }
   function resumableUpload(file, token, folderId, name, onProgress) {
-    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
+    return withinTime(fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,
@@ -819,7 +845,7 @@
         'X-Upload-Content-Length': String(file.size)
       },
       body: JSON.stringify({ name: name, parents: folderId ? [folderId] : undefined, mimeType: file.type || 'video/mp4' })
-    }).then(function (r) {
+    }), CALL_WAIT_MS).then(function (r) {
       if (!r.ok) throw new Error('init ' + r.status);
       var loc = r.headers.get('Location') || r.headers.get('location');
       if (!loc) throw new Error('no-location');
@@ -872,11 +898,11 @@
       msg.textContent = 'Video saved into your Drive ✓'; msg.className = 'sv-msg good';
       persistSoon();
     }
-    function fail(t) {
+    function fail(t, noCarry) {
       clearProgress();
       setBusyMedia(false);
       if (state.draft !== d) return;
-      msg.textContent = t || 'Your video could not be uploaded just now — try again, or use a shorter clip.';
+      msg.textContent = (t || 'Your video could not be uploaded just now — try again, or use a shorter clip.') + (noCarry ? '' : ' ' + CARRY_ON);
       msg.className = 'sv-msg bad';
     }
 
@@ -894,7 +920,7 @@
       return;
     }
 
-    call('getUpload', { dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || '' })
+    withinTime(call('getUpload', { dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || '' }), CALL_WAIT_MS)
       .then(function (r) {
         if (r && r.error === 'needs-drive') throw new Error('needs-drive');
         if (!(r && r.ok && r.token)) throw new Error('no-token');
@@ -908,14 +934,14 @@
         setProgress(1, 'Nearly there — filing it in your Drive…');
         // the upload itself SUCCEEDED: a registerMedia (teacher-share) hiccup
         // must not fall through to the fallback and upload the video twice.
-        return call('registerMedia', { fileId: resp.id, kind: 'video' }).then(
+        return withinTime(call('registerMedia', { fileId: resp.id, kind: 'video' }), CALL_WAIT_MS).then(
           function (r2) { ok(resp.id, (r2 && r2.url) || ''); },
           function () { ok(resp.id, ''); }
         );
       })
       .catch(function (e) {
         if (e && e.message === 'needs-drive') {
-          fail('Your video was not saved. ' + DRIVE_STOP + ' Tap Connect my Drive in the box at the top of the page, then add the video again.');
+          fail('Your video was not saved. ' + DRIVE_STOP + ' Tap Connect my Drive in the box at the top of the page, then add the video again.', true);
           showDriveGate();
           return;
         }
@@ -924,10 +950,10 @@
           setProgress(0.4, 'Trying another route… this can take a few seconds');
           b64OfFile(file)
             .then(function (b64) {
-              return call('uploadVideo', {
+              return withinTime(call('uploadVideo', {
                 b64: b64, mime: file.type || 'video/mp4', n: name,
                 dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || ''
-              });
+              }), 2 * CALL_WAIT_MS);
             })
             .then(function (r) {
               if (!(r && r.ok && r.id)) throw new Error('fallback');
@@ -1263,7 +1289,7 @@
         clearBusy(msg, '');
         hide($('entry')); show($('home'));
         renderHome();
-        openHooray(r.preview ? spec : null);
+        openHooray(r.preview ? spec : null, summary);
       })
       .catch(function (e) {
         if (e && e.message === 'needs-drive') {
@@ -1301,7 +1327,7 @@
     }
   }
   var previewSpec = null;
-  function openHooray(specForPreview) {
+  function openHooray(specForPreview, summary) {
     previewSpec = specForPreview || null;
     var a = $('hooray-open');
     if (previewSpec) {
@@ -1313,7 +1339,11 @@
       a.textContent = 'Open my portfolio';
       a.setAttribute('target', '_blank');
       a.href = state.docUrl || '#';
-      $('hooray-text').textContent = 'Your reflection has been added to your portfolio document, with your photos — and your teacher can see it too.';
+      var m = summary || {}, bits = [];
+      if (m.photos) bits.push(m.photos === 1 ? 'your photo' : 'your photos');
+      if (m.videos) bits.push(m.videos === 1 ? 'your video' : 'your videos');
+      $('hooray-text').textContent = 'Your reflection has been added to your portfolio document' +
+        (bits.length ? ', with ' + bits.join(' and ') : '') + ' — and your teacher can see it too.';
     }
     confettiBurst();
     show($('hooray'));
