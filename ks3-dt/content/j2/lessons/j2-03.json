@@ -230,13 +230,14 @@
       "shapeNote": "input( ) is the new word today. It puts a question on the screen and then STOPS the program until somebody types an answer.",
       "check": {
        "kind": "clean",
-       "usesReplies": true
+       "usesReplies": true,
+       "repliesSay": "Your bot ran to the end, but it did not print the name you typed. Look at the box name on line 2 and the box name on line 3. They must be spelled exactly the same, and the one on line 3 must not be inside speech marks."
       },
       "matchedSay": "It works now. The box on line 2 and the box on line 3 have the same name, so line 3 can find what you typed.",
       "notYetSay": "It is not working yet. Read what Python said in the console, then look at the box name on line 2 and the box name on line 3."
      }
     ],
-    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Type your answer in the reply space just above the RUN button and press Send. RUN turns on again as soon as the bot has finished.",
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
     "runDiedSay": "Your program stopped before it finished, so this card cannot say whether your bot works. Read the console underneath to see what Python said, then press RUN again.",
     "notCheckedLabel": "could not be checked"
    }
@@ -338,7 +339,8 @@
       "chat": true,
       "check": {
        "kind": "clean",
-       "usesReplies": true
+       "usesReplies": true,
+       "repliesSay": "Your bot ran to the end, but it did not print an answer you typed. Your bot needs exactly one line with input( ) in it. If the line input(\"What is your favourite colour?\") is on the right, it asks a question and keeps nothing, so put it back on the left. If the line colour = \"What is your favourite colour?\" is on the right, it keeps the question in the box instead of your answer, so put it back on the left too."
       },
       "goalLine": "Build a bot that asks a question you write yourself, then uses the answer in its reply.",
       "brief": "Two of the six lines are real mistakes people make, and you leave those two where they are. One keeps the QUESTION in the box instead of the answer. The other asks the question and keeps nothing at all.",
@@ -412,7 +414,8 @@
       "chat": true,
       "check": {
        "kind": "clean",
-       "usesReplies": true
+       "usesReplies": true,
+       "repliesSay": "Your bot ran to the end, but it printed the word name instead of the name you typed. Look for a Hello line where name sits inside speech marks: Python prints the word, not what is in the box. Put that line back on the left and use the Hello line with a gap in it, with name typed in the gap."
       },
       "goalLine": "Build a bot that asks your name once and uses it TWICE.",
       "brief": "Two of the five lines are real mistakes people make, and you leave those two where they are. One puts the WORD name on the screen instead of what you typed. The other spells the box name with a capital letter, and Python treats that as a completely different box.",
@@ -472,7 +475,7 @@
       ]
      }
     ],
-    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Type your answer in the reply space just above the RUN button and press Send. RUN turns on again as soon as the bot has finished.",
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "runDiedSay": "Your program stopped before it finished, so this card cannot say whether your bot works. Read the console underneath to see what Python said, then press RUN again.",
@@ -630,7 +633,7 @@
       "planLabel": "The three jobs your bot has to do"
      }
     ],
-    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Type your answer in the reply space just above the RUN button and press Send. RUN turns on again as soon as the bot has finished.",
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
     "matchedAllLabel": "EVERY JOB IS WORKING",
     "doneLabel": "done",
     "startLabel": "Start writing",
@@ -874,7 +877,8 @@
       "chat": true,
       "check": {
        "kind": "clean",
-       "usesReplies": true
+       "usesReplies": true,
+       "repliesSay": "Your bot ran to the end, but it did not print the answer you typed. The line weekend = \"your weekend\" is the mistake. It puts the words your weekend into the weekend box, so your answer is replaced. Put that line back on the left and keep the line with input( ) in it."
       },
       "title": "Job 1 — a bot that asks about the weekend",
       "whiff": "One question, one reply, all your own words.",
@@ -1017,7 +1021,7 @@
       "matchedSay": "Both lines print the same thing. The second one is called an f-string, and you will meet it again next year."
      }
     ],
-    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Type your answer in the reply space just above the RUN button and press Send. RUN turns on again as soon as the bot has finished.",
+    "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "targetLead": "This is what your program should print:",

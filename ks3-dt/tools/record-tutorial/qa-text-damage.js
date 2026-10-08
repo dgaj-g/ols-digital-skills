@@ -93,7 +93,12 @@ const ALLOWED_REPEATS = [
   ['The order they sit in is not a clue',
    'j3-03 deck s5.3, the separated reader\'s own rewrite (L4 round): "They sit on the left in a mixed-up order" says the lines are jumbled; "The order they sit in is not a clue" says the jumble carries no information — two facts, not one said twice'],
   ['None. None',
-   'film j3-l4 ch5: "And the hand gets None. None is Python\'s word for nothing at all." — the same rhetoric as the l5 FALSE. FALSE caption: the word is picked up to be explained']
+   'film j3-l4 ch5: "And the hand gets None. None is Python\'s word for nothing at all." — the same rhetoric as the l5 FALSE. FALSE caption: the word is picked up to be explained'],
+  /* V71 (8 Oct 2026). */
+  ['what is your favourite colour',   /* the run is matched lowercased */
+   'j2-03 training-3 build t3a check.repliesSay (V71, his class on J2 L3): the sentence quotes BOTH code lines a pupil can misplace — input("What is your favourite colour?") and colour = "What is your favourite colour?" — exactly as they appear on the card, so she can find them; the question text is the same on both lines on purpose'],
+  ['If the line colour = "What is your favourite colour?"',
+   'the same t3a sentence, seen by the paraphrase test: the two lines she can misplace are described in the one sentence shape ("If the line … is on the right, it …, so put it back on the left") so she sees they are the same kind of mistake — two roads, the same shape on purpose, as j2-04 j2t4-corridor']
 ];
 
 let failures = 0;
