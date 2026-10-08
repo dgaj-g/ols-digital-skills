@@ -216,7 +216,9 @@
     var s = offlineStore();
     switch (p.action) {
       case 'whoami':
-        return Promise.resolve({ ok: true, email: 'demo.pupil@offline (preview)' });
+        // ?nodrive previews the Drive permission box
+        return Promise.resolve({ ok: true, email: 'demo.pupil@offline (preview)',
+          drive: !/[?&]nodrive\b/.test(location.search), authUrl: 'https://accounts.google.com/' });
       case 'load':
         return Promise.resolve({
           ok: true,
@@ -712,15 +714,22 @@
       msg.className = 'sv-msg bad';
       return;
     }
-    var done = 0, failed = 0;
+    var done = 0, failed = 0, driveStop = false, lastWhy = '', gateUrl = '';
     setBusyMedia(true, 'Saving your photo' + (list.length > 1 ? 's' : '') + ' into your Drive — this can take a few seconds…');
     function one(i) {
       if (state.draft !== d) { setBusyMedia(false); return; }   // entry was submitted/closed mid-upload
       if (i >= list.length) {
         setBusyMedia(false);
         var parts = [];
-        parts.push(done === 1 ? 'Photo saved into your Drive ✓' : done + ' photos saved into your Drive ✓');
-        if (failed) parts.push(failed + ' could not be saved — try those again.');
+        if (done) parts.push(done === 1 ? 'Photo saved into your Drive ✓' : done + ' photos saved into your Drive ✓');
+        if (driveStop) {
+          parts.push((failed === 1 ? 'Your photo was' : failed + ' photos were') + ' not saved. ' + DRIVE_STOP +
+            ' Follow the three steps in the box at the top of the page, then add ' + (failed === 1 ? 'the photo' : 'them') + ' again.');
+          showDriveGate(gateUrl);
+        } else if (failed) {
+          parts.push((failed === 1 ? 'Your photo' : failed + ' photos') + ' could not be saved into your Drive — try ' + (failed === 1 ? 'it' : 'them') + ' again.' +
+            (/\s/.test(lastWhy) ? ' (Google said: ' + lastWhy + ')' : ''));
+        }
         if (dropped) parts.push('Only ' + MAX_PHOTOS + ' photos fit on one practical, so ' + dropped + ' of your selection ' + (dropped === 1 ? 'was' : 'were') + ' not added.');
         msg.textContent = parts.join(' ');
         msg.className = (failed || dropped) ? 'sv-msg bad' : 'sv-msg good';
@@ -735,6 +744,7 @@
             entryId: d.id, folderId: d.folderId || '',
             n: 'photo ' + (mediaCounts().p + 1)
           }).then(function (r) {
+            if (r && r.error === 'needs-drive') { gateUrl = r.authUrl || gateUrl; throw new Error('needs-drive'); }
             if (!(r && r.ok && r.id)) throw new Error((r && r.error) || 'upload');
             if (r.folderId) d.folderId = r.folderId;
             saveThumb(r.id, ph.thumb);
@@ -744,7 +754,12 @@
             renderMediaStrip();
           });
         })
-        .catch(function () { failed++; })
+        .catch(function (e) {
+          failed++;
+          var why = String((e && e.message) || e || '');
+          if (why === 'needs-drive') driveStop = true;
+          else if (why) lastWhy = why.slice(0, 160);
+        })
         .then(function () { one(i + 1); });
     }
     one(0);
@@ -877,6 +892,7 @@
 
     call('getUpload', { dish: d.dish || 'Practical', date: d.date || todayIso(), entryId: d.id, folderId: d.folderId || '' })
       .then(function (r) {
+        if (r && r.error === 'needs-drive') { var ge = new Error('needs-drive'); ge.authUrl = r.authUrl || ''; throw ge; }
         if (!(r && r.ok && r.token)) throw new Error('no-token');
         if (r.folderId) d.folderId = r.folderId;
         return resumableUpload(file, r.token, r.folderId, name, function (frac) {
@@ -893,7 +909,12 @@
           function () { ok(resp.id, ''); }
         );
       })
-      .catch(function () {
+      .catch(function (e) {
+        if (e && e.message === 'needs-drive') {
+          fail('Your video was not saved. ' + DRIVE_STOP + ' Follow the three steps in the box at the top of the page, then add the video again.');
+          showDriveGate(e.authUrl || '');
+          return;
+        }
         // fall back to the simple path for small files
         if (file.size <= VIDEO_B64_CAP) {
           setProgress(0.4, 'Trying another route… this can take a few seconds');
@@ -1227,6 +1248,7 @@
     persistNow()
       .then(function () { return call('submitEntry', { spec: spec, summary: summary }); })
       .then(function (r) {
+        if (r && r.error === 'needs-drive') { var ge = new Error('needs-drive'); ge.authUrl = r.authUrl || ''; throw ge; }
         if (!(r && r.ok)) throw new Error((r && r.error) || 'submit');
         // (covers duplicate:true retries too - never list the same entry twice)
         var have = state.entries.some(function (e) { return e.id === summary.id; });
@@ -1240,7 +1262,10 @@
         openHooray(r.preview ? spec : null);
       })
       .catch(function (e) {
-        if (e && e.message === 'not-signed-in') {
+        if (e && e.message === 'needs-drive') {
+          clearBusy(msg, 'Your page was not added to your portfolio. ' + DRIVE_STOP + ' Follow the three steps in the box at the top of the page, then press the button again. Nothing is lost.');
+          showDriveGate(e.authUrl || '');
+        } else if (e && e.message === 'not-signed-in') {
           clearBusy(msg, 'Your sign-in has expired. Refresh this page to sign back in — your work is saved, then press the button again.');
         } else {
           clearBusy(msg, 'Sorry — that did not save just now. Nothing is lost: please press the button to try again.');
@@ -1564,6 +1589,74 @@
   /* ============================================================
      Boot
      ============================================================ */
+  /* ============================================================
+     Drive permission gate. Google's consent screen lets a pupil tick
+     some permissions and leave others; with Drive left unticked she gets
+     in but nothing can be saved into her Drive. The server checks and
+     hands us Google's own link for granting just the missing ones.
+     ============================================================ */
+  var DRIVE_STOP = 'This app does not have permission to use your Google Drive yet.';
+  function showDriveGate(authUrl) {
+    var box = $('drive-gate');
+    if (!box) {
+      box = document.createElement('section');
+      box.id = 'drive-gate';
+      box.className = 'drive-gate';
+      box.setAttribute('role', 'alert');
+      var app = $('app');
+      app.insertBefore(box, app.firstChild);
+    }
+    var steps = authUrl
+      ? '<ol class="dg-steps">' +
+          '<li>Tap <b>Give permission</b>. A Google page opens.</li>' +
+          '<li>On the Google page, tap <b>Select all</b> so that every box is ticked, then tap <b>Continue</b>.</li>' +
+          '<li>Come back to this page and tap <b>I have done it</b>.</li>' +
+        '</ol>' +
+        '<div class="dg-actions">' +
+          '<a class="btn btn-acc" id="dg-grant" href="' + escapeHtml(authUrl) + '" target="_blank" rel="noopener">Give permission</a>' +
+          '<button type="button" class="btn btn-soft" id="dg-check">I have done it</button>' +
+        '</div>'
+      : '<ol class="dg-steps">' +
+          '<li>Open <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a>.</li>' +
+          '<li>Tap <b>My Kitchen Portfolio</b>, then remove its access.</li>' +
+          '<li>Open this app again. When Google asks for permission, tap <b>Select all</b> so that every box is ticked, then tap <b>Continue</b>.</li>' +
+        '</ol>' +
+        '<div class="dg-actions"><button type="button" class="btn btn-soft" id="dg-check">I have done it</button></div>';
+    box.className = 'drive-gate';
+    box.innerHTML =
+      '<h2 class="dg-title">Your Google Drive is not connected to this app yet</h2>' +
+      '<p class="dg-why">This app saves your photos, videos and portfolio into your own Google Drive. ' +
+        'Google has not given it permission to use your Drive, so nothing can be saved there until you do these three steps.</p>' +
+      steps + '<p class="dg-msg" id="dg-msg"></p>';
+    $('dg-check').addEventListener('click', recheckDrive);
+    try { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { box.scrollIntoView(); }
+  }
+  function recheckDrive() {
+    var btn = $('dg-check'), m = $('dg-msg');
+    btn.disabled = true;
+    m.textContent = 'Checking with Google…'; m.className = 'dg-msg';
+    call('whoami', {})
+      .then(function (r) {
+        if (r && r.drive !== false) {
+          var box = $('drive-gate');
+          box.className = 'drive-gate ok';
+          box.innerHTML = '<h2 class="dg-title">Your Google Drive is connected ✓</h2>' +
+            '<p class="dg-why">Your photos, videos and portfolio will now save into your Drive. If a photo did not save earlier, add it again.</p>';
+          setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 9000);
+        } else {
+          if (r && r.authUrl) $('dg-grant') && ($('dg-grant').href = r.authUrl);
+          btn.disabled = false;
+          m.textContent = 'Google still says your Drive is not connected. Tap Give permission again and make sure every box is ticked before you tap Continue.';
+          m.className = 'dg-msg bad';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        m.textContent = 'The check could not reach Google just now. Wait a moment and tap I have done it again.';
+        m.className = 'dg-msg bad';
+      });
+  }
+
   function boot() {
     // Preview-only conveniences (guarded to offline so they can never touch
     // a pupil's saved work on the deployed app):
@@ -1674,6 +1767,7 @@
       .then(function (r) {
         state.email = (r && r.email) || '';
         state.autoName = (r && r.name) || '';   // pupil's real C2k name, or '' offline/blank
+        if (r && r.drive === false) showDriveGate(r.authUrl || '');
       })
       .catch(function () {})
       .then(function () { return call('load', {}); })
