@@ -60,6 +60,10 @@ function initBoard() {
    or the ?class= parameter. Capture both here and inject them via OLS_BOOT,
    along with the class's year group from the registry. */
 function doGet(e) {
+  // A pupil who left Google Drive unticked on Google's permission screen is
+  // sent straight back to that screen by Google itself - no button, no
+  // request-access page, nothing emailed to the owner.
+  if (!driveAccess_().ok) ScriptApp.requireScopes(ScriptApp.AuthMode.FULL, DRIVE_SCOPES_);
   var t = HtmlService.createTemplateFromFile('Index');
   var cls = (e && e.parameter && e.parameter['class']) ? String(e.parameter['class']) : 'default';
   cls = realClass_(cls);
@@ -156,15 +160,17 @@ function yearFor_(cls, core, reqYear) {
 function apiWhoAmI() {
   var acc = driveAccess_();
   return { ok: true, email: String(userEmail_()), name: autoName_() || null,
-           drive: acc.ok, authUrl: acc.authUrl || '', driveWhy: acc.reason || '' };
+           drive: acc.ok, driveWhy: acc.reason || '' };
 }
 
 /* Google's consent screen (granular, 2026) lets a pupil tick SOME of the
    app's permissions. With Docs ticked but Drive left empty she still gets in
    and her drafts still save, but every photo, video and filing call fails
    with "You do not have permission to call DriveApp...". Seen live on 8 Oct
-   2026 (4 J3 records + a J1 pupil). So: check before any Drive work, and
-   hand the page Google's own link for granting just the missing ones. */
+   2026 (36 of 252 pupil records). So: doGet sends her back to Google's own
+   permission screen (requireScopes), and every Drive call checks first.
+   NEVER hand a pupil getAuthorizationUrl(): it points at the project file,
+   so she meets "You need access" and the owner gets a share-request email. */
 var DRIVE_SCOPES_ = [
   'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/documents'
@@ -173,15 +179,15 @@ function driveAccess_() {
   try {
     var info = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL, DRIVE_SCOPES_);
     if (info.getAuthorizationStatus() !== ScriptApp.AuthorizationStatus.REQUIRED) return { ok: true };
-    return { ok: false, authUrl: String(info.getAuthorizationUrl() || '') };
+    return { ok: false };
   } catch (e) {
     // no scoped check available: probe Drive itself
     try { DriveApp.getRootFolder(); return { ok: true }; }
-    catch (e2) { return { ok: false, authUrl: '', reason: String(e2 && e2.message ? e2.message : e2) }; }
+    catch (e2) { return { ok: false, reason: String(e2 && e2.message ? e2.message : e2) }; }
   }
 }
-function needsDrive_(acc) {
-  return { ok: false, error: 'needs-drive', authUrl: (acc && acc.authUrl) || '' };
+function needsDrive_() {
+  return { ok: false, error: 'needs-drive' };
 }
 
 function apiLoad(req) {
