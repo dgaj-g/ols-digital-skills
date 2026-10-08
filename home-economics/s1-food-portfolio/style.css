@@ -1039,3 +1039,21 @@ body[data-palette] .confetto { border-radius: 50% 0 50% 0; animation-duration: 3
   body[data-palette] .confetto { animation: none !important; }
   body[data-palette] .btn, body[data-palette] .chef-bar i { transition: none !important; }
 }
+
+/* Drive permission box (Google consent left Drive unticked) */
+.drive-gate {
+  margin: 0 auto 18px; max-width: 760px;
+  background: var(--kp-bad-soft); border: 2px solid var(--kp-bad);
+  border-radius: 16px; padding: 18px 20px; box-shadow: var(--kp-shadow);
+  color: var(--kp-ink);
+}
+.drive-gate.ok { background: var(--kp-good-soft); border-color: var(--kp-good); }
+.dg-title { margin: 0 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; line-height: 1.25; }
+.dg-why { margin: 0 0 10px; line-height: 1.5; }
+.dg-steps { margin: 0 0 14px; padding-left: 1.4em; line-height: 1.6; }
+.dg-steps li { margin-bottom: 4px; }
+.dg-steps a { color: var(--kp-deep); word-break: break-word; }
+.dg-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.dg-actions .btn { text-decoration: none; }
+.dg-msg { margin: 10px 0 0; min-height: 1em; }
+.dg-msg.bad { color: var(--kp-bad); font-weight: 600; }

@@ -154,7 +154,34 @@ function yearFor_(cls, core, reqYear) {
    here so the page can sign the pupil straight in (no form) when C2k gives
    us her name; a null name tells the client to use the type-once fallback. */
 function apiWhoAmI() {
-  return { ok: true, email: String(userEmail_()), name: autoName_() || null };
+  var acc = driveAccess_();
+  return { ok: true, email: String(userEmail_()), name: autoName_() || null,
+           drive: acc.ok, authUrl: acc.authUrl || '', driveWhy: acc.reason || '' };
+}
+
+/* Google's consent screen (granular, 2026) lets a pupil tick SOME of the
+   app's permissions. With Docs ticked but Drive left empty she still gets in
+   and her drafts still save, but every photo, video and filing call fails
+   with "You do not have permission to call DriveApp...". Seen live on 8 Oct
+   2026 in the J1-J3 Kitchen Portfolio (4 J3 records + a J1 pupil). So: check before any Drive work, and
+   hand the page Google's own link for granting just the missing ones. */
+var DRIVE_SCOPES_ = [
+  'https://www.googleapis.com/auth/drive',
+  'https://www.googleapis.com/auth/documents'
+];
+function driveAccess_() {
+  try {
+    var info = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL, DRIVE_SCOPES_);
+    if (info.getAuthorizationStatus() !== ScriptApp.AuthorizationStatus.REQUIRED) return { ok: true };
+    return { ok: false, authUrl: String(info.getAuthorizationUrl() || '') };
+  } catch (e) {
+    // no scoped check available: probe Drive itself
+    try { DriveApp.getRootFolder(); return { ok: true }; }
+    catch (e2) { return { ok: false, authUrl: '', reason: String(e2 && e2.message ? e2.message : e2) }; }
+  }
+}
+function needsDrive_(acc) {
+  return { ok: false, error: 'needs-drive', authUrl: (acc && acc.authUrl) || '' };
 }
 
 function apiLoad(req) {
@@ -244,6 +271,8 @@ function apiUploadPhoto(req) {
   req = req || {};
   var who = userEmail_();
   if (!who) return { ok: false, error: 'not-signed-in' };
+  var acc = driveAccess_();
+  if (!acc.ok) return needsDrive_(acc);
   if (!req.b64) return { ok: false, error: 'no-data' };
   var cls = realClass_(req.classCode);
   var core = readCore_(cls);
@@ -268,6 +297,8 @@ function apiGetUpload(req) {
   req = req || {};
   var who = userEmail_();
   if (!who) return { ok: false, error: 'not-signed-in' };
+  var acc = driveAccess_();
+  if (!acc.ok) return needsDrive_(acc);
   var cls = realClass_(req.classCode);
   var core = readCore_(cls);
   var folder;
@@ -280,6 +311,8 @@ function apiUploadVideo(req) {
   req = req || {};
   var who = userEmail_();
   if (!who) return { ok: false, error: 'not-signed-in' };
+  var acc = driveAccess_();
+  if (!acc.ok) return needsDrive_(acc);
   if (!req.b64) return { ok: false, error: 'no-data' };
   var cls = realClass_(req.classCode);
   var core = readCore_(cls);
@@ -329,6 +362,8 @@ function apiSubmitEntry(req) {
   req = req || {};
   var who = userEmail_();
   if (!who) return { ok: false, error: 'not-signed-in' };
+  var acc = driveAccess_();
+  if (!acc.ok) return needsDrive_(acc);
   var spec = (req.spec && typeof req.spec === 'object') ? req.spec : null;
   var entry = spec && spec.entry && typeof spec.entry === 'object' ? spec.entry : null;
   if (!entry || !entry.dish) return { ok: false, error: 'no-entry' };
