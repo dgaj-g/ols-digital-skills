@@ -24,7 +24,7 @@
      "title": "Read what a stored procedure is, and why every action gets one.",
      "blocks": [
       {
-       "p": "In chapter 3 you typed SELECT, INSERT and DELETE lines into a query window and ran them yourself. Your program cannot do that. A program needs each action it takes on the data to be written down once, given a name, and kept inside the database, so that the program only has to say the name. That is a stored procedure: a recipe with a name, saved in the database. The program says the name and hands over the ingredients, such as a customer's name and phone number, and the database does the rest."
+       "p": "In chapter 3 you typed SELECT and INSERT lines into a query window and ran them yourself. Your program cannot do that. A program needs each action it takes on the data to be written down once, given a name, and kept inside the database, so that the program only has to say the name. That is a stored procedure: a recipe with a name, saved in the database. The program says the name and hands over the ingredients, such as a customer's name and phone number, and the database does the rest."
       },
       {
        "p": "Every action your program will ever take on the data gets its own stored procedure: search for customers, fetch one customer, add one, change one, delete one, and so on. The program never sends a SELECT or an INSERT of its own. That is the rule. The top mark band asks for a program that adds, deletes, changes and displays related data from more than one table, and marking last year's work showed that doing every one of those through a stored procedure is what the examiner expects to see."
@@ -97,7 +97,7 @@
       {
        "need": [
         "Chapter 3 is finished: your BikeShop.sql builds the ten tables and fills them with the sample data when you press F5.",
-        "SQL Server Management Studio (SSMS) is open, connected to your BikeShop database.",
+        "SQL Server Management Studio (SSMS) is open, connected to the server (localdb)\\mssqllocaldb, as in chapter 1.",
         "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
        ]
       },
@@ -114,7 +114,7 @@
      "title": "Open your script, and find the line where every stored procedure goes.",
      "blocks": [
       {
-       "p": "Your stored procedures go into BikeShop.sql, under the sample data and above the line that prints BikeShop is ready. That PRINT line always stays last, so that when the whole script runs, the last thing you see is the message that it worked. The picture shows the exact spot."
+       "p": "Your stored procedures go into BikeShop.sql, under the sample data and above the line that prints BikeShop is ready. That PRINT line always stays last, so that when the whole script runs, the last thing you see is the message that it worked. At the start of every new session, open BikeShop.sql and press F5 with nothing selected before you do anything else, because the database on the server may have been cleared since you last signed in. The script builds it again, with the sample data and every stored procedure you have added so far. The picture shows the exact spot."
       },
       {
        "steps": [
@@ -347,8 +347,8 @@
         },
         {
          "id": "4.2.4",
-         "do": "Press F5, or click Execute on the toolbar, with nothing selected. This runs the whole script, so your database is built again from nothing with the new stored procedure in it.",
-         "see": "The Messages pane ends with BikeShop is ready and a Completion time, with no red text above it.",
+         "do": "Press F5, or click Execute on the toolbar, with nothing selected. This runs the whole script, so your database is built again from nothing with the new stored procedure in it. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane ends with BikeShop is ready and a Completion time, with no red text above it. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "img": {
           "img": "img/ch07-ssms-execute.png",
           "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (12 rows affected), then BikeShop is ready, then a Completion time.",
@@ -541,7 +541,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -691,8 +691,8 @@
         },
         {
          "id": "4.2.18",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -707,7 +707,7 @@
        ]
       },
       {
-       "p": "From now on, every stored procedure you add runs this way: paste it in, select it from CREATE OR ALTER PROCEDURE down to GO, and press F5. The whole script only needs to run again when you want the sample data put back."
+       "p": "From now on, every stored procedure you add runs this way: paste it in, select it from CREATE OR ALTER PROCEDURE down to GO, press F5, and then press Ctrl and S together to save your script. At the start of each new session, first click in BikeShop.sql and press F5 with nothing selected, so that BikeShop, its sample data and the stored procedures you added before are built again. Then carry on this way."
       }
      ]
     },
@@ -766,7 +766,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -884,8 +884,8 @@
         },
         {
          "id": "4.3.5",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -1031,7 +1031,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ],
           [
            "Must declare the scalar variable @NewID",
@@ -1176,8 +1176,8 @@
         },
         {
          "id": "4.3.16",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -1296,7 +1296,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         }
@@ -1424,8 +1424,8 @@
         },
         {
          "id": "4.4.5",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -1553,7 +1553,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         }
@@ -1717,7 +1717,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -1871,8 +1871,8 @@
         },
         {
          "id": "4.5.5",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -1969,7 +1969,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -2093,8 +2093,8 @@
         },
         {
          "id": "4.5.16",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -2238,7 +2238,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -2522,8 +2522,8 @@
         },
         {
          "id": "4.5.39",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -2698,7 +2698,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -2884,8 +2884,8 @@
         },
         {
          "id": "4.6.4",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -2976,7 +2976,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ],
           [
            "'Incorrect syntax near'",
@@ -3124,8 +3124,8 @@
         },
         {
          "id": "4.6.14",
-         "do": "Press F5 to run the highlighted lines.",
-         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "do": "Press F5 to run the highlighted lines. Then press Ctrl and S together to save your script.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "wrong": [
           [
            "The Messages pane shows (12 rows affected) and BikeShop is ready",
@@ -3238,7 +3238,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         }
@@ -3430,7 +3430,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         }
@@ -3751,7 +3751,7 @@
          "wrong": [
           [
            "'Could not find stored procedure'",
-           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again. If BikeShop is not in the box, or you have just signed in for a new session, the database has been cleared: click in BikeShop.sql, press F5 with nothing selected to build it again, and then run the test again."
           ]
          ]
         },
@@ -3887,10 +3887,10 @@
    "screens": [
     {
      "id": "1",
-     "title": "Tick the table: every stored procedure, and the three refusals.",
+     "title": "Tick the table: every stored procedure, and the four refusals.",
      "blocks": [
       {
-       "p": "Every row below is a test the examiner would run. Three of them are refusals that must happen: deleting customer 1, signing in as Liam, and signing in with the wrong password. Start by clicking in BikeShop.sql and pressing F5 with nothing selected, so that the sample data is back. Then paste each test from the chapter into your test window, press F5, and tick the row when you have seen the result."
+       "p": "Every row below is a test the examiner would run. Four of them are refusals that must happen: deleting customer 1, signing in as Liam, signing in with the wrong password, and adding a username that is already taken. Start by clicking in BikeShop.sql and pressing F5 with nothing selected, so that the sample data is back. Then paste each test from the chapter into your test window, press F5, and tick the row when you have seen the result."
       },
       {
        "check": [
@@ -4026,7 +4026,7 @@
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Twenty ticks are your evidence that every action on customers, staff, services and suppliers goes through a stored procedure, and that the database says no in a sentence when it should. Keep screenshots of the three refusals for your testing evidence in chapter 10. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected. Save your script with Ctrl and S together before you close SQL Server Management Studio (SSMS)."
+       "p": "Twenty ticks are your evidence that every action on customers, staff, services and suppliers goes through a stored procedure, and that the database says no in a sentence when it should. Keep screenshots of the four refusals for your testing evidence in chapter 10. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected. Save your script with Ctrl and S together before you close SQL Server Management Studio (SSMS)."
       },
       {
        "box": {

@@ -183,7 +183,7 @@
      "title": "Read how a bike is one thing, not a count.",
      "blocks": [
       {
-       "p": "A bike is never counted, because every bike is different: its own frame number, size and colour. Instead, each bike has a status. A bike for sale starts as Available. A customer can reserve it, which makes it Reserved and remembers who. Then it is sold, once, and becomes Sold with the date. Any bike can go into repair and come back."
+       "p": "A bike is never counted, because every bike is different: its own frame number, size and colour. Instead, each bike has a status. A bike for sale starts as Available. A customer can reserve it, which makes it Reserved and remembers who. Then it is sold, once, and becomes Sold with the date. Any available bike can go into repair and come back."
       },
       {
        "box": {
@@ -623,6 +623,37 @@
          "a": "Your script was run with nothing selected since the last test, which put the sample data back. The count starts at 5 again. That is not a fault."
         }
        ]
+      },
+      {
+       "box": {
+        "title": "Before you log off: save your database",
+        "blocks": [
+         {
+          "p": "Your two test sales are rows in your database, and the cloud PC wipes the database when you log off. Stage 3 refunds them. Whenever you stop before the end of this chapter, save the whole database to a script before you log off, as you did in chapter 7:"
+         },
+         {
+          "p": "1. In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts…."
+         },
+         {
+          "p": "2. Click Next, then Next again. Leave Script entire database and all database objects chosen."
+         },
+         {
+          "p": "3. Click Advanced. Find Types of data to script at the bottom of the General list, change Schema only to Schema and data, and click OK."
+         },
+         {
+          "p": "4. Click Save as script file. Click the … button beside File name, open your OneDrive coursework folder, type BikeShop-saved.sql as the file name and click Save. If Windows asks whether to replace the file, click Yes."
+         },
+         {
+          "p": "5. Click Next, then Next again. When every line says Success, click Finish."
+         },
+         {
+          "p": "At the start of your next lesson, open BikeShop-saved.sql the way you open BikeShop.sql (File, Open, File…) and press F5 with nothing selected, instead of running BikeShop.sql. Your database comes back exactly as you left it, test rows and numbers included. Keep adding new work to BikeShop.sql: it is still the master copy. Never type in BikeShop-saved.sql."
+         },
+         {
+          "p": "If red lines say Database 'BikeShop' already exists, BikeShop.sql was run first this lesson. In Object Explorer, right-click BikeShop, click Delete, tick Close existing connections at the bottom and click OK. Then press F5 in BikeShop-saved.sql again."
+         }
+        ]
+       }
       }
      ]
     }
@@ -697,8 +728,8 @@
          "Then two UPDATEs: mark the PartSale row Refunded, and add @Quantity back to QtyInStock on the Part row. Finish with END and GO.",
          "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
         ],
-        "test": "The ready-made test on the next screen refunds one sale by its number, prints the count, and then lists the sales of the last ten days.",
-        "expect": "'Refunded sale number 9. Stock of part 5 is now 5.' on the first run, and 'That sale has already been refunded, or does not exist.' on the second. If the second run prints Refunded again, your check is missing the Status test.",
+        "test": "The ready-made test on screen 3 of this stage refunds one sale by its number, prints the count, and then lists the sales of the last ten days.",
+        "expect": "'Refunded sale number 9. Stock of part 5 is now 3.' on the first run, with your own sale number in place of 9, and 'That sale has already been refunded, or does not exist.' on the second. If the second run prints Refunded again, your check is missing the Status test.",
         "hint": "The SELECT that fills two boxes at once looks like the one in usp_PartSale_Add: SELECT @PartID = PartID, @Quantity = Quantity FROM PartSale WHERE … The Status test goes in that WHERE, so a refunded sale is never found.",
         "text": "CREATE OR ALTER PROCEDURE usp_PartSale_Refund\n    @PartSaleID INT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n\n    DECLARE @PartID INT, @Quantity INT;\n    SELECT @PartID = PartID, @Quantity = Quantity\n    FROM PartSale\n    WHERE PartSaleID = @PartSaleID AND Status = 'Sold';\n    IF @PartID IS NULL\n    BEGIN\n        SET @Message =\n            'That sale has already been refunded, or does not exist.';\n        RETURN;\n    END\n\n    UPDATE PartSale SET Status = 'Refunded' WHERE PartSaleID = @PartSaleID;\n    -- stock goes back\n    UPDATE Part SET QtyInStock = QtyInStock + @Quantity WHERE PartID = @PartID;\nEND\nGO",
         "focusLines": [
@@ -2744,6 +2775,7 @@
         "acceptButton": "btnSave",
         "cancelButton": "btnCancel",
         "formNote": "Add or edit a part. When editing, the stock box is hidden: stock only changes through sales, refunds and deliveries.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -2855,7 +2887,8 @@
           "toolbox": "Label",
           "name": "lblStock",
           "settings": [
-           "ForeColor = grey (92, 103, 116)"
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)",
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": "When editing: \"Stock changes only through sales, refunds and deliveries.\""
@@ -2905,7 +2938,7 @@
            "Text = Save"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSave_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSave_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3073,7 +3106,7 @@
           ],
           [
            "'The name Grid does not exist' or 'The name Msg does not exist'",
-           "Your grid and message helpers from chapter 6 are called something else, or are in a different namespace. Match the names you used."
+           "Your grid and message helpers from chapters 5 and 6 are called something else, or are in a different namespace. Match the names you used."
           ],
           [
            "'The name SupplierData does not exist'",
@@ -3202,6 +3235,7 @@
         "acceptButton": "btnSell",
         "cancelButton": "btnCancel",
         "formNote": "A counter sale. The database takes the stock off, and refuses if there is not enough.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -3215,7 +3249,9 @@
          {
           "toolbox": "Label",
           "name": "lblPart",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
           "note": "Filled in: the part being sold."
          },
@@ -3223,7 +3259,8 @@
           "toolbox": "Label",
           "name": "lblInStock",
           "settings": [
-           "ForeColor = grey (92, 103, 116)"
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)",
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": ""
@@ -3255,7 +3292,7 @@
            "Text = Walk-in customer (no account)"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `chkWalkIn_CheckedChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `chkWalkIn_CheckedChanged`, which the code you paste later replaces."
           ],
           "note": "Ticked: the customer list is skipped."
          },
@@ -3284,7 +3321,7 @@
            "Text = Sell"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSell_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSell_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3553,6 +3590,7 @@
         "acceptButton": "btnPlace",
         "cancelButton": "btnCancel",
         "formNote": "Orders more of one part from its supplier. Nothing changes in stock until the delivery is received.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -3566,7 +3604,9 @@
          {
           "toolbox": "Label",
           "name": "lblPart",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
           "note": ""
          },
@@ -3613,7 +3653,7 @@
           "name": "lblNote",
           "settings": [
            "Text = Stock goes up when the delivery is received, not now.",
-           "ForeColor = grey (92, 103, 116)"
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": ""
@@ -3625,7 +3665,7 @@
            "Text = Place order"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnPlace_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnPlace_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3689,6 +3729,7 @@
         "acceptButton": "btnReceive",
         "cancelButton": "btnCancel",
         "formNote": "The delivery has arrived. One click closes the order and adds the parts to stock, inside one transaction.",
+        "load": false,
         "rows": [
          {
           "toolbox": "Label",
@@ -3702,7 +3743,9 @@
          {
           "toolbox": "Label",
           "name": "lblOrder",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
           "note": ""
          },
@@ -3710,7 +3753,8 @@
           "toolbox": "Label",
           "name": "lblOrdered",
           "settings": [
-           "ForeColor = grey (92, 103, 116)"
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)",
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": ""
@@ -3738,7 +3782,7 @@
           "name": "lblNote",
           "settings": [
            "Text = If the box is short, type what actually arrived.",
-           "ForeColor = grey (92, 103, 116)"
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": ""
@@ -3750,7 +3794,7 @@
            "Text = Receive"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReceive_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReceive_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -4083,6 +4127,7 @@
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "Counted stock. Pink rows need reordering. The lower grid is the orders still waiting for a delivery.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -4097,7 +4142,7 @@
           "toolbox": "DataGridView",
           "name": "dgvParts",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [
            "Events tab (the lightning bolt) → SelectionChanged: type `dgvParts_SelectionChanged` beside it and press Enter.",
@@ -4112,7 +4157,7 @@
            "Text = Add part"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnAddPart_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnAddPart_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -4124,7 +4169,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnEditPart_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnEditPart_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -4136,7 +4181,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSell_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSell_Click`, which the code you paste later replaces."
           ],
           "note": "Over the counter. Stock can never go below zero."
          },
@@ -4148,7 +4193,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnOrder_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnOrder_Click`, which the code you paste later replaces."
           ],
           "note": "Stock does not change until the delivery is received."
          },
@@ -4159,7 +4204,7 @@
            "Text = Reorder list"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReorderList_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReorderList_Click`, which the code you paste later replaces."
           ],
           "note": "Swaps the grid to only the parts that need ordering, and back."
          },
@@ -4176,7 +4221,7 @@
           "toolbox": "DataGridView",
           "name": "dgvOrders",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [
            "Events tab (the lightning bolt) → SelectionChanged: type `dgvOrders_SelectionChanged` beside it and press Enter."
@@ -4191,7 +4236,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReceive_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReceive_Click`, which the code you paste later replaces."
           ],
           "note": "Closes the order and adds to stock in one go."
          },
@@ -4203,7 +4248,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCancelOrder_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCancelOrder_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -4214,7 +4259,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -4603,7 +4648,7 @@
          "img": {
           "img": "img/ch08-vs-main-three-buttons.png",
           "alt": "frmMain in the Visual Studio 2019 designer with its Parts and stock, Bikes for sale and hire, and Bike hire buttons, and the code window beside it showing the two lines inside btnParts_Click.",
-          "cap": "The three buttons on your main menu that this chapter wires up. Each one gets two lines, the same shape as the Diary button in chapter 7.",
+          "cap": "The three buttons on your main menu that this chapter wires up. Each one gets two lines, the same shape as the Workshop diary button in chapter 7.",
           "w": 1497,
           "h": 603,
           "missing": false,
@@ -4629,7 +4674,7 @@
         },
         {
          "id": "8.5.39",
-         "do": "Inside the method, type the same two lines you typed for the Diary button in chapter 7, with frmParts in place of frmDiary: frmParts parts = new frmParts(); as the first line, and parts.ShowDialog(this); as the second line.",
+         "do": "Inside the method, type the same two lines you typed for the Workshop diary button in chapter 7, with frmParts in place of frmDiary: frmParts parts = new frmParts(); as the first line, and parts.ShowDialog(this); as the second line.",
          "see": "Two lines sit inside the method, each ending with a semicolon."
         },
         {
@@ -5677,7 +5722,7 @@
      "title": "Read the stored procedure that finds the free hire bikes, then add it.",
      "blocks": [
       {
-       "p": "The hire form in stage 8 asks one question: which hire bikes are free for every day from the start date to the return date? The answer is the clash test from chapter 7, inside NOT EXISTS, with dates in place of times. A bike is free when no hire of it that is Booked or Out overlaps the dates."
+       "p": "The hire form in stage 8 asks one question: which hire bikes are free for every day from the start date to the return date? The answer is the clash test from chapter 7, inside NOT EXISTS, with dates in place of times. A bike is free when it is a hire bike that is Available and no hire of it that is Booked or Out overlaps the dates."
       },
       {
        "code": {
@@ -6185,6 +6230,7 @@
         "acceptButton": "btnSave",
         "cancelButton": "btnCancel",
         "formNote": "A hire bike has a daily rate; a bike for sale has a price. Only the box that applies is switched on.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -6285,7 +6331,7 @@
            "Text = for hire"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `rdoHire_CheckedChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `rdoHire_CheckedChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6296,7 +6342,7 @@
            "Text = for sale"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `rdoSale_CheckedChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `rdoSale_CheckedChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6345,7 +6391,7 @@
            "Text = Save"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSave_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSave_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6585,7 +6631,8 @@
         "border": "FixedSingle",
         "acceptButton": null,
         "cancelButton": null,
-        "formNote": "Every bike the shop owns. Sale bikes go Available → Reserved → Sold; any bike can go in and out of repair.",
+        "formNote": "Every bike the shop owns. Sale bikes go Available → Reserved → Sold; any available bike can go into repair and come back.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -6604,7 +6651,7 @@
            "Items = All bikes / For sale / Hire fleet"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `cboFilter_SelectedIndexChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `cboFilter_SelectedIndexChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6630,7 +6677,7 @@
           "toolbox": "DataGridView",
           "name": "dgvBikes",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [
            "Events tab (the lightning bolt) → SelectionChanged: type `dgvBikes_SelectionChanged` beside it and press Enter."
@@ -6644,7 +6691,7 @@
            "Text = Add bike"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnAdd_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnAdd_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6656,7 +6703,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReserve_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReserve_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -6668,7 +6715,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnUnreserve_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnUnreserve_Click`, which the code you paste later replaces."
           ],
           "note": "Back to Available: the bike returns to stock."
          },
@@ -6680,7 +6727,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSell_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSell_Click`, which the code you paste later replaces."
           ],
           "note": "Once. The database refuses a second sale."
          },
@@ -6692,7 +6739,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnRepair_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnRepair_Click`, which the code you paste later replaces."
           ],
           "note": "Reads \"Back in service\" for a bike in repair."
          },
@@ -6703,7 +6750,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -7987,6 +8034,7 @@
         "acceptButton": "btnBook",
         "cancelButton": "btnCancel",
         "formNote": "Pick the dates first; the bike list then shows only bikes free for the whole of those dates, and the price works itself out.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -8022,7 +8070,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpStart_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpStart_ValueChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8042,7 +8090,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpEnd_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpEnd_ValueChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8062,14 +8110,16 @@
            "DropDownStyle = DropDownList"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `cboBike_SelectedIndexChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `cboBike_SelectedIndexChanged`, which the code you paste later replaces."
           ],
           "note": "Only bikes free for those dates."
          },
          {
           "toolbox": "Label",
           "name": "lblCost",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
           "note": "\"3 days × £18.00 = £54.00 · deposit at least £10.80\""
          },
@@ -8099,7 +8149,7 @@
            "Text = Book hire"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnBook_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnBook_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8572,6 +8622,7 @@
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "Hires between two dates. Check out when the bike leaves, Returned when it comes back.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -8589,7 +8640,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpFrom_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpFrom_ValueChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8609,7 +8660,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpTo_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpTo_ValueChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8617,7 +8668,7 @@
           "toolbox": "DataGridView",
           "name": "dgvHires",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [
            "Events tab (the lightning bolt) → SelectionChanged: type `dgvHires_SelectionChanged` beside it and press Enter."
@@ -8631,7 +8682,7 @@
            "Text = New hire"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnNew_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnNew_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8643,7 +8694,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCheckOut_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCheckOut_Click`, which the code you paste later replaces."
           ],
           "note": "Booked → Out."
          },
@@ -8655,7 +8706,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReturn_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReturn_Click`, which the code you paste later replaces."
           ],
           "note": "Out → Returned."
          },
@@ -8667,7 +8718,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCancelHire_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCancelHire_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -8678,7 +8729,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -8855,7 +8906,7 @@
           ],
           [
            "'The name Grid does not exist' or 'The name Msg does not exist'",
-           "Your grid and message helpers from chapter 6 are called something else, or are in a different namespace. Match the names you used."
+           "Your grid and message helpers from chapters 5 and 6 are called something else, or are in a different namespace. Match the names you used."
           ],
           [
            "'The type or namespace name frmHireEdit could not be found'",
@@ -8917,7 +8968,7 @@
             "n": 2,
             "x": 2,
             "y": 24.4,
-            "say": "Jack O'Hare's hire, hire 4, is Returned and Róisín Campbell's, hire 5, is Cancelled, from your tests. No button is on for them.",
+            "say": "Jack O'Hare's hire, hire 4, is Returned and Róisín Campbell's, hire 5, is Cancelled, from your tests. Only New hire is on for them.",
             "w": 96,
             "h": 7
            }
@@ -9004,7 +9055,7 @@
        "steps": [
         {
          "id": "8.9.1",
-         "do": "Press Parts and stock on the main menu, and press Reorder list.",
+         "do": "Close the hire screen with its Close button. On the main menu, press Parts and stock, and press Reorder list.",
          "see": "The top grid shows only PADS-DISC and TYRE-700-35, with a Supplier phone column, and the button now reads Show all parts. CHAIN-11 is not there, because order 3 for it is open.",
          "img": {
           "img": "img/ch08-run-reorder-list.png",
@@ -9137,7 +9188,7 @@
          "id": "8.10.5",
          "what": "A refund puts the stock back",
          "expect": "allowed",
-         "how": "In SQL Server Management Studio (SSMS), run the refund test from stage 3 with the number of that sale. The count printed is 2 again."
+         "how": "In SQL Server Management Studio (SSMS), click New Query, type SELECT * FROM PartSale; and press F5. The last row is the sale you just made, with PartID 4 and Quantity 2, and its PartSaleID is its number. Put that number on the SET @ID line of the refund test from stage 3 and press F5. The Messages pane says Refunded sale number and your number: ignore the count it prints, because that is for part 5, the chain. Close Parts and stock and open it again: PADS-DISC shows 2 again."
         },
         {
          "id": "8.10.6",

@@ -33,6 +33,7 @@
        "need": [
         "Chapter 1 is finished: your OneDrive coursework folder exists, and SQL Server Management Studio (SSMS) has run SELECT @@VERSION once.",
         "You have a pen and two sheets of paper. One sheet is for the Towpath Cycles plan as you read it, and one is for your own case study at the end.",
+        "Your own case study is beside you, printed or open in another window, because you plan it on the last screen.",
         "This guide is open in the Edge browser. Tick each step as you do it, and the chapter remembers where you are."
        ]
       },
@@ -149,13 +150,13 @@
      "title": "Pick out the nouns, and keep the ones the shop has many of.",
      "blocks": [
       {
-       "p": "A table holds one kind of thing, and each row is one of those things. So the tables hide inside the nouns of the story. Underline every noun in the Towpath Cycles story, then ask the same question of each one: does the shop keep many of these, each with its own details?"
+       "p": "A table holds one kind of thing, and each row is one of those things. So the tables hide inside the nouns of the story. Write every noun in the Towpath Cycles story on your first sheet of paper, then ask the same question of each one: does the shop keep many of these, each with its own details?"
       },
       {
        "p": "A customer passes the test. The shop has many customers, and each has a first name, a last name and a phone number, so Customer is a table. Mechanic passes too, but a mechanic is one kind of member of staff, and so are the counter assistant and the manager. All three go in one Staff table, with a column called Role that says which kind each person is."
       },
       {
-       "p": "Three kinds of noun do not become tables. Towpath Cycles, the canal and Newry are one of each, so a table for any of them would have only one row. A phone number, a price and a frame number are details of something else, so each becomes a column in that thing's table. A service such as a puncture repair is a table, because the shop has seven of them, each with its own minutes and price."
+       "p": "Two kinds of noun do not become tables. Towpath Cycles, the canal and Newry are one of each, so a table for any of them would have only one row. A phone number, a price and a frame number are details of something else, so each becomes a column in that thing's table. A service such as a puncture repair is a table, because the shop has seven of them, each with its own minutes and price."
       },
       {
        "box": {
@@ -280,7 +281,7 @@
       {
        "box": {
         "title": "One real row of the Appointment table",
-        "text": "The first appointment in the sample data holds CustomerID 1, MechanicID 3 and ServiceTypeID 6. Customer number 1 is Aoife McCann. Staff number 3 is Aoife Byrne, a mechanic. ServiceType number 6 is the Basic service, 60 minutes for 40 pounds. So the row says that Aoife Byrne gave Aoife McCann's blue Trek hybrid a basic service."
+        "text": "The first appointment in the sample data holds CustomerID 1, MechanicID 3 and ServiceTypeID 6. Customer number 1 is Aoife McCann. Staff number 3 is Aoife Byrne, a mechanic. ServiceType number 6 is the Basic service, 60 minutes for 40 pounds. So the row says that Aoife Byrne gave Aoife McCann's bike a basic service. The bike is named in a column called BikeDescription, which holds the words Blue Trek hybrid."
        }
       },
       {
@@ -426,7 +427,7 @@
      "title": "See the plan of all ten Towpath Cycles tables.",
      "blocks": [
       {
-       "p": "Here is the whole plan as a drawing. Each box is one table, with its name in the dark bar at the top. Each box lists the primary key, marked PK, every foreign key, marked FK, and two or three of the other columns."
+       "p": "Here is the whole plan as a drawing. Each box is one table, with its name in the dark bar at the top. Each box lists the primary key, marked PK, every foreign key, marked FK, and two or three of the other columns. The boxes do not show every column: Appointment, for example, also has BikeDescription, and chapter 3 gives you the full list of columns when you build each table."
       },
       {
        "diagram": {
@@ -810,8 +811,8 @@
         },
         {
          "id": "2.5.7",
-         "do": "Draw a box for each table, with its ID column first, marked PK.",
-         "see": "Each table is a box, and its first line is its name followed by ID, such as LessonID."
+         "do": "Draw a box for each table, write the table name at the top of the box, and write its ID column first underneath, marked PK.",
+         "see": "Each table is a box with its name at the top, and the first line under the name is the table name followed by ID, such as LessonID."
         },
         {
          "id": "2.5.8",
@@ -824,6 +825,9 @@
          "see": "Every booking and every sale points at the people and the lists it needs, by number."
         }
        ]
+      },
+      {
+       "p": "Then finish each box, before you go to the next screen. Under the ID, write the other columns you moved under that table in step 5, each with its type: INT for a whole number, VARCHAR(40) for text with the most letters in the brackets, DECIMAL(8,2) for money, DATE for a day, DATETIME for a day and a clock time, or BIT for a yes or a no. Beside each column that counts stock, such as the number on the shelf, write CHECK 0 or more. Beside each status column, write CHECK and its list of allowed words, such as Booked, Done or Cancelled."
       },
       {
        "box": {
