@@ -212,14 +212,6 @@ textarea.comment{width:100%;font:inherit;padding:10px;border:1px solid var(--lin
 .cw h1{margin:0 0 6px}
 .cw .sub{font-size:17px;color:var(--ink);max-width:72ch;margin:0 0 6px}
 .cw-marks{font-size:13px;color:var(--mute);margin:0 0 14px}
-.cw-stages{position:sticky;top:-22px;z-index:5;background:var(--bg);margin:0 -4px 18px;padding:8px 4px 8px;border-bottom:1px solid var(--line);list-style:none;display:flex;flex-wrap:wrap;gap:6px}
-.cw-stages li{display:flex;align-items:center;gap:7px;font-size:13px;padding:5px 11px 5px 6px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;color:var(--ink)}
-.cw-stages li i{width:20px;height:20px;border-radius:50%;background:#e6eaf0;color:var(--ink);font-style:normal;font-size:12px;font-weight:600;display:grid;place-items:center}
-.cw-stages li.now{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
-.cw-stages li.now i{background:var(--navy);color:#fff}
-.cw-stages li.ok i{background:var(--ok);color:#fff}
-.cw-stages li.ok i::before{content:"\2713 "}
-.cw-stages li.ok i span{display:none}
 .cw-top{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 22px}
 .cw-need ul{margin:8px 0 0;padding-left:20px}
 .cw-need li{margin:4px 0}
@@ -421,15 +413,15 @@ details.cw-box>div{margin-top:8px}
 /* stage strip: a pill per stage with a dot per screen */
 .cw-stages{position:sticky;top:-22px;z-index:5;background:var(--bg);margin:0 -4px 18px;padding:8px 4px 8px;border-bottom:1px solid var(--line);list-style:none;display:flex;flex-wrap:wrap;gap:6px 8px}
 .cw-stages li{display:flex;align-items:center;gap:6px;padding:0;border:0;background:none;cursor:default}
-.cw-stages .cw-pill{display:flex;align-items:center;gap:7px;font:13px var(--sans);padding:5px 11px 5px 6px;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;color:var(--ink)}
+.cw-stages .cw-pill{display:flex;align-items:center;gap:0;font:13px var(--sans);padding:5px 6px;transition:padding .25s;border:1px solid var(--line);border-radius:999px;background:var(--card);cursor:pointer;color:var(--ink)}
 .cw-stages .cw-pill i{width:20px;height:20px;border-radius:50%;background:#e6eaf0;color:var(--ink);font-style:normal;font-size:12px;font-weight:600;display:grid;place-items:center;flex:none}
 .cw-stages .cw-pill .tt{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .25s,opacity .2s}
-.cw-stages li.now .pill{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
-.cw-stages li.now .pill .tt{max-width:420px;opacity:1}
-.cw-stages li.now .pill i{background:var(--navy);color:#fff}
-.cw-stages li.ok .pill i{background:var(--ok);color:#fff}
-.cw-stages li.ok .pill i::before{content:"\2713 "}
-.cw-stages li.ok .pill i span{display:none}
+.cw-stages li.now .cw-pill{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+.cw-stages li.now .cw-pill{padding-right:11px}.cw-stages li.now .cw-pill .tt{max-width:420px;opacity:1;margin-left:7px}
+.cw-stages li.now .cw-pill i{background:var(--navy);color:#fff}
+.cw-stages li.ok .cw-pill i{background:var(--ok);color:#fff}
+.cw-stages li.ok .cw-pill i::before{content:"\2713 "}
+.cw-stages li.ok .cw-pill i span{display:none}
 .cw-stages .cw-dots{display:flex;gap:4px;align-items:center}
 .cw-stages .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid #b9c2cf;background:var(--card);padding:0;cursor:pointer}
 .cw-stages .dot.ok{background:var(--ok);border-color:var(--ok)}
@@ -461,6 +453,8 @@ details.cw-box>div{margin-top:8px}
 .cw-shot .mk.box{border:3px solid var(--gold);border-radius:7px;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
 .cw-shot .mk i{position:absolute;left:-12px;top:-12px;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#1c2430;font:700 13px/24px var(--sans);text-align:center;font-style:normal;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .cw-shot .mk.ring i{left:-16px;top:-16px}
+/* a box keeps its words clear: the badge sits just above its top-left corner (beside it when the box touches the top; inside only in the very corner) */
+.cw-shot .mk.box i{left:-6px;top:-27px}.cw-shot .mk.box.side i{left:-28px;top:-3px}.cw-shot .mk.box.corner i{left:-12px;top:-12px}
 .mk-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px;max-width:86ch}
 .mk-list li{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;font-size:14.5px;line-height:1.5}
 .mk-list li i{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#1c2430;font:700 13px/24px var(--sans);text-align:center;font-style:normal}
@@ -593,7 +587,7 @@ details.cw-box>div{margin-top:8px}
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "a2ssd-db5ae55e3f-0858c8a2";
+window.A2_DEPLOY = "a2ssd-db5ae55e3f-c90c1fad";
 window.A2_CW = "https://dgaj-g.github.io/ols-digital-skills/a2-ssd/content/coursework/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1266,7 +1260,7 @@ window.CW = (function () {
       var pic = el('<div class="pic" style="max-width:' + w + 'px"><img src="' + h(S.base + x.img) + '" alt="' + h(x.alt) + '"></div>');
       marks.forEach(function (m) {
         var box = m.w != null;
-        pic.appendChild(el('<span class="mk ' + (box ? 'box' : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
+        pic.appendChild(el('<span class="mk ' + (box ? 'box' + (+m.y < 5 ? (+m.x < 4 ? ' corner' : ' side') : '') : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
       });
       fig.appendChild(pic);
     }

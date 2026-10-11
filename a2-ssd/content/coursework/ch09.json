@@ -37,15 +37,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 26,
-          "y": 18,
-          "say": "The five reports. Each one is one stored procedure."
+          "x": 10,
+          "y": 11.5,
+          "say": "The five reports. Each one is one stored procedure.",
+          "w": 32,
+          "h": 13.5
          },
          {
           "n": 2,
-          "x": 60,
-          "y": 10,
-          "say": "The From and To dates. The form starts with the last thirty days."
+          "x": 47.2,
+          "y": 7.2,
+          "say": "The From and To dates. The form starts with the last thirty days.",
+          "w": 27.5,
+          "h": 4.6
          }
         ]
        }
@@ -312,15 +316,19 @@
            },
            {
             "n": 2,
-            "x": 6,
-            "y": 25,
-            "say": "Point at Open."
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 41,
-            "y": 48,
-            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder.",
+            "w": 37.5,
+            "h": 5
            }
           ]
          }
@@ -339,9 +347,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -366,15 +376,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 6,
-            "say": "Click Execute, or press F5."
+            "x": 27.3,
+            "y": 4,
+            "say": "Click Execute, or press F5.",
+            "w": 8.2,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 39,
-            "y": 90,
-            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+            "x": 31.5,
+            "y": 88,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read.",
+            "w": 40.5,
+            "h": 10
            }
           ]
          },
@@ -466,15 +480,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 27,
-            "say": "The column headings are the AS names from the SELECT."
+            "x": 7,
+            "y": 19,
+            "say": "The column headings are the AS names from the SELECT.",
+            "w": 62,
+            "h": 15
            },
            {
             "n": 2,
-            "x": 14,
-            "y": 88,
-            "say": "Liam Doran: a row of zeros, not a missing row."
+            "x": 7,
+            "y": 81,
+            "say": "Liam Doran: a row of zeros, not a missing row.",
+            "w": 62,
+            "h": 14
            }
           ]
          }
@@ -677,9 +695,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -692,16 +712,18 @@
          "img": {
           "img": "img/ch07-ssms-paste-gap.png",
           "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
-          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes. The picture shows usp_Appointment_Add from chapter 7. Yours has its own name and lines, with the marker line in the same kind of place.",
           "w": 900,
           "h": 560,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+            "x": 4,
+            "y": 62,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker.",
+            "w": 30,
+            "h": 4
            }
           ]
          }
@@ -728,22 +750,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -836,15 +862,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 38,
-            "y": 30,
-            "say": "Three sources in one Source column, because UNION ALL stacked three SELECTs."
+            "x": 28,
+            "y": 17,
+            "say": "Three sources in one Source column, because UNION ALL stacked three SELECTs.",
+            "w": 17.5,
+            "h": 79
            },
            {
             "n": 2,
-            "x": 18,
-            "y": 60,
-            "say": "The days run in order, because ORDER BY sorted the whole stack."
+            "x": 9,
+            "y": 17,
+            "say": "The days run in order, because ORDER BY sorted the whole stack.",
+            "w": 14,
+            "h": 79
            }
           ]
          }
@@ -1015,9 +1045,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -1030,16 +1062,18 @@
          "img": {
           "img": "img/ch07-ssms-paste-gap.png",
           "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
-          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes. The picture shows usp_Appointment_Add from chapter 7. Yours has its own name and lines, with the marker line in the same kind of place.",
           "w": 900,
           "h": 560,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+            "x": 4,
+            "y": 62,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker.",
+            "w": 30,
+            "h": 4
            }
           ]
          }
@@ -1066,22 +1100,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -1174,15 +1212,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 25,
-            "y": 60,
-            "say": "The What column holds the five labels you typed."
+            "x": 10.5,
+            "y": 27,
+            "say": "The What column holds the five labels you typed.",
+            "w": 31,
+            "h": 71
            },
            {
             "n": 2,
-            "x": 62,
-            "y": 60,
-            "say": "The How many column holds one count each."
+            "x": 44,
+            "y": 17,
+            "say": "The How many column holds one count each.",
+            "w": 12,
+            "h": 81
            }
           ]
          }
@@ -1330,9 +1372,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -1350,22 +1394,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -1457,15 +1505,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 33,
-            "say": "Two services tie at 3. ORDER BY Bookings DESC, Service puts Basic service first, by name."
+            "x": 10,
+            "y": 22.5,
+            "say": "Two services tie at 3. ORDER BY Bookings DESC, Service puts Basic service first, by name.",
+            "w": 63,
+            "h": 24
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 91,
-            "say": "Safety check with 0: the row the LEFT JOIN keeps."
+            "x": 10,
+            "y": 86,
+            "say": "Safety check with 0: the row the LEFT JOIN keeps.",
+            "w": 63,
+            "h": 11
            }
           ]
          }
@@ -1712,15 +1764,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 24,
-            "y": 22,
-            "say": "Brake cable and Inner tube 700c both sold 3 this year."
+            "x": 10,
+            "y": 14.5,
+            "say": "Brake cable and Inner tube 700c both sold 3 this year.",
+            "w": 60,
+            "h": 16
            },
            {
             "n": 2,
-            "x": 24,
-            "y": 80,
-            "say": "Six parts with 0. A JOIN would have dropped them."
+            "x": 10,
+            "y": 57.5,
+            "say": "Six parts with 0. A JOIN would have dropped them.",
+            "w": 60,
+            "h": 40
            }
           ]
          }
@@ -1919,21 +1975,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 7,
-            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders."
+            "x": 1.2,
+            "y": 4.8,
+            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders.",
+            "w": 51.5,
+            "h": 3.6
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 38,
-            "say": "Point at Add."
+            "x": 53,
+            "y": 35.5,
+            "say": "Point at Add.",
+            "w": 41,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 20,
-            "y": 92,
-            "say": "Click Class…"
+            "x": 14,
+            "y": 89.8,
+            "say": "Click Class…",
+            "w": 39,
+            "h": 4.5
            }
           ]
          }
@@ -1952,14 +2014,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89.2,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.4,
             "say": "Press Add."
            }
           ]
@@ -1994,9 +2058,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2148,21 +2214,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -2181,14 +2253,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89.2,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.4,
             "say": "Press Add."
            }
           ]
@@ -2224,9 +2298,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2274,21 +2350,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -2305,28 +2387,34 @@
          "img": {
           "img": "img/ch07-vs-designer.png",
           "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
-          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control. The picture shows the finished New booking form from chapter 7; your form starts empty.",
           "w": 900,
           "h": 600,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 46,
-            "say": "The Toolbox. Drag a control from here on to the form."
+            "x": 0.5,
+            "y": 5.5,
+            "say": "The Toolbox. Drag a control from here on to the form.",
+            "w": 25.5,
+            "h": 93
            },
            {
             "n": 2,
-            "x": 56,
-            "y": 49,
-            "say": "The form. Drop the control where the picture shows it."
+            "x": 28,
+            "y": 9.5,
+            "say": "The form. Drop the control where the picture shows it.",
+            "w": 55.5,
+            "h": 79
            },
            {
             "n": 3,
-            "x": 93,
-            "y": 54,
-            "say": "The Properties window. Set Name first, then the rest of the row."
+            "x": 86.5,
+            "y": 21,
+            "say": "The Properties window. Set Name first, then the rest of the row.",
+            "w": 13.5,
+            "h": 76.5
            }
           ]
          }
@@ -2352,33 +2440,43 @@
          "marks": [
           {
            "n": 1,
-           "x": 24,
-           "y": 9,
-           "say": "The report list, cboReport, with its five report names."
+           "x": 8,
+           "y": 6.5,
+           "say": "The report list, cboReport, with its five report names.",
+           "w": 34,
+           "h": 4.7
           },
           {
            "n": 2,
-           "x": 62,
-           "y": 3,
-           "say": "The two date boxes, dtpFrom and dtpTo, with Run beside them."
+           "x": 47,
+           "y": 6.5,
+           "say": "The two date boxes, dtpFrom and dtpTo, with Run beside them.",
+           "w": 29,
+           "h": 4.7
           },
           {
            "n": 3,
-           "x": 50,
-           "y": 50,
-           "say": "The grid, dgvReport."
+           "x": 2,
+           "y": 12.3,
+           "say": "The grid, dgvReport.",
+           "w": 96,
+           "h": 73.5
           },
           {
            "n": 4,
-           "x": 30,
-           "y": 89,
-           "say": "The label under the grid, lblTotal, where the one-line summary goes."
+           "x": 2,
+           "y": 86.5,
+           "say": "The label under the grid, lblTotal, where the one-line summary goes.",
+           "w": 60,
+           "h": 4.5
           },
           {
            "n": 5,
-           "x": 68,
-           "y": 94,
-           "say": "Copy to clipboard, switched off until a report has rows, and Close."
+           "x": 71,
+           "y": 91.2,
+           "say": "Copy to clipboard, switched off until a report has rows, and Close.",
+           "w": 27.5,
+           "h": 5.6
           }
          ]
         },
@@ -2745,15 +2843,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab is in front."
+            "x": 0.5,
+            "y": 1,
+            "say": "The code tab is in front.",
+            "w": 20,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Select everything here before you paste over it."
+            "x": 2.5,
+            "y": 9.5,
+            "say": "Select everything here before you paste over it.",
+            "w": 96.5,
+            "h": 89.5
            }
           ]
          }
@@ -2788,9 +2890,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2819,7 +2923,7 @@
        "screenshot": {
         "img": "img/ch07-vs-events.png",
         "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
         "w": 520,
         "h": 520,
         "missing": false,
@@ -2832,9 +2936,11 @@
          },
          {
           "n": 2,
-          "x": 63,
-          "y": 36,
-          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, after Leave."
+          "x": 37.5,
+          "y": 33.8,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, after Leave.",
+          "w": 61.5,
+          "h": 4
          }
         ]
        }
@@ -2864,9 +2970,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 61,
-            "y": 75,
-            "say": "Click Start, or press F5."
+            "x": 59,
+            "y": 57,
+            "say": "Click Start, or press F5.",
+            "w": 8.5,
+            "h": 38
            }
           ]
          }
@@ -2885,21 +2993,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 58,
-            "y": 46,
-            "say": "Type the username siobhan."
+            "x": 41,
+            "y": 42.8,
+            "say": "Type the username siobhan.",
+            "w": 35,
+            "h": 6
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 55,
-            "say": "Type the password canal01."
+            "x": 41,
+            "y": 51.8,
+            "say": "Type the password canal01.",
+            "w": 35,
+            "h": 6.2
            },
            {
             "n": 3,
-            "x": 68,
-            "y": 76,
-            "say": "Click Sign in."
+            "x": 61,
+            "y": 72,
+            "say": "Click Sign in.",
+            "w": 15,
+            "h": 8.5
            }
           ]
          }
@@ -2918,15 +3032,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 26,
-            "y": 18,
-            "say": "The five reports. Each one is one stored procedure."
+            "x": 10,
+            "y": 11.5,
+            "say": "The five reports. Each one is one stored procedure.",
+            "w": 32,
+            "h": 13.5
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 10,
-            "say": "The From and To dates. The form starts with the last thirty days."
+            "x": 47.2,
+            "y": 7.2,
+            "say": "The From and To dates. The form starts with the last thirty days.",
+            "w": 27.5,
+            "h": 4.6
            }
           ]
          }
@@ -2994,15 +3112,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 24,
-            "say": "Five rows, one count each. The labels are the words in quotes in the stored procedure."
+            "x": 4.5,
+            "y": 17.3,
+            "say": "Five rows, one count each. The labels are the words in quotes in the stored procedure.",
+            "w": 91,
+            "h": 17.5
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 88,
-            "say": "The sentence under the grid."
+            "x": 4.5,
+            "y": 87.3,
+            "say": "The sentence under the grid.",
+            "w": 31,
+            "h": 3.8
            }
           ]
          }
@@ -3021,15 +3143,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 15,
-            "y": 19,
-            "say": "The top row is the most popular, and the sentence names it."
+            "x": 4.5,
+            "y": 17.2,
+            "say": "The top row is the most popular, and the sentence names it.",
+            "w": 91,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 15,
-            "y": 39,
-            "say": "Safety check, with 0. A JOIN instead of a LEFT JOIN would lose this row."
+            "x": 4.5,
+            "y": 37.5,
+            "say": "Safety check, with 0. A JOIN instead of a LEFT JOIN would lose this row.",
+            "w": 91,
+            "h": 3.6
            }
           ]
          }
@@ -3048,15 +3174,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 15,
-            "y": 21,
-            "say": "Brake cable and Inner tube 700c both sold 3. Names break the tie, so Brake cable is first."
+            "x": 4.5,
+            "y": 17.2,
+            "say": "Brake cable and Inner tube 700c both sold 3. Names break the tie, so Brake cable is first.",
+            "w": 91,
+            "h": 7.2
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 88,
-            "say": "The sentence names the top row."
+            "x": 4.5,
+            "y": 87.3,
+            "say": "The sentence names the top row.",
+            "w": 29.5,
+            "h": 3.8
            }
           ]
          }
@@ -3159,15 +3289,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 53,
-          "y": 10,
-          "say": "From is after To."
+          "x": 47.2,
+          "y": 7.2,
+          "say": "From is after To.",
+          "w": 12.5,
+          "h": 4.5
          },
          {
           "n": 2,
-          "x": 52,
-          "y": 54,
-          "say": "The sentence came from the exception class you typed in stage 6."
+          "x": 36.5,
+          "y": 51.3,
+          "say": "The sentence came from the exception class you typed in stage 6.",
+          "w": 31.5,
+          "h": 5.3
          }
         ]
        }
@@ -3183,21 +3317,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 40,
-          "say": "An empty grid is not an error. The question had an answer: nothing."
+          "x": 4.5,
+          "y": 13.2,
+          "say": "An empty grid is not an error. The question had an answer: nothing.",
+          "w": 91,
+          "h": 72.5
          },
          {
           "n": 2,
-          "x": 14,
-          "y": 89,
-          "say": "The sentence for no rows, the same for every report."
+          "x": 4.5,
+          "y": 87.3,
+          "say": "The sentence for no rows, the same for every report.",
+          "w": 15.5,
+          "h": 3.8
          },
          {
           "n": 3,
-          "x": 78,
-          "y": 94,
-          "say": "Copy to clipboard is greyed out."
+          "x": 70,
+          "y": 91.8,
+          "say": "Copy to clipboard is greyed out.",
+          "w": 15.5,
+          "h": 5.2
          }
         ]
        }

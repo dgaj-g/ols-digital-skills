@@ -37,21 +37,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 27,
-          "say": "The drawn time line: one row for each mechanic, 08:30 to 17:30 across."
+          "x": 4,
+          "y": 12.5,
+          "say": "The drawn time line: one row for each mechanic, 08:30 to 17:30 across.",
+          "w": 92,
+          "h": 29
          },
          {
           "n": 2,
-          "x": 50,
-          "y": 66,
-          "say": "The same bookings as a grid, with names."
+          "x": 4,
+          "y": 42.5,
+          "say": "The same bookings as a grid, with names.",
+          "w": 92,
+          "h": 47.5
          },
          {
           "n": 3,
-          "x": 10,
-          "y": 94,
-          "say": "New booking. The database checks every booking before it is saved."
+          "x": 4,
+          "y": 91.3,
+          "say": "New booking. The database checks every booking before it is saved.",
+          "w": 12.8,
+          "h": 5
          }
         ]
        }
@@ -295,15 +301,19 @@
            },
            {
             "n": 2,
-            "x": 6,
-            "y": 25,
-            "say": "Point at Open."
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 41,
-            "y": 48,
-            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder.",
+            "w": 37.5,
+            "h": 5
            }
           ]
          }
@@ -322,9 +332,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -528,9 +540,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+            "x": 4,
+            "y": 62,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker.",
+            "w": 30,
+            "h": 4
            }
           ]
          }
@@ -564,15 +578,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 6,
-            "say": "Click Execute, or press F5."
+            "x": 27.3,
+            "y": 4,
+            "say": "Click Execute, or press F5.",
+            "w": 8.2,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 39,
-            "y": 90,
-            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+            "x": 31.5,
+            "y": 88,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read.",
+            "w": 40.5,
+            "h": 10
            }
           ]
          },
@@ -685,15 +703,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 7,
-            "y": 5,
-            "say": "Click New Query, or press Ctrl and N together."
+            "x": 1.2,
+            "y": 2,
+            "say": "Click New Query, or press Ctrl and N together.",
+            "w": 11.5,
+            "h": 7
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 60,
-            "say": "Paste the test into the empty window."
+            "x": 5,
+            "y": 25,
+            "say": "Paste the test into the empty window.",
+            "w": 94,
+            "h": 74
            }
           ]
          }
@@ -712,9 +734,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 18,
-            "say": "The sentence came from @Message. This is the refusal."
+            "x": 2,
+            "y": 11,
+            "say": "The sentence came from @Message. This is the refusal.",
+            "w": 41.5,
+            "h": 11
            }
           ]
          }
@@ -958,15 +982,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -1079,9 +1107,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 82,
-            "say": "The last line is the refusal. The booking stayed at 15:15."
+            "x": 2,
+            "y": 77.5,
+            "say": "The last line is the refusal. The booking stayed at 15:15.",
+            "w": 57.5,
+            "h": 8.5
            }
           ]
          },
@@ -1389,9 +1419,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 28,
-            "y": 46,
-            "say": "If the second line says the rule is broken, go back to your clash test."
+            "x": 2,
+            "y": 41,
+            "say": "If the second line says the rule is broken, go back to your clash test.",
+            "w": 53,
+            "h": 10
            }
           ]
          }
@@ -1568,15 +1600,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -1650,9 +1686,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 11,
-            "y": 12,
-            "say": "Two columns: the number the program keeps, and the name the form shows."
+            "x": 3.4,
+            "y": 8.5,
+            "say": "Two columns: the number the program keeps, and the name the form shows.",
+            "w": 16.3,
+            "h": 22
            }
           ]
          }
@@ -1897,21 +1935,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 31.5,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -1937,21 +1981,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 31.5,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -1970,21 +2020,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -2003,14 +2059,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type AppointmentData.cs in the Name box."
+            "x": 13.4,
+            "y": 89,
+            "say": "Type AppointmentData.cs in the Name box.",
+            "w": 58.3,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.4,
             "say": "Press Add."
            }
           ]
@@ -2031,9 +2089,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2075,21 +2135,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -2101,28 +2167,34 @@
          "img": {
           "img": "img/ch07-vs-designer.png",
           "alt": "Visual Studio with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
-          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control. The picture shows the finished New booking form; yours starts empty.",
           "w": 900,
           "h": 600,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 46,
-            "say": "The Toolbox. Drag a control from here on to the form."
+            "x": 0.5,
+            "y": 5.5,
+            "say": "The Toolbox. Drag a control from here on to the form.",
+            "w": 25.5,
+            "h": 93
            },
            {
             "n": 2,
-            "x": 56,
-            "y": 49,
-            "say": "The form. Drop the control where the picture shows it."
+            "x": 28,
+            "y": 9.5,
+            "say": "The form. Drop the control where the picture shows it.",
+            "w": 55.5,
+            "h": 79
            },
            {
             "n": 3,
-            "x": 93,
-            "y": 54,
-            "say": "The Properties window. Set Name first, then the other settings in the table."
+            "x": 86.5,
+            "y": 20.5,
+            "say": "The Properties window. Set Name first, then the other settings in the table.",
+            "w": 13.5,
+            "h": 78
            }
           ]
          }
@@ -2151,9 +2223,11 @@
          "marks": [
           {
            "n": 1,
-           "x": 61,
-           "y": 54,
-           "say": "Each box lines up with its label. The grey note sits under the Mechanic list, invisible until the program fills it in."
+           "x": 31,
+           "y": 50.5,
+           "say": "Each box lines up with its label. The grey note sits under the Mechanic list, invisible until the program fills it in.",
+           "w": 59,
+           "h": 5.5
           }
          ]
         },
@@ -2937,15 +3011,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab, frmAppointmentEdit.cs, is in front."
+            "x": 0.5,
+            "y": 1,
+            "say": "The code tab, frmAppointmentEdit.cs, is in front.",
+            "w": 18,
+            "h": 4.8
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Paste inside the class, after the last method the designer made."
+            "x": 10,
+            "y": 91.3,
+            "say": "Paste inside the class, after the last method the designer made.",
+            "w": 35,
+            "h": 3.3
            }
           ]
          }
@@ -2965,9 +3043,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2988,7 +3068,7 @@
        "screenshot": {
         "img": "img/ch07-vs-events.png",
         "alt": "The Properties window with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
         "w": 520,
         "h": 520,
         "missing": false,
@@ -3001,9 +3081,11 @@
          },
          {
           "n": 2,
-          "x": 63,
-          "y": 36,
-          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave."
+          "x": 37.5,
+          "y": 33.8,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave.",
+          "w": 61.5,
+          "h": 4
          }
         ]
        }
@@ -3119,15 +3201,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -3152,9 +3238,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 21,
-            "y": 46,
-            "say": "Two bookings from the sample data and your two test bookings, in time order."
+            "x": 3.5,
+            "y": 27.5,
+            "say": "Two bookings from the sample data and your two test bookings, in time order.",
+            "w": 96,
+            "h": 25
            }
           ]
          }
@@ -3404,9 +3492,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Controls folder in Solution Explorer."
+            "x": 64.5,
+            "y": 26.6,
+            "say": "Right-click the Controls folder in Solution Explorer.",
+            "w": 33,
+            "h": 3.5
            },
            {
             "n": 2,
@@ -3438,9 +3528,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          }
@@ -3469,21 +3561,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -3512,27 +3610,35 @@
          "marks": [
           {
            "n": 1,
-           "x": 19,
-           "y": 8,
-           "say": "Day, the date picker and Today along the top."
+           "x": 3.5,
+           "y": 5.8,
+           "say": "Day, the date picker and Today along the top.",
+           "w": 36.5,
+           "h": 5.2
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 64,
-           "say": "The grid."
+           "x": 4,
+           "y": 41.5,
+           "say": "The grid.",
+           "w": 92.2,
+           "h": 45.8
           },
           {
            "n": 3,
-           "x": 27,
-           "y": 91,
-           "say": "New booking, Move, Mark done, Cancel booking and Close along the bottom."
+           "x": 4,
+           "y": 88.8,
+           "say": "New booking, Move, Mark done, Cancel booking and Close along the bottom.",
+           "w": 92.3,
+           "h": 5
           },
           {
            "n": 4,
-           "x": 24,
-           "y": 19,
-           "say": "The time line. In the designer it says there are no bookings, because there is no day yet."
+           "x": 4,
+           "y": 12.4,
+           "say": "The time line. In the designer it says there are no bookings, because there is no day yet.",
+           "w": 92.2,
+           "h": 27.4
           }
          ]
         },
@@ -3669,9 +3775,11 @@
         "marks": [
          {
           "n": 1,
-          "x": 24,
-          "y": 32,
-          "say": "Drag DiaryTimeline on to frmDiary, above the grid."
+          "x": 6,
+          "y": 29.3,
+          "say": "Drag DiaryTimeline on to frmDiary, above the grid.",
+          "w": 52,
+          "h": 5.7
          }
         ]
        }
@@ -4026,15 +4134,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab, frmAppointmentEdit.cs, is in front."
+            "x": 0.5,
+            "y": 1,
+            "say": "The code tab, frmAppointmentEdit.cs, is in front.",
+            "w": 18,
+            "h": 4.8
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Paste inside the class, after the last method the designer made."
+            "x": 10,
+            "y": 91.3,
+            "say": "Paste inside the class, after the last method the designer made.",
+            "w": 35,
+            "h": 3.3
            }
           ]
          }
@@ -4053,15 +4165,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 15,
-            "y": 36,
-            "say": "Double-click the Diary button to make its Click method."
+            "x": 3.3,
+            "y": 29.8,
+            "say": "Double-click the Diary button to make its Click method.",
+            "w": 24.5,
+            "h": 12.5
            },
            {
             "n": 2,
-            "x": 78,
-            "y": 75,
-            "say": "Type the two lines inside it."
+            "x": 67,
+            "y": 73.3,
+            "say": "Type the two lines inside it.",
+            "w": 22,
+            "h": 6
            }
           ]
          }
@@ -4093,15 +4209,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 19,
-            "y": 9,
-            "say": "Pick your test day here."
+            "x": 6.7,
+            "y": 6.8,
+            "say": "Pick your test day here.",
+            "w": 24,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 9,
-            "y": 94,
-            "say": "New booking opens the booking form."
+            "x": 2.7,
+            "y": 91.4,
+            "say": "New booking opens the booking form.",
+            "w": 13.2,
+            "h": 4.7
            }
           ]
          }
@@ -4120,9 +4240,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 39,
-            "y": 55,
-            "say": "Aoife Byrne is not in the list."
+            "x": 31,
+            "y": 51,
+            "say": "Aoife Byrne is not in the list.",
+            "w": 62,
+            "h": 8
            },
            {
             "n": 2,
@@ -4152,9 +4274,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 32,
-            "y": 28,
-            "say": "Change the 1 after @CustomerID to 3, and the 3 after @MechanicID to 4."
+            "x": 7.5,
+            "y": 24.5,
+            "say": "Change the 1 after @CustomerID to 3, and the 3 after @MechanicID to 4.",
+            "w": 26.5,
+            "h": 8.5
            }
           ]
          }
@@ -4173,9 +4297,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 53,
-            "y": 48,
-            "say": "The sentence from @Message, shown by Msg.Problem."
+            "x": 28.5,
+            "y": 44.5,
+            "say": "The sentence from @Message, shown by Msg.Problem.",
+            "w": 49,
+            "h": 7
            }
           ]
          }
@@ -4194,9 +4320,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 42,
-            "y": 84,
-            "say": "Names in every column. No numbers."
+            "x": 0.5,
+            "y": 50.5,
+            "say": "Names in every column. No numbers.",
+            "w": 99,
+            "h": 42
            }
           ]
          }
@@ -4328,15 +4456,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          }
@@ -4436,15 +4568,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          }
@@ -4529,9 +4665,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 90,
-            "y": 79,
-            "say": "Status reads Cancelled. The row was not deleted."
+            "x": 87,
+            "y": 76,
+            "say": "Status reads Cancelled. The row was not deleted.",
+            "w": 6.2,
+            "h": 6
            }
           ]
          }
@@ -4570,9 +4708,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 64,
-            "y": 82,
-            "say": "Yes cancels; No does nothing."
+            "x": 56.5,
+            "y": 74,
+            "say": "Yes cancels; No does nothing.",
+            "w": 39.5,
+            "h": 17
            }
           ]
          }
