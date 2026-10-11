@@ -39,27 +39,35 @@
         "marks": [
          {
           "n": 1,
-          "x": 28,
-          "y": 11,
-          "say": "The Search box. The grid narrows as you type."
+          "x": 11,
+          "y": 8.5,
+          "say": "The Search box. The grid narrows as you type.",
+          "w": 34,
+          "h": 4.5
          },
          {
           "n": 2,
-          "x": 50,
-          "y": 30,
-          "say": "Twelve customers, sorted by last name. The CustomerID column is hidden."
+          "x": 4.5,
+          "y": 14,
+          "say": "Twelve customers, sorted by last name. The CustomerID column is hidden.",
+          "w": 91,
+          "h": 45
          },
          {
           "n": 3,
-          "x": 50,
-          "y": 70,
-          "say": "The bookings grid: empty until a customer is picked."
+          "x": 4.5,
+          "y": 65,
+          "say": "The bookings grid: empty until a customer is picked.",
+          "w": 91,
+          "h": 23
          },
          {
           "n": 4,
-          "x": 25,
-          "y": 94,
-          "say": "Edit and Delete are off until a row is picked."
+          "x": 15.5,
+          "y": 90,
+          "say": "Edit and Delete are off until a row is picked.",
+          "w": 22.5,
+          "h": 5.5
          }
         ]
        }
@@ -219,21 +227,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 32,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -252,14 +266,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.3,
             "say": "Press Add."
            }
           ]
@@ -295,9 +311,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 83.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 13,
+            "h": 10
            }
           ]
          }
@@ -424,21 +442,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 64,
+            "y": 25.5,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 33.5,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -457,14 +481,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.3,
             "say": "Press Add."
            }
           ]
@@ -500,9 +526,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 83.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 13,
+            "h": 10
            }
           ]
          },
@@ -714,21 +742,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 7,
-            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders."
+            "x": 1,
+            "y": 5,
+            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders.",
+            "w": 52,
+            "h": 3.2
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 38,
-            "say": "Point at Add."
+            "x": 53,
+            "y": 35.5,
+            "say": "Point at Add.",
+            "w": 41,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 20,
-            "y": 92,
-            "say": "Click Class…"
+            "x": 14,
+            "y": 89.8,
+            "say": "Click Class…",
+            "w": 39,
+            "h": 4.5
            }
           ]
          }
@@ -747,14 +781,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.3,
             "say": "Press Add."
            }
           ]
@@ -790,9 +826,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 83.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 13,
+            "h": 10
            }
           ]
          },
@@ -833,27 +871,35 @@
          "marks": [
           {
            "n": 1,
-           "x": 79,
-           "y": 9,
-           "say": "lblSearch, txtSearch and the grey hint lblHint."
+           "x": 2.5,
+           "y": 6.8,
+           "say": "lblSearch, txtSearch and the grey hint lblHint.",
+           "w": 72,
+           "h": 4.7
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 32,
-           "say": "The customers grid, dgvCustomers."
+           "x": 2.5,
+           "y": 12.5,
+           "say": "The customers grid, dgvCustomers.",
+           "w": 95,
+           "h": 47.5
           },
           {
            "n": 3,
-           "x": 34,
-           "y": 63,
-           "say": "lblBookings, then the bookings grid, dgvBookings."
+           "x": 2.5,
+           "y": 61.5,
+           "say": "lblBookings, then the bookings grid, dgvBookings.",
+           "w": 95,
+           "h": 28.5
           },
           {
            "n": 4,
-           "x": 41,
-           "y": 94,
-           "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right."
+           "x": 2.5,
+           "y": 91.3,
+           "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right.",
+           "w": 95,
+           "h": 5.5
           }
          ]
         },
@@ -995,28 +1041,34 @@
          "img": {
           "img": "img/ch07-vs-designer.png",
           "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
-          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control. The picture shows the finished New booking form from chapter 7; your form starts empty.",
           "w": 900,
           "h": 600,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 46,
-            "say": "The Toolbox. Drag a control from here on to the form."
+            "x": 0.5,
+            "y": 5.5,
+            "say": "The Toolbox. Drag a control from here on to the form.",
+            "w": 25.5,
+            "h": 93
            },
            {
             "n": 2,
-            "x": 56,
-            "y": 49,
-            "say": "The form. Drop the control where the picture shows it."
+            "x": 28,
+            "y": 9.5,
+            "say": "The form. Drop the control where the picture shows it.",
+            "w": 55.5,
+            "h": 79
            },
            {
             "n": 3,
-            "x": 93,
-            "y": 54,
-            "say": "The Properties window. Set Name first, then the rest of the row."
+            "x": 86.5,
+            "y": 21,
+            "say": "The Properties window. Set Name first, then the rest of the row.",
+            "w": 13.5,
+            "h": 76
            }
           ]
          }
@@ -1045,27 +1097,35 @@
           "marks": [
            {
             "n": 1,
-            "x": 79,
-            "y": 9,
-            "say": "lblSearch, txtSearch and the grey hint lblHint."
+            "x": 2.5,
+            "y": 6.8,
+            "say": "lblSearch, txtSearch and the grey hint lblHint.",
+            "w": 72,
+            "h": 4.7
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 32,
-            "say": "The customers grid, dgvCustomers."
+            "x": 2.5,
+            "y": 12.5,
+            "say": "The customers grid, dgvCustomers.",
+            "w": 95,
+            "h": 47.5
            },
            {
             "n": 3,
-            "x": 34,
-            "y": 63,
-            "say": "lblBookings, then the bookings grid, dgvBookings."
+            "x": 2.5,
+            "y": 61.5,
+            "say": "lblBookings, then the bookings grid, dgvBookings.",
+            "w": 95,
+            "h": 28.5
            },
            {
             "n": 4,
-            "x": 41,
-            "y": 94,
-            "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right."
+            "x": 2.5,
+            "y": 91.3,
+            "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right.",
+            "w": 95,
+            "h": 5.5
            }
           ]
          }
@@ -1092,7 +1152,7 @@
          "img": {
           "img": "img/ch07-vs-events.png",
           "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
           "w": 520,
           "h": 520,
           "missing": false,
@@ -1105,9 +1165,11 @@
            },
            {
             "n": 2,
-            "x": 63,
-            "y": 36,
-            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+            "x": 37.5,
+            "y": 33.8,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order.",
+            "w": 61.5,
+            "h": 4
            }
           ]
          }
@@ -1139,7 +1201,7 @@
          "img": {
           "img": "img/ch07-vs-events.png",
           "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
           "w": 520,
           "h": 520,
           "missing": false,
@@ -1152,9 +1214,11 @@
            },
            {
             "n": 2,
-            "x": 63,
-            "y": 36,
-            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+            "x": 37.5,
+            "y": 33.8,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order.",
+            "w": 61.5,
+            "h": 4
            }
           ]
          }
@@ -1488,15 +1552,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab is in front."
+            "x": 0.2,
+            "y": 1.2,
+            "say": "The code tab is in front.",
+            "w": 19.5,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Select everything here before you paste over it."
+            "x": 2,
+            "y": 9,
+            "say": "Select everything here before you paste over it.",
+            "w": 97.5,
+            "h": 90
            }
           ]
          }
@@ -1564,15 +1632,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 14,
-            "y": 44,
-            "say": "Three green lines: parked, not deleted. Chapter 7 brings them back."
+            "x": 19.5,
+            "y": 25,
+            "say": "Three green lines: parked, not deleted. Chapter 7 brings them back.",
+            "w": 44,
+            "h": 35
            },
            {
             "n": 2,
-            "x": 14,
-            "y": 77,
-            "say": "The two lines you type. They call the same stored procedure through Db."
+            "x": 19.5,
+            "y": 60.5,
+            "say": "The two lines you type. They call the same stored procedure through Db.",
+            "w": 64,
+            "h": 25
            }
           ]
          },
@@ -1626,21 +1698,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 64,
+            "y": 26,
+            "say": "Right-click the Forms folder.",
+            "w": 33.5,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 1.7,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 36.6,
+            "h": 4.8
            }
           ]
          }
@@ -1657,28 +1735,34 @@
          "img": {
           "img": "img/ch07-vs-designer.png",
           "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
-          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control. The picture shows the finished New booking form from chapter 7; your form starts empty.",
           "w": 900,
           "h": 600,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 46,
-            "say": "The Toolbox. Drag a control from here on to the form."
+            "x": 0.5,
+            "y": 5.5,
+            "say": "The Toolbox. Drag a control from here on to the form.",
+            "w": 25.5,
+            "h": 93
            },
            {
             "n": 2,
-            "x": 56,
-            "y": 49,
-            "say": "The form. Drop the control where the picture shows it."
+            "x": 28,
+            "y": 9.5,
+            "say": "The form. Drop the control where the picture shows it.",
+            "w": 55.5,
+            "h": 79
            },
            {
             "n": 3,
-            "x": 93,
-            "y": 54,
-            "say": "The Properties window. Set Name first, then the rest of the row."
+            "x": 86.5,
+            "y": 21,
+            "say": "The Properties window. Set Name first, then the rest of the row.",
+            "w": 13.5,
+            "h": 76
            }
           ]
          }
@@ -1707,21 +1791,27 @@
          "marks": [
           {
            "n": 1,
-           "x": 22,
-           "y": 42,
-           "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail."
+           "x": 5,
+           "y": 16,
+           "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail.",
+           "w": 19,
+           "h": 44
           },
           {
            "n": 2,
-           "x": 86,
-           "y": 45,
-           "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail."
+           "x": 32,
+           "y": 15.5,
+           "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail.",
+           "w": 62.5,
+           "h": 46
           },
           {
            "n": 3,
-           "x": 46,
-           "y": 84,
-           "say": "btnSave, then btnCancel."
+           "x": 51.5,
+           "y": 77.5,
+           "say": "btnSave, then btnCancel.",
+           "w": 46,
+           "h": 10.5
           }
          ]
         },
@@ -1844,21 +1934,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 42,
-            "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail."
+            "x": 5,
+            "y": 16,
+            "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail.",
+            "w": 19,
+            "h": 44
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 45,
-            "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail."
+            "x": 32,
+            "y": 15.5,
+            "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail.",
+            "w": 62.5,
+            "h": 46
            },
            {
             "n": 3,
-            "x": 46,
-            "y": 84,
-            "say": "btnSave, then btnCancel."
+            "x": 51.5,
+            "y": 77.5,
+            "say": "btnSave, then btnCancel.",
+            "w": 46,
+            "h": 10.5
            }
           ]
          }
@@ -1885,7 +1981,7 @@
          "img": {
           "img": "img/ch07-vs-events.png",
           "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
           "w": 520,
           "h": 520,
           "missing": false,
@@ -1898,9 +1994,11 @@
            },
            {
             "n": 2,
-            "x": 63,
-            "y": 36,
-            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+            "x": 37.5,
+            "y": 33.8,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order.",
+            "w": 61.5,
+            "h": 4
            }
           ]
          }
@@ -2282,15 +2380,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab is in front."
+            "x": 0.2,
+            "y": 1.2,
+            "say": "The code tab is in front.",
+            "w": 19.5,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Select everything here before you paste over it."
+            "x": 2,
+            "y": 9,
+            "say": "Select everything here before you paste over it.",
+            "w": 97.5,
+            "h": 90
            }
           ]
          }
@@ -2325,9 +2427,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 83.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 13,
+            "h": 10
            }
           ]
          },
@@ -2391,9 +2495,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 61,
-            "y": 75,
-            "say": "Click Start, or press F5."
+            "x": 59,
+            "y": 57,
+            "say": "Click Start, or press F5.",
+            "w": 8.5,
+            "h": 38
            }
           ]
          }
@@ -2412,21 +2518,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 58,
-            "y": 46,
-            "say": "Type the username siobhan."
+            "x": 41,
+            "y": 42.5,
+            "say": "Type the username siobhan.",
+            "w": 35,
+            "h": 6.5
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 55,
-            "say": "Type the password canal01."
+            "x": 41,
+            "y": 51.5,
+            "say": "Type the password canal01.",
+            "w": 35,
+            "h": 6.5
            },
            {
             "n": 3,
-            "x": 68,
-            "y": 76,
-            "say": "Click Sign in."
+            "x": 61,
+            "y": 72,
+            "say": "Click Sign in.",
+            "w": 15,
+            "h": 8
            }
           ]
          }
@@ -2445,27 +2557,35 @@
           "marks": [
            {
             "n": 1,
-            "x": 28,
-            "y": 11,
-            "say": "The Search box. The grid narrows as you type."
+            "x": 11,
+            "y": 8.5,
+            "say": "The Search box. The grid narrows as you type.",
+            "w": 34,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 30,
-            "say": "Twelve customers, sorted by last name. The CustomerID column is hidden."
+            "x": 4.5,
+            "y": 14,
+            "say": "Twelve customers, sorted by last name. The CustomerID column is hidden.",
+            "w": 91,
+            "h": 45
            },
            {
             "n": 3,
-            "x": 50,
-            "y": 70,
-            "say": "The bookings grid: empty until a customer is picked."
+            "x": 4.5,
+            "y": 65,
+            "say": "The bookings grid: empty until a customer is picked.",
+            "w": 91,
+            "h": 23
            },
            {
             "n": 4,
-            "x": 25,
-            "y": 94,
-            "say": "Edit and Delete are off until a row is picked."
+            "x": 15.5,
+            "y": 90,
+            "say": "Edit and Delete are off until a row is picked.",
+            "w": 22.5,
+            "h": 5.5
            }
           ]
          },
@@ -2494,21 +2614,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 40,
-            "say": "Click the row Aoife McCann."
+            "x": 4.5,
+            "y": 38.5,
+            "say": "Click the row Aoife McCann.",
+            "w": 91.5,
+            "h": 3.5
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 76,
-            "say": "Her bookings, newest first, with the status in words and the mechanic's name in each row."
+            "x": 4.5,
+            "y": 65,
+            "say": "Her bookings, newest first, with the status in words and the mechanic's name in each row.",
+            "w": 91,
+            "h": 23
            },
            {
             "n": 3,
-            "x": 25,
-            "y": 94,
-            "say": "Edit and Delete are on."
+            "x": 15.5,
+            "y": 90,
+            "say": "Edit and Delete are on.",
+            "w": 22.5,
+            "h": 5.5
            }
           ]
          }
@@ -2537,15 +2663,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 28,
-            "y": 11,
-            "say": "Type qu in the Search box."
+            "x": 11,
+            "y": 8.5,
+            "say": "Type qu in the Search box.",
+            "w": 34,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 15,
-            "y": 20,
-            "say": "One row left: Ciara Quinn."
+            "x": 4.5,
+            "y": 18.3,
+            "say": "One row left: Ciara Quinn.",
+            "w": 91.5,
+            "h": 3.8
            }
           ]
          }
@@ -2594,15 +2724,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 45,
-            "say": "The first problem found, and only that one."
+            "x": 36.5,
+            "y": 41,
+            "say": "The first problem found, and only that one.",
+            "w": 32.5,
+            "h": 11
            },
            {
             "n": 2,
-            "x": 64,
-            "y": 74,
-            "say": "Press OK. The cursor is put in the Last name box for you."
+            "x": 56.5,
+            "y": 69.5,
+            "say": "Press OK. The cursor is put in the Last name box for you.",
+            "w": 14.5,
+            "h": 10.5
            }
           ]
          }
@@ -2626,9 +2760,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 45,
-            "say": "Nine digits typed, ten needed."
+            "x": 32,
+            "y": 41,
+            "say": "Nine digits typed, ten needed.",
+            "w": 42,
+            "h": 11
            }
           ]
          }
@@ -2647,21 +2783,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 26,
-            "y": 19,
-            "say": "The title reads Add a customer, because the form was opened with the number 0."
+            "x": 19,
+            "y": 16,
+            "say": "The title reads Add a customer, because the form was opened with the number 0.",
+            "w": 14,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 55,
-            "y": 45,
-            "say": "The four boxes, filled in."
+            "x": 38,
+            "y": 25.5,
+            "say": "The four boxes, filled in.",
+            "w": 41,
+            "h": 33.5
            },
            {
             "n": 3,
-            "x": 58,
-            "y": 74,
-            "say": "Save checks every box before it talks to the database."
+            "x": 51,
+            "y": 70.7,
+            "say": "Save checks every box before it talks to the database.",
+            "w": 14.5,
+            "h": 7.3
            }
           ]
          }
@@ -2690,15 +2832,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 26,
-            "y": 19,
-            "say": "The title reads Edit customer, because the form was opened with a customer number."
+            "x": 19,
+            "y": 16,
+            "say": "The title reads Edit customer, because the form was opened with a customer number.",
+            "w": 13,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 55,
-            "y": 45,
-            "say": "The boxes are filled from usp_Customer_GetByID before you see them."
+            "x": 38,
+            "y": 25.5,
+            "say": "The boxes are filled from usp_Customer_GetByID before you see them.",
+            "w": 41,
+            "h": 33.5
            }
           ]
          }
@@ -2742,15 +2888,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 45,
-            "say": "The name comes from the picked row of the grid."
+            "x": 37.2,
+            "y": 43.5,
+            "say": "The name comes from the picked row of the grid.",
+            "w": 11.5,
+            "h": 8
            },
            {
             "n": 2,
-            "x": 63,
-            "y": 76,
-            "say": "Yes deletes. No goes back with nothing changed."
+            "x": 47.5,
+            "y": 69.5,
+            "say": "Yes deletes. No goes back with nothing changed.",
+            "w": 31.5,
+            "h": 11
            }
           ]
          }
@@ -2792,9 +2942,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 45,
-            "say": "This sentence was typed in chapter 4, inside the stored procedure."
+            "x": 24.5,
+            "y": 40.5,
+            "say": "This sentence was typed in chapter 4, inside the stored procedure.",
+            "w": 40.5,
+            "h": 13.5
            }
           ]
          }
@@ -2883,21 +3035,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 32,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -3004,21 +3162,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 64,
+            "y": 25.5,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 33.5,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -3053,9 +3217,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 83.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 13,
+            "h": 10
            }
           ]
          }

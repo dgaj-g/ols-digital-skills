@@ -35,21 +35,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 58,
-          "y": 46,
-          "say": "Type the username."
+          "x": 41,
+          "y": 42.5,
+          "say": "Type the username.",
+          "w": 35,
+          "h": 7
          },
          {
           "n": 2,
-          "x": 58,
-          "y": 55,
-          "say": "Type the password."
+          "x": 41,
+          "y": 51.5,
+          "say": "Type the password.",
+          "w": 35,
+          "h": 7
          },
          {
           "n": 3,
-          "x": 68,
-          "y": 76,
-          "say": "Click Sign in."
+          "x": 61,
+          "y": 72,
+          "say": "Click Sign in.",
+          "w": 15,
+          "h": 8.5
          }
         ]
        }
@@ -65,15 +71,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 30,
-          "y": 22,
-          "say": "Who is signed in."
+          "x": 8,
+          "y": 19.5,
+          "say": "Who is signed in.",
+          "w": 34,
+          "h": 5.5
          },
          {
           "n": 2,
-          "x": 72,
-          "y": 60,
-          "say": "One button for each screen."
+          "x": 7,
+          "y": 29,
+          "say": "One button for each screen.",
+          "w": 86,
+          "h": 61
          }
         ]
        }
@@ -89,15 +99,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 30,
-          "y": 11,
-          "say": "The Search box narrows the list as you type."
+          "x": 14.5,
+          "y": 8.5,
+          "say": "The Search box narrows the list as you type.",
+          "w": 31.5,
+          "h": 4.5
          },
          {
           "n": 2,
-          "x": 15,
-          "y": 40,
-          "say": "Customers are shown by name, never by number."
+          "x": 9,
+          "y": 14.5,
+          "say": "Customers are shown by name, never by number.",
+          "w": 21,
+          "h": 44.5
          }
         ]
        }
@@ -113,15 +127,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 20,
-          "y": 8,
-          "say": "Pick a day here."
+          "x": 11,
+          "y": 5.5,
+          "say": "Pick a day here.",
+          "w": 22,
+          "h": 5
          },
          {
           "n": 2,
-          "x": 37,
-          "y": 18,
-          "say": "One lane for each mechanic, with each booking drawn as a bar."
+          "x": 7.5,
+          "y": 12,
+          "say": "One lane for each mechanic, with each booking drawn as a bar.",
+          "w": 85,
+          "h": 28.5
          }
         ]
        }
@@ -137,15 +155,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 26,
-          "say": "Pink rows are parts that are running low and need to be ordered."
+          "x": 7,
+          "y": 25.5,
+          "say": "Pink rows are parts that are running low and need to be ordered.",
+          "w": 86,
+          "h": 3.2
          },
          {
           "n": 2,
-          "x": 50,
-          "y": 72,
-          "say": "Orders from suppliers that have not arrived yet."
+          "x": 7,
+          "y": 64.5,
+          "say": "Orders from suppliers that have not arrived yet.",
+          "w": 86,
+          "h": 4
          }
         ]
        }
@@ -161,15 +183,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 25,
-          "y": 8,
-          "say": "Pick a report and two dates."
+          "x": 6,
+          "y": 7,
+          "say": "Pick a report and two dates.",
+          "w": 68,
+          "h": 5
          },
          {
           "n": 2,
-          "x": 50,
-          "y": 50,
-          "say": "The answer, worked out from several tables at once."
+          "x": 6,
+          "y": 13,
+          "say": "The answer, worked out from several tables at once.",
+          "w": 88,
+          "h": 73
          }
         ]
        }

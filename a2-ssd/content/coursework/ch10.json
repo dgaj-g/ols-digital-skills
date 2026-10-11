@@ -197,21 +197,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 42,
-            "y": 17,
-            "say": "The heading row: eight headings, in this order."
+            "x": 1.5,
+            "y": 14.5,
+            "say": "The heading row: eight headings, in this order.",
+            "w": 97.5,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 50,
-            "say": "The Type column says valid, invalid or extreme."
+            "x": 19.4,
+            "y": 14.5,
+            "say": "The Type column says valid, invalid or extreme.",
+            "w": 6,
+            "h": 77.5
            },
            {
             "n": 3,
-            "x": 75,
-            "y": 74,
-            "say": "The Evidence column names a figure under the table."
+            "x": 71.5,
+            "y": 14.5,
+            "say": "The Evidence column names a figure under the table.",
+            "w": 8,
+            "h": 77.5
            }
           ]
          },
@@ -286,22 +292,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database.",
+          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          }
@@ -345,9 +355,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 67,
-            "y": 59,
-            "say": "The sentence from @Message, shown by Msg.Problem."
+            "x": 44,
+            "y": 54,
+            "say": "The sentence from @Message, shown by Msg.Problem.",
+            "w": 21,
+            "h": 8
            }
           ]
          }
@@ -369,22 +381,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database.",
+          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          }
@@ -418,9 +434,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 70,
-            "y": 21,
-            "say": "PADS-DISC shows 0 in stock, and the row is pink because 0 is below its reorder level of 4."
+            "x": 1.5,
+            "y": 18.7,
+            "say": "PADS-DISC shows 0 in stock, and the row is pink because 0 is below its reorder level of 4.",
+            "w": 97,
+            "h": 3.8
            }
           ]
          }
@@ -538,21 +556,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 58,
-          "y": 46,
-          "say": "Type the username."
+          "x": 41,
+          "y": 42.5,
+          "say": "Type the username.",
+          "w": 35,
+          "h": 7
          },
          {
           "n": 2,
-          "x": 58,
-          "y": 55,
-          "say": "Type the password."
+          "x": 41,
+          "y": 51.5,
+          "say": "Type the password.",
+          "w": 35,
+          "h": 7
          },
          {
           "n": 3,
-          "x": 68,
-          "y": 76,
-          "say": "Click Sign in."
+          "x": 61,
+          "y": 72,
+          "say": "Click Sign in.",
+          "w": 15,
+          "h": 8.5
          }
         ]
        }
@@ -568,15 +592,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 72,
-          "say": "The database said no, and the program turned that into a sentence."
+          "x": 6,
+          "y": 65.5,
+          "say": "The database said no, and the program turned that into a sentence.",
+          "w": 88,
+          "h": 6
          },
          {
           "n": 2,
-          "x": 30,
-          "y": 58,
-          "say": "The password box is emptied and the cursor is put back in it."
+          "x": 35,
+          "y": 52.3,
+          "say": "The password box is emptied and the cursor is put back in it.",
+          "w": 58,
+          "h": 8
          }
         ]
        }
@@ -612,9 +640,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 61,
-            "y": 75,
-            "say": "Click Start, or press F5."
+            "x": 59,
+            "y": 57,
+            "say": "Click Start, or press F5.",
+            "w": 8.5,
+            "h": 38
            }
           ]
          }
@@ -633,21 +663,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 58,
-            "y": 46,
-            "say": "Type the username."
+            "x": 41,
+            "y": 42.5,
+            "say": "Type the username.",
+            "w": 35,
+            "h": 7
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 55,
-            "say": "Type the password."
+            "x": 41,
+            "y": 51.5,
+            "say": "Type the password.",
+            "w": 35,
+            "h": 7
            },
            {
             "n": 3,
-            "x": 68,
-            "y": 76,
-            "say": "Click Sign in."
+            "x": 61,
+            "y": 72,
+            "say": "Click Sign in.",
+            "w": 15,
+            "h": 8.5
            }
           ]
          }
@@ -676,9 +712,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 72,
-            "say": "The red message appears here and the window stays open."
+            "x": 6,
+            "y": 65.5,
+            "say": "The red message appears here and the window stays open.",
+            "w": 60.5,
+            "h": 6
            }
           ]
          }
@@ -707,15 +745,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 22,
-            "say": "Who is signed in."
+            "x": 8,
+            "y": 19.5,
+            "say": "Who is signed in.",
+            "w": 34,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 72,
-            "y": 60,
-            "say": "One button for each screen."
+            "x": 7,
+            "y": 29,
+            "say": "One button for each screen.",
+            "w": 86,
+            "h": 61
            }
           ]
          }
@@ -819,15 +861,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 72,
-          "say": "The database said no, and the program turned that into a sentence."
+          "x": 6,
+          "y": 65.5,
+          "say": "The database said no, and the program turned that into a sentence.",
+          "w": 88,
+          "h": 6
          },
          {
           "n": 2,
-          "x": 30,
-          "y": 58,
-          "say": "The password box is emptied and the cursor is put back in it."
+          "x": 35,
+          "y": 52.3,
+          "say": "The password box is emptied and the cursor is put back in it.",
+          "w": 58,
+          "h": 8
          }
         ]
        }

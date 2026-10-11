@@ -138,15 +138,19 @@
            },
            {
             "n": 2,
-            "x": 6,
-            "y": 25,
-            "say": "Point at Open."
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 41,
-            "y": 48,
-            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder.",
+            "w": 37.5,
+            "h": 5
            }
           ]
          }
@@ -171,7 +175,7 @@
          "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
          "see": "The cursor blinks on the empty line, with the sample data above it.",
          "img": {
-          "img": "img/ch07-ssms-end-of-script.png",
+          "img": "img/ch04-ssms-end-of-script.png",
           "alt": "The BikeShop.sql script scrolled to its last lines: the sample data, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
           "cap": "The end of your script. Every stored procedure in this chapter goes on the empty line above the line that prints BikeShop is ready, one after another, each ending with GO.",
           "w": 900,
@@ -180,9 +184,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 89.3,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 3.5
            }
           ]
          }
@@ -203,15 +209,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 5,
-          "y": 6,
-          "say": "Results: the rows a SELECT found."
+          "x": 0.5,
+          "y": 3.2,
+          "say": "Results: the rows a SELECT found.",
+          "w": 8,
+          "h": 5.5
          },
          {
           "n": 2,
-          "x": 13,
-          "y": 6,
-          "say": "Messages: the lines that PRINT wrote, and any error."
+          "x": 8.6,
+          "y": 3.2,
+          "say": "Messages: the lines that PRINT wrote, and any error.",
+          "w": 9.2,
+          "h": 5.5
          }
         ]
        }
@@ -349,15 +359,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 6,
-            "say": "Click Execute, or press F5."
+            "x": 27.3,
+            "y": 4,
+            "say": "Click Execute, or press F5.",
+            "w": 8.2,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 39,
-            "y": 90,
-            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+            "x": 31.5,
+            "y": 88,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read.",
+            "w": 40.5,
+            "h": 10
            }
           ]
          },
@@ -392,15 +406,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 43,
-            "y": 10,
-            "say": "Expand Programmability, then Stored Procedures."
+            "x": 21.5,
+            "y": 8.5,
+            "say": "Expand Programmability, then Stored Procedures.",
+            "w": 27,
+            "h": 3.2
            },
            {
             "n": 2,
-            "x": 55,
-            "y": 71,
-            "say": "dbo.usp_Customer_Search. If a new one does not show, right-click Stored Procedures and click Refresh."
+            "x": 36,
+            "y": 69.8,
+            "say": "dbo.usp_Customer_Search. If a new one does not show, right-click Stored Procedures and click Refresh.",
+            "w": 36,
+            "h": 3.4
            }
           ]
          },
@@ -464,15 +482,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 7,
-            "y": 5,
-            "say": "Click New Query, or press Ctrl and N together."
+            "x": 1.2,
+            "y": 2,
+            "say": "Click New Query, or press Ctrl and N together.",
+            "w": 11.5,
+            "h": 7
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 60,
-            "say": "Paste the test into the empty window."
+            "x": 4.5,
+            "y": 25.5,
+            "say": "Paste the test into the empty window.",
+            "w": 95,
+            "h": 73
            }
           ]
          }
@@ -502,9 +524,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 19,
-            "y": 50,
-            "say": "FullName is one column made from FirstName and LastName joined together. The word AS gave the column that name."
+            "x": 12.5,
+            "y": 28,
+            "say": "FullName is one column made from FirstName and LastName joined together. The word AS gave the column that name.",
+            "w": 10.5,
+            "h": 62
            },
            {
             "n": 2,
@@ -641,22 +665,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 21.5,
+            "y": 26.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 32.5,
+            "h": 43
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 20.5,
+            "y": 80.5,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 19,
+            "h": 3.5
            }
           ]
          }
@@ -986,9 +1014,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 75,
-            "say": "The new row, fetched by the number the database chose."
+            "x": 4.3,
+            "y": 65,
+            "say": "The new row, fetched by the number the database chose.",
+            "w": 62,
+            "h": 20
            },
            {
             "n": 2,
@@ -1108,16 +1138,18 @@
          "img": {
           "img": "img/ch07-ssms-paste-gap.png",
           "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
-          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes. The picture shows usp_Appointment_Add from chapter 7. Yours has its own name and lines, with the marker line in the same kind of place.",
           "w": 900,
           "h": 560,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+            "x": 4,
+            "y": 62,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker.",
+            "w": 30.5,
+            "h": 4
            }
           ]
          }
@@ -1510,9 +1542,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 42,
-            "say": "The sentence came from inside the stored procedure, word for word."
+            "x": 2,
+            "y": 33,
+            "say": "The sentence came from inside the stored procedure, word for word.",
+            "w": 51,
+            "h": 20
            }
           ]
          },
@@ -1664,15 +1698,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 25,
-            "y": 20,
-            "say": "Headings with nothing under them: the row is gone."
+            "x": 4,
+            "y": 15.5,
+            "say": "Headings with nothing under them: the row is gone.",
+            "w": 41,
+            "h": 10
            },
            {
             "n": 2,
-            "x": 14,
-            "y": 80,
-            "say": "The Messages tab shows the two printed lines."
+            "x": 2,
+            "y": 70,
+            "say": "The Messages tab shows the two printed lines.",
+            "w": 25,
+            "h": 29
            }
           ]
          },
@@ -1912,15 +1950,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 52,
-            "y": 56,
-            "say": "Mechanic reads Conor Walsh, not 4. Service reads Wheel true, not 4."
+            "x": 46.5,
+            "y": 48,
+            "say": "Mechanic reads Conor Walsh, not 4. Service reads Wheel true, not 4.",
+            "w": 17,
+            "h": 18
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 84,
-            "say": "Last week's Basic service, marked Done."
+            "x": 4,
+            "y": 77,
+            "say": "Last week's Basic service, marked Done.",
+            "w": 79,
+            "h": 14
            }
           ]
          },
@@ -2185,9 +2227,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 25,
-            "y": 75,
-            "say": "One row: StaffID 1, Siobhán Rooney, Manager."
+            "x": 6,
+            "y": 63,
+            "say": "One row: StaffID 1, Siobhán Rooney, Manager.",
+            "w": 33,
+            "h": 23
            }
           ]
          },
@@ -2774,7 +2818,7 @@
          "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
          "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it.",
          "img": {
-          "img": "img/ch07-ssms-end-of-script.png",
+          "img": "img/ch04-ssms-end-of-script.png",
           "alt": "The BikeShop.sql script scrolled to its last lines: the sample data, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
           "cap": "The end of your script. Every stored procedure in this chapter goes on the empty line above the line that prints BikeShop is ready, one after another, each ending with GO.",
           "w": 900,
@@ -2783,9 +2827,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 89.3,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 3.5
            }
           ]
          }
@@ -2812,22 +2858,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 21.5,
+            "y": 26.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 32.5,
+            "h": 43
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 20.5,
+            "y": 80.5,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 19,
+            "h": 3.5
            }
           ]
          }
@@ -2907,15 +2957,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 24,
-            "y": 30,
-            "say": "Puncture repair and Safety check both take 30 minutes, so they are put in name order."
+            "x": 4.5,
+            "y": 24.5,
+            "say": "Puncture repair and Safety check both take 30 minutes, so they are put in name order.",
+            "w": 70,
+            "h": 18.5
            },
            {
             "n": 2,
-            "x": 66,
-            "y": 30,
-            "say": "Display: the name, the minutes and the price in one piece of text."
+            "x": 53,
+            "y": 14,
+            "say": "Display: the name, the minutes and the price in one piece of text.",
+            "w": 22,
+            "h": 79
            }
           ]
          },
@@ -3032,16 +3086,18 @@
          "img": {
           "img": "img/ch07-ssms-paste-gap.png",
           "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
-          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes. The picture shows usp_Appointment_Add from chapter 7. Yours has its own name and lines, with the marker line in the same kind of place.",
           "w": 900,
           "h": 560,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+            "x": 4,
+            "y": 62,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker.",
+            "w": 30.5,
+            "h": 4
            }
           ]
          }
@@ -3729,9 +3785,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 41,
-            "say": "Carlingford Cycles, number 4, first because C comes before L."
+            "x": 4.5,
+            "y": 35,
+            "say": "Carlingford Cycles, number 4, first because C comes before L.",
+            "w": 23,
+            "h": 13
            },
            {
             "n": 2,

@@ -37,15 +37,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 30,
-          "y": 22,
-          "say": "Who is signed in."
+          "x": 8,
+          "y": 19.5,
+          "say": "Who is signed in.",
+          "w": 34,
+          "h": 5.5
          },
          {
           "n": 2,
-          "x": 72,
-          "y": 60,
-          "say": "One button for each screen."
+          "x": 7,
+          "y": 29,
+          "say": "One button for each screen.",
+          "w": 86,
+          "h": 61
          }
         ]
        }
@@ -150,21 +154,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 59,
-            "y": 11,
-            "say": "Type Windows Forms in the search box."
+            "x": 42,
+            "y": 8,
+            "say": "Type Windows Forms in the search box.",
+            "w": 36,
+            "h": 6
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 37,
-            "say": "Click Windows Forms App (.NET Framework) with C# under it."
+            "x": 42.5,
+            "y": 34.5,
+            "say": "Click Windows Forms App (.NET Framework) with C# under it.",
+            "w": 50.5,
+            "h": 14.5
            },
            {
             "n": 3,
-            "x": 91,
-            "y": 92,
-            "say": "Click Next."
+            "x": 86,
+            "y": 89.5,
+            "say": "Click Next.",
+            "w": 10,
+            "h": 5
            }
           ]
          }
@@ -203,27 +213,35 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 29,
-            "say": "Type BikeShop as the Project name."
+            "x": 4,
+            "y": 26,
+            "say": "Type BikeShop as the Project name.",
+            "w": 55,
+            "h": 5.8
            },
            {
             "n": 2,
-            "x": 31,
-            "y": 39,
-            "say": "Choose your OneDrive coursework folder as the Location."
+            "x": 4,
+            "y": 36.2,
+            "say": "Choose your OneDrive coursework folder as the Location.",
+            "w": 55,
+            "h": 5.8
            },
            {
             "n": 3,
-            "x": 31,
-            "y": 77,
-            "say": "Choose .NET Framework 4.7.2."
+            "x": 4,
+            "y": 73.8,
+            "say": "Choose .NET Framework 4.7.2.",
+            "w": 55,
+            "h": 5.8
            },
            {
             "n": 4,
-            "x": 91,
-            "y": 92,
-            "say": "Click Create."
+            "x": 86,
+            "y": 89.5,
+            "say": "Click Create.",
+            "w": 10,
+            "h": 5
            }
           ]
          }
@@ -252,27 +270,35 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 24,
-            "say": "The project, BikeShop, in bold."
+            "x": 14,
+            "y": 18.5,
+            "say": "The project, BikeShop, in bold.",
+            "w": 19,
+            "h": 10
            },
            {
             "n": 2,
-            "x": 36,
-            "y": 63,
-            "say": "App.config, which holds the connection string in the next stage."
+            "x": 21,
+            "y": 58,
+            "say": "App.config, which holds the connection string in the next stage.",
+            "w": 19,
+            "h": 11
            },
            {
             "n": 3,
-            "x": 34,
-            "y": 76,
-            "say": "Form1.cs, a window you will delete later in this chapter."
+            "x": 20,
+            "y": 71,
+            "say": "Form1.cs, a window you will delete later in this chapter.",
+            "w": 15,
+            "h": 11
            },
            {
             "n": 4,
-            "x": 36,
-            "y": 89,
-            "say": "Program.cs, which says which window opens first."
+            "x": 20,
+            "y": 83,
+            "say": "Program.cs, which says which window opens first.",
+            "w": 21,
+            "h": 11
            }
           ]
          },
@@ -316,9 +342,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 7,
-            "say": "Right-click BikeShop, the project, in Solution Explorer."
+            "x": 6.3,
+            "y": 4.8,
+            "say": "Right-click BikeShop, the project, in Solution Explorer.",
+            "w": 7.5,
+            "h": 3.5
            },
            {
             "n": 2,
@@ -328,9 +356,11 @@
            },
            {
             "n": 3,
-            "x": 22,
-            "y": 45,
-            "say": "Click New Folder, type the name and press Enter."
+            "x": 14,
+            "y": 42.5,
+            "say": "Click New Folder, type the name and press Enter.",
+            "w": 39,
+            "h": 4.5
            }
           ]
          }
@@ -354,9 +384,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 50,
-            "say": "Controls, Data, Forms and Models, in alphabetical order."
+            "x": 12,
+            "y": 37.5,
+            "say": "Controls, Data, Forms and Models, in alphabetical order.",
+            "w": 23,
+            "h": 33
            }
           ]
          },
@@ -437,15 +469,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 25,
-            "y": 61,
-            "say": "The name, BikeShop, that the helper class asks for."
+            "x": 19.5,
+            "y": 59.5,
+            "say": "The name, BikeShop, that the helper class asks for.",
+            "w": 11.5,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 57,
-            "y": 68,
-            "say": "The connection string: the server, the database, and how to sign in."
+            "x": 13,
+            "y": 64,
+            "say": "The connection string: the server, the database, and how to sign in.",
+            "w": 72,
+            "h": 13.5
            }
           ]
          }
@@ -551,15 +587,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 7,
-            "y": 8,
-            "say": "Click Assemblies on the left."
+            "x": 1.5,
+            "y": 5.5,
+            "say": "Click Assemblies on the left.",
+            "w": 10.5,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 85,
-            "y": 8,
-            "say": "Type System.Configuration in the search box."
+            "x": 74,
+            "y": 6,
+            "say": "Type System.Configuration in the search box.",
+            "w": 25,
+            "h": 5
            },
            {
             "n": 3,
@@ -569,9 +609,11 @@
            },
            {
             "n": 4,
-            "x": 83,
-            "y": 96,
-            "say": "Click OK."
+            "x": 77.5,
+            "y": 93.5,
+            "say": "Click OK.",
+            "w": 10,
+            "h": 5
            }
           ]
          }
@@ -643,21 +685,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -676,21 +724,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 30,
-            "say": "Class is already selected in the middle list."
+            "x": 26,
+            "y": 11.5,
+            "say": "Class is already selected in the middle list.",
+            "w": 45.5,
+            "h": 6.5
            },
            {
             "n": 2,
-            "x": 45,
-            "y": 88,
-            "say": "Type the file name in the Name box, ending in .cs."
+            "x": 13.5,
+            "y": 88.5,
+            "say": "Type the file name in the Name box, ending in .cs.",
+            "w": 58,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 88,
-            "y": 93,
-            "say": "Press Add."
+            "x": 81.5,
+            "y": 94,
+            "say": "Press Add.",
+            "w": 9.3,
+            "h": 4.5
            }
           ]
          },
@@ -731,9 +785,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -939,21 +995,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder."
+            "x": 64,
+            "y": 31.5,
+            "say": "Right-click the Models folder.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -1044,21 +1106,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 7,
-            "say": "Right-click the project name, BikeShop, in bold."
+            "x": 6.3,
+            "y": 4.8,
+            "say": "Right-click the project name, BikeShop, in bold.",
+            "w": 7.5,
+            "h": 3.5
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 38,
-            "say": "Point at Add."
+            "x": 53,
+            "y": 35.5,
+            "say": "Point at Add.",
+            "w": 41,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 20,
-            "y": 92,
-            "say": "Click Class…"
+            "x": 14,
+            "y": 89.8,
+            "say": "Click Class…",
+            "w": 39,
+            "h": 4.5
            }
           ]
          }
@@ -1194,21 +1262,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -1323,21 +1397,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 7,
-            "say": "Right-click the project name, BikeShop, in bold."
+            "x": 6.3,
+            "y": 4.8,
+            "say": "Right-click the project name, BikeShop, in bold.",
+            "w": 7.5,
+            "h": 3.5
            },
            {
             "n": 2,
-            "x": 60,
-            "y": 38,
-            "say": "Point at Add."
+            "x": 53,
+            "y": 35.5,
+            "say": "Point at Add.",
+            "w": 41,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 20,
-            "y": 92,
-            "say": "Click Class…"
+            "x": 14,
+            "y": 89.8,
+            "say": "Click Class…",
+            "w": 39,
+            "h": 4.5
            }
           ]
          }
@@ -1469,21 +1549,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -1522,33 +1608,43 @@
          "marks": [
           {
            "n": 1,
-           "x": 52,
-           "y": 20,
-           "say": "lblTitle, in 16 point bold."
+           "x": 7.5,
+           "y": 15.5,
+           "say": "lblTitle, in 16 point bold.",
+           "w": 39,
+           "h": 8.5
           },
           {
            "n": 2,
-           "x": 86,
-           "y": 43,
-           "say": "txtUsername, with lblUsername to its left."
+           "x": 35.5,
+           "y": 39,
+           "say": "txtUsername, with lblUsername to its left.",
+           "w": 56,
+           "h": 8
           },
           {
            "n": 3,
-           "x": 86,
-           "y": 55,
-           "say": "txtPassword, with lblPassword to its left. It shows dots instead of letters."
+           "x": 35.5,
+           "y": 50.5,
+           "say": "txtPassword, with lblPassword to its left. It shows dots instead of letters.",
+           "w": 56,
+           "h": 8
           },
           {
            "n": 4,
-           "x": 50,
-           "y": 68,
-           "say": "lblMessage, empty for now, in Firebrick red."
+           "x": 6,
+           "y": 64.5,
+           "say": "lblMessage, empty for now, in Firebrick red.",
+           "w": 88,
+           "h": 7
           },
           {
            "n": 5,
-           "x": 63,
-           "y": 83,
-           "say": "btnSignIn, which you double-click last."
+           "x": 68,
+           "y": 78.5,
+           "say": "btnSignIn, which you double-click last.",
+           "w": 23,
+           "h": 9.5
           }
          ]
         },
@@ -1652,27 +1748,35 @@
         "marks": [
          {
           "n": 1,
-          "x": 22,
-          "y": 10,
-          "say": "The box at the top names what is selected: frmLogin, the form."
+          "x": 1,
+          "y": 7,
+          "say": "The box at the top names what is selected: frmLogin, the form.",
+          "w": 98,
+          "h": 7
          },
          {
           "n": 2,
-          "x": 55,
-          "y": 97,
-          "say": "Text is the words in the title bar."
+          "x": 1,
+          "y": 94.5,
+          "say": "Text is the words in the title bar.",
+          "w": 97,
+          "h": 5.5
          },
          {
           "n": 3,
-          "x": 55,
-          "y": 76,
-          "say": "Size is width then height, in pixels, with a comma between."
+          "x": 1,
+          "y": 73.5,
+          "say": "Size is width then height, in pixels, with a comma between.",
+          "w": 97,
+          "h": 5.8
          },
          {
           "n": 4,
-          "x": 55,
-          "y": 69,
-          "say": "FormBorderStyle decides whether the window can be resized."
+          "x": 1,
+          "y": 66.5,
+          "say": "FormBorderStyle decides whether the window can be resized.",
+          "w": 97,
+          "h": 5.8
          }
         ]
        }
@@ -1688,9 +1792,11 @@
         "marks": [
          {
           "n": 1,
-          "x": 19,
-          "y": 33,
-          "say": "Find the control in the Toolbox."
+          "x": 5,
+          "y": 30.5,
+          "say": "Find the control in the Toolbox.",
+          "w": 53,
+          "h": 5.8
          },
          {
           "n": 2,
@@ -1712,9 +1818,11 @@
         "marks": [
          {
           "n": 1,
-          "x": 72,
-          "y": 50,
-          "say": "Click the box beside (Name), type the name from the table and press Enter."
+          "x": 47,
+          "y": 46.5,
+          "say": "Click the box beside (Name), type the name from the table and press Enter.",
+          "w": 51,
+          "h": 7
          }
         ]
        }
@@ -1766,15 +1874,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 32,
-            "say": "Right-click the form in Solution Explorer."
+            "x": 20,
+            "y": 28.5,
+            "say": "Right-click the form in Solution Explorer.",
+            "w": 30,
+            "h": 8
            },
            {
             "n": 2,
-            "x": 21,
-            "y": 85,
-            "say": "Click View Code, or press F7."
+            "x": 11,
+            "y": 81.5,
+            "say": "Click View Code, or press F7.",
+            "w": 74,
+            "h": 7.5
            }
           ]
          }
@@ -1963,15 +2075,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 30,
-            "say": "Right-click Form1.cs."
+            "x": 19.5,
+            "y": 27.8,
+            "say": "Right-click Form1.cs.",
+            "w": 17,
+            "h": 4.8
            },
            {
             "n": 2,
-            "x": 20,
-            "y": 85,
-            "say": "Click Delete, then OK."
+            "x": 3.5,
+            "y": 82.8,
+            "say": "Click Delete, then OK.",
+            "w": 83,
+            "h": 4.6
            }
           ]
          }
@@ -2011,9 +2127,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 46,
-            "y": 81,
-            "say": "The line you typed, which names frmLogin inside Application.Run."
+            "x": 27.5,
+            "y": 78,
+            "say": "The line you typed, which names frmLogin inside Application.Run.",
+            "w": 37,
+            "h": 6
            }
           ]
          },
@@ -2130,21 +2248,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -2198,21 +2322,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -2240,33 +2370,43 @@
          "marks": [
           {
            "n": 1,
-           "x": 36,
-           "y": 14,
-           "say": "lblWelcome, in 16 point bold."
+           "x": 5,
+           "y": 10.8,
+           "say": "lblWelcome, in 16 point bold.",
+           "w": 26.5,
+           "h": 7
           },
           {
            "n": 2,
-           "x": 19,
-           "y": 21,
-           "say": "lblSignedIn, which the code fills in when the window opens."
+           "x": 5,
+           "y": 19,
+           "say": "lblSignedIn, which the code fills in when the window opens.",
+           "w": 11,
+           "h": 5
           },
           {
            "n": 3,
-           "x": 10,
-           "y": 58,
-           "say": "btnDiary, btnHires and btnParts down the left."
+           "x": 4.5,
+           "y": 28,
+           "say": "btnDiary, btnHires and btnParts down the left.",
+           "w": 43.5,
+           "h": 60
           },
           {
            "n": 4,
-           "x": 58,
-           "y": 58,
-           "say": "btnCustomers, btnBikes and btnReports down the right."
+           "x": 52,
+           "y": 28,
+           "say": "btnCustomers, btnBikes and btnReports down the right.",
+           "w": 43.5,
+           "h": 60
           },
           {
            "n": 5,
-           "x": 76,
-           "y": 93,
-           "say": "btnSignOut at the bottom right."
+           "x": 79.5,
+           "y": 89.5,
+           "say": "btnSignOut at the bottom right.",
+           "w": 16,
+           "h": 7
           }
          ]
         },
@@ -2386,7 +2526,7 @@
        "screenshot": {
         "img": "img/ch07-vs-events.png",
         "alt": "The Properties window with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
         "w": 520,
         "h": 520,
         "missing": false,
@@ -2399,9 +2539,11 @@
          },
          {
           "n": 2,
-          "x": 63,
-          "y": 36,
-          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave."
+          "x": 37.5,
+          "y": 33.8,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave.",
+          "w": 61.5,
+          "h": 4
          }
         ]
        }
@@ -2464,9 +2606,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2610,9 +2754,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 61,
-            "y": 75,
-            "say": "Click Start, or press F5."
+            "x": 59,
+            "y": 57,
+            "say": "Click Start, or press F5.",
+            "w": 8.5,
+            "h": 38
            }
           ]
          },
@@ -2641,21 +2787,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 58,
-            "y": 46,
-            "say": "Type the username."
+            "x": 41,
+            "y": 42.5,
+            "say": "Type the username.",
+            "w": 35,
+            "h": 7
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 55,
-            "say": "Type the password."
+            "x": 41,
+            "y": 51.5,
+            "say": "Type the password.",
+            "w": 35,
+            "h": 7
            },
            {
             "n": 3,
-            "x": 68,
-            "y": 76,
-            "say": "Click Sign in."
+            "x": 61,
+            "y": 72,
+            "say": "Click Sign in.",
+            "w": 15,
+            "h": 8.5
            }
           ]
          },
@@ -2702,15 +2854,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 46,
-            "y": 22,
-            "say": "Signed in: Pádraig Maguire (Counter)."
+            "x": 4,
+            "y": 19,
+            "say": "Signed in: Pádraig Maguire (Counter).",
+            "w": 36.5,
+            "h": 6
            },
            {
             "n": 2,
-            "x": 93,
-            "y": 80,
-            "say": "Reports (manager only), greyed out."
+            "x": 52.3,
+            "y": 71,
+            "say": "Reports (manager only), greyed out.",
+            "w": 44,
+            "h": 18
            }
           ]
          }
@@ -2814,9 +2970,11 @@
         "marks": [
          {
           "n": 1,
-          "x": 75,
-          "y": 69,
-          "say": "The red message appears here and the window stays open."
+          "x": 5.5,
+          "y": 65.5,
+          "say": "The red message appears here and the window stays open.",
+          "w": 62,
+          "h": 6
          }
         ]
        }
@@ -2832,15 +2990,19 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 77,
-          "say": "The database said no, and the program turned that into a sentence."
+          "x": 5.5,
+          "y": 65.5,
+          "say": "The database said no, and the program turned that into a sentence.",
+          "w": 91,
+          "h": 6
          },
          {
           "n": 2,
-          "x": 96,
-          "y": 56,
-          "say": "The password box is emptied and the cursor is put back in it."
+          "x": 35,
+          "y": 51.8,
+          "say": "The password box is emptied and the cursor is put back in it.",
+          "w": 58.5,
+          "h": 8.5
          }
         ]
        }
@@ -2881,27 +3043,35 @@
         "marks": [
          {
           "n": 1,
-          "x": 30,
-          "y": 25,
-          "say": "Data: Db.cs and StaffData.cs."
+          "x": 8,
+          "y": 22,
+          "say": "Data: Db.cs and StaffData.cs.",
+          "w": 42,
+          "h": 14.5
          },
          {
           "n": 2,
-          "x": 30,
-          "y": 37,
-          "say": "Forms: eight forms."
+          "x": 8,
+          "y": 35,
+          "say": "Forms: eight forms.",
+          "w": 55,
+          "h": 39
          },
          {
           "n": 3,
-          "x": 32,
-          "y": 76,
-          "say": "Models: StaffMember.cs."
+          "x": 8,
+          "y": 74.8,
+          "say": "Models: StaffMember.cs.",
+          "w": 46,
+          "h": 8
          },
          {
           "n": 4,
-          "x": 26,
-          "y": 89,
-          "say": "Msg.cs and Session.cs at the top level, beside App.config and Program.cs."
+          "x": 13,
+          "y": 82,
+          "say": "Msg.cs and Session.cs at the top level, beside App.config and Program.cs.",
+          "w": 33,
+          "h": 17
          }
         ]
        }

@@ -107,7 +107,7 @@ window.CW = (function () {
       var pic = el('<div class="pic" style="max-width:' + w + 'px"><img src="' + h(S.base + x.img) + '" alt="' + h(x.alt) + '"></div>');
       marks.forEach(function (m) {
         var box = m.w != null;
-        pic.appendChild(el('<span class="mk ' + (box ? 'box' : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
+        pic.appendChild(el('<span class="mk ' + (box ? 'box' + (+m.y < 5 ? (+m.x < 4 ? ' corner' : ' side') : '') : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
       });
       fig.appendChild(pic);
     }
