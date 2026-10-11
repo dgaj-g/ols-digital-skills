@@ -11,6 +11,7 @@
 | 11 Oct 2026 13:49 | 7 | db5ae55e3f-7ee35a4e | (shows Untitled) tile wording | home tile reads "Build a bike shop system…"; main 72738e8 (PR #61) |
 | 11 Oct 2026 13:55 | 8 | db5ae55e3f-0858c8a2 | v8 A2 SSD db5ae55e3f-0858c8a2 Reload fix | the "papers were updated" Reload button gave a blank page; it now reloads the real address; Code.gs SHA-1 8317a62bde matches local, Index.html = main 7d81ee5 (PR #62). Pupil smoke as the dummy account in TEST-CW: chapter list, chapters 0 and 3 open, crumbs work, a ticked step shows on the staff Coursework grid (ch 3 1/165, whole guide 1/934); TEST-CW then deleted |
 | 11 Oct 2026 15:17 | 9 | db5ae55e3f-c90c1fad | v9 A2 SSD db5ae55e3f-c90c1fad picture marks | every numbered mark on every guide picture checked and realigned, two pictures retaken, four captions made honest, stage pill strip aligned; Code.gs SHA-1 de1bf501f6 matches local, Index.html = main f0727f2 (PR #64); owner page loads on v9 |
+| 11 Oct 2026 18:34 | 10 | 9ff5601479-fa23be53 | v10 coursework guide pupil walk fixes 9ff5601479 | the coursework guide walked as a pupil on the cloud PC: 214 checked wording fixes in chapters 0-12, the SSMS Generate Scripts save routine, copy buttons end with a new line, gap-copy button, "1 step ticked" wording, PDF remade (909 pages); Code.gs SHA-1 cf4d475484 matches local, Index.html = main 1b3a3e0 (PR #66); owner page loads on v10 |
 
 - Project: OLS A2 SSD Platform (owner dgartland021@c2ken.net)
 - Script ID: 1B53FthiVBjLCQYsDCtKimL2ueSD7qpNbZBx26W4O-eFPRtKwNXbWsF1X
