@@ -1,0 +1,756 @@
+{
+ "id": "12",
+ "n": 12,
+ "title": "Make it yours",
+ "one": "Turning the bike shop into your scenario: the same patterns, your tables.",
+ "marks": "This chapter is where the bike shop becomes your own project. The examiner gives the marks for your case study, built with the same rules: no double booking, stock that is always right, and a refusal in a plain sentence.",
+ "prev": {
+  "id": "11",
+  "title": "Mistakes that cost marks",
+  "n": 11
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "This year's case study, matched to the bike shop",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will do in this chapter.",
+     "blocks": [
+      {
+       "p": "Towpath Cycles was never your project. It was a practice business, made so that every pattern a case study asks for appears once, in a place you can see it working. Your own project is the case study that CCEA sets this year. This chapter shows you which part of the bike shop each part of this year's case study matches."
+      },
+      {
+       "p": "By the end you will have three things: a list that matches each thing in the case study to a bike shop table, a list of the stored procedures to copy and the names to change in each, and two upgrades that are worth extra marks. Nothing in this chapter changes your BikeShop database. Everything here is reading, matching and writing on paper."
+      },
+      {
+       "need": [
+        "Chapters 0 to 11 are finished, and the whole BikeShop program runs.",
+        "Your copy of this year's case study from your teacher, The Gallery, is beside you.",
+        "You have a sheet of paper, or a blank Word document, for your own lists.",
+        "This guide is open in the Edge browser beside you."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Case study",
+         "The made-up business that CCEA describes each year. Your project is the program for that business."
+        ],
+        [
+         "Shape",
+         "A pattern that comes back in every case study, such as a booking of one person for a time, or stock that is counted."
+        ],
+        [
+         "Unique item",
+         "A thing there is only one of, such as one painting. It can be reserved and sold once only."
+        ],
+        [
+         "Counted stock",
+         "Things kept as a number, such as tubes of paint. The number goes down with each sale and up with each delivery."
+        ],
+        [
+         "Capacity",
+         "The most people that one class or one room can take at the same time."
+        ],
+        [
+         "Deposit",
+         "Part of the price that a customer pays first, to hold a booking."
+        ],
+        [
+         "Header table",
+         "A table with one row for a whole order: when it was placed, and whether it has arrived."
+        ],
+        [
+         "Line table",
+         "A table with one row for each thing on an order. Each row holds the number of its order, so it is linked to its header row."
+        ],
+        [
+         "Provisional",
+         "Held for now but not yet confirmed. A provisional booking is let go if nobody confirms it in time."
+        ],
+        [
+         "ALTER TABLE",
+         "The words that change a table that already exists, such as adding a column, without building the table again."
+        ],
+        [
+         "UNIQUE",
+         "A rule in a table that refuses two rows with the same value, or with the same pair of values."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read this year's case study: The Gallery.",
+     "blocks": [
+      {
+       "p": "The Gallery sells art and antiques. It also runs pottery and photography, frames pictures, and sells art supplies. Read your copy of the case study first. The box below lists the parts of it that need a table or a stored procedure."
+      },
+      {
+       "box": {
+        "title": "What The Gallery needs your program to do",
+        "text": "Every artwork is one of a kind. Staff put a blue dot on an artwork when a customer reserves it, and a red dot when it is sold. A reserved artwork can go back to stock. Art supplies are counted. The Gallery orders pottery materials and photography materials from suppliers, and those orders are never written down anywhere at the moment. Customers book photo appointments, and the same photographer must never be booked twice at once. Pottery classes run for 1 day, 3 days or 5 days. A pottery consultation needs a deposit of 15 per cent, which is not paid back. Framing needs a deposit of 10 per cent. A customer who buys at an exhibition pays a deposit of 20 per cent and collects the artwork within 2 working days."
+       }
+      },
+      {
+       "p": "Every sentence in that box matches a shape you have already built. The next two screens go through them, one table at a time."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Match what The Gallery sells to the two kinds of stock in the bike shop.",
+     "blocks": [
+      {
+       "box": {
+        "title": "An artwork is a bike for sale",
+        "text": "A bike for sale is one of a kind, and so is an artwork. Your Artwork table is the Bike table with its own columns: the title, the artist and the price in place of the make, the model and the frame number. The Status column keeps the same three words. Available has no dot. Reserved is the blue dot. Sold is the red dot. Back to stock is what usp_Bike_Unreserve did: the status goes back to Available and the customer number is cleared."
+       }
+      },
+      {
+       "box": {
+        "title": "Art supplies are parts",
+        "text": "A part is counted stock, and so is a tube of paint or a bag of clay. Your Supply table is the Part table: a code, a name, a supplier, a cost, a selling price, a number in stock and a reorder level. The rule that stock is always right stays word for word. A sale is refused when there are not enough in stock, and the number in stock is only ever changed inside a stored procedure."
+       }
+      },
+      {
+       "box": {
+        "title": "Supplier orders are part orders",
+        "text": "The case study says that orders for pottery and photography materials are never written down. That is a problem your program solves. Your SupplyOrder table is the PartOrder table. Placing an order changes nothing in stock. Receiving the delivery closes the order and puts the number in stock up. Stage 3 shows an upgrade that lets one order hold many different supplies."
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Match the bookings The Gallery takes to the bookings in the bike shop.",
+     "blocks": [
+      {
+       "box": {
+        "title": "A photo appointment is a workshop appointment",
+        "text": "A workshop appointment books one mechanic for a start time and an end time. A photo appointment books one photographer in the same way. Your PhotoAppointment table is the Appointment table, with PhotographerID in place of MechanicID. The two lines of the clash check that you typed in chapter 7 stay exactly as they are, so a photographer can never be booked twice at once."
+       }
+      },
+      {
+       "box": {
+        "title": "A pottery class is a count, not a clash",
+        "text": "A pottery class is different. Many customers book the same class, so one booking does not clash with another. Instead, the class has a number of places. Give your class table a Places column, which is its capacity. In the stored procedure that books a place, replace the clash check with a count: count the bookings for that class that are not cancelled, and refuse with the sentence That class is full. when the count has reached Places. The count is one line: `IF (SELECT COUNT(*) FROM ClassBooking WHERE ClassID = @ClassID AND Status <> 'Cancelled') >= (SELECT Places FROM Class WHERE ClassID = @ClassID)`. The 1-day, 3-day and 5-day classes are three rows of a class type table, like the rows of ServiceType."
+       }
+      },
+      {
+       "box": {
+        "title": "Every deposit is the hire deposit rule",
+        "text": "A bike hire needs a deposit of at least 20 per cent of the total cost, and usp_Hire_Add refuses anything less. The Gallery has three deposits, and each one is the same deposit lines with a different number. Framing uses 0.10 in place of 0.20. A pottery consultation uses 0.15. Collecting from an exhibition keeps 0.20. Change the number in the refusal sentence too, so that it says 10% or 15%. The consultation deposit is not paid back, so the stored procedure that cancels a consultation leaves the DepositPaid column as it is. The 2 working days to collect from an exhibition is a deadline, and stage 3 shows how to keep one."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Which stored procedure to copy, and what to rename",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Learn how to turn one bike shop stored procedure into a Gallery one.",
+     "blocks": [
+      {
+       "p": "Every action in The Gallery is a stored procedure you have already written for Towpath Cycles. You do not start from nothing. You copy the bike shop's stored procedure into your own script and change the names. The checks, the IF lines, the refusal sentences and the order of the lines stay the same, because the rules are the same."
+      },
+      {
+       "p": "The next two screens hold a set of cards. Each card is one action The Gallery needs. It names the bike shop stored procedure to copy, then lists the names that change. Work through one card now, on paper, so that you know the method before your own project starts."
+      },
+      {
+       "steps": [
+        {
+         "id": "12.2.1",
+         "do": "Click File, then Open, then File… in SQL Server Management Studio (SSMS), and choose BikeShop.sql from your OneDrive folder.",
+         "see": "Your BikeShop script is in a tab, and the line USE BikeShop; is near the top.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Your script opens from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 6,
+            "y": 25,
+            "say": "Point at Open."
+           },
+           {
+            "n": 3,
+            "x": 41,
+            "y": 48,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+           }
+          ]
+         }
+        },
+        {
+         "id": "12.2.2",
+         "do": "Scroll down the script until you reach the line CREATE OR ALTER PROCEDURE usp_Bike_Reserve. Your stored procedures are in the order the chapters added them, so the bike ones are after the appointment ones.",
+         "see": "The stored procedure that reserves a bike is on the screen, with @BikeID, @CustomerID and @Message at the top."
+        },
+        {
+         "id": "12.2.3",
+         "do": "On your paper, write each name in usp_Bike_Reserve that belongs to the bike shop, one under another: usp_Bike_Reserve, Bike, @BikeID, BikeID, the Purpose test, and the refusal sentence.",
+         "see": "Your paper has a column of six bike shop names."
+        },
+        {
+         "id": "12.2.4",
+         "do": "Beside each of the six bike shop names on your paper, write its Gallery name from the first card on the next screen, Reserve an artwork with a blue dot.",
+         "see": "Your paper has two columns. The left column holds usp_Bike_Reserve and the right column holds usp_Artwork_Reserve, and so on down the page. The two columns are the whole change."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Copy these stored procedures for the artworks and the art supplies.",
+     "blocks": [
+      {
+       "box": {
+        "title": "Reserve an artwork with a blue dot",
+        "text": "Copy usp_Bike_Reserve. Rename it usp_Artwork_Reserve. Bike becomes Artwork and @BikeID becomes @ArtworkID. Take out the test Purpose = 'Sale', because every artwork is for sale. The refusal sentence becomes Only an available artwork can be reserved."
+       }
+      },
+      {
+       "box": {
+        "title": "Take a reservation off, back to stock",
+        "text": "Copy usp_Bike_Unreserve. Rename it usp_Artwork_Unreserve. Bike becomes Artwork and @BikeID becomes @ArtworkID. The refusal sentence becomes That artwork is not reserved."
+       }
+      },
+      {
+       "box": {
+        "title": "Sell an artwork with a red dot",
+        "text": "Copy usp_Bike_Sell. Rename it usp_Artwork_Sell. Bike becomes Artwork and @BikeID becomes @ArtworkID. Take out the Purpose test again. Each sentence that says bike says artwork."
+       }
+      },
+      {
+       "box": {
+        "title": "Sell art supplies",
+        "text": "Copy usp_PartSale_Add. Rename it usp_SupplySale_Add. Part becomes Supply, PartSale becomes SupplySale and @PartID becomes @SupplyID. Keep QtyInStock, the check against @Quantity and the sentence that starts Only, word for word."
+       }
+      },
+      {
+       "box": {
+        "title": "Order pottery or photography materials",
+        "text": "Copy usp_PartOrder_Place. Rename it usp_SupplyOrder_Place. PartOrder becomes SupplyOrder and @PartID becomes @SupplyID. Placing an order still changes nothing in stock."
+       }
+      },
+      {
+       "box": {
+        "title": "Receive a delivery from a supplier",
+        "text": "Copy usp_PartOrder_Receive. Rename it usp_SupplyOrder_Receive. PartOrder becomes SupplyOrder, Part becomes Supply and @PartID becomes @SupplyID. Closing the order and putting the stock up still happen in the same stored procedure."
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Copy these stored procedures for the photo appointments, pottery, framing and collection.",
+     "blocks": [
+      {
+       "box": {
+        "title": "Book a photo appointment",
+        "text": "Copy usp_Appointment_Add. Rename it usp_PhotoAppointment_Add. Appointment becomes PhotoAppointment, @MechanicID becomes @PhotographerID and ServiceType becomes PhotoSessionType. Change the opening hours in the time check to The Gallery's hours. Keep the two lines of the clash check exactly as they are."
+       }
+      },
+      {
+       "box": {
+        "title": "Move a photo appointment",
+        "text": "Copy usp_Appointment_Move. Rename it usp_PhotoAppointment_Move, with the same changes. A booking may still overlap itself, so keep the line that leaves out its own number."
+       }
+      },
+      {
+       "box": {
+        "title": "Book a place on a pottery class",
+        "text": "Copy usp_Appointment_Add. Rename it usp_ClassBooking_Add. Appointment becomes ClassBooking. Replace the clash check with the count against Places from stage 1, and the refusal sentence with That class is full."
+       }
+      },
+      {
+       "box": {
+        "title": "Book a pottery consultation with a 15 per cent deposit",
+        "text": "Copy usp_Appointment_Add, then the deposit lines from usp_Hire_Add. Rename it usp_Consultation_Add. Add a @DepositPaid parameter, and copy in the deposit lines from usp_Hire_Add with 0.15 in place of 0.20."
+       }
+      },
+      {
+       "box": {
+        "title": "Book framing with a 10 per cent deposit",
+        "text": "Copy usp_Hire_Add. Rename it usp_Framing_Add. Hire becomes Framing and @BikeID goes. Keep the deposit lines with 0.10 in place of 0.20. Framing books a date range for a job, not a bike, so the clash check comes out."
+       }
+      },
+      {
+       "box": {
+        "title": "Hold an exhibition sale for collection, with a 20 per cent deposit",
+        "text": "Copy usp_Bike_Reserve, then the deposit lines from usp_Hire_Add. Rename it usp_Artwork_ReserveForCollection. Keep 0.20. Add an ExpiresOn date, 2 working days after today. Stage 3 shows how to let the sale go when that date has passed."
+       }
+      },
+      {
+       "box": {
+        "title": "Cancel any booking",
+        "text": "Copy usp_Appointment_Cancel. Rename it to match each booking table, such as usp_PhotoAppointment_Cancel. A cancel is still a change of Status, never a DELETE, because the row is The Gallery's history."
+       }
+      },
+      {
+       "box": {
+        "title": "Every report",
+        "text": "Copy usp_Report_MechanicWorkload and the other four reports. Rename them for The Gallery's own questions, such as usp_Report_PhotographerWorkload or usp_Report_IncomeBySource. Keep the LEFT JOIN with the date test after ON."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Two upgrades worth the marks",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read why these two upgrades earn marks.",
+     "blocks": [
+      {
+       "p": "A project that copies the bike shop's shapes well earns good marks. The top marks go to a project that also handles something the bike shop did not need. The Gallery has two things like that, and each one is a small step on from code you already know."
+      },
+      {
+       "box": {
+        "title": "Upgrade one: one supplier order with many lines",
+        "text": "In the bike shop, one order is for one part. A real supplier order from The Gallery holds clay, glaze and photo paper on the same piece of paper. That needs a header table for the order and a line table for each thing on it, and the stored procedure that receives the delivery must put up the stock of every line at once."
+       }
+      },
+      {
+       "box": {
+        "title": "Upgrade two: a booking held for a short time, then let go",
+        "text": "A customer who asks for a pottery consultation has not paid the deposit yet. An exhibition buyer has 2 working days to collect. In both cases the booking is held, but only until a deadline. That needs a status called Provisional, a column that holds the deadline, and a stored procedure that cancels every held booking whose deadline has passed."
+       }
+      },
+      {
+       "p": "Both upgrades are code blocks to read, not to copy. Read them here, part by part. Do not paste them into your BikeShop script, because the bike shop does not need them. You build them in your own project, with your own names, when you reach chapters 3 and 8."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read upgrade one: one supplier order with many lines.",
+     "blocks": [
+      {
+       "p": "The picture shows the three tables. The order table is on the left, the lines table is in the middle and the part table is on the right. Each line row points back to its order and across to one part. In your own project, the header table keeps the dates, the status and who placed the order. The part number and the quantity move into the lines."
+      },
+      {
+       "diagram": {
+        "id": "12.3-order-diagram",
+        "alt": "Three tables drawn as boxes. PartOrder on the left holds PartOrderID, Status and ReceivedOn. PartOrderLine in the middle holds PartOrderLineID, PartOrderID, PartID and QtyOrdered. Part on the right holds PartID, Name and QtyInStock. A line joins PartOrderLine.PartOrderID to PartOrder.PartOrderID, and another joins PartOrderLine.PartID to Part.PartID.",
+        "cap": "One order on the left, many lines in the middle. Each line points back to its order and across to one part.",
+        "tables": [
+         {
+          "name": "PartOrder",
+          "x": 40,
+          "y": 20,
+          "cols": [
+           [
+            "PartOrderID",
+            "PK"
+           ],
+           [
+            "Status",
+            ""
+           ],
+           [
+            "ReceivedOn",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "PartOrderLine",
+          "x": 400,
+          "y": 20,
+          "cols": [
+           [
+            "PartOrderLineID",
+            "PK"
+           ],
+           [
+            "PartOrderID",
+            "FK"
+           ],
+           [
+            "PartID",
+            "FK"
+           ],
+           [
+            "QtyOrdered",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "Part",
+          "x": 760,
+          "y": 20,
+          "cols": [
+           [
+            "PartID",
+            "PK"
+           ],
+           [
+            "Name",
+            ""
+           ],
+           [
+            "QtyInStock",
+            ""
+           ]
+          ]
+         }
+        ],
+        "links": [
+         [
+          "PartOrderLine.PartOrderID",
+          "PartOrder.PartOrderID"
+         ],
+         [
+          "PartOrderLine.PartID",
+          "Part.PartID"
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "12.3-order-lines",
+        "kind": "read",
+        "lang": "sql",
+        "title": "PartOrderLine and usp_PartOrder_ReceiveLines: an order with many lines",
+        "src": "try:ch12_make_it_yours.sql#order-lines",
+        "parts": [
+         [
+          "DROP TABLE IF EXISTS PartOrderLine;",
+          "GO",
+          "Drop the old lines table first",
+          "A line row points at its order, so the lines table is a child of PartOrder. Children are dropped before their parents. In your own script, this line goes at the top of the list of DROP lines, above the order table."
+         ],
+         [
+          "CREATE TABLE PartOrderLine (",
+          "QtyOrdered      INT NOT NULL,",
+          "The lines table and its four columns",
+          "Each line has its own number, the number of the order it belongs to, the part it is for, and how many were ordered. Three lines of the same order all hold the same PartOrderID."
+         ],
+         [
+          "CONSTRAINT PK_PartOrderLine",
+          "REFERENCES Part (PartID),",
+          "The key, and the two links",
+          "The primary key is the line's own number. The first foreign key links each line to a real order. The second foreign key links each line to a real part, so a line can never be for a part that does not exist."
+         ],
+         [
+          "CONSTRAINT UQ_PartOrderLine",
+          "GO",
+          "One line per part, and never zero",
+          "UNIQUE on the pair PartOrderID and PartID refuses a second line for the same part on the same order, so 10 tubes of paint are one line, not two lines of 5. The CHECK refuses a line for 0 or fewer."
+         ],
+         [
+          "CREATE OR ALTER PROCEDURE usp_PartOrder_ReceiveLines",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and the one thing that goes in",
+          "The stored procedure needs only the order number. Everything else it needs is already in the lines. @Message carries the refusal sentence back out, as in every stored procedure that changes data."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "AS, BEGIN and the blank message",
+          "AS and BEGIN mark where the work starts. The message starts blank, and a blank message at the end means the delivery was received."
+         ],
+         [
+          "IF NOT EXISTS (SELECT * FROM PartOrder",
+          "END",
+          "Refuse an order that is not open",
+          "An order that has already been received, or was cancelled, must not put the stock up a second time. If there is no open order with this number, the sentence That order is not open. goes back, and RETURN stops the stored procedure there."
+         ],
+         [
+          "IF NOT EXISTS (SELECT * FROM PartOrderLine",
+          "END",
+          "Refuse an order with no lines",
+          "An order with nothing on it has nothing to receive. The sentence That order has no lines. goes back, and RETURN stops the stored procedure."
+         ],
+         [
+          "UPDATE PartOrder",
+          "WHERE PartOrderID = @PartOrderID;",
+          "Close the order",
+          "The header row is marked Received, with today's date. This is the same UPDATE as in usp_PartOrder_Receive. This version receives every line in full."
+         ],
+         [
+          "UPDATE Part",
+          "$end",
+          "Put the stock up for every line at once",
+          "This is the line that handles the whole order. The INNER JOIN matches each part to its own line on this order, and each matched part goes up by the quantity on its own line. An order with three lines puts three parts up, in one UPDATE. Parts that are not on the order do not match the join, so they are left as they were. END closes the stored procedure, and GO ends the batch."
+         ]
+        ],
+        "text": "-- Upgrade 1: one supplier order with many lines.\n-- The lines table is a child of PartOrder, so it is dropped first.\nDROP TABLE IF EXISTS PartOrderLine;\nGO\n\nCREATE TABLE PartOrderLine (\n    PartOrderLineID INT IDENTITY(1,1) NOT NULL,\n    PartOrderID     INT NOT NULL,\n    PartID          INT NOT NULL,\n    QtyOrdered      INT NOT NULL,\n    CONSTRAINT PK_PartOrderLine PRIMARY KEY (PartOrderLineID),\n    CONSTRAINT FK_PartOrderLine_PartOrder FOREIGN KEY (PartOrderID)\n        REFERENCES PartOrder (PartOrderID),\n    CONSTRAINT FK_PartOrderLine_Part FOREIGN KEY (PartID)\n        REFERENCES Part (PartID),\n    -- one line per part on each order\n    CONSTRAINT UQ_PartOrderLine UNIQUE (PartOrderID, PartID),\n    CONSTRAINT CK_PartOrderLine_Qty CHECK (QtyOrdered > 0)\n);\nGO\n\nCREATE OR ALTER PROCEDURE usp_PartOrder_ReceiveLines\n    @PartOrderID INT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n\n    IF NOT EXISTS (SELECT * FROM PartOrder WHERE PartOrderID = @PartOrderID\n        AND Status = 'Ordered')\n    BEGIN\n        SET @Message = 'That order is not open.';\n        RETURN;\n    END\n    IF NOT EXISTS (SELECT * FROM PartOrderLine\n        WHERE PartOrderID = @PartOrderID)\n    BEGIN\n        SET @Message = 'That order has no lines.';\n        RETURN;\n    END\n\n    UPDATE PartOrder\n    SET Status = 'Received', ReceivedOn = CAST(GETDATE() AS DATE)\n    WHERE PartOrderID = @PartOrderID;\n\n    -- Every line at once: each part goes up by its own line's quantity.\n    UPDATE Part\n    SET QtyInStock = QtyInStock + PartOrderLine.QtyOrdered\n    FROM Part\n        INNER JOIN PartOrderLine ON PartOrderLine.PartID = Part.PartID\n    WHERE PartOrderLine.PartOrderID = @PartOrderID;\nEND\nGO",
+        "partLines": [
+         [
+          3,
+          4,
+          "Drop the old lines table first",
+          "A line row points at its order, so the lines table is a child of PartOrder. Children are dropped before their parents. In your own script, this line goes at the top of the list of DROP lines, above the order table."
+         ],
+         [
+          6,
+          10,
+          "The lines table and its four columns",
+          "Each line has its own number, the number of the order it belongs to, the part it is for, and how many were ordered. Three lines of the same order all hold the same PartOrderID."
+         ],
+         [
+          11,
+          15,
+          "The key, and the two links",
+          "The primary key is the line's own number. The first foreign key links each line to a real order. The second foreign key links each line to a real part, so a line can never be for a part that does not exist."
+         ],
+         [
+          17,
+          20,
+          "One line per part, and never zero",
+          "UNIQUE on the pair PartOrderID and PartID refuses a second line for the same part on the same order, so 10 tubes of paint are one line, not two lines of 5. The CHECK refuses a line for 0 or fewer."
+         ],
+         [
+          22,
+          24,
+          "The name, and the one thing that goes in",
+          "The stored procedure needs only the order number. Everything else it needs is already in the lines. @Message carries the refusal sentence back out, as in every stored procedure that changes data."
+         ],
+         [
+          25,
+          27,
+          "AS, BEGIN and the blank message",
+          "AS and BEGIN mark where the work starts. The message starts blank, and a blank message at the end means the delivery was received."
+         ],
+         [
+          29,
+          34,
+          "Refuse an order that is not open",
+          "An order that has already been received, or was cancelled, must not put the stock up a second time. If there is no open order with this number, the sentence That order is not open. goes back, and RETURN stops the stored procedure there."
+         ],
+         [
+          35,
+          40,
+          "Refuse an order with no lines",
+          "An order with nothing on it has nothing to receive. The sentence That order has no lines. goes back, and RETURN stops the stored procedure."
+         ],
+         [
+          42,
+          44,
+          "Close the order",
+          "The header row is marked Received, with today's date. This is the same UPDATE as in usp_PartOrder_Receive. This version receives every line in full."
+         ],
+         [
+          47,
+          53,
+          "Put the stock up for every line at once",
+          "This is the line that handles the whole order. The INNER JOIN matches each part to its own line on this order, and each matched part goes up by the quantity on its own line. An order with three lines puts three parts up, in one UPDATE. Parts that are not on the order do not match the join, so they are left as they were. END closes the stored procedure, and GO ends the batch."
+         ]
+        ]
+       }
+      },
+      {
+       "p": "To place an order with many lines, your own project needs one more stored procedure that adds one line to an open order. It is usp_PartOrder_Place with the part and the quantity moved into the line table."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read upgrade two: a booking held for a short time, then let go.",
+     "blocks": [
+      {
+       "p": "A provisional booking holds its slot like any other booking. The clash check counts every booking that is not cancelled, so nobody else can book that time while it is held. When the deadline passes, one stored procedure cancels it and the slot is free again. Your diary form runs that stored procedure each time it opens, so a booking that has run out is gone before anyone looks."
+      },
+      {
+       "code": {
+        "id": "12.3-provisional",
+        "kind": "read",
+        "lang": "sql",
+        "title": "A Provisional status, ExpiresOn and usp_Appointment_ExpireProvisional",
+        "src": "try:ch12_make_it_yours.sql#provisional",
+        "parts": [
+         [
+          "ALTER TABLE Appointment ALTER COLUMN",
+          "ALTER COLUMN",
+          "Make the Status column longer",
+          "The word Provisional has eleven letters, and the Status column holds only ten. This line makes it hold twelve. In your own script you type VARCHAR(12) in CREATE TABLE instead, and ALTER TABLE is not needed."
+         ],
+         [
+          "ADD ExpiresOn",
+          "ADD ExpiresOn",
+          "A new column for the deadline",
+          "ExpiresOn holds the date and time when the hold runs out. It is empty for an ordinary booking, which never runs out."
+         ],
+         [
+          "DROP CONSTRAINT CK_Appointment_Status",
+          "GO",
+          "Add Provisional to the allowed statuses",
+          "The CHECK on the Status column lists the words it allows. The old CHECK is dropped, and a new one is added with Provisional at the front of the list. In your own script, you add the word to the CHECK inside CREATE TABLE."
+         ],
+         [
+          "CREATE OR ALTER PROCEDURE usp_Appointment_ExpireProvisional",
+          "SET @Message = '';",
+          "The name, and the blank message",
+          "Nothing goes in, because the stored procedure looks at every held booking. It still has @Message, because it changes data, and the message starts blank."
+         ],
+         [
+          "UPDATE Appointment",
+          "$end",
+          "Cancel every hold whose time is up",
+          "Every booking that is Provisional and whose ExpiresOn is before now becomes Cancelled. GETDATE() is the date and time at this moment. The row stays in the table as history, and the time slot is free for someone else. END closes the stored procedure, and GO ends the batch."
+         ]
+        ],
+        "text": "-- Upgrade 2: a booking held for a short time, then let go.\n-- In your own script these changes go inside CREATE TABLE.  Here, ALTER\n-- TABLE makes them to the Appointment table that is already there.\nALTER TABLE Appointment ALTER COLUMN Status VARCHAR(12) NOT NULL;\nALTER TABLE Appointment ADD ExpiresOn DATETIME NULL;\nALTER TABLE Appointment DROP CONSTRAINT CK_Appointment_Status;\nALTER TABLE Appointment ADD CONSTRAINT CK_Appointment_Status\n    CHECK (Status IN ('Provisional', 'Booked', 'Done', 'Cancelled'));\nGO\n\nCREATE OR ALTER PROCEDURE usp_Appointment_ExpireProvisional\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    -- A held booking whose time is up is cancelled.  The row stays as\n    -- history, and the slot is free for someone else.\n    UPDATE Appointment\n    SET Status = 'Cancelled'\n    WHERE Status = 'Provisional' AND ExpiresOn < GETDATE();\nEND\nGO",
+        "partLines": [
+         [
+          4,
+          4,
+          "Make the Status column longer",
+          "The word Provisional has eleven letters, and the Status column holds only ten. This line makes it hold twelve. In your own script you type VARCHAR(12) in CREATE TABLE instead, and ALTER TABLE is not needed."
+         ],
+         [
+          5,
+          5,
+          "A new column for the deadline",
+          "ExpiresOn holds the date and time when the hold runs out. It is empty for an ordinary booking, which never runs out."
+         ],
+         [
+          6,
+          9,
+          "Add Provisional to the allowed statuses",
+          "The CHECK on the Status column lists the words it allows. The old CHECK is dropped, and a new one is added with Provisional at the front of the list. In your own script, you add the word to the CHECK inside CREATE TABLE."
+         ],
+         [
+          11,
+          15,
+          "The name, and the blank message",
+          "Nothing goes in, because the stored procedure looks at every held booking. It still has @Message, because it changes data, and the message starts blank."
+         ],
+         [
+          18,
+          22,
+          "Cancel every hold whose time is up",
+          "Every booking that is Provisional and whose ExpiresOn is before now becomes Cancelled. GETDATE() is the date and time at this moment. The row stays in the table as history, and the time slot is free for someone else. END closes the stored procedure, and GO ends the batch."
+         ]
+        ]
+       }
+      },
+      {
+       "p": "To make a provisional booking, the stored procedure that adds the booking sets Status to Provisional and ExpiresOn to `DATEADD(HOUR, 48, GETDATE())`, which is 48 hours from now. To confirm it when the deposit is paid, copy usp_Appointment_MarkDone and change two words: the status it looks for is Provisional, and the status it sets is Booked."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Prove it: your own project",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Keep this table for testing your own project.",
+     "blocks": [
+      {
+       "p": "These are the tests an examiner would run on The Gallery. You cannot tick them yet, because your own project is not built. Come back to this table when your own program runs, and tick each row when you have seen it happen. Rows marked Must be refused are the most important ones. Each one proves that a rule holds, so the program says no in a plain sentence and nothing in the database changes."
+      },
+      {
+       "check": [
+        {
+         "id": "12.4.1",
+         "what": "Reserve an available artwork",
+         "expect": "allowed",
+         "how": "Reserve an artwork with the status Available for a customer in your program. Its status becomes Reserved, the blue dot, with the customer's number beside it."
+        },
+        {
+         "id": "12.4.2",
+         "what": "Reserve an artwork that is already sold",
+         "expect": "control",
+         "how": "Try to reserve an artwork with the status Sold. The message reads Only an available artwork can be reserved., and the artwork stays Sold."
+        },
+        {
+         "id": "12.4.3",
+         "what": "Take a reservation off",
+         "expect": "allowed",
+         "how": "Take the reservation off the artwork from the first row. Its status goes back to Available and the customer number is empty."
+        },
+        {
+         "id": "12.4.4",
+         "what": "Sell more art supplies than are in stock",
+         "expect": "control",
+         "how": "Pick a supply with 2 in stock and try to sell 3. The message reads Only 2 in stock., and the number in stock is still 2."
+        },
+        {
+         "id": "12.4.5",
+         "what": "Receive a supplier order",
+         "expect": "allowed",
+         "how": "Place an order for 10 of one supply, then receive it. The order is marked Received, and the number in stock is 10 higher than before."
+        },
+        {
+         "id": "12.4.6",
+         "what": "Book one photographer twice at the same time",
+         "expect": "control",
+         "how": "Book a photographer for 10:00 to 11:00, then try to book the same photographer for 10:30 to 11:30 on the same day. The second booking is refused with the clash sentence, and only one booking is in the table."
+        },
+        {
+         "id": "12.4.7",
+         "what": "Book one place more than a class has",
+         "expect": "control",
+         "how": "Give a class 2 places, book 2 customers on it, then try to book a third. The third is refused with That class is full."
+        },
+        {
+         "id": "12.4.8",
+         "what": "Book framing with too small a deposit",
+         "expect": "control",
+         "how": "Book a framing job that costs £50.00 with a deposit of £4.00. The message says the deposit must be at least £5.00, and no booking is made."
+        },
+        {
+         "id": "12.4.9",
+         "what": "A provisional booking past its deadline is let go",
+         "expect": "allowed",
+         "how": "Make a provisional booking in your program. Then, in SQL Server Management Studio (SSMS), right-click your booking table, choose Edit Top 200 Rows and change that booking's ExpiresOn to yesterday's date. Then close your diary form and open it again. The booking now shows as Cancelled, and the time is free to book again."
+        },
+        {
+         "id": "12.4.10",
+         "what": "Cancel a booking and keep its row",
+         "expect": "allowed",
+         "how": "Cancel any booking. It stays in the table with the status Cancelled. A consultation that is cancelled still shows its deposit as paid."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Start your own project.",
+     "blocks": [
+      {
+       "p": "You have built every shape a case study asks for, in a business made for practice. The Gallery uses the same shapes, with different names on them. Your two lists from this chapter are the plan: which bike shop table each Gallery table copies, and which stored procedure each Gallery action copies."
+      },
+      {
+       "p": "Go back to chapter 2 with The Gallery beside you. Work through each chapter again, and at each Make it yours box, build that part for The Gallery instead of the bike shop."
+      },
+      {
+       "p": "Your own project starts in chapter 2 with your own nouns."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -268,8 +268,52 @@
     const started = Object.keys(REC.P).length > 0;
     frame(null, '<h1>' + h(T('home.hello', { name: REC.n || ME.name })) + '</h1><div class="tiles">' +
       '<button class="tile live" data-go="#sql"><h2>' + h(T('home.sql')) + '</h2><p>' + h(T('home.sqlSub')) + '</p><span class="state">' + h(started ? T('home.sqlState', { open, done }) : T('home.notStarted')) + '</span></button>' +
+      '<button class="tile live" data-go="#cw"><h2>' + h(T('home.cw')) + '</h2><p>' + h(T('home.cwSub')) + '</p><span class="state">' + h(cwState()) + '</span></button>' +
       '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.norm')) + '</h2><span class="soon">' + h(T('home.soon')) + '</span></div>' +
       '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.theory')) + '</h2><p>' + h(T('home.theorySub')) + '</p><span class="soon">' + h(T('home.soon')) + '</span></div></div>');
+  }
+
+  // ---------- coursework guide (DESIGN §6.1, §6.7): cw.js draws it; every pupil act goes to apiCw; the server copy wins on the first open ----------
+  const CWBASE = window.A2_CW || 'https://dgaj-g.github.io/ols-digital-skills/a2-ssd/content/coursework/';
+  let cwHost = null, cwSynced = null;
+  const cwLS = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
+  function cwState() {
+    let done = 0, ticks = 0;
+    for (let i = 0; i <= 12; i++) { const c = String(i).padStart(2, '0'); if (cwLS.get('cw:done:' + c)) done++; ticks += (cwLS.get('cw:ticks:' + c) || []).length; }
+    return done ? T('home.cwDone', { n: done }) : ticks ? T('home.cwTicks', { n: ticks }) : T('home.notStarted');
+  }
+  function cwSync() {
+    if (!cwSynced) cwSynced = call('apiCw', { op: 'state' }).then((r) => {
+      const W = (r && r.W) || {};
+      Object.keys(W).forEach((ch) => {
+        if (!/^\d\d$/.test(ch)) return;
+        const c = W[ch];
+        cwLS.set('cw:ticks:' + ch, c.k || []);
+        cwLS.set('cw:done:' + ch, !!c.d);
+        if (c.a) cwLS.set('cw:at:' + ch, c.a);
+      });
+    }, () => { cwSynced = null; });
+    return cwSynced.catch(() => {});
+  }
+  function vCw() {
+    const send = (req) => { call('apiCw', req).catch(() => {}); };
+    if (!cwHost) {
+      cwHost = document.createElement('div'); cwHost.id = 'cw';
+      window.CW.mount(cwHost, { base: CWBASE, api: {
+        open: (ch) => send({ op: 'open', ch }), screen: (ch, key) => send({ op: 'screen', ch, key }),
+        tick: (ch, id, on) => send({ op: 'tick', ch, id, on: !!on }), copy: (ch, id) => send({ op: 'copy', ch, id }),
+        reveal: (ch, id) => send({ op: 'reveal', ch, id }), done: (ch, on) => send({ op: 'done', ch, on: !!on }),
+        download: (file) => send({ op: 'download', file })
+      } });
+    }
+    const crumbs = (ch) => [{ t: T('cw.crumbHome'), go: '#home' }, { t: T('cw.crumb'), go: '#cw' }].concat(ch ? [{ t: T('cw.crumbCh', { n: ch.n, title: ch.title }) }] : []);
+    frame(crumbs(null), '', 'work');
+    app.querySelector('main').appendChild(cwHost);
+    const hash = location.hash;
+    cwSync().then(() => window.CW.show(hash)).then((ch) => {
+      const bar = app.querySelector('header.bar');
+      if (bar && ch && /^#cw/.test(location.hash)) bar.outerHTML = header(crumbs(ch));
+    });
   }
 
   // ---------- SQL map ----------
@@ -700,6 +744,7 @@
     else if (k === 'paper') vPaper(bits[1]);
     else if (k === 'part') vPart(bits[1], BEATS.concat('door').includes(bits[2]) ? bits[2] : null);
     else if (k === 'eval') vEval(bits[1]);
+    else if (k === 'cw') { vCw(); return; }
     else vHome();
     const w = app.querySelector('.work') || app.querySelector('main'); if (w) w.scrollTop = 0;
   }
