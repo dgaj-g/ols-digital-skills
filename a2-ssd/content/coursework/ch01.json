@@ -40,9 +40,11 @@
         "marks": [
          {
           "n": 1,
-          "x": 22,
-          "y": 22,
-          "say": "The folder A2 SSD Coursework."
+          "x": 15.5,
+          "y": 20.3,
+          "say": "The folder A2 SSD Coursework.",
+          "w": 12,
+          "h": 4.3
          },
          {
           "n": 2,
@@ -190,15 +192,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 7,
-            "y": 58,
-            "say": "Click OneDrive - C2k in the list down the left side."
+            "x": 0.5,
+            "y": 55.8,
+            "say": "Click OneDrive - C2k in the list down the left side.",
+            "w": 13.5,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 40,
-            "y": 36,
-            "say": "Your OneDrive files and folders are listed here."
+            "x": 15,
+            "y": 16,
+            "say": "Your OneDrive files and folders are listed here.",
+            "w": 62,
+            "h": 37
            }
           ]
          },
@@ -229,15 +235,19 @@
            },
            {
             "n": 2,
-            "x": 33,
-            "y": 59,
-            "say": "Point at New."
+            "x": 27,
+            "y": 57.3,
+            "say": "Point at New.",
+            "w": 33,
+            "h": 4.3
            },
            {
             "n": 3,
-            "x": 67,
-            "y": 60,
-            "say": "Click Folder."
+            "x": 60,
+            "y": 57.3,
+            "say": "Click Folder.",
+            "w": 39.5,
+            "h": 4.3
            }
           ]
          }
@@ -281,9 +291,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 22,
-            "say": "The folder A2 SSD Coursework."
+            "x": 15.5,
+            "y": 20.3,
+            "say": "The folder A2 SSD Coursework.",
+            "w": 12,
+            "h": 4.3
            },
            {
             "n": 2,
@@ -345,15 +357,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 17,
-            "y": 95,
-            "say": "The search box, with the name typed in it."
+            "x": 0.5,
+            "y": 92.5,
+            "say": "The search box, with the name typed in it.",
+            "w": 44,
+            "h": 7
            },
            {
             "n": 2,
-            "x": 20,
-            "y": 18,
-            "say": "Click SQL Server Management Studio at the top of the list."
+            "x": 0.5,
+            "y": 12,
+            "say": "Click SQL Server Management Studio at the top of the list.",
+            "w": 44,
+            "h": 12.5
            }
           ]
          },
@@ -383,21 +399,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 66,
-            "y": 46,
-            "say": "Type (localdb)\\mssqllocaldb in the Server name box."
+            "x": 35,
+            "y": 42.5,
+            "say": "Type (localdb)\\mssqllocaldb in the Server name box.",
+            "w": 62.5,
+            "h": 6.5
            },
            {
             "n": 2,
-            "x": 66,
-            "y": 54,
-            "say": "Leave Authentication as Windows Authentication."
+            "x": 35,
+            "y": 50,
+            "say": "Leave Authentication as Windows Authentication.",
+            "w": 62.5,
+            "h": 7
            },
            {
             "n": 3,
-            "x": 35,
-            "y": 92,
-            "say": "Click Connect."
+            "x": 29,
+            "y": 87.5,
+            "say": "Click Connect.",
+            "w": 15.5,
+            "h": 8
            }
           ]
          }
@@ -463,15 +485,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 7,
-            "y": 5,
-            "say": "Click New Query, or press Ctrl and N together."
+            "x": 0.5,
+            "y": 1,
+            "say": "Click New Query, or press Ctrl and N together.",
+            "w": 10.5,
+            "h": 8
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 60,
-            "say": "Type into the empty window."
+            "x": 7.5,
+            "y": 26,
+            "say": "Type into the empty window.",
+            "w": 92,
+            "h": 73
            }
           ]
          }
@@ -495,21 +521,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 38,
-            "y": 13,
-            "say": "The line you typed."
+            "x": 31.5,
+            "y": 11,
+            "say": "The line you typed.",
+            "w": 12,
+            "h": 3.6
            },
            {
             "n": 2,
-            "x": 47,
-            "y": 64,
-            "say": "One row, starting Microsoft SQL Server."
+            "x": 32.5,
+            "y": 62.5,
+            "say": "One row, starting Microsoft SQL Server.",
+            "w": 29.5,
+            "h": 3.8
            },
            {
             "n": 3,
-            "x": 38,
-            "y": 97,
-            "say": "Query executed successfully."
+            "x": 30.5,
+            "y": 96,
+            "say": "Query executed successfully.",
+            "w": 18,
+            "h": 3.8
            }
           ]
          },
@@ -561,21 +593,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 62,
-            "say": "Click OneDrive - C2k on the left."
+            "x": 2,
+            "y": 59.5,
+            "say": "Click OneDrive - C2k on the left.",
+            "w": 13,
+            "h": 5
            },
            {
             "n": 2,
-            "x": 18,
-            "y": 80,
-            "say": "Type BikeShop.sql in the File name box."
+            "x": 13,
+            "y": 77.5,
+            "say": "Type BikeShop.sql in the File name box.",
+            "w": 86.5,
+            "h": 5.5
            },
            {
             "n": 3,
-            "x": 82,
-            "y": 95,
-            "say": "Click Save."
+            "x": 78,
+            "y": 92.5,
+            "say": "Click Save.",
+            "w": 10,
+            "h": 5.5
            }
           ]
          }
@@ -649,15 +687,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 17,
-            "y": 95,
-            "say": "The search box, with the name typed in it."
+            "x": 0.5,
+            "y": 94,
+            "say": "The search box, with the name typed in it.",
+            "w": 44,
+            "h": 6
            },
            {
             "n": 2,
-            "x": 15,
-            "y": 16,
-            "say": "Click Visual Studio 2019 at the top of the list."
+            "x": 0.5,
+            "y": 12,
+            "say": "Click Visual Studio 2019 at the top of the list.",
+            "w": 44,
+            "h": 10
            }
           ]
          }
@@ -691,9 +733,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 77,
-            "y": 62,
-            "say": "Click Create a new project."
+            "x": 59.5,
+            "y": 57,
+            "say": "Click Create a new project.",
+            "w": 34.5,
+            "h": 11.5
            }
           ]
          }
@@ -712,21 +756,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 59,
-            "y": 11,
-            "say": "Type Windows Forms in the search box."
+            "x": 42,
+            "y": 8,
+            "say": "Type Windows Forms in the search box.",
+            "w": 35.5,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 58,
-            "y": 40,
-            "say": "Windows Forms App (.NET Framework), with C# under it."
+            "x": 42,
+            "y": 34.5,
+            "say": "Windows Forms App (.NET Framework), with C# under it.",
+            "w": 51,
+            "h": 14.5
            },
            {
             "n": 3,
-            "x": 81,
-            "y": 92,
-            "say": "Click Back. Today you only look."
+            "x": 76.5,
+            "y": 89.3,
+            "say": "Click Back. Today you only look.",
+            "w": 9.5,
+            "h": 4.8
            }
           ]
          },
@@ -904,21 +954,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 38,
-          "y": 13,
-          "say": "The line you typed."
+          "x": 31.5,
+          "y": 11,
+          "say": "The line you typed.",
+          "w": 12,
+          "h": 3.6
          },
          {
           "n": 2,
-          "x": 47,
-          "y": 64,
-          "say": "One row, starting Microsoft SQL Server."
+          "x": 32.5,
+          "y": 62.5,
+          "say": "One row, starting Microsoft SQL Server.",
+          "w": 29.5,
+          "h": 3.8
          },
          {
           "n": 3,
-          "x": 38,
-          "y": 97,
-          "say": "Query executed successfully."
+          "x": 30.5,
+          "y": 96,
+          "say": "Query executed successfully.",
+          "w": 18,
+          "h": 3.8
          }
         ]
        }

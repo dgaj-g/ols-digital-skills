@@ -37,21 +37,27 @@
         "marks": [
          {
           "n": 1,
-          "x": 50,
-          "y": 30,
-          "say": "Every part with its real count. Pink rows are at or below their reorder level."
+          "x": 1,
+          "y": 9,
+          "say": "Every part with its real count. Pink rows are at or below their reorder level.",
+          "w": 98,
+          "h": 41.5
          },
          {
           "n": 2,
-          "x": 50,
-          "y": 66,
-          "say": "The orders still waiting for a delivery. Receive closes one and adds to the count in one go."
+          "x": 1,
+          "y": 60.5,
+          "say": "The orders still waiting for a delivery. Receive closes one and adds to the count in one go.",
+          "w": 98,
+          "h": 30
          },
          {
           "n": 3,
-          "x": 26,
-          "y": 54,
-          "say": "Sell opens the counter sale. The database refuses if the count is short."
+          "x": 22,
+          "y": 51.6,
+          "say": "Sell opens the counter sale. The database refuses if the count is short.",
+          "w": 9.2,
+          "h": 4.2
          }
         ]
        }
@@ -366,15 +372,19 @@
            },
            {
             "n": 2,
-            "x": 6,
-            "y": 25,
-            "say": "Point at Open."
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 41,
-            "y": 48,
-            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder.",
+            "w": 37.5,
+            "h": 5
            }
           ]
          }
@@ -398,9 +408,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 5,
-            "y": 70,
-            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+            "x": 3,
+            "y": 58.8,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there.",
+            "w": 30,
+            "h": 4.5
            }
           ]
          }
@@ -413,16 +425,18 @@
          "img": {
           "img": "img/ch07-ssms-paste-gap.png",
           "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
-          "cap": "After the paste. Everything is in except the yellow lines. The marker line shows where they go.",
+          "cap": "After the paste. Everything is in except the yellow lines. The marker line shows where they go. The picture shows usp_Appointment_Add from chapter 7. Yours has its own name and lines, with the marker line in the same kind of place.",
           "w": 900,
           "h": 560,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 20,
-            "y": 64,
-            "say": "The marker line that says YOU TYPE THIS PART. The yellow lines go in its place in the next step."
+            "x": 7.2,
+            "y": 62,
+            "say": "The marker line that says YOU TYPE THIS PART. The yellow lines go in its place in the next step.",
+            "w": 26.5,
+            "h": 4
            }
           ]
          }
@@ -456,15 +470,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 31,
-            "y": 6,
-            "say": "Click Execute, or press F5."
+            "x": 27.3,
+            "y": 4,
+            "say": "Click Execute, or press F5.",
+            "w": 8.2,
+            "h": 4.3
            },
            {
             "n": 2,
-            "x": 39,
-            "y": 90,
-            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+            "x": 31.5,
+            "y": 88,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read.",
+            "w": 40.5,
+            "h": 10
            }
           ]
          },
@@ -565,15 +583,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 24,
-            "y": 42,
-            "say": "Write this sale number down. You refund it in stage 3."
+            "x": 1.8,
+            "y": 39.5,
+            "say": "Write this sale number down. You refund it in stage 3.",
+            "w": 63.5,
+            "h": 8.5
            },
            {
             "n": 2,
-            "x": 10,
-            "y": 81,
-            "say": "The refusal. Nothing was saved and the count is still 2."
+            "x": 1.8,
+            "y": 75.5,
+            "say": "The refusal. Nothing was saved and the count is still 2.",
+            "w": 16.5,
+            "h": 11
            }
           ]
          }
@@ -799,22 +821,26 @@
          "img": {
           "img": "img/ch07-ssms-select-run.png",
           "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
-          "cap": "Select the lines you added, then press F5. Only the highlighted lines run, so the test sales and orders you have made stay in the database.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run, so the test sales and orders you have made stay in the database. The picture shows usp_Customer_Search highlighted. Highlight your own stored procedure the same way.",
           "w": 1004,
           "h": 483,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 40,
-            "y": 45,
-            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+            "x": 19.5,
+            "y": 24.5,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted.",
+            "w": 33,
+            "h": 45
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 82,
-            "say": "The Messages pane says: Commands completed successfully."
+            "x": 19,
+            "y": 79,
+            "say": "The Messages pane says: Commands completed successfully.",
+            "w": 20.7,
+            "h": 5.5
            }
           ]
          },
@@ -1359,15 +1385,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 14,
-            "y": 24,
-            "say": "Two rows changed: the order and the part."
+            "x": 1.8,
+            "y": 16.5,
+            "say": "Two rows changed: the order and the part.",
+            "w": 12,
+            "h": 24
            },
            {
             "n": 2,
-            "x": 10,
-            "y": 81,
-            "say": "The second run is refused. The count stays at 15."
+            "x": 1.8,
+            "y": 75.5,
+            "say": "The second run is refused. The count stays at 15.",
+            "w": 16.5,
+            "h": 11
            }
           ]
          }
@@ -2028,15 +2058,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 74,
-            "y": 33,
-            "say": "Every part. QtyInStock beside ReorderLevel tells you which rows are low."
+            "x": 0.8,
+            "y": 7,
+            "say": "Every part. QtyInStock beside ReorderLevel tells you which rows are low.",
+            "w": 98.5,
+            "h": 63
            },
            {
             "n": 2,
-            "x": 55,
-            "y": 92,
-            "say": "The reorder list: low stock and no open order. The supplier phone number is here so the shop can ring."
+            "x": 0.8,
+            "y": 85,
+            "say": "The reorder list: low stock and no open order. The supplier phone number is here so the shop can ring.",
+            "w": 83.5,
+            "h": 14.5
            }
           ]
          }
@@ -2371,21 +2405,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 31.5,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -2410,21 +2450,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -2443,14 +2489,16 @@
           "marks": [
            {
             "n": 1,
-            "x": 22,
-            "y": 91,
-            "say": "Type the name in the Name box, with .cs on the end."
+            "x": 13.5,
+            "y": 89.2,
+            "say": "Type the name in the Name box, with .cs on the end.",
+            "w": 58,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 86,
-            "y": 95,
+            "x": 84.7,
+            "y": 96.4,
             "say": "Press Add."
            }
           ]
@@ -2471,9 +2519,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2545,9 +2595,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -2585,21 +2637,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -2611,28 +2669,34 @@
          "img": {
           "img": "img/ch07-vs-designer.png",
           "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
-          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control. The picture shows the finished New booking form from chapter 7; your form starts empty.",
           "w": 900,
           "h": 600,
           "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 46,
-            "say": "The Toolbox. Drag a control from here on to the form."
+            "x": 0.5,
+            "y": 5.5,
+            "say": "The Toolbox. Drag a control from here on to the form.",
+            "w": 25.5,
+            "h": 93
            },
            {
             "n": 2,
-            "x": 56,
-            "y": 49,
-            "say": "The form. Drop the control where the picture shows it."
+            "x": 28,
+            "y": 9.5,
+            "say": "The form. Drop the control where the picture shows it.",
+            "w": 55.5,
+            "h": 79
            },
            {
             "n": 3,
-            "x": 93,
-            "y": 54,
-            "say": "The Properties window. Set Name first, then the rest of the row."
+            "x": 86.5,
+            "y": 21,
+            "say": "The Properties window. Set Name first, then the rest of the row.",
+            "w": 13.5,
+            "h": 76.5
            }
           ]
          }
@@ -2655,15 +2719,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 66,
-           "y": 40,
-           "say": "Each box lines up with its label."
+           "x": 5.5,
+           "y": 10.5,
+           "say": "Each box lines up with its label.",
+           "w": 89,
+           "h": 70.5
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 62,
-           "say": "The grey note replaces the stock box when a part is being edited."
+           "x": 33,
+           "y": 53,
+           "say": "The grey note replaces the stock box when a part is being edited.",
+           "w": 25.5,
+           "h": 6.5
           }
          ]
         },
@@ -2953,15 +3021,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 4,
-            "say": "The code tab is in front."
+            "x": 0.5,
+            "y": 1,
+            "say": "The code tab is in front.",
+            "w": 20,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 22,
-            "y": 93,
-            "say": "Select everything here before you paste over it."
+            "x": 2.5,
+            "y": 9.5,
+            "say": "Select everything here before you paste over it.",
+            "w": 96.5,
+            "h": 89.5
            }
           ]
          }
@@ -2986,9 +3058,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -3013,7 +3087,7 @@
        "screenshot": {
         "img": "img/ch07-vs-events.png",
         "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
-        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method. In the picture Load already has a method name beside it, because that form's Load method was made earlier; yours stays empty until you double-click it. To see the events of a control, such as a grid, click that control on the form first.",
         "w": 520,
         "h": 520,
         "missing": false,
@@ -3026,9 +3100,11 @@
          },
          {
           "n": 2,
-          "x": 63,
-          "y": 36,
-          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, after Leave."
+          "x": 37.5,
+          "y": 33.8,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, after Leave.",
+          "w": 61.5,
+          "h": 4
          }
         ]
        }
@@ -3058,21 +3134,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -3095,15 +3177,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 28,
-           "y": 21,
-           "say": "The part name and In stock line are filled in when the form opens."
+           "x": 5.5,
+           "y": 16.5,
+           "say": "The part name and In stock line are filled in when the form opens.",
+           "w": 9,
+           "h": 8
           },
           {
            "n": 2,
-           "x": 82,
-           "y": 53,
-           "say": "Walk-in customer ticked switches the customer list off."
+           "x": 27,
+           "y": 49.5,
+           "say": "Walk-in customer ticked switches the customer list off.",
+           "w": 47.5,
+           "h": 7.5
           }
          ]
         },
@@ -3349,9 +3435,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -3397,21 +3485,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -3434,15 +3528,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 58,
-           "y": 37,
-           "say": "Quantity starts at the part's usual reorder amount."
+           "x": 27,
+           "y": 31.8,
+           "say": "Quantity starts at the part's usual reorder amount.",
+           "w": 23.5,
+           "h": 8.8
           },
           {
            "n": 2,
-           "x": 89,
-           "y": 66,
-           "say": "The grey note: stock goes up when the delivery is received, not now."
+           "x": 6,
+           "y": 62.5,
+           "say": "The grey note: stock goes up when the delivery is received, not now.",
+           "w": 74.5,
+           "h": 8
           }
          ]
         },
@@ -3566,15 +3664,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 22,
-           "y": 24,
-           "say": "The order summary and the quantity ordered are filled in when the form opens."
+           "x": 4.5,
+           "y": 19,
+           "say": "The order summary and the quantity ordered are filled in when the form opens.",
+           "w": 9,
+           "h": 10
           },
           {
            "n": 2,
-           "x": 76,
-           "y": 61,
-           "say": "If the box is short, the staff type what actually arrived."
+           "x": 22,
+           "y": 57.5,
+           "say": "If the box is short, the staff type what actually arrived.",
+           "w": 50,
+           "h": 8
           }
          ]
         },
@@ -3863,9 +3965,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -3903,21 +4007,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -3940,21 +4050,27 @@
          "marks": [
           {
            "n": 1,
-           "x": 50,
-           "y": 30,
-           "say": "The parts grid, dgvParts."
+           "x": 2,
+           "y": 9,
+           "say": "The parts grid, dgvParts.",
+           "w": 96,
+           "h": 41
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 67,
-           "say": "The orders grid, dgvOrders."
+           "x": 2,
+           "y": 60,
+           "say": "The orders grid, dgvOrders.",
+           "w": 96,
+           "h": 29.2
           },
           {
            "n": 3,
-           "x": 62,
-           "y": 94,
-           "say": "Add part, Edit, Sell, Place order and Reorder list sit between the grids; Receive delivery, Cancel order and Close sit along the bottom."
+           "x": 2,
+           "y": 91.5,
+           "say": "Add part, Edit, Sell, Place order and Reorder list sit between the grids; Receive delivery, Cancel order and Close sit along the bottom.",
+           "w": 96,
+           "h": 6
           }
          ]
         },
@@ -4447,9 +4563,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -4492,15 +4610,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 63,
-            "say": "Double-click the button to make its Click method."
+            "x": 3,
+            "y": 56,
+            "say": "Double-click the button to make its Click method.",
+            "w": 18.7,
+            "h": 13
            },
            {
             "n": 2,
-            "x": 69,
-            "y": 58,
-            "say": "Type the two lines inside it."
+            "x": 59.5,
+            "y": 55.5,
+            "say": "Type the two lines inside it.",
+            "w": 18,
+            "h": 5.5
            }
           ]
          }
@@ -4534,15 +4656,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 27,
-            "say": "PADS-DISC, CHAIN-11 and TYRE-700-35 are pink: their count is at or below the reorder level."
+            "x": 1,
+            "y": 9.5,
+            "say": "PADS-DISC, CHAIN-11 and TYRE-700-35 are pink: their count is at or below the reorder level.",
+            "w": 97.5,
+            "h": 41
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 68,
-            "say": "The orders waiting for delivery. Order 3, for CHAIN-11, is on the way."
+            "x": 1.5,
+            "y": 62,
+            "say": "The orders waiting for delivery. Order 3, for CHAIN-11, is on the way.",
+            "w": 97,
+            "h": 30
            }
           ]
          }
@@ -4566,9 +4692,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 67,
-            "y": 59,
-            "say": "The sentence from @Message, shown by Msg.Problem."
+            "x": 45,
+            "y": 54.5,
+            "say": "The sentence from @Message, shown by Msg.Problem.",
+            "w": 21,
+            "h": 7
            }
           ]
          }
@@ -4918,15 +5046,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 26,
-            "y": 41,
-            "say": "Bike 12 changed status: Available to Reserved."
+            "x": 2,
+            "y": 35,
+            "say": "Bike 12 changed status: Available to Reserved.",
+            "w": 26,
+            "h": 12
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 56,
-            "say": "The same sentence twice, for two different reasons. One check covers both."
+            "x": 2,
+            "y": 47,
+            "say": "The same sentence twice, for two different reasons. One check covers both.",
+            "w": 38,
+            "h": 19
            }
           ]
          }
@@ -5161,15 +5293,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 28,
-            "y": 30,
-            "say": "The sold bike and the reserved bike are both refused, each with its own sentence."
+            "x": 2,
+            "y": 17,
+            "say": "The sold bike and the reserved bike are both refused, each with its own sentence.",
+            "w": 35,
+            "h": 22
            },
            {
             "n": 2,
-            "x": 24,
-            "y": 61,
-            "say": "The sale that is allowed: the reserved bike to its own customer."
+            "x": 2,
+            "y": 55,
+            "say": "The sale that is allowed: the reserved bike to its own customer.",
+            "w": 33,
+            "h": 12
            }
           ]
          }
@@ -5698,15 +5834,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 65,
-            "y": 28,
-            "say": "Four bikes free. Bike 1 is missing because of the booked hire."
+            "x": 1,
+            "y": 10,
+            "say": "Four bikes free. Bike 1 is missing because of the booked hire.",
+            "w": 57,
+            "h": 37
            },
            {
             "n": 2,
-            "x": 65,
-            "y": 95,
-            "say": "Five bikes free, bike 1 among them. The Display column is the sentence the hire form shows in its list."
+            "x": 1,
+            "y": 53,
+            "say": "Five bikes free, bike 1 among them. The Display column is the sentence the hire form shows in its list.",
+            "w": 57,
+            "h": 46
            }
           ]
          }
@@ -5864,21 +6004,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 68,
-            "y": 34,
-            "say": "Right-click the Models folder in Solution Explorer."
+            "x": 64,
+            "y": 31.5,
+            "say": "Right-click the Models folder in Solution Explorer.",
+            "w": 33,
+            "h": 4.5
            },
            {
             "n": 2,
-            "x": 42,
-            "y": 37,
-            "say": "Point at Add."
+            "x": 37.5,
+            "y": 34,
+            "say": "Point at Add.",
+            "w": 31,
+            "h": 5
            },
            {
             "n": 3,
-            "x": 8,
-            "y": 87,
-            "say": "Click Class…"
+            "x": 4,
+            "y": 84.5,
+            "say": "Click Class…",
+            "w": 31.5,
+            "h": 5
            }
           ]
          }
@@ -5924,9 +6070,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -5964,21 +6112,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -6006,15 +6160,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 62,
-           "y": 42,
-           "say": "The five boxes that describe the bike."
+           "x": 4,
+           "y": 10,
+           "say": "The five boxes that describe the bike.",
+           "w": 91,
+           "h": 44
           },
           {
            "n": 2,
-           "x": 78,
-           "y": 60,
-           "say": "for hire or for sale, then the one price that applies."
+           "x": 5,
+           "y": 55,
+           "say": "for hire or for sale, then the one price that applies.",
+           "w": 67,
+           "h": 28
           }
          ]
         },
@@ -6339,21 +6497,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -6381,27 +6545,35 @@
          "marks": [
           {
            "n": 1,
-           "x": 15,
-           "y": 9,
-           "say": "The Show list: All bikes, For sale, Hire fleet."
+           "x": 6.5,
+           "y": 6.5,
+           "say": "The Show list: All bikes, For sale, Hire fleet.",
+           "w": 17,
+           "h": 5
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 48,
-           "say": "The bikes grid, dgvBikes."
+           "x": 1.5,
+           "y": 12,
+           "say": "The bikes grid, dgvBikes.",
+           "w": 97,
+           "h": 76.5
           },
           {
            "n": 3,
-           "x": 75,
-           "y": 94,
-           "say": "The buttons that move a bike through its life, and Close."
+           "x": 1.5,
+           "y": 90.5,
+           "say": "The buttons that move a bike through its life, and Close.",
+           "w": 97,
+           "h": 6.5
           },
           {
            "n": 4,
-           "x": 80,
-           "y": 9,
-           "say": "The customer list: Reserve and Sell use the customer picked here."
+           "x": 49.5,
+           "y": 6.5,
+           "say": "The customer list: Reserve and Sell use the customer picked here.",
+           "w": 28.5,
+           "h": 5
           }
          ]
         },
@@ -6759,9 +6931,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -6824,15 +6998,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 36,
-            "y": 88,
-            "say": "A reserved bike for sale: Un-reserve and Sell are on, and Reserve and Send for repair are off."
+            "x": 1,
+            "y": 91.5,
+            "say": "A reserved bike for sale: Un-reserve and Sell are on, and Reserve and Send for repair are off.",
+            "w": 97,
+            "h": 6.5
            },
            {
             "n": 2,
-            "x": 66,
-            "y": 46,
-            "say": "With a sold bike picked, every button but Add bike and Close goes off."
+            "x": 1.5,
+            "y": 44.3,
+            "say": "With a sold bike picked, every button but Add bike and Close goes off.",
+            "w": 97,
+            "h": 4.3
            }
           ]
          }
@@ -7174,15 +7352,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 12,
-            "y": 41,
-            "say": "Booked became Out for hire 4."
+            "x": 2,
+            "y": 36,
+            "say": "Booked became Out for hire 4.",
+            "w": 12,
+            "h": 12
            },
            {
             "n": 2,
-            "x": 30,
-            "y": 51,
-            "say": "The refusal for a hire that is not Booked."
+            "x": 2,
+            "y": 45.5,
+            "say": "The refusal for a hire that is not Booked.",
+            "w": 31.5,
+            "h": 12
            }
           ]
          }
@@ -7645,21 +7827,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 28,
-            "say": "Right-click the Data folder in Solution Explorer."
+            "x": 65.5,
+            "y": 25.8,
+            "say": "Right-click the Data folder in Solution Explorer.",
+            "w": 32,
+            "h": 4.2
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38,
+            "y": 28.5,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.5
            },
            {
             "n": 3,
-            "x": 7,
-            "y": 70,
-            "say": "Click Class…"
+            "x": 1.5,
+            "y": 67.5,
+            "say": "Click Class…",
+            "w": 36,
+            "h": 5
            }
           ]
          }
@@ -7689,9 +7877,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -7729,21 +7919,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -7766,15 +7962,19 @@
          "marks": [
           {
            "n": 1,
-           "x": 78,
-           "y": 34,
-           "say": "Pick the dates first. The bike list then shows only the bikes free for all of those days."
+           "x": 31.5,
+           "y": 24,
+           "say": "Pick the dates first. The bike list then shows only the bikes free for all of those days.",
+           "w": 44,
+           "h": 19
           },
           {
            "n": 2,
-           "x": 45,
-           "y": 63,
-           "say": "The cost line and the deposit, worked out by the form."
+           "x": 5,
+           "y": 56,
+           "say": "The cost line and the deposit, worked out by the form.",
+           "w": 50,
+           "h": 20
           }
          ]
         },
@@ -8246,9 +8446,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -8294,21 +8496,27 @@
           "marks": [
            {
             "n": 1,
-            "x": 82,
-            "y": 29,
-            "say": "Right-click the Forms folder."
+            "x": 65.5,
+            "y": 27,
+            "say": "Right-click the Forms folder.",
+            "w": 32,
+            "h": 4
            },
            {
             "n": 2,
-            "x": 43,
-            "y": 31,
-            "say": "Point at Add."
+            "x": 38.5,
+            "y": 29,
+            "say": "Point at Add.",
+            "w": 31.5,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 13,
-            "y": 58,
-            "say": "Click Form (Windows Forms)…, type the name, press Add."
+            "x": 4.5,
+            "y": 55.8,
+            "say": "Click Form (Windows Forms)…, type the name, press Add.",
+            "w": 18,
+            "h": 4.2
            }
           ]
          }
@@ -8331,21 +8539,27 @@
          "marks": [
           {
            "n": 1,
-           "x": 56,
-           "y": 9,
-           "say": "From and to: the grid shows the hires that touch these dates."
+           "x": 6.5,
+           "y": 6.8,
+           "say": "From and to: the grid shows the hires that touch these dates.",
+           "w": 46,
+           "h": 5
           },
           {
            "n": 2,
-           "x": 50,
-           "y": 48,
-           "say": "The hires grid, dgvHires."
+           "x": 2,
+           "y": 12.5,
+           "say": "The hires grid, dgvHires.",
+           "w": 95.5,
+           "h": 75.5
           },
           {
            "n": 3,
-           "x": 70,
-           "y": 94,
-           "say": "New hire, Check out, Return, Cancel hire and Close."
+           "x": 2,
+           "y": 90.8,
+           "say": "New hire, Check out, Return, Cancel hire and Close.",
+           "w": 96,
+           "h": 6
           }
          ]
         },
@@ -8626,9 +8840,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 8,
-            "y": 88,
-            "say": "Build succeeded. Press F6 to build at any time."
+            "x": 1,
+            "y": 82.5,
+            "say": "Build succeeded. Press F6 to build at any time.",
+            "w": 14,
+            "h": 12
            }
           ]
          },
@@ -8691,15 +8907,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 94,
-            "y": 19,
-            "say": "Darragh Rice's hire, hire 3, is Out, so only Return is on for it."
+            "x": 2,
+            "y": 17,
+            "say": "Darragh Rice's hire, hire 3, is Out, so only Return is on for it.",
+            "w": 96,
+            "h": 3.8
            },
            {
             "n": 2,
-            "x": 97,
-            "y": 26,
-            "say": "Jack O'Hare's hire, hire 4, is Returned and Róisín Campbell's, hire 5, is Cancelled, from your tests. No button is on for them."
+            "x": 2,
+            "y": 24.4,
+            "say": "Jack O'Hare's hire, hire 4, is Returned and Róisín Campbell's, hire 5, is Cancelled, from your tests. No button is on for them.",
+            "w": 96,
+            "h": 7
            }
           ]
          }
@@ -8718,9 +8938,11 @@
           "marks": [
            {
             "n": 1,
-            "x": 90,
-            "y": 64,
-            "say": "Four bikes are offered. The Giant Escape 3 S is missing because hire 3 has it out until the day after tomorrow, and the Frog 62 is missing because it is in repair."
+            "x": 30.5,
+            "y": 54,
+            "say": "Four bikes are offered. The Giant Escape 3 S is missing because hire 3 has it out until the day after tomorrow, and the Frog 62 is missing because it is in repair.",
+            "w": 66,
+            "h": 20
            }
           ]
          }
@@ -8794,15 +9016,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 50,
-            "y": 17,
-            "say": "Only the parts to order. CHAIN-11 is gone because its order is open."
+            "x": 1.5,
+            "y": 13,
+            "say": "Only the parts to order. CHAIN-11 is gone because its order is open.",
+            "w": 96.5,
+            "h": 7.2
            },
            {
             "n": 2,
-            "x": 50,
-            "y": 55,
-            "say": "The button has swapped its words. Press it again to see every part."
+            "x": 43.5,
+            "y": 52.3,
+            "say": "The button has swapped its words. Press it again to see every part.",
+            "w": 13,
+            "h": 4.8
            }
           ]
          }
@@ -8831,15 +9057,19 @@
           "marks": [
            {
             "n": 1,
-            "x": 10,
-            "y": 37,
-            "say": "The summary and the ordered amount came from the row you picked."
+            "x": 21.5,
+            "y": 19.5,
+            "say": "The summary and the ordered amount came from the row you picked.",
+            "w": 69,
+            "h": 20
            },
            {
             "n": 2,
-            "x": 45,
-            "y": 52,
-            "say": "Change the number only if the box was short."
+            "x": 21,
+            "y": 45.5,
+            "say": "Change the number only if the box was short.",
+            "w": 52,
+            "h": 23
            }
           ]
          }

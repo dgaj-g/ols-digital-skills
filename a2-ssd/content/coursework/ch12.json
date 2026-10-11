@@ -186,15 +186,19 @@
            },
            {
             "n": 2,
-            "x": 6,
-            "y": 25,
-            "say": "Point at Open."
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
            },
            {
             "n": 3,
-            "x": 41,
-            "y": 48,
-            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder.",
+            "w": 37.5,
+            "h": 5
            }
           ]
          }
