@@ -196,3 +196,6 @@ textarea.comment{width:100%;font:inherit;padding:10px;border:1px solid var(--lin
 .cwd .sq{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid #9aa4b0;margin:0 3px 3px 0;vertical-align:middle;background:#fff}.cwd .sq.on{background:var(--ok);border-color:var(--ok)}
 .cwd .stg{border-top:1px solid var(--line);padding:10px 0}.cwd .stg b{display:block;margin-bottom:6px;font-weight:600}
 .cwd p{margin:6px 0}
+
+/* Coursework guide: printing is turned off (his ruling 11 Oct 2026: the guide is read signed in, never as paper or PDF). */
+@media print{#cw>*{display:none !important}#cw::before{content:"The coursework guide can only be read on the A2 SSD platform, signed in with your school account.";display:block;padding:24px;font-size:14pt}}

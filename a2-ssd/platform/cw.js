@@ -706,7 +706,6 @@ window.CW = (function () {
         files.querySelector('ul').appendChild(li);
       });
       root.appendChild(files);
-      root.appendChild(el('<div class="card cw-files"><h3>The whole guide as a PDF</h3><p class="note">Every chapter in one large file, to read away from the computer or to print one chapter.</p><ul><li><a href="' + h(S.base) + 'A2-Coursework-Guide.pdf" target="_blank" rel="noopener">A2-Coursework-Guide.pdf</a><span>All 13 chapters, with every picture.</span></li></ul></div>'));
       S.host.innerHTML = ''; S.host.appendChild(root);
       var m = mainEl(); if (m) m.scrollTop = 0;
     }, function (e) { S.host.innerHTML = '<div class="banner">The guide could not be loaded (' + h(e.message) + ').</div>'; });
