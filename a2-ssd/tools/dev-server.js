@@ -119,6 +119,7 @@ function page(q) {
     '  } }); }\n  return runner(null, null);\n})() } };</script>';
   let html = fs.readFileSync(INDEX, 'utf8').replace('<?= classCode ?>', cls).replace('<?= baseUrl ?>', 'http://localhost:' + PORT + '/');
   html = html.replace(/window\.A2_VENDOR = [^;]*;/, "window.A2_VENDOR = ['/vendor/'];");
+  html = html.replace(/window\.A2_CW = [^;]*;/, "window.A2_CW = '/cw/';");
   return html.replace('<script>window.OLS_BOOT', shim + '\n<script>window.OLS_BOOT');
 }
 http.createServer((req, res) => {
@@ -127,6 +128,11 @@ http.createServer((req, res) => {
   if (req.method === 'GET' && u.pathname.startsWith('/vendor/')) {
     const f = path.join(VENDOR, path.basename(u.pathname));
     if (fs.existsSync(f)) { res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream', 'access-control-allow-origin': '*' }); res.end(fs.readFileSync(f)); return; }
+  }
+  if (req.method === 'GET' && u.pathname.startsWith('/cw/')) { // the coursework guide's content, as github.io serves it
+    const f = path.join(A2, 'content', 'coursework', path.normalize(decodeURIComponent(u.pathname.slice(4))).replace(/^(\.\.[/\\])+/, ''));
+    if (f.startsWith(path.join(A2, 'content', 'coursework')) && fs.existsSync(f) && fs.statSync(f).isFile()) { res.writeHead(200, { 'content-type': f.endsWith('.json') ? 'application/json' : MIME[path.extname(f)] || 'application/octet-stream' }); res.end(fs.readFileSync(f)); return; }
+    res.writeHead(404); res.end(); return;
   }
   if (req.method === 'POST') {
     let body = '';

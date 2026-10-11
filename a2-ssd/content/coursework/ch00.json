@@ -1,0 +1,411 @@
+{
+ "id": "00",
+ "n": 0,
+ "title": "Start here",
+ "one": "What you are making, how the guide works, and the two rules that never break.",
+ "marks": "This chapter shows the finished program, the two rules the examiner checks hardest, and where the fifty marks come from.",
+ "next": {
+  "id": "01",
+  "title": "Your workspace",
+  "n": 1
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "What you are making",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See the shop and the program you will build for it.",
+     "blocks": [
+      {
+       "p": "Towpath Cycles is a small bike shop beside the canal towpath in Newry. Its mechanics repair bikes, and customers book a time with a mechanic for each repair. The shop also hires out bikes by the day and sells bikes of its own. It keeps spare parts on the shelf, sells them, and orders more from its suppliers. The shop is made up, and it holds every kind of booking and stock that a CCEA case study asks for."
+      },
+      {
+       "p": "In this guide you build a program for the staff of Towpath Cycles. The program keeps everything in a database, which is a store of information kept in tables. A table is a grid where each row is one thing, such as one customer or one booking. The six pictures below are the finished program, signed in as Siobhán Rooney, the manager."
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-app-login.png",
+        "alt": "The Towpath Cycles sign-in window of the finished program, with the username siobhan typed and the password hidden as dots.",
+        "cap": "The sign-in window. Every member of staff signs in with their own username, so the program knows who did what.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 58,
+          "y": 46,
+          "say": "Type the username."
+         },
+         {
+          "n": 2,
+          "x": 58,
+          "y": 55,
+          "say": "Type the password."
+         },
+         {
+          "n": 3,
+          "x": 68,
+          "y": 76,
+          "say": "Click Sign in."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-app-menu.png",
+        "alt": "The main menu of the finished program after Siobhán Rooney, the manager, signs in, with her name at the top and one button for each screen.",
+        "cap": "The main menu. One button opens each screen of the program.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 30,
+          "y": 22,
+          "say": "Who is signed in."
+         },
+         {
+          "n": 2,
+          "x": 72,
+          "y": 60,
+          "say": "One button for each screen."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch00-app-customers.png",
+        "alt": "The Customers screen of the finished program: a Search box at the top, a grid of twelve customers from Hannah Boyle down to Ben Toner with their phone numbers, and the buttons Add, Edit, Delete and Close along the bottom.",
+        "cap": "The customers screen. You build it in chapter 6.",
+        "w": 900,
+        "h": 560,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 30,
+          "y": 11,
+          "say": "The Search box narrows the list as you type."
+         },
+         {
+          "n": 2,
+          "x": 15,
+          "y": 40,
+          "say": "Customers are shown by name, never by number."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch00-app-diary.png",
+        "alt": "The Diary screen of the finished program for today: a date picker at the top, a drawn time line with one lane each for Aoife Byrne, Conor Walsh and Niamh Hughes, and the day's bookings in a grid under it.",
+        "cap": "The diary of workshop bookings. You build it in chapter 7, and it can never book one mechanic twice at the same time.",
+        "w": 900,
+        "h": 560,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 20,
+          "y": 8,
+          "say": "Pick a day here."
+         },
+         {
+          "n": 2,
+          "x": 37,
+          "y": 18,
+          "say": "One lane for each mechanic, with each booking drawn as a bar."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch00-app-parts.png",
+        "alt": "The Parts and stock screen of the finished program: every part in the top grid with its count in stock, the rows for PADS-DISC, CHAIN-11 and TYRE-700-35 tinted pink, and the open orders from suppliers in the lower grid.",
+        "cap": "The parts and stock screen. You build it in chapter 8, and its counts are always right.",
+        "w": 900,
+        "h": 560,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 50,
+          "y": 26,
+          "say": "Pink rows are parts that are running low and need to be ordered."
+         },
+         {
+          "n": 2,
+          "x": 50,
+          "y": 72,
+          "say": "Orders from suppliers that have not arrived yet."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch00-app-reports.png",
+        "alt": "The Reports screen of the finished program showing Most popular parts: a From date and a To date at the top, a grid of parts with Brake cable first at 3 sold and £12.00, and a sentence under the grid naming the best seller.",
+        "cap": "The reports screen. You build it in chapter 9, and each report joins several tables for a range of dates.",
+        "w": 900,
+        "h": 560,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 25,
+          "y": 8,
+          "say": "Pick a report and two dates."
+         },
+         {
+          "n": 2,
+          "x": 50,
+          "y": 50,
+          "say": "The answer, worked out from several tables at once."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the two rules that never break.",
+     "blocks": [
+      {
+       "p": "Every case study has bookings and stock, and the examiner checks two things about them harder than anything else. Each rule is written below in one sentence, with what goes wrong in the shop without it."
+      },
+      {
+       "rule": {
+        "which": "double",
+        "text": "One mechanic can never be booked for two repairs that overlap in time."
+       }
+      },
+      {
+       "p": "Without this rule, two customers arrive at 13:00 for the same mechanic, and one of them is sent home."
+      },
+      {
+       "rule": {
+        "which": "stock",
+        "text": "The number of each part in stock always matches what is really on the shelf, and it can never go below zero."
+       }
+      },
+      {
+       "p": "Without this rule, the program sells three brake cables when the shelf holds two, and the count says minus one."
+      },
+      {
+       "p": "Chapter 7 builds the first rule and chapter 8 builds the second. In both chapters the database itself refuses the bad booking or the bad sale, so no screen of the program can get round it."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "See where the fifty marks come from.",
+     "blocks": [
+      {
+       "p": "The coursework is marked out of 50 marks, split into three parts called assessment objectives, AO1, AO2 and AO3."
+      },
+      {
+       "p": "AO1 is worth 10 marks, for your project plan and your list of what the users need."
+      },
+      {
+       "p": "AO2 is worth 24 marks, for the working program and the evidence that it works."
+      },
+      {
+       "p": "AO3 is worth 16 marks, for how well you look back at your plan and judge what you made."
+      },
+      {
+       "p": "The top band of AO2, Level 4, is 19 to 24 marks, and it asks for each of the following."
+      },
+      {
+       "p": "The program works and covers the whole case study, with screens that are easy to use."
+      },
+      {
+       "p": "It can add, change, delete and show records from several tables that are linked to each other."
+      },
+      {
+       "p": "It has a report that brings together records from several linked tables and works with them, such as adding up totals."
+      },
+      {
+       "p": "You hand in the script that makes and fills the database, and all the code of the program."
+      },
+      {
+       "p": "You write a user guide that shows a member of staff how to use every screen, step by step."
+      },
+      {
+       "p": "You write a test plan that covers the whole program, with the result of every test."
+      },
+      {
+       "p": "This guide builds every one of those, in the bike shop first, so that you can build the same for your own case study."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "How this guide works",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Learn how to move through a chapter and tick your steps.",
+     "blocks": [
+      {
+       "p": "Each chapter is split into stages, and each stage is a short run of screens. A screen holds one thing to read or one small group of steps to do. The line above each screen heading says which stage you are in and which screen of that stage you are on."
+      },
+      {
+       "p": "The strip of numbered stages under the chapter title shows the whole chapter. Each stage has a row of small dots, one dot for each screen, and the dot for the screen you are on is lit. Click a stage or a dot to go straight to it."
+      },
+      {
+       "p": "At the foot of every screen, the Back button goes to the screen before and the Next button goes to the screen after. The Next button shows the heading of the screen it leads to. The left and right arrow keys on the keyboard do the same. If you close the guide and open the chapter again, it opens on the screen you were last on."
+      },
+      {
+       "p": "Every step has a small numbered box at its left. Click the box when you have done the step, and it turns into a tick. Ticks are saved to your name when you are signed in, so they are still there on another computer and in another lesson. When every step on a screen is ticked, the dot for that screen is ticked too."
+      },
+      {
+       "p": "The last screen of every chapter counts your ticks, and it has a button that says Clear my ticks. Clear my ticks asks you first, and then takes every tick off that chapter, so that you can work through it again from the start. The same screen has the button that marks the chapter as done, and the button that goes on to the next chapter."
+      },
+      {
+       "steps": [
+        {
+         "id": "0.2.1",
+         "do": "Click the numbered box at the left of this step.",
+         "see": "The box turns into a tick, and the dot for this screen in the stage strip is ticked too."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Learn what the four labels on the code mean.",
+     "blocks": [
+      {
+       "p": "From chapter 3 onward, the guide shows you code, which is the lines a computer follows. Every block of code has a label at its top, and the label tells you what to do with it before you read a line."
+      },
+      {
+       "box": {
+        "title": "Copy this one",
+        "text": "You read this code and copy it into your file with the Copy button. It is used for the long parts that every program needs, and for the first time the guide shows a new idea in full."
+       }
+      },
+      {
+       "box": {
+        "title": "Type this one",
+        "text": "You type the yellow lines yourself, letter by letter. These blocks are short, usually ten lines or fewer, and the grey lines round them can still be copied. The yellow lines are the ones your own project needs, with your own names in them."
+       }
+      },
+      {
+       "box": {
+        "title": "Your turn",
+        "text": "There is no code to copy here. The guide tells you what the code must do, the test to run, and the message you should see when it works. If you get stuck, a closed box under it that starts with Stuck? Show me holds the answer."
+       }
+      },
+      {
+       "box": {
+        "title": "Read this one",
+        "text": "You read this code to see how something works, and you do not copy it or type it. It has no Copy button."
+       }
+      },
+      {
+       "p": "Typing the short blocks matters, because those lines are the ones you change when you build your own case study. When your fingers have typed a line once, you notice each word in it, and you can find the same line in your own code later. Every block also has a button that says Walk me through it, which lights up one part of the code at a time and explains it in plain words."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Find the one download, then start chapter 1.",
+     "blocks": [
+      {
+       "p": "There is one file to download for the whole coursework. It is called BikeShop-sample-data.sql, and it holds sample data, which is made-up records for the shop, such as twelve customers and the parts on the shelf."
+      },
+      {
+       "p": "You will use it in chapter 3, and the button for it is there too. It is also in the Sample data box on the front page of this guide, under the list of chapters."
+      },
+      {
+       "p": "Everything else you build yourself, chapter by chapter. Chapter 1 sets up the place where you work: SQL Server Management Studio (SSMS), Visual Studio 2019 and your OneDrive folder, inside the Programming Environment."
+      },
+      {
+       "steps": [
+        {
+         "id": "0.2.2",
+         "do": "Click the button that says Mark chapter 0 as done, at the foot of this screen.",
+         "see": "The button changes to say that chapter 0 is done."
+        },
+        {
+         "id": "0.2.3",
+         "do": "Click the button that says Go on to chapter 1, at the foot of this screen.",
+         "see": "Chapter 1, Your workspace, opens on its first screen."
+        }
+       ]
+      },
+      {
+       "words": [
+        [
+         "Database",
+         "A store of information kept in tables, which the program reads from and writes to."
+        ],
+        [
+         "Table",
+         "A grid with named columns, where each row is one thing, such as one customer."
+        ],
+        [
+         "Record",
+         "One row of a table, such as one customer or one booking."
+        ],
+        [
+         "Program",
+         "A set of screens that staff click and type in, which you write in Visual Studio 2019."
+        ],
+        [
+         "Code",
+         "The lines a computer follows, written in a language such as SQL or C#."
+        ],
+        [
+         "Script",
+         "A file of SQL lines that the database runs from the top to the bottom."
+        ],
+        [
+         "Sample data",
+         "Made-up records with real-looking names and dates, so that you have something to test with."
+        ],
+        [
+         "Double booking",
+         "Two bookings for the same mechanic that overlap in time."
+        ],
+        [
+         "Stock",
+         "The number of each part the shop has on its shelf."
+        ],
+        [
+         "Assessment objective",
+         "One of the three parts the marks are split into, called AO1, AO2 and AO3."
+        ],
+        [
+         "Level 4",
+         "The top band of marks in an assessment objective."
+        ],
+        [
+         "Stage",
+         "One part of a chapter, made up of a few screens."
+        ],
+        [
+         "Tick",
+         "The mark you put on a step when you have done it, saved to your name."
+        ]
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

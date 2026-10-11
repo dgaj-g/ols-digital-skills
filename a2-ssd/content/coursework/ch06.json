@@ -1,0 +1,3318 @@
+{
+ "id": "06",
+ "n": 6,
+ "title": "Add, edit, delete, display",
+ "one": "The customers screen: a grid of names and an edit form that checks its boxes.",
+ "marks": {
+  "say": "The first screen that changes the database: a list the user can search, an add and edit form that checks what was typed, and a delete that asks first and takes no for an answer from the database."
+ },
+ "prev": {
+  "id": "05",
+  "title": "Connect C#",
+  "n": 5
+ },
+ "next": {
+  "id": "07",
+  "title": "Bookings",
+  "n": 7
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "One customer in your hands",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will build in this chapter.",
+     "blocks": [
+      {
+       "p": "Chapter 5 gave your program a front door: a sign-in window and a main menu with six buttons that open six empty forms. In this chapter the Customers button opens a real screen. A grid lists every customer. A Search box narrows the grid as you type. Add opens a small form, Edit opens the same form with the customer already in it, and Delete asks before it acts. The database still makes the final decisions: it refuses to delete a customer who has bookings, and the refusal appears on the screen in its own words."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch06-customers-run.png",
+        "alt": "The Customers screen of the running program: a Search box at the top, a grid of twelve customers from Hannah Boyle down to Ben Toner with the columns Full name, Phone, Email and Date joined, an empty Bookings grid under it, and the buttons Add, Edit, Delete and Close along the bottom with Edit and Delete greyed out.",
+        "cap": "The customers screen as it opens. Nothing is picked yet, so Edit and Delete are switched off and the bookings grid is empty.",
+        "w": 960,
+        "h": 660,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 28,
+          "y": 11,
+          "say": "The Search box. The grid narrows as you type."
+         },
+         {
+          "n": 2,
+          "x": 50,
+          "y": 30,
+          "say": "Twelve customers, sorted by last name. The CustomerID column is hidden."
+         },
+         {
+          "n": 3,
+          "x": 50,
+          "y": 70,
+          "say": "The bookings grid: empty until a customer is picked."
+         },
+         {
+          "n": 4,
+          "x": 25,
+          "y": 94,
+          "say": "Edit and Delete are off until a row is picked."
+         }
+        ]
+       }
+      },
+      {
+       "p": "Five files do the work, and you meet them in order. Customer.cs holds one customer. CustomerData.cs calls the five customer stored procedures from chapter 4. Grid.cs tidies any grid. frmCustomers.cs is the list. frmCustomerEdit.cs is the add and edit form. At the end, two small classes for the services and the suppliers follow the same pattern, and you write the Supplier pair yourself."
+      },
+      {
+       "words": [
+        [
+         "Class",
+         "A description of one kind of thing, written as code. The Customer class describes what one customer has: a number, two names, a phone, an email and a date."
+        ],
+        [
+         "Object",
+         "One real thing made from a class. The class is the plan; the object is one customer, with real names in it."
+        ],
+        [
+         "Property",
+         "One piece of information inside a class, such as FirstName. The program can read a property and, usually, change it."
+        ],
+        [
+         "Method",
+         "A named piece of code that does one job, such as Search or Tidy. Writing the name with brackets after it runs the job."
+        ],
+        [
+         "Constructor",
+         "The method that runs when an object is made with the word new. A form's constructor can take a value, and this chapter's edit form takes the customer's number."
+        ],
+        [
+         "Static",
+         "A class marked static has no objects made from it. You call its methods by the class name, such as CustomerData.Search, the way you called Db in chapter 5."
+        ],
+        [
+         "Grid",
+         "The DataGridView control: a table on a form, with a heading row and one row per record. In the code it is called dgvCustomers."
+        ],
+        [
+         "DataTable",
+         "A table of rows held in memory after the database answered. Db.GetTable gives one back, and a grid can show it."
+        ],
+        [
+         "Event",
+         "Something that happens to a control: a click, a key typed, a row picked. An event method is the code that runs when that happens."
+        ],
+        [
+         "null",
+         "The value that means nothing is there at all. An empty email box becomes null, so the database stores NULL and not an empty piece of text."
+        ],
+        [
+         "bool",
+         "A value that is either true or false. The form uses one called picked to switch two buttons on or off."
+        ],
+        [
+         "DialogResult",
+         "The answer a small window gives when it closes: OK or Cancel. The list form waits for it, and loads the grid again on OK."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Check that you have these ready.",
+     "blocks": [
+      {
+       "need": [
+        "Chapter 5 is finished: your program signs in as siobhan with the password canal01 and shows the main menu, and the six empty forms are in the Forms folder with the exact names frmCustomers, frmDiary, frmHires, frmBikes, frmParts and frmReports.",
+        "Chapter 4 is finished: usp_Customer_Search, usp_Customer_GetByID, usp_Customer_Add, usp_Customer_Update, usp_Customer_Delete and usp_Appointment_GetForCustomer are in your database. If you are not sure, run the whole script once in SQL Server Management Studio (SSMS) and look for the line that says BikeShop is ready.",
+        "The BikeShop project is open in Visual Studio 2019, with Solution Explorer showing the Data, Models, Forms and Controls folders."
+       ]
+      },
+      {
+       "p": "Every file in this chapter goes into the Models folder, the Data folder, the Forms folder or the project itself, and the table at the start of each stage says which. Press F6 after each file, so a slip is found while it is still one file old."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "A class holds one customer in the program.",
+     "blocks": [
+      {
+       "p": "In chapter 4, a customer was one row of the Customer table: a number, two names, a phone, an email and a date. Inside the program a customer needs a shape too, so that the form can hand one whole customer to the data class in a single go, instead of five separate values that could be passed in the wrong order. That shape is a class."
+      },
+      {
+       "p": "A class is a description of one kind of thing. It lists the pieces of information the thing has, and each piece is called a property. One real customer made from the class is called an object. The class below has one property for each column of the Customer table, and one extra property, FullName, which works out its own answer from the two names."
+      },
+      {
+       "code": {
+        "id": "6.1-customer",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Models/Customer.cs: one customer",
+        "src": "cs:Models/Customer.cs",
+        "parts": [
+         [
+          "using System;",
+          "public class Customer",
+          "The class",
+          "using System gives the file the DateTime type, which holds a date and a time together. namespace BikeShop.Models is the folder the class lives in, and the other files reach it with using BikeShop.Models. public class Customer starts the description."
+         ],
+         [
+          "public int CustomerID",
+          "public DateTime DateJoined",
+          "One property for each column",
+          "Each line is a property with the same name and the same kind of value as its column in the Customer table: int for a whole number, string for text, DateTime for a date. { get; set; } means the program can read the property and change it."
+         ],
+         [
+          "public string FullName",
+          "$end",
+          "A property that works out its own answer",
+          "FullName has only a get, so the program can read it but never set it. Every time it is read, it joins the first name, a space and the last name. The two closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System;\n\nnamespace BikeShop.Models\n{\n    // One customer.  Plain properties only: the form checks what the user typed\n    // before it fills these in.\n    public class Customer\n    {\n        public int CustomerID { get; set; }\n        public string FirstName { get; set; }\n        public string LastName { get; set; }\n        public string Phone { get; set; }\n        public string Email { get; set; }\n        public DateTime DateJoined { get; set; }\n\n        public string FullName\n        {\n            get { return FirstName + \" \" + LastName; }\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The class",
+          "using System gives the file the DateTime type, which holds a date and a time together. namespace BikeShop.Models is the folder the class lives in, and the other files reach it with using BikeShop.Models. public class Customer starts the description."
+         ],
+         [
+          9,
+          14,
+          "One property for each column",
+          "Each line is a property with the same name and the same kind of value as its column in the Customer table: int for a whole number, string for text, DateTime for a date. { get; set; } means the program can read the property and change it."
+         ],
+         [
+          16,
+          21,
+          "A property that works out its own answer",
+          "FullName has only a get, so the program can read it but never set it. Every time it is read, it joins the first name, a space and the last name. The two closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Add the Customer class to the Models folder.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.1.1",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the Models folder, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class-models.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Models folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Models folder. This picture was taken in the finished project, so Solution Explorer lists files you have not made yet.",
+          "w": 916,
+          "h": 441,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 68,
+            "y": 34,
+            "say": "Right-click the Models folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 42,
+            "y": 37,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 8,
+            "y": 87,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.1.2",
+         "do": "In the Name box at the bottom, type Customer.cs and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the middle and the Name box at the bottom holds the name of the new class.",
+          "cap": "Name the new class before you press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 91,
+            "say": "Type the name in the Name box, with .cs on the end."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 95,
+            "say": "Press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.1.3",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.1-customer",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.1.4",
+         "do": "Click anywhere in the new file and press Ctrl and A together.",
+         "see": "Everything in the file is highlighted."
+        },
+        {
+         "id": "6.1.5",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "Customer.cs holds the Customer class, ending with the FullName property, and no red wavy line anywhere."
+        },
+        {
+         "id": "6.1.6",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Read how CustomerData talks to the five customer stored procedures.",
+     "blocks": [
+      {
+       "p": "A data class is the only place in the program that names a stored procedure. CustomerData has one method for each customer stored procedure from chapter 4, and every method is the same shape: give Db the procedure's name and its parameters, and hand back what comes out. The class is static, so you never make a CustomerData object: you write CustomerData.Search, the way you wrote Db.GetTable in chapter 5."
+      },
+      {
+       "p": "Read it region by region. A region is a fold in the editor, marked #region and #endregion, that groups the lines for one job. Search and Delete are two lines each. GetByID turns one row into one Customer object. Add is the interesting one: the stored procedure hands back the new customer's number through an output parameter, and Db.Out makes that parameter."
+      },
+      {
+       "code": {
+        "id": "6.1-customerdata",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Data/CustomerData.cs: one method for each stored procedure",
+        "src": "cs:Data/CustomerData.cs",
+        "parts": [
+         [
+          "using System;",
+          "public static class CustomerData",
+          "The usings and the class",
+          "System.Data gives DataTable and DataRow. System.Data.SqlClient gives SqlParameter, the type Db.P and Db.Out make. using BikeShop.Models lets the file say Customer. The class is static: no objects, only methods called by the class name."
+         ],
+         [
+          "#region Search",
+          "#endregion",
+          "Search: the rows whose name or phone contains the text",
+          "Search hands Db.GetTable the name of the stored procedure and one parameter, made by Db.P. Whatever usp_Customer_Search selects comes back as a DataTable, and the form gives that table to the grid. An empty search text matches every customer."
+         ],
+         [
+          "#region GetByID",
+          "#endregion",
+          "GetByID: one customer as an object",
+          "The stored procedure answers with a table of one row, or no rows. No rows means there is no such customer, and the method returns null: nothing at all. Otherwise row is that one row, and each column is copied into a new Customer object. (int) and (string) in front of a column say what kind of value is inside. Email can be NULL in the database, which arrives as DBNull.Value, so the method checks for that first and stores null in the object."
+         ],
+         [
+          "#region Add",
+          "#endregion",
+          "Add: save a new customer, and get the new number back",
+          "usp_Customer_Add has two output parameters: @NewCustomerID and @Message. Db.Run makes @Message itself, so this method makes the other one with Db.Out, and keeps hold of it in newID. Db.Run returns the message: an empty string when the save worked, or a sentence to show the user. When the message is empty, the number the database chose is read from newID.Value and put into the customer object, so the caller knows it."
+         ],
+         [
+          "#region Update",
+          "#endregion",
+          "Update: save changes to a customer who already has a number",
+          "Five parameters go in, one for each box on the edit form plus the number that says which row to change. Nothing comes back except the message."
+         ],
+         [
+          "#region Delete",
+          "$end",
+          "Delete: ask the database to take one customer out",
+          "Only the number goes in. The stored procedure from chapter 4 refuses when the customer has bookings or sales, and its sentence comes back as the message. The last two braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System;\nusing System.Data;\nusing System.Data.SqlClient;\nusing BikeShop.Models;\n\nnamespace BikeShop.Data\n{\n    public static class CustomerData\n    {\n        #region Search\n        // Customers whose name or phone contains the search text.\n        public static DataTable Search(string searchText)\n        {\n            return Db.GetTable(\"usp_Customer_Search\",\n                Db.P(\"@SearchText\", searchText));\n        }\n        #endregion\n\n        #region GetByID\n        // One customer as an object, or null if there is no customer with that\n        // ID.\n        public static Customer GetByID(int customerID)\n        {\n            DataTable table = Db.GetTable(\"usp_Customer_GetByID\",\n                Db.P(\"@CustomerID\", customerID));\n            if (table.Rows.Count == 0)\n            {\n                return null;\n            }\n\n            DataRow row = table.Rows[0];\n            Customer customer = new Customer();\n            customer.CustomerID = (int)row[\"CustomerID\"];\n            customer.FirstName = (string)row[\"FirstName\"];\n            customer.LastName = (string)row[\"LastName\"];\n            customer.Phone = (string)row[\"Phone\"];\n            if (row[\"Email\"] == DBNull.Value)\n            {\n                customer.Email = null;\n            }\n            else\n            {\n                customer.Email = (string)row[\"Email\"];\n            }\n            customer.DateJoined = (DateTime)row[\"DateJoined\"];\n            return customer;\n        }\n        #endregion\n\n        #region Add\n        // Saves a new customer.  Returns \"\" if it worked, or the sentence to\n        // show the user.\n        public static string Add(Customer customer)\n        {\n            SqlParameter newID = Db.Out(\"@NewCustomerID\");\n            string message = Db.Run(\"usp_Customer_Add\",\n                Db.P(\"@FirstName\", customer.FirstName),\n                Db.P(\"@LastName\", customer.LastName),\n                Db.P(\"@Phone\", customer.Phone),\n                Db.P(\"@Email\", customer.Email),\n                newID);\n            if (message == \"\")\n            {\n                customer.CustomerID = (int)newID.Value;\n            }\n            return message;\n        }\n        #endregion\n\n        #region Update\n        // Saves changes to an existing customer.  Returns \"\" if it worked.\n        public static string Update(Customer customer)\n        {\n            return Db.Run(\"usp_Customer_Update\",\n                Db.P(\"@CustomerID\", customer.CustomerID),\n                Db.P(\"@FirstName\", customer.FirstName),\n                Db.P(\"@LastName\", customer.LastName),\n                Db.P(\"@Phone\", customer.Phone),\n                Db.P(\"@Email\", customer.Email));\n        }\n        #endregion\n\n        #region Delete\n        // The procedure refuses if the customer has bookings.  Returns \"\" if it\n        // worked.\n        public static string Delete(int customerID)\n        {\n            return Db.Run(\"usp_Customer_Delete\",\n                Db.P(\"@CustomerID\", customerID));\n        }\n        #endregion\n    }\n}",
+        "partLines": [
+         [
+          1,
+          9,
+          "The usings and the class",
+          "System.Data gives DataTable and DataRow. System.Data.SqlClient gives SqlParameter, the type Db.P and Db.Out make. using BikeShop.Models lets the file say Customer. The class is static: no objects, only methods called by the class name."
+         ],
+         [
+          10,
+          17,
+          "Search: the rows whose name or phone contains the text",
+          "Search hands Db.GetTable the name of the stored procedure and one parameter, made by Db.P. Whatever usp_Customer_Search selects comes back as a DataTable, and the form gives that table to the grid. An empty search text matches every customer."
+         ],
+         [
+          19,
+          48,
+          "GetByID: one customer as an object",
+          "The stored procedure answers with a table of one row, or no rows. No rows means there is no such customer, and the method returns null: nothing at all. Otherwise row is that one row, and each column is copied into a new Customer object. (int) and (string) in front of a column say what kind of value is inside. Email can be NULL in the database, which arrives as DBNull.Value, so the method checks for that first and stores null in the object."
+         ],
+         [
+          50,
+          68,
+          "Add: save a new customer, and get the new number back",
+          "usp_Customer_Add has two output parameters: @NewCustomerID and @Message. Db.Run makes @Message itself, so this method makes the other one with Db.Out, and keeps hold of it in newID. Db.Run returns the message: an empty string when the save worked, or a sentence to show the user. When the message is empty, the number the database chose is read from newID.Value and put into the customer object, so the caller knows it."
+         ],
+         [
+          70,
+          81,
+          "Update: save changes to a customer who already has a number",
+          "Five parameters go in, one for each box on the edit form plus the number that says which row to change. Nothing comes back except the message."
+         ],
+         [
+          83,
+          93,
+          "Delete: ask the database to take one customer out",
+          "Only the number goes in. The stored procedure from chapter 4 refuses when the customer has bookings or sales, and its sentence comes back as the message. The last two braces end the class and the namespace."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Add the CustomerData class to the Data folder.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.1.7",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the Data folder, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Data folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Data folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 28,
+            "say": "Right-click the Data folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 7,
+            "y": 70,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.1.8",
+         "do": "In the Name box at the bottom, type CustomerData.cs and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the middle and the Name box at the bottom holds the name of the new class.",
+          "cap": "Name the new class before you press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 91,
+            "say": "Type the name in the Name box, with .cs on the end."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 95,
+            "say": "Press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.1.9",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.1-customerdata",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.1.10",
+         "do": "Click anywhere in the new file and press Ctrl and A together.",
+         "see": "Everything in the file is highlighted."
+        },
+        {
+         "id": "6.1.11",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "CustomerData.cs holds five regions: Search, GetByID, Add, Update and Delete."
+        },
+        {
+         "id": "6.1.12",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'The name Db does not exist' or 'The name Msg does not exist'",
+           "Your helper classes from chapter 5 are called something else, or sit in a different namespace. Match the names you used there."
+          ],
+          [
+           "'The type or namespace name Customer could not be found'",
+           "The Customer class is missing from the Models folder, or its file was saved under another name. Go back to step 6.1.1 and check Solution Explorer."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "A tidy grid",
+   "screens": [
+    {
+     "id": "1",
+     "title": "What a grid shows, and why it needs tidying.",
+     "blocks": [
+      {
+       "p": "A grid is the DataGridView control: a table on a form with a heading row and one row per record. Give a grid a DataTable and it shows every column, with the column's name as the heading. Left alone, that means a heading like CustomerID, which is a number the user never needs, and a heading like DateJoined, which runs two words together."
+      },
+      {
+       "p": "Grid.cs is a small helper, written once and used by every grid in the program. Its method Tidy hides the columns you name, turns every heading into plain words, shows money with a pound sign and two decimal places, and shows dates as a day name and a date. The rule for the user is simple to state: names, never numbers. Two more methods, SelectedID and SelectedText, read one value from the row the user has picked."
+      },
+      {
+       "p": "Grid.cs goes at the top of the project, beside Program.cs, Session.cs and Msg.cs, because every form uses it. In Visual Studio 2019 that means adding the class to the project line itself, not to a folder."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the Grid helper.",
+     "blocks": [
+      {
+       "code": {
+        "id": "6.2-grid",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Grid.cs: the helpers every grid uses",
+        "src": "cs:Grid.cs",
+        "parts": [
+         [
+          "using System;",
+          "public static class Grid",
+          "The usings and the class",
+          "System.Text gives StringBuilder, which the Words method uses to build a heading one letter at a time. System.Windows.Forms gives DataGridView. The class is static and sits in the BikeShop namespace itself, so every form can say Grid without a using line."
+         ],
+         [
+          "#region Tidy",
+          "params string[] hiddenColumns)",
+          "Tidy: the grid, and the columns to hide",
+          "Tidy takes the grid and then any number of column names, which params gathers into a list called hiddenColumns. A form writes Grid.Tidy(dgvCustomers, \"CustomerID\") with one name, and a form with two number columns writes two."
+         ],
+         [
+          "foreach (string name in hiddenColumns)",
+          "false;",
+          "Hide the ID columns",
+          "foreach looks at each name in the list in turn. If the grid has a column with that name, its Visible setting is switched to false. The column is still there, so SelectedID can read the hidden number later."
+         ],
+         [
+          "foreach (DataGridViewColumn column in grid.Columns)",
+          "column.HeaderText = Words(column.Name);",
+          "Plain words in every heading",
+          "This foreach looks at every column of the grid. HeaderText is the words the user sees at the top of the column, and Words turns the column's name into them: DateJoined becomes Date joined."
+         ],
+         [
+          "if (column.ValueType == typeof(decimal)",
+          "DataGridViewContentAlignment.MiddleRight;",
+          "Money columns",
+          "ValueType is the kind of value the column holds. decimal is the kind for money. When the column holds decimals and its name says money, IsMoney answers true, and the column is shown with a pound sign and two decimal places, pushed to the right the way money is written."
+         ],
+         [
+          "else if (column.ValueType == typeof(DateTime))",
+          "column.DefaultCellStyle.Format = \"HH:mm\";",
+          "Date and time columns",
+          "A DateTime column is shown as a day name, a day, a month and a year, such as Mon 12 Oct 2026. If the column's name contains the word Time, the hours and minutes are shown instead, because the diary grids in chapter 7 show one day at a time. The closing braces end the if, the else if and the foreach."
+         ],
+         [
+          "grid.ClearSelection();",
+          "grid.ClearSelection();",
+          "Nothing picked to begin with",
+          "A grid picks its first row by itself as soon as it is filled. ClearSelection undoes that, so the form starts with no row picked and Edit and Delete switched off."
+         ],
+         [
+          "private static bool IsMoney",
+          "#endregion",
+          "Which columns hold money",
+          "IsMoney answers true when the column's name contains any of the seven money words. The two vertical bars mean or: any one match is enough. private means only Grid itself can call this method."
+         ],
+         [
+          "#region Words",
+          "#endregion",
+          "Words: BikeDescription becomes Bike description",
+          "Words walks along the column's name one letter at a time. char is one letter. When a capital letter follows a small one, a space goes in and the capital becomes small. StringBuilder collects the letters, and ToString hands back the finished heading."
+         ],
+         [
+          "#region Selected",
+          "return Convert.ToInt32",
+          "SelectedID: the hidden number of the picked row",
+          "SelectedRows is the list of rows the user has picked. When the list is empty the method returns 0, which every form treats as nothing picked. Otherwise it reads the named cell of the first picked row and turns the value into a whole number."
+         ],
+         [
+          "public static string SelectedText",
+          "$end",
+          "SelectedText: a text value from the picked row",
+          "The same shape, for text: an empty string when nothing is picked, otherwise the named cell as text. The delete button uses this to put the customer's name into its question."
+         ]
+        ],
+        "text": "using System;\nusing System.Text;\nusing System.Windows.Forms;\n\nnamespace BikeShop\n{\n    // Small helpers every grid uses.  Call Tidy straight after you set a grid's\n    // DataSource.\n    public static class Grid\n    {\n        #region Tidy\n        // Hides the ID columns (the user never needs a number) and turns column\n        // names into plain headers.\n        public static void Tidy(DataGridView grid,\n            params string[] hiddenColumns)\n        {\n            foreach (string name in hiddenColumns)\n                if (grid.Columns.Contains(name)) grid.Columns[name].Visible =\n                    false;\n\n            foreach (DataGridViewColumn column in grid.Columns)\n            {\n                column.HeaderText = Words(column.Name);\n                if (column.ValueType == typeof(decimal) && IsMoney(column.Name))\n                {\n                    column.DefaultCellStyle.Format = \"£#,##0.00\";\n                    column.DefaultCellStyle.Alignment =\n                        DataGridViewContentAlignment.MiddleRight;\n                }\n                else if (column.ValueType == typeof(DateTime))\n                {\n                    column.DefaultCellStyle.Format = \"ddd d MMM yyyy\";\n                    if (column.Name.Contains(\"Time\"))\n                    {\n                        column.DefaultCellStyle.Format = \"HH:mm\";\n                    }\n                }\n            }\n            grid.ClearSelection();\n        }\n\n        private static bool IsMoney(string name)\n        {\n            return name.Contains(\"Price\") || name.Contains(\"Rate\")\n                || name.Contains(\"Cost\") || name.Contains(\"Income\")\n                || name.Contains(\"Deposit\") || name.Contains(\"Total\")\n                    || name.Contains(\"Paid\");\n        }\n        #endregion\n\n        #region Words\n        // \"BikeDescription\" → \"Bike description\", \"QtyInStock\" → \"Qty in\n        // stock\", \"Mechanic\" → \"Mechanic\"\n        public static string Words(string columnName)\n        {\n            StringBuilder words = new StringBuilder();\n            for (int i = 0; i < columnName.Length; i++)\n            {\n                char c = columnName[i];\n                if (i > 0 && char.IsUpper(c) && char.IsLower(columnName[i - 1]))\n                {\n                    words.Append(' ');\n                    words.Append(char.ToLower(c));\n                }\n                else\n                {\n                    words.Append(c);\n                }\n            }\n            return words.ToString();\n        }\n        #endregion\n\n        #region Selected\n        // The hidden ID of the picked row (0 when nothing is picked).\n        public static int SelectedID(DataGridView grid, string idColumn)\n        {\n            if (grid.SelectedRows.Count == 0) return 0;\n            return Convert.ToInt32(grid.SelectedRows[0].Cells[idColumn].Value);\n        }\n\n        // A text value from the picked row (\"\" when nothing is picked).\n        public static string SelectedText(DataGridView grid, string column)\n        {\n            if (grid.SelectedRows.Count == 0) return \"\";\n            return Convert.ToString(grid.SelectedRows[0].Cells[column].Value);\n        }\n        #endregion\n    }\n}",
+        "partLines": [
+         [
+          1,
+          10,
+          "The usings and the class",
+          "System.Text gives StringBuilder, which the Words method uses to build a heading one letter at a time. System.Windows.Forms gives DataGridView. The class is static and sits in the BikeShop namespace itself, so every form can say Grid without a using line."
+         ],
+         [
+          11,
+          16,
+          "Tidy: the grid, and the columns to hide",
+          "Tidy takes the grid and then any number of column names, which params gathers into a list called hiddenColumns. A form writes Grid.Tidy(dgvCustomers, \"CustomerID\") with one name, and a form with two number columns writes two."
+         ],
+         [
+          17,
+          19,
+          "Hide the ID columns",
+          "foreach looks at each name in the list in turn. If the grid has a column with that name, its Visible setting is switched to false. The column is still there, so SelectedID can read the hidden number later."
+         ],
+         [
+          21,
+          23,
+          "Plain words in every heading",
+          "This foreach looks at every column of the grid. HeaderText is the words the user sees at the top of the column, and Words turns the column's name into them: DateJoined becomes Date joined."
+         ],
+         [
+          24,
+          29,
+          "Money columns",
+          "ValueType is the kind of value the column holds. decimal is the kind for money. When the column holds decimals and its name says money, IsMoney answers true, and the column is shown with a pound sign and two decimal places, pushed to the right the way money is written."
+         ],
+         [
+          30,
+          38,
+          "Date and time columns",
+          "A DateTime column is shown as a day name, a day, a month and a year, such as Mon 12 Oct 2026. If the column's name contains the word Time, the hours and minutes are shown instead, because the diary grids in chapter 7 show one day at a time. The closing braces end the if, the else if and the foreach."
+         ],
+         [
+          39,
+          40,
+          "Nothing picked to begin with",
+          "A grid picks its first row by itself as soon as it is filled. ClearSelection undoes that, so the form starts with no row picked and Edit and Delete switched off."
+         ],
+         [
+          42,
+          49,
+          "Which columns hold money",
+          "IsMoney answers true when the column's name contains any of the seven money words. The two vertical bars mean or: any one match is enough. private means only Grid itself can call this method."
+         ],
+         [
+          51,
+          72,
+          "Words: BikeDescription becomes Bike description",
+          "Words walks along the column's name one letter at a time. char is one letter. When a capital letter follows a small one, a space goes in and the capital becomes small. StringBuilder collects the letters, and ToString hands back the finished heading."
+         ],
+         [
+          74,
+          80,
+          "SelectedID: the hidden number of the picked row",
+          "SelectedRows is the list of rows the user has picked. When the list is empty the method returns 0, which every form treats as nothing picked. Otherwise it reads the named cell of the first picked row and turns the value into a whole number."
+         ],
+         [
+          83,
+          90,
+          "SelectedText: a text value from the picked row",
+          "The same shape, for text: an empty string when nothing is picked, otherwise the named cell as text. The delete button uses this to put the customer's name into its question."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add Grid.cs to the project itself.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.2.1",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the BikeShop project line, the one above the Data, Forms and Models folders, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch09-vs-add-class-root.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the BikeShop project line right-clicked, above its Data, Forms and Models folders. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the project itself, not to a folder. Grid.cs sits at the top, beside Program.cs, Session.cs and Msg.cs.",
+          "w": 842,
+          "h": 613,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 10,
+            "y": 7,
+            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 38,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 20,
+            "y": 92,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.2.2",
+         "do": "In the Name box at the bottom, type Grid.cs and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the middle and the Name box at the bottom holds the name of the new class.",
+          "cap": "Name the new class before you press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 91,
+            "say": "Type the name in the Name box, with .cs on the end."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 95,
+            "say": "Press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.2.3",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.2-grid",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.2.4",
+         "do": "Click anywhere in the new file and press Ctrl and A together.",
+         "see": "Everything in the file is highlighted."
+        },
+        {
+         "id": "6.2.5",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "Grid.cs holds three regions: Tidy, Words and Selected."
+        },
+        {
+         "id": "6.2.6",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Grid.cs appears inside the Data or Forms folder in Solution Explorer",
+           "The right-click landed on a folder instead of the project line. Drag Grid.cs up on to the BikeShop project line in Solution Explorer, and it moves. The program builds either way."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The customers screen",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Set out the controls on frmCustomers in Visual Studio 2019.",
+     "blocks": [
+      {
+       "p": "Chapter 5 added frmCustomers as an empty form. Now it gets its controls: a Search box with a label and a grey hint, the customers grid, a label and a second grid for the picked customer's bookings, and four buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+      },
+      {
+       "controls": {
+        "form": "frmCustomers",
+        "img": {
+         "img": "img/ch06-frmCustomers-design.png",
+         "alt": "frmCustomers in the Visual Studio 2019 designer: a Search label and box along the top with a grey hint beside them, a large grid, a label reading Bookings for the customer picked above, a smaller grid under it, and the buttons Add, Edit, Delete and Close along the bottom.",
+         "cap": "frmCustomers in the designer. Yours should look like this before you add any code.",
+         "w": 960,
+         "h": 668,
+         "missing": false,
+         "marks": [
+          {
+           "n": 1,
+           "x": 79,
+           "y": 9,
+           "say": "lblSearch, txtSearch and the grey hint lblHint."
+          },
+          {
+           "n": 2,
+           "x": 50,
+           "y": 32,
+           "say": "The customers grid, dgvCustomers."
+          },
+          {
+           "n": 3,
+           "x": 34,
+           "y": 63,
+           "say": "lblBookings, then the bookings grid, dgvBookings."
+          },
+          {
+           "n": 4,
+           "x": 41,
+           "y": 94,
+           "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right."
+          }
+         ]
+        },
+        "title": "Customers",
+        "size": [
+         900,
+         600
+        ],
+        "border": "FixedSingle",
+        "acceptButton": null,
+        "cancelButton": null,
+        "formNote": "Search, add, edit and delete customers. The lower grid shows the bookings of whichever customer is picked.",
+        "rows": [
+         {
+          "toolbox": "Label",
+          "name": "lblSearch",
+          "settings": [
+           "Text = Search"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtSearch",
+          "settings": [],
+          "then": [
+           "Double-click it. Visual Studio makes `txtSearch_TextChanged` for you; the code goes inside it."
+          ],
+          "note": "The list narrows as you type."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblHint",
+          "settings": [
+           "Text = Type part of a name or a phone number.",
+           "ForeColor = grey (92, 103, 116)"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "DataGridView",
+          "name": "dgvCustomers",
+          "settings": [
+           "the grid settings (chapter 6)"
+          ],
+          "then": [
+           "Events tab (the lightning bolt) → SelectionChanged: type `dgvCustomers_SelectionChanged` beside it and press Enter.",
+           "Events tab (the lightning bolt) → CellDoubleClick: type `dgvCustomers_CellDoubleClick` beside it and press Enter."
+          ],
+          "note": "The customers. Double-click a row to edit it."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblBookings",
+          "settings": [
+           "Text = Bookings for the customer picked above"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "DataGridView",
+          "name": "dgvBookings",
+          "settings": [
+           "the grid settings (chapter 6)"
+          ],
+          "then": [],
+          "note": "Read-only: that customer's bookings, newest first."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnAdd",
+          "settings": [
+           "Text = Add"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnAdd_Click` for you; the code goes inside it."
+          ],
+          "note": "Opens the edit window empty."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnEdit",
+          "settings": [
+           "Text = Edit",
+           "Enabled = False"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnEdit_Click` for you; the code goes inside it."
+          ],
+          "note": "Switched off until a row is picked."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnDelete",
+          "settings": [
+           "Text = Delete",
+           "Enabled = False"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnDelete_Click` for you; the code goes inside it."
+          ],
+          "note": "Asks first. The database refuses if the customer has bookings or sales."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnClose",
+          "settings": [
+           "Text = Close"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         }
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "The grid settings",
+        "text": "This is your first grid, so here are the settings the table calls the grid settings. Set them on dgvCustomers, and again on dgvBookings, in the Properties window: AllowUserToAddRows = False, AllowUserToDeleteRows = False, AllowUserToResizeRows = False, AutoSizeColumnsMode = Fill, BackgroundColor = White, MultiSelect = False, ReadOnly = True, RowHeadersVisible = False, SelectionMode = FullRowSelect. Together they make a grid the user can only read and pick from: one whole row at a time, no empty row at the bottom, no grey margin at the left, and columns that fill the width."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Lay out the controls, one at a time.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.3.1",
+         "do": "In Solution Explorer in Visual Studio 2019, double-click frmCustomers.cs in the Forms folder.",
+         "see": "The empty form opens in the designer.",
+         "img": {
+          "img": "img/ch07-vs-designer.png",
+          "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "w": 900,
+          "h": 600,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 12,
+            "y": 46,
+            "say": "The Toolbox. Drag a control from here on to the form."
+           },
+           {
+            "n": 2,
+            "x": 56,
+            "y": 49,
+            "say": "The form. Drop the control where the picture shows it."
+           },
+           {
+            "n": 3,
+            "x": 93,
+            "y": 54,
+            "say": "The Properties window. Set Name first, then the rest of the row."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.3.2",
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right."
+        },
+        {
+         "id": "6.3.3",
+         "do": "Click the form itself and set Text to Customers, Size to 900, 600 and FormBorderStyle to FixedSingle.",
+         "see": "The form grows, its title bar reads Customers, and its edges can no longer be dragged."
+        },
+        {
+         "id": "6.3.4",
+         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row.",
+         "see": "The form looks like the picture, with every control named as the table says.",
+         "img": {
+          "img": "img/ch06-frmCustomers-design.png",
+          "alt": "frmCustomers in the Visual Studio 2019 designer: a Search label and box along the top with a grey hint beside them, a large grid, a label reading Bookings for the customer picked above, a smaller grid under it, and the buttons Add, Edit, Delete and Close along the bottom.",
+          "cap": "frmCustomers in the designer. Yours should look like this before you add any code.",
+          "w": 960,
+          "h": 668,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 79,
+            "y": 9,
+            "say": "lblSearch, txtSearch and the grey hint lblHint."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 32,
+            "say": "The customers grid, dgvCustomers."
+           },
+           {
+            "n": 3,
+            "x": 34,
+            "y": 63,
+            "say": "lblBookings, then the bookings grid, dgvBookings."
+           },
+           {
+            "n": 4,
+            "x": 41,
+            "y": 94,
+            "say": "btnAdd, btnEdit, btnDelete, and btnClose at the right."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.3.5",
+         "do": "For txtSearch, double-click the box on the form.",
+         "see": "The code tab opens with an empty method called txtSearch_TextChanged. Press Shift and F7 together to go back to the designer."
+        },
+        {
+         "id": "6.3.6",
+         "do": "Click the dgvCustomers grid on the form.",
+         "see": "The Properties window shows dgvCustomers at the top."
+        },
+        {
+         "id": "6.3.6b",
+         "do": "Press the lightning bolt at the top of the Properties window.",
+         "see": "The Properties window shows the list of events for dgvCustomers, in alphabetical order."
+        },
+        {
+         "id": "6.3.6c",
+         "do": "Double-click the empty box beside SelectionChanged.",
+         "see": "The code tab opens with an empty method called dgvCustomers_SelectionChanged. Press Shift and F7 together to go back.",
+         "img": {
+          "img": "img/ch07-vs-events.png",
+          "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "w": 520,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 17,
+            "y": 13,
+            "say": "Press the lightning bolt."
+           },
+           {
+            "n": 2,
+            "x": 63,
+            "y": 36,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.3.7",
+         "do": "With dgvCustomers still picked and the lightning bolt still pressed, double-click the empty box beside CellDoubleClick.",
+         "see": "The code tab opens with an empty method called dgvCustomers_CellDoubleClick. Press Shift and F7 together to go back."
+        },
+        {
+         "id": "6.3.8",
+         "do": "Double-click each of the four buttons in turn: Add, Edit, Delete, then Close.",
+         "see": "Four empty Click methods are made, named btnAdd_Click, btnEdit_Click, btnDelete_Click and btnClose_Click."
+        },
+        {
+         "id": "6.3.9",
+         "do": "Click the form itself, on its grey background.",
+         "see": "The Properties window shows frmCustomers in the box at its top."
+        },
+        {
+         "id": "6.3.9b",
+         "do": "Press the lightning bolt at the top of the Properties window.",
+         "see": "The Properties window shows the list of events for frmCustomers."
+        },
+        {
+         "id": "6.3.9c",
+         "do": "Double-click the empty box beside Load, which is part of the way down, after Leave.",
+         "see": "The code tab opens with an empty method called frmCustomers_Load.",
+         "img": {
+          "img": "img/ch07-vs-events.png",
+          "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "w": 520,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 17,
+            "y": 13,
+            "say": "Press the lightning bolt."
+           },
+           {
+            "n": 2,
+            "x": 63,
+            "y": 36,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read how the grid loads, and searches as you type.",
+     "blocks": [
+      {
+       "p": "Three pieces of code go behind this form. Read them one at a time, then put the whole file in at once. The first piece is one method, LoadCustomers. It is called when the form opens, every time the search text changes, and after every add, edit and delete, so the grid always shows what the database holds right now."
+      },
+      {
+       "code": {
+        "id": "6.3-load",
+        "kind": "read",
+        "lang": "cs",
+        "title": "Forms/frmCustomers.cs: loading the grid",
+        "src": "cs:Forms/frmCustomers.cs#LoadCustomers",
+        "parts": [
+         [
+          "private void LoadCustomers()",
+          "CustomerData.Search(txtSearch.Text.Trim());",
+          "Ask the database, and give the grid the answer",
+          "DataSource is the table a grid shows. Trim takes spaces off both ends of the search text. CustomerData.Search sends the text to usp_Customer_Search and hands back the DataTable, and the grid shows it. An empty box brings every customer."
+         ],
+         [
+          "Grid.Tidy(dgvCustomers, \"CustomerID\");",
+          "$end",
+          "Tidy the grid",
+          "One line, straight after the DataSource line, every time. CustomerID is hidden, the headings become plain words, and no row is picked."
+         ]
+        ],
+        "text": "// Fills the grid from the database.  Called when the form opens, when\n// the search text changes,\n// and after every add, edit or delete, so the grid always shows what\n// the database holds.\nprivate void LoadCustomers()\n{\n    dgvCustomers.DataSource =\n        CustomerData.Search(txtSearch.Text.Trim());\n    // hide the ID, give the headers plain words\n    Grid.Tidy(dgvCustomers, \"CustomerID\");\n}",
+        "partLines": [
+         [
+          5,
+          8,
+          "Ask the database, and give the grid the answer",
+          "DataSource is the table a grid shows. Trim takes spaces off both ends of the search text. CustomerData.Search sends the text to usp_Customer_Search and hands back the DataTable, and the grid shows it. An empty box brings every customer."
+         ],
+         [
+          10,
+          11,
+          "Tidy the grid",
+          "One line, straight after the DataSource line, every time. CustomerID is hidden, the headings become plain words, and no row is picked."
+         ]
+        ]
+       }
+      },
+      {
+       "p": "Searching as you type is one more method, txtSearch_TextChanged, which does nothing but call LoadCustomers. Every key the user presses changes the text, the event fires, and the grid is loaded again from the database with the new text."
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Read how the buttons wake up when a row is picked.",
+     "blocks": [
+      {
+       "p": "Edit and Delete only make sense once a customer is picked, so they start switched off. The grid's SelectionChanged event fires whenever the picked row changes, and this piece switches the two buttons on or off and fills the lower grid."
+      },
+      {
+       "code": {
+        "id": "6.3-selection",
+        "kind": "read",
+        "lang": "cs",
+        "title": "Forms/frmCustomers.cs: when a row is picked",
+        "src": "cs:Forms/frmCustomers.cs#Selection",
+        "parts": [
+         [
+          "private void dgvCustomers_SelectionChanged",
+          "ShowBookings();",
+          "Switch the two buttons on or off",
+          "picked is a bool: true when at least one row is picked, false when none is. Enabled is the setting that switches a button on or off, so both buttons follow picked. Then ShowBookings fills the lower grid."
+         ],
+         [
+          "private void ShowBookings()",
+          "return;",
+          "Nothing picked: an empty lower grid",
+          "When no row is picked, the lower grid is given null, which empties it, and the method stops there with return."
+         ],
+         [
+          "dgvBookings.DataSource =",
+          "$end",
+          "Fetch that customer's bookings",
+          "Grid.SelectedID reads the hidden CustomerID of the picked row. AppointmentData.GetForCustomer sends that number to usp_Appointment_GetForCustomer from chapter 4, the stored procedure that joins three tables so the grid shows names and not numbers. Grid.Tidy hides the AppointmentID column. AppointmentData is a class you make in chapter 7, so the screen called Park the bookings line tells you what to do about it until then."
+         ]
+        ],
+        "text": "// Edit and Delete only make sense once a row is picked.\nprivate void dgvCustomers_SelectionChanged(object sender, EventArgs e)\n{\n    bool picked = dgvCustomers.SelectedRows.Count > 0;\n    btnEdit.Enabled = picked;\n    btnDelete.Enabled = picked;\n    ShowBookings();\n}\n\n// The lower grid shows the picked customer's bookings: two tables on\n// one screen.\nprivate void ShowBookings()\n{\n    if (dgvCustomers.SelectedRows.Count == 0)\n    {\n        dgvBookings.DataSource = null;\n        return;\n    }\n\n    dgvBookings.DataSource =\n        AppointmentData.GetForCustomer(Grid.SelectedID(dgvCustomers,\n        \"CustomerID\"));\n    Grid.Tidy(dgvBookings, \"AppointmentID\");\n}",
+        "partLines": [
+         [
+          2,
+          8,
+          "Switch the two buttons on or off",
+          "picked is a bool: true when at least one row is picked, false when none is. Enabled is the setting that switches a button on or off, so both buttons follow picked. Then ShowBookings fills the lower grid."
+         ],
+         [
+          12,
+          18,
+          "Nothing picked: an empty lower grid",
+          "When no row is picked, the lower grid is given null, which empties it, and the method stops there with return."
+         ],
+         [
+          20,
+          24,
+          "Fetch that customer's bookings",
+          "Grid.SelectedID reads the hidden CustomerID of the picked row. AppointmentData.GetForCustomer sends that number to usp_Appointment_GetForCustomer from chapter 4, the stored procedure that joins three tables so the grid shows names and not numbers. Grid.Tidy hides the AppointmentID column. AppointmentData is a class you make in chapter 7, so the screen called Park the bookings line tells you what to do about it until then."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Read Add, Edit and Delete.",
+     "blocks": [
+      {
+       "p": "The three buttons. Add and Edit open the edit form, which you build in the next stage. Delete asks a question, then tells the database and shows its answer. The word new makes an object from a class: new frmCustomerEdit(0) makes the edit form, and the number in the brackets goes to the form's constructor."
+      },
+      {
+       "code": {
+        "id": "6.3-buttons",
+        "kind": "read",
+        "lang": "cs",
+        "title": "Forms/frmCustomers.cs: the three buttons",
+        "src": "cs:Forms/frmCustomers.cs#AddEditDelete",
+        "parts": [
+         [
+          "private void btnAdd_Click",
+          "LoadCustomers();",
+          "Add opens the form with the number 0",
+          "0 means a new customer. ShowDialog opens the edit form and waits until it closes. The form answers with a DialogResult, and the answer is OK only when the save worked. On OK the grid is loaded again, so the new customer appears in it."
+         ],
+         [
+          "private void btnEdit_Click",
+          "LoadCustomers();",
+          "Edit opens the same form with the picked customer's number",
+          "The same three lines, with the hidden CustomerID of the picked row in place of 0. The form reads that number and fills its own boxes."
+         ],
+         [
+          "private void dgvCustomers_CellDoubleClick",
+          "btnEdit_Click(sender, e);",
+          "A double-click on a row is an Edit",
+          "e.RowIndex is the row that was double-clicked. A double-click on the heading row gives -1, so the check keeps that out. Otherwise the Edit button's own method is called, so the two ways of editing share one piece of code."
+         ],
+         [
+          "private void btnDelete_Click",
+          "return;",
+          "Delete asks first",
+          "Grid.SelectedText reads the picked customer's full name, and Msg.Ask puts it into a yes-or-no question. The exclamation mark means not: if the user did not say yes, the method stops at return and nothing happens."
+         ],
+         [
+          "string message =",
+          "$end",
+          "Tell the database, and show its answer",
+          "CustomerData.Delete sends the number to usp_Customer_Delete and hands back the message. A sentence means the database refused, and Msg.Problem shows that sentence. An empty message means the row is gone, and the grid is loaded again."
+         ]
+        ],
+        "text": "private void btnAdd_Click(object sender, EventArgs e)\n{\n    // 0 means \"a new customer\"\n    frmCustomerEdit edit = new frmCustomerEdit(0);\n    if (edit.ShowDialog(this) == DialogResult.OK)\n    {\n        LoadCustomers();\n    }\n}\n\nprivate void btnEdit_Click(object sender, EventArgs e)\n{\n    frmCustomerEdit edit =\n        new frmCustomerEdit(Grid.SelectedID(dgvCustomers,\n        \"CustomerID\"));\n    if (edit.ShowDialog(this) == DialogResult.OK)\n    {\n        LoadCustomers();\n    }\n}\n\nprivate void dgvCustomers_CellDoubleClick(object sender,\n    DataGridViewCellEventArgs e)\n{\n    if (e.RowIndex >= 0)\n    {\n        btnEdit_Click(sender, e);\n    }\n}\n\nprivate void btnDelete_Click(object sender, EventArgs e)\n{\n    string name = Grid.SelectedText(dgvCustomers, \"FullName\");\n    if (!Msg.Ask(\"Delete \" + name + \"? This cannot be undone.\"))\n    {\n        return;\n    }\n\n    string message =\n        CustomerData.Delete(Grid.SelectedID(dgvCustomers,\n        \"CustomerID\"));\n    if (message != \"\")\n    {\n        // the database refuses when the customer has bookings or sales,\n        // and says so\n        Msg.Problem(message);\n        return;\n    }\n    LoadCustomers();\n}",
+        "partLines": [
+         [
+          1,
+          9,
+          "Add opens the form with the number 0",
+          "0 means a new customer. ShowDialog opens the edit form and waits until it closes. The form answers with a DialogResult, and the answer is OK only when the save worked. On OK the grid is loaded again, so the new customer appears in it."
+         ],
+         [
+          11,
+          20,
+          "Edit opens the same form with the picked customer's number",
+          "The same three lines, with the hidden CustomerID of the picked row in place of 0. The form reads that number and fills its own boxes."
+         ],
+         [
+          22,
+          29,
+          "A double-click on a row is an Edit",
+          "e.RowIndex is the row that was double-clicked. A double-click on the heading row gives -1, so the check keeps that out. Otherwise the Edit button's own method is called, so the two ways of editing share one piece of code."
+         ],
+         [
+          31,
+          37,
+          "Delete asks first",
+          "Grid.SelectedText reads the picked customer's full name, and Msg.Ask puts it into a yes-or-no question. The exclamation mark means not: if the user did not say yes, the method stops at return and nothing happens."
+         ],
+         [
+          39,
+          50,
+          "Tell the database, and show its answer",
+          "CustomerData.Delete sends the number to usp_Customer_Delete and hands back the message. A sentence means the database refused, and Msg.Problem shows that sentence. An empty message means the row is gone, and the grid is loaded again."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Put the whole file behind the customers screen.",
+     "blocks": [
+      {
+       "p": "Here is the whole file: the three pieces you read, with the constructor, the Load method, the search box's event and the Close button around them. You replace everything in the code tab with it. Do not press F6 yet: the file names frmCustomerEdit, which you make in the next stage, and one line names AppointmentData, which the next screen deals with."
+      },
+      {
+       "code": {
+        "id": "6.3-customers",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Forms/frmCustomers.cs: the whole file",
+        "src": "cs:Forms/frmCustomers.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Models;",
+          "The usings",
+          "These lines bring in the tools the form needs: Windows Forms for the window itself, System.Data for the table that fills a grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          "namespace BikeShop.Forms",
+          "public partial class frmCustomers : Form",
+          "The class behind the form",
+          "partial means this class is in two files. The designer keeps the controls you dragged in frmCustomers.Designer.cs, and this file holds what the controls do. : Form means the class is a window."
+         ],
+         [
+          "public frmCustomers()",
+          "LoadCustomers();",
+          "Made, then loaded",
+          "The constructor runs when the main menu makes the form with new. InitializeComponent builds the controls you dragged. Then, when the form loads, the grid is filled for the first time."
+         ],
+         [
+          "#region LoadCustomers",
+          "#endregion",
+          "Loading the grid",
+          "One trip to the database and one call to Grid.Tidy. This is the piece you read first."
+         ],
+         [
+          "private void txtSearch_TextChanged",
+          "LoadCustomers();",
+          "Search as you type",
+          "Every change to the search box loads the grid again with the new text."
+         ],
+         [
+          "#region Selection",
+          "#endregion",
+          "When a row is picked",
+          "Edit and Delete follow the picked row, and the lower grid shows that customer's bookings."
+         ],
+         [
+          "#region AddEditDelete",
+          "#endregion",
+          "The three buttons",
+          "Add and Edit open the edit form and wait for OK. Delete asks, tells the database, and shows its answer."
+         ],
+         [
+          "private void btnClose_Click",
+          "$end",
+          "Close",
+          "Close shuts the window and the main menu is back. The two closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Drawing;\nusing System.Windows.Forms;\nusing BikeShop.Data;\nusing BikeShop.Models;\n\nnamespace BikeShop.Forms\n{\n    public partial class frmCustomers : Form\n    {\n        public frmCustomers()\n        {\n            InitializeComponent();\n        }\n\n        private void frmCustomers_Load(object sender, EventArgs e)\n        {\n            LoadCustomers();\n        }\n\n        #region LoadCustomers\n        // Fills the grid from the database.  Called when the form opens, when\n        // the search text changes,\n        // and after every add, edit or delete, so the grid always shows what\n        // the database holds.\n        private void LoadCustomers()\n        {\n            dgvCustomers.DataSource =\n                CustomerData.Search(txtSearch.Text.Trim());\n            // hide the ID, give the headers plain words\n            Grid.Tidy(dgvCustomers, \"CustomerID\");\n        }\n        #endregion\n\n        private void txtSearch_TextChanged(object sender, EventArgs e)\n        {\n            LoadCustomers();\n        }\n\n        #region Selection\n        // Edit and Delete only make sense once a row is picked.\n        private void dgvCustomers_SelectionChanged(object sender, EventArgs e)\n        {\n            bool picked = dgvCustomers.SelectedRows.Count > 0;\n            btnEdit.Enabled = picked;\n            btnDelete.Enabled = picked;\n            ShowBookings();\n        }\n\n        // The lower grid shows the picked customer's bookings: two tables on\n        // one screen.\n        private void ShowBookings()\n        {\n            if (dgvCustomers.SelectedRows.Count == 0)\n            {\n                dgvBookings.DataSource = null;\n                return;\n            }\n\n            dgvBookings.DataSource =\n                AppointmentData.GetForCustomer(Grid.SelectedID(dgvCustomers,\n                \"CustomerID\"));\n            Grid.Tidy(dgvBookings, \"AppointmentID\");\n        }\n        #endregion\n\n        #region AddEditDelete\n        private void btnAdd_Click(object sender, EventArgs e)\n        {\n            // 0 means \"a new customer\"\n            frmCustomerEdit edit = new frmCustomerEdit(0);\n            if (edit.ShowDialog(this) == DialogResult.OK)\n            {\n                LoadCustomers();\n            }\n        }\n\n        private void btnEdit_Click(object sender, EventArgs e)\n        {\n            frmCustomerEdit edit =\n                new frmCustomerEdit(Grid.SelectedID(dgvCustomers,\n                \"CustomerID\"));\n            if (edit.ShowDialog(this) == DialogResult.OK)\n            {\n                LoadCustomers();\n            }\n        }\n\n        private void dgvCustomers_CellDoubleClick(object sender,\n            DataGridViewCellEventArgs e)\n        {\n            if (e.RowIndex >= 0)\n            {\n                btnEdit_Click(sender, e);\n            }\n        }\n\n        private void btnDelete_Click(object sender, EventArgs e)\n        {\n            string name = Grid.SelectedText(dgvCustomers, \"FullName\");\n            if (!Msg.Ask(\"Delete \" + name + \"? This cannot be undone.\"))\n            {\n                return;\n            }\n\n            string message =\n                CustomerData.Delete(Grid.SelectedID(dgvCustomers,\n                \"CustomerID\"));\n            if (message != \"\")\n            {\n                // the database refuses when the customer has bookings or sales,\n                // and says so\n                Msg.Problem(message);\n                return;\n            }\n            LoadCustomers();\n        }\n        #endregion\n\n        private void btnClose_Click(object sender, EventArgs e)\n        {\n            Close();\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          7,
+          "The usings",
+          "These lines bring in the tools the form needs: Windows Forms for the window itself, System.Data for the table that fills a grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          9,
+          12,
+          "The class behind the form",
+          "partial means this class is in two files. The designer keeps the controls you dragged in frmCustomers.Designer.cs, and this file holds what the controls do. : Form means the class is a window."
+         ],
+         [
+          13,
+          21,
+          "Made, then loaded",
+          "The constructor runs when the main menu makes the form with new. InitializeComponent builds the controls you dragged. Then, when the form loads, the grid is filled for the first time."
+         ],
+         [
+          23,
+          35,
+          "Loading the grid",
+          "One trip to the database and one call to Grid.Tidy. This is the piece you read first."
+         ],
+         [
+          37,
+          40,
+          "Search as you type",
+          "Every change to the search box loads the grid again with the new text."
+         ],
+         [
+          42,
+          67,
+          "When a row is picked",
+          "Edit and Delete follow the picked row, and the lower grid shows that customer's bookings."
+         ],
+         [
+          69,
+          120,
+          "The three buttons",
+          "Add and Edit open the edit form and wait for OK. Delete asks, tells the database, and shows its answer."
+         ],
+         [
+          122,
+          127,
+          "Close",
+          "Close shuts the window and the main menu is back. The two closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "6.3.10",
+         "do": "With the form open in the designer, press F7.",
+         "see": "The code tab for the form comes to the front.",
+         "img": {
+          "img": "img/ch07-vs-f7-code.png",
+          "alt": "The code behind a form in Visual Studio 2019, with the designer tab beside it.",
+          "cap": "F7 shows the code behind the form that is open in the designer. Shift and F7 go back to the designer.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 4,
+            "say": "The code tab is in front."
+           },
+           {
+            "n": 2,
+            "x": 22,
+            "y": 93,
+            "say": "Select everything here before you paste over it."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.3.11",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.3-customers",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.3.12",
+         "do": "Click anywhere in the code tab and press Ctrl and A together.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "6.3.13",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "The file ends with btnClose_Click. Red wavy lines sit under frmCustomerEdit and under AppointmentData, because neither exists yet. That is expected."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "7",
+     "title": "Park the bookings line until chapter 7.",
+     "blocks": [
+      {
+       "p": "One line in ShowBookings calls AppointmentData.GetForCustomer. AppointmentData is the data class for bookings, and you build it in chapter 7, because it belongs with the diary. Until then the program cannot build with that line in it. So you park the line: two slashes at the front turn a line into a comment, which the program ignores and the editor shows in green. In its place you type two lines that call the same stored procedure straight through Db, which you have. The bookings grid works from today, and in chapter 7, straight after step 7.5.10 adds AppointmentData, you swap the lines back."
+      },
+      {
+       "steps": [
+        {
+         "id": "6.3.14",
+         "do": "In the code tab, find ShowBookings, and select the three lines from dgvBookings.DataSource = down to the line that reads \"CustomerID\"));, by clicking at the start of the first line and dragging to the end of the third.",
+         "see": "The three lines are highlighted."
+        },
+        {
+         "id": "6.3.15",
+         "do": "Press Ctrl and K together, then Ctrl and C together.",
+         "see": "The three lines turn green, each with two slashes at the front. That is the comment shortcut in Visual Studio 2019."
+        },
+        {
+         "id": "6.3.16",
+         "do": "Click at the end of the third green line and press Enter.",
+         "see": "The cursor blinks on a new empty line under the green lines."
+        },
+        {
+         "id": "6.3.17",
+         "do": "Type the first new line exactly as it reads here, with the comma on the end: dgvBookings.DataSource = Db.GetTable(\"usp_Appointment_GetForCustomer\", and nothing after the comma.",
+         "see": "The line ends with a comma, so the editor waits for more. If the editor adds a closing bracket after the comma by itself, leave it: it moves down as you type the next line, and your own brackets replace it."
+        },
+        {
+         "id": "6.3.18",
+         "do": "Press Enter and type the second new line exactly as it reads here, with the semicolon on the end: Db.P(\"@CustomerID\", Grid.SelectedID(dgvCustomers, \"CustomerID\"))); and nothing after the semicolon.",
+         "see": "The two typed lines sit under the three green ones, and the only red wavy lines left are under frmCustomerEdit.",
+         "img": {
+          "img": "img/ch06-vs-bookings-line.png",
+          "alt": "frmCustomers.cs in Visual Studio 2019 scrolled to ShowBookings: three green lines, each starting with two slashes, the first beginning dgvBookings.DataSource = AppointmentData. Under them are two new lines: dgvBookings.DataSource = Db.GetTable(\"usp_Appointment_GetForCustomer\", and Db.P(\"@CustomerID\", Grid.SelectedID(dgvCustomers, \"CustomerID\")));.",
+          "cap": "The parked lines in green, and the two lines that stand in for them until chapter 7.",
+          "w": 784,
+          "h": 135,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 14,
+            "y": 44,
+            "say": "Three green lines: parked, not deleted. Chapter 7 brings them back."
+           },
+           {
+            "n": 2,
+            "x": 14,
+            "y": 77,
+            "say": "The two lines you type. They call the same stored procedure through Db."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A red wavy line under Db",
+           "The form cannot see your Db class. Check that the file still begins with using BikeShop.Data, and that Db is in the Data folder from chapter 5."
+          ],
+          [
+           "A red wavy line at the end of the typed line",
+           "Count the closing brackets: three, then the semicolon. One bracket closes SelectedID, one closes Db.P, and one closes Db.GetTable."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "In chapter 7",
+        "text": "Straight after step 7.5.10 adds AppointmentData, come back to frmCustomers.cs. Delete the two lines you typed, select the three green lines, and press Ctrl and K together, then Ctrl and U together: the slashes come off, and ShowBookings calls AppointmentData the way the finished program does. The program works either way, because both versions run the same stored procedure, so nothing is lost if you do it later."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "One form for Add and Edit",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Add the form frmCustomerEdit in Visual Studio 2019.",
+     "blocks": [
+      {
+       "p": "Add and Edit open the same small window. Opened with the number 0 it is titled Add a customer and starts empty. Opened with a customer's number it is titled Edit customer and fills its boxes from the database first. One form, two jobs, and the number decides which."
+      },
+      {
+       "steps": [
+        {
+         "id": "6.4.1",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the Forms folder, point at Add, and click Form (Windows Forms)…",
+         "see": "The Add New Item window opens with Form (Windows Forms) selected.",
+         "img": {
+          "img": "img/ch07-vs-add-form.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Forms folder right-clicked. The menu shows Add, and its small menu shows Form (Windows Forms)…",
+          "cap": "Adding a form to the Forms folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 29,
+            "say": "Right-click the Forms folder."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 13,
+            "y": 58,
+            "say": "Click Form (Windows Forms)…, type the name, press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.4.2",
+         "do": "In the Name box at the bottom, type frmCustomerEdit and press Add.",
+         "see": "An empty form opens in the designer."
+        },
+        {
+         "id": "6.4.3",
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right.",
+         "img": {
+          "img": "img/ch07-vs-designer.png",
+          "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "w": 900,
+          "h": 600,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 12,
+            "y": 46,
+            "say": "The Toolbox. Drag a control from here on to the form."
+           },
+           {
+            "n": 2,
+            "x": 56,
+            "y": 49,
+            "say": "The form. Drop the control where the picture shows it."
+           },
+           {
+            "n": 3,
+            "x": 93,
+            "y": 54,
+            "say": "The Properties window. Set Name first, then the rest of the row."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Set out the controls on frmCustomerEdit.",
+     "blocks": [
+      {
+       "p": "Four labels, four boxes and two buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you. Two settings on the form itself matter here: AcceptButton = btnSave means the Enter key presses Save, and CancelButton = btnCancel means the Escape key presses Cancel."
+      },
+      {
+       "controls": {
+        "form": "frmCustomerEdit",
+        "img": {
+         "img": "img/ch06-frmCustomerEdit-design.png",
+         "alt": "frmCustomerEdit in the Visual Studio 2019 designer: four labels down the left reading First name, Last name, Phone and Email, four text boxes beside them, and the buttons Save and Cancel at the bottom right.",
+         "cap": "frmCustomerEdit in the designer. A small fixed window: four boxes and two buttons.",
+         "w": 560,
+         "h": 391,
+         "missing": false,
+         "marks": [
+          {
+           "n": 1,
+           "x": 22,
+           "y": 42,
+           "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail."
+          },
+          {
+           "n": 2,
+           "x": 86,
+           "y": 45,
+           "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail."
+          },
+          {
+           "n": 3,
+           "x": 46,
+           "y": 84,
+           "say": "btnSave, then btnCancel."
+          }
+         ]
+        },
+        "title": "Customer",
+        "size": [
+         440,
+         280
+        ],
+        "border": "FixedDialog",
+        "acceptButton": "btnSave",
+        "cancelButton": "btnCancel",
+        "formNote": "One window does both Add and Edit. It opens empty for a new customer, or filled in for an existing one.",
+        "rows": [
+         {
+          "toolbox": "Label",
+          "name": "lblFirstName",
+          "settings": [
+           "Text = First name"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtFirstName",
+          "settings": [],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblLastName",
+          "settings": [
+           "Text = Last name"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtLastName",
+          "settings": [],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblPhone",
+          "settings": [
+           "Text = Phone"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtPhone",
+          "settings": [],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblEmail",
+          "settings": [
+           "Text = Email"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtEmail",
+          "settings": [],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnSave",
+          "settings": [
+           "Text = Save"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnSave_Click` for you; the code goes inside it."
+          ],
+          "note": "Checks every box, stops at the first problem and shows it in a message, then saves."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnCancel",
+          "settings": [
+           "Text = Cancel",
+           "DialogResult = Cancel"
+          ],
+          "then": [],
+          "note": "Closes without saving. No code needed: set DialogResult to Cancel."
+         }
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "6.4.4",
+         "do": "Click the form itself and set Text to Customer, Size to 440, 280 and FormBorderStyle to FixedDialog.",
+         "see": "A small window with a title bar reading Customer and no minimise or maximise buttons."
+        },
+        {
+         "id": "6.4.5",
+         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row.",
+         "see": "The form looks like the picture, with every control named as the table says.",
+         "img": {
+          "img": "img/ch06-frmCustomerEdit-design.png",
+          "alt": "frmCustomerEdit in the Visual Studio 2019 designer: four labels down the left reading First name, Last name, Phone and Email, four text boxes beside them, and the buttons Save and Cancel at the bottom right.",
+          "cap": "frmCustomerEdit in the designer. A small fixed window: four boxes and two buttons.",
+          "w": 560,
+          "h": 391,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 42,
+            "say": "The four labels: lblFirstName, lblLastName, lblPhone and lblEmail."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 45,
+            "say": "The four boxes: txtFirstName, txtLastName, txtPhone and txtEmail."
+           },
+           {
+            "n": 3,
+            "x": 46,
+            "y": 84,
+            "say": "btnSave, then btnCancel."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.4.6",
+         "do": "Double-click the Save button.",
+         "see": "The code tab opens with an empty method called btnSave_Click. Press Shift and F7 together to go back to the designer."
+        },
+        {
+         "id": "6.4.7",
+         "do": "Click the Cancel button and, in the Properties window, set DialogResult to Cancel.",
+         "see": "The Properties window shows DialogResult set to Cancel. Cancel needs no code: a button with DialogResult set closes the form by itself and tells the form that opened it that Cancel was pressed."
+        },
+        {
+         "id": "6.4.8",
+         "do": "Click the form itself, set AcceptButton to btnSave and CancelButton to btnCancel.",
+         "see": "Both settings show the button names in the Properties window."
+        },
+        {
+         "id": "6.4.9",
+         "do": "With the form still picked, press the lightning bolt and double-click the empty box beside Load, which is part of the way down, after Leave.",
+         "see": "The code tab opens with an empty method called frmCustomerEdit_Load.",
+         "img": {
+          "img": "img/ch07-vs-events.png",
+          "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
+          "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+          "w": 520,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 17,
+            "y": 13,
+            "say": "Press the lightning bolt."
+           },
+           {
+            "n": 2,
+            "x": 63,
+            "y": 36,
+            "say": "Double-click the empty box beside the event your step names. The events are in alphabetical order."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read how one form does two jobs: the constructor.",
+     "blocks": [
+      {
+       "p": "A constructor is the method that runs when an object is made with new. This form's constructor takes one number, and keeps it in a field called customerID. A field is a variable that belongs to the whole form, so every method in the form can read it. readonly means it is set once, in the constructor, and never changes."
+      },
+      {
+       "code": {
+        "id": "6.4-ctor",
+        "kind": "read",
+        "lang": "cs",
+        "title": "Forms/frmCustomerEdit.cs: the constructor and Load",
+        "src": "cs:Forms/frmCustomerEdit.cs",
+        "parts": [
+         [
+          "private readonly int customerID;",
+          "customerID = id;",
+          "The constructor remembers which customer",
+          "frmCustomerEdit(int id) is the constructor, and id is the number the list form passed in the brackets. InitializeComponent builds the controls, then the number is kept in customerID."
+         ],
+         [
+          "private void frmCustomerEdit_Load",
+          "txtEmail.MaxLength = 100;",
+          "Four boxes, four limits",
+          "MaxLength is the most letters a box will take. Each limit matches the width of its column in the Customer table from chapter 3, so the database can never be given text that is too long."
+         ],
+         [
+          "if (customerID == 0)",
+          "return;",
+          "Adding: an empty form",
+          "Text is the words in the title bar. When the number is 0 the title says Add a customer and the method stops at return, leaving the boxes empty."
+         ],
+         [
+          "Text = \"Edit customer\";",
+          "$end",
+          "Editing: fill the boxes from the database",
+          "Otherwise the title says Edit customer, CustomerData.GetByID fetches that customer as an object, and each property is copied into its box."
+         ]
+        ],
+        "from": "private readonly int customerID;",
+        "to": "txtEmail.Text = customer.Email;",
+        "text": "private readonly int customerID;\n\npublic frmCustomerEdit(int id)\n{\n    InitializeComponent();\n    customerID = id;\n}\n\nprivate void frmCustomerEdit_Load(object sender, EventArgs e)\n{\n    // The boxes stop typing at the length the database column holds.\n    txtFirstName.MaxLength = 40;\n    txtLastName.MaxLength = 40;\n    txtPhone.MaxLength = 15;\n    txtEmail.MaxLength = 100;\n\n    if (customerID == 0)\n    {\n        Text = \"Add a customer\";\n        return;\n    }\n\n    Text = \"Edit customer\";\n    Customer customer = CustomerData.GetByID(customerID);\n    txtFirstName.Text = customer.FirstName;\n    txtLastName.Text = customer.LastName;\n    txtPhone.Text = customer.Phone;\n    txtEmail.Text = customer.Email;",
+        "partLines": [
+         [
+          1,
+          7,
+          "The constructor remembers which customer",
+          "frmCustomerEdit(int id) is the constructor, and id is the number the list form passed in the brackets. InitializeComponent builds the controls, then the number is kept in customerID."
+         ],
+         [
+          9,
+          15,
+          "Four boxes, four limits",
+          "MaxLength is the most letters a box will take. Each limit matches the width of its column in the Customer table from chapter 3, so the database can never be given text that is too long."
+         ],
+         [
+          17,
+          21,
+          "Adding: an empty form",
+          "Text is the words in the title bar. When the number is 0 the title says Add a customer and the method stops at return, leaving the boxes empty."
+         ],
+         [
+          23,
+          28,
+          "Editing: fill the boxes from the database",
+          "Otherwise the title says Edit customer, CustomerData.GetByID fetches that customer as an object, and each property is copied into its box."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Read Save: plain ifs, and the first problem wins.",
+     "blocks": [
+      {
+       "p": "Save checks the boxes one at a time with plain ifs. The first problem found is shown in a message, the cursor is put in that box, and the method stops. Nothing is sent to the database until every check has passed. Then one object is built, Add or Update is called depending on the number, and the database gets the last word."
+      },
+      {
+       "code": {
+        "id": "6.4-save",
+        "kind": "read",
+        "lang": "cs",
+        "title": "Forms/frmCustomerEdit.cs: the Save button and the two checks",
+        "src": "cs:Forms/frmCustomerEdit.cs#Save",
+        "parts": [
+         [
+          "private void btnSave_Click",
+          "return;",
+          "First name: must not be empty",
+          "Trim takes the spaces off both ends, so a box with only spaces in it counts as empty. Msg.Problem shows the sentence, Focus puts the cursor in the box, and return stops the method."
+         ],
+         [
+          "if (txtLastName.Text.Trim() == \"\")",
+          "return;",
+          "Last name: the same check",
+          "The same three lines for the last name. This is the check you prove at the end of the chapter."
+         ],
+         [
+          "string phoneProblem = PhoneProblem",
+          "return;",
+          "Phone: ask PhoneProblem",
+          "The phone check is longer, so it lives in its own method below. PhoneProblem answers with an empty string when the number is fine, or a sentence saying what is wrong. A sentence means stop, show it, and put the cursor in the phone box."
+         ],
+         [
+          "string emailProblem = EmailProblem",
+          "return;",
+          "Email: ask EmailProblem",
+          "The email check has the same shape as the phone check: ask EmailProblem, and if it answers with a sentence, show it, put the cursor in the Email box and stop."
+         ],
+         [
+          "Customer customer = new Customer();",
+          "customer.Email = null;",
+          "Build one Customer object from the boxes",
+          "new Customer() makes an empty object, and each box's text goes into its property. An empty email box becomes null, so the database stores NULL and not an empty piece of text."
+         ],
+         [
+          "string message;",
+          "message = CustomerData.Update(customer);",
+          "Add or Update, decided by the number",
+          "The same number the constructor kept. 0 means Add; anything else means Update. Both hand back the database's message."
+         ],
+         [
+          "if (message != \"\")",
+          "return;",
+          "The database's answer",
+          "A sentence means the database refused, and the user reads that sentence. The form stays open so the boxes can be changed."
+         ],
+         [
+          "DialogResult = DialogResult.OK;",
+          "DialogResult = DialogResult.OK;",
+          "Tell the list it worked",
+          "Setting DialogResult closes the form and hands OK back to ShowDialog in the list form, which loads the grid again."
+         ],
+         [
+          "private string PhoneProblem",
+          "return \"Type the customer's phone number.\";",
+          "PhoneProblem: an empty box",
+          "The method takes the phone text and answers with a sentence or an empty string. An empty box gets the first sentence."
+         ],
+         [
+          "int digits = 0;",
+          "\"and -.\";",
+          "Count the digits, refuse anything else",
+          "foreach looks at each letter in turn. char.IsDigit asks whether the letter is 0 to 9, and digits counts them. A space, a plus or a dash is allowed and ignored. Any other letter means the method answers at once with the sentence about what a phone number may contain."
+         ],
+         [
+          "if (digits < 10)",
+          "return \"\";",
+          "At least ten digits",
+          "Fewer than ten digits is refused with its own sentence. Otherwise the method answers with an empty string: the number is fine. The database checks the same rule with CK_Customer_Phone from chapter 3, so a number that slipped past the form would still be refused."
+         ],
+         [
+          "private string EmailProblem",
+          "return \"\";",
+          "EmailProblem: a blank box is fine",
+          "An email is optional, so an empty box answers with an empty string straight away."
+         ],
+         [
+          "int at = email.IndexOf",
+          "$end",
+          "The shape of an email",
+          "IndexOf finds where the @ sign is, counting from 0. The if refuses when the @ is missing or first, when there is no dot at least two letters after it, or when the email ends with a dot. Anything else is accepted, because a perfect check would be pages long and the shop only needs a sensible one."
+         ]
+        ],
+        "text": "private void btnSave_Click(object sender, EventArgs e)\n{\n    // Check what was typed, one problem at a time: show the first and\n    // put the cursor in that box.\n    if (txtFirstName.Text.Trim() == \"\")\n    {\n        Msg.Problem(\"Type the customer's first name.\");\n        txtFirstName.Focus();\n        return;\n    }\n    if (txtLastName.Text.Trim() == \"\")\n    {\n        Msg.Problem(\"Type the customer's last name.\");\n        txtLastName.Focus();\n        return;\n    }\n    string phoneProblem = PhoneProblem(txtPhone.Text.Trim());\n    if (phoneProblem != \"\")\n    {\n        Msg.Problem(phoneProblem);\n        txtPhone.Focus();\n        return;\n    }\n    string emailProblem = EmailProblem(txtEmail.Text.Trim());\n    if (emailProblem != \"\")\n    {\n        Msg.Problem(emailProblem);\n        txtEmail.Focus();\n        return;\n    }\n\n    Customer customer = new Customer();\n    customer.CustomerID = customerID;\n    customer.FirstName = txtFirstName.Text.Trim();\n    customer.LastName = txtLastName.Text.Trim();\n    customer.Phone = txtPhone.Text.Trim();\n    customer.Email = txtEmail.Text.Trim();\n    if (customer.Email == \"\")\n    {\n        // nothing typed: store a NULL, not an empty piece of text\n        customer.Email = null;\n    }\n\n    string message;\n    if (customerID == 0)\n    {\n        message = CustomerData.Add(customer);\n    }\n    else\n    {\n        message = CustomerData.Update(customer);\n    }\n    if (message != \"\")\n    {\n        Msg.Problem(message);\n        return;\n    }\n    // closes this form and tells the list to refresh\n    DialogResult = DialogResult.OK;\n}\n\n// Returns \"\" when the phone number is fine; otherwise a sentence saying\n// what is wrong with it.\nprivate string PhoneProblem(string phone)\n{\n    if (phone == \"\")\n    {\n        return \"Type the customer's phone number.\";\n    }\n\n    int digits = 0;\n    foreach (char letter in phone)\n    {\n        if (char.IsDigit(letter))\n        {\n            digits = digits + 1;\n        }\n        else if (letter != ' ' && letter != '+' && letter != '-')\n        {\n            return \"A phone number can only have digits, spaces, + \" +\n                \"and -.\";\n        }\n    }\n    if (digits < 10)\n    {\n        return \"A phone number needs at least 10 digits.\";\n    }\n    return \"\";\n}\n\n// Returns \"\" when the email is fine.  An email is optional, so a blank\n// box is fine too.\nprivate string EmailProblem(string email)\n{\n    if (email == \"\")\n    {\n        return \"\";\n    }\n\n    int at = email.IndexOf('@');\n    if (at < 1 || email.IndexOf('.', at) < at + 2\n        || email.EndsWith(\".\"))\n    {\n        return \"An email address must look like name@example.com.\";\n    }\n    return \"\";\n}",
+        "partLines": [
+         [
+          1,
+          10,
+          "First name: must not be empty",
+          "Trim takes the spaces off both ends, so a box with only spaces in it counts as empty. Msg.Problem shows the sentence, Focus puts the cursor in the box, and return stops the method."
+         ],
+         [
+          11,
+          16,
+          "Last name: the same check",
+          "The same three lines for the last name. This is the check you prove at the end of the chapter."
+         ],
+         [
+          17,
+          23,
+          "Phone: ask PhoneProblem",
+          "The phone check is longer, so it lives in its own method below. PhoneProblem answers with an empty string when the number is fine, or a sentence saying what is wrong. A sentence means stop, show it, and put the cursor in the phone box."
+         ],
+         [
+          24,
+          30,
+          "Email: ask EmailProblem",
+          "The email check has the same shape as the phone check: ask EmailProblem, and if it answers with a sentence, show it, put the cursor in the Email box and stop."
+         ],
+         [
+          32,
+          42,
+          "Build one Customer object from the boxes",
+          "new Customer() makes an empty object, and each box's text goes into its property. An empty email box becomes null, so the database stores NULL and not an empty piece of text."
+         ],
+         [
+          44,
+          52,
+          "Add or Update, decided by the number",
+          "The same number the constructor kept. 0 means Add; anything else means Update. Both hand back the database's message."
+         ],
+         [
+          53,
+          57,
+          "The database's answer",
+          "A sentence means the database refused, and the user reads that sentence. The form stays open so the boxes can be changed."
+         ],
+         [
+          59,
+          60,
+          "Tell the list it worked",
+          "Setting DialogResult closes the form and hands OK back to ShowDialog in the list form, which loads the grid again."
+         ],
+         [
+          64,
+          69,
+          "PhoneProblem: an empty box",
+          "The method takes the phone text and answers with a sentence or an empty string. An empty box gets the first sentence."
+         ],
+         [
+          71,
+          83,
+          "Count the digits, refuse anything else",
+          "foreach looks at each letter in turn. char.IsDigit asks whether the letter is 0 to 9, and digits counts them. A space, a plus or a dash is allowed and ignored. Any other letter means the method answers at once with the sentence about what a phone number may contain."
+         ],
+         [
+          84,
+          89,
+          "At least ten digits",
+          "Fewer than ten digits is refused with its own sentence. Otherwise the method answers with an empty string: the number is fine. The database checks the same rule with CK_Customer_Phone from chapter 3, so a number that slipped past the form would still be refused."
+         ],
+         [
+          93,
+          98,
+          "EmailProblem: a blank box is fine",
+          "An email is optional, so an empty box answers with an empty string straight away."
+         ],
+         [
+          100,
+          107,
+          "The shape of an email",
+          "IndexOf finds where the @ sign is, counting from 0. The if refuses when the @ is missing or first, when there is no dot at least two letters after it, or when the email ends with a dot. Anything else is accepted, because a perfect check would be pages long and the shop only needs a sensible one."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Put the whole file behind the edit form, and build.",
+     "blocks": [
+      {
+       "p": "Here is the whole file: the constructor, Load and the Save region you read, in one piece. After the paste you press F6, and this time the build must succeed, because frmCustomerEdit now exists for frmCustomers to open."
+      },
+      {
+       "code": {
+        "id": "6.4-customeredit",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Forms/frmCustomerEdit.cs: the whole file",
+        "src": "cs:Forms/frmCustomerEdit.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Models;",
+          "The usings",
+          "These lines bring in the tools the form needs: Windows Forms for the window itself, System.Data for the table that fills a grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          "namespace BikeShop.Forms",
+          "public partial class frmCustomerEdit : Form",
+          "The class behind the form",
+          "partial again: the designer keeps the four boxes and two buttons in frmCustomerEdit.Designer.cs, and this file holds what they do."
+         ],
+         [
+          "private readonly int customerID;",
+          "customerID = id;",
+          "The constructor remembers which customer",
+          "The number from the brackets is kept in customerID for the whole life of the form."
+         ],
+         [
+          "private void frmCustomerEdit_Load",
+          "txtEmail.Text = customer.Email;",
+          "Load: Add or Edit",
+          "Load sets the four length limits, then makes either an empty form titled Add a customer or a filled one titled Edit customer."
+         ],
+         [
+          "#region Save",
+          "DialogResult = DialogResult.OK;",
+          "Save: the first problem wins",
+          "Four plain ifs, one object, Add or Update, and the database's answer. This is the piece you read on the last screen."
+         ],
+         [
+          "private string PhoneProblem",
+          "return \"\";",
+          "PhoneProblem",
+          "PhoneProblem answers with an empty string when the phone number is fine, and otherwise with the sentence to show."
+         ],
+         [
+          "private string EmailProblem",
+          "$end",
+          "EmailProblem",
+          "A blank box is fine, and anything else must look like name@example.com. The closing braces end the region, the class and the namespace."
+         ]
+        ],
+        "text": "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Drawing;\nusing System.Windows.Forms;\nusing BikeShop.Data;\nusing BikeShop.Models;\n\nnamespace BikeShop.Forms\n{\n    public partial class frmCustomerEdit : Form\n    {\n        // 0 = adding; otherwise the customer being edited\n        private readonly int customerID;\n\n        public frmCustomerEdit(int id)\n        {\n            InitializeComponent();\n            customerID = id;\n        }\n\n        private void frmCustomerEdit_Load(object sender, EventArgs e)\n        {\n            // The boxes stop typing at the length the database column holds.\n            txtFirstName.MaxLength = 40;\n            txtLastName.MaxLength = 40;\n            txtPhone.MaxLength = 15;\n            txtEmail.MaxLength = 100;\n\n            if (customerID == 0)\n            {\n                Text = \"Add a customer\";\n                return;\n            }\n\n            Text = \"Edit customer\";\n            Customer customer = CustomerData.GetByID(customerID);\n            txtFirstName.Text = customer.FirstName;\n            txtLastName.Text = customer.LastName;\n            txtPhone.Text = customer.Phone;\n            txtEmail.Text = customer.Email;\n        }\n\n        #region Save\n        private void btnSave_Click(object sender, EventArgs e)\n        {\n            // Check what was typed, one problem at a time: show the first and\n            // put the cursor in that box.\n            if (txtFirstName.Text.Trim() == \"\")\n            {\n                Msg.Problem(\"Type the customer's first name.\");\n                txtFirstName.Focus();\n                return;\n            }\n            if (txtLastName.Text.Trim() == \"\")\n            {\n                Msg.Problem(\"Type the customer's last name.\");\n                txtLastName.Focus();\n                return;\n            }\n            string phoneProblem = PhoneProblem(txtPhone.Text.Trim());\n            if (phoneProblem != \"\")\n            {\n                Msg.Problem(phoneProblem);\n                txtPhone.Focus();\n                return;\n            }\n            string emailProblem = EmailProblem(txtEmail.Text.Trim());\n            if (emailProblem != \"\")\n            {\n                Msg.Problem(emailProblem);\n                txtEmail.Focus();\n                return;\n            }\n\n            Customer customer = new Customer();\n            customer.CustomerID = customerID;\n            customer.FirstName = txtFirstName.Text.Trim();\n            customer.LastName = txtLastName.Text.Trim();\n            customer.Phone = txtPhone.Text.Trim();\n            customer.Email = txtEmail.Text.Trim();\n            if (customer.Email == \"\")\n            {\n                // nothing typed: store a NULL, not an empty piece of text\n                customer.Email = null;\n            }\n\n            string message;\n            if (customerID == 0)\n            {\n                message = CustomerData.Add(customer);\n            }\n            else\n            {\n                message = CustomerData.Update(customer);\n            }\n            if (message != \"\")\n            {\n                Msg.Problem(message);\n                return;\n            }\n            // closes this form and tells the list to refresh\n            DialogResult = DialogResult.OK;\n        }\n\n        // Returns \"\" when the phone number is fine; otherwise a sentence saying\n        // what is wrong with it.\n        private string PhoneProblem(string phone)\n        {\n            if (phone == \"\")\n            {\n                return \"Type the customer's phone number.\";\n            }\n\n            int digits = 0;\n            foreach (char letter in phone)\n            {\n                if (char.IsDigit(letter))\n                {\n                    digits = digits + 1;\n                }\n                else if (letter != ' ' && letter != '+' && letter != '-')\n                {\n                    return \"A phone number can only have digits, spaces, + \" +\n                        \"and -.\";\n                }\n            }\n            if (digits < 10)\n            {\n                return \"A phone number needs at least 10 digits.\";\n            }\n            return \"\";\n        }\n\n        // Returns \"\" when the email is fine.  An email is optional, so a blank\n        // box is fine too.\n        private string EmailProblem(string email)\n        {\n            if (email == \"\")\n            {\n                return \"\";\n            }\n\n            int at = email.IndexOf('@');\n            if (at < 1 || email.IndexOf('.', at) < at + 2\n                || email.EndsWith(\".\"))\n            {\n                return \"An email address must look like name@example.com.\";\n            }\n            return \"\";\n        }\n        #endregion\n    }\n}",
+        "partLines": [
+         [
+          1,
+          7,
+          "The usings",
+          "These lines bring in the tools the form needs: Windows Forms for the window itself, System.Data for the table that fills a grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          9,
+          12,
+          "The class behind the form",
+          "partial again: the designer keeps the four boxes and two buttons in frmCustomerEdit.Designer.cs, and this file holds what they do."
+         ],
+         [
+          14,
+          20,
+          "The constructor remembers which customer",
+          "The number from the brackets is kept in customerID for the whole life of the form."
+         ],
+         [
+          22,
+          42,
+          "Load: Add or Edit",
+          "Load sets the four length limits, then makes either an empty form titled Add a customer or a filled one titled Edit customer."
+         ],
+         [
+          44,
+          104,
+          "Save: the first problem wins",
+          "Four plain ifs, one object, Add or Update, and the database's answer. This is the piece you read on the last screen."
+         ],
+         [
+          108,
+          133,
+          "PhoneProblem",
+          "PhoneProblem answers with an empty string when the phone number is fine, and otherwise with the sentence to show."
+         ],
+         [
+          137,
+          154,
+          "EmailProblem",
+          "A blank box is fine, and anything else must look like name@example.com. The closing braces end the region, the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "6.4.10",
+         "do": "With the form open in the designer, press F7.",
+         "see": "The code tab for the form comes to the front.",
+         "img": {
+          "img": "img/ch07-vs-f7-code.png",
+          "alt": "The code behind a form in Visual Studio 2019, with the designer tab beside it.",
+          "cap": "F7 shows the code behind the form that is open in the designer. Shift and F7 go back to the designer.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 4,
+            "say": "The code tab is in front."
+           },
+           {
+            "n": 2,
+            "x": 22,
+            "y": 93,
+            "say": "Select everything here before you paste over it."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.4.11",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.4-customeredit",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.4.12",
+         "do": "Click anywhere in the code tab and press Ctrl and A together.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "6.4.13",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "The file ends with EmailProblem, and no red wavy line anywhere."
+        },
+        {
+         "id": "6.4.14",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'frmCustomerEdit' does not contain a definition for 'button1_Click' (or another old name)",
+           "The event was made before the control was given its Name, so the designer still calls the method by its old name. Double-click the error: Visual Studio 2019 opens frmCustomerEdit.Designer.cs on the line that hooks up the event. At the end of that line, change the old name to btnSave_Click and press F6 again."
+          ],
+          [
+           "'frmCustomers' does not contain a definition for 'button1_Click' (or another old name)",
+           "The event was made before the control was given its Name, so the designer still calls the method by its old name. Double-click the error: Visual Studio 2019 opens frmCustomers.Designer.cs on the line that hooks up the event. At the end of that line, change the old name to btnAdd_Click and press F6 again."
+          ],
+          [
+           "'frmCustomerEdit' does not contain a definition for 'txtFirstName'",
+           "A control on the form has a different Name from the one in the table. Open the form in the designer, click the control, and check its Name in the Properties window, letter by letter, against the table."
+          ],
+          [
+           "'frmCustomers' does not contain a definition for 'dgvBookings'",
+           "A control on the form has a different Name from the one in the table. Open the form in the designer, click the control, and check its Name in the Properties window, letter by letter, against the table."
+          ],
+          [
+           "'The name Db does not exist' or 'The name Msg does not exist'",
+           "Your helper classes from chapter 5 are called something else, or sit in a different namespace. Match the names you used there."
+          ],
+          [
+           "'The name AppointmentData does not exist in the current context'",
+           "The three AppointmentData lines in frmCustomers.cs do not start with two slashes. Go back to step 6.3.14 and type two slashes (//) at the start of each of the three lines."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Run it: add, edit, delete",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Open the customers screen from the main menu.",
+     "blocks": [
+      {
+       "p": "The Customers button on the main menu already opens this form: chapter 5 pasted the two lines behind it, frmCustomers customers = new frmCustomers(); and customers.ShowDialog(this);. So the program is ready to run. Start it in Visual Studio 2019, sign in, and open the screen."
+      },
+      {
+       "steps": [
+        {
+         "id": "6.5.1",
+         "do": "Press F5 to start the program.",
+         "see": "The sign-in window opens.",
+         "img": {
+          "img": "img/sh-vs-run.png",
+          "alt": "The Visual Studio 2019 toolbar with the green Start button.",
+          "cap": "Start runs your program. Close the program window to come back to Visual Studio 2019.",
+          "w": 784,
+          "h": 61,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 61,
+            "y": 75,
+            "say": "Click Start, or press F5."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.2",
+         "do": "Type siobhan as the username, canal01 as the password, and click Sign in.",
+         "see": "The main menu opens.",
+         "img": {
+          "img": "img/sh-app-login.png",
+          "alt": "The BikeShop sign-in window with the username siobhan typed and the password hidden as dots.",
+          "cap": "The sign-in window. Siobhán Rooney is the manager, and either role can open the customers screen.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 58,
+            "y": 46,
+            "say": "Type the username siobhan."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 55,
+            "say": "Type the password canal01."
+           },
+           {
+            "n": 3,
+            "x": 68,
+            "y": 76,
+            "say": "Click Sign in."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.3",
+         "do": "Click the Customers button.",
+         "see": "The Customers screen opens with twelve customers in the grid, Hannah Boyle first and Ben Toner last, and Edit and Delete greyed out.",
+         "img": {
+          "img": "img/ch06-customers-run.png",
+          "alt": "The Customers screen of the running program: a Search box at the top, a grid of twelve customers from Hannah Boyle down to Ben Toner with the columns Full name, Phone, Email and Date joined, an empty Bookings grid under it, and the buttons Add, Edit, Delete and Close along the bottom with Edit and Delete greyed out.",
+          "cap": "The customers screen as it opens. Nothing is picked yet, so Edit and Delete are switched off and the bookings grid is empty.",
+          "w": 960,
+          "h": 660,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 11,
+            "say": "The Search box. The grid narrows as you type."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 30,
+            "say": "Twelve customers, sorted by last name. The CustomerID column is hidden."
+           },
+           {
+            "n": 3,
+            "x": 50,
+            "y": 70,
+            "say": "The bookings grid: empty until a customer is picked."
+           },
+           {
+            "n": 4,
+            "x": 25,
+            "y": 94,
+            "say": "Edit and Delete are off until a row is picked."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The grid is empty",
+           "The search text is not empty, or the connection string in App.config points at a database without the sample data. Clear the Search box first. If the grid is still empty, run the whole script again in SQL Server Management Studio (SSMS)."
+          ],
+          [
+           "The grid shows a column headed CustomerID",
+           "Grid.Tidy is not being called, or is called before the DataSource line. In LoadCustomers the Tidy line comes straight after the DataSource line."
+          ]
+         ]
+        },
+        {
+         "id": "6.5.4",
+         "do": "Click the row Aoife McCann.",
+         "see": "The row is highlighted, Edit and Delete switch on, and the bookings grid shows her two bookings, newest first, with the mechanic's name in each row.",
+         "img": {
+          "img": "img/ch06-customers-picked.png",
+          "alt": "The Customers screen with the row Aoife McCann highlighted, Edit and Delete now switched on, and two rows in the Bookings grid: the newer one marked Booked with Conor Walsh at the top, and an older one marked Done with Aoife Byrne under it.",
+          "cap": "One click on a row switches the buttons on and fills the lower grid with that customer's bookings, newest first.",
+          "w": 960,
+          "h": 660,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 12,
+            "y": 40,
+            "say": "Click the row Aoife McCann."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 76,
+            "say": "Her bookings, newest first, with the status in words and the mechanic's name in each row."
+           },
+           {
+            "n": 3,
+            "x": 25,
+            "y": 94,
+            "say": "Edit and Delete are on."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Search as you type.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.5.5",
+         "do": "Click in the Search box and type qu.",
+         "see": "The grid narrows to one row, Ciara Quinn, and the bookings grid empties because nothing is picked.",
+         "img": {
+          "img": "img/ch06-customers-search.png",
+          "alt": "The Customers screen with qu typed in the Search box and one row left in the grid, Ciara Quinn, 028 3025 7720, with an empty Email cell.",
+          "cap": "Two letters typed, one row left. The grid is loaded again from the database every time the search text changes.",
+          "w": 960,
+          "h": 660,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 11,
+            "say": "Type qu in the Search box."
+           },
+           {
+            "n": 2,
+            "x": 15,
+            "y": 20,
+            "say": "One row left: Ciara Quinn."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.6",
+         "do": "Press Backspace twice to clear the Search box.",
+         "see": "All twelve customers are back."
+        },
+        {
+         "id": "6.5.7",
+         "do": "Type 028 in the Search box.",
+         "see": "Six rows: every customer whose phone number starts with 028. The search looks at the phone number as well as the names."
+        },
+        {
+         "id": "6.5.8",
+         "do": "Press Backspace three times to clear the Search box.",
+         "see": "All twelve customers are back."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add a customer, and watch the form refuse first.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.5.9",
+         "do": "Click the Add button.",
+         "see": "A small window titled Add a customer opens with four empty boxes."
+        },
+        {
+         "id": "6.5.10",
+         "do": "Type Nuala in the First name box and click Save.",
+         "see": "A message reads: Type the customer's last name. Press OK, and the cursor is in the Last name box.",
+         "img": {
+          "img": "img/ch06-refused-lastname.png",
+          "alt": "A small Towpath Cycles message window with a warning sign reading: Type the customer's last name. with one OK button.",
+          "cap": "The form refuses before the database is asked. The sentence comes from btnSave_Click.",
+          "w": 520,
+          "h": 220,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 45,
+            "say": "The first problem found, and only that one."
+           },
+           {
+            "n": 2,
+            "x": 64,
+            "y": 74,
+            "say": "Press OK. The cursor is put in the Last name box for you."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.11",
+         "do": "Type Breen in the Last name box and 077009001 in the Phone box.",
+         "see": "Breen is in the Last name box and 077009001 is in the Phone box."
+        },
+        {
+         "id": "6.5.11b",
+         "do": "Click the Save button.",
+         "see": "A message reads: A phone number needs at least 10 digits. Nine digits were typed. Press OK, and the cursor is in the Phone box.",
+         "img": {
+          "img": "img/ch06-refused-phone.png",
+          "alt": "A small Towpath Cycles message window with a warning sign reading: A phone number needs at least 10 digits. with one OK button.",
+          "cap": "The phone check counted the digits and found too few. The sentence comes from PhoneProblem.",
+          "w": 520,
+          "h": 220,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 45,
+            "say": "Nine digits typed, ten needed."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.12",
+         "do": "Change the Phone box to 07700 900123, type nuala.breen@example.com in the Email box, and click Save.",
+         "see": "The window closes and Nuala Breen is the second row of the grid, between Hannah Boyle and Róisín Campbell, with today's date in the Date joined column.",
+         "img": {
+          "img": "img/ch06-add-form.png",
+          "alt": "The Add a customer window of the running program with Nuala typed in First name, Breen in Last name, 07700 900123 in Phone and nuala.breen@example.com in Email, and the Save and Cancel buttons at the bottom right.",
+          "cap": "The same form does the adding and the editing. Its title says which job it is doing.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 26,
+            "y": 19,
+            "say": "The title reads Add a customer, because the form was opened with the number 0."
+           },
+           {
+            "n": 2,
+            "x": 55,
+            "y": 45,
+            "say": "The four boxes, filled in."
+           },
+           {
+            "n": 3,
+            "x": 58,
+            "y": 74,
+            "say": "Save checks every box before it talks to the database."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Edit the customer, two ways.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.5.13",
+         "do": "Click the row Nuala Breen, then click Edit.",
+         "see": "The window opens titled Edit customer, with her four details already in the boxes.",
+         "img": {
+          "img": "img/ch06-edit-form.png",
+          "alt": "The Edit customer window of the running program with Nuala, Breen, 07700 900123 and nuala.breen@example.com already in its four boxes.",
+          "cap": "Edit opens the same form with the customer already in it, fetched by number from the database.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 26,
+            "y": 19,
+            "say": "The title reads Edit customer, because the form was opened with a customer number."
+           },
+           {
+            "n": 2,
+            "x": 55,
+            "y": 45,
+            "say": "The boxes are filled from usp_Customer_GetByID before you see them."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.14",
+         "do": "Change the last digit of the phone number to 4, so the box reads 07700 900124, and click Save.",
+         "see": "The window closes and the Phone column of her row reads 07700 900124."
+        },
+        {
+         "id": "6.5.15",
+         "do": "Double-click the row Nuala Breen.",
+         "see": "The same Edit customer window opens: a double-click on a row is an Edit."
+        },
+        {
+         "id": "6.5.16",
+         "do": "Change the Phone box to 07700 900999 and press Escape.",
+         "see": "The window closes and her row still reads 07700 900124. Escape is the Cancel button, and Cancel saves nothing."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Delete: the form asks first.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "6.5.17",
+         "do": "With Nuala Breen still picked, click Delete.",
+         "see": "A question reads: Delete Nuala Breen? This cannot be undone.",
+         "img": {
+          "img": "img/ch06-delete-ask.png",
+          "alt": "A small Towpath Cycles question window reading: Delete Nuala Breen? This cannot be undone. with Yes and No buttons.",
+          "cap": "Msg.Ask names the customer and says what will happen. No means nothing happens at all.",
+          "w": 520,
+          "h": 220,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 45,
+            "say": "The name comes from the picked row of the grid."
+           },
+           {
+            "n": 2,
+            "x": 63,
+            "y": 76,
+            "say": "Yes deletes. No goes back with nothing changed."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.18",
+         "do": "Click No in the question window.",
+         "see": "Nothing changes, and Nuala Breen is still in the grid."
+        },
+        {
+         "id": "6.5.19",
+         "do": "Click Delete again, and this time click Yes.",
+         "see": "Her row is gone, and the grid is back to twelve customers."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Delete: the database says no.",
+     "blocks": [
+      {
+       "p": "Every one of the twelve sample customers has at least one booking, and usp_Customer_Delete from chapter 4 refuses to delete a customer with history. The form does not check that, because it cannot know: only the database can. Watch the refusal arrive on the screen."
+      },
+      {
+       "steps": [
+        {
+         "id": "6.5.20",
+         "do": "Click the row Aoife McCann, click Delete, and click Yes.",
+         "see": "A message reads: This customer has bookings or sales on record, so they cannot be deleted. Aoife McCann is still in the grid.",
+         "img": {
+          "img": "img/ch06-delete-refused.png",
+          "alt": "A small Towpath Cycles message window with a warning sign reading: This customer has bookings or sales on record, so they cannot be deleted. with one OK button.",
+          "cap": "The database said no, and its sentence came all the way up to the screen: usp_Customer_Delete, then Db.Run, then CustomerData.Delete, then Msg.Problem.",
+          "w": 520,
+          "h": 220,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 45,
+            "say": "This sentence was typed in chapter 4, inside the stored procedure."
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.5.21",
+         "do": "Click OK, then click Close.",
+         "see": "The Customers screen closes and the main menu is back."
+        },
+        {
+         "id": "6.5.22",
+         "do": "Close the main menu window.",
+         "see": "The program ends and Visual Studio 2019 is back."
+        }
+       ]
+      },
+      {
+       "p": "That sentence travelled a long way. It was typed in chapter 4 inside usp_Customer_Delete, set into @Message, read by Db.Run, handed back by CustomerData.Delete, and shown by Msg.Problem. No form in this program decides whether a delete is allowed. The database decides, and the form passes on what it said."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Two small data classes",
+   "screens": [
+    {
+     "id": "1",
+     "title": "ServiceType: the same shape, shorter.",
+     "blocks": [
+      {
+       "p": "Chapter 7 needs a list of the kinds of service the workshop does, and chapter 8 needs a list of suppliers. Both are the Customer pattern again with fewer columns: a class in Models with one property per column, and a static class in Data with one method per stored procedure. The first pair is given to you. The second pair you write."
+      },
+      {
+       "code": {
+        "id": "6.6-servicetype",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Models/ServiceType.cs: one kind of service",
+        "src": "cs:Models/ServiceType.cs",
+        "parts": [
+         [
+          "namespace BikeShop.Models",
+          "public class ServiceType",
+          "The class",
+          "No using line, because none of the four properties needs a type from outside. The class sits in Models with Customer."
+         ],
+         [
+          "public int ServiceTypeID",
+          "$end",
+          "One property for each column",
+          "A number, a name, how many minutes the service takes, and its price. decimal is the kind of value for money. The closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "namespace BikeShop.Models\n{\n    // One kind of service, such as a puncture repair.  Plain properties only.\n    public class ServiceType\n    {\n        public int ServiceTypeID { get; set; }\n        public string Name { get; set; }\n        public int DurationMinutes { get; set; }\n        public decimal Price { get; set; }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          5,
+          "The class",
+          "No using line, because none of the four properties needs a type from outside. The class sits in Models with Customer."
+         ],
+         [
+          6,
+          11,
+          "One property for each column",
+          "A number, a name, how many minutes the service takes, and its price. decimal is the kind of value for money. The closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "6.6.1",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the Models folder, point at Add, click Class…, type ServiceType.cs in the Name box and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-models.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Models folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Models folder. This picture was taken in the finished project, so Solution Explorer lists files you have not made yet.",
+          "w": 916,
+          "h": 441,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 68,
+            "y": 34,
+            "say": "Right-click the Models folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 42,
+            "y": 37,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 8,
+            "y": 87,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.6.2",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.6-servicetype",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.6.3",
+         "do": "Click anywhere in the new file and press Ctrl and A together.",
+         "see": "Everything in the file is highlighted."
+        },
+        {
+         "id": "6.6.4",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "ServiceType.cs holds the four properties and no red wavy line."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "ServiceTypeData: three methods, three stored procedures.",
+     "blocks": [
+      {
+       "code": {
+        "id": "6.6-servicetypedata",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Data/ServiceTypeData.cs: GetAll, Add and Update",
+        "src": "cs:Data/ServiceTypeData.cs",
+        "parts": [
+         [
+          "using System.Data;",
+          "public static class ServiceTypeData",
+          "The usings and the class",
+          "The same three usings as CustomerData, less System, because nothing here needs it. Static again: ServiceTypeData.GetAll, by the class name."
+         ],
+         [
+          "public static DataTable GetAll()",
+          "return Db.GetTable(\"usp_ServiceType_GetAll\");",
+          "GetAll: every service",
+          "usp_ServiceType_GetAll takes no parameters, so Db.GetTable is given the name alone. The whole table comes back, ready for a grid or a list."
+         ],
+         [
+          "public static string Add",
+          "return message;",
+          "Add: the same shape as the customer Add",
+          "Db.Out makes the output parameter for the new number, Db.Run calls the stored procedure with three values and that parameter, and when the message is empty the new number goes into the object."
+         ],
+         [
+          "public static string Update",
+          "$end",
+          "Update: four values in, the message back",
+          "The number says which row, and the other three are the new values. The closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System.Data;\nusing System.Data.SqlClient;\nusing BikeShop.Models;\n\nnamespace BikeShop.Data\n{\n    public static class ServiceTypeData\n    {\n        // Every kind of service.\n        public static DataTable GetAll()\n        {\n            return Db.GetTable(\"usp_ServiceType_GetAll\");\n        }\n\n        // Saves a new service.  Returns \"\" if it worked, or the sentence to\n        // show the user.\n        public static string Add(ServiceType service)\n        {\n            SqlParameter newID = Db.Out(\"@NewServiceTypeID\");\n            string message = Db.Run(\"usp_ServiceType_Add\",\n                Db.P(\"@Name\", service.Name),\n                Db.P(\"@DurationMinutes\", service.DurationMinutes),\n                Db.P(\"@Price\", service.Price),\n                newID);\n            if (message == \"\")\n            {\n                service.ServiceTypeID = (int)newID.Value;\n            }\n            return message;\n        }\n\n        // Saves changes to an existing service.\n        public static string Update(ServiceType service)\n        {\n            return Db.Run(\"usp_ServiceType_Update\",\n                Db.P(\"@ServiceTypeID\", service.ServiceTypeID),\n                Db.P(\"@Name\", service.Name),\n                Db.P(\"@DurationMinutes\", service.DurationMinutes),\n                Db.P(\"@Price\", service.Price));\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The usings and the class",
+          "The same three usings as CustomerData, less System, because nothing here needs it. Static again: ServiceTypeData.GetAll, by the class name."
+         ],
+         [
+          10,
+          13,
+          "GetAll: every service",
+          "usp_ServiceType_GetAll takes no parameters, so Db.GetTable is given the name alone. The whole table comes back, ready for a grid or a list."
+         ],
+         [
+          17,
+          30,
+          "Add: the same shape as the customer Add",
+          "Db.Out makes the output parameter for the new number, Db.Run calls the stored procedure with three values and that parameter, and when the message is empty the new number goes into the object."
+         ],
+         [
+          33,
+          42,
+          "Update: four values in, the message back",
+          "The number says which row, and the other three are the new values. The closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "6.6.5",
+         "do": "In Solution Explorer in Visual Studio 2019, right-click the Data folder, point at Add, click Class…, type ServiceTypeData.cs in the Name box and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Data folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Data folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 28,
+            "say": "Right-click the Data folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 7,
+            "y": 70,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "6.6.6",
+         "do": "Press the Copy button under this step.",
+         "copy": "6.6-servicetypedata",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "6.6.7",
+         "do": "Click anywhere in the new file and press Ctrl and A together.",
+         "see": "Everything in the file is highlighted."
+        },
+        {
+         "id": "6.6.8",
+         "do": "Press Ctrl and V together to paste over the highlighted text.",
+         "see": "ServiceTypeData.cs holds GetAll, Add and Update."
+        },
+        {
+         "id": "6.6.9",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Your turn: the Supplier class.",
+     "blocks": [
+      {
+       "p": "Chapter 8 needs suppliers. The Supplier table from chapter 3 has four columns: SupplierID, Name, Phone and Email. Write the class yourself, on the ServiceType pattern, in a new file in the Models folder. If you get stuck, the finished code is under Stuck? Show me, and no one minds."
+      },
+      {
+       "code": {
+        "id": "6.6-supplier",
+        "kind": "turn",
+        "lang": "cs",
+        "title": "Models/Supplier.cs: one supplier",
+        "src": "cs:Models/Supplier.cs",
+        "parts": [
+         [
+          "namespace BikeShop.Models",
+          "public class Supplier",
+          "The class",
+          "The same start as ServiceType: no using line, the Models namespace, and the class."
+         ],
+         [
+          "public int SupplierID",
+          "$end",
+          "One property for each column",
+          "The class has one number and three pieces of text, matching the four columns of the Supplier table."
+         ]
+        ],
+        "task": [
+         "In Solution Explorer in Visual Studio 2019, right-click the Models folder, point at Add, click Class…, type Supplier.cs in the Name box and press Add.",
+         "Change the first line to namespace BikeShop.Models, the way ServiceType.cs starts, and change the class line to public class Supplier.",
+         "Inside the class, type one property for each of the four columns: an int called SupplierID, then three strings called Name, Phone and Email, each ending with { get; set; }.",
+         "Delete any using lines Visual Studio 2019 put at the top: nothing in this class needs them."
+        ],
+        "test": "Press F6 to build the project.",
+        "expect": "Build succeeded, at the bottom left. Supplier.cs is four properties long, and Solution Explorer lists it in the Models folder beside Customer.cs and ServiceType.cs.",
+        "hint": "Open ServiceType.cs beside you. Change the class name, swap the four property lines for the four columns of the Supplier table, and change nothing else. Every property line ends with { get; set; }.",
+        "text": "namespace BikeShop.Models\n{\n    // One supplier of parts.  Plain properties only.\n    public class Supplier\n    {\n        public int SupplierID { get; set; }\n        public string Name { get; set; }\n        public string Phone { get; set; }\n        public string Email { get; set; }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          5,
+          "The class",
+          "The same start as ServiceType: no using line, the Models namespace, and the class."
+         ],
+         [
+          6,
+          11,
+          "One property for each column",
+          "The class has one number and three pieces of text, matching the four columns of the Supplier table."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Your turn: the SupplierData class.",
+     "blocks": [
+      {
+       "p": "Now the data class, on the ServiceTypeData pattern, with two methods: GetAll, which calls usp_Supplier_GetAll, and Add, which calls usp_Supplier_Add with the parameters @Name, @Phone and @Email and the output parameter @NewSupplierID. There is no Update, because chapter 8 never changes a supplier."
+      },
+      {
+       "code": {
+        "id": "6.6-supplierdata",
+        "kind": "turn",
+        "lang": "cs",
+        "title": "Data/SupplierData.cs: GetAll and Add",
+        "src": "cs:Data/SupplierData.cs",
+        "parts": [
+         [
+          "using System.Data;",
+          "public static class SupplierData",
+          "The usings and the class",
+          "The same three usings and the Data namespace. The class is static, like every data class."
+         ],
+         [
+          "public static DataTable GetAll()",
+          "return Db.GetTable(\"usp_Supplier_GetAll\");",
+          "GetAll: every supplier",
+          "No parameters, so Db.GetTable is given the name alone."
+         ],
+         [
+          "public static string Add",
+          "$end",
+          "Add: three values in, the new number back",
+          "Db.Out for the new number, Db.Run with three Db.P lines and the output parameter, and the number copied into the object when the message is empty. The closing braces end the method, the class and the namespace."
+         ]
+        ],
+        "task": [
+         "In Solution Explorer in Visual Studio 2019, right-click the Data folder, point at Add, click Class…, type SupplierData.cs in the Name box and press Add.",
+         "Make the top of the file match ServiceTypeData.cs: the three usings, namespace BikeShop.Data, and public static class SupplierData.",
+         "Type GetAll: a public static method that returns a DataTable, with one line inside it that returns Db.GetTable with the name usp_Supplier_GetAll.",
+         "Type Add: a public static method that takes a Supplier called supplier and returns a string. Inside it, make the output parameter with Db.Out(\"@NewSupplierID\"), call Db.Run with the name usp_Supplier_Add, three Db.P lines for @Name, @Phone and @Email, and the output parameter last, keep the message, and when the message is empty put (int)newID.Value into supplier.SupplierID. Return the message."
+        ],
+        "test": "Press F6 to build the project.",
+        "expect": "Build succeeded, at the bottom left. SupplierData.cs has two methods, GetAll and Add, and nothing else.",
+        "hint": "Copy ServiceTypeData.cs into the new file, delete the Update method, and change the names one at a time: the class, the two stored procedures, the output parameter, and the three Db.P lines. Every line that said service now says supplier.",
+        "text": "using System.Data;\nusing System.Data.SqlClient;\nusing BikeShop.Models;\n\nnamespace BikeShop.Data\n{\n    public static class SupplierData\n    {\n        // Every supplier.\n        public static DataTable GetAll()\n        {\n            return Db.GetTable(\"usp_Supplier_GetAll\");\n        }\n\n        // Saves a new supplier.  Returns \"\" if it worked, or the sentence to\n        // show the user.\n        public static string Add(Supplier supplier)\n        {\n            SqlParameter newID = Db.Out(\"@NewSupplierID\");\n            string message = Db.Run(\"usp_Supplier_Add\",\n                Db.P(\"@Name\", supplier.Name),\n                Db.P(\"@Phone\", supplier.Phone),\n                Db.P(\"@Email\", supplier.Email),\n                newID);\n            if (message == \"\")\n            {\n                supplier.SupplierID = (int)newID.Value;\n            }\n            return message;\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The usings and the class",
+          "The same three usings and the Data namespace. The class is static, like every data class."
+         ],
+         [
+          10,
+          13,
+          "GetAll: every supplier",
+          "No parameters, so Db.GetTable is given the name alone."
+         ],
+         [
+          17,
+          32,
+          "Add: three values in, the new number back",
+          "Db.Out for the new number, Db.Run with three Db.P lines and the output parameter, and the number copied into the object when the message is empty. The closing braces end the method, the class and the namespace."
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Prove it",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Prove that the customers screen does what this chapter says.",
+     "blocks": [
+      {
+       "p": "Run the program, sign in as siobhan with the password canal01, open Customers, and work down the table. The rows marked Must be refused are the proof: a check that never fails is not a check. Tick each row when you have seen it with your own eyes."
+      },
+      {
+       "check": [
+        {
+         "id": "6.7.1",
+         "what": "The grid opens with twelve customers sorted by last name and no CustomerID column",
+         "expect": "allowed",
+         "how": "Click Customers on the main menu and read the first and last rows: Hannah Boyle, then Ben Toner."
+        },
+        {
+         "id": "6.7.2",
+         "what": "Edit and Delete are off until a row is picked",
+         "expect": "allowed",
+         "how": "Look at the two buttons as the screen opens, then click any row and look again."
+        },
+        {
+         "id": "6.7.3",
+         "what": "The bookings grid shows the picked customer's bookings, newest first",
+         "expect": "allowed",
+         "how": "Click Aoife McCann and count the rows in the lower grid: two, with a mechanic's name in each."
+        },
+        {
+         "id": "6.7.4",
+         "what": "The grid narrows as you type",
+         "expect": "allowed",
+         "how": "Type qu in the Search box and see one row, Ciara Quinn. Clear the box and see twelve."
+        },
+        {
+         "id": "6.7.5",
+         "what": "A blank last name is refused by the form",
+         "expect": "control",
+         "how": "Click Add, type Nuala in First name, leave Last name empty and click Save. The message must say: Type the customer's last name."
+        },
+        {
+         "id": "6.7.6",
+         "what": "A phone number with letters in it is refused by the form",
+         "expect": "control",
+         "how": "Type Breen in Last name, type abc in Phone and click Save. The message must say that a phone number can only have digits, spaces, + and -."
+        },
+        {
+         "id": "6.7.7",
+         "what": "A phone number with nine digits is refused by the form",
+         "expect": "control",
+         "how": "Change Phone to 077009001 and click Save. The message must say that a phone number needs at least 10 digits."
+        },
+        {
+         "id": "6.7.8",
+         "what": "An email without an @ is refused by the form",
+         "expect": "control",
+         "how": "Change Phone to 07700 900123, type nuala.breen in Email and click Save. The message must say that an email address must look like name@example.com."
+        },
+        {
+         "id": "6.7.9",
+         "what": "A good customer is saved and appears in the grid",
+         "expect": "allowed",
+         "how": "Change Email to nuala.breen@example.com and click Save. Nuala Breen is the second row, with today's date joined."
+        },
+        {
+         "id": "6.7.10",
+         "what": "Edit changes the row, and Cancel changes nothing",
+         "expect": "allowed",
+         "how": "Double-click Nuala Breen, change the phone number to 07700 900124 and click Save: the row shows the new number. Open her again, change the phone number and press Escape: the row keeps 07700 900124."
+        },
+        {
+         "id": "6.7.11",
+         "what": "Delete asks first, and No does nothing",
+         "expect": "allowed",
+         "how": "Click Nuala Breen, click Delete and click No. She is still in the grid."
+        },
+        {
+         "id": "6.7.12",
+         "what": "A customer with no history can be deleted",
+         "expect": "allowed",
+         "how": "Click Delete again and click Yes. Nuala Breen is gone, and the grid is back to twelve."
+        },
+        {
+         "id": "6.7.13",
+         "what": "A customer with bookings is refused by the database",
+         "expect": "control",
+         "how": "Click Aoife McCann, click Delete and click Yes. The message must say that this customer has bookings or sales on record, and she must still be in the grid."
+        },
+        {
+         "id": "6.7.14",
+         "what": "The Supplier pair you wrote builds",
+         "expect": "allowed",
+         "how": "Press F6 in Visual Studio 2019 and read Build succeeded, with Supplier.cs in Models and SupplierData.cs in Data."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Finished: what you have, and what comes next.",
+     "blocks": [
+      {
+       "p": "Your program now adds, edits, deletes and displays. The pattern is the same for every table that follows: a class in Models, a data class in Data, a list form with a grid, and an edit form that checks its boxes and lets the database have the last word. Chapter 7 uses the Customer and ServiceType classes to book a job in the diary, and chapter 8 uses Supplier to order parts."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Choose one sentence in frmCustomers.cs, such as the question Delete asks, and change the words between its quotation marks. Then press F5, open Customers, click a row, click Delete and read your own words on the screen."
+       }
+      },
+      {
+       "box": {
+        "title": "Still to do in chapter 7",
+        "text": "In chapter 7, step 7.5.10 adds AppointmentData. After that step, delete the two lines you typed under the three green lines in ShowBookings. Then select the three green lines and press Ctrl and K together, then Ctrl and U together. Press F6, and the bookings grid works as before, through the data class this time."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

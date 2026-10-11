@@ -1,0 +1,3225 @@
+{
+ "id": "09",
+ "n": 9,
+ "title": "Report across tables",
+ "one": "A report that joins tables, filters by dates and shows totals.",
+ "marks": "This chapter is where the examiner looks for a query that reaches across several tables to answer a real question, and for a mistake that is caught with a sentence instead of a crash.",
+ "prev": {
+  "id": "08",
+  "title": "Stock",
+  "n": 8
+ },
+ "next": {
+  "id": "10",
+  "title": "Testing evidence and user guide",
+  "n": 10
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "What a report is",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will build in this chapter.",
+     "blocks": [
+      {
+       "p": "Every screen so far has shown one table and changed it. A report is different. A report asks one question of the whole database, for a range of dates, and shows the answer in a grid. Which mechanic did the most work in March? Where did the money come from last week? Which service is booked most? Each question needs rows from two, three or four tables at once."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch09-reports-list.png",
+        "alt": "The Reports screen of the running program with the report list dropped open, showing Mechanic workload, Income by day and source, How many bookings, hires, sales and orders, Most popular services, and Most popular parts.",
+        "cap": "The five questions the shop asks, in one list. Pick one, choose two dates, and press Run.",
+        "w": 960,
+        "h": 620,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 26,
+          "y": 18,
+          "say": "The five reports. Each one is one stored procedure."
+         },
+         {
+          "n": 2,
+          "x": 60,
+          "y": 10,
+          "say": "The From and To dates. The form starts with the last thirty days."
+         }
+        ]
+       }
+      },
+      {
+       "p": "By the end, the shop's manager can pick one of five reports, choose two dates, and press Run. The grid fills, and one plain sentence under it gives the answer. Five stored procedures do the work, one per report. The form checks one thing only: that the From date is not after the To date. That check is the one mistake this chapter catches, and it is caught with a class you write from nothing."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Check that you have these ready.",
+     "blocks": [
+      {
+       "need": [
+        "Chapter 8 is finished: your BikeShop.sql has the stock, bike and hire stored procedures in it, and the parts screen runs.",
+        "SQL Server Management Studio (SSMS) is open, connected to your BikeShop database.",
+        "Your BikeShop solution is open in Visual Studio 2019.",
+        "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Report",
+         "A question asked of the whole database for a range of dates, answered as a grid of rows."
+        ],
+        [
+         "Date range",
+         "Two dates, From and To, with every day between them counted in."
+        ],
+        [
+         "LEFT JOIN",
+         "A join that keeps every row of the first table, even the rows that match nothing in the second."
+        ],
+        [
+         "GROUP BY",
+         "The words that squash many rows into one row per thing, so COUNT and SUM can add them up."
+        ],
+        [
+         "UNION ALL",
+         "The words that stack the rows of one SELECT under the rows of another, as one list."
+        ],
+        [
+         "Derived table",
+         "A SELECT inside brackets that another SELECT reads from, as if it were a table."
+        ],
+        [
+         "ISNULL",
+         "A function that swaps an empty value for the value you give it, such as 0."
+        ],
+        [
+         "DATEDIFF",
+         "A function that counts the minutes, hours or days between two times."
+        ],
+        [
+         "Exception",
+         "An object that a method throws when something has gone wrong, carrying a sentence that says what."
+        ],
+        [
+         "Catch",
+         "The part of a method that takes an exception and does something sensible with it, instead of crashing."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read what a report does, and what it never does.",
+     "blocks": [
+      {
+       "p": "A report is three things: one question, two dates, one grid. The question is fixed in the stored procedure. The dates come from the form. The grid is whatever rows the SELECT makes. Nothing else is needed, because the answer is read straight from the tables that your screens have been keeping right since chapter 6."
+      },
+      {
+       "box": {
+        "title": "The five questions Towpath Cycles asks",
+        "text": "Which mechanic did the most work, and earned the most for the shop? Where did the money come from, day by day, and was it the workshop, bike hire or parts? How much happened: how many bookings, hires, sales and orders? Which services are booked most? Which parts sell most? Each question is one stored procedure, and each stored procedure is one SELECT, or a stack of SELECTs."
+       }
+      },
+      {
+       "p": "A report never changes data. There is no INSERT, UPDATE or DELETE in any of the five. That is why none of them has an @Message parameter: there is nothing to refuse. In the program, each one is called with Db.GetTable, which hands back a table of rows, never with Db.Run. Run the same report twice and you get the same answer twice, and the database is exactly as it was."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Which mechanic did the most work",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the workload stored procedure, then add it to your script.",
+     "blocks": [
+      {
+       "p": "The first report answers one question: for each mechanic, how many jobs were done between two dates, how many hours did they take, and how much did the shop earn from them. Three tables take part. Staff gives the mechanics, Appointment gives the jobs, and ServiceType gives the price of each job. Read the stored procedure below first. It uses a LEFT JOIN so a mechanic with no jobs still shows, a GROUP BY so there is one row per mechanic, and COUNT, SUM and DATEDIFF to count the jobs and add up the minutes and the money."
+      },
+      {
+       "code": {
+        "id": "9.2-workload",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Report_MechanicWorkload: jobs, hours and income per mechanic",
+        "src": "sql:usp_Report_MechanicWorkload",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Report_MechanicWorkload",
+          "@ToDate",
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT s.FirstName + ' ' + s.LastName AS Mechanic,",
+          "SELECT s.FirstName + ' ' + s.LastName AS Mechanic,",
+          "The first column: the mechanic",
+          "The first name, a space and the last name are joined into one piece of text with plus signs. AS Mechanic names the column, so the grid heading reads Mechanic and not an expression."
+         ],
+         [
+          "COUNT(a.AppointmentID) AS JobsDone,",
+          "COUNT(a.AppointmentID) AS JobsDone,",
+          "The second column: how many jobs",
+          "COUNT counts the appointment numbers in the group. It counts the appointment column, not a star, because a mechanic with no jobs has no appointment number and must count as 0, not 1."
+         ],
+         [
+          "CAST(ISNULL(SUM(DATEDIFF",
+          "AS DECIMAL(6,1)) AS HoursWorked,",
+          "The third column: the hours",
+          "DATEDIFF counts the minutes from the start of each job to its end. SUM adds the minutes up. ISNULL turns an empty total into 0 for a mechanic with no jobs. Dividing by 60.0 makes hours, and CAST to DECIMAL(6,1) rounds the answer to one decimal place, such as 2.8."
+         ],
+         [
+          "ISNULL(SUM(st.Price), 0) AS Income",
+          "ISNULL(SUM(st.Price), 0) AS Income",
+          "The fourth column: the money",
+          "The price of each job comes from its service type. SUM adds the prices up, and ISNULL gives 0 to a mechanic with nothing to add."
+         ],
+         [
+          "FROM Staff s",
+          "BETWEEN @FromDate AND @ToDate",
+          "Start from the staff, and bring in their jobs",
+          "The report starts from Staff, because the question is about mechanics. LEFT JOIN brings in each mechanic's appointments, and keeps the mechanic even when none match. The three tests after ON pick which appointments count: the mechanic's own, finished ones, and ones that started between the two dates. CAST to DATE throws away the clock part so that BETWEEN works on whole days. The date test sits after ON and not in a WHERE on purpose: a WHERE would throw away the mechanics with no jobs in those dates."
+         ],
+         [
+          "LEFT JOIN ServiceType st",
+          "LEFT JOIN ServiceType st",
+          "Bring in the price of each job",
+          "Each appointment has a service type, and the service type holds the price. This is a LEFT JOIN too, so a mechanic with no appointments, and so no service type, is still kept."
+         ],
+         [
+          "WHERE s.Role = 'Mechanic'",
+          "WHERE s.Role = 'Mechanic'",
+          "Only the mechanics",
+          "Staff holds the manager and the counter staff too. The WHERE is on the Staff row, so it keeps the right people without losing anyone's jobs."
+         ],
+         [
+          "GROUP BY s.StaffID, s.FirstName, s.LastName",
+          "GROUP BY s.StaffID, s.FirstName, s.LastName",
+          "One row per mechanic",
+          "GROUP BY squashes all of one mechanic's appointment rows into one row, so that COUNT and SUM have something to add up. Every column in the SELECT that is not inside COUNT or SUM must be listed here."
+         ],
+         [
+          "ORDER BY Income DESC, Mechanic;",
+          "$end",
+          "Biggest earner first",
+          "DESC means highest first. Two mechanics with the same income are then put in name order, so the list is always in the same order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Report_MechanicWorkload\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT s.FirstName + ' ' + s.LastName AS Mechanic,\n           COUNT(a.AppointmentID) AS JobsDone,\n           CAST(ISNULL(SUM(DATEDIFF(MINUTE, a.StartTime, a.EndTime)), 0) / 60.0\n               AS DECIMAL(6,1)) AS HoursWorked,\n           ISNULL(SUM(st.Price), 0) AS Income\n    FROM Staff s\n    LEFT JOIN Appointment a\n           ON a.MechanicID = s.StaffID\n          AND a.Status = 'Done'\n          AND CAST(a.StartTime AS DATE) BETWEEN @FromDate AND @ToDate\n    LEFT JOIN ServiceType st ON st.ServiceTypeID = a.ServiceTypeID\n    WHERE s.Role = 'Mechanic'\n    GROUP BY s.StaffID, s.FirstName, s.LastName\n    ORDER BY Income DESC, Mechanic;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          6,
+          "The first column: the mechanic",
+          "The first name, a space and the last name are joined into one piece of text with plus signs. AS Mechanic names the column, so the grid heading reads Mechanic and not an expression."
+         ],
+         [
+          7,
+          7,
+          "The second column: how many jobs",
+          "COUNT counts the appointment numbers in the group. It counts the appointment column, not a star, because a mechanic with no jobs has no appointment number and must count as 0, not 1."
+         ],
+         [
+          8,
+          9,
+          "The third column: the hours",
+          "DATEDIFF counts the minutes from the start of each job to its end. SUM adds the minutes up. ISNULL turns an empty total into 0 for a mechanic with no jobs. Dividing by 60.0 makes hours, and CAST to DECIMAL(6,1) rounds the answer to one decimal place, such as 2.8."
+         ],
+         [
+          10,
+          10,
+          "The fourth column: the money",
+          "The price of each job comes from its service type. SUM adds the prices up, and ISNULL gives 0 to a mechanic with nothing to add."
+         ],
+         [
+          11,
+          15,
+          "Start from the staff, and bring in their jobs",
+          "The report starts from Staff, because the question is about mechanics. LEFT JOIN brings in each mechanic's appointments, and keeps the mechanic even when none match. The three tests after ON pick which appointments count: the mechanic's own, finished ones, and ones that started between the two dates. CAST to DATE throws away the clock part so that BETWEEN works on whole days. The date test sits after ON and not in a WHERE on purpose: a WHERE would throw away the mechanics with no jobs in those dates."
+         ],
+         [
+          16,
+          16,
+          "Bring in the price of each job",
+          "Each appointment has a service type, and the service type holds the price. This is a LEFT JOIN too, so a mechanic with no appointments, and so no service type, is still kept."
+         ],
+         [
+          17,
+          17,
+          "Only the mechanics",
+          "Staff holds the manager and the counter staff too. The WHERE is on the Staff row, so it keeps the right people without losing anyone's jobs."
+         ],
+         [
+          18,
+          18,
+          "One row per mechanic",
+          "GROUP BY squashes all of one mechanic's appointment rows into one row, so that COUNT and SUM have something to add up. Every column in the SELECT that is not inside COUNT or SUM must be listed here."
+         ],
+         [
+          19,
+          21,
+          "Biggest earner first",
+          "DESC means highest first. Two mechanics with the same income are then put in name order, so the list is always in the same order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.2.1",
+         "do": "In SQL Server Management Studio (SSMS), click File, then Open, then File…, and open BikeShop.sql from your OneDrive folder.",
+         "see": "Your script is in a tab, and the first line is the USE line from chapter 3.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio (SSMS) with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Your script opens from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 6,
+            "y": 25,
+            "say": "Point at Open."
+           },
+           {
+            "n": 3,
+            "x": 41,
+            "y": 48,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.2.2",
+         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "see": "The cursor blinks on the empty line, with the hire stored procedures from chapter 8 above it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: END, GO, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Everything new in this chapter goes on the empty line above the line that prints BikeShop is ready, one stored procedure after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.2.3",
+         "do": "Press the Copy button under this step, click on the empty line above the line that prints BikeShop is ready, and paste.",
+         "copy": "9.2-workload",
+         "see": "The stored procedure is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "9.2.4",
+         "do": "Press F5, or click Execute on the toolbar, with nothing selected. This runs the whole script, so your database is built again from nothing with the new stored procedure in it.",
+         "see": "The Messages pane ends with BikeShop is ready and a Completion time. No red text. The sample data is back as it was at the start of chapter 8, which is what the tests in this chapter expect.",
+         "img": {
+          "img": "img/ch07-ssms-execute.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (6 rows affected), then BikeShop is ready, then a Completion time.",
+          "cap": "Execute with nothing selected runs the whole script. The Messages pane counts the sample rows it put back, then says BikeShop is ready.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 6,
+            "say": "Click Execute, or press F5."
+           },
+           {
+            "n": 2,
+            "x": 39,
+            "y": 90,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test it: the workload for this year.",
+     "blocks": [
+      {
+       "p": "The test asks for the whole of this year. The sample data is dated around today, so a whole year catches every job in it. A report hands back rows, not a message, so the answer appears in the Results tab, not the Messages pane."
+      },
+      {
+       "code": {
+        "id": "9.2-try",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that runs the workload report for this year",
+        "src": "try:ch09_reports.sql#workload",
+        "parts": [
+         [
+          "DECLARE @From DATE, @To DATE;",
+          "SET @To = '2026-12-31';",
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          "EXEC usp_Report_MechanicWorkload",
+          "$end",
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. The rows it makes come back as a table in the Results tab."
+         ]
+        ],
+        "text": "-- Which mechanic did the most work this year?\n-- Four rows, one per mechanic, biggest earner first.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_MechanicWorkload @FromDate = @From, @ToDate = @To;",
+        "partLines": [
+         [
+          3,
+          5,
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          7,
+          7,
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. The rows it makes come back as a table in the Results tab."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.2.5",
+         "do": "Click New Query on the toolbar, or press Ctrl and N together.",
+         "see": "A new tab opens with an empty query window, and the cursor blinks in it."
+        },
+        {
+         "id": "9.2.6",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.2-try",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.2.7",
+         "do": "Click in the empty query window and press Ctrl and V together.",
+         "see": "The test is in the window, with the DECLARE line at the top and the line that runs usp_Report_MechanicWorkload at the bottom."
+        },
+        {
+         "id": "9.2.8",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows four rows: Conor Walsh with 2 jobs, 2.8 hours and 113.00; Niamh Hughes with 2, 1.8 and 65.00; Aoife Byrne with 2, 1.5 and 55.00; and Liam Doran with 0, 0.0 and 0.00. The Messages tab says (4 rows affected).",
+         "img": {
+          "img": "img/ch09-ssms-workload.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the workload test: four rows, Conor Walsh with 2 jobs, 2.8 hours and 113.00, Niamh Hughes with 2, 1.8 and 65.00, Aoife Byrne with 2, 1.5 and 55.00, and Liam Doran with 0, 0.0 and 0.00.",
+          "cap": "The workload report for the year. Liam Doran left in the summer and did no jobs this year, and he is still listed, with zeros, because of the LEFT JOIN.",
+          "w": 490,
+          "h": 122,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 27,
+            "say": "The column headings are the AS names from the SELECT."
+           },
+           {
+            "n": 2,
+            "x": 14,
+            "y": 88,
+            "say": "Liam Doran: a row of zeros, not a missing row."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.2.9",
+         "do": "Change the two dates to '2000-01-01' and '2000-01-02', and press F5 again.",
+         "see": "The same four names, each with 0, 0.0 and 0.00. Nobody did a job in the year 2000, and every mechanic is still listed. That is the LEFT JOIN doing its work."
+        },
+        {
+         "id": "9.2.10",
+         "do": "Change the two dates back to this year, and leave the window open.",
+         "see": "The four rows with their real numbers are back. The next stages paste their tests into this same window."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "Liam Doran is in the list, but he left the shop",
+         "a": "The report asks about the Role column, which still says Mechanic, not the IsActive column. That is right: a mechanic who left in the summer still did jobs earlier in the year, and the shop wants them counted."
+        },
+        {
+         "q": "Conor Walsh shows 2.75 hours, not 2.8",
+         "a": "The CAST to DECIMAL(6,1) is missing or has a different number after the comma. One decimal place is the shape the form expects."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Where the money came from",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the income stored procedure, and type the lines that stack it.",
+     "blocks": [
+      {
+       "p": "Money comes into the shop from three places: the workshop, bike hire and parts. They live in three different tables. The second report puts all three into one grid, one row per day per source, by stacking three SELECTs on top of each other with UNION ALL. The three SELECTs must have the same columns in the same order. The whole stack sits inside brackets as a derived table, so that one ORDER BY at the end can sort every row by day. You type the seams, where one part ends and the next begins, so that you see the columns lining up with your own hands. Add it in SQL Server Management Studio (SSMS) the same way as before."
+      },
+      {
+       "code": {
+        "id": "9.3-income",
+        "kind": "type",
+        "lang": "sql",
+        "title": "usp_Report_Income: the money per day, from three tables",
+        "src": "sql:usp_Report_Income",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Report_Income",
+          "@ToDate",
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT [Day], Source, Items, Income",
+          "FROM (",
+          "The outer SELECT: four columns from a stack",
+          "This SELECT reads from the bracket that follows, not from a table. Day is in square brackets because SQL Server uses that word itself. The four names are the column headings the grid will show."
+         ],
+         [
+          "SELECT CAST(a.StartTime AS DATE) AS [Day]",
+          "AND @ToDate",
+          "The workshop part",
+          "One row per day of finished jobs: the day, the word Workshop as its source, how many jobs, and the prices added up. Appointment is joined to ServiceType for the price. The AS names here name the columns for the whole stack, because the first SELECT names the columns for all of them."
+         ],
+         [
+          "GROUP BY CAST(a.StartTime AS DATE)",
+          "SELECT h.EndDate",
+          "The first seam: the yellow lines",
+          "GROUP BY on the day ends the workshop part. UNION ALL stacks the next part underneath. The SELECT that starts the bike hire part gives the same four things: a day, the words Bike hire in quotes, a count and a sum. It has no AS names, because the first part named the columns already."
+         ],
+         [
+          "FROM Hire h",
+          "WHERE h.Status = 'Returned'",
+          "Where the hire money comes from",
+          "Only hires that came back count, on the day they came back. EndDate is already a date, so no CAST is needed."
+         ],
+         [
+          "GROUP BY h.EndDate",
+          "SELECT CAST(ps.SoldOn AS DATE)",
+          "The second seam: the yellow lines",
+          "The same shape again. GROUP BY on the day ends the hire part, UNION ALL stacks the parts sales underneath, and the SELECT gives a day, the word Parts, and a count. The count here is a SUM of quantities, because one sale can be three inner tubes."
+         ],
+         [
+          "SUM(ps.Quantity * ps.UnitPrice)",
+          "GROUP BY CAST(ps.SoldOn AS DATE)",
+          "Where the parts money comes from",
+          "The income of a sale is its quantity times the price it was sold at. Only sales still marked Sold count, so a refund drops out. CAST to DATE throws away the clock part of SoldOn."
+         ],
+         [
+          ") AS income",
+          "$end",
+          "Close the stack and sort it",
+          "The closing bracket ends the derived table, and AS income gives it a name, which SQL Server insists on. ORDER BY sorts the whole stack by day, then by source, so the three sources of one day sit together. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "GROUP BY CAST(a.StartTime AS DATE)",
+          "SELECT h.EndDate"
+         ],
+         [
+          "GROUP BY h.EndDate",
+          "SELECT CAST(ps.SoldOn AS DATE)"
+         ]
+        ],
+        "why": "Each yellow block is a seam: the GROUP BY that ends one part, UNION ALL, and the SELECT that starts the next. The SELECT you type must give the same four columns, in the same order, as the workshop part above it. Typing it is how you learn to line them up.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Report_Income\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT [Day], Source, Items, Income\n    FROM (\n        SELECT CAST(a.StartTime AS DATE) AS [Day], 'Workshop' AS Source,\n               COUNT(*) AS Items, SUM(st.Price) AS Income\n        FROM Appointment a\n        JOIN ServiceType st ON st.ServiceTypeID = a.ServiceTypeID\n        WHERE a.Status = 'Done' AND CAST(a.StartTime AS DATE) BETWEEN @FromDate\n            AND @ToDate\n        GROUP BY CAST(a.StartTime AS DATE)\n\n        UNION ALL\n\n        SELECT h.EndDate, 'Bike hire', COUNT(*), SUM(h.TotalCost)\n        FROM Hire h\n        WHERE h.Status = 'Returned' AND h.EndDate BETWEEN @FromDate AND @ToDate\n        GROUP BY h.EndDate\n\n        UNION ALL\n\n        SELECT CAST(ps.SoldOn AS DATE), 'Parts', SUM(ps.Quantity),\n            SUM(ps.Quantity * ps.UnitPrice)\n        FROM PartSale ps\n        WHERE ps.Status = 'Sold' AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate\n            AND @ToDate\n        GROUP BY CAST(ps.SoldOn AS DATE)\n    ) AS income\n    ORDER BY [Day], Source;\nEND\nGO",
+        "focusLines": [
+         [
+          14,
+          18
+         ],
+         [
+          21,
+          25
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          7,
+          "The outer SELECT: four columns from a stack",
+          "This SELECT reads from the bracket that follows, not from a table. Day is in square brackets because SQL Server uses that word itself. The four names are the column headings the grid will show."
+         ],
+         [
+          8,
+          13,
+          "The workshop part",
+          "One row per day of finished jobs: the day, the word Workshop as its source, how many jobs, and the prices added up. Appointment is joined to ServiceType for the price. The AS names here name the columns for the whole stack, because the first SELECT names the columns for all of them."
+         ],
+         [
+          14,
+          18,
+          "The first seam: the yellow lines",
+          "GROUP BY on the day ends the workshop part. UNION ALL stacks the next part underneath. The SELECT that starts the bike hire part gives the same four things: a day, the words Bike hire in quotes, a count and a sum. It has no AS names, because the first part named the columns already."
+         ],
+         [
+          19,
+          20,
+          "Where the hire money comes from",
+          "Only hires that came back count, on the day they came back. EndDate is already a date, so no CAST is needed."
+         ],
+         [
+          21,
+          25,
+          "The second seam: the yellow lines",
+          "The same shape again. GROUP BY on the day ends the hire part, UNION ALL stacks the parts sales underneath, and the SELECT gives a day, the word Parts, and a count. The count here is a SUM of quantities, because one sale can be three inner tubes."
+         ],
+         [
+          26,
+          30,
+          "Where the parts money comes from",
+          "The income of a sale is its quantity times the price it was sold at. Only sales still marked Sold count, so a refund drops out. CAST to DATE throws away the clock part of SoldOn."
+         ],
+         [
+          31,
+          34,
+          "Close the stack and sort it",
+          "The closing bracket ends the derived table, and AS income gives it a name, which SQL Server insists on. ORDER BY sorts the whole stack by day, then by source, so the three sources of one day sit together. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.3.1",
+         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: END, GO, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Everything new in this chapter goes on the empty line above the line that prints BikeShop is ready, one stored procedure after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.3.2",
+         "do": "Press the Copy button under this step, click on the empty line above the line that prints BikeShop is ready, and paste.",
+         "copy": "9.3-income",
+         "see": "The stored procedure is in your script, with a line that says YOU TYPE THIS PART where each yellow block goes.",
+         "img": {
+          "img": "img/ch07-ssms-paste-gap.png",
+          "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 20,
+            "y": 64,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.3.3",
+         "do": "Type the yellow lines in place of each line that says YOU TYPE THIS PART, so that no marker line is left.",
+         "see": "You have typed six lines of your own, three at each seam, and no marker line is left.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that each line ends the way the yellow line ends."
+          ],
+          [
+           "'Must declare the scalar variable …'",
+           "A name beginning with @ is spelled differently from the line that declares it. Make the two match."
+          ]
+         ]
+        },
+        {
+         "id": "9.3.4",
+         "do": "Select the lines you added, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The Messages pane shows (6 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken, because a report never changes data. Carry on."
+          ],
+          [
+           "'All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions'",
+           "One SELECT in the stack has a column missing or one too many. Every SELECT joined by UNION ALL must list the same number of columns, in the same order. Count the commas in each one."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test it: fourteen lines of income.",
+     "blocks": [
+      {
+       "code": {
+        "id": "9.3-try",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that runs the income report for this year",
+        "src": "try:ch09_reports.sql#income",
+        "parts": [
+         [
+          "DECLARE @From DATE, @To DATE;",
+          "SET @To = '2026-12-31';",
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          "EXEC usp_Report_Income",
+          "$end",
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. The stacked rows come back as one table in the Results tab."
+         ]
+        ],
+        "text": "-- Where did the money come from this year, day by day?\n-- One row per day per source: Workshop, Bike hire or Parts.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_Income @FromDate = @From, @ToDate = @To;",
+        "partLines": [
+         [
+          3,
+          5,
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          7,
+          7,
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. The stacked rows come back as one table in the Results tab."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.3.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.3-try",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.3.6",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "9.3.7",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and its EXEC line runs usp_Report_Income."
+        },
+        {
+         "id": "9.3.8",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows fourteen rows, oldest day first. The Source column holds Workshop, Bike hire or Parts. The two Bike hire rows show 36.00 and 110.00, and the Workshop rows add up to 233.00, the same total the workload report gave.",
+         "img": {
+          "img": "img/ch09-ssms-income.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the income test: fourteen rows, each with a Day, a Source of Workshop, Bike hire or Parts, a count of Items and an Income, oldest day first.",
+          "cap": "The income report for the year: fourteen lines from three tables, sorted into one list by day.",
+          "w": 392,
+          "h": 311,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 38,
+            "y": 30,
+            "say": "Three sources in one Source column, because UNION ALL stacked three SELECTs."
+           },
+           {
+            "n": 2,
+            "x": 18,
+            "y": 60,
+            "say": "The days run in order, because ORDER BY sorted the whole stack."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.3.9",
+         "do": "Change the two dates to '2000-01-01' and '2000-01-02', and press F5 again.",
+         "see": "The Results tab shows the four headings and no rows, and the Messages tab says (0 rows affected). An empty answer is still an answer."
+        },
+        {
+         "id": "9.3.10",
+         "do": "Change the two dates back to this year.",
+         "see": "The fourteen rows are back."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "'All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions'",
+         "a": "One SELECT in the stack has a column missing or one too many. Every SELECT joined by UNION ALL must list the same number of columns, in the same order. Count the commas in each one."
+        },
+        {
+         "q": "'Incorrect syntax near the keyword ORDER'",
+         "a": "The derived table has no name. The line after the closing bracket must read ) AS income, and ORDER BY comes after it."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "How much happened",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Type the four stacked counts of the activity stored procedure.",
+     "blocks": [
+      {
+       "p": "The third report is five numbers: bookings kept, bookings cancelled, hires, parts sold and orders placed, each between the two dates. Each number is one small SELECT that gives one row with a label and a count, and UNION ALL stacks the five rows into one grid. The label is text in quotes, so the first column reads Workshop bookings and not a column name. The first SELECT is given. In SQL Server Management Studio (SSMS), you type the other four from its pattern: same shape, a different table, a different status test."
+      },
+      {
+       "code": {
+        "id": "9.4-activity",
+        "kind": "type",
+        "lang": "sql",
+        "title": "usp_Report_Activity: five counts in one grid",
+        "src": "sql:usp_Report_Activity",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Report_Activity",
+          "@ToDate",
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT 'Workshop bookings' AS [What]",
+          "AND CAST(StartTime AS DATE) BETWEEN @FromDate AND @ToDate",
+          "The first count: bookings kept",
+          "The text in quotes is the label, and AS [What] names the column. COUNT(*) counts the appointment rows that are not cancelled and started between the dates. How many is in square brackets because it has a space in it. This SELECT names the two columns for the whole stack."
+         ],
+         [
+          "UNION ALL",
+          "AND CAST(StartTime AS DATE) BETWEEN @FromDate AND @ToDate",
+          "The second count: bookings cancelled",
+          "UNION ALL stacks one more row underneath. The same table, with the status test turned round: only the cancelled ones. No AS names, because the first SELECT named the columns."
+         ],
+         [
+          "UNION ALL",
+          "AND StartDate BETWEEN @FromDate AND @ToDate",
+          "The third count: bike hires",
+          "Hires that were not cancelled and started between the dates. StartDate is already a date, so there is no CAST."
+         ],
+         [
+          "UNION ALL",
+          "AND CAST(SoldOn AS DATE) BETWEEN @FromDate AND @ToDate",
+          "The fourth count: parts sold",
+          "This one is a SUM, not a COUNT, because one sale row can be three inner tubes. ISNULL turns an empty sum into 0 when nothing was sold, so the row still appears with a number in it."
+         ],
+         [
+          "UNION ALL",
+          "$end",
+          "The fifth count: orders placed",
+          "Orders that were not cancelled and were placed between the dates. The last line ends with a semicolon, because it is the end of the whole stacked statement. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "UNION ALL",
+          "AND OrderedOn BETWEEN @FromDate AND @ToDate;"
+         ]
+        ],
+        "why": "Four times the same four lines, each on a different table. Typing them is how the pattern sticks: a label in quotes, a COUNT or SUM, the table, the status test, the date test.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Report_Activity\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT 'Workshop bookings' AS [What], COUNT(*) AS [How many]\n    FROM Appointment\n    WHERE Status <> 'Cancelled'\n      AND CAST(StartTime AS DATE) BETWEEN @FromDate AND @ToDate\n\n    UNION ALL\n\n    SELECT 'Bookings cancelled', COUNT(*)\n    FROM Appointment\n    WHERE Status = 'Cancelled'\n      AND CAST(StartTime AS DATE) BETWEEN @FromDate AND @ToDate\n\n    UNION ALL\n\n    SELECT 'Bike hires', COUNT(*)\n    FROM Hire\n    WHERE Status <> 'Cancelled'\n      AND StartDate BETWEEN @FromDate AND @ToDate\n\n    UNION ALL\n\n    SELECT 'Parts sold', ISNULL(SUM(Quantity), 0)\n    FROM PartSale\n    WHERE Status = 'Sold'\n      AND CAST(SoldOn AS DATE) BETWEEN @FromDate AND @ToDate\n\n    UNION ALL\n\n    SELECT 'Part orders placed', COUNT(*)\n    FROM PartOrder\n    WHERE Status <> 'Cancelled'\n      AND OrderedOn BETWEEN @FromDate AND @ToDate;\nEND\nGO",
+        "focusLines": [
+         [
+          11,
+          37
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          9,
+          "The first count: bookings kept",
+          "The text in quotes is the label, and AS [What] names the column. COUNT(*) counts the appointment rows that are not cancelled and started between the dates. How many is in square brackets because it has a space in it. This SELECT names the two columns for the whole stack."
+         ],
+         [
+          11,
+          16,
+          "The second count: bookings cancelled",
+          "UNION ALL stacks one more row underneath. The same table, with the status test turned round: only the cancelled ones. No AS names, because the first SELECT named the columns."
+         ],
+         [
+          18,
+          23,
+          "The third count: bike hires",
+          "Hires that were not cancelled and started between the dates. StartDate is already a date, so there is no CAST."
+         ],
+         [
+          25,
+          30,
+          "The fourth count: parts sold",
+          "This one is a SUM, not a COUNT, because one sale row can be three inner tubes. ISNULL turns an empty sum into 0 when nothing was sold, so the row still appears with a number in it."
+         ],
+         [
+          32,
+          39,
+          "The fifth count: orders placed",
+          "Orders that were not cancelled and were placed between the dates. The last line ends with a semicolon, because it is the end of the whole stacked statement. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.4.1",
+         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: END, GO, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Everything new in this chapter goes on the empty line above the line that prints BikeShop is ready, one stored procedure after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.4.2",
+         "do": "Press the Copy button under this step, click on the empty line above the line that prints BikeShop is ready, and paste.",
+         "copy": "9.4-activity",
+         "see": "The stored procedure is in your script, with a line that says YOU TYPE THIS PART where each yellow block goes.",
+         "img": {
+          "img": "img/ch07-ssms-paste-gap.png",
+          "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 20,
+            "y": 64,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.4.3",
+         "do": "Type the yellow lines in place of each line that says YOU TYPE THIS PART, so that no marker line is left.",
+         "see": "You have typed four stacked SELECTs of your own under the first one, each starting with UNION ALL, and no marker line is left.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that each line ends the way the yellow line ends."
+          ],
+          [
+           "'Must declare the scalar variable …'",
+           "A name beginning with @ is spelled differently from the line that declares it. Make the two match."
+          ]
+         ]
+        },
+        {
+         "id": "9.4.4",
+         "do": "Select the lines you added, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The Messages pane shows (6 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken, because a report never changes data. Carry on."
+          ],
+          [
+           "'All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions'",
+           "One SELECT in the stack has a column missing or one too many. Every SELECT joined by UNION ALL must list the same number of columns, in the same order. Count the commas in each one."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test it: five counts for this year.",
+     "blocks": [
+      {
+       "code": {
+        "id": "9.4-try",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that runs the activity report for this year",
+        "src": "try:ch09_reports.sql#activity",
+        "parts": [
+         [
+          "DECLARE @From DATE, @To DATE;",
+          "SET @To = '2026-12-31';",
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          "EXEC usp_Report_Activity",
+          "$end",
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. Five rows come back in the Results tab, in the order the SELECTs are stacked."
+         ]
+        ],
+        "text": "-- How much happened this year?  Five rows, one count each.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_Activity @FromDate = @From, @ToDate = @To;",
+        "partLines": [
+         [
+          2,
+          4,
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          6,
+          6,
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. Five rows come back in the Results tab, in the order the SELECTs are stacked."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.4.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.4-try",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.4.6",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "9.4.7",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and its EXEC line runs usp_Report_Activity."
+        },
+        {
+         "id": "9.4.8",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows five rows: Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3.",
+         "img": {
+          "img": "img/ch09-ssms-activity.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the activity test: five rows, Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3.",
+          "cap": "The activity report for the year. Each row is one SELECT, and its label is the text in quotes.",
+          "w": 343,
+          "h": 142,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 25,
+            "y": 60,
+            "say": "The What column holds the five labels you typed."
+           },
+           {
+            "n": 2,
+            "x": 62,
+            "y": 60,
+            "say": "The How many column holds one count each."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "'Invalid column name'",
+         "a": "A column name in one of the four SELECTs you typed is spelled differently from the table. Double-click the error to jump to the line, and compare it with the yellow lines, letter by letter."
+        },
+        {
+         "q": "Parts sold shows a different number",
+         "a": "Count the Sold rows in your PartSale table and add up their Quantity column. If you sold or refunded parts in chapter 8 since the last whole-script run, the number is right for your data."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Most popular services, then your turn",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the popular services stored procedure, then add it to your script.",
+     "blocks": [
+      {
+       "p": "The fourth report lists every service with how many times it was booked between the dates, most booked first. It lists every service, including the ones nobody booked: a manager wants to see the 0 beside Safety check, not wonder where it went. That is a LEFT JOIN from ServiceType to Appointment, with the date test after ON, the same shape as the workload report. Read the stored procedure below, then add it to your script in SQL Server Management Studio (SSMS). The next screen breaks the report on purpose, so that you see what the LEFT does."
+      },
+      {
+       "code": {
+        "id": "9.5-services",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Report_PopularServices: every service, most booked first",
+        "src": "sql:usp_Report_PopularServices",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Report_PopularServices",
+          "@ToDate",
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT st.Name AS Service,",
+          "st.Price",
+          "Three columns",
+          "The service's name, how many appointments matched it, and its price. COUNT on the appointment number gives 0 for a service with no matching appointments, because there are no numbers to count."
+         ],
+         [
+          "FROM ServiceType st",
+          "FROM ServiceType st",
+          "Start from every service",
+          "The report starts from ServiceType, because the question is about services. Every row of this table will be in the answer."
+         ],
+         [
+          "LEFT JOIN Appointment a",
+          "BETWEEN @FromDate AND @ToDate",
+          "Bring in the bookings that match, and keep the services that have none",
+          "LEFT JOIN keeps every service even when no appointment matches. The three tests after ON pick the appointments that count: the right service, not cancelled, and started between the dates. The date test must sit here, after ON. If it moved to a WHERE, a service with no bookings in those dates would be thrown away, and the 0 would vanish with it."
+         ],
+         [
+          "GROUP BY st.ServiceTypeID, st.Name, st.Price",
+          "GROUP BY st.ServiceTypeID, st.Name, st.Price",
+          "One row per service",
+          "All of one service's appointment rows are squashed into one row, so COUNT has something to count. Name and Price are listed because they are in the SELECT outside the COUNT."
+         ],
+         [
+          "ORDER BY Bookings DESC, Service;",
+          "$end",
+          "Most booked first",
+          "Highest count first. Two services with the same count are put in name order, so the list is always in the same order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Report_PopularServices\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT st.Name AS Service,\n           COUNT(a.AppointmentID) AS Bookings,\n           st.Price\n    FROM ServiceType st\n    LEFT JOIN Appointment a\n           ON a.ServiceTypeID = st.ServiceTypeID\n          AND a.Status <> 'Cancelled'\n          AND CAST(a.StartTime AS DATE) BETWEEN @FromDate AND @ToDate\n    GROUP BY st.ServiceTypeID, st.Name, st.Price\n    ORDER BY Bookings DESC, Service;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          8,
+          "Three columns",
+          "The service's name, how many appointments matched it, and its price. COUNT on the appointment number gives 0 for a service with no matching appointments, because there are no numbers to count."
+         ],
+         [
+          9,
+          9,
+          "Start from every service",
+          "The report starts from ServiceType, because the question is about services. Every row of this table will be in the answer."
+         ],
+         [
+          10,
+          13,
+          "Bring in the bookings that match, and keep the services that have none",
+          "LEFT JOIN keeps every service even when no appointment matches. The three tests after ON pick the appointments that count: the right service, not cancelled, and started between the dates. The date test must sit here, after ON. If it moved to a WHERE, a service with no bookings in those dates would be thrown away, and the 0 would vanish with it."
+         ],
+         [
+          14,
+          14,
+          "One row per service",
+          "All of one service's appointment rows are squashed into one row, so COUNT has something to count. Name and Price are listed because they are in the SELECT outside the COUNT."
+         ],
+         [
+          15,
+          17,
+          "Most booked first",
+          "Highest count first. Two services with the same count are put in name order, so the list is always in the same order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.5.1",
+         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: END, GO, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Everything new in this chapter goes on the empty line above the line that prints BikeShop is ready, one stored procedure after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.5.2",
+         "do": "Press the Copy button under this step, click on the empty line above the line that prints BikeShop is ready, and paste.",
+         "copy": "9.5-services",
+         "see": "The stored procedure is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "9.5.3",
+         "do": "Select the lines you added, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The Messages pane shows (6 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken, because a report never changes data. Carry on."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test it, then break it on purpose.",
+     "blocks": [
+      {
+       "p": "First you run the report as it should be. Then you take out one word, LEFT, and run the test again with the year 2000 dates, so that you see the rows go missing. Then you put the word back."
+      },
+      {
+       "code": {
+        "id": "9.5-try",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that runs the popular services report for this year",
+        "src": "try:ch09_reports.sql#services",
+        "parts": [
+         [
+          "DECLARE @From DATE, @To DATE;",
+          "SET @To = '2026-12-31';",
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          "EXEC usp_Report_PopularServices",
+          "$end",
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. One row per service comes back in the Results tab."
+         ]
+        ],
+        "text": "-- Which services were booked most this year?\n-- Every service is listed, even one that nobody booked.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_PopularServices @FromDate = @From, @ToDate = @To;",
+        "partLines": [
+         [
+          3,
+          5,
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          7,
+          7,
+          "Run the report",
+          "EXEC runs the stored procedure with the two dates. One row per service comes back in the Results tab."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.5.4",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.5-try",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.5.5",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "9.5.6",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and its EXEC line runs usp_Report_PopularServices."
+        },
+        {
+         "id": "9.5.7",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows seven rows: Basic service and Full service at the top with 3 each, then Brake pad replacement, Gear tune-up and Puncture repair with 2 each, Wheel true with 1, and Safety check at the bottom with 0.",
+         "img": {
+          "img": "img/ch09-ssms-services.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the services test: seven rows, Basic service 3 and 40.00, Full service 3 and 85.00, Brake pad replacement 2 and 28.00, Gear tune-up 2 and 25.00, Puncture repair 2 and 15.00, Wheel true 1 and 20.00, Safety check 0 and 0.00.",
+          "cap": "Every service, most booked first. Safety check has no bookings this year and is still there, with 0.",
+          "w": 367,
+          "h": 180,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 33,
+            "say": "Two services tie at 3. ORDER BY Bookings DESC, Service puts Basic service first, by name."
+           },
+           {
+            "n": 2,
+            "x": 22,
+            "y": 91,
+            "say": "Safety check with 0: the row the LEFT JOIN keeps."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.5.8",
+         "do": "Change the two dates to '2000-01-01' and '2000-01-02', and press F5 again.",
+         "see": "Seven rows, every one with 0 in the Bookings column. Nobody booked anything in the year 2000, and every service is still listed."
+        },
+        {
+         "id": "9.5.9",
+         "do": "Click in the tab that holds your script, find the line in usp_Report_PopularServices that reads LEFT JOIN Appointment a, and delete the word LEFT and the space after it.",
+         "see": "The line now reads JOIN Appointment a, with the same indent as before."
+        },
+        {
+         "id": "9.5.10",
+         "do": "Select the lines you added, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran."
+        },
+        {
+         "id": "9.5.11",
+         "do": "Click back in the test tab, and press F5 with the year 2000 dates still in it.",
+         "see": "The Results tab shows the three headings and no rows at all. Without LEFT, a service with no matching appointment is thrown away, and the whole report is empty. A manager would read that as no services, which is wrong."
+        },
+        {
+         "id": "9.5.12",
+         "do": "Click in the script tab, and type LEFT and a space back in front of JOIN Appointment a.",
+         "see": "The line reads LEFT JOIN Appointment a again."
+        },
+        {
+         "id": "9.5.13",
+         "do": "Select the lines you added, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran."
+        },
+        {
+         "id": "9.5.14",
+         "do": "Click back in the test tab, change the two dates back to this year, and press F5.",
+         "see": "The seven rows are back, Basic service at the top with 3, Safety check at the bottom with 0."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Your turn: write the popular parts stored procedure.",
+     "blocks": [
+      {
+       "p": "The fifth report is the fourth one with the words changed. It lists every part, how many were sold between the dates, and the money they brought in, best seller first, under the headings Part, Sold and Income. Part takes the place of ServiceType, PartSale takes the place of Appointment, and the count becomes a SUM of quantities, because one sale can be three inner tubes. Write usp_Report_PopularParts yourself, and the test on the next screen runs it."
+      },
+      {
+       "code": {
+        "id": "9.5-parts",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "usp_Report_PopularParts: every part, best seller first",
+        "src": "sql:usp_Report_PopularParts",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Report_PopularParts",
+          "@ToDate",
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT p.Name AS Part,",
+          "ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income",
+          "Three columns",
+          "The part's name, how many were sold, and the money they made. Both sums are wrapped in ISNULL, so a part with no sales shows 0 and 0.00 instead of an empty cell."
+         ],
+         [
+          "FROM Part p",
+          "FROM Part p",
+          "Start from every part",
+          "The report starts from Part, because the question is about parts, and every part must be in the answer."
+         ],
+         [
+          "LEFT JOIN PartSale ps",
+          "BETWEEN @FromDate AND @ToDate",
+          "Bring in the sales that match, and keep the parts that have none",
+          "LEFT JOIN keeps every part even when no sale matches. The three tests after ON pick the sales that count: the right part, still marked Sold, and sold between the dates. A refunded sale is not Sold, so it drops out."
+         ],
+         [
+          "GROUP BY p.PartID, p.Name",
+          "GROUP BY p.PartID, p.Name",
+          "One row per part",
+          "All of one part's sale rows are squashed into one row, so the two SUMs have something to add up."
+         ],
+         [
+          "ORDER BY Sold DESC, Part;",
+          "$end",
+          "Best seller first",
+          "Highest number sold first. Two parts with the same number are put in name order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "SELECT p.Name AS Part,",
+          "ORDER BY Sold DESC, Part;"
+         ]
+        ],
+        "task": [
+         "In SQL Server Management Studio (SSMS), click on the empty line above the line that prints BikeShop is ready and type the first lines of the stored procedure: CREATE OR ALTER PROCEDURE usp_Report_PopularParts, the two date parameters, AS and BEGIN.",
+         "Type the SELECT with three columns: p.Name AS Part, then ISNULL(SUM(ps.Quantity), 0) AS Sold, then ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income.",
+         "Type FROM Part p, then LEFT JOIN PartSale ps with three tests after ON: ps.PartID = p.PartID, AND ps.Status = 'Sold', AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate AND @ToDate.",
+         "Type GROUP BY p.PartID, p.Name and then ORDER BY Sold DESC, Part; and finish with END and GO.",
+         "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
+        ],
+        "test": "The ready-made test on the next screen runs your stored procedure for this year.",
+        "expect": "Twelve rows, one per part. Brake cable and Inner tube 700c are at the top with 3 each, and six parts at the bottom show 0 and 0.00. If you see six rows instead of twelve, the LEFT is missing or the date test has moved into a WHERE.",
+        "hint": "Open usp_Report_PopularServices in your script beside you and change one name at a time. The ISNULL round each SUM is new: a part with no sales has nothing to add up, and ISNULL turns that empty answer into 0.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Report_PopularParts\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT p.Name AS Part,\n           ISNULL(SUM(ps.Quantity), 0) AS Sold,\n           ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income\n    FROM Part p\n    LEFT JOIN PartSale ps\n           ON ps.PartID = p.PartID\n          AND ps.Status = 'Sold'\n          AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate AND @ToDate\n    GROUP BY p.PartID, p.Name\n    ORDER BY Sold DESC, Part;\nEND\nGO",
+        "focusLines": [
+         [
+          6,
+          15
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and the two dates that go in",
+          "Every report takes the same two things: a From date and a To date. Nothing comes back through a parameter. The answer is the table of rows that the SELECT makes."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          8,
+          "Three columns",
+          "The part's name, how many were sold, and the money they made. Both sums are wrapped in ISNULL, so a part with no sales shows 0 and 0.00 instead of an empty cell."
+         ],
+         [
+          9,
+          9,
+          "Start from every part",
+          "The report starts from Part, because the question is about parts, and every part must be in the answer."
+         ],
+         [
+          10,
+          13,
+          "Bring in the sales that match, and keep the parts that have none",
+          "LEFT JOIN keeps every part even when no sale matches. The three tests after ON pick the sales that count: the right part, still marked Sold, and sold between the dates. A refunded sale is not Sold, so it drops out."
+         ],
+         [
+          14,
+          14,
+          "One row per part",
+          "All of one part's sale rows are squashed into one row, so the two SUMs have something to add up."
+         ],
+         [
+          15,
+          17,
+          "Best seller first",
+          "Highest number sold first. Two parts with the same number are put in name order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Test your popular parts stored procedure, and compare it with the finished one.",
+     "blocks": [
+      {
+       "code": {
+        "id": "9.5-try-parts",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that runs the popular parts report for this year",
+        "src": "try:ch09_reports.sql#parts",
+        "parts": [
+         [
+          "DECLARE @From DATE, @To DATE;",
+          "SET @To = '2026-12-31';",
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          "EXEC usp_Report_PopularParts",
+          "$end",
+          "Run the report",
+          "EXEC runs your stored procedure with the two dates. One row per part comes back in the Results tab."
+         ]
+        ],
+        "text": "-- Which parts sold most this year?\n-- Every part is listed, even one that nobody bought.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_PopularParts @FromDate = @From, @ToDate = @To;",
+        "partLines": [
+         [
+          3,
+          5,
+          "Two dates in two boxes",
+          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+         ],
+         [
+          7,
+          7,
+          "Run the report",
+          "EXEC runs your stored procedure with the two dates. One row per part comes back in the Results tab."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.5.15",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.5-try-parts",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.5.16",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "9.5.17",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and its EXEC line runs usp_Report_PopularParts."
+        },
+        {
+         "id": "9.5.18",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows twelve rows: Brake cable with 3 and 12.00, Inner tube 700c with 3 and 18.00, Brake pads, disc (pair) with 2 and 32.00, then three parts with 1 each, then six parts with 0 and 0.00.",
+         "img": {
+          "img": "img/ch09-ssms-parts.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the parts test: twelve rows, Brake cable 3 and 12.00 and Inner tube 700c 3 and 18.00 at the top, then Brake pads, disc (pair) 2 and 32.00, three parts with 1, and six parts with 0 and 0.00 at the bottom.",
+          "cap": "Every part, best seller first, from the stored procedure you wrote yourself.",
+          "w": 379,
+          "h": 272,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 24,
+            "y": 22,
+            "say": "Brake cable and Inner tube 700c both sold 3 this year."
+           },
+           {
+            "n": 2,
+            "x": 24,
+            "y": 80,
+            "say": "Six parts with 0. A JOIN would have dropped them."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "p": "This is the finished SELECT, to hold beside yours. The whole stored procedure is in the fold-out on the last screen, part by part."
+      },
+      {
+       "code": {
+        "id": "9.5-parts-answer",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The finished SELECT of usp_Report_PopularParts",
+        "src": "sql:usp_Report_PopularParts",
+        "parts": [
+         [
+          "SELECT p.Name AS Part,",
+          "ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income",
+          "Three columns",
+          "The part's name, how many were sold, and the money they made, each sum wrapped in ISNULL so that a part with no sales shows 0."
+         ],
+         [
+          "FROM Part p",
+          "BETWEEN @FromDate AND @ToDate",
+          "Every part, with its matching sales",
+          "LEFT JOIN keeps every part. The three tests after ON pick the sales that count: the right part, still marked Sold, and sold between the dates."
+         ],
+         [
+          "GROUP BY p.PartID, p.Name",
+          "$end",
+          "One row per part, best seller first",
+          "GROUP BY squashes each part's sales into one row, and ORDER BY puts the highest number sold at the top, with names breaking a tie."
+         ]
+        ],
+        "from": "SELECT p.Name AS Part,",
+        "to": "ORDER BY Sold DESC, Part;",
+        "text": "SELECT p.Name AS Part,\n       ISNULL(SUM(ps.Quantity), 0) AS Sold,\n       ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income\nFROM Part p\nLEFT JOIN PartSale ps\n       ON ps.PartID = p.PartID\n      AND ps.Status = 'Sold'\n      AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate AND @ToDate\nGROUP BY p.PartID, p.Name\nORDER BY Sold DESC, Part;",
+        "partLines": [
+         [
+          1,
+          3,
+          "Three columns",
+          "The part's name, how many were sold, and the money they made, each sum wrapped in ISNULL so that a part with no sales shows 0."
+         ],
+         [
+          4,
+          8,
+          "Every part, with its matching sales",
+          "LEFT JOIN keeps every part. The three tests after ON pick the sales that count: the right part, still marked Sold, and sold between the dates."
+         ],
+         [
+          9,
+          10,
+          "One row per part, best seller first",
+          "GROUP BY squashes each part's sales into one row, and ORDER BY puts the highest number sold at the top, with names breaking a tie."
+         ]
+        ]
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "Six rows instead of twelve",
+         "a": "The parts with no sales have been thrown away. Check that the join reads LEFT JOIN, and that all three tests sit after ON and not in a WHERE."
+        },
+        {
+         "q": "'Column 'Part.Name' is invalid in the select list'",
+         "a": "The GROUP BY is missing p.Name. Every column in the SELECT that is not inside a SUM must be listed in the GROUP BY."
+        },
+        {
+         "q": "The Sold column is empty for some parts",
+         "a": "The ISNULL round the SUM is missing. A part with no sales has nothing to add up, and ISNULL turns that empty answer into 0."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "The report code and the one mistake",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what an exception is, then type the one class this chapter writes from nothing.",
+     "blocks": [
+      {
+       "p": "A report can be asked one impossible thing: a From date after the To date. The form could check the two boxes itself, but the check belongs with the data code, because every report needs it and the form should not have to remember. So the data class throws an exception. An exception is an object that a method throws when it cannot carry on, carrying a sentence that says why. The method that threw it stops at once, and the sentence travels up to whoever called it, until a catch takes it. The one class you write from nothing in Visual Studio 2019 is that exception."
+      },
+      {
+       "p": "The first line of the class ends with a colon and the word Exception. The colon means is a kind of: InvalidDateRangeException is a kind of Exception, and gets everything an Exception already has, such as its Message. The constructor passes its sentence to base, which is the Exception underneath, so the sentence becomes the Message. The form in the next stage catches this class by its name, so nothing else is caught by mistake."
+      },
+      {
+       "code": {
+        "id": "9.6-exception",
+        "kind": "type",
+        "lang": "cs",
+        "title": "InvalidDateRangeException.cs: the whole class",
+        "src": "cs:InvalidDateRangeException.cs",
+        "parts": [
+         [
+          "using System;",
+          "using System;",
+          "The one using line",
+          "Exception and DateTime both live in System, so that is the only using line this file needs."
+         ],
+         [
+          "namespace BikeShop",
+          "{",
+          "The namespace: the project itself, not a folder",
+          "This file sits at the top of the project, beside Program.cs, so its namespace is BikeShop with no folder name after it. The form and the data class can both reach it."
+         ],
+         [
+          "public class InvalidDateRangeException : Exception",
+          "{",
+          "The class, and what the colon means",
+          "This is a class of its own, so that the form can catch this mistake by name. The colon and Exception mean this class is a kind of Exception: it can be thrown, caught, and asked for its Message."
+         ],
+         [
+          "public DateTime FromDate { get; set; }",
+          "public DateTime ToDate { get; set; }",
+          "Two properties that remember the dates",
+          "The two dates that caused the problem are kept, so that whoever catches the exception can read them as dates, not only as words in a sentence."
+         ],
+         [
+          "public InvalidDateRangeException(DateTime fromDate, DateTime toDate)",
+          "\"). Choose a From date on or before the To date.\")",
+          "The constructor, and base",
+          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2026, so the sentence reads like English."
+         ],
+         [
+          "FromDate = fromDate;",
+          "$end",
+          "Keep the two dates",
+          "The two dates are copied into the properties. The closing braces end the constructor, the class and the namespace."
+         ]
+        ],
+        "why": "This is the only class in the guide that you type from nothing. It is a short file, and every part of it is a shape you will use again: a class that is a kind of another class, two properties, and a constructor that hands a sentence to base.",
+        "text": "using System;\n\nnamespace BikeShop\n{\n    // The one mistake a report can be asked to make: a From date after the\n    // To date. It is a class of its own so the report form can catch this\n    // mistake by name and nothing else.\n    public class InvalidDateRangeException : Exception\n    {\n        public DateTime FromDate { get; set; }\n        public DateTime ToDate { get; set; }\n\n        public InvalidDateRangeException(DateTime fromDate, DateTime toDate)\n            : base(\"The From date (\" + fromDate.ToString(\"d MMM yyyy\")\n                  + \") is after the To date (\" + toDate.ToString(\"d MMM yyyy\")\n                  + \"). Choose a From date on or before the To date.\")\n        {\n            FromDate = fromDate;\n            ToDate = toDate;\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          1,
+          "The one using line",
+          "Exception and DateTime both live in System, so that is the only using line this file needs."
+         ],
+         [
+          3,
+          4,
+          "The namespace: the project itself, not a folder",
+          "This file sits at the top of the project, beside Program.cs, so its namespace is BikeShop with no folder name after it. The form and the data class can both reach it."
+         ],
+         [
+          8,
+          9,
+          "The class, and what the colon means",
+          "This is a class of its own, so that the form can catch this mistake by name. The colon and Exception mean this class is a kind of Exception: it can be thrown, caught, and asked for its Message."
+         ],
+         [
+          10,
+          11,
+          "Two properties that remember the dates",
+          "The two dates that caused the problem are kept, so that whoever catches the exception can read them as dates, not only as words in a sentence."
+         ],
+         [
+          13,
+          17,
+          "The constructor, and base",
+          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2026, so the sentence reads like English."
+         ],
+         [
+          18,
+          22,
+          "Keep the two dates",
+          "The two dates are copied into the properties. The closing braces end the constructor, the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.6.1",
+         "do": "In Solution Explorer, right-click the BikeShop project line, the one above the Data, Forms and Models folders, point at Add, and click Class….",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch09-vs-add-class-root.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the BikeShop project line right-clicked, above its Data, Forms and Models folders. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the project itself, not to a folder. The exception class sits at the top, beside Program.cs and Session.cs.",
+          "w": 842,
+          "h": 613,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 10,
+            "y": 7,
+            "say": "Right-click the BikeShop project line, the one above the Data, Forms and Models folders."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 38,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 20,
+            "y": 92,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.6.2",
+         "do": "In the Name box at the bottom, type InvalidDateRangeException.cs and press Add.",
+         "see": "A new file opens with an empty class in it, and its namespace line reads namespace BikeShop.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the middle and the Name box at the bottom holds the name of the new class.",
+          "cap": "Name the new class before you press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 91,
+            "say": "Type the name in the Name box, with .cs on the end."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 95,
+            "say": "Press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.6.3",
+         "do": "Click in the new file, press Ctrl and A together to select everything, and type the class above in its place, line by line, exactly as the block shows it.",
+         "see": "Your file matches the block, and there is no red wavy line anywhere.",
+         "wrong": [
+          [
+           "A red wavy line under Exception",
+           "The using System; line at the top is missing. Add it above the namespace line."
+          ],
+          [
+           "A red wavy line under base",
+           "The line that starts with a colon and base must come before the opening brace of the constructor, and the brackets after base must hold one piece of text, built with plus signs."
+          ]
+         ]
+        },
+        {
+         "id": "9.6.4",
+         "do": "Press F6 to build.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'The type or namespace name Exception could not be found'",
+           "The using System; line at the top is missing, or is spelled differently. Add it above the namespace line."
+          ],
+          [
+           "The namespace line reads BikeShop.Data or BikeShop.Forms",
+           "The class was added inside a folder. Delete it, and add it again by right-clicking the project line itself, the one above the folders."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the report data class.",
+     "blocks": [
+      {
+       "p": "One data class holds the five reports. Every method does the same two things: it runs CheckRange, and then it asks SQL Server for the table. CheckRange is where the exception is thrown. The word throw starts the exception on its way: the method stops at that line, and whoever called it gets the exception instead of a table. The dates go in with .Date on the end, which throws away the clock part, so that a report asked at four in the afternoon still includes the whole of the To day."
+      },
+      {
+       "code": {
+        "id": "9.6-reportdata",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Data/ReportData.cs: the five reports and the one check",
+        "src": "cs:Data/ReportData.cs",
+        "parts": [
+         [
+          "using System;",
+          "using System.Data;",
+          "The usings",
+          "System gives the file DateTime, and System.Data gives it DataTable, the table of rows that each report hands back."
+         ],
+         [
+          "namespace BikeShop.Data",
+          "public static class ReportData",
+          "The class",
+          "This is a static class in the Data folder, like the others: you write ReportData.Activity(…), and never make a copy of the class."
+         ],
+         [
+          "private static void CheckRange",
+          "throw new InvalidDateRangeException",
+          "CheckRange: the one mistake, caught before SQL Server is asked",
+          "private means only this class can call it. If the From date is after the To date, a new InvalidDateRangeException is made with the two dates and thrown. The method stops there, and so does the method that called it. If the dates are in order, nothing happens, and the report goes ahead."
+         ],
+         [
+          "public static DataTable MechanicWorkload",
+          "Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));",
+          "MechanicWorkload: check, then ask",
+          "The method runs CheckRange first. Then Db.GetTable runs the stored procedure with the two dates and hands back a DataTable, which the form puts straight into its grid. It is GetTable and not Run, because a report has no @Message."
+         ],
+         [
+          "public static DataTable Income",
+          "Db.P(\"@FromDate\"",
+          "Income",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_Income."
+         ],
+         [
+          "public static DataTable Activity",
+          "Db.P(\"@FromDate\"",
+          "Activity",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_Activity."
+         ],
+         [
+          "public static DataTable PopularServices",
+          "Db.P(\"@FromDate\"",
+          "PopularServices",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_PopularServices."
+         ],
+         [
+          "public static DataTable PopularParts",
+          "$end",
+          "PopularParts, and the end of the class",
+          "This method uses the same two lines as the others, and it calls usp_Report_PopularParts, the stored procedure you wrote yourself. The two closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System;\nusing System.Data;\n\nnamespace BikeShop.Data\n{\n    public static class ReportData\n    {\n        // Every report starts with the same check. A From date after the To\n        // date is refused before SQL Server is asked anything.\n        private static void CheckRange(DateTime fromDate, DateTime toDate)\n        {\n            if (fromDate.Date > toDate.Date)\n            {\n                throw new InvalidDateRangeException(fromDate.Date, toDate.Date);\n            }\n        }\n\n        public static DataTable MechanicWorkload(DateTime fromDate,\n            DateTime toDate)\n        {\n            CheckRange(fromDate, toDate);\n            return Db.GetTable(\"usp_Report_MechanicWorkload\",\n                Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));\n        }\n\n        public static DataTable Income(DateTime fromDate, DateTime toDate)\n        {\n            CheckRange(fromDate, toDate);\n            return Db.GetTable(\"usp_Report_Income\",\n                Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));\n        }\n\n        public static DataTable Activity(DateTime fromDate, DateTime toDate)\n        {\n            CheckRange(fromDate, toDate);\n            return Db.GetTable(\"usp_Report_Activity\",\n                Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));\n        }\n\n        public static DataTable PopularServices(DateTime fromDate,\n            DateTime toDate)\n        {\n            CheckRange(fromDate, toDate);\n            return Db.GetTable(\"usp_Report_PopularServices\",\n                Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));\n        }\n\n        public static DataTable PopularParts(DateTime fromDate,\n            DateTime toDate)\n        {\n            CheckRange(fromDate, toDate);\n            return Db.GetTable(\"usp_Report_PopularParts\",\n                Db.P(\"@FromDate\", fromDate.Date), Db.P(\"@ToDate\", toDate.Date));\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          2,
+          "The usings",
+          "System gives the file DateTime, and System.Data gives it DataTable, the table of rows that each report hands back."
+         ],
+         [
+          4,
+          7,
+          "The class",
+          "This is a static class in the Data folder, like the others: you write ReportData.Activity(…), and never make a copy of the class."
+         ],
+         [
+          10,
+          16,
+          "CheckRange: the one mistake, caught before SQL Server is asked",
+          "private means only this class can call it. If the From date is after the To date, a new InvalidDateRangeException is made with the two dates and thrown. The method stops there, and so does the method that called it. If the dates are in order, nothing happens, and the report goes ahead."
+         ],
+         [
+          18,
+          24,
+          "MechanicWorkload: check, then ask",
+          "The method runs CheckRange first. Then Db.GetTable runs the stored procedure with the two dates and hands back a DataTable, which the form puts straight into its grid. It is GetTable and not Run, because a report has no @Message."
+         ],
+         [
+          26,
+          31,
+          "Income",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_Income."
+         ],
+         [
+          33,
+          38,
+          "Activity",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_Activity."
+         ],
+         [
+          40,
+          46,
+          "PopularServices",
+          "This method uses the same two lines as MechanicWorkload, and it calls usp_Report_PopularServices."
+         ],
+         [
+          48,
+          56,
+          "PopularParts, and the end of the class",
+          "This method uses the same two lines as the others, and it calls usp_Report_PopularParts, the stored procedure you wrote yourself. The two closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.6.5",
+         "do": "In Solution Explorer, right-click the Data folder, point at Add, and click Class….",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Data folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Data folder. This picture was taken in the finished project, so Solution Explorer lists files you have not made yet.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 28,
+            "say": "Right-click the Data folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 7,
+            "y": 70,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.6.6",
+         "do": "In the Name box at the bottom, type ReportData.cs and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the middle and the Name box at the bottom holds the name of the new class.",
+          "cap": "Name the new class before you press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 91,
+            "say": "Type the name in the Name box, with .cs on the end."
+           },
+           {
+            "n": 2,
+            "x": 86,
+            "y": 95,
+            "say": "Press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.6.7",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.6-reportdata",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.6.8",
+         "do": "Click in the new file and press Ctrl and A together to select everything.",
+         "see": "Everything in the new file is highlighted."
+        },
+        {
+         "id": "9.6.9",
+         "do": "Press Ctrl and V together to paste the copied class over it.",
+         "see": "The file holds the ReportData class, starting with the using lines."
+        },
+        {
+         "id": "9.6.10",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'The type or namespace name InvalidDateRangeException could not be found'",
+           "The class from the last screen is missing, is spelled differently, or has the wrong namespace. Open it and check that its namespace line reads namespace BikeShop."
+          ],
+          [
+           "'The name Db does not exist'",
+           "Your helper class from chapter 5 is called something else, or is in a different namespace. Match the name you used."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "The report form",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Add the report form and set its controls.",
+     "blocks": [
+      {
+       "p": "One form shows all five reports. Along the top: a list of the five report names, a From date, a To date and a Run button. Under them, a grid, a label for the one-line summary, and a Copy to clipboard button that is switched off until a report has rows. Add it in Visual Studio 2019 the same way as the forms in chapter 8."
+      },
+      {
+       "steps": [
+        {
+         "id": "9.7.1",
+         "do": "Right-click the Forms folder in Solution Explorer, point at Add, and click Form (Windows Forms)…",
+         "see": "The Add New Item window opens with Form (Windows Forms) selected.",
+         "img": {
+          "img": "img/ch07-vs-add-form.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Forms folder right-clicked. The menu shows Add, and its small menu shows Form (Windows Forms)…",
+          "cap": "Adding a form to the Forms folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 29,
+            "say": "Right-click the Forms folder."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 13,
+            "y": 58,
+            "say": "Click Form (Windows Forms)…, type the name, press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.7.2",
+         "do": "Type frmReports in the Name box and press Add.",
+         "see": "An empty form opens in the designer."
+        },
+        {
+         "id": "9.7.3",
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right.",
+         "img": {
+          "img": "img/ch07-vs-designer.png",
+          "alt": "Visual Studio 2019 with the form designer in the middle, the Toolbox open on the left and the Properties window on the right.",
+          "cap": "The three parts of the designer: the Toolbox you drag from, the form you drop on, the Properties window where you name and set each control.",
+          "w": 900,
+          "h": 600,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 12,
+            "y": 46,
+            "say": "The Toolbox. Drag a control from here on to the form."
+           },
+           {
+            "n": 2,
+            "x": 56,
+            "y": 49,
+            "say": "The form. Drop the control where the picture shows it."
+           },
+           {
+            "n": 3,
+            "x": 93,
+            "y": 54,
+            "say": "The Properties window. Set Name first, then the rest of the row."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+      },
+      {
+       "p": "For the report list, the Items row needs five lines of text. Click on cboReport, find Items in the Properties window, click the three dots beside it, and type one report name per line in the window that opens, exactly as the row shows them."
+      },
+      {
+       "controls": {
+        "form": "frmReports",
+        "img": {
+         "img": "img/ch09-frmReports-design.png",
+         "alt": "frmReports in the Visual Studio 2019 designer: a report list, two date boxes and a Run button along the top, a large empty grid, a label under the grid, and the Copy to clipboard and Close buttons at the bottom right.",
+         "cap": "frmReports in the designer. Yours should look like this before you add any code.",
+         "w": 960,
+         "h": 651,
+         "missing": false,
+         "marks": [
+          {
+           "n": 1,
+           "x": 24,
+           "y": 9,
+           "say": "The report list, cboReport, with its five report names."
+          },
+          {
+           "n": 2,
+           "x": 62,
+           "y": 3,
+           "say": "The two date boxes, dtpFrom and dtpTo, with Run beside them."
+          },
+          {
+           "n": 3,
+           "x": 50,
+           "y": 50,
+           "say": "The grid, dgvReport."
+          },
+          {
+           "n": 4,
+           "x": 30,
+           "y": 89,
+           "say": "The label under the grid, lblTotal, where the one-line summary goes."
+          },
+          {
+           "n": 5,
+           "x": 68,
+           "y": 94,
+           "say": "Copy to clipboard, switched off until a report has rows, and Close."
+          }
+         ]
+        },
+        "title": "Reports",
+        "size": [
+         960,
+         620
+        ],
+        "border": "FixedSingle",
+        "acceptButton": null,
+        "cancelButton": null,
+        "formNote": "Five reports across several tables for a date range, each with a one-line summary and a Copy button for the user guide and test evidence.",
+        "rows": [
+         {
+          "toolbox": "Label",
+          "name": "lblReport",
+          "settings": [
+           "Text = Report"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "ComboBox",
+          "name": "cboReport",
+          "settings": [
+           "DropDownStyle = DropDownList",
+           "Items = Mechanic workload / Income by day and source / How many bookings, hires, sales and orders / Most popular services / Most popular parts"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblFrom",
+          "settings": [
+           "Text = From"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "DateTimePicker",
+          "name": "dtpFrom",
+          "settings": [
+           "CustomFormat = dd/MM/yyyy",
+           "Format = Custom"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblTo",
+          "settings": [
+           "Text = to"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "DateTimePicker",
+          "name": "dtpTo",
+          "settings": [
+           "CustomFormat = dd/MM/yyyy",
+           "Format = Custom"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnRun",
+          "settings": [
+           "Text = Run"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnRun_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         },
+         {
+          "toolbox": "DataGridView",
+          "name": "dgvReport",
+          "settings": [
+           "the grid settings (chapter 6)"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblTotal",
+          "settings": [],
+          "then": [],
+          "note": "\"Services listed: 12. Most popular: Full service, booked 5 times.\""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnCopy",
+          "settings": [
+           "Text = Copy to clipboard",
+           "Enabled = False"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnCopy_Click` for you; the code goes inside it."
+          ],
+          "note": "Copies the grid with its headings, ready for Word or Excel."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnClose",
+          "settings": [
+           "Text = Close"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Put the code behind the report form.",
+     "blocks": [
+      {
+       "p": "Read the file, then put it in. The Run button asks the data class for one of the five tables, chosen by which report is picked, inside a try. If the data class throws the date exception, the catch underneath shows its sentence, puts the cursor back in the From box, and stops. If not, the grid is filled and ShowTotal writes the one-line summary. Copy to clipboard copies the grid with its headings, ready for your user guide and your test evidence."
+      },
+      {
+       "code": {
+        "id": "9.7-form",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Forms/frmReports.cs: the whole file",
+        "src": "cs:Forms/frmReports.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Models;",
+          "The usings",
+          "These lines bring in the tools this form needs: Windows Forms for the window itself, System.Data for the table that fills the grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          "namespace BikeShop.Forms",
+          "InitializeComponent();",
+          "The form’s class and its constructor",
+          "partial means the designer keeps the other half of this class, the controls you dragged, in its own file. The constructor builds those controls."
+         ],
+         [
+          "private void frmReports_Load",
+          "lblTotal.Text = \"\";",
+          "When the form loads",
+          "The first report is picked in the list, the dates are set to the last thirty days, and the summary label starts empty."
+         ],
+         [
+          "#region Run",
+          "DataTable table;",
+          "The Run button starts",
+          "The Run button's method starts by making one box, called table, to hold whichever report comes back. The #region line only folds the code up in Visual Studio 2019."
+         ],
+         [
+          "try",
+          "dtpTo.Value);",
+          "try, and the first choice",
+          "Everything inside try is watched. If any line in it throws an exception, the code jumps straight to catch. SelectedIndex is the position of the picked report in the list, counting from 0, so 0 is Mechanic workload."
+         ],
+         [
+          "else if (cboReport.SelectedIndex == 1)",
+          "$last dtpTo.Value);",
+          "The other four choices",
+          "There is one else if for each of the next three reports, in the order of the list: 1 is income, 2 is activity and 3 is popular services. A plain else covers popular parts. Each one asks the data class for its table with the two dates from the boxes."
+         ],
+         [
+          "catch (InvalidDateRangeException ex)",
+          "return;",
+          "catch: the one mistake, by name",
+          "This catch takes only InvalidDateRangeException, so a different problem is not hidden. Msg.Problem shows the sentence that the exception carries. The cursor goes back to the From box, and return leaves the method, so the grid is left as it was."
+         ],
+         [
+          "dgvReport.DataSource = table;",
+          "btnCopy.Enabled = dgvReport.Rows.Count > 0;",
+          "Show the answer",
+          "The table goes into the grid, and Grid.Tidy from chapter 6 sizes the columns. ShowTotal writes the sentence under the grid. Copy to clipboard is switched on only when there is at least one row to copy."
+         ],
+         [
+          "private void ShowTotal()",
+          "lblTotal.Text = \"Nothing in those dates.\";",
+          "ShowTotal: no rows",
+          "n is the number of rows in the grid. When it is 0, every report shows the same sentence, because an empty grid with no sentence looks like a fault."
+         ],
+         [
+          "else if (cboReport.SelectedIndex == 0)",
+          "$last SumColumn(\"Income\")",
+          "Mechanic workload, and income: a count and a sum",
+          "The first two reports both have an Income column, so each sentence gives the number of rows and the column added up by SumColumn. ToString with #,##0.00 writes money with two decimal places and a comma for thousands."
+         ],
+         [
+          "else if (cboReport.SelectedIndex == 2)",
+          "\"Each line counts one kind of thing in these dates.\";",
+          "Activity: one fixed sentence",
+          "The activity report is five counts of different things, so there is nothing sensible to add up. The sentence says what the grid is."
+         ],
+         [
+          "else if (cboReport.SelectedIndex == 3)",
+          "+ \", booked \" + Times(booked) + \".\";",
+          "Services: the top row is the most popular",
+          "The report is sorted most booked first, so row 0 is the answer. Its Bookings cell is read as a number. If it is 0, nothing was booked at all, and the sentence says so. Otherwise the sentence names the service and how many times, with Times turning 1 into once and 2 into twice."
+         ],
+         [
+          "else",
+          "+ \", \" + sold + \" sold.\";",
+          "Parts: the same shape",
+          "The same idea for parts: the top row's Sold cell decides between None were sold and Best seller, and the sentence names the part."
+         ],
+         [
+          "private decimal SumColumn(string column)",
+          "return total;",
+          "SumColumn: add up one column",
+          "This method loops over every row of the grid, reading one named cell as a decimal and adding it to a running total. The column name is passed in, so the same method serves both reports that need it."
+         ],
+         [
+          "private string Times(int n)",
+          "#endregion",
+          "Times: once, twice, or a number",
+          "This method gives three ways to say how many times, so the sentence reads like English. The #endregion line closes the fold that #region Run opened."
+         ],
+         [
+          "#region Copy",
+          "#endregion",
+          "The Copy button",
+          "The grid is told to include its headings when copied. Every cell is selected, the selection is turned into clipboard content, and if there is any it goes on the clipboard. The selection is cleared again, and a short message says what to do next."
+         ],
+         [
+          "private void btnClose_Click",
+          "$end",
+          "Close",
+          "Close shuts the form. The two closing braces end the class and the namespace."
+         ]
+        ],
+        "text": "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Drawing;\nusing System.Windows.Forms;\nusing BikeShop.Data;\nusing BikeShop.Models;\n\nnamespace BikeShop.Forms\n{\n    public partial class frmReports : Form\n    {\n        public frmReports()\n        {\n            InitializeComponent();\n        }\n\n        private void frmReports_Load(object sender, EventArgs e)\n        {\n            cboReport.SelectedIndex = 0;\n            dtpFrom.Value = DateTime.Today.AddDays(-30);\n            dtpTo.Value = DateTime.Today;\n            lblTotal.Text = \"\";\n        }\n\n        #region Run\n        private void btnRun_Click(object sender, EventArgs e)\n        {\n            DataTable table;\n            try\n            {\n                if (cboReport.SelectedIndex == 0)\n                {\n                    table = ReportData.MechanicWorkload(dtpFrom.Value,\n                        dtpTo.Value);\n                }\n                else if (cboReport.SelectedIndex == 1)\n                {\n                    table = ReportData.Income(dtpFrom.Value, dtpTo.Value);\n                }\n                else if (cboReport.SelectedIndex == 2)\n                {\n                    table = ReportData.Activity(dtpFrom.Value, dtpTo.Value);\n                }\n                else if (cboReport.SelectedIndex == 3)\n                {\n                    table = ReportData.PopularServices(dtpFrom.Value,\n                        dtpTo.Value);\n                }\n                else\n                {\n                    table = ReportData.PopularParts(dtpFrom.Value,\n                        dtpTo.Value);\n                }\n            }\n            catch (InvalidDateRangeException ex)\n            {\n                // The From date is after the To date: say so, leave the grid\n                // as it was, and put the cursor back in From.\n                Msg.Problem(ex.Message);\n                dtpFrom.Focus();\n                return;\n            }\n\n            dgvReport.DataSource = table;\n            Grid.Tidy(dgvReport);\n            ShowTotal();\n            btnCopy.Enabled = dgvReport.Rows.Count > 0;\n        }\n\n        // One plain sentence under the grid, so the answer to the report's\n        // question is on screen, not left to a calculator.\n        private void ShowTotal()\n        {\n            int n = dgvReport.Rows.Count;\n            if (n == 0)\n            {\n                lblTotal.Text = \"Nothing in those dates.\";\n            }\n            else if (cboReport.SelectedIndex == 0)\n            {\n                lblTotal.Text = \"Mechanics listed: \" + n\n                    + \". Workshop income in these dates: £\"\n                    + SumColumn(\"Income\").ToString(\"#,##0.00\") + \".\";\n            }\n            else if (cboReport.SelectedIndex == 1)\n            {\n                lblTotal.Text = \"Lines listed: \" + n\n                    + \". Total income in these dates: £\"\n                    + SumColumn(\"Income\").ToString(\"#,##0.00\") + \".\";\n            }\n            else if (cboReport.SelectedIndex == 2)\n            {\n                lblTotal.Text =\n                    \"Each line counts one kind of thing in these dates.\";\n            }\n            else if (cboReport.SelectedIndex == 3)\n            {\n                DataGridViewRow top = dgvReport.Rows[0];\n                int booked = Convert.ToInt32(top.Cells[\"Bookings\"].Value);\n                if (booked == 0)\n                {\n                    lblTotal.Text = \"Services listed: \" + n\n                        + \". None were booked in these dates.\";\n                }\n                else\n                {\n                    lblTotal.Text = \"Services listed: \" + n\n                        + \". Most popular: \" + top.Cells[\"Service\"].Value\n                        + \", booked \" + Times(booked) + \".\";\n                }\n            }\n            else\n            {\n                DataGridViewRow top = dgvReport.Rows[0];\n                int sold = Convert.ToInt32(top.Cells[\"Sold\"].Value);\n                if (sold == 0)\n                {\n                    lblTotal.Text = \"Parts listed: \" + n\n                        + \". None were sold in these dates.\";\n                }\n                else\n                {\n                    lblTotal.Text = \"Parts listed: \" + n\n                        + \". Best seller: \" + top.Cells[\"Part\"].Value\n                        + \", \" + sold + \" sold.\";\n                }\n            }\n        }\n\n        // Adds up one column of the grid.\n        private decimal SumColumn(string column)\n        {\n            decimal total = 0;\n            foreach (DataGridViewRow row in dgvReport.Rows)\n            {\n                total = total + Convert.ToDecimal(row.Cells[column].Value);\n            }\n            return total;\n        }\n\n        // 1 becomes \"once\", 2 becomes \"twice\", anything else \"5 times\".\n        private string Times(int n)\n        {\n            if (n == 1)\n            {\n                return \"once\";\n            }\n            else if (n == 2)\n            {\n                return \"twice\";\n            }\n            else\n            {\n                return n + \" times\";\n            }\n        }\n        #endregion\n\n        #region Copy\n        // Copies the grid with its headers, ready to paste into Word or Excel\n        // for the user guide or the test evidence.\n        private void btnCopy_Click(object sender, EventArgs e)\n        {\n            dgvReport.ClipboardCopyMode =\n                DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;\n            dgvReport.SelectAll();\n            DataObject content = dgvReport.GetClipboardContent();\n            if (content != null)\n            {\n                Clipboard.SetDataObject(content);\n            }\n            dgvReport.ClearSelection();\n            Msg.Info(\"Copied. Paste it into Word or Excel.\");\n        }\n        #endregion\n\n        private void btnClose_Click(object sender, EventArgs e)\n        {\n            Close();\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          7,
+          "The usings",
+          "These lines bring in the tools this form needs: Windows Forms for the window itself, System.Data for the table that fills the grid, System.Drawing for colours, and your own Data and Models folders."
+         ],
+         [
+          9,
+          16,
+          "The form’s class and its constructor",
+          "partial means the designer keeps the other half of this class, the controls you dragged, in its own file. The constructor builds those controls."
+         ],
+         [
+          18,
+          24,
+          "When the form loads",
+          "The first report is picked in the list, the dates are set to the last thirty days, and the summary label starts empty."
+         ],
+         [
+          26,
+          29,
+          "The Run button starts",
+          "The Run button's method starts by making one box, called table, to hold whichever report comes back. The #region line only folds the code up in Visual Studio 2019."
+         ],
+         [
+          30,
+          36,
+          "try, and the first choice",
+          "Everything inside try is watched. If any line in it throws an exception, the code jumps straight to catch. SelectedIndex is the position of the picked report in the list, counting from 0, so 0 is Mechanic workload."
+         ],
+         [
+          37,
+          55,
+          "The other four choices",
+          "There is one else if for each of the next three reports, in the order of the list: 1 is income, 2 is activity and 3 is popular services. A plain else covers popular parts. Each one asks the data class for its table with the two dates from the boxes."
+         ],
+         [
+          56,
+          63,
+          "catch: the one mistake, by name",
+          "This catch takes only InvalidDateRangeException, so a different problem is not hidden. Msg.Problem shows the sentence that the exception carries. The cursor goes back to the From box, and return leaves the method, so the grid is left as it was."
+         ],
+         [
+          65,
+          69,
+          "Show the answer",
+          "The table goes into the grid, and Grid.Tidy from chapter 6 sizes the columns. ShowTotal writes the sentence under the grid. Copy to clipboard is switched on only when there is at least one row to copy."
+         ],
+         [
+          73,
+          79,
+          "ShowTotal: no rows",
+          "n is the number of rows in the grid. When it is 0, every report shows the same sentence, because an empty grid with no sentence looks like a fault."
+         ],
+         [
+          80,
+          91,
+          "Mechanic workload, and income: a count and a sum",
+          "The first two reports both have an Income column, so each sentence gives the number of rows and the column added up by SumColumn. ToString with #,##0.00 writes money with two decimal places and a comma for thousands."
+         ],
+         [
+          92,
+          96,
+          "Activity: one fixed sentence",
+          "The activity report is five counts of different things, so there is nothing sensible to add up. The sentence says what the grid is."
+         ],
+         [
+          97,
+          112,
+          "Services: the top row is the most popular",
+          "The report is sorted most booked first, so row 0 is the answer. Its Bookings cell is read as a number. If it is 0, nothing was booked at all, and the sentence says so. Otherwise the sentence names the service and how many times, with Times turning 1 into once and 2 into twice."
+         ],
+         [
+          113,
+          129,
+          "Parts: the same shape",
+          "The same idea for parts: the top row's Sold cell decides between None were sold and Best seller, and the sentence names the part."
+         ],
+         [
+          132,
+          140,
+          "SumColumn: add up one column",
+          "This method loops over every row of the grid, reading one named cell as a decimal and adding it to a running total. The column name is passed in, so the same method serves both reports that need it."
+         ],
+         [
+          143,
+          158,
+          "Times: once, twice, or a number",
+          "This method gives three ways to say how many times, so the sentence reads like English. The #endregion line closes the fold that #region Run opened."
+         ],
+         [
+          160,
+          176,
+          "The Copy button",
+          "The grid is told to include its headings when copied. Every cell is selected, the selection is turned into clipboard content, and if there is any it goes on the clipboard. The selection is cleared again, and a short message says what to do next."
+         ],
+         [
+          178,
+          183,
+          "Close",
+          "Close shuts the form. The two closing braces end the class and the namespace."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "9.7.4",
+         "do": "With frmReports open in the designer, press F7 to see its code.",
+         "see": "The code tab for the form comes to the front.",
+         "img": {
+          "img": "img/ch07-vs-f7-code.png",
+          "alt": "The code behind a form in Visual Studio 2019, with the designer tab beside it.",
+          "cap": "F7 shows the code behind the form that is open in the designer. Shift and F7 go back to the designer.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 4,
+            "say": "The code tab is in front."
+           },
+           {
+            "n": 2,
+            "x": 22,
+            "y": 93,
+            "say": "Select everything here before you paste over it."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.7.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "9.7-form",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "9.7.6",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "9.7.7",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        },
+        {
+         "id": "9.7.8",
+         "do": "Press F6 to build the project.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio 2019 reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'frmReports' does not contain a definition for 'button1_Click' (or another old name)",
+           "The event was made before the control was given its Name, so the designer still calls the method by its old name. Double-click the error: Visual Studio 2019 opens frmReports.Designer.cs on the line that hooks up the event. At the end of that line, change the old name (such as button1_Click) to the control's Name followed by _Click: btnRun_Click if the line starts with this.btnRun, or frmReports_Load if the line starts with this.Load. Then press F6 to build again."
+          ],
+          [
+           "'The name Grid does not exist' or 'The name Msg does not exist'",
+           "Your grid and message helpers from chapter 6 are called something else, or are in a different namespace. Match the names you used."
+          ],
+          [
+           "'The name ReportData does not exist'",
+           "The data class from stage 6 is missing or named differently. Check that Data/ReportData.cs is in Solution Explorer and that its class is called ReportData."
+          ],
+          [
+           "'The type or namespace name InvalidDateRangeException could not be found'",
+           "The exception class from stage 6 has the wrong namespace. Open it and check that its namespace line reads namespace BikeShop."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch07-vs-events.png",
+        "alt": "The Properties window in Visual Studio 2019 with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "w": 520,
+        "h": 520,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 17,
+          "y": 13,
+          "say": "Press the lightning bolt."
+         },
+         {
+          "n": 2,
+          "x": 63,
+          "y": 36,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, after Leave."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Run the program and open the reports.",
+     "blocks": [
+      {
+       "p": "The Reports button has been on your main menu since chapter 5, switched on for a manager only. It opens this form. Sign in as the manager, open the reports, set the dates to the whole of this year, and run the first one."
+      },
+      {
+       "steps": [
+        {
+         "id": "9.7.9",
+         "do": "Press F5 in Visual Studio 2019 to run your program.",
+         "see": "The sign-in window opens.",
+         "img": {
+          "img": "img/sh-vs-run.png",
+          "alt": "The Visual Studio 2019 toolbar with the green Start button.",
+          "cap": "Start runs your program. Close the program window to come back to Visual Studio 2019.",
+          "w": 784,
+          "h": 61,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 61,
+            "y": 75,
+            "say": "Click Start, or press F5."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.7.10",
+         "do": "Sign in with the username siobhan and the password canal01.",
+         "see": "The main menu opens with Siobhán Rooney at the top, and the Reports button is switched on.",
+         "img": {
+          "img": "img/sh-app-login.png",
+          "alt": "The BikeShop sign-in window with the username siobhan typed and the password hidden as dots.",
+          "cap": "The sign-in window. Siobhán Rooney is the manager, and only a manager can open the reports.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 58,
+            "y": 46,
+            "say": "Type the username siobhan."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 55,
+            "say": "Type the password canal01."
+           },
+           {
+            "n": 3,
+            "x": 68,
+            "y": 76,
+            "say": "Click Sign in."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.7.11",
+         "do": "Press the Reports button on the main menu.",
+         "see": "The Reports screen opens with Mechanic workload picked in the list, the dates set to the last thirty days, an empty grid, and Copy to clipboard greyed out.",
+         "img": {
+          "img": "img/ch09-reports-list.png",
+          "alt": "The Reports screen of the running program with the report list dropped open, showing Mechanic workload, Income by day and source, How many bookings, hires, sales and orders, Most popular services, and Most popular parts.",
+          "cap": "The five questions the shop asks, in one list. Pick one, choose two dates, and press Run.",
+          "w": 960,
+          "h": 620,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 26,
+            "y": 18,
+            "say": "The five reports. Each one is one stored procedure."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 10,
+            "say": "The From and To dates. The form starts with the last thirty days."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.7.12",
+         "do": "Click on the day number in the From box and type 01. Press the right arrow key and type 01. Press the right arrow key again and type 2026.",
+         "see": "The From box reads 01/01/2026. The right arrow key moves you from the day to the month, then to the year."
+        },
+        {
+         "id": "9.7.13",
+         "do": "Click on the day number in the To box and type 31. Press the right arrow key and type 12. Press the right arrow key again and type 2026.",
+         "see": "The To box reads 31/12/2026."
+        },
+        {
+         "id": "9.7.14",
+         "do": "Press the Run button beside the dates.",
+         "see": "The grid shows four rows, Conor Walsh at the top with 113.00, and under it the sentence: Mechanics listed: 4. Workshop income in these dates: £233.00. Copy to clipboard is now switched on.",
+         "wrong": [
+          [
+           "'Reports (manager only)' and the button is greyed out",
+           "You are signed in as someone who is not a manager. Close the program, run it again, and sign in as siobhan."
+          ],
+          [
+           "A message that starts: Could not find stored procedure",
+           "The stored procedure named in the message is not in your database. Go back to its stage, select its lines in your script, and press F5."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Prove it: the report table",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Run each report once for this year.",
+     "blocks": [
+      {
+       "p": "With the dates still set to 1 Jan 2026 and 31 Dec 2026, run the other four reports. Each one gets its own sentence under the grid. The numbers below are for the sample data as the whole-script run in stage 2 left it; if you sold or refunded parts since, your parts numbers will differ, and that is right."
+      },
+      {
+       "steps": [
+        {
+         "id": "9.8.1",
+         "do": "Pick Income by day and source in the list, and press Run.",
+         "see": "Fourteen rows, oldest day first, with Workshop, Bike hire or Parts in the Source column, and the sentence: Lines listed: 14. Total income in these dates: £483.50."
+        },
+        {
+         "id": "9.8.2",
+         "do": "Pick How many bookings, hires, sales and orders in the list, and press Run.",
+         "see": "Five rows: Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3. The sentence reads: Each line counts one kind of thing in these dates.",
+         "img": {
+          "img": "img/ch09-activity.png",
+          "alt": "The Reports screen showing How many bookings, hires, sales and orders for 1 Jan 2026 to 31 Dec 2026: five rows, Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3, and under the grid the sentence Each line counts one kind of thing in these dates.",
+          "cap": "The activity report for the year. Five counts from four tables in one grid.",
+          "w": 960,
+          "h": 620,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 24,
+            "say": "Five rows, one count each. The labels are the words in quotes in the stored procedure."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 88,
+            "say": "The sentence under the grid."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.8.3",
+         "do": "Pick Most popular services in the list, and press Run.",
+         "see": "Seven rows, Basic service at the top with 3 and Safety check at the bottom with 0, and the sentence: Services listed: 7. Most popular: Basic service, booked 3 times.",
+         "img": {
+          "img": "img/ch09-popular-services.png",
+          "alt": "The Reports screen showing Most popular services for the year: seven rows with Basic service and Full service at the top with 3 bookings each, Safety check at the bottom with 0, and the sentence Services listed: 7. Most popular: Basic service, booked 3 times.",
+          "cap": "Every service, most booked first. Safety check has no bookings this year and is still in the list, with 0.",
+          "w": 960,
+          "h": 620,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 15,
+            "y": 19,
+            "say": "The top row is the most popular, and the sentence names it."
+           },
+           {
+            "n": 2,
+            "x": 15,
+            "y": 39,
+            "say": "Safety check, with 0. A JOIN instead of a LEFT JOIN would lose this row."
+           }
+          ]
+         }
+        },
+        {
+         "id": "9.8.4",
+         "do": "Pick Most popular parts in the list, and press Run.",
+         "see": "Twelve rows, Brake cable at the top with 3 sold and £12.00, six parts with 0 at the bottom, and the sentence: Parts listed: 12. Best seller: Brake cable, 3 sold.",
+         "img": {
+          "img": "img/ch09-popular-parts.png",
+          "alt": "The Reports screen showing Most popular parts for the year: twelve rows with Brake cable at the top, 3 sold and £12.00, then Inner tube 700c, 3 sold and £18.00, six parts with 0 at the bottom, and the sentence Parts listed: 12. Best seller: Brake cable, 3 sold.",
+          "cap": "Every part, best seller first. The six parts nobody bought this year are still listed, with 0.",
+          "w": 960,
+          "h": 620,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 15,
+            "y": 21,
+            "say": "Brake cable and Inner tube 700c both sold 3. Names break the tie, so Brake cable is first."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 88,
+            "say": "The sentence names the top row."
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Tick the table: every report, the one mistake and the empty answer.",
+     "blocks": [
+      {
+       "p": "Every row below is a test the examiner would run. Four of them are the ones that matter most: the From date after the To date, which must be refused with a sentence and nothing else; two days with nothing in them, which must give an empty grid and a sentence, not an error; a service nobody booked, which must still be listed; and the LEFT JOIN taken out, which must lose that row, so that you know the LEFT is doing something. Do each one in your running program where it says, or in SQL Server Management Studio (SSMS) where it says, and tick it when you have seen the result."
+      },
+      {
+       "check": [
+        {
+         "id": "9.8.5",
+         "what": "Mechanic workload for the year",
+         "expect": "allowed",
+         "how": "Set the dates to 01/01/2026 and 31/12/2026, pick Mechanic workload, and press Run. You should see four rows, Conor Walsh first with 113.00 and Liam Doran last with zeros, and the sentence: Mechanics listed: 4. Workshop income in these dates: £233.00."
+        },
+        {
+         "id": "9.8.6",
+         "what": "Income by day and source for the year",
+         "expect": "allowed",
+         "how": "Fourteen rows. Sentence: Lines listed: 14. Total income in these dates: £483.50."
+        },
+        {
+         "id": "9.8.7",
+         "what": "How many bookings, hires, sales and orders for the year",
+         "expect": "allowed",
+         "how": "Five rows: 13, 1, 5, 11 and 3. Sentence: Each line counts one kind of thing in these dates."
+        },
+        {
+         "id": "9.8.8",
+         "what": "Most popular services for the year",
+         "expect": "allowed",
+         "how": "Seven rows. Sentence: Services listed: 7. Most popular: Basic service, booked 3 times."
+        },
+        {
+         "id": "9.8.9",
+         "what": "Most popular parts for the year",
+         "expect": "allowed",
+         "how": "Twelve rows. Sentence: Parts listed: 12. Best seller: Brake cable, 3 sold."
+        },
+        {
+         "id": "9.8.10",
+         "what": "The From date after the To date",
+         "expect": "control",
+         "how": "Set From to 31/12/2026 and To to 01/01/2026, any report, Run. Message: The From date (31 Dec 2026) is after the To date (1 Jan 2026). Choose a From date on or before the To date. Press OK: the grid still shows the last report, and the cursor is back in the From box."
+        },
+        {
+         "id": "9.8.11",
+         "what": "Two days with nothing in them",
+         "expect": "allowed",
+         "how": "Set From to 01/01/2000 and To to 02/01/2000, Income by day and source, Run. An empty grid with its headings, the sentence Nothing in those dates, and Copy to clipboard greyed out. No error."
+        },
+        {
+         "id": "9.8.12",
+         "what": "A service nobody booked still shows",
+         "expect": "allowed",
+         "how": "Keep the year 2000 dates, Most popular services, Run. Seven rows, every one with 0. Sentence: Services listed: 7. None were booked in these dates."
+        },
+        {
+         "id": "9.8.13",
+         "what": "A part nobody bought still shows",
+         "expect": "allowed",
+         "how": "Keep the year 2000 dates, Most popular parts, Run. Twelve rows, every one with 0 and 0.00. Sentence: Parts listed: 12. None were sold in these dates."
+        },
+        {
+         "id": "9.8.14",
+         "what": "Copy to clipboard pastes into Notepad",
+         "expect": "allowed",
+         "how": "Set the dates back to 01/01/2026 and 31/12/2026, pick Most popular services, press Run, press Copy to clipboard, and press OK on the message. Open Notepad and press Ctrl and V together. The first line is the headings Service, Bookings and Price, and seven rows follow."
+        },
+        {
+         "id": "9.8.15",
+         "what": "The LEFT JOIN taken out loses the service with no bookings",
+         "expect": "control",
+         "how": "Do this in four steps in SQL Server Management Studio (SSMS): (1) in your script, delete the word LEFT from usp_Report_PopularServices as in stage 5, select the lines from CREATE OR ALTER PROCEDURE down to GO, and press F5; (2) in your test tab, with the year 2000 dates, press F5 and check the Results tab has no rows at all; (3) in your script, type LEFT back, select the same lines and press F5; (4) in your test tab, press F5 again and check there are seven rows, each with 0."
+        },
+        {
+         "id": "9.8.16",
+         "what": "Counter staff cannot open the reports",
+         "expect": "control",
+         "how": "Close the program, run it again, and sign in as padraig with the password canal02. The button reads Reports (manager only) and is greyed out, so the money is for the manager's eyes only."
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch09-from-after-to.png",
+        "alt": "The Reports screen with From set to 31/12/2026 and To set to 01/01/2026, and a message box in front reading: The From date (31 Dec 2026) is after the To date (1 Jan 2026). Choose a From date on or before the To date.",
+        "cap": "The one mistake a report can be asked to make, caught before SQL Server is asked anything. The grid behind the message is unchanged.",
+        "w": 960,
+        "h": 620,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 53,
+          "y": 10,
+          "say": "From is after To."
+         },
+         {
+          "n": 2,
+          "x": 52,
+          "y": 54,
+          "say": "The sentence came from the exception class you typed in stage 6."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch09-nothing.png",
+        "alt": "The Reports screen showing Income by day and source for 1 Jan 2000 to 2 Jan 2000: an empty grid with only its headings, the sentence Nothing in those dates, and the Copy to clipboard button greyed out.",
+        "cap": "Two days in the year 2000, long before the shop opened. The report ran, found nothing, and said so. Copy to clipboard is off, because there is nothing to copy.",
+        "w": 960,
+        "h": 620,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 50,
+          "y": 40,
+          "say": "An empty grid is not an error. The question had an answer: nothing."
+         },
+         {
+          "n": 2,
+          "x": 14,
+          "y": 89,
+          "say": "The sentence for no rows, the same for every report."
+         },
+         {
+          "n": 3,
+          "x": 78,
+          "y": 94,
+          "say": "Copy to clipboard is greyed out."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Twelve ticks are your evidence that every report answers its question, that the one mistake and an empty answer are each handled with a sentence, and that the rows nobody would think to look for are still there. Take a screenshot of each result as you tick it, and keep the screenshots for your testing evidence in chapter 10. Paste one copied report into your user guide. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Your scenario has its own questions. First, write down the five questions a manager would ask, each in one sentence with the word between in it, such as how many tickets were sold between two dates, or which room was booked most between two dates. Next, for each question, write down the table it starts from and the table joined to it. If the answer should list every one of something, even the ones with nothing to count, use a LEFT JOIN with the date test after ON. If the answer comes from two or three different tables, use a UNION ALL stack. Last, build one report form like frmReports, with your five questions in its list and the check that the From date is not after the To date."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

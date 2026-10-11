@@ -1,0 +1,292 @@
+{
+ "id": "11",
+ "n": 11,
+ "title": "Mistakes that cost marks",
+ "one": "What last year lost marks for, and how to check your own work for each one.",
+ "marks": "This chapter is where you find the mistakes in your own project before the examiner does, using the fourteen that cost marks last year.",
+ "prev": {
+  "id": "10",
+  "title": "Testing evidence and user guide",
+  "n": 10
+ },
+ "next": {
+  "id": "12",
+  "title": "Make it yours",
+  "n": 12
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "Prove it: fourteen mistakes, and the check for each one",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the five database mistakes, and where this guide does each one right.",
+     "blocks": [
+      {
+       "p": "Every mistake in this chapter was found in a real A2 project last year. No names are given. Each mistake is told in three parts: what went wrong, what it cost, and the chapter of this guide that does the same job the right way. Read each mistake, then look for it in your own project. The last screen turns all fourteen into a table of checks to tick before you hand in."
+      },
+      {
+       "words": [
+        [
+         "Grid",
+         "The table of rows and columns on a form, such as the list of customers."
+        ],
+        [
+         "ID number",
+         "The number the database gives each row by itself, such as CustomerID 7. It means nothing to the person using the program."
+        ],
+        [
+         "Column type",
+         "The kind of value a column holds, such as DATE for a day, DECIMAL for money, VARCHAR for text or BIT for yes or no."
+        ],
+        [
+         "Stored procedure",
+         "A saved set of instructions inside the database that your program asks it to run, such as usp_Appointment_Add."
+        ],
+        [
+         "Parameter",
+         "One piece of information sent into a stored procedure, with a name that starts with @, such as @CustomerID."
+        ],
+        [
+         "Clash",
+         "Two bookings for the same mechanic, or the same bike, at times that overlap."
+        ],
+        [
+         "Status",
+         "One word in a row that says where a thing is in its life, such as Booked, Cancelled or Sold."
+        ],
+        [
+         "Click method",
+         "The method that runs when a button is pressed, such as btnSave_Click for the Save button."
+        ],
+        [
+         "Property",
+         "A named value on a class, such as LastName on a Customer, that the program can read and change."
+        ],
+        [
+         "Get part",
+         "The code inside a property that runs when the program reads its value."
+        ],
+        [
+         "DataTable",
+         "The table of rows that a stored procedure hands back to the C# program."
+        ],
+        [
+         "Null",
+         "The word C# uses for nothing at all: no table, no text and no number."
+        ],
+        [
+         "Crash",
+         "The program stops with an error box or freezes, and the person using it loses what they were doing."
+        ]
+       ]
+      },
+      {
+       "box": {
+        "title": "ID numbers in the grids",
+        "text": "One project showed its bookings grid with columns of numbers such as CustomerID 7 and StaffID 3, so the person at the counter could not tell who a booking was for. Last year's marking counted a grid of ID numbers as a clear weakness, because the program does not suit the person using it. Chapter 6, stage 2, screen 1, 'What a grid shows, and why it needs tidying', hides the ID columns with Grid.Tidy. Chapter 4, stage 5, 'Names, not numbers', writes the stored procedures that join the tables so the grid gets names."
+       }
+      },
+      {
+       "box": {
+        "title": "Dates kept as text",
+        "text": "One project kept its dates in VARCHAR columns, which hold text, and turned each date into words with ToString. Some dates came out cut short, and the program could not put the bookings in order by day or find the ones between two dates. Wrong data in normal use costs marks for the database and for the testing. Chapter 2, stage 4, screen 1, 'Choose a type for every column', explains why dates are DATE or DATETIME and never text. Chapter 3, stage 3, screen 1, 'Read the Appointment table part by part, then add it to your script', uses DATETIME for a day with a clock time, and DATE for a day on its own."
+       }
+      },
+      {
+       "box": {
+        "title": "A money column that is too small",
+        "text": "One project gave its price column the type DECIMAL(3,2), which allows three digits with two of them after the point, so the biggest price it can hold is 9.99. Every price of ten pounds or more was refused with an error, so the shop could not record anything that cost more. Chapter 2, stage 4, screen 1, 'Choose a type for every column', explains why money is DECIMAL. Chapter 3, stage 2, screen 3, 'Type the two checks of the ServiceType table', uses DECIMAL(8,2) for a price: eight digits, two of them after the point."
+       }
+      },
+      {
+       "box": {
+        "title": "The double-booking check only in the form",
+        "text": "One project checked for a clash inside the C# booking form, by loading the bookings into the program and comparing them. Two computers at the counter could still book the same mechanic at the same time, because each form only knew the bookings it had loaded when it opened. A check in the form earned some credit, but no double booking is a rule every case study tests, and full marks need the database to refuse. Chapter 7, stage 1, screen 3, 'Read what goes wrong without the rule', shows why the check belongs in the stored procedure, and stage 2 of chapter 7 writes that stored procedure."
+       }
+      },
+      {
+       "box": {
+        "title": "Cancel deletes the booking",
+        "text": "One project's Cancel button deleted the booking's row, so a cancelled booking vanished from the database. The shop lost its history: nobody could see what had been cancelled, and every count of bookings came out too low. A business needs its records, so a program that throws them away loses marks. Chapter 7, stage 7, screen 1, 'Read why a cancelled booking is not deleted, and type the stored procedure that cancels one', sets the booking's status to Cancelled instead."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the five code mistakes, and where this guide does each one right.",
+     "blocks": [
+      {
+       "p": "These five mistakes are in the C# code, and in the way the C# code talks to the stored procedures. Each one either leaves a button doing nothing or stops the program with an error. The examiner presses every button, so each of these mistakes shows up in the examiner's testing."
+      },
+      {
+       "box": {
+        "title": "Buttons with nothing behind them",
+        "text": "One project had buttons whose Click methods were empty, and other buttons that were never joined to a Click method at all, so pressing them did nothing. A button that does nothing is a feature that is not there, and the marks for that feature are lost. Chapter 5, stage 6, screen 2, 'Put the code behind the main menu', gives every menu button its own Click method, and each later chapter fills in the screen that the button opens."
+       }
+      },
+      {
+       "box": {
+        "title": "Console.ReadLine in a form",
+        "text": "One project used Console.ReadLine, which waits for someone to type in a black command window, inside a Windows form. A form has no command window, so the program froze and had to be closed. A freeze in normal use is one of the most serious faults a program can have. Chapter 5, stage 4, screen 5, 'Add the Msg class at the top level, and read it', shows a message box instead, and every form in this guide reads what was typed from its own text boxes."
+       }
+      },
+      {
+       "box": {
+        "title": "\"y\" in one place and \"Yes\" in another",
+        "text": "One project saved a yes-or-no answer as the letter y in one form, and tested for the word Yes in another form. The two never matched, so the feature that depended on the answer never worked. Chapter 3, stage 2, screen 2, 'Add the Staff table, which has a UNIQUE rule and a list of roles', stores yes or no as a BIT, which can only be 1 or 0, and lets the Role column hold only the exact words in its list. Chapter 4, stage 5, screen 3, 'Copy the sign-in stored procedure, and read how one row means yes', tests IsActive = 1."
+       }
+      },
+      {
+       "box": {
+        "title": "A parameter without its @",
+        "text": "One project left the @ off a parameter name inside a stored procedure. Without the @, SQL Server reads the word as a column name and not as the value the form sent in. In a WHERE line, CustomerID = CustomerID is true for every row, so an update changes every customer instead of one. Chapter 4, stage 3, screen 3, 'Type the lines that make an Update different from an Add', writes WHERE CustomerID = @CustomerID, with the @ on the value that was sent in."
+       }
+      },
+      {
+       "box": {
+        "title": "Names that do not match",
+        "text": "One project's C# asked for a stored procedure by one name while the script had saved it under another, such as usp_AddCustomer in the code and usp_Customer_Add in the script. The program stopped with the message Could not find stored procedure. A parameter spelled differently in the two places stops the program in the same way. Chapter 4, stage 1, screen 2, 'Check that you have these ready, and learn how the stored procedures are named', sets out one naming pattern for every stored procedure. Chapter 5, stage 4, screen 4, 'Add the StaffData class to the Data folder, and read its Login method', sends the exact name usp_Staff_Login and the same @ names the stored procedure declares."
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read the four mistakes in the screens and the data, and where this guide does each one right.",
+     "blocks": [
+      {
+       "p": "These four mistakes only show up when someone uses the program the way the examiner does: an empty report, a second sale, an edit, or a class read many times. Two of them crash the program, and two of them quietly save the wrong thing."
+      },
+      {
+       "box": {
+        "title": "The report form that crashes when nothing is found",
+        "text": "One project's report form crashed when the dates held no records, because its code read the first row of a DataTable that had no rows, or a DataTable that was null. The examiner tries dates with nothing in them on purpose, so this crash happens during the examiner's testing. Chapter 9, stage 7, screen 2, 'Put the code behind the report form', counts the rows first, and when there are none the form shows the sentence: Nothing in those dates."
+       }
+      },
+      {
+       "box": {
+        "title": "Sold items never marked sold",
+        "text": "One project recorded each sale but never changed the item's status to Sold, so the same item could be sold again the next day. Stock that is always right is the second rule every case study tests, so this mistake costs marks in the program and in the testing. Chapter 8, stage 6, screen 3, 'Write the stored procedure that sells a bike once, and only once', refuses a bike that is already sold, and sets the bike's status to Sold in the same stored procedure that records the sale."
+       }
+      },
+      {
+       "box": {
+        "title": "The last name copied from the first-name box",
+        "text": "One project's edit form had a copied line that set the last name from the first-name box, as in customer.LastName = txtFirstName.Text. Every customer that was edited came back with the same first name and last name, and nothing warned anyone, so the mistake only showed when someone read the grid. Chapter 6, stage 4, screen 4, 'Read Save: plain ifs, and the first problem wins', copies each box into its own property, one line each. Chapter 6, stage 5, screen 4, 'Edit the customer, two ways', is the test that catches this mistake."
+       }
+      },
+      {
+       "box": {
+        "title": "The get part that reads itself",
+        "text": "One project wrote a property whose get part handed back the property itself, as in get { return Price; } inside the property called Price. Reading the property ran the get part, which read the property again, over and over, until the program crashed. Chapter 6, stage 1, screen 3, 'A class is one row in your hands', gives every plain property { get; set; }. FullName, the one property in that class with its own code, reads FirstName and LastName and never reads FullName."
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Check your own project for all fourteen mistakes before you hand it in.",
+     "blocks": [
+      {
+       "p": "Three kinds of mistake cost the most marks last year. The first is a double-booking check that lives only in the form, because no double booking is a rule every case study tests. The second is a crash or a freeze in normal use: the report on empty dates, Console.ReadLine, the get part that reads itself, and the price that does not fit. The third is a grid of ID numbers, which the marking counts as a program that does not suit the person using it."
+      },
+      {
+       "p": "Do each check below in your own program, not the bike shop. A row marked Must be refused passes only when your program says no with a sentence. Tick the row when your project passes it, and if it fails, fix your project before you hand in. Then take a screenshot of each refusal for your testing evidence in chapter 10."
+      },
+      {
+       "check": [
+        {
+         "id": "11.1.1",
+         "what": "Every grid shows names",
+         "expect": "allowed",
+         "how": "Open every screen in your program that has a grid. No column shows an ID number such as CustomerID or StaffID, and every person, thing and service appears by name."
+        },
+        {
+         "id": "11.1.2",
+         "what": "Every date is kept as a date",
+         "expect": "allowed",
+         "how": "In SQL Server Management Studio (SSMS), expand each of your tables in Object Explorer and open Columns. Every column that holds a day or a time is DATE or DATETIME, never VARCHAR."
+        },
+        {
+         "id": "11.1.3",
+         "what": "The biggest price fits",
+         "expect": "allowed",
+         "how": "Add one item with the highest price your scenario could ever have, such as 1250.00. The item saves, and the grid shows the price with its pennies."
+        },
+        {
+         "id": "11.1.4",
+         "what": "A double booking is refused by the database",
+         "expect": "control",
+         "how": "In SSMS, run EXEC on your booking stored procedure twice, giving the same person or thing and an overlapping time both times. The second run refuses with a sentence, and no second row is added."
+        },
+        {
+         "id": "11.1.5",
+         "what": "A cancelled booking stays on record",
+         "expect": "allowed",
+         "how": "Cancel one booking in your program, then look at that day. The booking is still there, marked Cancelled, and its time is free to book again."
+        },
+        {
+         "id": "11.1.6",
+         "what": "Every button does something",
+         "expect": "allowed",
+         "how": "Sign in as each role and press every button on every screen once. Each button opens a screen, saves, refuses with a sentence or closes, and no button does nothing."
+        },
+        {
+         "id": "11.1.7",
+         "what": "No Console anywhere in the forms",
+         "expect": "allowed",
+         "how": "In Visual Studio 2019, press Ctrl, Shift and F together, search the entire solution for the word Console, and press Find All. The results list is empty."
+        },
+        {
+         "id": "11.1.8",
+         "what": "Yes and no mean the same everywhere",
+         "expect": "allowed",
+         "how": "For each yes-or-no column, check that the table stores it as a BIT, and that every form and stored procedure tests it as 1 or 0, never as text such as y or Yes."
+        },
+        {
+         "id": "11.1.9",
+         "what": "Every parameter keeps its @",
+         "expect": "allowed",
+         "how": "In your script, read every WHERE line inside every stored procedure. Each value the form sent in has its @, as in WHERE CustomerID = @CustomerID."
+        },
+        {
+         "id": "11.1.10",
+         "what": "The names match in both places",
+         "expect": "allowed",
+         "how": "Pick one Db.GetTable or Db.Run line in your C# and find the stored procedure with exactly that name in your script. Check that each @ name in the Db.P lines under it matches a parameter at the top of that stored procedure. Then do the same for every other Db.GetTable and Db.Run line."
+        },
+        {
+         "id": "11.1.11",
+         "what": "A report with nothing in it",
+         "expect": "allowed",
+         "how": "Run every report for two days long before your business opened, such as 01/01/2000 to 02/01/2000. Each report shows an empty grid and a sentence, never an error."
+        },
+        {
+         "id": "11.1.12",
+         "what": "A sold item cannot be sold twice",
+         "expect": "control",
+         "how": "Sell one item that is one of a kind, then try to sell the same item again. The second sale is refused with a sentence, and the item's status reads Sold."
+        },
+        {
+         "id": "11.1.13",
+         "what": "An edit keeps every box in its place",
+         "expect": "allowed",
+         "how": "Open one record for editing and change every box to a new value. Click Save, then open the same record again. Each box shows the value you typed into that box, and no box shows the value of another."
+        },
+        {
+         "id": "11.1.14",
+         "what": "No property reads itself",
+         "expect": "allowed",
+         "how": "Open each class in your Models folder. Every property is { get; set; }, or its get part reads other properties and never its own name."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
