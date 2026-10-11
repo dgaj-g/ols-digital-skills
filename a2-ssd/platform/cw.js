@@ -676,7 +676,7 @@ window.CW = (function () {
     return getJSON('index.json').then(function (ix) {
       var root = el('<article class="cw"></article>');
       root.appendChild(el('<h1>Coursework guide</h1>'));
-      root.appendChild(el('<p class="sub">Build the bike shop system one chapter at a time, then turn it into your own system. Each chapter is one sitting. Tick the steps as you do them. Your ticks are saved.</p>'));
+      root.appendChild(el('<p class="sub">Build a bike shop system one chapter at a time, then turn it into your own system. Each chapter is one sitting. Tick the steps as you do them. Your ticks are saved.</p>'));
       var ol = el('<ol class="cw-list"></ol>');
       ix.chapters.forEach(function (c) {
         var ticks = loadTicks(c.id).size, done = !!load('cw:done:' + c.id, false), at = load('cw:at:' + c.id, null);
@@ -715,6 +715,11 @@ window.CW = (function () {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       if (typingSomewhere()) return;
       go(e.key === 'ArrowRight' ? 1 : -1); e.preventDefault();
+    });
+    // Hash links stay inside the page: the served page has <base target="_top">, which would send them to the sandbox frame's own address.
+    host.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault(); location.hash = a.getAttribute('href');
     });
     var t = null; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(relayout, 120); });
   }

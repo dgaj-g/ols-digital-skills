@@ -2505,20 +2505,20 @@
           "img": "img/ch03-edge-download.png",
           "alt": "The front page of this guide in the Edge browser, with the Sample data card under the list of chapters and the link BikeShop-sample-data.sql in it. The Downloads pop-up at the top right shows BikeShop-sample-data.sql.",
           "cap": "The Sample data card on the front page of this guide. One click saves BikeShop-sample-data.sql into your Downloads folder.",
-          "w": 900,
-          "h": 560,
-          "missing": true,
+          "w": 1568,
+          "h": 542,
+          "missing": false,
           "marks": [
            {
             "n": 1,
-            "x": 30,
-            "y": 80,
+            "x": 7,
+            "y": 89,
             "say": "Click BikeShop-sample-data.sql in the Sample data card."
            },
            {
             "n": 2,
-            "x": 88,
-            "y": 10,
+            "x": 82,
+            "y": 22,
             "say": "Edge shows the file in its Downloads pop-up."
            }
           ]
