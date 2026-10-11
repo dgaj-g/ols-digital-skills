@@ -1,0 +1,3182 @@
+{
+ "id": "03",
+ "n": 3,
+ "title": "Build the database",
+ "one": "The script that creates every table and fills it with sample data, and can be run again.",
+ "marks": "This chapter is where the examiner looks for a database that is made by one script, with rules in the tables themselves that refuse bad data, and sample data to test with.",
+ "prev": {
+  "id": "02",
+  "title": "Plan the tables",
+  "n": 2
+ },
+ "next": {
+  "id": "04",
+  "title": "Stored procedures",
+  "n": 4
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "A script you can run again",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will build in this chapter.",
+     "blocks": [
+      {
+       "p": "In chapter 2 you planned ten tables on paper. In this chapter you make them, by writing one script, BikeShop.sql, that the server runs from top to bottom. By the end of the chapter the script makes the database, makes the ten tables, puts in the sample data, and prints the words BikeShop is ready. Then you ask the Customer table for its rows and see twelve names come back."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch03-ssms-tables.png",
+        "alt": "Object Explorer in SQL Server Management Studio (SSMS) with the BikeShop database opened out: Tables lists the ten tables, Appointment, Bike, Customer, Hire, Part, PartOrder, PartSale, ServiceType, Staff and Supplier, each with dbo. in front of its name.",
+        "cap": "Object Explorer, on the left of SQL Server Management Studio (SSMS). Right-click Tables and click Refresh to see the tables your script has made. The dbo. in front of each name is added by the server, and you never type it.",
+        "w": 260,
+        "h": 432,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 40,
+          "y": 30,
+          "say": "Open Databases, then BikeShop."
+         },
+         {
+          "n": 2,
+          "x": 62,
+          "y": 62,
+          "say": "Tables: the ten tables, in alphabetical order."
+         }
+        ]
+       }
+      },
+      {
+       "p": "The script has one habit that matters more than any other: it can be run again. Every time you press F5 it throws the old tables away and makes fresh ones with the same sample data. That means a mistake is never serious. If a table is wrong, you fix the script and run it again. If a test in a later chapter leaves the data in a mess, you run it again. The script is the master copy of your database, and it lives in your OneDrive folder."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Learn these words before you start.",
+     "blocks": [
+      {
+       "need": [
+        "Chapter 2 is finished: your plan of the ten tables, with their columns and rules, is beside you.",
+        "SQL Server Management Studio (SSMS) is open and connected, as in chapter 1.",
+        "BikeShop.sql is saved in your OneDrive coursework folder, and it is still empty.",
+        "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Script",
+         "A file of SQL lines that the server runs from the top to the bottom."
+        ],
+        [
+         "Table",
+         "A grid with named columns, where each row is one thing, such as one customer."
+        ],
+        [
+         "Column",
+         "One named box in every row, with a type that says what can go in it, such as a number or a date."
+        ],
+        [
+         "Row",
+         "One line of a table: one customer, one bike, one booking."
+        ],
+        [
+         "INT",
+         "A type for whole numbers, such as 3 or 120."
+        ],
+        [
+         "VARCHAR",
+         "A type for text, with the most letters allowed in brackets, such as VARCHAR(40)."
+        ],
+        [
+         "DECIMAL",
+         "A type for money and other numbers with a decimal point: DECIMAL(8,2) allows eight digits, two of them after the point."
+        ],
+        [
+         "DATE and DATETIME",
+         "DATE holds a day, such as 12 October 2026. DATETIME holds a day and a clock time together, such as 12 October 2026 at 09:30."
+        ],
+        [
+         "BIT",
+         "A type that holds a yes or a no, written as 1 or 0."
+        ],
+        [
+         "NULL",
+         "An empty box. NOT NULL after a column means the box can never be empty."
+        ],
+        [
+         "IDENTITY",
+         "The table gives each new row the next number itself, so nobody types it."
+        ],
+        [
+         "PRIMARY KEY",
+         "The column that names each row, so that no two rows can share a number."
+        ],
+        [
+         "FOREIGN KEY",
+         "A column that holds the number of a row in another table, such as the customer a booking is for."
+        ],
+        [
+         "CHECK",
+         "A rule written into the table that refuses a row that breaks it, before any program runs."
+        ],
+        [
+         "UNIQUE",
+         "A rule that no two rows can hold the same value in that column."
+        ],
+        [
+         "DEFAULT",
+         "The value a column takes when a row is added without one."
+        ],
+        [
+         "GO",
+         "A line on its own that sends everything above it to the server, so the next lines start fresh."
+        ],
+        [
+         "Sample data",
+         "Made-up rows, with real-looking names and dates, that fill the tables so that you have something to test with."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read why the script drops the old tables first, children before parents.",
+     "blocks": [
+      {
+       "p": "A script that can be run again has to deal with what is already there. The second time it runs, the ten tables exist, and CREATE TABLE would be refused with the words there is already an object named Customer. So the script starts by dropping every table it is about to make. DROP TABLE IF EXISTS means: throw the table away if it is there, and say nothing if it is not. The first run finds nothing to drop and carries on."
+      },
+      {
+       "box": {
+        "title": "Children before parents",
+        "text": "A table that holds a foreign key points at another table. Appointment points at Customer, because every booking is for one customer. Call Appointment the child and Customer the parent. The server will not drop a parent while a child still points at it, so the children go first. That is why the ten DROP TABLE lines run in the opposite order to the ten CREATE TABLE lines: PartSale is dropped first and Customer last, and Customer is made first and PartSale last."
+       }
+      },
+      {
+       "p": "The same order matters when the tables are made. A foreign key can only point at a table that already exists, so Customer and Staff come before Appointment, and Supplier before Part. The order in this chapter is the order that works. Keep it."
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Copy the top of the script into BikeShop.sql.",
+     "blocks": [
+      {
+       "p": "The top of the script does three things: it makes the database if it is not there, it moves into it, and it drops the ten old tables. Read each part, then copy the whole block into your empty BikeShop.sql and run it once. The tables come next, one at a time."
+      },
+      {
+       "code": {
+        "id": "3.1-head",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "The top of BikeShop.sql: the database, and the ten DROP TABLE lines",
+        "src": "sql_head",
+        "parts": [
+         [
+          "/* ====",
+          "*/",
+          "The note at the top",
+          "Everything between the slash-star at the start and the star-slash at the end is a note for a person, and the server skips it. The note names the shop in this guide, Towpath Cycles in Newry, and says what the file is, that it can be run again, and the order of its five parts. When you build your own scenario, you change the shop name and the town in this note to yours."
+         ],
+         [
+          "IF DB_ID('BikeShop') IS NULL",
+          "GO",
+          "Make the database if it is not there",
+          "DB_ID looks up a database by name and gives NULL, meaning nothing, if there is no such database. So the second line, CREATE DATABASE BikeShop, only runs the first time. GO sends those lines to the server before anything else happens."
+         ],
+         [
+          "USE BikeShop;",
+          "GO",
+          "Work inside it",
+          "USE BikeShop tells the server that every line after this belongs to the BikeShop database, not to master, the database the server starts in. The GO under it sends the USE line to the server before the DROP TABLE lines run."
+         ],
+         [
+          "/* ---- 2. Drop",
+          "$last GO",
+          "Drop the ten old tables, children first",
+          "This part has ten lines, one per table, and each says DROP TABLE IF EXISTS and a table name. The order runs from PartSale, which points at three other tables, down to Customer, which points at none. The comment line with the two dashes is a note for a person. GO ends this part."
+         ],
+         [
+          "/* ---- 3. Tables",
+          "$end",
+          "A heading for the tables",
+          "This is one more note line, so that you can find the tables in a long script. The first CREATE TABLE goes on the empty line under this heading."
+         ]
+        ],
+        "text": "/* =====================================================================\n   BikeShop.sql  —  Towpath Cycles (workshop + bike hire), Newry\n   A2 SSD coursework demo database.  SQL Server 2019 / LocalDB.\n\n   This script is RERUNNABLE: run it from the top any time and you get\n   a fresh database with the same sample data.  Keep it in your\n   OneDrive folder — it is the master copy of your database.\n\n   Order:  1 create the database   2 drop old tables (children first)\n           3 create tables         4 sample data        5 procedures\n   ===================================================================== */\n\nIF DB_ID('BikeShop') IS NULL\n    CREATE DATABASE BikeShop;\nGO\nUSE BikeShop;\nGO\n\n/* ---- 2. Drop old tables, children first ---- */\n-- A child table holds the foreign key, so it goes before its parent.\nDROP TABLE IF EXISTS PartSale;\nDROP TABLE IF EXISTS PartOrder;\nDROP TABLE IF EXISTS Part;\nDROP TABLE IF EXISTS Supplier;\nDROP TABLE IF EXISTS Hire;\nDROP TABLE IF EXISTS Appointment;\nDROP TABLE IF EXISTS Bike;\nDROP TABLE IF EXISTS ServiceType;\nDROP TABLE IF EXISTS Staff;\nDROP TABLE IF EXISTS Customer;\nGO\n\n/* ---- 3. Tables ---- */",
+        "partLines": [
+         [
+          1,
+          11,
+          "The note at the top",
+          "Everything between the slash-star at the start and the star-slash at the end is a note for a person, and the server skips it. The note names the shop in this guide, Towpath Cycles in Newry, and says what the file is, that it can be run again, and the order of its five parts. When you build your own scenario, you change the shop name and the town in this note to yours."
+         ],
+         [
+          13,
+          15,
+          "Make the database if it is not there",
+          "DB_ID looks up a database by name and gives NULL, meaning nothing, if there is no such database. So the second line, CREATE DATABASE BikeShop, only runs the first time. GO sends those lines to the server before anything else happens."
+         ],
+         [
+          16,
+          17,
+          "Work inside it",
+          "USE BikeShop tells the server that every line after this belongs to the BikeShop database, not to master, the database the server starts in. The GO under it sends the USE line to the server before the DROP TABLE lines run."
+         ],
+         [
+          19,
+          31,
+          "Drop the ten old tables, children first",
+          "This part has ten lines, one per table, and each says DROP TABLE IF EXISTS and a table name. The order runs from PartSale, which points at three other tables, down to Customer, which points at none. The comment line with the two dashes is a note for a person. GO ends this part."
+         ],
+         [
+          33,
+          33,
+          "A heading for the tables",
+          "This is one more note line, so that you can find the tables in a long script. The first CREATE TABLE goes on the empty line under this heading."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.1.1",
+         "do": "In SQL Server Management Studio (SSMS), click File at the top left.",
+         "see": "The File menu opens."
+        },
+        {
+         "id": "3.1.2",
+         "do": "Point at Open in the File menu.",
+         "see": "A small menu opens beside Open, and File… is in it.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio (SSMS) with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Files open from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 6,
+            "y": 25,
+            "say": "Point at Open."
+           },
+           {
+            "n": 3,
+            "x": 41,
+            "y": 48,
+            "say": "File… opens the box where you choose the file."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.1.3",
+         "do": "Click File… in the small menu.",
+         "see": "The Open File box opens."
+        },
+        {
+         "id": "3.1.4",
+         "do": "In the Open File box, double-click BikeShop.sql in your OneDrive coursework folder.",
+         "see": "A tab named BikeShop.sql opens, and it is empty."
+        },
+        {
+         "id": "3.1.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.1-head",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.1.6",
+         "do": "Click in the empty BikeShop.sql window.",
+         "see": "The cursor blinks at the top of the empty window."
+        },
+        {
+         "id": "3.1.7",
+         "do": "Press Ctrl and V together.",
+         "see": "The top of the script is in your window, from the note at the top down to the heading for the tables, and the tab name has a star after it.",
+         "img": {
+          "img": "img/ch03-ssms-head-pasted.png",
+          "alt": "The BikeShop.sql tab in SQL Server Management Studio (SSMS) with the top of the script pasted in: the note in the box of equals signs, IF DB_ID, CREATE DATABASE BikeShop, USE BikeShop, the ten DROP TABLE lines, GO and the heading for the tables. The tab name ends with a star.",
+          "cap": "The top of the script, pasted into the empty BikeShop.sql. The star after the tab name means it is not saved yet.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 55,
+            "y": 50,
+            "say": "The pasted lines, from the note at the top down to the heading for the tables."
+           },
+           {
+            "n": 2,
+            "x": 48,
+            "y": 7,
+            "say": "The star after BikeShop.sql means the file needs saving."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.1.8",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.1.9",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. In Object Explorer, BikeShop appears under Databases, with nothing in its Tables folder yet.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'CREATE DATABASE permission denied'",
+           "You are connected to the wrong server. Close the window, start SQL Server Management Studio (SSMS) again and connect to (localdb)\\mssqllocaldb, as in chapter 1."
+          ],
+          [
+           "BikeShop is not under Databases",
+           "Object Explorer does not look again by itself. Right-click Databases and click Refresh."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Customer, Staff and ServiceType",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the Customer table part by part, then add it to your script.",
+     "blocks": [
+      {
+       "p": "The first table is Customer, and four other tables point at it. Read it slowly, because every table in this chapter is built out of the same pieces: a number column that fills itself, columns with a type and NOT NULL, a DEFAULT, a PRIMARY KEY, and a CHECK rule."
+      },
+      {
+       "code": {
+        "id": "3.2-customer",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "Customer: the first table",
+        "src": "sql_table:Customer",
+        "parts": [
+         [
+          "CREATE TABLE Customer (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "CREATE TABLE and a name start the table. The bracket opens the list of columns. The first column is the number that names each row. IDENTITY(1,1) means the table gives the number out itself, starting at 1 and going up by 1, so you never type it. NOT NULL means the box can never be left empty."
+         ],
+         [
+          "FirstName",
+          "Phone",
+          "Three text columns that must be filled",
+          "FirstName and LastName hold up to 40 letters each. Phone holds up to 15, because a number such as 028 3026 4411 has spaces in it and is text, not a number to add up. NOT NULL on all three: a customer with no name or no phone number is refused."
+         ],
+         [
+          "Email",
+          "Email",
+          "A column that may be empty",
+          "Email says NULL, not NOT NULL, so a customer without an email address can still be added. The box is left empty, and the word NULL shows in it when you look."
+         ],
+         [
+          "DateJoined",
+          "DF_Customer_DateJoined",
+          "A date that fills itself in",
+          "DateJoined is a DATE, and it has a DEFAULT. GETDATE() gives the date and time right now, and CAST turns that into a date with no clock part. So a new customer is stamped with today's date without anyone typing it. The DEFAULT has a name, DF_Customer_DateJoined, so that an error can name it."
+         ],
+         [
+          "PK_Customer",
+          "PK_Customer",
+          "The primary key",
+          "CustomerID is the column that names each row. PRIMARY KEY means no two customers can have the same number, and a booking can point at a customer by it. The rule is named PK_Customer: PK for primary key, then the table."
+         ],
+         [
+          "CK_Customer_Phone",
+          "$end",
+          "The phone number check",
+          "LEN counts the characters in the phone number. The CHECK refuses any row whose phone number is shorter than ten characters, so 12345 can never get in. The rule is named CK_Customer_Phone: CK for check, the table, then what it checks. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE Customer (\n    CustomerID   INT IDENTITY(1,1) NOT NULL,\n    FirstName    VARCHAR(40)  NOT NULL,\n    LastName     VARCHAR(40)  NOT NULL,\n    Phone        VARCHAR(15)   NOT NULL,\n    Email        VARCHAR(100) NULL,\n    DateJoined   DATE          NOT NULL\n        CONSTRAINT DF_Customer_DateJoined DEFAULT (CAST(GETDATE() AS DATE)),\n    CONSTRAINT PK_Customer PRIMARY KEY (CustomerID),\n    CONSTRAINT CK_Customer_Phone CHECK (LEN(Phone) >= 10)\n);\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "CREATE TABLE and a name start the table. The bracket opens the list of columns. The first column is the number that names each row. IDENTITY(1,1) means the table gives the number out itself, starting at 1 and going up by 1, so you never type it. NOT NULL means the box can never be left empty."
+         ],
+         [
+          3,
+          5,
+          "Three text columns that must be filled",
+          "FirstName and LastName hold up to 40 letters each. Phone holds up to 15, because a number such as 028 3026 4411 has spaces in it and is text, not a number to add up. NOT NULL on all three: a customer with no name or no phone number is refused."
+         ],
+         [
+          6,
+          6,
+          "A column that may be empty",
+          "Email says NULL, not NOT NULL, so a customer without an email address can still be added. The box is left empty, and the word NULL shows in it when you look."
+         ],
+         [
+          7,
+          8,
+          "A date that fills itself in",
+          "DateJoined is a DATE, and it has a DEFAULT. GETDATE() gives the date and time right now, and CAST turns that into a date with no clock part. So a new customer is stamped with today's date without anyone typing it. The DEFAULT has a name, DF_Customer_DateJoined, so that an error can name it."
+         ],
+         [
+          9,
+          9,
+          "The primary key",
+          "CustomerID is the column that names each row. PRIMARY KEY means no two customers can have the same number, and a booking can point at a customer by it. The rule is named PK_Customer: PK for primary key, then the table."
+         ],
+         [
+          10,
+          12,
+          "The phone number check",
+          "LEN counts the characters in the phone number. The CHECK refuses any row whose phone number is shorter than ten characters, so 12345 can never get in. The rule is named CK_Customer_Phone: CK for check, the table, then what it checks. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.2.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.2-customer",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.2.2",
+         "do": "Click on the empty line under the heading for the tables, at the very end of the script.",
+         "see": "The cursor blinks on the empty line under the line that says 3. Tables, with nothing after it."
+        },
+        {
+         "id": "3.2.3",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-customer-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the Customer table pasted under the heading for the tables: CREATE TABLE Customer at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The Customer table pasted under the heading for the tables. Every table starts with CREATE TABLE and ends with GO, and the next one goes on the empty line under that GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 37,
+            "y": 38,
+            "say": "The heading for the tables, with the Customer table pasted under it."
+           },
+           {
+            "n": 2,
+            "x": 55,
+            "y": 57,
+            "say": "The pasted Customer table, from CREATE TABLE Customer down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.2.4",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.2.5",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.2.6",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the Staff table, which has a UNIQUE rule and a list of roles.",
+     "blocks": [
+      {
+       "p": "Staff is the people who use the program: a manager, counter staff and mechanics. Two things are new. A UNIQUE rule stops two people sharing a username, and the first CHECK with a list in it says a role must be one of three words."
+      },
+      {
+       "code": {
+        "id": "3.2-staff",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "Staff: the people who sign in",
+        "src": "sql_table:Staff",
+        "parts": [
+         [
+          "CREATE TABLE Staff (",
+          "LastName",
+          "The same start as Customer",
+          "This starts the same way as Customer: a number column that fills itself, then a first name and a last name that must be filled."
+         ],
+         [
+          "Role",
+          "Role",
+          "The job",
+          "Role is one of three words, Mechanic, Counter or Manager, and it decides which screens a person can open in later chapters."
+         ],
+         [
+          "Username",
+          "Password",
+          "The sign-in details",
+          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would scramble the password before storing it, and this coursework keeps it plain and says so."
+         ],
+         [
+          "IsActive",
+          "IsActive",
+          "A yes or no column",
+          "BIT holds a 1 for yes or a 0 for no. The DEFAULT of 1 means a new member of staff is active unless told otherwise, and someone who leaves is set to 0 rather than deleted."
+         ],
+         [
+          "PK_Staff",
+          "UQ_Staff_Username",
+          "The key and the UNIQUE rule",
+          "StaffID is the primary key. UQ_Staff_Username says no two rows can have the same username, so a sign-in always finds one person."
+         ],
+         [
+          "CK_Staff_Role",
+          "$end",
+          "The list of roles",
+          "IN followed by a list in brackets means: the value must be one of these. A role of Boss is refused by the table. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE Staff (\n    StaffID      INT IDENTITY(1,1) NOT NULL,\n    FirstName    VARCHAR(40) NOT NULL,\n    LastName     VARCHAR(40) NOT NULL,\n    Role         VARCHAR(10)  NOT NULL,\n    Username     VARCHAR(30)  NOT NULL,\n    -- a real system stores a hash; say so in your user guide\n    Password     VARCHAR(30)  NOT NULL,\n    IsActive     BIT          NOT NULL CONSTRAINT DF_Staff_IsActive DEFAULT (1),\n    CONSTRAINT PK_Staff PRIMARY KEY (StaffID),\n    CONSTRAINT UQ_Staff_Username UNIQUE (Username),\n    CONSTRAINT CK_Staff_Role CHECK (Role IN ('Mechanic', 'Counter', 'Manager'))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          4,
+          "The same start as Customer",
+          "This starts the same way as Customer: a number column that fills itself, then a first name and a last name that must be filled."
+         ],
+         [
+          5,
+          5,
+          "The job",
+          "Role is one of three words, Mechanic, Counter or Manager, and it decides which screens a person can open in later chapters."
+         ],
+         [
+          6,
+          8,
+          "The sign-in details",
+          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would scramble the password before storing it, and this coursework keeps it plain and says so."
+         ],
+         [
+          9,
+          9,
+          "A yes or no column",
+          "BIT holds a 1 for yes or a 0 for no. The DEFAULT of 1 means a new member of staff is active unless told otherwise, and someone who leaves is set to 0 rather than deleted."
+         ],
+         [
+          10,
+          11,
+          "The key and the UNIQUE rule",
+          "StaffID is the primary key. UQ_Staff_Username says no two rows can have the same username, so a sign-in always finds one person."
+         ],
+         [
+          12,
+          14,
+          "The list of roles",
+          "IN followed by a list in brackets means: the value must be one of these. A role of Boss is refused by the table. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.2.7",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.2-staff",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.2.8",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.2.9",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-staff-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the Staff table pasted after the GO that ends the Customer table: CREATE TABLE Staff at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The Staff table pasted at the end of the script, under the GO that ends the Customer table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 40,
+            "say": "The GO that ends the Customer table."
+           },
+           {
+            "n": 2,
+            "x": 55,
+            "y": 60,
+            "say": "The pasted Staff table, from CREATE TABLE Staff down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.2.10",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.2.11",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.2.12",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Type the two checks of the ServiceType table.",
+     "blocks": [
+      {
+       "p": "ServiceType is the list of jobs the workshop does, such as a puncture repair at 15.00 for 30 minutes. It is short, so this is the table where you type the rules yourself. The copy button leaves a gap for the yellow lines, and you type them in."
+      },
+      {
+       "code": {
+        "id": "3.2-servicetype",
+        "kind": "type",
+        "lang": "sql",
+        "title": "ServiceType: the jobs the workshop does",
+        "src": "sql_table:ServiceType",
+        "parts": [
+         [
+          "CREATE TABLE ServiceType (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "This starts the same way as the two tables before it, with a number that the table gives out itself."
+         ],
+         [
+          "VARCHAR(40)",
+          "DECIMAL(8,2)",
+          "What a job is called, how long it takes and what it costs",
+          "Name is text. DurationMinutes is a whole number of minutes. Price is DECIMAL(8,2): up to eight digits with two after the point, which is how money is stored, because a DECIMAL never rounds a penny away."
+         ],
+         [
+          "PK_ServiceType",
+          "UQ_ServiceType_Name",
+          "The key and the UNIQUE rule",
+          "ServiceTypeID is the primary key, and no two jobs can share a name."
+         ],
+         [
+          "CK_ServiceType_Duration",
+          "$end",
+          "The two checks: the yellow lines",
+          "BETWEEN 15 AND 480 means the length must be from a quarter of an hour to eight hours. The percent sign gives the remainder after dividing, so DurationMinutes % 15 = 0 means the length divides exactly by 15: the diary runs in quarter hours. AND joins the two tests, so both must be true. The second CHECK refuses a price below zero. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "focus": [
+         [
+          "CK_ServiceType_Duration",
+          "CK_ServiceType_Price"
+         ]
+        ],
+        "why": "The two CHECK rules are the part of a table that you will write most often in your own scenario. Typing BETWEEN, the remainder sign and a comparison once, with your own hands, is how the shape sticks.",
+        "text": "CREATE TABLE ServiceType (\n    ServiceTypeID   INT IDENTITY(1,1) NOT NULL,\n    Name            VARCHAR(40) NOT NULL,\n    DurationMinutes INT          NOT NULL,\n    Price           DECIMAL(8,2) NOT NULL,\n    CONSTRAINT PK_ServiceType PRIMARY KEY (ServiceTypeID),\n    CONSTRAINT UQ_ServiceType_Name UNIQUE (Name),\n    CONSTRAINT CK_ServiceType_Duration CHECK (DurationMinutes BETWEEN 15\n        AND 480 AND DurationMinutes % 15 = 0),\n    CONSTRAINT CK_ServiceType_Price CHECK (Price >= 0)\n);\nGO",
+        "focusLines": [
+         [
+          8,
+          10
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "This starts the same way as the two tables before it, with a number that the table gives out itself."
+         ],
+         [
+          3,
+          5,
+          "What a job is called, how long it takes and what it costs",
+          "Name is text. DurationMinutes is a whole number of minutes. Price is DECIMAL(8,2): up to eight digits with two after the point, which is how money is stored, because a DECIMAL never rounds a penny away."
+         ],
+         [
+          6,
+          7,
+          "The key and the UNIQUE rule",
+          "ServiceTypeID is the primary key, and no two jobs can share a name."
+         ],
+         [
+          8,
+          12,
+          "The two checks: the yellow lines",
+          "BETWEEN 15 AND 480 means the length must be from a quarter of an hour to eight hours. The percent sign gives the remainder after dividing, so DurationMinutes % 15 = 0 means the length divides exactly by 15: the diary runs in quarter hours. AND joins the two tests, so both must be true. The second CHECK refuses a price below zero. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.2.13",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.2-servicetype",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.2.14",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.2.15",
+         "do": "Press Ctrl and V together.",
+         "see": "The table is at the end of your script, with a line that says YOU TYPE THIS PART where the yellow lines go.",
+         "img": {
+          "img": "img/ch03-ssms-type-gap.png",
+          "alt": "The ServiceType table pasted at the end of BikeShop.sql in SQL Server Management Studio (SSMS), with a line that says YOU TYPE THIS PART between the UNIQUE line and the closing bracket.",
+          "cap": "After the paste. Everything is in except the yellow lines. The marker line shows where they go.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 33,
+            "say": "The marker line that says YOU TYPE THIS PART. The yellow lines go in its place."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.2.16",
+         "do": "Type the yellow lines in place of the line that says YOU TYPE THIS PART, so that no marker line is left.",
+         "see": "The marker line is gone, and the lines you typed sit where it was, inside the table.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A word is misspelled. Compare each line you typed with the same yellow line in the code block above, letter by letter, and check that your line ends the way that line ends."
+          ]
+         ]
+        },
+        {
+         "id": "3.2.17",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.2.18",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.2.19",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Appointment, Bike and Hire",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the Appointment table part by part, then add it to your script.",
+     "blocks": [
+      {
+       "p": "Appointment is the diary: one row is one booking of one bike for one mechanic at one time. It is the first table that points at other tables, and it points at three. Read it part by part, because the four FOREIGN KEY lines and the two CHECK rules at the end are the rules that keep the diary honest."
+      },
+      {
+       "code": {
+        "id": "3.3-appointment",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "Appointment: one row per booking",
+        "src": "sql_table:Appointment",
+        "parts": [
+         [
+          "CREATE TABLE Appointment (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "AppointmentID is a number that the table gives out itself."
+         ],
+         [
+          "CustomerID",
+          "ServiceTypeID",
+          "Three numbers that point at other tables",
+          "CustomerID is the number of a row in Customer. MechanicID is the number of a row in Staff. ServiceTypeID is the number of a row in ServiceType. Each is a plain INT here; the lines near the end say which table each one points at."
+         ],
+         [
+          "StartTime",
+          "EndTime",
+          "When the job starts and ends",
+          "DATETIME holds a day and a clock time together, such as 12 October 2026 at 09:30, which is what a diary needs. Both must be filled."
+         ],
+         [
+          "BikeDescription",
+          "Notes",
+          "What the bike is, and any notes",
+          "BikeDescription is up to 80 letters, such as Blue Trek hybrid, and must be filled. Notes may be left empty."
+         ],
+         [
+          "Status",
+          "DF_Appointment_Status",
+          "The status, Booked unless told otherwise",
+          "Status is one short word. The DEFAULT means a new booking is Booked without anyone saying so."
+         ],
+         [
+          "BookedByStaffID",
+          "DF_Appointment_BookedOn",
+          "Who booked it and when",
+          "BookedByStaffID is the number of the member of staff who made the booking. BookedOn is stamped with the date and time right now by its DEFAULT, GETDATE(), with the clock part kept this time."
+         ],
+         [
+          "PK_Appointment",
+          "PK_Appointment",
+          "The primary key",
+          "AppointmentID names each booking."
+         ],
+         [
+          "FK_Appointment_Customer",
+          "REFERENCES Staff",
+          "The first two foreign keys",
+          "FOREIGN KEY (CustomerID) REFERENCES Customer (CustomerID) means: the number in CustomerID must be the number of a real row in Customer. A booking for customer 99, who does not exist, is refused. The second one says the same for MechanicID, which must be a real row in Staff. Each rule is named FK, the table, then what it points at."
+         ],
+         [
+          "FK_Appointment_ServiceType",
+          "REFERENCES Staff",
+          "Two more foreign keys",
+          "ServiceTypeID must be a real job in ServiceType. BookedByStaffID must be a real member of staff, so this table points at Staff twice: once for the mechanic, once for whoever took the booking."
+         ],
+         [
+          "CK_Appointment_Times",
+          "CK_Appointment_Times",
+          "The end must be after the start",
+          "A booking that ends before it starts is refused by the table, whatever any program does."
+         ],
+         [
+          "CK_Appointment_Status",
+          "$end",
+          "The list of statuses",
+          "Status must be Booked, Done or Cancelled. The list runs over two lines because of its length; the server reads it as one. In stage 6 you will try to add a booking with the status Maybe, and this rule will turn it away. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE Appointment (\n    AppointmentID   INT IDENTITY(1,1) NOT NULL,\n    CustomerID      INT           NOT NULL,\n    MechanicID      INT           NOT NULL,\n    ServiceTypeID   INT           NOT NULL,\n    StartTime       DATETIME      NOT NULL,\n    EndTime         DATETIME      NOT NULL,\n    BikeDescription VARCHAR(80)  NOT NULL,\n    Notes           VARCHAR(200) NULL,\n    Status          VARCHAR(10)   NOT NULL\n        CONSTRAINT DF_Appointment_Status DEFAULT ('Booked'),\n    BookedByStaffID INT           NOT NULL,\n    BookedOn        DATETIME      NOT NULL\n        CONSTRAINT DF_Appointment_BookedOn DEFAULT (GETDATE()),\n    CONSTRAINT PK_Appointment PRIMARY KEY (AppointmentID),\n    CONSTRAINT FK_Appointment_Customer    FOREIGN KEY (CustomerID)\n        REFERENCES Customer (CustomerID),\n    CONSTRAINT FK_Appointment_Mechanic    FOREIGN KEY (MechanicID)\n        REFERENCES Staff (StaffID),\n    CONSTRAINT FK_Appointment_ServiceType FOREIGN KEY (ServiceTypeID)\n        REFERENCES ServiceType (ServiceTypeID),\n    CONSTRAINT FK_Appointment_BookedBy    FOREIGN KEY (BookedByStaffID)\n        REFERENCES Staff (StaffID),\n    CONSTRAINT CK_Appointment_Times  CHECK (EndTime > StartTime),\n    CONSTRAINT CK_Appointment_Status CHECK (Status IN ('Booked', 'Done',\n        'Cancelled'))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "AppointmentID is a number that the table gives out itself."
+         ],
+         [
+          3,
+          5,
+          "Three numbers that point at other tables",
+          "CustomerID is the number of a row in Customer. MechanicID is the number of a row in Staff. ServiceTypeID is the number of a row in ServiceType. Each is a plain INT here; the lines near the end say which table each one points at."
+         ],
+         [
+          6,
+          7,
+          "When the job starts and ends",
+          "DATETIME holds a day and a clock time together, such as 12 October 2026 at 09:30, which is what a diary needs. Both must be filled."
+         ],
+         [
+          8,
+          9,
+          "What the bike is, and any notes",
+          "BikeDescription is up to 80 letters, such as Blue Trek hybrid, and must be filled. Notes may be left empty."
+         ],
+         [
+          10,
+          11,
+          "The status, Booked unless told otherwise",
+          "Status is one short word. The DEFAULT means a new booking is Booked without anyone saying so."
+         ],
+         [
+          12,
+          14,
+          "Who booked it and when",
+          "BookedByStaffID is the number of the member of staff who made the booking. BookedOn is stamped with the date and time right now by its DEFAULT, GETDATE(), with the clock part kept this time."
+         ],
+         [
+          15,
+          15,
+          "The primary key",
+          "AppointmentID names each booking."
+         ],
+         [
+          16,
+          19,
+          "The first two foreign keys",
+          "FOREIGN KEY (CustomerID) REFERENCES Customer (CustomerID) means: the number in CustomerID must be the number of a real row in Customer. A booking for customer 99, who does not exist, is refused. The second one says the same for MechanicID, which must be a real row in Staff. Each rule is named FK, the table, then what it points at."
+         ],
+         [
+          20,
+          23,
+          "Two more foreign keys",
+          "ServiceTypeID must be a real job in ServiceType. BookedByStaffID must be a real member of staff, so this table points at Staff twice: once for the mechanic, once for whoever took the booking."
+         ],
+         [
+          24,
+          24,
+          "The end must be after the start",
+          "A booking that ends before it starts is refused by the table, whatever any program does."
+         ],
+         [
+          25,
+          28,
+          "The list of statuses",
+          "Status must be Booked, Done or Cancelled. The list runs over two lines because of its length; the server reads it as one. In stage 6 you will try to add a booking with the status Maybe, and this rule will turn it away. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.3.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.3-appointment",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.3.2",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.3.3",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-appointment-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the Appointment table pasted after the GO that ends the ServiceType table: CREATE TABLE Appointment at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The Appointment table pasted at the end of the script, under the GO that ends the ServiceType table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 12,
+            "say": "The GO that ends the ServiceType table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 50,
+            "say": "The pasted Appointment table, from CREATE TABLE Appointment down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.3.4",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.3.5",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.3.6",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the Bike table, which has a rule that reads two columns at once.",
+     "blocks": [
+      {
+       "p": "Bike is every bike the shop owns, for hire or for sale. It is the longest table, because a bike has many facts, and two of its checks read more than one column at once. Read what is new in each part, then add it."
+      },
+      {
+       "code": {
+        "id": "3.3-bike",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "Bike: every bike the shop owns",
+        "src": "sql_table:Bike",
+        "parts": [
+         [
+          "CREATE TABLE Bike (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "BikeID is a number that the table gives out itself."
+         ],
+         [
+          "FrameNumber",
+          "Colour",
+          "What the bike is",
+          "FrameNumber is the code stamped on the frame, such as TK-2201. Make, Model, Size and Colour are text. Size is VARCHAR(2) because the longest size, XS or XL, is two letters."
+         ],
+         [
+          "Purpose",
+          "SalePrice",
+          "Hire or sale, and the two prices",
+          "Purpose is the word Hire or the word Sale. DailyRate and SalePrice both allow NULL, because a hire bike has no sale price and a sale bike has no daily rate."
+         ],
+         [
+          "Status",
+          "SoldOn",
+          "The status, and who the bike is for",
+          "Status starts as Available. CustomerID may be empty, and holds the customer a bike is reserved for or sold to. SoldOn is the day it was sold, empty until then."
+         ],
+         [
+          "PK_Bike",
+          "REFERENCES Customer",
+          "The key, the unique frame number and the foreign key",
+          "No two bikes can share a frame number, and CustomerID, when it is filled, must be a real customer."
+         ],
+         [
+          "CK_Bike_Size",
+          "CK_Bike_SalePrice",
+          "The lists and the prices",
+          "Three lists: a size must be XS, S, M, L or XL; a purpose must be Hire or Sale; a status must be Available, Reserved, Sold or In repair. The two price checks say IS NULL OR, which means: an empty price is fine, and a filled price must not be below zero."
+         ],
+         [
+          "CK_Bike_PriceForPurpose",
+          "OR (Purpose = 'Sale'",
+          "A hire bike needs a daily rate, a sale bike needs a price",
+          "This CHECK reads two columns at once. Either the purpose is Hire and the daily rate is filled, or the purpose is Sale and the sale price is filled. A sale bike with no price is refused."
+         ],
+         [
+          "CK_Bike_SoldNeedsDetails",
+          "$end",
+          "A sold bike needs a date and a customer",
+          "Either the status is Sold and both the day and the customer are filled, or the status is anything else and the day is empty. The two-character sign <> means is not equal to. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE Bike (\n    BikeID      INT IDENTITY(1,1) NOT NULL,\n    FrameNumber VARCHAR(20)  NOT NULL,\n    Make        VARCHAR(30) NOT NULL,\n    Model       VARCHAR(40) NOT NULL,\n    Size        VARCHAR(2)   NOT NULL,\n    Colour      VARCHAR(20) NOT NULL,\n    Purpose     VARCHAR(4)   NOT NULL,\n    DailyRate   DECIMAL(6,2) NULL,\n    SalePrice   DECIMAL(8,2) NULL,\n    Status      VARCHAR(10)  NOT NULL\n        CONSTRAINT DF_Bike_Status DEFAULT ('Available'),\n    CustomerID  INT          NULL,      -- reserved for / sold to\n    SoldOn      DATE         NULL,\n    CONSTRAINT PK_Bike PRIMARY KEY (BikeID),\n    CONSTRAINT UQ_Bike_FrameNumber UNIQUE (FrameNumber),\n    CONSTRAINT FK_Bike_Customer FOREIGN KEY (CustomerID)\n        REFERENCES Customer (CustomerID),\n    CONSTRAINT CK_Bike_Size    CHECK (Size IN ('XS', 'S', 'M', 'L', 'XL')),\n    CONSTRAINT CK_Bike_Purpose CHECK (Purpose IN ('Hire', 'Sale')),\n    CONSTRAINT CK_Bike_Status  CHECK (Status IN ('Available', 'Reserved',\n        'Sold', 'In repair')),\n    CONSTRAINT CK_Bike_DailyRate CHECK (DailyRate IS NULL OR DailyRate >= 0),\n    CONSTRAINT CK_Bike_SalePrice CHECK (SalePrice IS NULL OR SalePrice >= 0),\n    CONSTRAINT CK_Bike_PriceForPurpose CHECK (\n        (Purpose = 'Hire' AND DailyRate IS NOT NULL)\n            OR (Purpose = 'Sale' AND SalePrice IS NOT NULL)),\n    CONSTRAINT CK_Bike_SoldNeedsDetails CHECK (\n        (Status = 'Sold' AND SoldOn IS NOT NULL AND CustomerID IS NOT NULL)\n            OR (Status <> 'Sold' AND SoldOn IS NULL))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "BikeID is a number that the table gives out itself."
+         ],
+         [
+          3,
+          7,
+          "What the bike is",
+          "FrameNumber is the code stamped on the frame, such as TK-2201. Make, Model, Size and Colour are text. Size is VARCHAR(2) because the longest size, XS or XL, is two letters."
+         ],
+         [
+          8,
+          10,
+          "Hire or sale, and the two prices",
+          "Purpose is the word Hire or the word Sale. DailyRate and SalePrice both allow NULL, because a hire bike has no sale price and a sale bike has no daily rate."
+         ],
+         [
+          11,
+          14,
+          "The status, and who the bike is for",
+          "Status starts as Available. CustomerID may be empty, and holds the customer a bike is reserved for or sold to. SoldOn is the day it was sold, empty until then."
+         ],
+         [
+          15,
+          18,
+          "The key, the unique frame number and the foreign key",
+          "No two bikes can share a frame number, and CustomerID, when it is filled, must be a real customer."
+         ],
+         [
+          19,
+          24,
+          "The lists and the prices",
+          "Three lists: a size must be XS, S, M, L or XL; a purpose must be Hire or Sale; a status must be Available, Reserved, Sold or In repair. The two price checks say IS NULL OR, which means: an empty price is fine, and a filled price must not be below zero."
+         ],
+         [
+          25,
+          27,
+          "A hire bike needs a daily rate, a sale bike needs a price",
+          "This CHECK reads two columns at once. Either the purpose is Hire and the daily rate is filled, or the purpose is Sale and the sale price is filled. A sale bike with no price is refused."
+         ],
+         [
+          28,
+          32,
+          "A sold bike needs a date and a customer",
+          "Either the status is Sold and both the day and the customer are filled, or the status is anything else and the day is empty. The two-character sign <> means is not equal to. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.3.7",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.3-bike",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.3.8",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.3.9",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-bike-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the Bike table pasted after the GO that ends the Appointment table: CREATE TABLE Bike at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The Bike table pasted at the end of the script, under the GO that ends the Appointment table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 12,
+            "say": "The GO that ends the Appointment table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 50,
+            "say": "The pasted Bike table, from CREATE TABLE Bike down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.3.10",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.3.11",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.3.12",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add the Hire table, and read the deposit check.",
+     "blocks": [
+      {
+       "p": "Hire is one row per bike hire: which bike, which customer, the day it goes out and the day it comes back. Most of it you have seen before. Read the deposit check with care, because it is the shape of every money rule in your own scenario."
+      },
+      {
+       "code": {
+        "id": "3.3-hire",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "Hire: one row per bike hire",
+        "src": "sql_table:Hire",
+        "parts": [
+         [
+          "CREATE TABLE Hire (",
+          "CustomerID",
+          "The number column and two pointers",
+          "HireID is given out by the table. BikeID and CustomerID are the numbers of a real bike and a real customer."
+         ],
+         [
+          "StartDate",
+          "EndDate",
+          "The two days",
+          "A hire is by the day, not the hour, so both are DATE with no clock part. The comment says what EndDate means: the day the bike comes back."
+         ],
+         [
+          "TotalCost",
+          "DF_Hire_DepositPaid",
+          "The money",
+          "TotalCost is what the hire costs. DepositPaid is what was paid up front, and it starts at 0 unless a value is given."
+         ],
+         [
+          "Status",
+          "DF_Hire_BookedOn",
+          "The status, who booked it and when",
+          "Status is Booked until told otherwise. BookedByStaffID is the staff member who took the booking, and BookedOn is the date and time it was made, stamped by GETDATE()."
+         ],
+         [
+          "PK_Hire",
+          "REFERENCES Staff",
+          "The key and three foreign keys",
+          "HireID names the row. The three FOREIGN KEY rules say the bike, the customer and the staff member must each be a real row in their own table."
+         ],
+         [
+          "CK_Hire_Dates",
+          "CK_Hire_Total",
+          "The dates and the total",
+          "The bike must come back after it goes out, and the total cost cannot be below zero."
+         ],
+         [
+          "CK_Hire_Deposit",
+          "CK_Hire_Deposit",
+          "The deposit check, walked",
+          "CONSTRAINT names the rule: CK for check, Hire for the table, Deposit for what it checks. CHECK opens the test. Inside the brackets, DepositPaid >= 0 is true for a deposit of 0 or more and false for a deposit of minus 5. When the test is false, the row is refused and the red text names CK_Hire_Deposit. A program never gets the chance to store a negative deposit."
+         ],
+         [
+          "CK_Hire_Status",
+          "$end",
+          "The list of statuses",
+          "Status must be Booked, Out, Returned or Cancelled, and nothing else. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE Hire (\n    HireID          INT IDENTITY(1,1) NOT NULL,\n    BikeID          INT          NOT NULL,\n    CustomerID      INT          NOT NULL,\n    StartDate       DATE         NOT NULL,\n    EndDate         DATE         NOT NULL,   -- the day the bike comes back\n    TotalCost       DECIMAL(8,2) NOT NULL,\n    DepositPaid     DECIMAL(8,2) NOT NULL\n        CONSTRAINT DF_Hire_DepositPaid DEFAULT (0),\n    Status          VARCHAR(10)  NOT NULL\n        CONSTRAINT DF_Hire_Status DEFAULT ('Booked'),\n    BookedByStaffID INT          NOT NULL,\n    BookedOn        DATETIME     NOT NULL\n        CONSTRAINT DF_Hire_BookedOn DEFAULT (GETDATE()),\n    CONSTRAINT PK_Hire PRIMARY KEY (HireID),\n    CONSTRAINT FK_Hire_Bike     FOREIGN KEY (BikeID)\n        REFERENCES Bike (BikeID),\n    CONSTRAINT FK_Hire_Customer FOREIGN KEY (CustomerID)\n        REFERENCES Customer (CustomerID),\n    CONSTRAINT FK_Hire_BookedBy FOREIGN KEY (BookedByStaffID)\n        REFERENCES Staff (StaffID),\n    CONSTRAINT CK_Hire_Dates   CHECK (EndDate > StartDate),\n    CONSTRAINT CK_Hire_Total   CHECK (TotalCost >= 0),\n    CONSTRAINT CK_Hire_Deposit CHECK (DepositPaid >= 0),\n    CONSTRAINT CK_Hire_Status  CHECK (Status IN ('Booked', 'Out', 'Returned',\n        'Cancelled'))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          4,
+          "The number column and two pointers",
+          "HireID is given out by the table. BikeID and CustomerID are the numbers of a real bike and a real customer."
+         ],
+         [
+          5,
+          6,
+          "The two days",
+          "A hire is by the day, not the hour, so both are DATE with no clock part. The comment says what EndDate means: the day the bike comes back."
+         ],
+         [
+          7,
+          9,
+          "The money",
+          "TotalCost is what the hire costs. DepositPaid is what was paid up front, and it starts at 0 unless a value is given."
+         ],
+         [
+          10,
+          14,
+          "The status, who booked it and when",
+          "Status is Booked until told otherwise. BookedByStaffID is the staff member who took the booking, and BookedOn is the date and time it was made, stamped by GETDATE()."
+         ],
+         [
+          15,
+          21,
+          "The key and three foreign keys",
+          "HireID names the row. The three FOREIGN KEY rules say the bike, the customer and the staff member must each be a real row in their own table."
+         ],
+         [
+          22,
+          23,
+          "The dates and the total",
+          "The bike must come back after it goes out, and the total cost cannot be below zero."
+         ],
+         [
+          24,
+          24,
+          "The deposit check, walked",
+          "CONSTRAINT names the rule: CK for check, Hire for the table, Deposit for what it checks. CHECK opens the test. Inside the brackets, DepositPaid >= 0 is true for a deposit of 0 or more and false for a deposit of minus 5. When the test is false, the row is refused and the red text names CK_Hire_Deposit. A program never gets the chance to store a negative deposit."
+         ],
+         [
+          25,
+          28,
+          "The list of statuses",
+          "Status must be Booked, Out, Returned or Cancelled, and nothing else. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.3.13",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.3-hire",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.3.14",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.3.15",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-hire-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the Hire table pasted after the GO that ends the Bike table: CREATE TABLE Hire at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The Hire table pasted at the end of the script, under the GO that ends the Bike table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 21,
+            "say": "The GO that ends the Bike table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 55,
+            "say": "The pasted Hire table, from CREATE TABLE Hire down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.3.16",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.3.17",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.3.18",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Supplier and Part, then PartOrder and PartSale",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Write the Supplier table yourself.",
+     "blocks": [
+      {
+       "p": "Supplier is the smallest table in the database: who the shop buys parts from. It has four columns, a primary key and one UNIQUE rule, and you have seen every piece of it in Customer and Staff. Write it from the plan below, run it, and only then open the answer to compare."
+      },
+      {
+       "code": {
+        "id": "3.4-supplier",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "Supplier: who the shop buys from",
+        "src": "sql_table:Supplier",
+        "parts": [
+         [
+          "CREATE TABLE Supplier (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "SupplierID is a number that the table gives out itself."
+         ],
+         [
+          "VARCHAR(60)",
+          "Email",
+          "The name, the phone number and the email address",
+          "Name holds up to 60 letters, because a supplier's name is longer than a person's. Phone is text, as in Customer. Email may be empty."
+         ],
+         [
+          "PK_Supplier",
+          "$end",
+          "The key and the UNIQUE rule",
+          "SupplierID names the row, and no two suppliers can share a name. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "task": [
+         "In SQL Server Management Studio (SSMS), click on the empty line under the last GO at the end of your script and type CREATE TABLE Supplier, a space and an opening bracket.",
+         "Type four columns, one per line with a comma after each: SupplierID as an INT that the table gives out itself and can never be empty; Name as text of up to 60 letters that must be filled; Phone as text of up to 15 characters that must be filled; Email as text of up to 100 characters that may be empty.",
+         "Type a CONSTRAINT line that makes SupplierID the primary key, named PK_Supplier, with a comma after it.",
+         "Type a CONSTRAINT line named UQ_Supplier_Name that makes Name UNIQUE, with no comma after it.",
+         "Close the bracket with a semicolon after it, and type GO on the next line."
+        ],
+        "test": "Running the whole script with nothing highlighted is the test: the Messages pane must say Commands completed successfully, and after a Refresh, Supplier must be in the Tables folder in Object Explorer.",
+        "expect": "Commands completed successfully, and seven tables in the Tables folder once you right-click it and click Refresh. Red text means a line to fix: the line number in it is the one to look at.",
+        "hint": "Customer is the pattern. Its first line is CustomerID INT IDENTITY(1,1) NOT NULL, and its UNIQUE rule would be written CONSTRAINT UQ_Supplier_Name UNIQUE (Name). A column that may be empty says NULL where the others say NOT NULL.",
+        "text": "CREATE TABLE Supplier (\n    SupplierID INT IDENTITY(1,1) NOT NULL,\n    Name       VARCHAR(60)  NOT NULL,\n    Phone      VARCHAR(15)   NOT NULL,\n    Email      VARCHAR(100) NULL,\n    CONSTRAINT PK_Supplier PRIMARY KEY (SupplierID),\n    CONSTRAINT UQ_Supplier_Name UNIQUE (Name)\n);\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "SupplierID is a number that the table gives out itself."
+         ],
+         [
+          3,
+          5,
+          "The name, the phone number and the email address",
+          "Name holds up to 60 letters, because a supplier's name is longer than a person's. Phone is text, as in Customer. Email may be empty."
+         ],
+         [
+          6,
+          9,
+          "The key and the UNIQUE rule",
+          "SupplierID names the row, and no two suppliers can share a name. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.4.1",
+         "do": "Do the five numbered tasks in the Supplier box above, in order.",
+         "see": "Your Supplier table is under the last GO, ending with a closing bracket, a semicolon and GO on its own line."
+        },
+        {
+         "id": "3.4.2",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.4.3",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.4.4",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ],
+          [
+           "Red text that says 'Column, parameter, or variable … Cannot find data type …'",
+           "A type is misspelled, such as VARCHAR without the R or DECIMAL with the letters swapped. The types in this chapter are INT, VARCHAR, DECIMAL, DATE, DATETIME and BIT."
+          ]
+         ]
+        },
+        {
+         "id": "3.4.5",
+         "do": "In Object Explorer, right-click the Tables folder under BikeShop and click Refresh.",
+         "see": "Supplier is in the list of tables."
+        },
+        {
+         "id": "3.4.6",
+         "do": "Click Stuck? Show me the finished table under the tasks.",
+         "see": "The finished Supplier table opens under the tasks."
+        },
+        {
+         "id": "3.4.7",
+         "do": "Read the finished table beside your own, line by line.",
+         "see": "Your table has the same four columns, the same two rules and the same GO. Spaces and the order of NOT NULL and the type do not matter; names and brackets do."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Write the Part table yourself, with the rule that stock can never go below zero.",
+     "blocks": [
+      {
+       "p": "Part is every part on the shelf: what it is called, who supplies it, what the shop pays, what the customer pays, and how many are in stock. It has one foreign key, to Supplier, and five CHECK rules. One of those rules is the most important line in this whole script for chapter 8, where parts are sold: stock can never go below zero. Write the table from the plan, run it, then compare."
+      },
+      {
+       "code": {
+        "id": "3.4-part",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "Part: every part on the shelf",
+        "src": "sql_table:Part",
+        "parts": [
+         [
+          "CREATE TABLE Part (",
+          "IDENTITY(1,1)",
+          "The table name and its number column",
+          "PartID is a number that the table gives out itself."
+         ],
+         [
+          "PartCode",
+          "SupplierID",
+          "The code, the name and the supplier",
+          "PartCode is the short code on the shelf label, such as TUBE-700. Name is what a person reads. SupplierID points at Supplier."
+         ],
+         [
+          "UnitCost",
+          "SellPrice",
+          "The two prices",
+          "UnitCost is what the shop pays the supplier, and SellPrice is what the customer pays. Both are DECIMAL(7,2), so the pennies are exact. The comments say which is which."
+         ],
+         [
+          "QtyInStock",
+          "ReorderQty",
+          "How many, and when to order more",
+          "QtyInStock starts at 0 by DEFAULT. ReorderLevel is the count at which more should be ordered, and ReorderQty is how many to order then. Chapter 8 uses both."
+         ],
+         [
+          "PK_Part",
+          "REFERENCES Supplier",
+          "The key, the unique code and the foreign key",
+          "PartID names the row, no two parts share a code, and the supplier must be a real row in Supplier."
+         ],
+         [
+          "CK_Part_UnitCost",
+          "CK_Part_SellPrice",
+          "Neither price below zero",
+          "These are two checks of the same shape as the deposit check in Hire."
+         ],
+         [
+          "CK_Part_QtyInStock",
+          "CK_Part_QtyInStock",
+          "Stock can never go below zero",
+          "CHECK (QtyInStock >= 0) is the rule the whole stock screen in chapter 8 relies on. If a program ever tries to sell three of a part when two are left, this one line refuses it, and the count stays right."
+         ],
+         [
+          "CK_Part_ReorderLevel",
+          "$end",
+          "The reorder rules",
+          "The reorder level may be 0, meaning never reorder. The reorder quantity must be more than 0, because ordering nothing makes no sense. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "task": [
+         "Click on the empty line under the last GO and type CREATE TABLE Part, a space and an opening bracket.",
+         "Type the columns, one per line with a comma after each: PartID, an INT the table gives out itself; PartCode, text of up to 12 characters; Name, text of up to 60; SupplierID, an INT; UnitCost and SellPrice, each DECIMAL(7,2); QtyInStock, an INT with a DEFAULT of 0 named DF_Part_QtyInStock; ReorderLevel and ReorderQty, each an INT. Every column is NOT NULL.",
+         "Type the primary key on PartID, named PK_Part, and a UNIQUE rule on PartCode, named UQ_Part_PartCode.",
+         "Type a FOREIGN KEY named FK_Part_Supplier that says SupplierID must be a real row in Supplier, in the shape of FK_Bike_Customer.",
+         "Type five CHECK rules, each named CK_Part_ and the column: UnitCost and SellPrice are each 0 or more; QtyInStock is 0 or more; ReorderLevel is 0 or more; ReorderQty is more than 0. The last one has no comma after it.",
+         "Close the bracket with a semicolon after it, and type GO on the next line."
+        ],
+        "test": "The whole script is the test again. Commands completed successfully, and Part in the Tables folder after a Refresh.",
+        "expect": "Commands completed successfully, and eight tables in the Tables folder after a Refresh. The one rule the examiner will look for is CHECK (QtyInStock >= 0), and the answer shows exactly where it goes.",
+        "hint": "A DEFAULT sits on the column's own line, after NOT NULL: CONSTRAINT DF_Part_QtyInStock DEFAULT (0). A foreign key is two lines: CONSTRAINT FK_Part_Supplier FOREIGN KEY (SupplierID), then REFERENCES Supplier (SupplierID). The checks are the same shape as CK_Hire_Deposit.",
+        "text": "CREATE TABLE Part (\n    PartID       INT IDENTITY(1,1) NOT NULL,\n    PartCode     VARCHAR(12)  NOT NULL,\n    Name         VARCHAR(60) NOT NULL,\n    SupplierID   INT          NOT NULL,\n    UnitCost     DECIMAL(7,2) NOT NULL,   -- what we pay\n    SellPrice    DECIMAL(7,2) NOT NULL,   -- what the customer pays\n    QtyInStock   INT          NOT NULL\n        CONSTRAINT DF_Part_QtyInStock DEFAULT (0),\n    ReorderLevel INT          NOT NULL,\n    ReorderQty   INT          NOT NULL,\n    CONSTRAINT PK_Part PRIMARY KEY (PartID),\n    CONSTRAINT UQ_Part_PartCode UNIQUE (PartCode),\n    CONSTRAINT FK_Part_Supplier FOREIGN KEY (SupplierID)\n        REFERENCES Supplier (SupplierID),\n    CONSTRAINT CK_Part_UnitCost     CHECK (UnitCost >= 0),\n    CONSTRAINT CK_Part_SellPrice    CHECK (SellPrice >= 0),\n    -- stock can never go below zero\n    CONSTRAINT CK_Part_QtyInStock   CHECK (QtyInStock >= 0),\n    CONSTRAINT CK_Part_ReorderLevel CHECK (ReorderLevel >= 0),\n    CONSTRAINT CK_Part_ReorderQty   CHECK (ReorderQty > 0)\n);\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The table name and its number column",
+          "PartID is a number that the table gives out itself."
+         ],
+         [
+          3,
+          5,
+          "The code, the name and the supplier",
+          "PartCode is the short code on the shelf label, such as TUBE-700. Name is what a person reads. SupplierID points at Supplier."
+         ],
+         [
+          6,
+          7,
+          "The two prices",
+          "UnitCost is what the shop pays the supplier, and SellPrice is what the customer pays. Both are DECIMAL(7,2), so the pennies are exact. The comments say which is which."
+         ],
+         [
+          8,
+          11,
+          "How many, and when to order more",
+          "QtyInStock starts at 0 by DEFAULT. ReorderLevel is the count at which more should be ordered, and ReorderQty is how many to order then. Chapter 8 uses both."
+         ],
+         [
+          12,
+          15,
+          "The key, the unique code and the foreign key",
+          "PartID names the row, no two parts share a code, and the supplier must be a real row in Supplier."
+         ],
+         [
+          16,
+          17,
+          "Neither price below zero",
+          "These are two checks of the same shape as the deposit check in Hire."
+         ],
+         [
+          19,
+          19,
+          "Stock can never go below zero",
+          "CHECK (QtyInStock >= 0) is the rule the whole stock screen in chapter 8 relies on. If a program ever tries to sell three of a part when two are left, this one line refuses it, and the count stays right."
+         ],
+         [
+          20,
+          23,
+          "The reorder rules",
+          "The reorder level may be 0, meaning never reorder. The reorder quantity must be more than 0, because ordering nothing makes no sense. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.4.8",
+         "do": "Do the five numbered tasks in the Part box above, in order.",
+         "see": "Your Part table is under the last GO, ending with a closing bracket, a semicolon and GO on its own line."
+        },
+        {
+         "id": "3.4.9",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.4.10",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.4.11",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ],
+          [
+           "Red text that says 'Column, parameter, or variable … Cannot find data type …'",
+           "A type is misspelled, such as VARCHAR without the R or DECIMAL with the letters swapped. The types in this chapter are INT, VARCHAR, DECIMAL, DATE, DATETIME and BIT."
+          ]
+         ]
+        },
+        {
+         "id": "3.4.12",
+         "do": "In Object Explorer, right-click the Tables folder under BikeShop and click Refresh.",
+         "see": "Part is in the list of tables."
+        },
+        {
+         "id": "3.4.13",
+         "do": "Click Stuck? Show me the finished table under the tasks.",
+         "see": "The finished Part table opens under the tasks."
+        },
+        {
+         "id": "3.4.14",
+         "do": "Read the finished table beside your own, line by line.",
+         "see": "Your table has the same nine columns and the same eight rules, and the line CHECK (QtyInStock >= 0) is in it with the name CK_Part_QtyInStock."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add the PartOrder table, which records orders to suppliers.",
+     "blocks": [
+      {
+       "p": "PartOrder is one row per order the shop places with a supplier for more of a part. Nothing in it is new except that three of its columns stay empty until the order arrives. Read what each part does, then add it."
+      },
+      {
+       "code": {
+        "id": "3.4-partorder",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "PartOrder: one row per order to a supplier",
+        "src": "sql_table:PartOrder",
+        "parts": [
+         [
+          "CREATE TABLE PartOrder (",
+          "QtyOrdered",
+          "The number, the part and how many",
+          "PartOrderID is given out by the table. PartID points at the part. QtyOrdered is how many were asked for."
+         ],
+         [
+          "OrderedOn",
+          "DF_PartOrder_OrderedOn",
+          "The day it was ordered",
+          "OrderedOn is a DATE that its DEFAULT stamps with today, using the same CAST of GETDATE() as DateJoined in Customer."
+         ],
+         [
+          "ExpectedOn",
+          "QtyReceived",
+          "Three columns that wait for the delivery",
+          "ExpectedOn, ReceivedOn and QtyReceived all allow NULL, because an order that has not arrived yet has no delivery day and no count received."
+         ],
+         [
+          "Status",
+          "PlacedByStaffID",
+          "The status, and who placed it",
+          "Status starts as Ordered until something changes it, and PlacedByStaffID is the number of the member of staff who placed the order."
+         ],
+         [
+          "PK_PartOrder",
+          "REFERENCES Staff",
+          "The key and two foreign keys",
+          "The part must be a real row in Part, and the staff member a real row in Staff."
+         ],
+         [
+          "CK_PartOrder_Qty",
+          "OR QtyReceived >= 0",
+          "The two quantity checks",
+          "QtyOrdered must be more than 0. QtyReceived may be empty, and when it is filled it must be 0 or more."
+         ],
+         [
+          "CK_PartOrder_Status",
+          "$end",
+          "The list of statuses",
+          "Status must be Ordered, Received or Cancelled. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE PartOrder (\n    PartOrderID     INT IDENTITY(1,1) NOT NULL,\n    PartID          INT         NOT NULL,\n    QtyOrdered      INT         NOT NULL,\n    OrderedOn       DATE        NOT NULL\n        CONSTRAINT DF_PartOrder_OrderedOn DEFAULT (CAST(GETDATE() AS DATE)),\n    ExpectedOn      DATE        NULL,\n    ReceivedOn      DATE        NULL,\n    QtyReceived     INT         NULL,\n    Status          VARCHAR(10) NOT NULL\n        CONSTRAINT DF_PartOrder_Status DEFAULT ('Ordered'),\n    PlacedByStaffID INT         NOT NULL,\n    CONSTRAINT PK_PartOrder PRIMARY KEY (PartOrderID),\n    CONSTRAINT FK_PartOrder_Part     FOREIGN KEY (PartID)\n        REFERENCES Part (PartID),\n    CONSTRAINT FK_PartOrder_PlacedBy FOREIGN KEY (PlacedByStaffID)\n        REFERENCES Staff (StaffID),\n    CONSTRAINT CK_PartOrder_Qty         CHECK (QtyOrdered > 0),\n    CONSTRAINT CK_PartOrder_QtyReceived CHECK (QtyReceived IS NULL\n        OR QtyReceived >= 0),\n    CONSTRAINT CK_PartOrder_Status      CHECK (Status IN ('Ordered', 'Received',\n        'Cancelled'))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          4,
+          "The number, the part and how many",
+          "PartOrderID is given out by the table. PartID points at the part. QtyOrdered is how many were asked for."
+         ],
+         [
+          5,
+          6,
+          "The day it was ordered",
+          "OrderedOn is a DATE that its DEFAULT stamps with today, using the same CAST of GETDATE() as DateJoined in Customer."
+         ],
+         [
+          7,
+          9,
+          "Three columns that wait for the delivery",
+          "ExpectedOn, ReceivedOn and QtyReceived all allow NULL, because an order that has not arrived yet has no delivery day and no count received."
+         ],
+         [
+          10,
+          12,
+          "The status, and who placed it",
+          "Status starts as Ordered until something changes it, and PlacedByStaffID is the number of the member of staff who placed the order."
+         ],
+         [
+          13,
+          17,
+          "The key and two foreign keys",
+          "The part must be a real row in Part, and the staff member a real row in Staff."
+         ],
+         [
+          18,
+          20,
+          "The two quantity checks",
+          "QtyOrdered must be more than 0. QtyReceived may be empty, and when it is filled it must be 0 or more."
+         ],
+         [
+          21,
+          24,
+          "The list of statuses",
+          "Status must be Ordered, Received or Cancelled. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.4.15",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.4-partorder",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.4.16",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.4.17",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-partorder-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the PartOrder table pasted after the GO that ends the Part table: CREATE TABLE PartOrder at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The PartOrder table pasted at the end of the script, under the GO that ends the Part table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 30,
+            "say": "The GO that ends the Part table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 60,
+            "say": "The pasted PartOrder table, from CREATE TABLE PartOrder down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.4.18",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.4.19",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.4.20",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Add the PartSale table, the last of the ten.",
+     "blocks": [
+      {
+       "p": "PartSale is one row per sale of a part over the counter. Two things are new: a customer column that may be empty, because many people who buy an inner tube are not on the books, and a price column that keeps the price on the day, so that a later price change does not rewrite history."
+      },
+      {
+       "code": {
+        "id": "3.4-partsale",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "PartSale: one row per sale over the counter",
+        "src": "sql_table:PartSale",
+        "parts": [
+         [
+          "CREATE TABLE PartSale (",
+          "PartID        INT",
+          "The number and the part",
+          "PartSaleID is given out by the table. PartID points at the part that was sold."
+         ],
+         [
+          "CustomerID",
+          "Quantity",
+          "The customer, who may be a walk-in, and how many",
+          "CustomerID allows NULL. The comment says why: an empty box means a walk-in customer, someone not on the books. Quantity is how many were sold."
+         ],
+         [
+          "UnitPrice",
+          "DF_PartSale_SoldOn",
+          "The price on the day, and when",
+          "UnitPrice is copied from the part's SellPrice at the moment of the sale, so a price rise next month does not change what was paid today. SoldOn is stamped with the date and time by GETDATE()."
+         ],
+         [
+          "SoldByStaffID",
+          "DF_PartSale_Status",
+          "Who sold it, and the status",
+          "SoldByStaffID is the number of the member of staff at the counter, and Status starts as Sold."
+         ],
+         [
+          "PK_PartSale",
+          "REFERENCES Staff",
+          "The key and three foreign keys",
+          "The part, the customer when there is one, and the staff member must each be a real row in their own table."
+         ],
+         [
+          "CK_PartSale_Quantity",
+          "$end",
+          "The two checks",
+          "A sale of 0 or fewer parts is refused, and the status must be Sold or Refunded. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ],
+        "text": "CREATE TABLE PartSale (\n    PartSaleID    INT IDENTITY(1,1) NOT NULL,\n    PartID        INT          NOT NULL,\n    CustomerID    INT          NULL,      -- NULL = walk-in customer\n    Quantity      INT          NOT NULL,\n    -- the price on the day: history keeps it\n    UnitPrice     DECIMAL(7,2) NOT NULL,\n    SoldOn        DATETIME     NOT NULL\n        CONSTRAINT DF_PartSale_SoldOn DEFAULT (GETDATE()),\n    SoldByStaffID INT          NOT NULL,\n    Status        VARCHAR(10)  NOT NULL\n        CONSTRAINT DF_PartSale_Status DEFAULT ('Sold'),\n    CONSTRAINT PK_PartSale PRIMARY KEY (PartSaleID),\n    CONSTRAINT FK_PartSale_Part     FOREIGN KEY (PartID)\n        REFERENCES Part (PartID),\n    CONSTRAINT FK_PartSale_Customer FOREIGN KEY (CustomerID)\n        REFERENCES Customer (CustomerID),\n    CONSTRAINT FK_PartSale_SoldBy   FOREIGN KEY (SoldByStaffID)\n        REFERENCES Staff (StaffID),\n    CONSTRAINT CK_PartSale_Quantity CHECK (Quantity > 0),\n    CONSTRAINT CK_PartSale_Status   CHECK (Status IN ('Sold', 'Refunded'))\n);\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "The number and the part",
+          "PartSaleID is given out by the table. PartID points at the part that was sold."
+         ],
+         [
+          4,
+          5,
+          "The customer, who may be a walk-in, and how many",
+          "CustomerID allows NULL. The comment says why: an empty box means a walk-in customer, someone not on the books. Quantity is how many were sold."
+         ],
+         [
+          7,
+          9,
+          "The price on the day, and when",
+          "UnitPrice is copied from the part's SellPrice at the moment of the sale, so a price rise next month does not change what was paid today. SoldOn is stamped with the date and time by GETDATE()."
+         ],
+         [
+          10,
+          12,
+          "Who sold it, and the status",
+          "SoldByStaffID is the number of the member of staff at the counter, and Status starts as Sold."
+         ],
+         [
+          13,
+          19,
+          "The key and three foreign keys",
+          "The part, the customer when there is one, and the staff member must each be a real row in their own table."
+         ],
+         [
+          20,
+          23,
+          "The two checks",
+          "A sale of 0 or fewer parts is refused, and the status must be Sold or Refunded. The closing bracket and the semicolon end the table. GO sends everything above it to the server before the next table starts."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.4.21",
+         "do": "Press the Copy button under this step.",
+         "copy": "3.4-partsale",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "3.4.22",
+         "do": "Click on the empty line under the last GO, at the very end of the script.",
+         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+        },
+        {
+         "id": "3.4.23",
+         "do": "Press Ctrl and V together.",
+         "see": "The new table is at the end of your script, from CREATE TABLE down to its own GO.",
+         "img": {
+          "img": "img/ch03-ssms-partsale-pasted.png",
+          "alt": "The end of BikeShop.sql in SQL Server Management Studio (SSMS) with the PartSale table pasted after the GO that ends the PartOrder table: CREATE TABLE PartSale at the top of the pasted block and its own GO at the bottom. The cursor sits on the empty line under that GO.",
+          "cap": "The PartSale table pasted at the end of the script, under the GO that ends the PartOrder table. The next table goes on the empty line under its own GO.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 33,
+            "say": "The GO that ends the PartOrder table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 62,
+            "say": "The pasted PartSale table, from CREATE TABLE PartSale down to GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.4.24",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.4.25",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.4.26",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane says: Commands completed successfully. All ten tables were dropped and made again.",
+         "img": {
+          "img": "img/ch03-ssms-head-run.png",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 28,
+            "y": 3,
+            "say": "Click Execute, or press F5, with nothing highlighted."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 60,
+            "say": "The Messages pane says: Commands completed successfully."
+           },
+           {
+            "n": 3,
+            "x": 11,
+            "y": 26,
+            "say": "BikeShop appears under Databases."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare it with the block above, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Sample data and the last line",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Download the sample data file.",
+     "blocks": [
+      {
+       "p": "Ten empty tables are hard to test with. The sample data is a file of INSERT lines that fills every table with made-up rows: twelve customers, six members of staff, seven jobs, three suppliers, twelve parts, twelve bikes, fourteen bookings, six hires, four orders and eight sales. It is a download from the front page of this guide, and its lines go into your script under the last table, so that every run of the script puts the same rows back."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.5.1",
+         "do": "In the Edge browser, click Coursework guide at the top left to go back to the front page.",
+         "see": "The list of chapters is showing, and under it is a card called Sample data."
+        },
+        {
+         "id": "3.5.2",
+         "do": "Click BikeShop-sample-data.sql in the Sample data card.",
+         "see": "Edge shows the file in its Downloads pop-up at the top right. It is now in your Downloads folder.",
+         "img": {
+          "img": "img/ch03-edge-download.png",
+          "alt": "The front page of this guide in the Edge browser, with the Sample data card under the list of chapters and the link BikeShop-sample-data.sql in it. The Downloads pop-up at the top right shows BikeShop-sample-data.sql.",
+          "cap": "The Sample data card on the front page of this guide. One click saves BikeShop-sample-data.sql into your Downloads folder.",
+          "w": 900,
+          "h": 560,
+          "missing": true,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 80,
+            "say": "Click BikeShop-sample-data.sql in the Sample data card."
+           },
+           {
+            "n": 2,
+            "x": 88,
+            "y": 10,
+            "say": "Edge shows the file in its Downloads pop-up."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Edge asks whether to keep the file",
+           "Click Keep. The file is a text file of SQL lines from this guide, and nothing in it runs by itself."
+          ]
+         ]
+        },
+        {
+         "id": "3.5.3",
+         "do": "In SQL Server Management Studio (SSMS), click File at the top left.",
+         "see": "The File menu opens."
+        },
+        {
+         "id": "3.5.4",
+         "do": "Point at Open in the File menu.",
+         "see": "A small menu opens beside Open, and File… is in it.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio (SSMS) with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Files open from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 6,
+            "y": 25,
+            "say": "Point at Open."
+           },
+           {
+            "n": 3,
+            "x": 41,
+            "y": 48,
+            "say": "File… opens the box where you choose the file."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.5.5",
+         "do": "Click File… in the small menu.",
+         "see": "The Open File box opens."
+        },
+        {
+         "id": "3.5.6",
+         "do": "In the Open File box, double-click BikeShop-sample-data.sql in your Downloads folder.",
+         "see": "A second tab opens, named BikeShop-sample-data.sql. Its first line is a comment that says BikeShop sample data, and INSERT INTO Customer is a few lines down."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Copy every line of the sample data into your script, under the last table.",
+     "blocks": [
+      {
+       "p": "The sample data goes into BikeShop.sql in one piece, under the GO that ends the PartSale table. Copy the whole file, paste it, and the second tab can be closed. It does not matter that the pasted part is long: it is the same INSERT shape over and over, and the next screen reads the first one."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.5.7",
+         "do": "Press Ctrl and A together in the BikeShop-sample-data.sql tab.",
+         "see": "Every line in the tab is highlighted, from the first comment line down to the GO at the end.",
+         "img": {
+          "img": "img/ch03-ssms-sample-open.png",
+          "alt": "A second tab in SQL Server Management Studio (SSMS) named BikeShop-sample-data.sql, with every line highlighted after Ctrl and A: the DECLARE line, SET @Today, then INSERT INTO Customer and the first names, Aoife McCann and Seán Devlin.",
+          "cap": "The sample data file open in its own tab, with every line highlighted. It stays as it is: its lines are about to be copied into BikeShop.sql.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 37,
+            "y": 7,
+            "say": "The second tab, BikeShop-sample-data.sql."
+           },
+           {
+            "n": 2,
+            "x": 45,
+            "y": 50,
+            "say": "Every line highlighted, from the first comment line to the GO at the end."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.5.8",
+         "do": "Press Ctrl and C together.",
+         "see": "Nothing changes on the screen, and the lines are copied."
+        },
+        {
+         "id": "3.5.9",
+         "do": "Click the BikeShop.sql tab at the top of the window.",
+         "see": "The BikeShop.sql tab is in front, with your ten tables in it."
+        },
+        {
+         "id": "3.5.10",
+         "do": "Click on the empty line under the GO that ends the PartSale table, at the very end of the script.",
+         "see": "The cursor blinks on the empty line under the last GO."
+        },
+        {
+         "id": "3.5.11",
+         "do": "Press Ctrl and V together.",
+         "see": "The sample data is in your script, starting with its comment line and DECLARE @Today, and ending with GO. That GO is now the last line of the script.",
+         "img": {
+          "img": "img/ch03-ssms-sample-pasted.png",
+          "alt": "The BikeShop.sql tab in SQL Server Management Studio (SSMS) scrolled to the end of the PartSale table: its GO, then the pasted sample data starting with the comment line about sample data, DECLARE @Today, and INSERT INTO Customer.",
+          "cap": "The sample data pasted under the last table. The ten CREATE TABLE blocks are above it, and its GO is now the last line of the script.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 23,
+            "say": "The GO that ends the PartSale table."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 45,
+            "say": "The pasted sample data, starting with its comment line and DECLARE @Today."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.5.12",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        },
+        {
+         "id": "3.5.13",
+         "do": "Click the small cross on the BikeShop-sample-data.sql tab to close it.",
+         "see": "Only the BikeShop.sql tab is left. The downloaded file is still in your Downloads folder, and you will not need it again."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read the Customer INSERT, and what @Today does.",
+     "blocks": [
+      {
+       "p": "Every table is filled the same way: INSERT INTO, the table name, the list of columns in brackets, VALUES, then one row per bracket. Read the Customer one. The one thing that is not a plain value is @Today. A name beginning with @ is a variable: a named box that holds one value while the script runs. The lines above the INSERT in your script declare @Today and set it to today's date with CAST(GETDATE() AS DATE). Every DateJoined is counted back from that box, so the sample customers always joined between 400 and 5 days ago, whatever day you run the script. Two more boxes, @Day0 and @Next, do the same for the bookings, so that the diary always has bookings tomorrow."
+      },
+      {
+       "code": {
+        "id": "3.5-customer-data",
+        "kind": "read",
+        "lang": "sql",
+        "title": "INSERT INTO Customer: the twelve sample customers",
+        "src": "sql_data:Customer",
+        "parts": [
+         [
+          "INSERT INTO Customer",
+          "INSERT INTO Customer",
+          "Which table, and which columns",
+          "The five columns named in the brackets are the ones given a value, in that order. CustomerID is not in the list, because the table gives it out itself. VALUES says the rows follow."
+         ],
+         [
+          "('Aoife'",
+          "DATEADD(DAY, -400",
+          "The first customer",
+          "One row is one bracket with five values in the column order: Aoife, McCann, a phone number in quotes because it is text, an email address, and a date. DATEADD(DAY, -400, @Today) means: take the date in the @Today box and go back 400 days. The comment line with the number 1 is a note for a person, so that you can count the rows."
+         ],
+         [
+          "('Seán'",
+          "$end",
+          "Eleven more",
+          "Each row ends with a comma, and the last one ends with a semicolon, which ends the whole INSERT. Ciara Quinn and Hannah Boyle have NULL where the email address goes: an empty box, which the Email column allows. Jack O'Hare is written with two apostrophes, because one apostrophe would end the text early. Names with a fada, such as Seán and Gráinne, are stored as they are."
+         ]
+        ],
+        "text": "INSERT INTO Customer (FirstName, LastName, Phone, Email, DateJoined) VALUES\n -- 1\n ('Aoife',    'McCann',    '028 3026 4411', 'aoife.mccann@example.com',\n     DATEADD(DAY, -400, @Today)),\n -- 2\n ('Seán',     'Devlin',    '07712 334 918', 'sean.devlin@example.com',\n     DATEADD(DAY, -380, @Today)),\n -- 3\n ('Ciara',    'Quinn',     '028 3025 7720', NULL,\n     DATEADD(DAY, -300, @Today)),\n -- 4\n ('Oisín',    'Fegan',     '07855 201 377', 'oisin.fegan@example.com',\n     DATEADD(DAY, -260, @Today)),\n -- 5\n ('Gráinne',  'Murphy',    '028 3083 1190', 'grainne.murphy@example.com',\n     DATEADD(DAY, -200, @Today)),\n -- 6\n ('Tomás',    'Loughran',  '07400 556 212', 'tomas.loughran@example.com',\n     DATEADD(DAY, -150, @Today)),\n -- 7\n ('Hannah',   'Boyle',     '028 3026 9034', NULL,\n     DATEADD(DAY, -120, @Today)),\n -- 8\n ('Darragh',  'Rice',      '07911 782 450', 'darragh.rice@example.com',\n     DATEADD(DAY,  -90, @Today)),\n -- 9\n ('Méabh',    'Cunningham','028 3083 2278', 'meabh.c@example.com',\n     DATEADD(DAY,  -60, @Today)),\n -- 10\n ('Jack',     'O''Hare',   '07525 118 906', 'jack.ohare@example.com',\n     DATEADD(DAY,  -40, @Today)),\n -- 11\n ('Róisín',   'Campbell',  '028 3026 1552',\n     'roisin.campbell@example.com',DATEADD(DAY,  -21, @Today)),\n -- 12\n ('Ben',      'Toner',     '07388 640 271', 'ben.toner@example.com',\n     DATEADD(DAY,   -5, @Today));",
+        "partLines": [
+         [
+          1,
+          1,
+          "Which table, and which columns",
+          "The five columns named in the brackets are the ones given a value, in that order. CustomerID is not in the list, because the table gives it out itself. VALUES says the rows follow."
+         ],
+         [
+          3,
+          4,
+          "The first customer",
+          "One row is one bracket with five values in the column order: Aoife, McCann, a phone number in quotes because it is text, an email address, and a date. DATEADD(DAY, -400, @Today) means: take the date in the @Today box and go back 400 days. The comment line with the number 1 is a note for a person, so that you can count the rows."
+         ],
+         [
+          6,
+          37,
+          "Eleven more",
+          "Each row ends with a comma, and the last one ends with a semicolon, which ends the whole INSERT. Ciara Quinn and Hannah Boyle have NULL where the email address goes: an empty box, which the Email column allows. Jack O'Hare is written with two apostrophes, because one apostrophe would end the text early. Names with a fada, such as Seán and Gráinne, are stored as they are."
+         ]
+        ]
+       }
+      },
+      {
+       "p": "You can change the names to suit your own scenario, as long as every row keeps five values in the same order, and every phone number keeps at least ten characters, or the CHECK in Customer will refuse it."
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Type the last line of the script.",
+     "blocks": [
+      {
+       "p": "The script ends with one line that prints the words BikeShop is ready, and a GO. Those two lines are typed, not copied, because from now on they are the landmark of the script: every stored procedure in chapters 4 to 9 goes on the empty line above the PRINT line, so that the PRINT line is always last and the last thing the Messages pane says is always BikeShop is ready."
+      },
+      {
+       "code": {
+        "id": "3.5-tail",
+        "kind": "type",
+        "lang": "sql",
+        "title": "The last two lines of BikeShop.sql",
+        "src": "sql_tail",
+        "parts": [
+         [
+          "PRINT",
+          "$end",
+          "The words that mean the script got to the end",
+          "PRINT writes a line in the Messages pane. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
+         ]
+        ],
+        "focus": [
+         [
+          "PRINT",
+          "GO"
+         ]
+        ],
+        "why": "Two lines, typed so that the semicolon after the quote, the apostrophes round the words and the GO on its own line are in your fingers. Every chapter after this one finds its place by this line.",
+        "text": "PRINT 'BikeShop is ready.';\nGO",
+        "focusLines": [
+         [
+          1,
+          2
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          2,
+          "The words that mean the script got to the end",
+          "PRINT writes a line in the Messages pane. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.5.14",
+         "do": "Click at the end of the last GO, at the very end of the script.",
+         "see": "The cursor blinks after the O of the last GO."
+        },
+        {
+         "id": "3.5.15",
+         "do": "Press the Enter key twice.",
+         "see": "The cursor blinks on a new empty line, with one empty line between it and the GO that ends the sample data."
+        },
+        {
+         "id": "3.5.16",
+         "do": "Type PRINT 'BikeShop is ready.'; on that line, with the single quotes and the semicolon, and press Enter.",
+         "see": "The PRINT line is typed, and the cursor is on the line under it.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A word is misspelled. Compare your line with the PRINT line in the code block above, letter by letter, and check that it ends with a single quote and a semicolon."
+          ]
+         ]
+        },
+        {
+         "id": "3.5.17",
+         "do": "Type GO and press Enter.",
+         "see": "GO is the last line of the script, with an empty line above the PRINT line.",
+         "img": {
+          "img": "img/ch03-ssms-tail-typed.png",
+          "alt": "The last lines of BikeShop.sql in SQL Server Management Studio (SSMS): the GO that ends the sample data, an empty line, then PRINT BikeShop is ready, then GO, typed by hand.",
+          "cap": "The end of the script. From now on, every new line of SQL goes on the empty line above the line that prints BikeShop is ready, so that line stays last.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 85,
+            "say": "The empty line above the PRINT line, where every later chapter adds its lines."
+           },
+           {
+            "n": 2,
+            "x": 45,
+            "y": 90,
+            "say": "The two typed lines: PRINT BikeShop is ready, then GO."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.5.18",
+         "do": "Press Ctrl and S together to save the script.",
+         "see": "The star after BikeShop.sql on the tab disappears, because the file is saved."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Prove it: run it, look at it, and tick the table",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Run the whole script and see the sample rows go in.",
+     "blocks": [
+      {
+       "p": "The script is complete. Run it with nothing highlighted and read the Messages pane from the top: one line per INSERT counting the rows that went in, then BikeShop is ready. Run it a second time and the counts are the same, because the tables were dropped and made again before the rows went in. That second run is the proof that the script can be run again."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.6.1",
+         "do": "Click anywhere in the script so that nothing is highlighted.",
+         "see": "The cursor blinks in the script, and no line is highlighted in blue."
+        },
+        {
+         "id": "3.6.2",
+         "do": "Press F5 to run the whole script.",
+         "see": "The Messages pane shows a line for each table, such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
+         "img": {
+          "img": "img/ch07-ssms-execute.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
+          "cap": "Execute with nothing highlighted runs the whole script. The Messages pane counts the sample rows it put in, one line per table, then says BikeShop is ready.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 6,
+            "say": "Click Execute, or press F5."
+           },
+           {
+            "n": 2,
+            "x": 39,
+            "y": 90,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Incorrect syntax near …'",
+           "A bracket, a comma or a quote mark is missing or doubled. The line number in the red text is the line to look at. Compare that line with the same line in the code block on the screen for its table, or in the sample data download, character by character."
+          ],
+          [
+           "Red text that says 'There is already an object named … in the database'",
+           "The DROP TABLE line for that table is missing from the top of the script, so the old table was still there. Check the ten DROP TABLE lines against the block in stage 1."
+          ],
+          [
+           "Red text that says 'Could not drop object … because it is referenced by a FOREIGN KEY constraint'",
+           "A table is being dropped before a table that points at it. Put the DROP TABLE lines back in the order shown in stage 1: PartSale first, Customer last."
+          ],
+          [
+           "Red text that says 'Foreign key … references invalid table …'",
+           "A table is being made before the table it points at. The tables must be in the order of this chapter: Customer, Staff, ServiceType, Appointment, Bike, Hire, Supplier, Part, PartOrder, PartSale."
+          ],
+          [
+           "Red text that says 'The INSERT statement conflicted with the FOREIGN KEY constraint …'",
+           "A table is being filled before the table it points at. The INSERT lines must stay in the order of the download: Customer, Staff, ServiceType, Supplier, Part, Bike, Appointment, Hire, PartOrder, PartSale."
+          ],
+          [
+           "Red text that says 'Must declare the scalar variable @Today'",
+           "The DECLARE line and the SET lines above the Customer INSERT are missing, or a GO has got between them and the INSERTs. The sample data runs as one piece, from DECLARE down to its GO."
+          ]
+         ]
+        },
+        {
+         "id": "3.6.3",
+         "do": "Press F5 again, with nothing highlighted.",
+         "see": "The same lines appear again, ending with BikeShop is ready. Nothing is doubled, because the old tables were dropped first."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "See the ten tables in Object Explorer.",
+     "blocks": [
+      {
+       "p": "Object Explorer, on the left, lists what the server holds. It does not look again by itself, so after a script makes tables you refresh it. The ten tables appear in alphabetical order, each with dbo. in front, which the server adds to every table and which you never type."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch03-ssms-tables.png",
+        "alt": "Object Explorer in SQL Server Management Studio (SSMS) with the BikeShop database opened out: Tables lists the ten tables, Appointment, Bike, Customer, Hire, Part, PartOrder, PartSale, ServiceType, Staff and Supplier, each with dbo. in front of its name.",
+        "cap": "Object Explorer, on the left of SQL Server Management Studio (SSMS). Right-click Tables and click Refresh to see the tables your script has made. The dbo. in front of each name is added by the server, and you never type it.",
+        "w": 260,
+        "h": 432,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 40,
+          "y": 30,
+          "say": "Open Databases, then BikeShop."
+         },
+         {
+          "n": 2,
+          "x": 62,
+          "y": 62,
+          "say": "Tables: the ten tables, in alphabetical order."
+         }
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.6.4",
+         "do": "In Object Explorer, click the plus sign beside Databases.",
+         "see": "Databases opens out, and BikeShop is in the list under it."
+        },
+        {
+         "id": "3.6.5",
+         "do": "Click the plus sign beside BikeShop.",
+         "see": "BikeShop opens out, and one of the folders under it is called Tables."
+        },
+        {
+         "id": "3.6.6",
+         "do": "Right-click the Tables folder and click Refresh.",
+         "see": "The Tables folder is read again from the server."
+        },
+        {
+         "id": "3.6.7",
+         "do": "Click the plus sign beside the Tables folder.",
+         "see": "Ten tables are listed: Appointment, Bike, Customer, Hire, Part, PartOrder, PartSale, ServiceType, Staff and Supplier.",
+         "wrong": [
+          [
+           "Fewer than ten tables",
+           "One CREATE TABLE block is missing from the script, or the script stopped at a red error before it reached that table. Scroll the Messages pane up to the first red line and fix that."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Ask the Customer table for its rows.",
+     "blocks": [
+      {
+       "p": "A question to the database is written in a New Query window, not in the script, so that the script stays the clean master copy. SELECT * FROM Customer; means: show me every column of every row of Customer. The star means every column. The twelve names that come back are the first proof that the data is in."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.6.8",
+         "do": "Click New Query on the toolbar, or press Ctrl and N together.",
+         "see": "A new tab opens with an empty query window, and the cursor blinks in it.",
+         "img": {
+          "img": "img/ch07-ssms-new-query.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the New Query button at the left, and an empty query window below it.",
+          "cap": "New Query opens a second, empty window. Questions you ask the database go in here, so your script stays clean.",
+          "w": 900,
+          "h": 300,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 7,
+            "y": 5,
+            "say": "Click New Query, or press Ctrl and N together."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 60,
+            "say": "Type the question into the empty window."
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.6.9",
+         "do": "Type SELECT * FROM Customer; in the new window.",
+         "see": "The line is typed, with the star between SELECT and FROM, and a semicolon at the end."
+        },
+        {
+         "id": "3.6.10",
+         "do": "Press F5 to run the question.",
+         "see": "A Results tab appears under the window with twelve rows, numbered 1 to 12: Aoife McCann first and Ben Toner last. Two Email boxes say NULL. The bottom bar says 12 rows.",
+         "img": {
+          "img": "img/ch03-ssms-select-customer.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after SELECT * FROM Customer: twelve rows, CustomerID 1 to 12, Aoife McCann first and Ben Toner last, with Phone, Email and DateJoined columns. The Email box for Ciara Quinn and Hannah Boyle reads NULL.",
+          "cap": "Twelve customers, numbered 1 to 12 by the table itself. NULL in the Email column is an empty box, which the Email column allows.",
+          "w": 857,
+          "h": 598,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 50,
+            "say": "Twelve rows, Aoife McCann first and Ben Toner last."
+           },
+           {
+            "n": 2,
+            "x": 49,
+            "y": 37,
+            "say": "NULL means the box is empty."
+           },
+           {
+            "n": 3,
+            "x": 12,
+            "y": 97,
+            "say": "Query executed successfully: the question worked."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Invalid object name Customer'",
+           "The new window is looking at the wrong database. In the box on the toolbar that says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-ssms-tabs.png",
+        "alt": "The bottom of a query window in SQL Server Management Studio (SSMS) with two tabs, Results and Messages. Results shows a grid of rows; Messages shows the lines the query printed.",
+        "cap": "Results shows the rows a question returns. Messages shows what it printed and any error, in red.",
+        "w": 857,
+        "h": 365,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 5,
+          "y": 6,
+          "say": "Results: the rows, as a grid."
+         },
+         {
+          "n": 2,
+          "x": 13,
+          "y": 6,
+          "say": "Messages: printed lines and errors, in red."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Tick the table: the tables, the rows, and two rows the tables must refuse.",
+     "blocks": [
+      {
+       "p": "Every row below is a test the examiner would run, and the last two are the ones that matter most. A table with a CHECK rule refuses a bad row by itself, with red text that names the rule, before any program exists. You type each refused INSERT into your New Query window, over the SELECT, and the red text is the evidence. Nothing is added, and SELECT * FROM Customer; afterwards still shows twelve rows."
+      },
+      {
+       "check": [
+        {
+         "id": "3.6.11",
+         "what": "Ten tables listed",
+         "expect": "allowed",
+         "how": "Right-click Tables in Object Explorer and click Refresh. You see ten tables: Appointment, Bike, Customer, Hire, Part, PartOrder, PartSale, ServiceType, Staff and Supplier."
+        },
+        {
+         "id": "3.6.12",
+         "what": "Twelve customers",
+         "expect": "allowed",
+         "how": "Type SELECT * FROM Customer; in the New Query window and press F5. You see twelve rows, Aoife McCann first and Ben Toner last, and the bottom bar says 12 rows."
+        },
+        {
+         "id": "3.6.13",
+         "what": "The script runs again and the rows are not doubled",
+         "expect": "allowed",
+         "how": "Click in the BikeShop.sql tab and press F5 with nothing highlighted. Then click the New Query tab and press F5 to run SELECT * FROM Customer; again. You still see twelve rows, not twenty-four."
+        },
+        {
+         "id": "3.6.14",
+         "what": "A booking with the status Maybe",
+         "expect": "control",
+         "how": "Click in the New Query window and press Ctrl and A to highlight the SELECT line, then type this on one line: INSERT INTO Appointment (CustomerID, MechanicID, ServiceTypeID, StartTime, EndTime, BikeDescription, BookedByStaffID, Status) VALUES (1, 3, 1, '2026-10-12 09:00', '2026-10-12 09:30', 'Test bike', 2, 'Maybe'); Then press F5. You see red text in the Messages tab: The INSERT statement conflicted with the CHECK constraint \"CK_Appointment_Status\". Under it: The statement has been terminated. Nothing was added."
+        },
+        {
+         "id": "3.6.15",
+         "what": "A customer with a five-digit phone number",
+         "expect": "control",
+         "how": "Click in the New Query window and press Ctrl and A to highlight the INSERT line, then type this on one line: INSERT INTO Customer (FirstName, LastName, Phone) VALUES ('Test', 'Person', '12345'); Then press F5. You see red text: The INSERT statement conflicted with the CHECK constraint \"CK_Customer_Phone\". Press Ctrl and A, type SELECT * FROM Customer; and press F5. It still shows twelve rows."
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch03-ssms-maybe-refused.png",
+        "alt": "The Messages tab in SQL Server Management Studio (SSMS) after an INSERT with the status Maybe, with red text: The INSERT statement conflicted with the CHECK constraint CK_Appointment_Status. Under it: The statement has been terminated.",
+        "cap": "A refusal, in red. The table itself turned the row away, because Maybe is not in the list the CHECK allows. No program was needed.",
+        "w": 1016,
+        "h": 341,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 41,
+          "y": 49,
+          "say": "The red text names the rule that refused the row: CK_Appointment_Status."
+         },
+         {
+          "n": 2,
+          "x": 14,
+          "y": 57,
+          "say": "The statement has been terminated: nothing was added."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Five ticks are your evidence that one script makes the whole database, that it can be run again, and that the rules in the tables refuse bad rows before any program is written. Keep a screenshot of the red refusal and of the twelve customers for your testing evidence in chapter 10. Close the New Query window without saving it: the script is the only file that matters, and it is saved in your OneDrive folder."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Your scenario has its own ten tables from chapter 2. Build them in this order: every table that points at nothing first, then the tables that point at those, then the rest, and drop them in the opposite order at the top. Give every rule a name in the same shape, PK, FK, UQ, CK or DF, then the table, then what it is about, so that every red refusal tells you which rule spoke. Write at least one CHECK with a list of allowed words, one that compares two columns, and one that says a count can never go below zero. Then make your own sample data, with at least ten rows in your busiest table, and dates counted back from @Today."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

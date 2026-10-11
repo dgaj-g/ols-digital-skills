@@ -55,6 +55,11 @@ C.papers.forEach((p) => { papers[p.id] = { id: p.id, year: p.year, marks: p.mark
 const clusterTwins = {};
 Object.entries(C.clusters.clusters).forEach(([k, v]) => { clusterTwins[k] = v.twins; });
 const META = { papers, order: C.papers.map((p) => p.id), twinOrder: C.clusters.order, clusterTwins };
+// the coursework guide's tickable rows per built chapter (DESIGN §6.7.1: apiCw refuses anything else)
+const CWIX = JSON.parse(need(path.join(A2, 'content', 'coursework', 'index.json')));
+const CWMETA = {};
+CWIX.chapters.filter((c) => c.built).forEach((c) => { CWMETA[c.id] = c.steps; });
+CWMETA.files = CWIX.files.map((f) => f.name);
 
 // ---- staff passcode (made once)
 const STAFF_JSON = path.join(DEPLOY, 'staff.json');
@@ -73,18 +78,19 @@ const STAFF = JSON.parse(fs.readFileSync(STAFF_JSON, 'utf8'));
 
 // ---- the public page first (its hash is part of the build id)
 const index = need(path.join(PLATFORM, 'index.html'));
-const style = need(path.join(PLATFORM, 'style.css'));
+const style = need(path.join(PLATFORM, 'style.css')) + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(PLATFORM, 'cw.css'));
 const scripts = [
   ['content.js', path.join(PLATFORM, 'content.js')],
   ['lessonview.js', path.join(PLATFORM, 'lessonview.js')],
   ['tsql2sqlite.js', path.join(A2, 'tools', 'tsql2sqlite.js')],
   ['editor.js', path.join(PLATFORM, 'editor.js')],
   ['lesson.js', path.join(PLATFORM, 'lesson.js')],
+  ['cw.js', path.join(PLATFORM, 'cw.js')],
   ['app.js', path.join(PLATFORM, 'app.js')],
   ['staff.js', path.join(PLATFORM, 'staff.js')],
 ].map(([n, p]) => [n, need(p)]);
 
-const APIS = ['apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiStaff'];
+const APIS = ['apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
 const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {
@@ -113,7 +119,7 @@ const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).rep
   .replace("'@@STAFF_HASH@@'", JSON.stringify(STAFF.hash)).replace("'@@BUILD@@'", JSON.stringify(BUILD)).replace("'@@TITLE@@'", JSON.stringify(C.strings['app.title']));
 if (/@@[A-Z_]+@@/.test(filled)) { console.error('Code.gs.template: unfilled placeholder ' + filled.match(/@@[A-Z_]+@@/)[0]); process.exit(1); }
 const code = asciiJs(['/* OLS A2 SSD Platform - Code.gs - build ' + BUILD + ' - PRIVATE: holds the mark schemes. Never commit. */',
-  priv.trim(), 'var A2META = ' + JSON.stringify(META) + ';', judgeSrc, filled].join('\n\n'));
+  priv.trim(), 'var A2META = ' + JSON.stringify(META) + ';', 'var CWMETA = ' + JSON.stringify(CWMETA) + ';', judgeSrc, filled].join('\n\n'));
 guardAscii('Code.gs', code);
 fs.writeFileSync(path.join(DEPLOY, 'Code.gs'), code, { mode: 0o600 });
 fs.chmodSync(path.join(DEPLOY, 'Code.gs'), 0o600);
@@ -125,7 +131,7 @@ if (!bodyOpen) { console.error('index.html: no <body>'); process.exit(1); }
 let body = index.slice(index.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.lastIndexOf('</body>') > -1 ? body.lastIndexOf('</body>') : body.length).replace(/<script[\s\S]*?<\/script>/gi, '');
 const boot = '<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };\n' +
-  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';</script>';
+  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(GH.replace('platform/vendor/', 'content/coursework/')) + ';</script>';
 const frags = [boot, '<script>\n' + jsBlock(shim) + '\n</script>']
   .concat(scripts.map(([n, s]) => { const b = jsBlock(s); if (/<\/script/i.test(b)) { console.error(n + ': </script left'); process.exit(1); } return '<script>\n' + b + '\n</script>'; }))
   .concat(["<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>"]);

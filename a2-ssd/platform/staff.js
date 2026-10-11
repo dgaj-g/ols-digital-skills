@@ -1,5 +1,5 @@
 /* platform/staff.js — the staff page (SPEC §10): the bare /exec link with no class. Passcode once per account (the owner is admitted by email, D56).
- * Tabs: Classes · Papers · Live · Export. Every string from strings.json (D5). window.Staff.boot(app, bootReply). */
+ * Tabs: Classes · Papers · Live · Coursework · Export. Every string from strings.json (D5). window.Staff.boot(app, bootReply). */
 (function () {
   'use strict';
   const C = window.A2CONTENT;
@@ -70,7 +70,7 @@
   }
   function paint() {
     clearInterval(timer); timer = null;
-    const tabs = [['classes', 'staff.tabClasses'], ['papers', 'staff.tabPapers'], ['live', 'staff.tabLive'], ['export', 'staff.tabExport']];
+    const tabs = [['classes', 'staff.tabClasses'], ['papers', 'staff.tabPapers'], ['live', 'staff.tabLive'], ['coursework', 'staff.tabCoursework'], ['export', 'staff.tabExport']];
     if (!CLASSES.length) TAB = 'classes';
     const pick = TAB !== 'classes' && CLASSES.length ? '<span class="cls"><label for="cls">' + h(T('staff.class')) + '</label><select id="cls">' +
       CLASSES.map((c) => '<option' + (c.name === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>').join('') + '</select></span>' : '';
@@ -78,7 +78,7 @@
     app.querySelectorAll('.stabs [data-tab]').forEach((b) => b.addEventListener('click', () => { TAB = b.dataset.tab; keep('tab', TAB); paint(); }));
     const s = app.querySelector('#cls');
     if (s) s.addEventListener('change', () => { CLS = s.value; keep('cls', CLS); paint(); });
-    ({ classes: vClasses, papers: vPapers, live: vLive, export: vExport })[TAB]();
+    ({ classes: vClasses, papers: vPapers, live: vLive, coursework: vCoursework, export: vExport })[TAB]();
   }
   const pane = () => app.querySelector('#pane');
   function twoPress(btn, confirmText, act) { // a destructive button asks once, in its own words, then acts on the second press
@@ -240,7 +240,7 @@
   // ---------- one pupil's activity (D100): sessions newest first, each with its timed events ----------
   const PART = {}; C.papers.forEach((p) => p.parts.forEach((q) => { PART[q.id] = { p, q }; }));
   function activity(email) {
-    const pu = LIVE.pupils.find((x) => x.email === email); if (!pu) return;
+    const pu = [LIVE, CWR].map((x) => x && x.pupils.find((y) => y.email === email)).find(Boolean); if (!pu) return;
     const old = app.querySelector('.drawer'); if (old) old.remove();
     app.insertAdjacentHTML('beforeend', '<aside class="drawer" role="dialog" aria-label="' + h(pu.n || pu.email) + '"><div class="row" style="justify-content:space-between"><h3>' + h(T('staff.act.title', { name: pu.n || pu.email })) + '</h3>' +
       '<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div><div data-acts><p class="note">' + h(T('staff.act.loading')) + '</p></div></aside>');
@@ -250,6 +250,7 @@
   }
   function evText(e) {
     if (e.k === 'j') return T('staff.ev.joined');
+    if (e.k === 'cw') return cwEvText(e);
     if (e.k === 'e') return T('staff.ev.eval', { paper: PAPERS[e.paper] ? PAPERS[e.paper].year : e.paper });
     const x = PART[e.part]; if (!x) return e.part;
     const part = T('staff.ev.part', { year: x.p.year, label: label(x.q) }), tw = e.id && C.twins[e.id];
@@ -284,6 +285,94 @@
         (s.ev.length ? '<ul class="evs">' + s.ev.map((e) => '<li><span class="at">' + h(hm(e.m)) + '</span><span>' + h(evText(e)) + '</span></li>').join('') + '</ul>' : '<p class="note">' + h(T('staff.act.nothingMarked')) + '</p>') +
         '</details>').join('') : '<p class="note">' + h(T('staff.act.none')) + '</p>') +
       (r.untimed ? '<p class="note">' + h(T('staff.act.archived')) + '</p>' : '');
+  }
+
+  // ---------- Coursework (DESIGN §6.7): pupils down the side, chapters across, the whole guide at the right ----------
+  const CWBASE = window.A2_CW || 'https://dgaj-g.github.io/ols-digital-skills/a2-ssd/content/coursework/';
+  let CWIX = null, CWR = null;
+  const cwIndex = () => (CWIX ? Promise.resolve(CWIX) : fetch(CWBASE + 'index.json', { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }).then((ix) => { CWIX = ix; return ix; }));
+  const cwChs = () => CWIX.chapters.filter((c) => c.built);
+  const one = (n, k1, kn) => T(n === 1 ? k1 : kn, { n });
+  const times = (n) => (n === 1 ? T('staff.cw.once') : n === 2 ? T('staff.cw.twice') : T('staff.cw.nTimes', { n }));
+  const when = (m, now) => (m ? ago(now, m) : '—');
+  const cwTot = (pu) => cwChs().reduce((t, c) => t + ((pu.W[c.id] || {}).k || []).length, 0);
+  const cwLatest = (pu) => { let best = null, l = -1; Object.keys(pu.W).forEach((ch) => { if (/^\d\d$/.test(ch) && (pu.W[ch].l || 0) > l) { l = pu.W[ch].l || 0; best = ch; } }); return best; };
+  function cwEvText(e) {
+    const c = /^\d\d$/.test(e.x) ? +e.x : e.x;
+    return T({ o: 'ev.cwOpen', t: 'ev.cwTick', u: 'ev.cwUntick', d: 'ev.cwDone', n: 'ev.cwUndone', w: 'ev.cwDownload', x: 'ev.cwClear' }[e.c] || 'ev.cwOpen', { c, id: e.x, file: e.x });
+  }
+  function vCoursework() {
+    pane().innerHTML = '<p class="note">' + h(T('staff.cw.loading')) + '</p>';
+    const load = () => Promise.all([cwIndex(), call({ op: 'coursework', name: CLS })]).then(([, r]) => { CWR = r; cwPaint(); }, fail);
+    const cwPaint = () => {
+      const r = CWR, chs = cwChs(), all = chs.reduce((t, c) => t + c.steps.length, 0), sort = sel('cwsort') || 'name';
+      const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      const rows = r.pupils.map((pu) => ({ pu, tot: cwTot(pu), now: cwLatest(pu), name: pu.n || pu.email }));
+      const byName = (a, b) => a.name.localeCompare(b.name);
+      rows.sort(sort === 'most' ? (a, b) => b.tot - a.tot || byName(a, b) : sort === 'least' ? (a, b) => a.tot - b.tot || byName(a, b) : sort === 'seen' ? (a, b) => (b.pu.seen || 0) - (a.pu.seen || 0) || byName(a, b) : byName);
+      const opened = rows.filter((x) => chs.some((c) => x.pu.W[c.id])).length, marked = rows.filter((x) => chs.some((c) => (x.pu.W[c.id] || {}).d)).length;
+      const cell = (x, c) => {
+        const w = x.pu.W[c.id], n = c.steps.length, at = h(x.pu.email) + '|' + c.id;
+        if (!w) return '<td class="c e" data-cw="' + at + '" title="' + h(T('staff.cw.notOpened')) + '" tabindex="0">—</td>';
+        const t = (w.k || []).length;
+        const title = T(w.o === 1 ? 'staff.cw.cellTitle1' : 'staff.cw.cellTitle', { c: c.n, t, n, o: w.o, when: when(w.l, r.now) });
+        return '<td class="c ' + (w.d ? 'd' : 's') + (x.now === c.id ? ' now' : '') + '" data-cw="' + at + '" title="' + h(title) + '" tabindex="0">' + (w.d ? '✓ ' : '') + h(T('staff.cw.cell', { t, n })) + '</td>';
+      };
+      const head = '<tr><th class="p">' + h(T('staff.cw.pupil')) + '</th><th>' + h(T('staff.cw.seen')) + '</th>' + chs.map((c) => '<th>' + h(T('staff.cw.ch', { c: c.n })) + '<small>' + h(c.title) + '</small></th>').join('') + '<th>' + h(T('staff.cw.whole')) + '</th></tr>';
+      const body = rows.map((x) => {
+        const pct = all ? Math.round(100 * x.tot / all) : 0, pu = x.pu;
+        return '<tr' + (pu.me ? ' class="me"' : '') + '><td class="p"><button class="who" data-act="' + h(pu.email) + '" title="' + h(T('staff.act.open')) + '">' + h(x.name) + '</button>' + (pu.me ? ' ' + h(T('staff.you')) : '') + '</td><td class="seen">' + h(ago(r.now, pu.seen)) + '</td>' +
+          chs.map((c) => cell(x, c)).join('') + '<td class="w"><div class="cwbar"><i style="width:' + pct + '%"></i></div>' + h(T('staff.cw.cell', { t: x.tot, n: all })) + '</td></tr>';
+      }).join('');
+      const sum = rows.reduce((t, x) => t + x.tot, 0);
+      const foot = '<tr class="foot"><td class="p">' + h(T('staff.cw.class')) + '</td><td></td>' + chs.map((c) => {
+        let dn = 0, st = 0; rows.forEach((x) => { const w = x.pu.W[c.id]; if (w) { if (w.d) dn++; else st++; } });
+        return '<td>' + h(dn + st ? T('staff.cw.foot', { d: T('staff.cw.footDone', { n: dn }), s: T('staff.cw.footStarted', { n: st }) }) : T('staff.cw.footNone')) + '</td>';
+      }).join('') + '<td>' + h(T('staff.cw.avg', { p: rows.length && all ? Math.round(100 * sum / (all * rows.length)) : 0 })) + '</td></tr>';
+      const sorts = [['name', 'staff.cw.sortName'], ['most', 'staff.cw.sortMost'], ['least', 'staff.cw.sortLeast'], ['seen', 'staff.cw.sortSeen']];
+      pane().innerHTML = '<div class="row cwctl"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span>' +
+        '<span class="sortbox"><label for="cwsort">' + h(T('staff.cw.sort')) + '</label><select id="cwsort">' + sorts.map(([v, k]) => '<option value="' + v + '"' + (v === sort ? ' selected' : '') + '>' + h(T(k)) + '</option>').join('') + '</select></span></div>' +
+        (rows.length ? '<p class="note cwsum">' + h(T('staff.cw.summaryLine', { a: one(rows.length, 'staff.cw.pupils1', 'staff.cw.pupils'), b: one(opened, 'staff.cw.opened1x', 'staff.cw.openedN'), c: one(marked, 'staff.cw.done1x', 'staff.cw.doneN') })) + '</p>' : '') +
+        (opened ? '' : '<p class="note">' + h(T('staff.cw.empty')) + '</p>') +
+        (rows.length ? '<div class="scroll"><table class="grid cwg">' + head + body + foot + '</table></div><p class="note" style="margin-top:10px">' + h(T('staff.cw.legend')) + '</p>' : '');
+      pane().querySelector('[data-refresh]').addEventListener('click', load);
+      pane().querySelector('#cwsort').addEventListener('change', (e) => { keep('cwsort', e.target.value); cwPaint(); });
+      pane().querySelectorAll('[data-cw]').forEach((td) => {
+        const openIt = () => { const [em, ch] = td.dataset.cw.split('|'); cwDrawer(em, ch); };
+        td.addEventListener('click', openIt);
+        td.addEventListener('keydown', (e) => { if (e.key === 'Enter') openIt(); });
+      });
+      pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
+    };
+    load();
+    timer = setInterval(() => { if (!document.hidden && TAB === 'coursework' && !app.querySelector('.drawer')) load(); }, 60000);
+  }
+  function cwDrawer(email, ch) {
+    const pu = CWR.pupils.find((x) => x.email === email), c = CWIX.chapters.find((x) => x.id === ch); if (!pu || !c) return;
+    const old = app.querySelector('.drawer'); if (old) old.remove();
+    const w = pu.W[ch], name = pu.n || pu.email, p = (k, v) => '<p>' + h(T(k, v)) + '</p>';
+    let html;
+    if (!w) html = p('staff.cw.never', { name, c: c.n });
+    else {
+      const on = new Set(w.k || []), now = CWR.now;
+      const shots = {}; c.steps.forEach((id) => { const s = id.split('.')[1]; (shots[s] = shots[s] || []).push(id); });
+      const scr = (w.a || '').split('-'), inStage = ((c.stages || []).find((x) => x[0] === scr[0]) || [])[2];
+      html = p('staff.cw.ticked', { t: on.size, n: c.steps.length }) +
+        (w.o === 1 ? p('staff.cw.opened1', { first: when(w.f, now) }) : p('staff.cw.opened', { o: w.o || 0, first: when(w.f, now), last: when(w.l, now) })) +
+        (w.a ? p('staff.cw.lastScreen', { s: scr[0], k: scr[1], of: inStage || '—' }) : '') +
+        (w.d ? p('staff.cw.done', { when: when(w.d, now) }) : p('staff.cw.notDone')) +
+        p('staff.cw.copies', { c: w.c || 0, r: w.r || 0 }) +
+        Object.keys(pu.W.D || {}).map((f) => p('staff.cw.downloads', { file: f, times: times(pu.W.D[f]) })).join('') +
+        (c.stages || []).map(([sid, title]) => {
+          const ids = shots[sid] || []; if (!ids.length) return '';
+          return '<div class="stg"><b>' + h(T('staff.cw.stage', { s: sid, title, t: ids.filter((id) => on.has(id)).length, n: ids.length })) + '</b>' +
+            ids.map((id) => '<span class="sq' + (on.has(id) ? ' on' : '') + '" title="' + h(id) + '"></span>').join('') + '</div>';
+        }).join('');
+    }
+    app.insertAdjacentHTML('beforeend', '<aside class="drawer cwd" role="dialog" aria-label="' + h(name) + '"><div class="row" style="justify-content:space-between"><h3>' + h(T('staff.cw.title', { name, c: c.n, title: c.title })) + '</h3>' +
+      '<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div>' + html + '</aside>');
+    const dr = app.querySelector('.drawer');
+    dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
   }
 
   // ---------- Export ----------

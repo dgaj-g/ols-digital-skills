@@ -474,6 +474,75 @@ function apiKv(req) {
   return err_('bad-op');
 }
 
+/* ==================== COURSEWORK GUIDE (DESIGN §6.1, §6.7) ==================== */
+// One key per pupil, written only here under the script lock: w:<class>:<email> =
+//   { "<ch>": { k: ticked rows as a hex bitmap over CWMETA[ch], o: times opened, f/l: first/last opened tmin,
+//               a: last screen "stage-screen", d: marked-done tmin or 0, c: copies, r: answers opened },
+//     D: { "<file>": downloads }, e: [[tmin, code, arg]] the latest coursework events for the activity timeline }
+// Every tick of all 934 rows stays under 4 KB as a bitmap (a list of ids would not fit the 9 KB value limit).
+var CW_EVENTS = 40;   // coursework events kept per pupil, oldest dropped first
+var CW_OPS = ['open', 'screen', 'tick', 'copy', 'reveal', 'done', 'download'];
+function wKey_(cls, email) { return 'w:' + cls + ':' + email; }
+function cwBits_(hex, n) {
+  var out = [], s = str_(hex);
+  for (var i = 0; i < n; i++) { var d = parseInt(s.charAt(i >> 2) || '0', 16) || 0; if (d & (8 >> (i & 3))) out.push(i); }
+  return out;
+}
+function cwHex_(on, n) {
+  var s = '';
+  for (var i = 0; i < n; i += 4) { var d = 0; for (var j = 0; j < 4; j++) if (on[i + j]) d |= 8 >> j; s += d.toString(16); }
+  return s.replace(/0+$/, '');
+}
+// the record as the pages read it: ticks as step ids
+function cwView_(W) {
+  var out = {};
+  W = W || {};
+  Object.keys(CWMETA).forEach(function (ch) {
+    var c = W[ch], steps = CWMETA[ch];
+    if (ch === 'files' || !c) return;
+    out[ch] = { k: cwBits_(c.k, steps.length).map(function (i) { return steps[i]; }), o: num_(c.o), f: num_(c.f), l: num_(c.l),
+      a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r) };
+  });
+  if (W.D) out.D = W.D;
+  return out;
+}
+function apiCw(req) {
+  req = req || {};
+  var w = who_(req); if (w.error) return err_(w.error);
+  var op = str_(req.op), key = wKey_(w.cls, w.email);
+  if (op === 'state') return ok_({ W: cwView_(jget_(sp_(), key, {})) });
+  if (CW_OPS.indexOf(op) === -1) return err_('bad-op');
+  var ch = str_(req.ch), steps = CWMETA[ch], id = str_(req.id), file = str_(req.file), idx = -1;
+  if (op === 'download') { if (CWMETA.files.indexOf(file) === -1) return err_('bad-key'); }
+  else if (!/^\d\d$/.test(ch) || !steps) return err_('bad-key');
+  if (op === 'tick' && id !== '*') { idx = steps.indexOf(id); if (idx < 0) return err_('bad-key'); }
+  if (op === 'screen' && !/^\d{1,2}-\d{1,2}$/.test(str_(req.key))) return err_('bad-key');
+  touch_(w.cls, w.email, 1, 0);
+  return withLock_(function () {
+    var W = jget_(sp_(), key, {}), now = tmin_(), ev = null;
+    if (op === 'download') { W.D = W.D || {}; W.D[file] = num_(W.D[file]) + 1; ev = [now, 'w', file]; }
+    else {
+      var c = W[ch] || (W[ch] = { k: '', o: 0, f: 0, l: 0, a: '', d: 0, c: 0, r: 0 });
+      if (op === 'open') { c.o = num_(c.o) + 1; if (!c.f) c.f = now; c.l = now; ev = [now, 'o', ch]; }
+      else if (op === 'screen') c.a = str_(req.key);
+      else if (op === 'copy') c.c = num_(c.c) + 1;
+      else if (op === 'reveal') c.r = num_(c.r) + 1;
+      else if (op === 'done') { var on = !!req.on; if (!!num_(c.d) !== on) ev = [now, on ? 'd' : 'n', ch]; c.d = on ? now : 0; }
+      else if (idx < 0) { if (c.k) ev = [now, 'x', ch]; c.k = ''; } // "Clear my ticks": the ticks only; the done mark is its own button
+      else {
+        var set = {}, want = !!req.on;
+        cwBits_(c.k, steps.length).forEach(function (i) { set[i] = 1; });
+        if (!!set[idx] !== want) ev = [now, want ? 't' : 'u', id];
+        if (want) set[idx] = 1; else delete set[idx];
+        c.k = cwHex_(set, steps.length);
+      }
+    }
+    if (ev) { W.e = W.e || []; W.e.push(ev); if (W.e.length > CW_EVENTS) W.e.splice(0, W.e.length - CW_EVENTS); }
+    jset_(sp_(), key, W);
+    return ok_({});
+  });
+}
+
 /* ==================== STAFF API ==================== */
 function passOk_(pass) {
   var plain = str_(sp_().getProperty('staffPasscode'));
@@ -553,7 +622,7 @@ function apiStaff(req) {
     if (!isClassOwner_(name, email) && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
       var store = sp_(), keys = store.getKeys();
-      var pres = ['p:' + name + ':', 'd:' + name + ':', 's:' + name + ':'];
+      var pres = ['p:' + name + ':', 'd:' + name + ':', 's:' + name + ':', 'w:' + name + ':'];
       keys.forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
       store.deleteProperty('cls:' + name);
       jset_(store, 'classes', classList_().filter(function (n) { return n !== name; }));
@@ -581,6 +650,15 @@ function apiStaff(req) {
     var pupils = pupilsOf_(props, name).map(function (p) { p.me = p.email === email; return p; });
     var c1 = readClass_(name);
     return ok_({ pupils: pupils, order: c1.order || A2META.order, open: c1.open || [], now: tmin_() });
+  }
+  // the class progress grid (DESIGN §6.7.2): one read of the store, every pupil's coursework record
+  if (op === 'coursework') {
+    props = allProps_();
+    var cwp = pupilsOf_(props, name).map(function (p) {
+      var W = {}; try { W = JSON.parse(props[wKey_(name, p.email)] || '{}'); } catch (e) { W = {}; }
+      return { email: p.email, n: p.n, seen: p.seen, last: p.last, me: p.email === email, W: cwView_(W) };
+    });
+    return ok_({ pupils: cwp, now: tmin_() });
   }
   if (op === 'scripts') {
     var pe = str_(req.email).toLowerCase(), partId = str_(req.part), mp = markPart_(partId);
@@ -615,6 +693,7 @@ function apiStaff(req) {
     });
     Object.keys(ur.E || {}).forEach(function (pid) { var e = ur.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'e', paper: pid }); });
     if (ur.j) evs.push({ m: ur.j, k: 'j' });
+    ((jget_(sp_(), wKey_(name, ue), {}) || {}).e || []).forEach(function (x) { evs.push({ m: x[0], k: 'cw', c: x[1], x: x[2] }); });
     evs.sort(function (x, y) { return x.m - y.m; });
     return ok_({ sessions: readSeen_(props[sKey_(name, ue)]).S, events: evs, untimed: untimed, now: tmin_() });
   }
@@ -632,7 +711,7 @@ function apiStaff(req) {
     return withLock_(function () {
       var store = sp_();
       store.getKeys().forEach(function (k) {
-        if (k === 'p:' + name + ':' + email || k === 's:' + name + ':' + email || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
+        if (k === 'p:' + name + ':' + email || k === 's:' + name + ':' + email || k === wKey_(name, email) || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
       });
       return ok_({});
     });
