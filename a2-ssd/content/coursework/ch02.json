@@ -1,0 +1,928 @@
+{
+ "id": "02",
+ "n": 2,
+ "title": "Plan the tables",
+ "one": "From the scenario to tables, keys and the columns each one needs.",
+ "marks": "This chapter is where the examiner looks for a design that comes from the scenario: one table for each thing the business keeps many of, a number for every row, links between tables by number, and rules that refuse bad data.",
+ "prev": {
+  "id": "01",
+  "title": "Your workspace",
+  "n": 1
+ },
+ "next": {
+  "id": "03",
+  "title": "Build the database",
+  "n": 3
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "From the story to the tables",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will plan in this chapter, and learn the words it uses.",
+     "blocks": [
+      {
+       "p": "This chapter uses no software. You read the story of a bike shop, pick out the things the shop needs to remember, and plan the tables that will hold them. By the end of the chapter you have a drawing of ten tables, with their columns and the lines that join them. In chapter 3 you type that plan into SQL Server Management Studio (SSMS), and the server makes the tables."
+      },
+      {
+       "p": "Planning first saves you hours. A table that is wrong on paper takes a minute to fix with a pencil. The same mistake found after the program is written means changing the table, the stored procedures and the screens."
+      },
+      {
+       "need": [
+        "Chapter 1 is finished: your OneDrive coursework folder exists, and SQL Server Management Studio (SSMS) has run SELECT @@VERSION once.",
+        "You have a pen and two sheets of paper. One sheet is for the Towpath Cycles plan as you read it, and one is for your own case study at the end.",
+        "This guide is open in the Edge browser. Tick each step as you do it, and the chapter remembers where you are."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Stored procedure",
+         "A saved set of instructions the database runs when your program asks, such as adding a booking."
+        ],
+        [
+         "Database",
+         "A store of tables kept by the server, such as BikeShop, which your program reads and changes."
+        ],
+        [
+         "Noun",
+         "A naming word for a person, place or thing, such as customer, bike or booking."
+        ],
+        [
+         "Table",
+         "A grid with named columns, where each row is one thing, such as one customer."
+        ],
+        [
+         "Row",
+         "One line of a table: one customer, one bike or one booking."
+        ],
+        [
+         "Column",
+         "One named box in every row, such as Phone, with a type that says what can go in it."
+        ],
+        [
+         "Booking",
+         "A row that holds a person or a thing for a time, such as a mechanic from 13:00 to 13:30."
+        ],
+        [
+         "Stock",
+         "The things a shop keeps to sell, such as inner tubes on a shelf or bikes on the floor."
+        ],
+        [
+         "Primary key",
+         "The column that holds a different number for every row, so that each row can be named by its number. On a plan it is marked PK."
+        ],
+        [
+         "Foreign key",
+         "A column that holds the number of a row in another table, such as the customer a booking is for. On a plan it is marked FK."
+        ],
+        [
+         "Parent and child",
+         "The table being pointed at is the parent, such as Customer. The table that holds the foreign key is the child, such as Appointment."
+        ],
+        [
+         "Type",
+         "What a column may hold: a whole number, text, money, a date, or a yes or no."
+        ],
+        [
+         "INT",
+         "A type for whole numbers, such as 3 or 120."
+        ],
+        [
+         "VARCHAR",
+         "A type for text, with the most letters allowed written in brackets, such as VARCHAR(40)."
+        ],
+        [
+         "DECIMAL",
+         "A type for money: DECIMAL(8,2) allows eight digits, two of them after the point."
+        ],
+        [
+         "FLOAT",
+         "A type for very large or very small numbers that stores a close guess, so it is never used for money."
+        ],
+        [
+         "DATE and DATETIME",
+         "DATE holds a day, such as 12 October 2026. DATETIME holds a day and a clock time together, such as 12 October 2026 at 13:00."
+        ],
+        [
+         "BIT",
+         "A type that holds a yes or a no, written as 1 or 0."
+        ],
+        [
+         "NULL and NOT NULL",
+         "NULL is an empty box. NOT NULL on a column means the box can never be left empty."
+        ],
+        [
+         "CHECK",
+         "A rule written into the table that refuses a row that breaks it, before any program runs."
+        ],
+        [
+         "UNIQUE",
+         "A rule that no two rows can hold the same value in that column, such as two staff with one username."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the story of Towpath Cycles, the shop this guide builds.",
+     "blocks": [
+      {
+       "p": "Every case study the examiner sets is a short story about a business. The story for this guide is about Towpath Cycles, a bike shop beside the canal towpath in Newry. Read the story below once from start to end. Then read it again with a pen in your hand."
+      },
+      {
+       "box": {
+        "title": "Towpath Cycles, Newry",
+        "text": "Towpath Cycles is a bike workshop and hire shop beside the canal in Newry. Customers book their own bikes in for a service, such as a puncture repair or a full service, and each service takes a set number of minutes and has a set price. Each service appointment is with one mechanic, at a start time and an end time between 08:30 and 17:30, in steps of 15 minutes. The shop also hires out bikes by the day: a customer takes one bike from a start date to an end date and pays a deposit of 20 per cent. Other bikes are for sale, and each one has its own frame number, so it can be reserved for one customer and sold only once. The shop keeps parts on its shelves, such as inner tubes and brake pads, and it orders more from its suppliers when the count runs low. Every sale of a part takes it off the shelf, and every delivery from a supplier puts more on. Staff log in as a mechanic, a counter assistant or the manager, and the shop records who made each booking, order and sale."
+       }
+      },
+      {
+       "p": "Two rules matter more than anything else in the story. One mechanic can never be booked twice at the same time, and one bike can never be hired twice on the same day. The count of each part on the shelf must always be right, and it can never go below zero."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Pick out the nouns, and keep the ones the shop has many of.",
+     "blocks": [
+      {
+       "p": "A table holds one kind of thing, and each row is one of those things. So the tables hide inside the nouns of the story. Underline every noun in the Towpath Cycles story, then ask the same question of each one: does the shop keep many of these, each with its own details?"
+      },
+      {
+       "p": "A customer passes the test. The shop has many customers, and each has a first name, a last name and a phone number, so Customer is a table. Mechanic passes too, but a mechanic is one kind of member of staff, and so are the counter assistant and the manager. All three go in one Staff table, with a column called Role that says which kind each person is."
+      },
+      {
+       "p": "Three kinds of noun do not become tables. Towpath Cycles, the canal and Newry are one of each, so a table for any of them would have only one row. A phone number, a price and a frame number are details of something else, so each becomes a column in that thing's table. A service such as a puncture repair is a table, because the shop has seven of them, each with its own minutes and price."
+      },
+      {
+       "box": {
+        "title": "The ten tables that come out of the story",
+        "text": "Customer, Staff, ServiceType, Appointment, Hire, Bike, Part, Supplier, PartOrder and PartSale. Each name is one word with no spaces, and each is singular: Customer, not Customers, because each row is one customer. PartOrder records one order of a part from a supplier, and PartSale records one sale of a part to a customer."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "The four shapes",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Learn the two booking shapes: booked by time, and booked by day.",
+     "blocks": [
+      {
+       "p": "Almost every case study has something that is booked. Towpath Cycles has both of the two kinds, so that you see each one once."
+      },
+      {
+       "box": {
+        "title": "Booked by time: Appointment",
+        "text": "A service appointment books a person, the mechanic, for part of one day. Each row holds a start time and an end time, such as 13:00 to 13:30, so its type is DATETIME, a day and a clock time together. A clash is two appointments for the same mechanic whose times overlap. In your case study the same shape might be a driving lesson, a dentist's appointment or a room booked by the hour."
+       }
+      },
+      {
+       "box": {
+        "title": "Booked by day: Hire",
+        "text": "A hire books a thing, one bike, for whole days. Each row holds a start date and an end date, the day the bike comes back, so its type is DATE. A clash is two hires of the same bike whose days overlap. In your case study the same shape might be a holiday cottage, a hired van or a hotel room."
+       }
+      },
+      {
+       "rule": {
+        "which": "double",
+        "text": "One mechanic can never be booked twice at the same time, and one bike can never be hired twice on the same day. Chapter 7 builds the check that refuses a double booking."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Learn the two stock shapes: counted stock, and one-off stock.",
+     "blocks": [
+      {
+       "p": "Almost every case study has stock too. Again there are two kinds, and Towpath Cycles has both."
+      },
+      {
+       "box": {
+        "title": "Counted stock: Part",
+        "text": "An inner tube is one of many that are all the same, so the shop keeps a count of them, not a row for each tube. The Part table has a column called QtyInStock, which holds the count. The count goes down when a part is sold and goes up when a delivery from a supplier arrives. When the count falls to ReorderLevel or below, the part goes on the list to order. In your case study the same shape might be tins in a food bank, tickets in a box office or books of one title in a shop."
+       }
+      },
+      {
+       "box": {
+        "title": "One-off stock: Bike",
+        "text": "A bike for sale is one of a kind, with its own frame number, so it gets its own row in the Bike table. Instead of a count, each bike has a status. The status goes from Available to Reserved to Sold, and a sold bike can never be sold again. In your case study the same shape might be a used car, a painting or a puppy for rehoming."
+       }
+      },
+      {
+       "rule": {
+        "which": "stock",
+        "text": "The count of a part on the shelf is always right, and it can never go below zero. Chapter 8 builds the check that refuses a sale of more parts than the shelf holds."
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "See the people and lists that sit around the four shapes.",
+     "blocks": [
+      {
+       "p": "The four shapes never stand alone. Every booking is for a customer and is made by a member of staff. Every part comes from a supplier. So each case study also has the people and the lists that the four shapes point at."
+      },
+      {
+       "box": {
+        "title": "The people and the lists",
+        "text": "Customer holds the people the shop serves. Staff holds the people who work there, with the username and password each one logs in with. ServiceType is a list of the seven services the workshop does, with the minutes and the price of each. Supplier is a list of the three firms the shop buys parts from."
+       }
+      },
+      {
+       "box": {
+        "title": "The records of stock moving",
+        "text": "PartOrder holds one row for each order the shop sends to a supplier, and PartSale holds one row for each sale of a part to a customer. These two tables are the history behind the count in Part. Every change to QtyInStock is caused by a row in one of them."
+       }
+      },
+      {
+       "p": "Bike does a second job. The bikes for hire are rows in the Bike table too, with Hire in a column called Purpose, so that Hire can point at the one bike it books."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Keys: a number for every row",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Give every table a number column, its primary key.",
+     "blocks": [
+      {
+       "p": "Every row needs a name that no other row shares. A person's name is not good enough. Towpath Cycles has a customer called Aoife McCann and a mechanic called Aoife Byrne, and next year it may have two customers called Aoife McCann."
+      },
+      {
+       "p": "So every table gets a number column, and it is always the first column. Its name is the table name followed by ID: CustomerID in Customer, BikeID in Bike, HireID in Hire. This column is the primary key, which means the column that holds a different number for every row."
+      },
+      {
+       "p": "Nobody types the number. When a new row is added, the table gives out the next number itself: the first customer is 1, the second is 2, and so on. A number is never given out twice, even after its row is deleted, so a number always means the same row."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Point at a row in another table by its number, with a foreign key.",
+     "blocks": [
+      {
+       "p": "A booking needs to say which customer it is for. It does that by holding the customer's number, not the customer's name. A column that holds the number of a row in another table is called a foreign key. A foreign key is the number of the other row."
+      },
+      {
+       "box": {
+        "title": "One real row of the Appointment table",
+        "text": "The first appointment in the sample data holds CustomerID 1, MechanicID 3 and ServiceTypeID 6. Customer number 1 is Aoife McCann. Staff number 3 is Aoife Byrne, a mechanic. ServiceType number 6 is the Basic service, 60 minutes for 40 pounds. So the row says that Aoife Byrne gave Aoife McCann's blue Trek hybrid a basic service."
+       }
+      },
+      {
+       "p": "A foreign key usually has the same name as the column it points at, such as CustomerID in Appointment pointing at CustomerID in Customer. When one table points at the same table twice, each column gets a name that says why. Appointment points at Staff twice: MechanicID for the mechanic who does the work, and BookedByStaffID for the person who made the booking."
+      },
+      {
+       "p": "The table being pointed at is called the parent, and the table that holds the foreign key is called the child. Customer is a parent, and Appointment is its child. A child row can only point at a parent row that exists, so the database refuses a booking for customer 99 when there is no customer 99."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Store each name once, in one table.",
+     "blocks": [
+      {
+       "p": "A customer's name lives in the Customer table and nowhere else. Every other table that needs the customer holds the CustomerID. Here is why the name is never stored twice."
+      },
+      {
+       "p": "Suppose Appointment held the words Aoife McCann instead of the number 1. If she changes her surname, someone has to change every booking she ever made. Miss one, and the shop has two customers where it had one. A spelling slip in a single booking does the same."
+      },
+      {
+       "p": "With the number, her name is written in one place. A change to that one row shows up in every booking, every hire and every sale at once."
+      },
+      {
+       "box": {
+        "title": "Names on the screen, numbers in the tables",
+        "text": "The tables store numbers, and the screens show names. When your program shows a booking, a stored procedure looks up the number and shows Aoife McCann. The person using your program never sees or types an ID number. Chapter 4 shows how a stored procedure does that look-up."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Types and rules",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Choose a type for every column.",
+     "blocks": [
+      {
+       "p": "Every column has a type, which says what may go in it. The type is a rule too: a column for whole numbers refuses the word Tuesday."
+      },
+      {
+       "box": {
+        "title": "Whole numbers and text",
+        "text": "Counts and ID numbers are INT, the type for whole numbers, such as QtyInStock and CustomerID. Names are VARCHAR, the type for text, with the most letters allowed in brackets: FirstName is VARCHAR(40). A phone number is text too, not a number, because 028 3026 4411 starts with a 0 and has spaces, and a whole number would lose both."
+       }
+      },
+      {
+       "box": {
+        "title": "Money is DECIMAL, never FLOAT",
+        "text": "Every price, cost and total is DECIMAL, the type that keeps the exact pennies. Price in ServiceType is DECIMAL(8,2): up to eight digits, two of them after the point. FLOAT stores a close guess instead. In FLOAT, 0.1 added to 0.2 comes out as 0.30000000000000004, so a till that adds up in FLOAT is a fraction of a penny wrong."
+       }
+      },
+      {
+       "box": {
+        "title": "Dates are DATE or DATETIME, never text",
+        "text": "A hire is booked by the day, so StartDate and EndDate are DATE. An appointment is booked by the clock, so StartTime and EndTime are DATETIME, a day and a time together. A date stored as text goes wrong in three ways. 01/02/2026 could be the first of February or the second of January. 31/02/2026 would be let in, although February has no 31st. And the text 10/01/2026 sorts before 9/01/2026, because the 1 comes before the 9."
+       }
+      },
+      {
+       "p": "A yes or no column, such as IsActive in Staff, is BIT, which holds 1 for yes and 0 for no."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Let the table refuse bad data before any program runs.",
+     "blocks": [
+      {
+       "p": "A rule can be written into the table itself. The table then refuses any row that breaks the rule, with red text that names the rule. No program has to remember to check, because every program that ever adds a row meets the same rule."
+      },
+      {
+       "box": {
+        "title": "NOT NULL: the box must be filled",
+        "text": "Every column is NOT NULL unless an empty box means something. A customer must have a first name, a last name and a phone number. Email may be empty, because Ciara Quinn and Hannah Boyle gave the shop no email address."
+       }
+      },
+      {
+       "box": {
+        "title": "CHECK: the value must pass a test",
+        "text": "A CHECK is a test the row must pass. The status of an appointment must be one of three words: Booked, Done or Cancelled. The end time must be after the start time. And QtyInStock in Part must be 0 or more, so the count can never go below zero, whatever any program does."
+       }
+      },
+      {
+       "box": {
+        "title": "UNIQUE: no two rows the same",
+        "text": "A UNIQUE column refuses a value that another row already holds. Two members of staff can never share a username, and two bikes can never share a frame number."
+       }
+      },
+      {
+       "p": "In chapter 3 you see a CHECK at work. You try to add a booking with the status Maybe, and the table refuses it in red before anything is saved."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read the plan of one table, written out in full.",
+     "blocks": [
+      {
+       "p": "Before you draw all ten tables, here is the plan of one of them, the Customer table, written out column by column. Each line gives the name of the column, its type and its rule. Your plan of each table in your case study looks like this one."
+      },
+      {
+       "box": {
+        "title": "The plan of the Customer table",
+        "blocks": [
+         {
+          "p": "CustomerID is an INT that the table gives out itself, and it is the primary key."
+         },
+         {
+          "p": "FirstName is a VARCHAR(40), and it is NOT NULL."
+         },
+         {
+          "p": "LastName is a VARCHAR(40), and it is NOT NULL."
+         },
+         {
+          "p": "Phone is a VARCHAR(15), it is NOT NULL, and a CHECK refuses a number shorter than ten characters."
+         },
+         {
+          "p": "Email is a VARCHAR(100), and it may be NULL, because some customers give no email address."
+         },
+         {
+          "p": "DateJoined is a DATE, it is NOT NULL, and the table fills in today's date if no date is given."
+         }
+        ]
+       }
+      },
+      {
+       "p": "Customer points at no other table, so it has no foreign key. Appointment, by contrast, has four foreign keys: CustomerID, MechanicID, ServiceTypeID and BookedByStaffID."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Prove it: the plan of the ten tables, and your own",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See the plan of all ten Towpath Cycles tables.",
+     "blocks": [
+      {
+       "p": "Here is the whole plan as a drawing. Each box is one table, with its name in the dark bar at the top. Each box lists the primary key, marked PK, every foreign key, marked FK, and two or three of the other columns."
+      },
+      {
+       "diagram": {
+        "id": "2.5-plan",
+        "alt": "A drawing of the ten Towpath Cycles tables as boxes. On the left are ServiceType, Appointment, Hire and Bike. In the middle are Customer and Staff. To their right are Part, PartSale and PartOrder, and on the far right is Supplier. Each box lists its number column marked PK, its foreign keys marked FK, and two or three other columns. Gold lines join each foreign key to the number column it points at: for example, CustomerID in Appointment is joined to CustomerID in Customer.",
+        "cap": "The plan of the ten tables. A gold line runs from each foreign key to the number column it points at, and the dot sits at the table being pointed at. Customer and Staff have the most lines, because almost everything in the shop is done for a customer by a member of staff.",
+        "tables": [
+         {
+          "name": "ServiceType",
+          "x": 10,
+          "y": 10,
+          "cols": [
+           [
+            "ServiceTypeID",
+            "PK"
+           ],
+           [
+            "Name",
+            ""
+           ],
+           [
+            "DurationMinutes",
+            ""
+           ],
+           [
+            "Price",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "Appointment",
+          "x": 10,
+          "y": 160,
+          "cols": [
+           [
+            "AppointmentID",
+            "PK"
+           ],
+           [
+            "CustomerID",
+            "FK"
+           ],
+           [
+            "MechanicID",
+            "FK"
+           ],
+           [
+            "ServiceTypeID",
+            "FK"
+           ],
+           [
+            "StartTime",
+            ""
+           ],
+           [
+            "EndTime",
+            ""
+           ],
+           [
+            "Status",
+            ""
+           ],
+           [
+            "BookedByStaffID",
+            "FK"
+           ]
+          ]
+         },
+         {
+          "name": "Hire",
+          "x": 10,
+          "y": 400,
+          "cols": [
+           [
+            "HireID",
+            "PK"
+           ],
+           [
+            "BikeID",
+            "FK"
+           ],
+           [
+            "CustomerID",
+            "FK"
+           ],
+           [
+            "StartDate",
+            ""
+           ],
+           [
+            "EndDate",
+            ""
+           ],
+           [
+            "BookedByStaffID",
+            "FK"
+           ]
+          ]
+         },
+         {
+          "name": "Bike",
+          "x": 10,
+          "y": 600,
+          "cols": [
+           [
+            "BikeID",
+            "PK"
+           ],
+           [
+            "FrameNumber",
+            ""
+           ],
+           [
+            "Purpose",
+            ""
+           ],
+           [
+            "Status",
+            ""
+           ],
+           [
+            "CustomerID",
+            "FK"
+           ]
+          ]
+         },
+         {
+          "name": "Customer",
+          "x": 270,
+          "y": 200,
+          "cols": [
+           [
+            "CustomerID",
+            "PK"
+           ],
+           [
+            "FirstName",
+            ""
+           ],
+           [
+            "LastName",
+            ""
+           ],
+           [
+            "Phone",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "Staff",
+          "x": 270,
+          "y": 420,
+          "cols": [
+           [
+            "StaffID",
+            "PK"
+           ],
+           [
+            "FirstName",
+            ""
+           ],
+           [
+            "Role",
+            ""
+           ],
+           [
+            "Username",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "Part",
+          "x": 530,
+          "y": 40,
+          "cols": [
+           [
+            "PartID",
+            "PK"
+           ],
+           [
+            "PartCode",
+            ""
+           ],
+           [
+            "SupplierID",
+            "FK"
+           ],
+           [
+            "QtyInStock",
+            ""
+           ],
+           [
+            "ReorderLevel",
+            ""
+           ]
+          ]
+         },
+         {
+          "name": "PartSale",
+          "x": 530,
+          "y": 230,
+          "cols": [
+           [
+            "PartSaleID",
+            "PK"
+           ],
+           [
+            "PartID",
+            "FK"
+           ],
+           [
+            "CustomerID",
+            "FK"
+           ],
+           [
+            "Quantity",
+            ""
+           ],
+           [
+            "SoldByStaffID",
+            "FK"
+           ]
+          ]
+         },
+         {
+          "name": "PartOrder",
+          "x": 530,
+          "y": 430,
+          "cols": [
+           [
+            "PartOrderID",
+            "PK"
+           ],
+           [
+            "PartID",
+            "FK"
+           ],
+           [
+            "QtyOrdered",
+            ""
+           ],
+           [
+            "Status",
+            ""
+           ],
+           [
+            "PlacedByStaffID",
+            "FK"
+           ]
+          ]
+         },
+         {
+          "name": "Supplier",
+          "x": 790,
+          "y": 40,
+          "cols": [
+           [
+            "SupplierID",
+            "PK"
+           ],
+           [
+            "Name",
+            ""
+           ],
+           [
+            "Phone",
+            ""
+           ]
+          ]
+         }
+        ],
+        "links": [
+         [
+          "Appointment.CustomerID",
+          "Customer.CustomerID"
+         ],
+         [
+          "Appointment.MechanicID",
+          "Staff.StaffID"
+         ],
+         [
+          "Appointment.ServiceTypeID",
+          "ServiceType.ServiceTypeID"
+         ],
+         [
+          "Appointment.BookedByStaffID",
+          "Staff.StaffID"
+         ],
+         [
+          "Hire.BikeID",
+          "Bike.BikeID"
+         ],
+         [
+          "Hire.CustomerID",
+          "Customer.CustomerID"
+         ],
+         [
+          "Hire.BookedByStaffID",
+          "Staff.StaffID"
+         ],
+         [
+          "Bike.CustomerID",
+          "Customer.CustomerID"
+         ],
+         [
+          "Part.SupplierID",
+          "Supplier.SupplierID"
+         ],
+         [
+          "PartSale.PartID",
+          "Part.PartID"
+         ],
+         [
+          "PartSale.CustomerID",
+          "Customer.CustomerID"
+         ],
+         [
+          "PartSale.SoldByStaffID",
+          "Staff.StaffID"
+         ],
+         [
+          "PartOrder.PartID",
+          "Part.PartID"
+         ],
+         [
+          "PartOrder.PlacedByStaffID",
+          "Staff.StaffID"
+         ]
+        ]
+       }
+      },
+      {
+       "p": "Follow one line to read the drawing. The line from CustomerID in Appointment ends at CustomerID in Customer, so every appointment is for one customer. The five lines into Staff come from the people who do the work and make the bookings: the mechanic, and the staff who book appointments, book hires, sell parts and order parts. In chapter 3 the server checks every one of these lines, and it refuses a row that points at a parent that is not there."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Your turn: plan the tables for your own case study.",
+     "blocks": [
+      {
+       "box": {
+        "title": "Your turn",
+        "text": "Take your own case study and turn it into a plan, the way the Towpath Cycles story became ten tables. Use a clean sheet of paper. This plan is yours, so there is no answer to open: the Towpath Cycles list below shows what a finished one looks like."
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "2.5.1",
+         "do": "Read your case study once from start to end without writing anything.",
+         "see": "You can tell someone what the business does and what it books or sells."
+        },
+        {
+         "id": "2.5.2",
+         "do": "Read the case study again and underline every noun.",
+         "see": "Every person, place and thing in the case study is underlined."
+        },
+        {
+         "id": "2.5.3",
+         "do": "Write each underlined noun once, on its own line, down the left of your sheet.",
+         "see": "Your sheet has a list of nouns, with no noun written twice."
+        },
+        {
+         "id": "2.5.4",
+         "do": "Cross out each noun that the business has only one of, such as its own name or its town.",
+         "see": "The nouns left are the things the business has many of, and their details."
+        },
+        {
+         "id": "2.5.5",
+         "do": "Move each noun that is a detail of another noun, such as a phone number, to sit under that noun.",
+         "see": "The nouns left down the left edge are your tables, and the details under them are their first columns."
+        },
+        {
+         "id": "2.5.6",
+         "do": "Write a shape beside each table: booked by time, booked by day, counted stock, one-off stock, a person, a list, or a record of stock moving.",
+         "see": "Every table has a shape, and you can see which of the four shapes your case study uses."
+        },
+        {
+         "id": "2.5.7",
+         "do": "Draw a box for each table, with its ID column first, marked PK.",
+         "see": "Each table is a box, and its first line is its name followed by ID, such as LessonID."
+        },
+        {
+         "id": "2.5.8",
+         "do": "Write each foreign key in the box of the child table, marked FK.",
+         "see": "Every booking and every sale has a column ending in ID for each person and list it needs."
+        },
+        {
+         "id": "2.5.8b",
+         "do": "Draw a line from each foreign key to the primary key of its parent table.",
+         "see": "Every booking and every sale points at the people and the lists it needs, by number."
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "What a finished list looks like, for Towpath Cycles",
+        "blocks": [
+         {
+          "p": "Booked by time: Appointment, which books a mechanic from a start time to an end time."
+         },
+         {
+          "p": "Booked by day: Hire, which books one bike from a start date to an end date."
+         },
+         {
+          "p": "Counted stock: Part, with QtyInStock and ReorderLevel."
+         },
+         {
+          "p": "One-off stock: Bike, with a frame number and a status that goes from Available to Reserved to Sold."
+         },
+         {
+          "p": "The people: Customer and Staff."
+         },
+         {
+          "p": "The lists: ServiceType, the services the workshop does, and Supplier, the firms the shop buys from."
+         },
+         {
+          "p": "The records of stock moving: PartOrder, for parts coming in, and PartSale, for parts going out."
+         }
+        ]
+       }
+      },
+      {
+       "p": "Your case study may not use all four shapes. A case study with no stock has no counted stock and no one-off stock, and that is fine. Most case studies have at least one booking shape and at least one stock shape, so look twice before you leave one out."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Tick the table: check your own plan against eight questions.",
+     "blocks": [
+      {
+       "p": "Check your own plan against every row below. The first four rows are things your plan must have. The last four are mistakes your plan must not have, and each one costs marks if it reaches your finished program."
+      },
+      {
+       "check": [
+        {
+         "id": "2.5.9",
+         "what": "Every table has a number column",
+         "expect": "allowed",
+         "how": "Look at the first line of each box on your plan. It is the table name followed by ID, such as CustomerID, and it is marked PK."
+        },
+        {
+         "id": "2.5.10",
+         "what": "Every booking has a start and an end",
+         "expect": "allowed",
+         "how": "Find each table you marked as booked by time or booked by day. A booking by time has a start time and an end time, both DATETIME. A booking by day has a start date and an end date, both DATE."
+        },
+        {
+         "id": "2.5.11",
+         "what": "Every link is a number with a line",
+         "expect": "allowed",
+         "how": "Find each column marked FK. It ends in ID, it is an INT, and a line on your plan runs from it to the primary key of its parent table."
+        },
+        {
+         "id": "2.5.12",
+         "what": "Every counted stock has a rule against going below zero",
+         "expect": "allowed",
+         "how": "Find the count column in each counted stock table, such as QtyInStock in Part. Beside it you have written a CHECK that says the count must be 0 or more."
+        },
+        {
+         "id": "2.5.13",
+         "what": "A name stored twice",
+         "expect": "control",
+         "how": "Look in every table except the people tables for a column such as CustomerName or MechanicName. Your plan must have none. If you find one, replace it with the ID of that person, such as CustomerID."
+        },
+        {
+         "id": "2.5.14",
+         "what": "Money planned as FLOAT",
+         "expect": "control",
+         "how": "Look at every price, cost and total on your plan. Each must be DECIMAL with two places after the point, such as DECIMAL(8,2). If you find a FLOAT, change it to DECIMAL."
+        },
+        {
+         "id": "2.5.15",
+         "what": "A date planned as text",
+         "expect": "control",
+         "how": "Look at every date and time on your plan. Each must be DATE or DATETIME. If you find a date planned as VARCHAR, change it, because text would let 31/02/2026 in."
+        },
+        {
+         "id": "2.5.16",
+         "what": "A status that could be any word",
+         "expect": "control",
+         "how": "Look at every status column on your plan. Each has a CHECK with its list of allowed words, such as Booked, Done or Cancelled. If one has no list, write the list beside it, or the table would let the word Maybe in."
+        }
+       ]
+      },
+      {
+       "p": "Keep your plan beside you for chapter 3. When your plan passes all eight rows, it is ready to be typed, and chapter 3 builds the Towpath Cycles tables the same way, one table at a time."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

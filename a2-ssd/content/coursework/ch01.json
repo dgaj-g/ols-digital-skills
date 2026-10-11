@@ -1,0 +1,954 @@
+{
+ "id": "01",
+ "n": 1,
+ "title": "Your workspace",
+ "one": "SSMS, Visual Studio and OneDrive inside the Programming Environment, and where your files live.",
+ "marks": "This chapter earns no marks by itself. Every mark in the chapters after it depends on files that are saved in the right place, and on tools that open and connect.",
+ "prev": {
+  "id": "00",
+  "title": "Start here",
+  "n": 0
+ },
+ "next": {
+  "id": "02",
+  "title": "Plan the tables",
+  "n": 2
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "Your folder",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will set up in this chapter.",
+     "blocks": [
+      {
+       "p": "Before you build anything, three things need to be in place. The first is a folder in your school OneDrive, where every file for this coursework lives. The second is SQL Server Management Studio (SSMS), connected to the database server. The third is Visual Studio 2019, checked so that it can make the kind of program this guide builds."
+      },
+      {
+       "p": "You do all of this inside the Programming Environment, the Windows desktop you are signed in to now. By the end of the chapter you will have run your first line of SQL, and one empty file called BikeShop.sql will be waiting in your own folder."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch01-explorer-folder-ticked.png",
+        "alt": "File Explorer open at OneDrive - C2k, with the folder A2 SSD Coursework in the list and a green tick beside it in the Status column.",
+        "cap": "Your coursework folder in OneDrive. The green tick means OneDrive has copied it to your school account.",
+        "w": 1121,
+        "h": 594,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 22,
+          "y": 22,
+          "say": "The folder A2 SSD Coursework."
+         },
+         {
+          "n": 2,
+          "x": 40,
+          "y": 22,
+          "say": "The green tick in the Status column."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Check that you have these ready.",
+     "blocks": [
+      {
+       "need": [
+        "You are signed in to the Programming Environment.",
+        "This guide is open in the Edge browser inside the Programming Environment, beside the other windows.",
+        "You have read chapter 0, so you know how the screens, the steps and the ticks work."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Programming Environment",
+         "The Windows desktop you reach through C2k, where SQL Server and the programming tools are installed."
+        ],
+        [
+         "OneDrive",
+         "Storage on your school account. A file saved there can be opened from any computer you sign in on."
+        ],
+        [
+         "Folder",
+         "A named place that holds files, the way a ring binder holds pages."
+        ],
+        [
+         "File Explorer",
+         "The Windows window that shows your folders and files."
+        ],
+        [
+         "Green tick",
+         "The mark OneDrive puts beside a file or folder once it has copied it to your school account."
+        ],
+        [
+         "SQL",
+         "The language you use to make a database and to ask it questions."
+        ],
+        [
+         "Database",
+         "A set of tables that keeps the shop's records, such as its customers and its bookings."
+        ],
+        [
+         "Server",
+         "A program that keeps databases and answers the SQL sent to it. It has no window of its own."
+        ],
+        [
+         "LocalDB",
+         "A small copy of SQL Server that starts by itself when a program connects to it."
+        ],
+        [
+         "SQL Server Management Studio (SSMS)",
+         "The window you use to type SQL, send it to the server, and read the answer."
+        ],
+        [
+         "Connect",
+         "Link SQL Server Management Studio (SSMS) to one server, so that the SQL you type goes to that server."
+        ],
+        [
+         "Query",
+         "A question or an instruction written in SQL, such as a request for the server's version."
+        ],
+        [
+         "F5",
+         "The key that runs the SQL in the window. It does the same as the Execute button."
+        ],
+        [
+         "Script",
+         "A file of SQL lines that the server runs from the top to the bottom. Its name ends in .sql."
+        ],
+        [
+         "Visual Studio 2019",
+         "The program you use to build the shop's windows and buttons, and the C# code behind them."
+        ],
+        [
+         "C#",
+         "The programming language you use in class, written C and a hash sign and said C sharp."
+        ],
+        [
+         "Template",
+         "A ready-made starting point that Visual Studio 2019 fills in when you make a new project."
+        ],
+        [
+         "Project",
+         "The set of files that make one program."
+        ],
+        [
+         "Solution folder",
+         "The folder Visual Studio 2019 makes for your project, with every file of the program inside it."
+        ],
+        [
+         "bin and obj",
+         "Two folders Visual Studio 2019 makes each time it builds the program. They are made again from your code, so you leave them out when you hand in."
+        ],
+        [
+         "Zip",
+         "Pack a folder into one smaller file that can be handed in."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Make your coursework folder in OneDrive.",
+     "blocks": [
+      {
+       "p": "Your coursework folder is called A2 SSD Coursework, and it sits inside OneDrive - C2k, your school OneDrive. OneDrive keeps a copy of everything in this folder on your school account. That means you can reach it from any computer you sign in on, and it is safe if one computer breaks. Every file you make in this guide goes in this folder: the script in chapter 1, the program in chapter 5, and your screenshots."
+      },
+      {
+       "steps": [
+        {
+         "id": "1.1.1",
+         "do": "Press the Windows key and the E key together.",
+         "see": "File Explorer opens. It is a window with a list of places down its left side.",
+         "wrong": [
+          [
+           "Nothing opens",
+           "Click the yellow folder picture on the taskbar at the bottom of the screen instead. It opens File Explorer too."
+          ]
+         ]
+        },
+        {
+         "id": "1.1.2",
+         "do": "Click OneDrive - C2k in the list down the left side of File Explorer.",
+         "see": "The right side lists the files and folders in your school OneDrive. It may be empty.",
+         "img": {
+          "img": "img/ch01-explorer-onedrive.png",
+          "alt": "File Explorer in the Programming Environment with OneDrive - C2k highlighted in the list down the left side, and the files and folders of the school OneDrive listed on the right.",
+          "cap": "File Explorer, open at your school OneDrive. Everything you make for this coursework goes in here.",
+          "w": 1121,
+          "h": 594,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 7,
+            "y": 58,
+            "say": "Click OneDrive - C2k in the list down the left side."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 36,
+            "say": "Your OneDrive files and folders are listed here."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "There is no OneDrive - C2k in the list",
+           "OneDrive has not started yet. Wait one minute, close File Explorer, and open it again with the Windows key and E. If it is still missing, tell your teacher before you go on."
+          ]
+         ]
+        },
+        {
+         "id": "1.1.3",
+         "do": "Right-click an empty white space on the right side, below any files.",
+         "see": "A menu opens, and New is one of the lines in it.",
+         "img": {
+          "img": "img/ch01-explorer-new-folder.png",
+          "alt": "File Explorer open at OneDrive - C2k, with the menu from a right-click on empty space. New is highlighted, and its small menu shows Folder at the top.",
+          "cap": "Right-click an empty space in OneDrive - C2k, point at New, and click Folder.",
+          "w": 747,
+          "h": 655,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 79,
+            "say": "Right-click an empty white space below the files."
+           },
+           {
+            "n": 2,
+            "x": 33,
+            "y": 59,
+            "say": "Point at New."
+           },
+           {
+            "n": 3,
+            "x": 67,
+            "y": 60,
+            "say": "Click Folder."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.1.4",
+         "do": "Point at New in the menu.",
+         "see": "A small menu opens beside New, with Folder at the top of it."
+        },
+        {
+         "id": "1.1.5",
+         "do": "Click Folder in the small menu.",
+         "see": "A new folder appears, with its name, New folder, highlighted in blue and ready to be typed over."
+        },
+        {
+         "id": "1.1.6",
+         "do": "Type A2 SSD Coursework and press Enter.",
+         "see": "The folder is named A2 SSD Coursework, with a capital A, capital SSD and a capital C.",
+         "wrong": [
+          [
+           "The name is spelled wrongly",
+           "Right-click the folder, click Rename, type A2 SSD Coursework, and press Enter."
+          ],
+          [
+           "The folder is still called New folder",
+           "The name was not highlighted when you typed. Right-click the folder, click Rename, type A2 SSD Coursework, and press Enter."
+          ]
+         ]
+        },
+        {
+         "id": "1.1.7",
+         "do": "Wait until a green tick appears beside the folder, in the Status column.",
+         "see": "A green tick sits beside A2 SSD Coursework. OneDrive has copied the folder to your school account, so it will be there in every session.",
+         "img": {
+          "img": "img/ch01-explorer-folder-ticked.png",
+          "alt": "File Explorer open at OneDrive - C2k, with the folder A2 SSD Coursework in the list and a green tick beside it in the Status column.",
+          "cap": "Your coursework folder in OneDrive. The green tick means OneDrive has copied it to your school account.",
+          "w": 1121,
+          "h": 594,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 22,
+            "say": "The folder A2 SSD Coursework."
+           },
+           {
+            "n": 2,
+            "x": 40,
+            "y": 22,
+            "say": "The green tick in the Status column."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Two blue arrows going round in a circle",
+           "OneDrive is still copying the folder. Wait a few seconds, and the arrows turn into a green tick."
+          ],
+          [
+           "A red cross beside the folder",
+           "OneDrive could not copy the folder. Check that you are still signed in to OneDrive, then tell your teacher, because your work will not be safe until the tick is green."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "SQL Server Management Studio (SSMS)",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Open SQL Server Management Studio (SSMS) and connect it to the database server.",
+     "blocks": [
+      {
+       "p": "SQL Server is the program that keeps your database. It runs quietly in the background and has no window of its own. SQL Server Management Studio (SSMS) is the window you use to talk to it: you type SQL, press F5, and the server's answer appears underneath."
+      },
+      {
+       "p": "The server in the Programming Environment is called `(localdb)\\mssqllocaldb`. It is LocalDB, a small copy of SQL Server that starts by itself when SQL Server Management Studio (SSMS) connects to it. You type this name once each time you open SQL Server Management Studio (SSMS), so it is worth getting every character right: the brackets, the backslash, and no spaces."
+      },
+      {
+       "steps": [
+        {
+         "id": "1.2.1",
+         "do": "Press the Windows key on the keyboard.",
+         "see": "The Start menu opens, with a search box ready for typing."
+        },
+        {
+         "id": "1.2.2",
+         "do": "Type SQL Server Management Studio.",
+         "see": "SQL Server Management Studio appears at the top of the list, with a version number after its name.",
+         "img": {
+          "img": "img/ch01-start-ssms.png",
+          "alt": "The Windows Start menu in the Programming Environment with SQL Server Management Studio typed in the search box and SQL Server Management Studio, with its version number, at the top of the list.",
+          "cap": "Typing the name in the Start menu finds the app. Click the top result.",
+          "w": 786,
+          "h": 678,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 17,
+            "y": 95,
+            "say": "The search box, with the name typed in it."
+           },
+           {
+            "n": 2,
+            "x": 20,
+            "y": 18,
+            "say": "Click SQL Server Management Studio at the top of the list."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Nothing called SQL Server Management Studio in the list",
+           "Check the spelling, then try typing Management Studio on its own as the search. If it is still missing, tell your teacher: the Programming Environment needs it for chapters 3 to 9."
+          ]
+         ]
+        },
+        {
+         "id": "1.2.3",
+         "do": "Click SQL Server Management Studio at the top of the list.",
+         "see": "SQL Server Management Studio (SSMS) opens. After a few seconds the Connect to Server box appears in the middle of it."
+        },
+        {
+         "id": "1.2.4",
+         "do": "Triple-click the Server name box, so that anything already in it is highlighted.",
+         "see": "The text in the Server name box is highlighted in blue, or the box is empty.",
+         "img": {
+          "img": "img/sh-ssms-connect.png",
+          "alt": "The Connect to Server box in SQL Server Management Studio (SSMS). Server type says Database Engine, Server name says (localdb)\\mssqllocaldb and Authentication says Windows Authentication.",
+          "cap": "The Connect to Server box. It opens every time you start SQL Server Management Studio (SSMS).",
+          "w": 480,
+          "h": 314,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 66,
+            "y": 46,
+            "say": "Type (localdb)\\mssqllocaldb in the Server name box."
+           },
+           {
+            "n": 2,
+            "x": 66,
+            "y": 54,
+            "say": "Leave Authentication as Windows Authentication."
+           },
+           {
+            "n": 3,
+            "x": 35,
+            "y": 92,
+            "say": "Click Connect."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.2.5",
+         "do": "Type `(localdb)\\mssqllocaldb` in the Server name box.",
+         "see": "The box reads `(localdb)\\mssqllocaldb`: the word localdb in round brackets, a backslash, then mssqllocaldb, with no spaces."
+        },
+        {
+         "id": "1.2.6",
+         "do": "Look at the Authentication box, under the Server name box.",
+         "see": "Authentication says Windows Authentication. That means the server knows you by the account you signed in with, so there is no password to type.",
+         "wrong": [
+          [
+           "It says SQL Server Authentication",
+           "Click the Authentication box and choose Windows Authentication from the list."
+          ]
+         ]
+        },
+        {
+         "id": "1.2.7",
+         "do": "Click the Connect button.",
+         "see": "The Connect to Server box closes. Object Explorer, down the left side, shows `(localdb)\\mssqllocaldb` at the top with a Databases folder under it.",
+         "wrong": [
+          [
+           "A red box that says 'Cannot connect to (localdb)\\mssqllocaldb'",
+           "LocalDB can take a few seconds to start the first time. Click OK, wait ten seconds, and click Connect again. If it still fails, compare the Server name box with `(localdb)\\mssqllocaldb`, character by character."
+          ],
+          [
+           "A red box that names a network-related or instance-specific error",
+           "The server name is spelled wrongly, so SQL Server Management Studio (SSMS) looked for a server that does not exist. Click OK, and retype the name exactly as `(localdb)\\mssqllocaldb`."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Run your first line of SQL, which asks the server for its version.",
+     "blocks": [
+      {
+       "p": "A query is a question or an instruction written in SQL. You type it in a query window and press F5 to run it. Your first query is one line: `SELECT @@VERSION;` Type it exactly, with two at signs and a semicolon at the end."
+      },
+      {
+       "p": "Each part of the line has a job. SELECT means show me. @@VERSION is a value the server always knows about itself: its own name and version number. The two at signs mark it as one of the server's own values. The semicolon ends the instruction, the way a full stop ends a sentence. If one row comes back, SQL Server Management Studio (SSMS) is connected and the server is answering."
+      },
+      {
+       "steps": [
+        {
+         "id": "1.2.8",
+         "do": "Click New Query on the toolbar, or press Ctrl and N together.",
+         "see": "A tab named SQLQuery1.sql opens with an empty white window, and the cursor blinks in it.",
+         "img": {
+          "img": "img/ch07-ssms-new-query.png",
+          "alt": "The toolbar of SQL Server Management Studio (SSMS) with the New Query button at the left, and an empty query window below it.",
+          "cap": "New Query opens an empty window where you type SQL.",
+          "w": 900,
+          "h": 300,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 7,
+            "y": 5,
+            "say": "Click New Query, or press Ctrl and N together."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 60,
+            "say": "Type into the empty window."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.2.9",
+         "do": "Type `SELECT @@VERSION;` in the empty window.",
+         "see": "The line reads `SELECT @@VERSION;` with SELECT coloured blue and @@VERSION coloured pink."
+        },
+        {
+         "id": "1.2.10",
+         "do": "Press F5 to run the query.",
+         "see": "A Results tab opens under the window with one row. Its one box holds a long line that starts with Microsoft SQL Server, then a year and a version number. The bar at the bottom says Query executed successfully.",
+         "img": {
+          "img": "img/ch01-ssms-version.png",
+          "alt": "A query window in SQL Server Management Studio (SSMS) holding the line SELECT @@VERSION; with the Results tab underneath showing one row. Its one box starts with Microsoft SQL Server, then a year and a version number. The bar at the bottom says Query executed successfully.",
+          "cap": "Your first query and its answer. One row came back from the server, so SQL Server Management Studio (SSMS) is connected and working.",
+          "w": 931,
+          "h": 655,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 38,
+            "y": 13,
+            "say": "The line you typed."
+           },
+           {
+            "n": 2,
+            "x": 47,
+            "y": 64,
+            "say": "One row, starting Microsoft SQL Server."
+           },
+           {
+            "n": 3,
+            "x": 38,
+            "y": 97,
+            "say": "Query executed successfully."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Red text that says 'Must declare the scalar variable'",
+           "@@VERSION is spelled wrongly, so the server does not recognise it. Check that the line has two at signs and the whole word VERSION, then press F5 again."
+          ],
+          [
+           "Red text that says 'Incorrect syntax near'",
+           "A character is missing or extra. Compare your line with `SELECT @@VERSION;` character by character, then press F5 again."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Empty the window and save it as BikeShop.sql in your folder.",
+     "blocks": [
+      {
+       "p": "This query window becomes your script. A script is a file of SQL lines that the server runs from the top to the bottom, and its name ends in .sql. In chapter 3 you fill it with the tables of your database, so it starts empty. Clear the test line out of the window, then save the empty window into your OneDrive folder as BikeShop.sql."
+      },
+      {
+       "steps": [
+        {
+         "id": "1.2.11",
+         "do": "Press Ctrl and A together, with the cursor in the query window.",
+         "see": "The SELECT line is highlighted in blue."
+        },
+        {
+         "id": "1.2.12",
+         "do": "Press the Delete key.",
+         "see": "The query window is empty. The Results tab underneath stays until you run something else."
+        },
+        {
+         "id": "1.2.13",
+         "do": "Press Ctrl and S together to save the window.",
+         "see": "The Save File As box opens, because this window has never been saved before.",
+         "img": {
+          "img": "img/sh-ssms-save-as.png",
+          "alt": "The Save File As box in SQL Server Management Studio (SSMS), open at the OneDrive folder A2 SSD Coursework, with BikeShop.sql typed in the File name box.",
+          "cap": "Saving the empty script into your OneDrive coursework folder, so that it is there in every session.",
+          "w": 945,
+          "h": 465,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 62,
+            "say": "Click OneDrive - C2k on the left."
+           },
+           {
+            "n": 2,
+            "x": 18,
+            "y": 80,
+            "say": "Type BikeShop.sql in the File name box."
+           },
+           {
+            "n": 3,
+            "x": 82,
+            "y": 95,
+            "say": "Click Save."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.2.14",
+         "do": "Click OneDrive - C2k in the list down the left side of the Save File As box.",
+         "see": "The middle of the box lists your OneDrive, and A2 SSD Coursework is in the list."
+        },
+        {
+         "id": "1.2.15",
+         "do": "Double-click the A2 SSD Coursework folder.",
+         "see": "The box opens inside A2 SSD Coursework, and the folder is empty."
+        },
+        {
+         "id": "1.2.16",
+         "do": "Triple-click the File name box, so that the name SQLQuery1.sql is highlighted.",
+         "see": "SQLQuery1.sql is highlighted in blue in the File name box."
+        },
+        {
+         "id": "1.2.17",
+         "do": "Type BikeShop.sql in the File name box.",
+         "see": "The File name box reads BikeShop.sql, with a capital B and a capital S."
+        },
+        {
+         "id": "1.2.18",
+         "do": "Click the Save button.",
+         "see": "The Save File As box closes, and the tab at the top of the query window is now named BikeShop.sql.",
+         "wrong": [
+          [
+           "The file was saved in the wrong folder",
+           "Click File at the top left, then Save BikeShop.sql As…, and save it again into A2 SSD Coursework. Then delete the copy in the wrong folder with File Explorer."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Visual Studio 2019",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Open Visual Studio 2019 and check that the Windows Forms template is there.",
+     "blocks": [
+      {
+       "p": "Visual Studio 2019 is where you build the program that the shop's staff use: the windows, the buttons and the C# code behind them. You make that program in chapter 5. Today you check one thing. The Programming Environment must have the template this guide uses, which is Windows Forms App (.NET Framework) for C#. A template is a ready-made starting point that Visual Studio 2019 fills in for a new project. You look for it, then go back without making anything."
+      },
+      {
+       "steps": [
+        {
+         "id": "1.3.1",
+         "do": "Press the Windows key on the keyboard.",
+         "see": "The Start menu opens, with a search box ready for typing."
+        },
+        {
+         "id": "1.3.2",
+         "do": "Type Visual Studio 2019.",
+         "see": "Visual Studio 2019 appears at the top of the list.",
+         "img": {
+          "img": "img/ch01-start-vs.png",
+          "alt": "The Windows Start menu in the Programming Environment with Visual Studio 2019 typed in the search box and Visual Studio 2019 at the top of the list.",
+          "cap": "The same search finds Visual Studio 2019. Click the top result.",
+          "w": 776,
+          "h": 678,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 17,
+            "y": 95,
+            "say": "The search box, with the name typed in it."
+           },
+           {
+            "n": 2,
+            "x": 15,
+            "y": 16,
+            "say": "Click Visual Studio 2019 at the top of the list."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.3.3",
+         "do": "Click Visual Studio 2019 at the top of the list.",
+         "see": "Visual Studio 2019 opens its start window, with Create a new project on the right.",
+         "wrong": [
+          [
+           "A box asks you to sign in with a Microsoft account",
+           "Click Not now, maybe later. You do not need an account for anything in this guide."
+          ],
+          [
+           "A box asks you to choose a colour theme",
+           "Click the blue button at the bottom of the box, whose name begins with the word Start. Any theme works with this guide."
+          ]
+         ]
+        },
+        {
+         "id": "1.3.4",
+         "do": "Click Create a new project.",
+         "see": "The Create a new project window opens, with a search box at the top and a long list of templates.",
+         "img": {
+          "img": "img/ch01-vs-start-window.png",
+          "alt": "The start window of Visual Studio 2019, with Open recent on the left and four buttons on the right under Get started. Create a new project is the last of the four.",
+          "cap": "The start window of Visual Studio 2019. It opens every time you start the program.",
+          "w": 1023,
+          "h": 680,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 77,
+            "y": 62,
+            "say": "Click Create a new project."
+           }
+          ]
+         }
+        },
+        {
+         "id": "1.3.5",
+         "do": "Type Windows Forms in the search box at the top.",
+         "see": "The list shrinks to the Windows Forms templates. One of them is Windows Forms App (.NET Framework), with C#, Windows and Desktop under its name.",
+         "img": {
+          "img": "img/ch01-vs-template.png",
+          "alt": "The Create a new project window in Visual Studio 2019, with Windows Forms typed in the search box and Windows Forms App (.NET Framework) in the list, with C#, Windows and Desktop under its name. Back and Next are at the bottom right.",
+          "cap": "Windows Forms App (.NET Framework), the one marked C#, is the template this guide uses. The one without (.NET Framework) is a different kind of project.",
+          "w": 1023,
+          "h": 680,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 59,
+            "y": 11,
+            "say": "Type Windows Forms in the search box."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 40,
+            "say": "Windows Forms App (.NET Framework), with C# under it."
+           },
+           {
+            "n": 3,
+            "x": 81,
+            "y": 92,
+            "say": "Click Back. Today you only look."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "There is no Windows Forms App (.NET Framework) in the list",
+           "The Programming Environment is missing the part of Visual Studio 2019 that makes Windows programs. Tell your teacher now. Chapters 2, 3 and 4 do not need Visual Studio 2019, so you can carry on with those while it is fixed."
+          ],
+          [
+           "Only Windows Forms App, without (.NET Framework)",
+           "Scroll down the list. The template with (.NET Framework) in its name is a different one, and it is the one this guide uses."
+          ]
+         ]
+        },
+        {
+         "id": "1.3.6",
+         "do": "Click Back at the bottom right, without choosing a template.",
+         "see": "The start window comes back, and no project has been made."
+        },
+        {
+         "id": "1.3.7",
+         "do": "Click the cross at the top right of the start window.",
+         "see": "Visual Studio 2019 closes.",
+         "img": {
+          "img": "img/ch01-vs-close.png",
+          "alt": "The start window of Visual Studio 2019 again, after Back, with the cross at its top right corner ringed.",
+          "cap": "Back returns you to the start window. The cross at its top right closes it.",
+          "w": 1023,
+          "h": 680,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 98,
+            "y": 3,
+            "say": "Click the cross at the top right."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A large empty Visual Studio 2019 window is still open",
+           "Closing the start window can leave the main window open with nothing in it. Click the cross at its top right, and Visual Studio 2019 closes."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "What you hand in and the home note",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read the list of what you hand in at the end.",
+     "blocks": [
+      {
+       "p": "At the end of the coursework you hand in five things. Every one of them is made in your A2 SSD Coursework folder, so nothing has to be found or copied at the last minute."
+      },
+      {
+       "box": {
+        "title": "The five things you hand in",
+        "text": "The first is BikeShop.sql, the script that makes your database. The second is the BikeShop solution folder from Visual Studio 2019, zipped into one file, with its bin and obj folders left out. The third is your write-up. The fourth is your user guide. The fifth is your test evidence, which is the screenshots you take at the end of each chapter."
+       }
+      },
+      {
+       "p": "Visual Studio 2019 makes the bin and obj folders every time it builds your program. They are large, and they are made again from your code, so the examiner does not need them. You zip the solution folder once, at the very end, when the program is finished."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read when to run your script.",
+     "blocks": [
+      {
+       "p": "From chapter 3 onward, BikeShop.sql makes your whole database: the tables, the sample data, and later the stored procedures, which are named blocks of SQL saved in the database. The database it makes lives on the server `(localdb)\\mssqllocaldb` inside the Programming Environment, not in your OneDrive folder. The script is the part that lives in OneDrive."
+      },
+      {
+       "p": "When you sign out of the Programming Environment, the database on the server may be gone the next time you sign in. The box below says what to do about it, and it is the same for every chapter."
+      },
+      {
+       "box": {
+        "title": "When to run your script",
+        "text": "BikeShop.sql is the master copy of your database. Run it at the start of every session; it takes two seconds."
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read what changes if you work at home.",
+     "blocks": [
+      {
+       "p": "Some pupils install SQL Server Express, SQL Server Management Studio (SSMS) and Visual Studio 2019 on a computer at home. If you do, one thing changes, which is the server name. At home the server is your own, such as `.\\SQLEXPRESS`. The full stop before the backslash means this computer, and SQLEXPRESS is the name SQL Server Express gives itself when it installs."
+      },
+      {
+       "box": {
+        "title": "If you work at home",
+        "text": "Type your own server name in the Server name box when SQL Server Management Studio (SSMS) asks you to connect. In chapter 5 you write the server name a second time, in a settings file called App.config, and at home you change it there too. The database at home is a separate one, so run BikeShop.sql there to make it. Nothing else changes: the script, the code and the steps in this guide are the same."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Prove it: your workspace is ready",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Tick the table: the folder, the script, the server and the template.",
+     "blocks": [
+      {
+       "p": "Every row below is a check you do now, in the Programming Environment. Two rows are mistakes made on purpose, and a refusal there is a pass, not a fail: it proves that SQL Server Management Studio (SSMS) is talking to a real server that checks what you send it."
+      },
+      {
+       "check": [
+        {
+         "id": "1.5.1",
+         "what": "Your coursework folder is in OneDrive with a green tick",
+         "expect": "allowed",
+         "how": "Press the Windows key and E together, and click OneDrive - C2k on the left. You see A2 SSD Coursework in the list, with a green tick in the Status column."
+        },
+        {
+         "id": "1.5.2",
+         "what": "BikeShop.sql is saved in the folder",
+         "expect": "allowed",
+         "how": "Double-click A2 SSD Coursework in File Explorer. You see BikeShop.sql in it, with a green tick beside it."
+        },
+        {
+         "id": "1.5.3",
+         "what": "A wrong server name is refused",
+         "expect": "control",
+         "how": "Close SQL Server Management Studio (SSMS) with the cross at its top right. Start it again from the Start menu. In the Server name box type `(localdb)\\mssqllocal`, with the last two letters missing, and click Connect. After a few seconds a red box names a network-related or instance-specific error, and nothing connects. Click OK."
+        },
+        {
+         "id": "1.5.4",
+         "what": "The right server name connects",
+         "expect": "allowed",
+         "how": "In the same Connect to Server box, type `(localdb)\\mssqllocaldb` in the Server name box and click Connect. Object Explorer shows `(localdb)\\mssqllocaldb` with a Databases folder under it."
+        },
+        {
+         "id": "1.5.5",
+         "what": "The server answers your first query",
+         "expect": "allowed",
+         "how": "Click New Query, type `SELECT @@VERSION;` and press F5. The Results tab shows one row that starts with Microsoft SQL Server."
+        },
+        {
+         "id": "1.5.6",
+         "what": "A misspelled query is refused",
+         "expect": "control",
+         "how": "Press Ctrl and A in the same window, type `SELECT @@VERSIO;` with the N missing, and press F5. The Messages tab shows red text: Must declare the scalar variable \"@@VERSIO\". Nothing else happens."
+        },
+        {
+         "id": "1.5.7",
+         "what": "The Windows Forms template is there",
+         "expect": "allowed",
+         "how": "Start Visual Studio 2019, click Create a new project, and type Windows Forms in the search box. You see Windows Forms App (.NET Framework) with C# under its name. Click Back and close Visual Studio 2019."
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch01-ssms-version.png",
+        "alt": "A query window in SQL Server Management Studio (SSMS) holding the line SELECT @@VERSION; with the Results tab underneath showing one row. Its one box starts with Microsoft SQL Server, then a year and a version number. The bar at the bottom says Query executed successfully.",
+        "cap": "Your first query and its answer. One row came back from the server, so SQL Server Management Studio (SSMS) is connected and working.",
+        "w": 931,
+        "h": 655,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 38,
+          "y": 13,
+          "say": "The line you typed."
+         },
+         {
+          "n": 2,
+          "x": 47,
+          "y": 64,
+          "say": "One row, starting Microsoft SQL Server."
+         },
+         {
+          "n": 3,
+          "x": 38,
+          "y": 97,
+          "say": "Query executed successfully."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Seven ticks mean your workspace is ready. Close the query window without saving it, because the test lines in it are not part of your script. Your one saved file, BikeShop.sql, is empty and waiting in your OneDrive folder. Chapter 3 opens it and fills it with the tables."
+      },
+      {
+       "need": [
+        "A2 SSD Coursework is in your OneDrive, with a green tick.",
+        "BikeShop.sql is saved in A2 SSD Coursework, and it is empty.",
+        "SQL Server Management Studio (SSMS) connects to `(localdb)\\mssqllocaldb`, and `SELECT @@VERSION;` returns one row.",
+        "Visual Studio 2019 has the Windows Forms App (.NET Framework) template for C#."
+       ]
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Your own scenario uses the same folder and the same server. When you build your own database in place of the bike shop, give the script your scenario's name, such as DogGroomer.sql, and save it in A2 SSD Coursework beside BikeShop.sql."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

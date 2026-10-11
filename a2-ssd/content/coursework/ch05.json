@@ -1,0 +1,2929 @@
+{
+ "id": "05",
+ "n": 5,
+ "title": "Connect C#",
+ "one": "The project, the connection string, the helper class and the first grid.",
+ "marks": "This chapter is where the examiner first sees your program talk to your database: one helper class that every screen goes through, a sign-in that the database decides, and a main menu that shows a manager more than a counter worker. Every later chapter builds on the files you make here.",
+ "prev": {
+  "id": "04",
+  "title": "Stored procedures",
+  "n": 4
+ },
+ "next": {
+  "id": "06",
+  "title": "Add, edit, delete, display",
+  "n": 6
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "Make the project in Visual Studio 2019",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will build in this chapter.",
+     "blocks": [
+      {
+       "p": "By the end of this chapter your program starts, asks for a username and a password, checks them against the Staff table in your BikeShop database, and opens a main menu with a button for every part of the shop. The menu knows who is signed in, and it switches the Reports button off for anyone who is not a manager."
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-app-menu.png",
+        "alt": "The BikeShop main menu after signing in as siobhan, with a button for each screen and her name at the top.",
+        "cap": "The main menu. A manager sees every button; a mechanic sees fewer.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 30,
+          "y": 22,
+          "say": "Who is signed in."
+         },
+         {
+          "n": 2,
+          "x": 72,
+          "y": 60,
+          "say": "One button for each screen."
+         }
+        ]
+       }
+      },
+      {
+       "p": "Up to now you have worked in SQL Server Management Studio (SSMS), where you typed SQL and ran it yourself. In this chapter you open Visual Studio 2019 for the first time and write C#, the language your program is written in. The program will run your stored procedures for you, the same ones you wrote in chapter 4."
+      },
+      {
+       "box": {
+        "title": "What a C# program is made of",
+        "text": "A C# program is a set of files, each ending in .cs. Each file holds a class: a named box of code that does one job. Inside a class are methods: named chunks of code that run when something calls them, the way a stored procedure runs when something executes it. Visual Studio 2019 keeps all the files together in a project, and the project is what you build and run."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Check that you have these ready.",
+     "blocks": [
+      {
+       "need": [
+        "Chapter 4 finished: BikeShop.sql runs clean in SQL Server Management Studio (SSMS) and ends with the line BikeShop is ready.",
+        "The stored procedure usp_Staff_Login in your script, from chapter 4.",
+        "Visual Studio 2019 open, inside the Programming Environment, as you did in chapter 1.",
+        "Your OneDrive folder for this course, the one that holds BikeShop.sql."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Project",
+         "The set of files that make one program. Visual Studio 2019 builds and runs the whole project at once."
+        ],
+        [
+         "Solution Explorer",
+         "The panel on the right of Visual Studio 2019 that lists every folder and file in your project."
+        ],
+        [
+         "Class",
+         "A named box of code in a .cs file that does one job, such as talking to the database or holding who is signed in."
+        ],
+        [
+         "Method",
+         "A named chunk of code inside a class. Code elsewhere calls it by name, and it runs. Methods are the C# version of stored procedures."
+        ],
+        [
+         "Namespace",
+         "The family name of a class, written at the top of its file. Classes in different folders have different family names, such as BikeShop.Data and BikeShop.Forms."
+        ],
+        [
+         "Connection string",
+         "One line of text that tells the program where SQL Server is, which database to open and how to sign in to it."
+        ],
+        [
+         "Reference",
+         "A ready-made set of code from Microsoft that your project is allowed to use. Most are there from the start, and one has to be added by hand."
+        ],
+        [
+         "Form",
+         "A window. Each form is a class with a designer, where you drag buttons and boxes on, and a code tab, where you write what the buttons do."
+        ],
+        [
+         "Control",
+         "One thing on a form: a button, a text box, a label. Each control has a Name that the code uses."
+        ],
+        [
+         "Event",
+         "Something that happens to a control, such as a click. The code that runs when it happens is an event method, and the designer makes it for you."
+        ],
+        [
+         "Build",
+         "Turning your .cs files into a program that can run. Press F6. It either says Build succeeded or lists the errors."
+        ],
+        [
+         "Static",
+         "A class marked static has one copy of everything, shared by the whole program, so you never make a new one. Db and Session are static."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Make a new Windows Forms project called BikeShop.",
+     "blocks": [
+      {
+       "p": "The first window of Visual Studio 2019 asks what you want to do. You want a new project of the Windows Forms kind, which is the kind with windows, buttons and boxes. Make sure to pick the one marked C# and .NET Framework, not the one marked Visual Basic and not the one marked .NET Core."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.1.1",
+         "do": "On the start window of Visual Studio 2019, click Create a new project.",
+         "see": "A list of project kinds opens, with a search box at the top.",
+         "img": {
+          "img": "img/sh-vs-new-project.png",
+          "alt": "The Create a new project window in Visual Studio 2019, with Windows Forms App (.NET Framework) selected and the C# label under it.",
+          "cap": "Choose Windows Forms App (.NET Framework), the one marked C#. The one without (.NET Framework) is a different kind of project.",
+          "w": 1023,
+          "h": 678,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 59,
+            "y": 11,
+            "say": "Type Windows Forms in the search box."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 37,
+            "say": "Click Windows Forms App (.NET Framework) with C# under it."
+           },
+           {
+            "n": 3,
+            "x": 91,
+            "y": 92,
+            "say": "Click Next."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.1.2",
+         "do": "Type Windows Forms in the search box at the top.",
+         "see": "The list shrinks to the Windows Forms kinds, including Windows Forms App (.NET Framework)."
+        },
+        {
+         "id": "5.1.2b",
+         "do": "Click Windows Forms App (.NET Framework) with C# under it, then press Next.",
+         "see": "The Configure your new project window opens, with a Project name box at the top.",
+         "wrong": [
+          [
+           "The list shows only Visual Basic",
+           "You clicked the Visual Basic one. Look for the same name with C# in the small grey words under it, and click that one instead."
+          ],
+          [
+           "The list shows Windows Forms App with no (.NET Framework)",
+           "That one is the .NET Core kind and the stored procedures you call will still work, but the pictures in this guide will not match. Pick the one with (.NET Framework) in its name."
+          ]
+         ]
+        },
+        {
+         "id": "5.1.3",
+         "do": "Type BikeShop in the Project name box, with a capital B and a capital S and no space.",
+         "see": "The Solution name box under it fills in with BikeShop too.",
+         "img": {
+          "img": "img/sh-vs-configure.png",
+          "alt": "The Configure your new project window: Project name BikeShop, Location the OneDrive coursework folder, Framework .NET Framework 4.7.2.",
+          "cap": "Name the project BikeShop and put it in your OneDrive coursework folder.",
+          "w": 1023,
+          "h": 678,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 29,
+            "say": "Type BikeShop as the Project name."
+           },
+           {
+            "n": 2,
+            "x": 31,
+            "y": 39,
+            "say": "Choose your OneDrive coursework folder as the Location."
+           },
+           {
+            "n": 3,
+            "x": 31,
+            "y": 77,
+            "say": "Choose .NET Framework 4.7.2."
+           },
+           {
+            "n": 4,
+            "x": 91,
+            "y": 92,
+            "say": "Click Create."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.1.4",
+         "do": "Click the three dots beside the Location box.",
+         "see": "A Project Location window opens, showing your folders."
+        },
+        {
+         "id": "5.1.4b",
+         "do": "Click your OneDrive folder for this course, the one that holds BikeShop.sql, and press Select Folder.",
+         "see": "The Location box shows a path that ends in your OneDrive folder."
+        },
+        {
+         "id": "5.1.5",
+         "do": "In the Framework box, make sure it says .NET Framework 4.7.2, and press Create.",
+         "see": "Visual Studio 2019 opens with an empty window called Form1 in the middle and Solution Explorer on the right.",
+         "img": {
+          "img": "img/ch05-vs-tree-new.png",
+          "alt": "Solution Explorer in Visual Studio 2019 straight after the project is made: Solution BikeShop at the top, the BikeShop project under it, then Properties, References, App.config, Form1.cs and Program.cs.",
+          "cap": "Your new project in Solution Explorer. Five things are there before you have done anything: Properties, References, App.config, Form1.cs and Program.cs.",
+          "w": 337,
+          "h": 140,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 24,
+            "say": "The project, BikeShop, in bold."
+           },
+           {
+            "n": 2,
+            "x": 36,
+            "y": 63,
+            "say": "App.config, which holds the connection string in the next stage."
+           },
+           {
+            "n": 3,
+            "x": 34,
+            "y": 76,
+            "say": "Form1.cs, a window you will delete later in this chapter."
+           },
+           {
+            "n": 4,
+            "x": 36,
+            "y": 89,
+            "say": "Program.cs, which says which window opens first."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The Framework box offers nothing called 4.7.2",
+           "Pick the highest 4.x number it offers. Write the number down: you will match it in App.config in the next stage."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "Where the project lives",
+        "text": "The project is a folder called BikeShop inside your OneDrive folder, next to BikeShop.sql. Every file you add in this guide goes inside it. Because it is in OneDrive, it follows you to any machine you sign in on, the same way your script does."
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Add the four folders that keep the files tidy.",
+     "blocks": [
+      {
+       "p": "A project with thirty files in one long list is hard to read, so you sort them into folders before you add any. Data holds the classes that talk to the database. Models holds classes that describe one thing, such as one member of staff. Forms holds the windows. Controls holds pieces that later chapters put on more than one form. Each folder also gives its classes a namespace, which is a name that groups classes together: a class in the Data folder is in the namespace BikeShop.Data."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.1.6",
+         "do": "In Solution Explorer, right-click the project name BikeShop, point at Add, and click New Folder.",
+         "see": "A new folder appears under the project with its name highlighted, ready to be typed over.",
+         "img": {
+          "img": "img/sh-vs-add-folder.png",
+          "alt": "Solution Explorer with the BikeShop project right-clicked. The menu shows Add, and its small menu shows New Folder.",
+          "cap": "Adding a folder to the project. Type its name straight away and press Enter.",
+          "w": 842,
+          "h": 613,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 10,
+            "y": 7,
+            "say": "Right-click BikeShop, the project, in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 38,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 22,
+            "y": 45,
+            "say": "Click New Folder, type the name and press Enter."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.1.7",
+         "do": "Type Data and press Enter.",
+         "see": "The folder is named Data."
+        },
+        {
+         "id": "5.1.8",
+         "do": "Repeat steps 5.1.6 and 5.1.7 three more times, typing Models, then Forms, then Controls as the names.",
+         "see": "Four folders sit under the project: Controls, Data, Forms and Models, in alphabetical order.",
+         "img": {
+          "img": "img/ch05-vs-tree-folders.png",
+          "alt": "Solution Explorer in Visual Studio 2019 showing the BikeShop project with four new folders under it: Controls, Data, Forms and Models, as well as App.config, Form1.cs and Program.cs.",
+          "cap": "The four folders in place. Every file you add from now on goes into one of these, except two that stay at the top level.",
+          "w": 337,
+          "h": 210,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 50,
+            "say": "Controls, Data, Forms and Models, in alphabetical order."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A folder is called NewFolder1",
+           "You clicked away before typing the name. Right-click the folder, click Rename, type the name and press Enter."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "p": "Leave Form1.cs where it is for now. It keeps the project able to build while you add the files in the next three stages, and you delete it in stage 5, when your own sign-in window is ready to take its place."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Tell the program where the database is",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what a connection string is.",
+     "blocks": [
+      {
+       "p": "In SQL Server Management Studio (SSMS) you connected to the server once, by picking a server name in the Connect window. Your program has to do the same thing every time it runs, and it has nobody to pick a name for it. So it reads one line of text that says where the server is, which database to open and how to sign in. That line is the connection string."
+      },
+      {
+       "p": "The connection string does not live in C# code. It lives in a small settings file called App.config, which Visual Studio 2019 made for you when it made the project. A settings file can be changed without touching any code, which matters when the program moves from the school server to your own machine at home."
+      },
+      {
+       "rule": {
+        "which": "one place",
+        "text": "The connection string is written once, in App.config, and read by one class, Db. No other file in the program ever mentions the server name."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Put the connection string into App.config.",
+     "blocks": [
+      {
+       "p": "App.config is already in your project. You replace all of it with the version below, which adds the connectionStrings part. The file is written in XML, a language of tags in angle brackets, not C#. You do not need to write any XML yourself: copy it, and read the four parts under it."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.2.1",
+         "do": "In Solution Explorer, double-click App.config.",
+         "see": "The file opens in a tab, starting with a line that begins with a question mark and the word xml."
+        },
+        {
+         "id": "5.2.2",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.2-appconfig",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.2.3",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.2.4",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The file now has a connectionStrings part in the middle, with a line that names BikeShop.",
+         "img": {
+          "img": "img/ch05-vs-app-config.png",
+          "alt": "The App.config file open in Visual Studio 2019, showing the connectionStrings part with the add line that names BikeShop and the connection string on the line under it.",
+          "cap": "App.config after the paste. The connection string is the long quoted text on the line that starts with connectionString.",
+          "w": 685,
+          "h": 259,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 25,
+            "y": 61,
+            "say": "The name, BikeShop, that the helper class asks for."
+           },
+           {
+            "n": 2,
+            "x": 57,
+            "y": 68,
+            "say": "The connection string: the server, the database, and how to sign in."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.2.5",
+         "do": "Press Ctrl and S together to save the file.",
+         "see": "The star after App.config on the tab disappears."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.2-appconfig",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "App.config: the whole file",
+        "src": "file:BikeShop/App.config",
+        "parts": [
+         [
+          "<?xml",
+          "</startup>",
+          "The top of the file",
+          "The first line says that this file is written in XML. The startup part names the version of .NET Framework the program runs on, 4.7.2, which is the version you picked when you made the project. If you had to pick a different number in stage 1, change 4.7.2 here to match it."
+         ],
+         [
+          "<connectionStrings>",
+          "<add name=\"BikeShop\"",
+          "The name of the connection string",
+          "The connectionStrings part can hold several connection strings, each with a name. Yours has one, named BikeShop. The helper class in the next stage asks for a connection string by this name, so the name here and the name in Db.cs must match exactly."
+         ],
+         [
+          "connectionString=\"Server=",
+          "Integrated Security=True;\"",
+          "The connection string itself",
+          "Three settings, separated by semicolons. Server= names the SQL Server to talk to: (localdb)\\mssqllocaldb is the small server inside the Programming Environment, the same name you pick in the Connect window of SQL Server Management Studio (SSMS). Database= names the database to open, BikeShop. Integrated Security=True means sign in as the person who is running the program, so no password is stored in this file."
+         ],
+         [
+          "providerName=",
+          "$end",
+          "The provider and the closing tags",
+          "The provider is the set of code that knows how to talk to SQL Server, called System.Data.SqlClient. The last two lines close the connectionStrings part and the file. Every tag that opens is closed again, which is how XML works."
+         ]
+        ],
+        "text": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<configuration>\n  <startup>\n    <supportedRuntime version=\"v4.0\" sku=\".NETFramework,Version=v4.7.2\" />\n  </startup>\n  <connectionStrings>\n    <!-- School: LocalDB inside the Programming Environment.\n         At home, change Server= to your own SQL Server name. -->\n    <add name=\"BikeShop\"\n         connectionString=\"Server=(localdb)\\mssqllocaldb;Database=BikeShop;\n           Integrated Security=True;\"\n         providerName=\"System.Data.SqlClient\" />\n  </connectionStrings>\n</configuration>",
+        "partLines": [
+         [
+          1,
+          5,
+          "The top of the file",
+          "The first line says that this file is written in XML. The startup part names the version of .NET Framework the program runs on, 4.7.2, which is the version you picked when you made the project. If you had to pick a different number in stage 1, change 4.7.2 here to match it."
+         ],
+         [
+          6,
+          9,
+          "The name of the connection string",
+          "The connectionStrings part can hold several connection strings, each with a name. Yours has one, named BikeShop. The helper class in the next stage asks for a connection string by this name, so the name here and the name in Db.cs must match exactly."
+         ],
+         [
+          10,
+          11,
+          "The connection string itself",
+          "Three settings, separated by semicolons. Server= names the SQL Server to talk to: (localdb)\\mssqllocaldb is the small server inside the Programming Environment, the same name you pick in the Connect window of SQL Server Management Studio (SSMS). Database= names the database to open, BikeShop. Integrated Security=True means sign in as the person who is running the program, so no password is stored in this file."
+         ],
+         [
+          12,
+          14,
+          "The provider and the closing tags",
+          "The provider is the set of code that knows how to talk to SQL Server, called System.Data.SqlClient. The last two lines close the connectionStrings part and the file. Every tag that opens is closed again, which is how XML works."
+         ]
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "If you work at home",
+        "text": "The comment line above the add line says what to change. At home, your SQL Server has a different name: it is the name you type in the Server name box when SQL Server Management Studio (SSMS) opens on your own machine, often a dot, or your computer name followed by a backslash and SQLEXPRESS. Change only the part after Server= and before the first semicolon. Nothing in the C# code changes.",
+        "fold": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add the reference that reads App.config.",
+     "blocks": [
+      {
+       "p": "Your program can read App.config only if it is allowed to use a set of Microsoft code called System.Configuration. Most sets like it are allowed from the start, and they appear under References in Solution Explorer. This one is not, so you add it by hand. If you forget, the helper class in the next stage will not build, and the error will say that the name ConfigurationManager could not be found."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.2.6",
+         "do": "In Solution Explorer, right-click References, and click Add Reference…",
+         "see": "The Reference Manager window opens with a long list of names and a search box at the top right.",
+         "img": {
+          "img": "img/sh-vs-add-reference.png",
+          "alt": "The Reference Manager window in Visual Studio with Assemblies chosen on the left and System.Configuration ticked in the list.",
+          "cap": "Adding System.Configuration, so your program can read the connection string from App.config.",
+          "w": 796,
+          "h": 545,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 7,
+            "y": 8,
+            "say": "Click Assemblies on the left."
+           },
+           {
+            "n": 2,
+            "x": 85,
+            "y": 8,
+            "say": "Type System.Configuration in the search box."
+           },
+           {
+            "n": 3,
+            "x": 23,
+            "y": 17,
+            "say": "Tick System.Configuration."
+           },
+           {
+            "n": 4,
+            "x": 83,
+            "y": 96,
+            "say": "Click OK."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.2.7",
+         "do": "In the search box at the top right, type System.Configuration.",
+         "see": "The list shrinks to one or two lines that start with System.Configuration."
+        },
+        {
+         "id": "5.2.8",
+         "do": "Tick the box beside System.Configuration, and press OK.",
+         "see": "The window closes. When you open References in Solution Explorer, System.Configuration is in the list.",
+         "wrong": [
+          [
+           "Two lines both say System.Configuration",
+           "Tick the one whose version number begins with 4, which matches .NET Framework 4.7.2."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The one helper the whole program talks through",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what the helper class does.",
+     "blocks": [
+      {
+       "p": "In Visual Studio 2019 you now add the most important file in the program: Db.cs. Db is one class that every other class goes through to reach the database. Nothing else in the program opens a connection or names a stored procedure. When a screen needs rows, it asks Db. When a screen needs to change data, it asks Db. That is the second rule from chapter 0: every table is touched through a stored procedure, and in C# every stored procedure is run through Db."
+      },
+      {
+       "p": "Db has four methods. P makes a parameter, which is one value to send to a stored procedure, such as a username. Out makes an output parameter, a slot the stored procedure fills in and the program reads afterwards, such as the new ID of a row that was just added. GetTable runs a stored procedure that selects rows and hands back a table. Run runs a stored procedure that changes data and hands back its message: an empty message means it worked."
+      },
+      {
+       "rule": {
+        "which": "one helper",
+        "text": "Every stored procedure is run through Db.GetTable or Db.Run. No form and no other class ever opens its own connection to SQL Server."
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the Db class to the Data folder.",
+     "blocks": [
+      {
+       "p": "A class is added to a folder from Solution Explorer. Visual Studio 2019 makes the file and writes an empty class inside it, with the right family name for the folder, BikeShop.Data. You then paste the finished class over the top of it."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.3.1",
+         "do": "In Solution Explorer, right-click the Data folder, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class.png",
+          "alt": "Solution Explorer in Visual Studio with the Data folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Data folder. This picture was taken in the finished project, so Solution Explorer lists files you have not made yet.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 28,
+            "say": "Right-click the Data folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 7,
+            "y": 70,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.3.2",
+         "do": "In the Name box at the bottom, type Db.cs and press Add.",
+         "see": "A new file opens with an empty class in it.",
+         "img": {
+          "img": "img/ch07-vs-add-class-name.png",
+          "alt": "The Add New Item window in Visual Studio 2019. Class is selected in the list, and the Name box at the bottom holds the file name.",
+          "cap": "The Add New Item window. The Name box is at the bottom: type the file name there, ending in .cs, and press Add.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 30,
+            "say": "Class is already selected in the middle list."
+           },
+           {
+            "n": 2,
+            "x": 45,
+            "y": 88,
+            "say": "Type the file name in the Name box, ending in .cs."
+           },
+           {
+            "n": 3,
+            "x": 88,
+            "y": 93,
+            "say": "Press Add."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The file is called Class1.cs",
+           "You pressed Add before typing the name. Right-click the file in Solution Explorer, click Rename, type Db.cs and press Enter. Then say Yes when it offers to rename the class as well."
+          ]
+         ]
+        },
+        {
+         "id": "5.3.3",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.3-db",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.3.4",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.3.5",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        },
+        {
+         "id": "5.3.6",
+         "do": "Press F6 to build.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'The name ConfigurationManager does not exist'",
+           "The System.Configuration reference from stage 2 is missing. Go back to that screen and add it, then press F6 again."
+          ],
+          [
+           "'The type or namespace name … could not be found'",
+           "A file is missing, or a class name is spelled differently from the one in this chapter. Double-click the error: the line it points at names the thing it cannot find. Check that the file exists in Solution Explorer and that its class is spelled the same way."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read Db.cs: the using lines and the connection string.",
+     "blocks": [
+      {
+       "p": "The whole file is below. It is long, so it is read in pieces, one region at a time. A region is a named fold in the code, marked with #region at its top and #endregion at its bottom. Visual Studio 2019 can fold a region shut with the small minus sign beside it, so that a long file reads like a list of names."
+      },
+      {
+       "code": {
+        "id": "5.3-db",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Data/Db.cs: the whole file",
+        "src": "cs:Data/Db.cs",
+        "parts": [
+         [
+          "using System;",
+          "using System.Data.SqlClient;",
+          "The using lines",
+          "Each using line names a set of ready-made code this file needs. System.Data.SqlClient is the one that knows how to talk to SQL Server. System.Configuration is the one that reads App.config, and it works because of the reference you added in stage 2."
+         ],
+         [
+          "namespace BikeShop.Data",
+          "public static class Db",
+          "The namespace and the class",
+          "The namespace line gives the class its family name: this class is BikeShop.Data.Db. The class is static, which means there is one shared copy of it for the whole program, so a form calls Db.GetTable directly without making a Db first. The comment lines above it are the four things to know, in one sentence each."
+         ],
+         [
+          "#region ConnectionString",
+          "#endregion",
+          "ConnectionString: reading App.config",
+          "This is a property, a named value with code behind it. When code asks for ConnectionString, the get part runs: it asks ConfigurationManager for every connection string in App.config, picks the one named BikeShop, and hands back its text. It is private, so only Db can read it, which keeps the server name in one place."
+         ],
+         [
+          "#region P",
+          "#endregion",
+          "P: one parameter to send",
+          "P takes a name, such as @Username, and a value, and wraps them as a SqlParameter, which is what SQL Server expects to receive. The if part handles an empty value: C# calls an empty value null, and SQL Server calls it NULL, and they are not the same thing, so null is swapped for DBNull.Value before it is sent."
+         ],
+         [
+          "#region Out",
+          "#endregion",
+          "Out: a slot the procedure fills in",
+          "Out makes a parameter that goes the other way. The stored procedure writes a whole number into it, such as the ID of the row it just added, and the program reads parameter.Value afterwards. Direction set to Output is what tells SQL Server that this one is for writing into."
+         ],
+         [
+          "#region GetTable",
+          "command.Parameters.AddRange(parameters);",
+          "GetTable: run a procedure that selects rows",
+          "GetTable takes the name of a stored procedure and any number of parameters, which is what params means. It makes an empty DataTable, then opens a connection using the connection string and makes a command that names the stored procedure. A using line with a block after it means close this when the block ends, so the connection is always closed, even if something goes wrong. CommandType set to StoredProcedure tells SQL Server that the name is a stored procedure and not a query to read."
+         ],
+         [
+          "using (SqlDataAdapter adapter",
+          "#endregion",
+          "GetTable: fill the table and hand it back",
+          "A SqlDataAdapter is the piece that runs the command and copies every row it selects into the table. Fill does that in one go. The table is then handed back, and whoever asked can put it straight into a grid on a form."
+         ],
+         [
+          "#region Run",
+          "message.Direction = ParameterDirection.Output;",
+          "Run: a procedure that changes data",
+          "Run is for stored procedures that insert, update or delete. Every one of those in chapter 4 has an @Message output parameter, so Run makes that parameter itself, 200 characters long, before it starts. The comment above says the rule: an empty message means it worked, and anything else is a sentence to show the user."
+         ],
+         [
+          "try",
+          "command.ExecuteNonQuery();",
+          "Run: open, run, close",
+          "The same connection and command as GetTable, with the message parameter added to the list. Open opens the connection, and ExecuteNonQuery runs the stored procedure without expecting rows back. Both using lines close again when the block ends."
+         ],
+         [
+          "catch (SqlException ex)",
+          "#endregion",
+          "Run: when SQL Server itself says no",
+          "try and catch mean: try this, and if SQL Server throws an error, run the catch part instead of crashing. A CHECK rule or a foreign key that refuses a change arrives here as a SqlException, and its message is handed back the same way as a message from the stored procedure. So a form only ever sees a sentence, and it never needs try and catch of its own round a database call. The last line hands back whatever the stored procedure put into @Message."
+         ]
+        ],
+        "text": "using System;\nusing System.Configuration;\nusing System.Data;\nusing System.Data.SqlClient;\n\nnamespace BikeShop.Data\n{\n    // The ONE place the program talks to SQL Server.  Every method runs a\n    // stored procedure.\n    // Four things to know:  P makes a parameter.  Out makes an output\n    // parameter.\n    // GetTable runs a procedure that SELECTs rows.  Run runs a procedure that\n    // changes data.\n    public static class Db\n    {\n        #region ConnectionString\n        // The connection string lives in App.config, so it can change without\n        // touching the code.\n        private static string ConnectionString\n        {\n            get\n            {\n                ConnectionStringSettingsCollection all =\n                    ConfigurationManager.ConnectionStrings;\n                return all[\"BikeShop\"].ConnectionString;\n            }\n        }\n        #endregion\n\n        #region P\n        // Makes a parameter to send to a procedure.  A C# null becomes a SQL\n        // NULL.\n        public static SqlParameter P(string name, object value)\n        {\n            if (value == null)\n            {\n                value = DBNull.Value;\n            }\n            return new SqlParameter(name, value);\n        }\n        #endregion\n\n        #region Out\n        // Makes an output parameter: the procedure fills it in, and you read\n        // its .Value afterwards.\n        public static SqlParameter Out(string name)\n        {\n            SqlParameter parameter = new SqlParameter(name, SqlDbType.Int);\n            parameter.Direction = ParameterDirection.Output;\n            return parameter;\n        }\n        #endregion\n\n        #region GetTable\n        // For procedures that SELECT rows.  Fills a DataTable you can put\n        // straight into a grid or a combo box.\n        public static DataTable GetTable(string procedureName,\n            params SqlParameter[] parameters)\n        {\n            DataTable table = new DataTable();\n            using (SqlConnection connection =\n                new SqlConnection(ConnectionString))\n            using (SqlCommand command = new SqlCommand(procedureName,\n                connection))\n            {\n                command.CommandType = CommandType.StoredProcedure;\n                command.Parameters.AddRange(parameters);\n                using (SqlDataAdapter adapter = new SqlDataAdapter(command))\n                {\n                    adapter.Fill(table);\n                }\n            }\n            return table;\n        }\n        #endregion\n\n        #region Run\n        // For procedures that change data.  Adds the @Message output parameter\n        // itself and returns\n        // whatever the procedure put in it.  \"\" means it worked.  Anything else\n        // is a sentence to\n        // show the user.  If SQL Server itself says no (a CHECK or a FOREIGN\n        // KEY), that message\n        // comes back the same way, so a screen never needs try and catch round\n        // a database call.\n        public static string Run(string procedureName,\n            params SqlParameter[] parameters)\n        {\n            SqlParameter message = new SqlParameter(\"@Message\",\n                SqlDbType.VarChar, 200);\n            message.Direction = ParameterDirection.Output;\n            try\n            {\n                using (SqlConnection connection =\n                    new SqlConnection(ConnectionString))\n                using (SqlCommand command = new SqlCommand(procedureName,\n                    connection))\n                {\n                    command.CommandType = CommandType.StoredProcedure;\n                    command.Parameters.AddRange(parameters);\n                    command.Parameters.Add(message);\n                    connection.Open();\n                    command.ExecuteNonQuery();\n                }\n            }\n            catch (SqlException ex)\n            {\n                return ex.Message;\n            }\n            return message.Value.ToString();\n        }\n        #endregion\n    }\n}",
+        "partLines": [
+         [
+          1,
+          4,
+          "The using lines",
+          "Each using line names a set of ready-made code this file needs. System.Data.SqlClient is the one that knows how to talk to SQL Server. System.Configuration is the one that reads App.config, and it works because of the reference you added in stage 2."
+         ],
+         [
+          6,
+          15,
+          "The namespace and the class",
+          "The namespace line gives the class its family name: this class is BikeShop.Data.Db. The class is static, which means there is one shared copy of it for the whole program, so a form calls Db.GetTable directly without making a Db first. The comment lines above it are the four things to know, in one sentence each."
+         ],
+         [
+          16,
+          28,
+          "ConnectionString: reading App.config",
+          "This is a property, a named value with code behind it. When code asks for ConnectionString, the get part runs: it asks ConfigurationManager for every connection string in App.config, picks the one named BikeShop, and hands back its text. It is private, so only Db can read it, which keeps the server name in one place."
+         ],
+         [
+          30,
+          41,
+          "P: one parameter to send",
+          "P takes a name, such as @Username, and a value, and wraps them as a SqlParameter, which is what SQL Server expects to receive. The if part handles an empty value: C# calls an empty value null, and SQL Server calls it NULL, and they are not the same thing, so null is swapped for DBNull.Value before it is sent."
+         ],
+         [
+          43,
+          52,
+          "Out: a slot the procedure fills in",
+          "Out makes a parameter that goes the other way. The stored procedure writes a whole number into it, such as the ID of the row it just added, and the program reads parameter.Value afterwards. Direction set to Output is what tells SQL Server that this one is for writing into."
+         ],
+         [
+          54,
+          67,
+          "GetTable: run a procedure that selects rows",
+          "GetTable takes the name of a stored procedure and any number of parameters, which is what params means. It makes an empty DataTable, then opens a connection using the connection string and makes a command that names the stored procedure. A using line with a block after it means close this when the block ends, so the connection is always closed, even if something goes wrong. CommandType set to StoredProcedure tells SQL Server that the name is a stored procedure and not a query to read."
+         ],
+         [
+          68,
+          75,
+          "GetTable: fill the table and hand it back",
+          "A SqlDataAdapter is the piece that runs the command and copies every row it selects into the table. Fill does that in one go. The table is then handed back, and whoever asked can put it straight into a grid on a form."
+         ],
+         [
+          77,
+          91,
+          "Run: a procedure that changes data",
+          "Run is for stored procedures that insert, update or delete. Every one of those in chapter 4 has an @Message output parameter, so Run makes that parameter itself, 200 characters long, before it starts. The comment above says the rule: an empty message means it worked, and anything else is a sentence to show the user."
+         ],
+         [
+          92,
+          105,
+          "Run: open, run, close",
+          "The same connection and command as GetTable, with the message parameter added to the list. Open opens the connection, and ExecuteNonQuery runs the stored procedure without expecting rows back. Both using lines close again when the block ends."
+         ],
+         [
+          106,
+          114,
+          "Run: when SQL Server itself says no",
+          "try and catch mean: try this, and if SQL Server throws an error, run the catch part instead of crashing. A CHECK rule or a foreign key that refuses a change arrives here as a SqlException, and its message is handed back the same way as a message from the stored procedure. So a form only ever sees a sentence, and it never needs try and catch of its own round a database call. The last line hands back whatever the stored procedure put into @Message."
+         ]
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "Why one helper",
+        "text": "If every form opened its own connection, a change to the server name would mean a change on every form, and one form would be bound to get it wrong. With Db, the connection string is read in one place, the closing of connections happens in one place, and the rule about messages is kept in one place. The examiner can see all of it on one page."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Who is signed in, and how the program asks",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what the four small classes do.",
+     "blocks": [
+      {
+       "p": "In this stage you add four short files to Visual Studio 2019. StaffMember describes one member of staff: it is a class with six properties and no methods, one property per column of the Staff table. Session remembers who is signed in, for the whole program, from sign-in to sign-out. StaffData is the class that asks Db to run the Staff stored procedures. Msg shows message boxes, so that every form says things the same way."
+      },
+      {
+       "p": "The pattern of StaffData is the one every later chapter repeats: a class in the Data folder, one method per stored procedure, each method one call to Db. Read it closely here, because chapters 6 to 9 add CustomerData, PartData and the rest in exactly this shape."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Add the StaffMember class to the Models folder.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "5.4.1",
+         "do": "In Solution Explorer, right-click the Models folder, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class-models.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the Models folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Right-click the Models folder, point at Add, and click Class…",
+          "w": 916,
+          "h": 441,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 68,
+            "y": 34,
+            "say": "Right-click the Models folder."
+           },
+           {
+            "n": 2,
+            "x": 42,
+            "y": 37,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 8,
+            "y": 87,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.4.2",
+         "do": "In the Name box at the bottom, type StaffMember.cs and press Add.",
+         "see": "A new file opens with an empty class in it."
+        },
+        {
+         "id": "5.4.3",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.4-staffmember",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.4.4",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.4.5",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the namespace line."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.4-staffmember",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Models/StaffMember.cs: the whole file",
+        "src": "cs:Models/StaffMember.cs",
+        "parts": [
+         [
+          "namespace BikeShop.Models",
+          "public class StaffMember",
+          "The namespace and the class",
+          "This class lives in the Models folder, so its family name is BikeShop.Models. It is not static: the program makes a new StaffMember each time it needs to hold one person, the way the Staff table holds one row per person."
+         ],
+         [
+          "public int StaffID",
+          "$end",
+          "Six properties, one per column",
+          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text."
+         ]
+        ],
+        "text": "namespace BikeShop.Models\n{\n    // One member of staff.  Plain properties only.\n    public class StaffMember\n    {\n        public int StaffID { get; set; }\n        public string FirstName { get; set; }\n        public string LastName { get; set; }\n        public string Role { get; set; }\n        public string Username { get; set; }\n        public string Password { get; set; }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          5,
+          "The namespace and the class",
+          "This class lives in the Models folder, so its family name is BikeShop.Models. It is not static: the program makes a new StaffMember each time it needs to hold one person, the way the Staff table holds one row per person."
+         ],
+         [
+          6,
+          13,
+          "Six properties, one per column",
+          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Add the Session class at the top level, and read it.",
+     "blocks": [
+      {
+       "p": "Session does not go in a folder. It is used by every form, so it sits at the top level of the project, beside Program.cs, with the plain family name BikeShop. To add a class at the top level you right-click the project name instead of a folder."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.4.6",
+         "do": "In Solution Explorer, right-click the project name BikeShop, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch09-vs-add-class-root.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the BikeShop project name right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Right-click the project name BikeShop, not a folder, point at Add, and click Class… The new file lands at the top level of the project.",
+          "w": 842,
+          "h": 613,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 10,
+            "y": 7,
+            "say": "Right-click the project name, BikeShop, in bold."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 38,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 20,
+            "y": 92,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.4.7",
+         "do": "In the Name box at the bottom, type Session.cs and press Add.",
+         "see": "A new file opens with an empty class in it."
+        },
+        {
+         "id": "5.4.8",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.4-session",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.4.9",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.4.10",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the namespace line."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.4-session",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Session.cs: the whole file",
+        "src": "cs:Session.cs",
+        "parts": [
+         [
+          "namespace BikeShop",
+          "public static class Session",
+          "The namespace and the class",
+          "The family name is plain BikeShop, because the file is at the top level. The class is static: there is one Session for the whole program, which is the point, because only one person is signed in at a time."
+         ],
+         [
+          "public static int StaffID",
+          "public static string Role",
+          "Three things about the person",
+          "The ID, the full name and the role of whoever is signed in. get; private set; means any form can read them, but only code inside Session can change them, so a form cannot sign someone in by accident."
+         ],
+         [
+          "public static bool IsSignedIn",
+          "get { return StaffID > 0; }",
+          "IsSignedIn: is anyone there",
+          "A property that works out its answer each time it is read. bool means the answer is true or false. Nobody has a StaffID of zero, so a StaffID above zero means someone is signed in."
+         ],
+         [
+          "public static bool IsManager",
+          "get { return Role == \"Manager\"; }",
+          "IsManager: is it a manager",
+          "True when the role of the signed-in person is exactly the word Manager. The main menu reads this to decide whether the Reports button is switched on."
+         ],
+         [
+          "public static void SignIn",
+          "Role = role;",
+          "SignIn: remember the person",
+          "The sign-in form calls this once, after the database has said yes, passing the three values from the row it got back. void means the method hands nothing back. The three lines store the three values."
+         ],
+         [
+          "public static void SignOut",
+          "$end",
+          "SignOut: forget the person",
+          "The main menu calls this when Sign out is pressed. StaffID goes back to zero, so IsSignedIn becomes false, and the name and role are cleared. null means no value at all."
+         ]
+        ],
+        "text": "namespace BikeShop\n{\n    // Who is signed in.  Set once by frmLogin, read by any form that needs to\n    // record who did something.\n    public static class Session\n    {\n        public static int StaffID { get; private set; }\n        public static string FullName { get; private set; }\n        public static string Role { get; private set; }\n\n        public static bool IsSignedIn\n        {\n            get { return StaffID > 0; }\n        }\n\n        public static bool IsManager\n        {\n            get { return Role == \"Manager\"; }\n        }\n\n        public static void SignIn(int staffID, string fullName, string role)\n        {\n            StaffID = staffID;\n            FullName = fullName;\n            Role = role;\n        }\n\n        public static void SignOut()\n        {\n            StaffID = 0;\n            FullName = null;\n            Role = null;\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          6,
+          "The namespace and the class",
+          "The family name is plain BikeShop, because the file is at the top level. The class is static: there is one Session for the whole program, which is the point, because only one person is signed in at a time."
+         ],
+         [
+          7,
+          9,
+          "Three things about the person",
+          "The ID, the full name and the role of whoever is signed in. get; private set; means any form can read them, but only code inside Session can change them, so a form cannot sign someone in by accident."
+         ],
+         [
+          11,
+          14,
+          "IsSignedIn: is anyone there",
+          "A property that works out its answer each time it is read. bool means the answer is true or false. Nobody has a StaffID of zero, so a StaffID above zero means someone is signed in."
+         ],
+         [
+          16,
+          19,
+          "IsManager: is it a manager",
+          "True when the role of the signed-in person is exactly the word Manager. The main menu reads this to decide whether the Reports button is switched on."
+         ],
+         [
+          21,
+          26,
+          "SignIn: remember the person",
+          "The sign-in form calls this once, after the database has said yes, passing the three values from the row it got back. void means the method hands nothing back. The three lines store the three values."
+         ],
+         [
+          28,
+          35,
+          "SignOut: forget the person",
+          "The main menu calls this when Sign out is pressed. StaffID goes back to zero, so IsSignedIn becomes false, and the name and role are cleared. null means no value at all."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Add the StaffData class to the Data folder, and read its Login method.",
+     "blocks": [
+      {
+       "steps": [
+        {
+         "id": "5.4.11",
+         "do": "In Solution Explorer, right-click the Data folder, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch07-vs-add-class.png",
+          "alt": "Solution Explorer in Visual Studio with the Data folder right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Adding a class to the Data folder. This picture was taken in the finished project, so Solution Explorer lists files you have not made yet.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 28,
+            "say": "Right-click the Data folder in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 7,
+            "y": 70,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.4.12",
+         "do": "In the Name box at the bottom, type StaffData.cs and press Add.",
+         "see": "A new file opens with an empty class in it."
+        },
+        {
+         "id": "5.4.13",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.4-staffdata",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.4.14",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.4.15",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.4-staffdata",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Data/StaffData.cs: the whole file",
+        "src": "cs:Data/StaffData.cs",
+        "parts": [
+         [
+          "using System.Data;",
+          "public static class StaffData",
+          "The using lines, the namespace and the class",
+          "System.Data is for the DataTable that comes back. BikeShop.Models is where StaffMember lives, so this file can use it. The class is static, like Db: a form calls StaffData.Login directly."
+         ],
+         [
+          "#region Login",
+          "#endregion",
+          "Login: ask the database if the details match",
+          "This is the method the sign-in form calls. It hands Db.GetTable the name of your stored procedure, usp_Staff_Login, and two parameters made with Db.P: the username and the password, with the same @ names the stored procedure declares. The stored procedure sends back one row when the details match an active member of staff and no rows when they do not, and the DataTable it comes back in is handed straight on. Nothing here decides whether the sign-in is allowed: the database decides."
+         ],
+         [
+          "// The staff who are mechanics.",
+          "return Db.GetTable(\"usp_Staff_GetAll\");",
+          "GetMechanics and GetAll: two lists",
+          "Two more methods in the same shape, each one line long. GetMechanics runs usp_Staff_GetMechanics, which the diary in chapter 7 uses to fill its list of mechanics. GetAll runs usp_Staff_GetAll. Neither needs a parameter."
+         ],
+         [
+          "// Saves a new member of staff.",
+          "$end",
+          "Add: save a new person and learn their ID",
+          "Add takes a filled-in StaffMember and runs usp_Staff_Add through Db.Run, with one Db.P for each column and one Db.Out for the new ID. Db.Run hands back the message. If the message is empty, the stored procedure worked, so the new ID is read out of the output parameter and stored in the StaffMember. Either way the message is handed back for the form to show. You do not call Add in this chapter: it is here so the pattern is complete."
+         ]
+        ],
+        "text": "using System.Data;\nusing System.Data.SqlClient;\nusing BikeShop.Models;\n\nnamespace BikeShop.Data\n{\n    public static class StaffData\n    {\n        #region Login\n        // Returns one row if the details match an active member of staff,\n        // otherwise no rows.\n        public static DataTable Login(string username, string password)\n        {\n            return Db.GetTable(\"usp_Staff_Login\", Db.P(\"@Username\", username),\n                Db.P(\"@Password\", password));\n        }\n        #endregion\n\n        // The staff who are mechanics.\n        public static DataTable GetMechanics()\n        {\n            return Db.GetTable(\"usp_Staff_GetMechanics\");\n        }\n\n        // Every member of staff.\n        public static DataTable GetAll()\n        {\n            return Db.GetTable(\"usp_Staff_GetAll\");\n        }\n\n        // Saves a new member of staff.  Returns \"\" if it worked, or the\n        // sentence to show the user.\n        public static string Add(StaffMember staff)\n        {\n            SqlParameter newID = Db.Out(\"@NewStaffID\");\n            string message = Db.Run(\"usp_Staff_Add\",\n                Db.P(\"@FirstName\", staff.FirstName),\n                Db.P(\"@LastName\", staff.LastName),\n                Db.P(\"@Role\", staff.Role),\n                Db.P(\"@Username\", staff.Username),\n                Db.P(\"@Password\", staff.Password),\n                newID);\n            if (message == \"\")\n            {\n                staff.StaffID = (int)newID.Value;\n            }\n            return message;\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The using lines, the namespace and the class",
+          "System.Data is for the DataTable that comes back. BikeShop.Models is where StaffMember lives, so this file can use it. The class is static, like Db: a form calls StaffData.Login directly."
+         ],
+         [
+          9,
+          17,
+          "Login: ask the database if the details match",
+          "This is the method the sign-in form calls. It hands Db.GetTable the name of your stored procedure, usp_Staff_Login, and two parameters made with Db.P: the username and the password, with the same @ names the stored procedure declares. The stored procedure sends back one row when the details match an active member of staff and no rows when they do not, and the DataTable it comes back in is handed straight on. Nothing here decides whether the sign-in is allowed: the database decides."
+         ],
+         [
+          19,
+          29,
+          "GetMechanics and GetAll: two lists",
+          "Two more methods in the same shape, each one line long. GetMechanics runs usp_Staff_GetMechanics, which the diary in chapter 7 uses to fill its list of mechanics. GetAll runs usp_Staff_GetAll. Neither needs a parameter."
+         ],
+         [
+          31,
+          50,
+          "Add: save a new person and learn their ID",
+          "Add takes a filled-in StaffMember and runs usp_Staff_Add through Db.Run, with one Db.P for each column and one Db.Out for the new ID. Db.Run hands back the message. If the message is empty, the stored procedure worked, so the new ID is read out of the output parameter and stored in the StaffMember. Either way the message is handed back for the form to show. You do not call Add in this chapter: it is here so the pattern is complete."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Add the Msg class at the top level, and read it.",
+     "blocks": [
+      {
+       "p": "A message box is a small window with a sentence and a button, the kind that pops up to say something worked or ask Are you sure. Msg wraps the three kinds the program uses, so every form shows them with the same title and the same icons. Like Session, it is used everywhere, so it goes at the top level."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.4.16",
+         "do": "In Solution Explorer, right-click the project name BikeShop, point at Add, and click Class…",
+         "see": "The Add New Item window opens with Class selected.",
+         "img": {
+          "img": "img/ch09-vs-add-class-root.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with the BikeShop project name right-clicked. The menu shows Add, and its small menu shows Class…",
+          "cap": "Right-click the project name BikeShop, not a folder, point at Add, and click Class… The new file lands at the top level of the project.",
+          "w": 842,
+          "h": 613,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 10,
+            "y": 7,
+            "say": "Right-click the project name, BikeShop, in bold."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 38,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 20,
+            "y": 92,
+            "say": "Click Class…"
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.4.17",
+         "do": "In the Name box at the bottom, type Msg.cs and press Add.",
+         "see": "A new file opens with an empty class in it."
+        },
+        {
+         "id": "5.4.18",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.4-msg",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.4.19",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.4.20",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        },
+        {
+         "id": "5.4.21",
+         "do": "Press F6 to build.",
+         "see": "Build succeeded, at the bottom left.",
+         "wrong": [
+          [
+           "'The type or namespace name … could not be found'",
+           "A file is missing, or a class name is spelled differently from the one in this chapter. Double-click the error: the line it points at names the thing it cannot find. Check that the file exists in Solution Explorer and that its class is spelled the same way."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.4-msg",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Msg.cs: the whole file",
+        "src": "cs:Msg.cs",
+        "parts": [
+         [
+          "using System.Windows.Forms;",
+          "private const string Title",
+          "The using line, the class and the title",
+          "System.Windows.Forms is the set of code that makes windows and message boxes. The class is static. Title is a const, a value that never changes: the words in the title bar of every message box, Towpath Cycles."
+         ],
+         [
+          "public static void Info",
+          "MessageBoxIcon.Information);",
+          "Info: something worked",
+          "MessageBox.Show opens the box. It is given the sentence to show, the title, which buttons to offer, OK only, and which icon to show, the blue Information one."
+         ],
+         [
+          "public static void Problem",
+          "MessageBoxIcon.Warning);",
+          "Problem: something was refused",
+          "The same box with the yellow Warning icon. Forms use this to show a message that came back from a stored procedure."
+         ],
+         [
+          "// Returns true when the user clicks Yes.",
+          "$end",
+          "Ask: a question with Yes and No",
+          "This box offers Yes and No. MessageBox.Show hands back which button was pressed, as a DialogResult, and the method compares it with DialogResult.Yes. So the method hands back true when Yes was pressed, and a form can write if (Msg.Ask(\"Delete this customer?\")) and act only on a Yes."
+         ]
+        ],
+        "text": "using System.Windows.Forms;\n\nnamespace BikeShop\n{\n    // Three kinds of message box, so every form says things the same way.\n    public static class Msg\n    {\n        private const string Title = \"Towpath Cycles\";\n\n        public static void Info(string text)\n        {\n            MessageBox.Show(text, Title, MessageBoxButtons.OK,\n                MessageBoxIcon.Information);\n        }\n\n        public static void Problem(string text)\n        {\n            MessageBox.Show(text, Title, MessageBoxButtons.OK,\n                MessageBoxIcon.Warning);\n        }\n\n        // Returns true when the user clicks Yes.\n        public static bool Ask(string question)\n        {\n            return MessageBox.Show(question, Title, MessageBoxButtons.YesNo,\n                MessageBoxIcon.Question) == DialogResult.Yes;\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The using line, the class and the title",
+          "System.Windows.Forms is the set of code that makes windows and message boxes. The class is static. Title is a const, a value that never changes: the words in the title bar of every message box, Towpath Cycles."
+         ],
+         [
+          10,
+          14,
+          "Info: something worked",
+          "MessageBox.Show opens the box. It is given the sentence to show, the title, which buttons to offer, OK only, and which icon to show, the blue Information one."
+         ],
+         [
+          16,
+          20,
+          "Problem: something was refused",
+          "The same box with the yellow Warning icon. Forms use this to show a message that came back from a stored procedure."
+         ],
+         [
+          22,
+          29,
+          "Ask: a question with Yes and No",
+          "This box offers Yes and No. MessageBox.Show hands back which button was pressed, as a DialogResult, and the method compares it with DialogResult.Yes. So the method hands back true when Yes was pressed, and a form can write if (Msg.Ask(\"Delete this customer?\")) and act only on a Yes."
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "The sign-in window",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Add the sign-in form to the Forms folder.",
+     "blocks": [
+      {
+       "p": "A form is a window. Visual Studio 2019 gives every form two tabs: the designer, where you drag controls onto the window, and the code tab, where you write what the controls do. You add the form, build its controls in the designer, and then paste the code. This is the order every form in this guide follows."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.5.1",
+         "do": "In Solution Explorer, right-click the Forms folder, point at Add, and click Form (Windows Forms)…",
+         "see": "The Add New Item window opens with Form (Windows Forms) selected.",
+         "img": {
+          "img": "img/ch07-vs-add-form.png",
+          "alt": "Solution Explorer with the Forms folder right-clicked. The menu shows Add, and its small menu shows Form (Windows Forms)…",
+          "cap": "Adding a form to the Forms folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 29,
+            "say": "Right-click the Forms folder."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 13,
+            "y": 58,
+            "say": "Click Form (Windows Forms)…, type the name, press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.5.2",
+         "do": "In the Name box at the bottom, type frmLogin.cs and press Add.",
+         "see": "An empty form opens in the designer, with frmLogin in its title bar."
+        },
+        {
+         "id": "5.5.3",
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Set the form and its nine controls.",
+     "blocks": [
+      {
+       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+      },
+      {
+       "controls": {
+        "form": "frmLogin",
+        "img": {
+         "img": "img/ch05-frmlogin-designer.png",
+         "alt": "The finished sign-in form in the Visual Studio 2019 designer: the title Towpath Cycles in large bold text, a line of smaller text under it, the Username and Password boxes with their labels, an empty red label, and a Sign in button.",
+         "cap": "The sign-in form with every control in place. Match this layout: the two boxes one above the other, the red message label under them, the button at the bottom.",
+         "w": 560,
+         "h": 432,
+         "missing": false,
+         "marks": [
+          {
+           "n": 1,
+           "x": 52,
+           "y": 20,
+           "say": "lblTitle, in 16 point bold."
+          },
+          {
+           "n": 2,
+           "x": 86,
+           "y": 43,
+           "say": "txtUsername, with lblUsername to its left."
+          },
+          {
+           "n": 3,
+           "x": 86,
+           "y": 55,
+           "say": "txtPassword, with lblPassword to its left. It shows dots instead of letters."
+          },
+          {
+           "n": 4,
+           "x": 50,
+           "y": 68,
+           "say": "lblMessage, empty for now, in Firebrick red."
+          },
+          {
+           "n": 5,
+           "x": 63,
+           "y": 83,
+           "say": "btnSignIn, which you double-click last."
+          }
+         ]
+        },
+        "title": "Towpath Cycles — sign in",
+        "size": [
+         420,
+         300
+        ],
+        "border": "FixedDialog",
+        "acceptButton": "btnSignIn",
+        "cancelButton": null,
+        "formNote": "The first window. A member of staff types their username and password; the database says whether they match.",
+        "rows": [
+         {
+          "toolbox": "Label",
+          "name": "lblTitle",
+          "settings": [
+           "Text = Towpath Cycles",
+           "Font = Segoe UI, 16pt, Bold"
+          ],
+          "then": [],
+          "note": "The shop name, big, so the window looks like it belongs to the shop."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblSub",
+          "settings": [
+           "Text = Sign in with your staff username and password."
+          ],
+          "then": [],
+          "note": "Tells the user what to do."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblUsername",
+          "settings": [
+           "Text = Username"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtUsername",
+          "settings": [],
+          "then": [],
+          "note": "Where the username is typed."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblPassword",
+          "settings": [
+           "Text = Password"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "TextBox",
+          "name": "txtPassword",
+          "settings": [
+           "UseSystemPasswordChar = True"
+          ],
+          "then": [],
+          "note": "Shows dots instead of letters."
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblMessage",
+          "settings": [
+           "ForeColor = Firebrick"
+          ],
+          "then": [],
+          "note": "Starts empty. Shows \"Those details are not recognised\" when sign-in fails."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnSignIn",
+          "settings": [
+           "Text = Sign in"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnSignIn_Click` for you; the code goes inside it."
+          ],
+          "note": "Checks the details against the Staff table."
+         }
+        ]
+       }
+      },
+      {
+       "p": "The form's own properties come first. Click the title bar of the form in the designer, and the Properties window shows frmLogin at its top. Text is the words in the title bar. Size is the width and the height, with a comma between. FixedDialog means the window cannot be dragged bigger. AcceptButton is set last, after btnSignIn exists: it makes the Enter key press the Sign in button, so nobody has to reach for the mouse."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-vs-form-properties.png",
+        "alt": "The Properties window in Visual Studio 2019 with the form itself selected. The rows Text, Size, FormBorderStyle and AcceptButton are visible, with the Text row holding Towpath Cycles — sign in.",
+        "cap": "The form's own properties. Click the form's title bar first, so that the Properties window shows the form and not a control.",
+        "w": 352,
+        "h": 348,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 22,
+          "y": 10,
+          "say": "The box at the top names what is selected: frmLogin, the form."
+         },
+         {
+          "n": 2,
+          "x": 55,
+          "y": 97,
+          "say": "Text is the words in the title bar."
+         },
+         {
+          "n": 3,
+          "x": 55,
+          "y": 76,
+          "say": "Size is width then height, in pixels, with a comma between."
+         },
+         {
+          "n": 4,
+          "x": 55,
+          "y": 69,
+          "say": "FormBorderStyle decides whether the window can be resized."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-vs-toolbox-drag.png",
+        "alt": "The Toolbox open on the left of Visual Studio with Button chosen under Common Controls, beside the form in the designer.",
+        "cap": "Drag a control from the Toolbox on the left and drop it on the form in the designer.",
+        "w": 514,
+        "h": 404,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 19,
+          "y": 33,
+          "say": "Find the control in the Toolbox."
+         },
+         {
+          "n": 2,
+          "x": 80,
+          "y": 62,
+          "say": "Drag it on to the form and let go."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-vs-properties-name.png",
+        "alt": "The Properties window in Visual Studio with the (Name) row selected and a control name typed in it.",
+        "cap": "Set (Name) first, before anything else. It is at the top of the list, in brackets.",
+        "w": 352,
+        "h": 245,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 72,
+          "y": 50,
+          "say": "Click the box beside (Name), type the name from the table and press Enter."
+         }
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "Name first, every time",
+        "text": "Set the Name of each control before you do anything else to it, and before you double-click it. The code in this guide calls the controls by these exact names. If a button is double-clicked while it is still called button1, the designer makes a method called button1_Click, and the pasted code will not match it."
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "The Properties window shows a control, not the form",
+         "a": "Click on the title bar of the form in the designer, or pick frmLogin from the drop-down box at the top of the Properties window."
+        },
+        {
+         "q": "The password box shows letters, not dots",
+         "a": "Click txtPassword, find UseSystemPasswordChar in the Properties window, and set it to True."
+        },
+        {
+         "q": "lblMessage is too narrow for a sentence",
+         "a": "Click it, find AutoSize in the Properties window, and set it to False. Then drag its right edge out to the width of the form."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Put the code behind the sign-in form.",
+     "blocks": [
+      {
+       "p": "Double-clicking the Sign in button in the last screen opened the code tab on an empty method called btnSignIn_Click. The whole file is below. You paste it over everything in the code tab, including that empty method, and then read the SignIn region piece by piece."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.5.4",
+         "do": "Click the frmLogin.cs tab, or press F7 while the designer is in front.",
+         "see": "The code tab for the form comes to the front.",
+         "img": {
+          "img": "img/sh-vs-view-code.png",
+          "alt": "Solution Explorer with a form right-clicked and View Code highlighted in the menu.",
+          "cap": "View Code opens the form's code. Pressing F7 on the designer does the same.",
+          "w": 352,
+          "h": 273,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 32,
+            "say": "Right-click the form in Solution Explorer."
+           },
+           {
+            "n": 2,
+            "x": 21,
+            "y": 85,
+            "say": "Click View Code, or press F7."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.5.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.5-frmlogin",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.5.6",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.5.7",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        },
+        {
+         "id": "5.5.8",
+         "do": "Press F6 to build.",
+         "see": "The Error List at the bottom shows one error: \"The type or namespace name 'frmMain' could not be found\". That is expected, and you fix it in stage 6.",
+         "wrong": [
+          [
+           "'frmLogin' does not contain a definition for 'button1_Click' (or another old name)",
+           "The event was made before the control was given its Name, so the designer still calls the method by its old name. Double-click the error: Visual Studio 2019 opens frmLogin.Designer.cs on the line that hooks up the event. At the end of that line, change the old name (such as button1_Click) to the control's Name followed by _Click: btnSignIn_Click. Then build again."
+          ],
+          [
+           "'The name lblMessage does not exist' (or txtUsername, txtPassword)",
+           "A control on the form has a different Name from the table. Go back to the designer, click the control, and set its Name to match the table exactly, including capital letters."
+          ],
+          [
+           "'The type or namespace name frmMain could not be found'",
+           "That is expected until stage 6, where you add frmMain. Carry on to the Program.cs screen, and build again at the end of stage 6."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.5-frmlogin",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Forms/frmLogin.cs: the whole file",
+        "src": "cs:Forms/frmLogin.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Models;",
+          "The using lines",
+          "The using lines a form needs: System.Windows.Forms for the window itself, System.Data for the table that comes back from the database, System.Data.SqlClient for the error that means SQL Server could not be reached, and your own Data and Models folders."
+         ],
+         [
+          "namespace BikeShop.Forms",
+          "InitializeComponent();",
+          "The class and the constructor",
+          "The form is a class called frmLogin, inside the namespace BikeShop.Forms. partial means the class is split over two files: this one, and the Designer file that Visual Studio 2019 writes when you drag controls on. The method with the same name as the class runs when the window is made, and InitializeComponent is the designer's own method that builds the controls."
+         ],
+         [
+          "#region SignIn",
+          "string password = txtPassword.Text;",
+          "SignIn: read the two boxes",
+          "This is the method the designer made when you double-clicked Sign in, so it runs on every click. The red label is cleared first. Then the two boxes are read into two strings, which is what C# calls text. Trim takes spaces off either end of the username, because a space typed by mistake should not stop a sign-in."
+         ],
+         [
+          "if (username == \"\" || password == \"\")",
+          "return;",
+          "Refuse two empty boxes",
+          "The two vertical bars mean or. If either box is empty, a sentence goes into the red label and return stops the method there, so the database is never asked. This is the one check the form does itself, because an empty box is something the form can see."
+         ],
+         [
+          "// One row comes back",
+          "return;",
+          "Ask the database, or say it cannot be reached",
+          "StaffData.Login runs your stored procedure and the table that comes back goes into match. It is wrapped in try and catch because this is the first time the program touches SQL Server: if the server is not running, the program should say so in the red label instead of crashing. This is the only try and catch any form in this guide has, because Db handles every other error for you."
+         ],
+         [
+          "if (match.Rows.Count == 0)",
+          "return;",
+          "Refuse when the database sent no rows",
+          "Rows.Count is how many rows came back. Zero rows means the stored procedure found no active member of staff with those details, so the form shows the sentence, empties the password box, puts the cursor back in it, and stops. The form does not know why the database said no, and it does not need to: the deciding was done in usp_Staff_Login."
+         ],
+         [
+          "DataRow staff = match.Rows[0];",
+          "(string)staff[\"Role\"]);",
+          "Remember who signed in",
+          "One row came back, and Rows[0] is the first row, because C# counts from zero. Its three columns are read by name and passed to Session.SignIn. The (int) and (string) in brackets say what kind of value each column holds, because a DataRow does not know until it is told."
+         ],
+         [
+          "frmMain main = new frmMain();",
+          "#endregion",
+          "Open the main menu",
+          "A new main menu window is made. FormClosed is an event: the line with += says that when the main menu closes, run Main_FormClosed below. Then this window hides itself and the main menu is shown. The sign-in window is not closed, because closing the first window of a program ends the program."
+         ],
+         [
+          "// The main window has closed.",
+          "$end",
+          "When the main menu closes",
+          "Two ways the main menu can close. After Sign out, Session is empty, so IsSignedIn is false, and the sign-in window empties the password box and shows itself again, ready for the next person. After the X in the corner, Session still holds the person, so the sign-in window closes too, and the program ends."
+         ]
+        ],
+        "text": "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Data.SqlClient;\nusing System.Drawing;\nusing System.Windows.Forms;\nusing BikeShop.Data;\nusing BikeShop.Models;\n\nnamespace BikeShop.Forms\n{\n    public partial class frmLogin : Form\n    {\n        public frmLogin()\n        {\n            InitializeComponent();\n        }\n\n        #region SignIn\n        private void btnSignIn_Click(object sender, EventArgs e)\n        {\n            lblMessage.Text = \"\";\n            string username = txtUsername.Text.Trim();\n            string password = txtPassword.Text;\n\n            if (username == \"\" || password == \"\")\n            {\n                lblMessage.Text = \"Type your username and your password.\";\n                return;\n            }\n\n            // One row comes back when the details match an active member of\n            // staff; no rows when they do not.\n            // If SQL Server itself cannot be reached, say so instead of\n            // crashing.\n            DataTable match;\n            try\n            {\n                match = StaffData.Login(username, password);\n            }\n            catch (SqlException)\n            {\n                lblMessage.Text =\n                    \"Could not reach the database. Is SQL Server running?\";\n                return;\n            }\n            if (match.Rows.Count == 0)\n            {\n                lblMessage.Text =\n                    \"Those details are not recognised. Check them and try \" +\n                    \"again.\";\n                txtPassword.Clear();\n                txtPassword.Focus();\n                return;\n            }\n\n            DataRow staff = match.Rows[0];\n            Session.SignIn((int)staff[\"StaffID\"], (string)staff[\"FullName\"],\n                (string)staff[\"Role\"]);\n\n            frmMain main = new frmMain();\n            // so we know when the main window closes\n            main.FormClosed += Main_FormClosed;\n            Hide();\n            main.Show();\n        }\n        #endregion\n\n        // The main window has closed.  After Sign out we come back here; after\n        // the X the program ends.\n        private void Main_FormClosed(object sender, FormClosedEventArgs e)\n        {\n            if (Session.IsSignedIn)\n            {\n                Close();\n            }\n            else\n            {\n                txtPassword.Clear();\n                Show();\n                txtUsername.Focus();\n            }\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          8,
+          "The using lines",
+          "The using lines a form needs: System.Windows.Forms for the window itself, System.Data for the table that comes back from the database, System.Data.SqlClient for the error that means SQL Server could not be reached, and your own Data and Models folders."
+         ],
+         [
+          10,
+          17,
+          "The class and the constructor",
+          "The form is a class called frmLogin, inside the namespace BikeShop.Forms. partial means the class is split over two files: this one, and the Designer file that Visual Studio 2019 writes when you drag controls on. The method with the same name as the class runs when the window is made, and InitializeComponent is the designer's own method that builds the controls."
+         ],
+         [
+          19,
+          24,
+          "SignIn: read the two boxes",
+          "This is the method the designer made when you double-clicked Sign in, so it runs on every click. The red label is cleared first. Then the two boxes are read into two strings, which is what C# calls text. Trim takes spaces off either end of the username, because a space typed by mistake should not stop a sign-in."
+         ],
+         [
+          26,
+          30,
+          "Refuse two empty boxes",
+          "The two vertical bars mean or. If either box is empty, a sentence goes into the red label and return stops the method there, so the database is never asked. This is the one check the form does itself, because an empty box is something the form can see."
+         ],
+         [
+          32,
+          46,
+          "Ask the database, or say it cannot be reached",
+          "StaffData.Login runs your stored procedure and the table that comes back goes into match. It is wrapped in try and catch because this is the first time the program touches SQL Server: if the server is not running, the program should say so in the red label instead of crashing. This is the only try and catch any form in this guide has, because Db handles every other error for you."
+         ],
+         [
+          47,
+          55,
+          "Refuse when the database sent no rows",
+          "Rows.Count is how many rows came back. Zero rows means the stored procedure found no active member of staff with those details, so the form shows the sentence, empties the password box, puts the cursor back in it, and stops. The form does not know why the database said no, and it does not need to: the deciding was done in usp_Staff_Login."
+         ],
+         [
+          57,
+          59,
+          "Remember who signed in",
+          "One row came back, and Rows[0] is the first row, because C# counts from zero. Its three columns are read by name and passed to Session.SignIn. The (int) and (string) in brackets say what kind of value each column holds, because a DataRow does not know until it is told."
+         ],
+         [
+          61,
+          67,
+          "Open the main menu",
+          "A new main menu window is made. FormClosed is an event: the line with += says that when the main menu closes, run Main_FormClosed below. Then this window hides itself and the main menu is shown. The sign-in window is not closed, because closing the first window of a program ends the program."
+         ],
+         [
+          69,
+          85,
+          "When the main menu closes",
+          "Two ways the main menu can close. After Sign out, Session is empty, so IsSignedIn is false, and the sign-in window empties the password box and shows itself again, ready for the next person. After the X in the corner, Session still holds the person, so the sign-in window closes too, and the program ends."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Delete Form1 and tell Program.cs to open your sign-in window.",
+     "blocks": [
+      {
+       "p": "The empty window called Form1 that came with the project has done its job. Program.cs, the file the program starts in, still says to open Form1 first. In this screen you delete Form1 and change that one line so that frmLogin opens first instead. The whole of Program.cs is below, and the line that opens the window is the one you type yourself."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.5.9",
+         "do": "In Solution Explorer, right-click Form1.cs and click Delete, then press OK.",
+         "see": "Form1.cs is gone from Solution Explorer.",
+         "img": {
+          "img": "img/ch05-vs-delete-form1.png",
+          "alt": "Solution Explorer in Visual Studio 2019 with Form1.cs right-clicked and Delete highlighted in the menu.",
+          "cap": "Right-click Form1.cs and click Delete. Your sign-in window takes its place.",
+          "w": 337,
+          "h": 589,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 30,
+            "say": "Right-click Form1.cs."
+           },
+           {
+            "n": 2,
+            "x": 20,
+            "y": 85,
+            "say": "Click Delete, then OK."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.5.10",
+         "do": "In Solution Explorer, double-click Program.cs.",
+         "see": "Program.cs opens in a tab, with a method called Main in the middle of it."
+        },
+        {
+         "id": "5.5.11",
+         "do": "Press the Copy button under this step. It copies Program.cs with a gap where the yellow line goes.",
+         "copy": "5.5-program",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.5.12",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.5.13",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, with one line that says YOU TYPE THIS PART."
+        },
+        {
+         "id": "5.5.14",
+         "do": "Select the whole line that says YOU TYPE THIS PART and type the yellow line over it.",
+         "see": "The yellow line is in your file, and no line says YOU TYPE THIS PART any more.",
+         "img": {
+          "img": "img/ch05-vs-program-cs.png",
+          "alt": "Program.cs open in Visual Studio 2019 with the line Application.Run(new frmLogin()); highlighted inside the Main method.",
+          "cap": "Program.cs after your typed line. The window named inside Application.Run is the first window the program opens.",
+          "w": 624,
+          "h": 357,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 46,
+            "y": 81,
+            "say": "The line you typed, which names frmLogin inside Application.Run."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that it ends with a semicolon."
+          ],
+          [
+           "'The type or namespace name Form1 could not be found'",
+           "The old line is still there. Find the line with Form1 in it and replace it with the yellow line."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.5-program",
+        "kind": "type",
+        "lang": "cs",
+        "title": "Program.cs: the whole file",
+        "src": "cs:Program.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Forms;",
+          "The using lines",
+          "The third using line is new: BikeShop.Forms is where frmLogin lives, and without this line Program.cs would not know the name."
+         ],
+         [
+          "namespace BikeShop",
+          "static void Main()",
+          "Main: where the program starts",
+          "Every C# program has one method called Main, and the program starts by running it. STAThread above it is a setting every Windows Forms program carries, and you never change it."
+         ],
+         [
+          "Application.EnableVisualStyles();",
+          "Application.SetCompatibleTextRenderingDefault(false);",
+          "Two lines that came with the project",
+          "These two lines make the buttons and boxes look the way Windows draws them today. They were in the file when Visual Studio 2019 made it, and they stay."
+         ],
+         [
+          "Application.Run(new frmLogin());",
+          "$end",
+          "The window that opens first",
+          "Application.Run opens one window and keeps the program running until that window closes. The window named inside the brackets is the first window the program shows. It was Form1. Now it is a new frmLogin, your sign-in window, and when the sign-in window closes, the program ends."
+         ]
+        ],
+        "focus": [
+         [
+          "Application.Run(new frmLogin());",
+          "Application.Run(new frmLogin());"
+         ]
+        ],
+        "why": "This is the one line that decides which window a program opens first, so it is worth typing with your own hands: every project you ever make will have it.",
+        "text": "using System;\nusing System.Windows.Forms;\nusing BikeShop.Forms;\n\nnamespace BikeShop\n{\n    static class Program\n    {\n        [STAThread]\n        static void Main()\n        {\n            Application.EnableVisualStyles();\n            Application.SetCompatibleTextRenderingDefault(false);\n            Application.Run(new frmLogin());\n        }\n    }\n}",
+        "focusLines": [
+         [
+          14,
+          14
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "The using lines",
+          "The third using line is new: BikeShop.Forms is where frmLogin lives, and without this line Program.cs would not know the name."
+         ],
+         [
+          5,
+          11,
+          "Main: where the program starts",
+          "Every C# program has one method called Main, and the program starts by running it. STAThread above it is a setting every Windows Forms program carries, and you never change it."
+         ],
+         [
+          12,
+          13,
+          "Two lines that came with the project",
+          "These two lines make the buttons and boxes look the way Windows draws them today. They were in the file when Visual Studio 2019 made it, and they stay."
+         ],
+         [
+          14,
+          17,
+          "The window that opens first",
+          "Application.Run opens one window and keeps the program running until that window closes. The window named inside the brackets is the first window the program shows. It was Form1. Now it is a new frmLogin, your sign-in window, and when the sign-in window closes, the program ends."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Add six empty forms, so that everything builds.",
+     "blocks": [
+      {
+       "p": "The main menu in the next stage opens six other windows, one per button. Those windows are built in later chapters, but the main menu will not build unless they exist by name. So you add six empty forms now, each with its exact name, and leave them empty. Chapters 6 to 9 fill them in."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.5.15",
+         "do": "In Solution Explorer, right-click the Forms folder, point at Add, and click Form (Windows Forms)… Type frmCustomers as the name and press Add.",
+         "see": "An empty form opens in the designer, with frmCustomers in its title bar.",
+         "img": {
+          "img": "img/ch07-vs-add-form.png",
+          "alt": "Solution Explorer with the Forms folder right-clicked. The menu shows Add, and its small menu shows Form (Windows Forms)…",
+          "cap": "Adding a form to the Forms folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 29,
+            "say": "Right-click the Forms folder."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 13,
+            "y": 58,
+            "say": "Click Form (Windows Forms)…, type the name, press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.5.16",
+         "do": "Do the same five more times, naming the forms frmDiary, frmHires, frmBikes, frmParts and frmReports.",
+         "see": "The Forms folder in Solution Explorer lists seven forms: frmBikes, frmCustomers, frmDiary, frmHires, frmLogin, frmParts and frmReports.",
+         "wrong": [
+          [
+           "A form is called Form2",
+           "You pressed Add before typing the name. Right-click the file in Solution Explorer, click Rename, type the right name ending in .cs, press Enter, and say Yes when it offers to rename the class as well."
+          ]
+         ]
+        },
+        {
+         "id": "5.5.17",
+         "do": "Close the six designer tabs you opened, by clicking the X on each tab.",
+         "see": "Only the frmLogin tabs and Program.cs are left open."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "The main menu",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Add the main menu form and set its controls.",
+     "blocks": [
+      {
+       "p": "The main menu is the window that opens after a sign-in. It is a form in Visual Studio 2019 like frmLogin: add it, drag the controls on, name them, and paste the code. It has one new thing: a Load event, which runs when the window opens, before anyone clicks anything. That is where the menu reads Session and sets itself up for the person signed in."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.6.1",
+         "do": "In Solution Explorer, right-click the Forms folder, point at Add, and click Form (Windows Forms)… Type frmMain as the name and press Add.",
+         "see": "An empty form opens in the designer, with frmMain in its title bar.",
+         "img": {
+          "img": "img/ch07-vs-add-form.png",
+          "alt": "Solution Explorer with the Forms folder right-clicked. The menu shows Add, and its small menu shows Form (Windows Forms)…",
+          "cap": "Adding a form to the Forms folder. Taken in the finished project, so Solution Explorer lists more files than yours.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 82,
+            "y": 29,
+            "say": "Right-click the Forms folder."
+           },
+           {
+            "n": 2,
+            "x": 43,
+            "y": 31,
+            "say": "Point at Add."
+           },
+           {
+            "n": 3,
+            "x": 13,
+            "y": 58,
+            "say": "Click Form (Windows Forms)…, type the name, press Add."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.6.2",
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right."
+        }
+       ]
+      },
+      {
+       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+      },
+      {
+       "controls": {
+        "form": "frmMain",
+        "img": {
+         "img": "img/ch05-frmmain-designer.png",
+         "alt": "The finished main menu form in the Visual Studio 2019 designer: the title Towpath Cycles in large bold text, a Signed in label under it, six large buttons in two columns, and a Sign out button at the bottom right.",
+         "cap": "The main menu with every control in place. Match this layout: six buttons in two columns, Reports last, and Sign out on its own at the bottom.",
+         "w": 700,
+         "h": 489,
+         "missing": false,
+         "marks": [
+          {
+           "n": 1,
+           "x": 36,
+           "y": 14,
+           "say": "lblWelcome, in 16 point bold."
+          },
+          {
+           "n": 2,
+           "x": 19,
+           "y": 21,
+           "say": "lblSignedIn, which the code fills in when the window opens."
+          },
+          {
+           "n": 3,
+           "x": 10,
+           "y": 58,
+           "say": "btnDiary, btnHires and btnParts down the left."
+          },
+          {
+           "n": 4,
+           "x": 58,
+           "y": 58,
+           "say": "btnCustomers, btnBikes and btnReports down the right."
+          },
+          {
+           "n": 5,
+           "x": 76,
+           "y": 93,
+           "say": "btnSignOut at the bottom right."
+          }
+         ]
+        },
+        "title": "Towpath Cycles",
+        "size": [
+         640,
+         420
+        ],
+        "border": "FixedSingle",
+        "acceptButton": null,
+        "cancelButton": null,
+        "formNote": "The menu. One big button for each part of the system; the Reports button is switched off unless the manager is signed in.",
+        "rows": [
+         {
+          "toolbox": "Label",
+          "name": "lblWelcome",
+          "settings": [
+           "Text = Towpath Cycles",
+           "Font = Segoe UI, 16pt, Bold"
+          ],
+          "then": [],
+          "note": ""
+         },
+         {
+          "toolbox": "Label",
+          "name": "lblSignedIn",
+          "settings": [
+           "Text = Signed in: "
+          ],
+          "then": [],
+          "note": "Filled in when the window opens: name and role."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnDiary",
+          "settings": [
+           "Text = Workshop diary"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnDiary_Click` for you; the code goes inside it."
+          ],
+          "note": "Opens the day-by-day diary of repair bookings."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnCustomers",
+          "settings": [
+           "Text = Customers"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnCustomers_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnHires",
+          "settings": [
+           "Text = Bike hire"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnHires_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnBikes",
+          "settings": [
+           "Text = Bikes for sale and hire"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnBikes_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnParts",
+          "settings": [
+           "Text = Parts and stock"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnParts_Click` for you; the code goes inside it."
+          ],
+          "note": ""
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnReports",
+          "settings": [
+           "Text = Reports"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnReports_Click` for you; the code goes inside it."
+          ],
+          "note": "Manager only. The code switches it off for everyone else."
+         },
+         {
+          "toolbox": "Button",
+          "name": "btnSignOut",
+          "settings": [
+           "Text = Sign out"
+          ],
+          "then": [
+           "Double-click it. Visual Studio makes `btnSignOut_Click` for you; the code goes inside it."
+          ],
+          "note": "Closes this window and shows the sign-in window again."
+         }
+        ]
+       }
+      },
+      {
+       "p": "The Load event is made from the form itself, not from a button. Click the title bar of the form, and in the Properties window press the lightning bolt at the top, which switches the window from properties to events. The events are listed in alphabetical order, so Load comes after Leave. Double-click the empty box beside Load, and the designer makes frmMain_Load for you."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch07-vs-events.png",
+        "alt": "The Properties window with the lightning bolt pressed, showing the list of events in alphabetical order, with Load part of the way down.",
+        "cap": "The lightning bolt shows the events, in alphabetical order. Double-click the empty box beside one to make its method.",
+        "w": 520,
+        "h": 520,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 17,
+          "y": 13,
+          "say": "Press the lightning bolt."
+         },
+         {
+          "n": 2,
+          "x": 63,
+          "y": 36,
+          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave."
+         }
+        ]
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "Double-clicking the form made a method called frmMain_Load already",
+         "a": "Double-clicking an empty part of a form makes its Load event, which is the one you want. Nothing to undo."
+        },
+        {
+         "q": "The Reports button text is too long for the button",
+         "a": "Make the button wider: click it and drag its right-hand edge out. The code changes its text to Reports (manager only) for non-managers, so leave room for that."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Put the code behind the main menu.",
+     "blocks": [
+      {
+       "p": "Double-clicking the last button opened the code tab. Paste the whole file over everything there, build, and then read the Load method and the Open region below."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.6.3",
+         "do": "Click the frmMain.cs tab, or press F7 while the designer is in front.",
+         "see": "The code tab for the form comes to the front."
+        },
+        {
+         "id": "5.6.4",
+         "do": "Press the Copy button under this step.",
+         "copy": "5.6-frmmain",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "5.6.5",
+         "do": "Click in the code tab and press Ctrl and A together to select everything.",
+         "see": "Everything in the code tab is highlighted."
+        },
+        {
+         "id": "5.6.6",
+         "do": "Press Ctrl and V together to paste the copied code over it.",
+         "see": "The code tab holds the whole file, starting with the using lines."
+        },
+        {
+         "id": "5.6.7",
+         "do": "Press F6 to build.",
+         "see": "Build succeeded, at the bottom left.",
+         "img": {
+          "img": "img/ch07-vs-build-succeeded.png",
+          "alt": "The bottom left corner of Visual Studio reading Build succeeded.",
+          "cap": "Build succeeded, at the bottom left. Anything else means an error list to read.",
+          "w": 900,
+          "h": 200,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 8,
+            "y": 88,
+            "say": "Build succeeded. Press F6 to build at any time."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'frmMain' does not contain a definition for 'button1_Click' (or another old name)",
+           "The event was made before the control was given its Name, so the designer still calls the method by its old name. Double-click the error: Visual Studio 2019 opens frmMain.Designer.cs on the line that hooks up the event. At the end of that line, change the old name (such as button1_Click) to the control's Name followed by _Click: btnDiary_Click. Then build again."
+          ],
+          [
+           "'The type or namespace name frmCustomers could not be found' (or another form name)",
+           "One of the six empty forms from the last stage is missing or spelled differently. Check the Forms folder in Solution Explorer against the list of seven names, and add or rename the one that is wrong."
+          ],
+          [
+           "'The name btnReports does not exist' (or another control name)",
+           "A control on the form has a different Name from the table. Go back to the designer, click the control, and set its Name to match the table exactly."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "5.6-frmmain",
+        "kind": "copy",
+        "lang": "cs",
+        "title": "Forms/frmMain.cs: the whole file",
+        "src": "cs:Forms/frmMain.cs",
+        "parts": [
+         [
+          "using System;",
+          "using BikeShop.Models;",
+          "The using lines",
+          "The same using lines as the sign-in form, without System.Data.SqlClient, because this form never touches the database itself."
+         ],
+         [
+          "namespace BikeShop.Forms",
+          "InitializeComponent();",
+          "The class and the constructor",
+          "The main menu is a partial class called frmMain, inside the namespace BikeShop.Forms. Like frmLogin, it has a method with the same name as the class that runs when the window is made, and InitializeComponent builds the controls you dragged on."
+         ],
+         [
+          "private void frmMain_Load",
+          "+ Session.Role + \")\";",
+          "Load: say who is signed in",
+          "This is the Load event method the designer made, so it runs once when the window opens. It builds a sentence out of pieces: the words Signed in, the full name from Session, and the role in brackets. The plus signs join text together. The sentence goes into the label under the title."
+         ],
+         [
+          "// Only a manager sees the money.",
+          "btnReports.Text = \"Reports (manager only)\";",
+          "Load: switch Reports off for a non-manager",
+          "Enabled is whether a button can be pressed. It is set to Session.IsManager, which is true for a manager and false for everyone else, so the button is greyed out for a counter worker or a mechanic. The exclamation mark means not: if the person is not a manager, the text of the button changes to say why it is off. The button stays visible, so everyone knows the reports exist."
+         ],
+         [
+          "#region Open",
+          "customers.ShowDialog(this);",
+          "Open: the Customers button",
+          "When Customers is clicked, a new frmCustomers window is made and shown with ShowDialog. ShowDialog means the main menu waits, and cannot be clicked, until that window is closed again. In C#, the word this means the main menu itself, and passing it in puts the new window in front of the menu."
+         ],
+         [
+          "private void btnDiary_Click",
+          "#endregion",
+          "Open: the other five buttons",
+          "Five more methods in exactly the same shape, one per button, each opening its own form. frmDiary, frmHires, frmBikes, frmParts and frmReports are the empty forms from stage 5, and the later chapters fill them in without changing a line here."
+         ],
+         [
+          "private void btnSignOut_Click",
+          "$end",
+          "Sign out",
+          "Session.SignOut clears who is signed in, and then the main menu closes itself. The sign-in window notices the close, sees that nobody is signed in any more, and shows itself again."
+         ]
+        ],
+        "text": "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Drawing;\nusing System.Windows.Forms;\nusing BikeShop.Data;\nusing BikeShop.Models;\n\nnamespace BikeShop.Forms\n{\n    public partial class frmMain : Form\n    {\n        public frmMain()\n        {\n            InitializeComponent();\n        }\n\n        private void frmMain_Load(object sender, EventArgs e)\n        {\n            lblSignedIn.Text = \"Signed in: \" + Session.FullName + \" (\"\n                + Session.Role + \")\";\n\n            // Only a manager sees the money.  The button stays visible so\n            // everyone knows the report exists.\n            btnReports.Enabled = Session.IsManager;\n            if (!Session.IsManager)\n            {\n                btnReports.Text = \"Reports (manager only)\";\n            }\n        }\n\n        #region Open\n        private void btnCustomers_Click(object sender, EventArgs e)\n        {\n            frmCustomers customers = new frmCustomers();\n            customers.ShowDialog(this);\n        }\n\n        private void btnDiary_Click(object sender, EventArgs e)\n        {\n            frmDiary diary = new frmDiary();\n            diary.ShowDialog(this);\n        }\n\n        private void btnHires_Click(object sender, EventArgs e)\n        {\n            frmHires hires = new frmHires();\n            hires.ShowDialog(this);\n        }\n\n        private void btnBikes_Click(object sender, EventArgs e)\n        {\n            frmBikes bikes = new frmBikes();\n            bikes.ShowDialog(this);\n        }\n\n        private void btnParts_Click(object sender, EventArgs e)\n        {\n            frmParts parts = new frmParts();\n            parts.ShowDialog(this);\n        }\n\n        private void btnReports_Click(object sender, EventArgs e)\n        {\n            frmReports reports = new frmReports();\n            reports.ShowDialog(this);\n        }\n        #endregion\n\n        private void btnSignOut_Click(object sender, EventArgs e)\n        {\n            Session.SignOut();\n            Close();        // frmLogin notices the close and shows itself again\n        }\n    }\n}",
+        "partLines": [
+         [
+          1,
+          7,
+          "The using lines",
+          "The same using lines as the sign-in form, without System.Data.SqlClient, because this form never touches the database itself."
+         ],
+         [
+          9,
+          16,
+          "The class and the constructor",
+          "The main menu is a partial class called frmMain, inside the namespace BikeShop.Forms. Like frmLogin, it has a method with the same name as the class that runs when the window is made, and InitializeComponent builds the controls you dragged on."
+         ],
+         [
+          18,
+          21,
+          "Load: say who is signed in",
+          "This is the Load event method the designer made, so it runs once when the window opens. It builds a sentence out of pieces: the words Signed in, the full name from Session, and the role in brackets. The plus signs join text together. The sentence goes into the label under the title."
+         ],
+         [
+          23,
+          30,
+          "Load: switch Reports off for a non-manager",
+          "Enabled is whether a button can be pressed. It is set to Session.IsManager, which is true for a manager and false for everyone else, so the button is greyed out for a counter worker or a mechanic. The exclamation mark means not: if the person is not a manager, the text of the button changes to say why it is off. The button stays visible, so everyone knows the reports exist."
+         ],
+         [
+          32,
+          37,
+          "Open: the Customers button",
+          "When Customers is clicked, a new frmCustomers window is made and shown with ShowDialog. ShowDialog means the main menu waits, and cannot be clicked, until that window is closed again. In C#, the word this means the main menu itself, and passing it in puts the new window in front of the menu."
+         ],
+         [
+          39,
+          68,
+          "Open: the other five buttons",
+          "Five more methods in exactly the same shape, one per button, each opening its own form. frmDiary, frmHires, frmBikes, frmParts and frmReports are the empty forms from stage 5, and the later chapters fill them in without changing a line here."
+         ],
+         [
+          70,
+          76,
+          "Sign out",
+          "Session.SignOut clears who is signed in, and then the main menu closes itself. The sign-in window notices the close, sees that nobody is signed in any more, and shows itself again."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Run the program and sign in as the manager.",
+     "blocks": [
+      {
+       "p": "This is the first time your program runs. F5 builds it and then starts it, which is why there was no need to build first. The sign-in window appears on its own, outside Visual Studio 2019. While the program is running, Visual Studio 2019 shows an orange bar at the bottom and will not let you edit code, so close the program before you change anything."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.6.8",
+         "do": "Press F5 to run your program.",
+         "see": "The sign-in window opens, with Towpath Cycles — sign in in its title bar and the cursor in the Username box.",
+         "img": {
+          "img": "img/sh-vs-run.png",
+          "alt": "The Visual Studio toolbar with the green Start button.",
+          "cap": "Start runs your program. Close the program window to come back to Visual Studio.",
+          "w": 784,
+          "h": 61,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 61,
+            "y": 75,
+            "say": "Click Start, or press F5."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A window says There were build errors. Would you like to continue",
+           "Press No. The Error List at the bottom names the problem. Double-click the first error to go to its line, fix it, and press F5 again."
+          ],
+          [
+           "The window opens but the cursor is not in the Username box",
+           "Click in the box. Later, if you like, click the form in the designer and set its ActiveControl to txtUsername."
+          ]
+         ]
+        },
+        {
+         "id": "5.6.9",
+         "do": "Type siobhan in the Username box, type canal01 in the Password box, and press Enter.",
+         "see": "The main menu opens, with Signed in: Siobhán Rooney (Manager) under the title, and the Reports button is switched on.",
+         "img": {
+          "img": "img/sh-app-login.png",
+          "alt": "The Towpath Cycles sign-in window with the username siobhan typed and the password hidden as dots.",
+          "cap": "The sign-in window of the finished program.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 58,
+            "y": 46,
+            "say": "Type the username."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 55,
+            "say": "Type the password."
+           },
+           {
+            "n": 3,
+            "x": 68,
+            "y": 76,
+            "say": "Click Sign in."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The red label says Could not reach the database. Is SQL Server running?",
+           "The connection string in App.config does not match a running server. In SQL Server Management Studio (SSMS), check the server name you connect with, and make it the same as the part after Server= in App.config."
+          ],
+          [
+           "The red label says Those details are not recognised",
+           "The username and password are both lower case with no spaces: siobhan and canal01. If they are right, open SQL Server Management Studio (SSMS) and run SELECT * FROM Staff to check that Siobhán Rooney is in the table with IsActive set to 1."
+          ]
+         ]
+        },
+        {
+         "id": "5.6.10",
+         "do": "Press the Sign out button.",
+         "see": "The main menu closes and the sign-in window comes back, with the password box empty."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Sign in as a counter worker, and see fewer buttons.",
+     "blocks": [
+      {
+       "p": "Pádraig Maguire works the counter. His sign-in is allowed, because he is an active member of staff, but he is not a manager, so the main menu should switch the Reports button off for him and say why."
+      },
+      {
+       "steps": [
+        {
+         "id": "5.6.11",
+         "do": "Type padraig in the Username box, type canal02 in the Password box, and press Enter.",
+         "see": "The main menu opens, with Signed in: Pádraig Maguire (Counter) under the title. The Reports button is greyed out and reads Reports (manager only).",
+         "img": {
+          "img": "img/ch05-app-menu-padraig.png",
+          "alt": "The Towpath Cycles main menu signed in as Pádraig Maguire (Counter). The Reports button is greyed out and reads Reports (manager only).",
+          "cap": "The main menu for a counter worker. The Reports button is still there, so everyone knows the reports exist, but it is switched off and says why.",
+          "w": 700,
+          "h": 493,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 46,
+            "y": 22,
+            "say": "Signed in: Pádraig Maguire (Counter)."
+           },
+           {
+            "n": 2,
+            "x": 93,
+            "y": 80,
+            "say": "Reports (manager only), greyed out."
+           }
+          ]
+         }
+        },
+        {
+         "id": "5.6.12",
+         "do": "Click the greyed-out Reports button.",
+         "see": "Nothing happens. A switched-off button does not click."
+        },
+        {
+         "id": "5.6.13",
+         "do": "Press Sign out, then close the sign-in window with the X in its corner.",
+         "see": "Both windows are gone, and the orange bar at the bottom of Visual Studio 2019 disappears."
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "Why the button stays visible",
+        "text": "A button that disappears leaves a gap, and a counter worker who has never seen it does not know the report exists. A button that is greyed out and says manager only tells the truth: the report is there, and it is not for you. The examiner looks for exactly this kind of difference between what two roles can do."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Prove it: the sign-in table",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Run each sign-in once.",
+     "blocks": [
+      {
+       "p": "The table on the next screen is evidence for your write-up: each row is one sign-in you tried and what the program did. Run your program from Visual Studio 2019 with F5, and work down the rows. Three rows are sign-ins that must be refused, and a refusal that happens is a pass, not a fail. Take a screenshot of each refusal, because chapter 10 asks for them."
+      },
+      {
+       "p": "The sixth member of staff, Liam Doran, left in the summer. His row in the Staff table is still there, with IsActive set to 0, so that the appointments he did still have a mechanic's name on them. Your stored procedure checks IsActive, so his old username and password should no longer get in. That is the database saying no, inside your program."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Tick the table: four sign-ins, three refusals.",
+     "blocks": [
+      {
+       "check": [
+        {
+         "id": "5.7.1",
+         "what": "The manager signs in and sees every button on",
+         "expect": "allowed",
+         "how": "Run the program, sign in as siobhan with canal01 and press Enter. The main menu opens with Signed in: Siobhán Rooney (Manager), and the Reports button is switched on."
+        },
+        {
+         "id": "5.7.2",
+         "what": "A counter worker signs in and sees Reports switched off",
+         "expect": "allowed",
+         "how": "Press Sign out, sign in as padraig with canal02 and press Enter. The main menu opens with Signed in: Pádraig Maguire (Counter), and the Reports button is greyed out and reads Reports (manager only)."
+        },
+        {
+         "id": "5.7.3",
+         "what": "A mechanic signs in and sees Reports switched off",
+         "expect": "allowed",
+         "how": "Press Sign out, sign in as aoife with canal03 and press Enter. The main menu opens with Signed in: Aoife Byrne (Mechanic), and the Reports button is greyed out."
+        },
+        {
+         "id": "5.7.4",
+         "what": "Sign out brings the sign-in window back with the password box empty",
+         "expect": "allowed",
+         "how": "Press Sign out. The main menu closes and the sign-in window comes back with the password box empty and the cursor in the Username box."
+        },
+        {
+         "id": "5.7.5",
+         "what": "Two empty boxes are refused before the database is asked",
+         "expect": "control",
+         "how": "Leave both boxes empty and press Enter. The red label says \"Type your username and your password.\" and the window stays open."
+        },
+        {
+         "id": "5.7.6",
+         "what": "A wrong password is refused",
+         "expect": "control",
+         "how": "Type siobhan in the Username box, type canal99 in the Password box, and press Enter. The red label says \"Those details are not recognised. Check them and try again.\" and the password box is emptied."
+        },
+        {
+         "id": "5.7.7",
+         "what": "A member of staff who has left is refused",
+         "expect": "control",
+         "how": "Type liam in the Username box, type canal06 in the Password box, and press Enter. The red label says Those details are not recognised, even though both are the right words, because Liam Doran has IsActive set to 0."
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-app-blank.png",
+        "alt": "The Towpath Cycles sign-in window with both boxes empty and the red message Type your username and your password. under them.",
+        "cap": "Sign in with both boxes empty. The program refuses before it asks the database anything.",
+        "w": 560,
+        "h": 437,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 75,
+          "y": 69,
+          "say": "The red message appears here and the window stays open."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-app-refused.png",
+        "alt": "The Towpath Cycles sign-in window with liam in the Username box, an empty Password box, and the red message Those details are not recognised. Check them and try again. under them.",
+        "cap": "Sign in as liam with canal06. The stored procedure sends back no rows, because Liam Doran is marked as left, so the program refuses and empties the password box.",
+        "w": 560,
+        "h": 437,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 50,
+          "y": 77,
+          "say": "The database said no, and the program turned that into a sentence."
+         },
+         {
+          "n": 2,
+          "x": 96,
+          "y": 56,
+          "say": "The password box is emptied and the cursor is put back in it."
+         }
+        ]
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "liam with canal06 gets in",
+         "a": "Your usp_Staff_Login is missing the line AND IsActive = 1. Open BikeShop.sql in SQL Server Management Studio (SSMS), find the stored procedure, add the line to its WHERE part, select the stored procedure and press F5. Then run your program again."
+        },
+        {
+         "q": "The wrong password gets in",
+         "a": "Your usp_Staff_Login is not checking the password. Open it in SQL Server Management Studio (SSMS) and check that its WHERE part has Username = @Username AND Password = @Password."
+        },
+        {
+         "q": "Every sign-in says Could not reach the database",
+         "a": "The program cannot find SQL Server. Check that SQL Server Management Studio (SSMS) can connect to the same server name that App.config has after Server=, and that the database there is called BikeShop."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Press Ctrl and Shift and S together in Visual Studio 2019 to save every file. Your project in Solution Explorer should now look like the picture below: two files in Data, eight forms in Forms, one file in Models, and Msg.cs and Session.cs at the top level beside App.config and Program.cs."
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-vs-tree-finished.png",
+        "alt": "Solution Explorer in Visual Studio 2019 at the end of chapter 5: the Data folder holding Db.cs and StaffData.cs, the Forms folder holding eight forms, the Models folder holding StaffMember.cs, and App.config, Msg.cs, Program.cs and Session.cs at the top level.",
+        "cap": "Your project at the end of this chapter, taken in the finished project. Your Solution Explorer should list the same files.",
+        "w": 337,
+        "h": 422,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 30,
+          "y": 25,
+          "say": "Data: Db.cs and StaffData.cs."
+         },
+         {
+          "n": 2,
+          "x": 30,
+          "y": 37,
+          "say": "Forms: eight forms."
+         },
+         {
+          "n": 3,
+          "x": 32,
+          "y": 76,
+          "say": "Models: StaffMember.cs."
+         },
+         {
+          "n": 4,
+          "x": 26,
+          "y": 89,
+          "say": "Msg.cs and Session.cs at the top level, beside App.config and Program.cs."
+         }
+        ]
+       }
+      },
+      {
+       "need": [
+        "App.config holds a connection string named BikeShop, and System.Configuration is under References.",
+        "Db.cs builds, and nothing else in the project opens a connection.",
+        "siobhan with canal01 gets in and sees Reports switched on; padraig with canal02 sees it switched off.",
+        "liam with canal06 is refused, and two empty boxes are refused.",
+        "Screenshots of the three refusals are saved for chapter 10."
+       ]
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "In your own project, the sign-in table is whatever your scenario calls its staff, and the roles are whatever your scenario needs: a manager and a receptionist, or an owner and a groomer. Keep the shape exactly: one stored procedure that checks the username, the password and an active flag; one Session class that remembers who is signed in; and one button on the main menu that only one role can press. Db.cs and Msg.cs do not change at all, and App.config changes only the database name."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,3984 @@
+{
+ "id": "04",
+ "n": 4,
+ "title": "Stored procedures",
+ "one": "One procedure per action: the only way your program touches the data.",
+ "marks": "This chapter is where the examiner looks for every add, change, delete and search going through a stored procedure, with the database saying no in a sentence when a rule would be broken.",
+ "prev": {
+  "id": "03",
+  "title": "Build the database",
+  "n": 3
+ },
+ "next": {
+  "id": "05",
+  "title": "Connect C#",
+  "n": 5
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "What a stored procedure is",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what a stored procedure is, and why every action gets one.",
+     "blocks": [
+      {
+       "p": "In chapter 3 you typed SELECT, INSERT and DELETE lines into a query window and ran them yourself. Your program cannot do that. A program needs each action it takes on the data to be written down once, given a name, and kept inside the database, so that the program only has to say the name. That is a stored procedure: a recipe with a name, saved in the database. The program says the name and hands over the ingredients, such as a customer's name and phone number, and the database does the rest."
+      },
+      {
+       "p": "Every action your program will ever take on the data gets its own stored procedure: search for customers, fetch one customer, add one, change one, delete one, and so on. The program never sends a SELECT or an INSERT of its own. That is the rule. The top mark band asks for a program that adds, deletes, changes and displays related data from more than one table, and marking last year's work showed that doing every one of those through a stored procedure is what the examiner expects to see."
+      },
+      {
+       "p": "There is one more reason. A stored procedure can check before it acts. If the shop tries to delete a customer who has bookings, the stored procedure says no, in a sentence, and the program shows that sentence. The rule lives in the database, so no screen can forget it. By the end of this chapter you will have fifteen stored procedures in your script, and the first refusal."
+      },
+      {
+       "words": [
+        [
+         "Stored procedure",
+         "A recipe with a name, saved inside the database, that the program runs by saying the name."
+        ],
+        [
+         "Parameter",
+         "One ingredient a stored procedure needs, such as a customer's first name, with a name that starts with @."
+        ],
+        [
+         "EXEC",
+         "The word that runs a stored procedure by name, handing over the parameters it needs."
+        ],
+        [
+         "OUTPUT",
+         "A parameter that carries an answer back out of the stored procedure, instead of carrying a value in."
+        ],
+        [
+         "@Message",
+         "The sentence a stored procedure hands back when it refuses to act. When it is blank, the action worked."
+        ],
+        [
+         "RETURN",
+         "Stop here: nothing below this line runs."
+        ],
+        [
+         "SCOPE_IDENTITY()",
+         "The number the database gave to the row that was added a moment ago."
+        ],
+        [
+         "IF EXISTS",
+         "A test that is true when the SELECT inside the brackets finds at least one row."
+        ],
+        [
+         "LIKE",
+         "A match on part of a piece of text, where % stands for any letters at all."
+        ],
+        [
+         "JOIN",
+         "Lining up the rows of two tables where a number in one matches a number in the other, so names can be shown instead of numbers."
+        ],
+        [
+         "GO",
+         "A word for SQL Server Management Studio (SSMS), not for the database: run everything above this line as one batch, then start a fresh one."
+        ],
+        [
+         "Variable",
+         "A named box that holds one value while a script runs, made with DECLARE and filled with SET."
+        ],
+        [
+         "Batch",
+         "A group of lines that SQL Server Management Studio (SSMS) sends to the database together."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Check that you have these ready, and learn how the stored procedures are named.",
+     "blocks": [
+      {
+       "need": [
+        "Chapter 3 is finished: your BikeShop.sql builds the ten tables and fills them with the sample data when you press F5.",
+        "SQL Server Management Studio (SSMS) is open, connected to your BikeShop database.",
+        "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
+       ]
+      },
+      {
+       "p": "Every stored procedure in this guide is named the same way: usp, an underscore, the table it works on, an underscore, and what it does. usp_Customer_Search searches the Customer table. usp_Customer_Delete deletes from it. The usp at the front stands for user stored procedure, and it keeps your own ones apart from the ones the database comes with. When SQL Server Management Studio (SSMS) lists them, every Customer one sits beside the others, which makes them easy to find."
+      },
+      {
+       "p": "There are four shapes, and you will meet each one in turn. A Get fetches rows and changes nothing. An Add puts one row in and hands back its new number. An Update changes one row. A Delete takes one row out, and checks first. Each shape is the same from table to table, so once you have written one Add, you can write every Add."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Open your script, and find the line where every stored procedure goes.",
+     "blocks": [
+      {
+       "p": "Your stored procedures go into BikeShop.sql, under the sample data and above the line that prints BikeShop is ready. That PRINT line always stays last, so that when the whole script runs, the last thing you see is the message that it worked. The picture shows the exact spot."
+      },
+      {
+       "steps": [
+        {
+         "id": "4.1.1",
+         "do": "Click File at the top left of SQL Server Management Studio (SSMS).",
+         "see": "The File menu drops down.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio (SSMS) with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Your script opens from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 6,
+            "y": 25,
+            "say": "Point at Open."
+           },
+           {
+            "n": 3,
+            "x": 41,
+            "y": 48,
+            "say": "Click File… and choose BikeShop.sql from your OneDrive folder."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.1.2",
+         "do": "Point at Open in the menu.",
+         "see": "A small menu opens beside Open, with File… in it."
+        },
+        {
+         "id": "4.1.3",
+         "do": "Click File… in the small menu.",
+         "see": "A window opens for you to choose a file."
+        },
+        {
+         "id": "4.1.4",
+         "do": "Choose BikeShop.sql from your OneDrive folder and press Open.",
+         "see": "Your script is in a tab, and the first lines are the ones you built in chapter 3."
+        },
+        {
+         "id": "4.1.5",
+         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "see": "The cursor blinks on the empty line, with the sample data above it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: the sample data, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Every stored procedure in this chapter goes on the empty line above the line that prints BikeShop is ready, one after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "p": "The Messages pane and the Results pane sit under the query window. Rows that a SELECT finds appear under Results. Lines that PRINT writes, and any error, appear under Messages. You will look at both in this chapter."
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-ssms-tabs.png",
+        "alt": "The bottom half of a query window in SQL Server Management Studio (SSMS), with the Results tab and the Messages tab side by side above a grid of rows.",
+        "cap": "Rows that a SELECT finds appear under Results. Lines that PRINT writes, and any error, appear under Messages.",
+        "w": 857,
+        "h": 365,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 5,
+          "y": 6,
+          "say": "Results: the rows a SELECT found."
+         },
+         {
+          "n": 2,
+          "x": 13,
+          "y": 6,
+          "say": "Messages: the lines that PRINT wrote, and any error."
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "The Get kind: a stored procedure that looks things up",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Copy the customer search into your script, and run the whole script once.",
+     "blocks": [
+      {
+       "p": "The first stored procedure searches for customers. The program's customers screen in chapter 6 will have a search box, and whatever is typed in it goes into this stored procedure as @SearchText. Any customer whose first name, last name or phone number contains that text comes back, in surname order. Read every part, then paste it in."
+      },
+      {
+       "code": {
+        "id": "4.2-search",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Customer_Search: find customers by part of a name or phone number",
+        "src": "sql:usp_Customer_Search",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Customer_Search",
+          "@SearchText VARCHAR(50)",
+          "The name, and what goes in",
+          "CREATE OR ALTER PROCEDURE makes a stored procedure with this name, or replaces the one already there, so the script can run again and again. The one parameter is @SearchText, up to 50 characters of text. A parameter is an ingredient the stored procedure needs, and its name always starts with @."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT CustomerID,",
+          "Phone, Email, DateJoined",
+          "What comes back",
+          "Each row that comes back has the customer's number, their first and last names joined with a space into one column called FullName, their phone, their email and the day they joined. AS gives the joined column its name."
+         ],
+         [
+          "FROM Customer",
+          "FROM Customer",
+          "Which table",
+          "The rows come from the Customer table, and from nowhere else."
+         ],
+         [
+          "WHERE FirstName LIKE",
+          "OR Phone",
+          "The search",
+          "LIKE matches part of a piece of text. The % signs stand for any letters at all, so '%' + @SearchText + '%' means the search text anywhere inside. There are three tests joined by OR, so a customer comes back when the text is in their first name, or in their last name, or in their phone number."
+         ],
+         [
+          "ORDER BY LastName, FirstName;",
+          "$end",
+          "In surname order",
+          "The rows come back in order of surname, and two customers with the same surname are put in first-name order. END closes the work that BEGIN opened. GO is not SQL. It is a word for SQL Server Management Studio (SSMS): run everything above this line as one batch, then start a fresh one. Every stored procedure ends with its own GO."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Customer_Search\n    @SearchText VARCHAR(50)\nAS\nBEGIN\n    SELECT CustomerID,\n           FirstName + ' ' + LastName AS FullName,\n           Phone, Email, DateJoined\n    FROM Customer\n    WHERE FirstName LIKE '%' + @SearchText + '%'\n       OR LastName  LIKE '%' + @SearchText + '%'\n       OR Phone     LIKE '%' + @SearchText + '%'\n    ORDER BY LastName, FirstName;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The name, and what goes in",
+          "CREATE OR ALTER PROCEDURE makes a stored procedure with this name, or replaces the one already there, so the script can run again and again. The one parameter is @SearchText, up to 50 characters of text. A parameter is an ingredient the stored procedure needs, and its name always starts with @."
+         ],
+         [
+          3,
+          4,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          5,
+          7,
+          "What comes back",
+          "Each row that comes back has the customer's number, their first and last names joined with a space into one column called FullName, their phone, their email and the day they joined. AS gives the joined column its name."
+         ],
+         [
+          8,
+          8,
+          "Which table",
+          "The rows come from the Customer table, and from nowhere else."
+         ],
+         [
+          9,
+          11,
+          "The search",
+          "LIKE matches part of a piece of text. The % signs stand for any letters at all, so '%' + @SearchText + '%' means the search text anywhere inside. There are three tests joined by OR, so a customer comes back when the text is in their first name, or in their last name, or in their phone number."
+         ],
+         [
+          12,
+          14,
+          "In surname order",
+          "The rows come back in order of surname, and two customers with the same surname are put in first-name order. END closes the work that BEGIN opened. GO is not SQL. It is a word for SQL Server Management Studio (SSMS): run everything above this line as one batch, then start a fresh one. Every stored procedure ends with its own GO."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.2.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.2-search",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.2.2",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.2.3",
+         "do": "Press Ctrl and V together to paste usp_Customer_Search.",
+         "see": "usp_Customer_Search is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.2.4",
+         "do": "Press F5, or click Execute on the toolbar, with nothing selected. This runs the whole script, so your database is built again from nothing with the new stored procedure in it.",
+         "see": "The Messages pane ends with BikeShop is ready and a Completion time, with no red text above it.",
+         "img": {
+          "img": "img/ch07-ssms-execute.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (12 rows affected), then BikeShop is ready, then a Completion time.",
+          "cap": "Execute with nothing selected runs the whole script. The Messages pane counts the sample rows it put back, then says BikeShop is ready.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 31,
+            "y": 6,
+            "say": "Click Execute, or press F5."
+           },
+           {
+            "n": 2,
+            "x": 39,
+            "y": 90,
+            "say": "The last lines say BikeShop is ready, then a Completion time. Red text here is an error to read."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        },
+        {
+         "id": "4.2.5",
+         "do": "In the Object Explorer pane on the left, click the plus sign beside BikeShop.",
+         "see": "Folders such as Tables and Programmability appear under BikeShop."
+        },
+        {
+         "id": "4.2.6",
+         "do": "Click the plus sign beside Programmability.",
+         "see": "More folders appear under Programmability, including Stored Procedures."
+        },
+        {
+         "id": "4.2.7",
+         "do": "Click the plus sign beside Stored Procedures.",
+         "see": "dbo.usp_Customer_Search is listed. The dbo in front is the owner the database gives everything, and you never type it.",
+         "img": {
+          "img": "img/ch04-ssms-procs.png",
+          "alt": "The Object Explorer pane in SQL Server Management Studio (SSMS) with the BikeShop database expanded, then Programmability, then Stored Procedures, with dbo.usp_Customer_Search listed under it.",
+          "cap": "Where a stored procedure lives once it has run: inside the database, under Programmability, then Stored Procedures.",
+          "w": 404,
+          "h": 586,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 43,
+            "y": 10,
+            "say": "Expand Programmability, then Stored Procedures."
+           },
+           {
+            "n": 2,
+            "x": 55,
+            "y": 71,
+            "say": "dbo.usp_Customer_Search. If a new one does not show, right-click Stored Procedures and click Refresh."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "Stored Procedures is empty",
+           "The list was drawn before the script ran. Right-click Stored Procedures and click Refresh."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test the search in a new query window.",
+     "blocks": [
+      {
+       "p": "Tests never go in your script. They go in a second window, so that the script stays clean and can be run again whenever you want the sample data back. The test below runs the stored procedure with the letters ar as its search text."
+      },
+      {
+       "code": {
+        "id": "4.2-try-search",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that searches for ar",
+        "src": "try:ch04_procedures.sql#search",
+        "parts": [
+         [
+          "EXEC usp_Customer_Search",
+          "$end",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure by name. The parameter is named, with an equals sign and the value it should hold. The rows it finds appear under Results, as if you had typed the SELECT yourself."
+         ]
+        ],
+        "text": "-- Every customer with the letters ar in their first name, last name or\n-- phone number: three rows, in surname order.\nEXEC usp_Customer_Search @SearchText = 'ar';",
+        "partLines": [
+         [
+          3,
+          3,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure by name. The parameter is named, with an equals sign and the value it should hold. The rows it finds appear under Results, as if you had typed the SELECT yourself."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.2.8",
+         "do": "Click New Query on the toolbar, or press Ctrl and N together.",
+         "see": "A new tab opens with an empty query window, and the cursor blinks in it.",
+         "img": {
+          "img": "img/ch07-ssms-new-query.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the New Query button at the left, and an empty query window below it.",
+          "cap": "New Query opens a second, empty window. Tests go in here, so your script stays clean.",
+          "w": 900,
+          "h": 300,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 7,
+            "y": 5,
+            "say": "Click New Query, or press Ctrl and N together."
+           },
+           {
+            "n": 2,
+            "x": 50,
+            "y": 60,
+            "say": "Paste the test into the empty window."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.2.9",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.2-try-search",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.2.10",
+         "do": "Click in the empty query window and press Ctrl and V together to paste the test.",
+         "see": "The test is in the window, and it runs usp_Customer_Search."
+        },
+        {
+         "id": "4.2.11",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows three rows: Jack O'Hare, Ciara Quinn and Darragh Rice, in that order.",
+         "img": {
+          "img": "img/ch04-ssms-search.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the search test: three rows, Jack O'Hare with CustomerID 10, Ciara Quinn with CustomerID 3, and Darragh Rice with CustomerID 8, each with a phone, an email and a DateJoined.",
+          "cap": "The search for ar found three customers: the letters are in Jack's surname, Ciara's first name and Darragh's first name. Surnames are in order.",
+          "w": 857,
+          "h": 110,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 19,
+            "y": 50,
+            "say": "FullName is one column made from FirstName and LastName joined together. The word AS gave the column that name."
+           },
+           {
+            "n": 2,
+            "x": 35,
+            "y": 69,
+            "say": "Ciara Quinn has NULL for Email, which means no email at all, because the shop never took one."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.2.12",
+         "do": "In the EXEC line, change ar inside the quotes to 028.",
+         "see": "The EXEC line now ends with @SearchText = '028', followed by a semicolon."
+        },
+        {
+         "id": "4.2.13",
+         "do": "Press F5 to run the search again.",
+         "see": "The Results tab shows six rows: Hannah Boyle, Róisín Campbell, Méabh Cunningham, Aoife McCann, Gráinne Murphy and Ciara Quinn. Every one of them has a phone number that starts with 028, so the third LIKE found them."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "No rows at all, with the column headings still there",
+         "a": "The search text is spelled differently from any name or phone number. Check that the quotes are the plain single ones, and that there is no space inside them."
+        },
+        {
+         "q": "More rows than the picture shows",
+         "a": "The search text is shorter than ar, or the quotes are empty, so more customers match. Put ar back, inside single quotes."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Read the stored procedure that fetches one customer by number, and add it.",
+     "blocks": [
+      {
+       "p": "The second Get is shorter. The customers screen will pick one row in its grid and need that customer's details, so it hands over the number and gets back the one row. There is nothing new in it, so read it, then paste it under the search."
+      },
+      {
+       "code": {
+        "id": "4.2-getbyid",
+        "kind": "read",
+        "lang": "sql",
+        "title": "usp_Customer_GetByID: one customer, by number",
+        "src": "sql:usp_Customer_GetByID",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Customer_GetByID",
+          "@CustomerID INT",
+          "The name, and what goes in",
+          "The one parameter is the customer's number, a whole number, which is what INT means."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT CustomerID, FirstName, LastName",
+          "FROM Customer",
+          "What comes back, and from where",
+          "The SELECT takes six columns from the Customer table. The names stay in two columns this time, because the edit form in chapter 6 has a box for each."
+         ],
+         [
+          "WHERE CustomerID = @CustomerID;",
+          "$end",
+          "Only the one customer",
+          "The WHERE line keeps only the row whose number matches the parameter. A number is given to one row and never reused, so this is one row or none. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Customer_GetByID\n    @CustomerID INT\nAS\nBEGIN\n    SELECT CustomerID, FirstName, LastName, Phone, Email, DateJoined\n    FROM Customer\n    WHERE CustomerID = @CustomerID;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The name, and what goes in",
+          "The one parameter is the customer's number, a whole number, which is what INT means."
+         ],
+         [
+          3,
+          4,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          5,
+          6,
+          "What comes back, and from where",
+          "The SELECT takes six columns from the Customer table. The names stay in two columns this time, because the edit form in chapter 6 has a box for each."
+         ],
+         [
+          7,
+          9,
+          "Only the one customer",
+          "The WHERE line keeps only the row whose number matches the parameter. A number is given to one row and never reused, so this is one row or none. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.2.14",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.2-getbyid",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.2.15",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.2.16",
+         "do": "Press Ctrl and V together to paste usp_Customer_GetByID.",
+         "see": "usp_Customer_GetByID is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.2.17",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.2.18",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "p": "From now on, every stored procedure you add runs this way: paste it in, select it from CREATE OR ALTER PROCEDURE down to GO, and press F5. The whole script only needs to run again when you want the sample data put back."
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Test the fetch by number.",
+     "blocks": [
+      {
+       "code": {
+        "id": "4.2-try-getbyid",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that fetches customer 3",
+        "src": "try:ch04_procedures.sql#getbyid",
+        "parts": [
+         [
+          "EXEC usp_Customer_GetByID",
+          "$end",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with the customer number 3. Customer 3 in the sample data is Ciara Quinn."
+         ]
+        ],
+        "text": "-- Customer 3, Ciara Quinn, on her own: one row.\nEXEC usp_Customer_GetByID @CustomerID = 3;",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with the customer number 3. Customer 3 in the sample data is Ciara Quinn."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.2.19",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.2-try-getbyid",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.2.20",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.2.21",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Customer_GetByID."
+        },
+        {
+         "id": "4.2.22",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows one row: CustomerID 3, Ciara, Quinn, 028 3025 7720, NULL for Email, and the day she joined.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.2.23",
+         "do": "In the EXEC line, change the 3 to 99.",
+         "see": "The EXEC line now ends with @CustomerID = 99, followed by a semicolon."
+        },
+        {
+         "id": "4.2.24",
+         "do": "Press F5 to run the test again.",
+         "see": "The Results tab shows the column headings with no row under them. There is no customer 99, and the stored procedure found nothing, which is right, not an error."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The Add kind: a stored procedure that puts a row in",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Copy the stored procedure that adds a customer, and read the two things that come back out.",
+     "blocks": [
+      {
+       "p": "An Add puts one row into the table. Two things come back out of it. The first is the number the database chose for the new row, because the program will need it. The second is @Message, the one way a stored procedure says no. Every stored procedure that changes data has @Message as its last parameter. This one has no rule to check, so its message is always blank, and that blank is the sign that it worked."
+      },
+      {
+       "code": {
+        "id": "4.3-add",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Customer_Add: put one customer in, and hand back the new number",
+        "src": "sql:usp_Customer_Add",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Customer_Add",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "Four parameters carry the customer's details in: first name, last name, phone and email, each with the same size as its column in the table. The last two have the word OUTPUT after them, which means they carry an answer back out: @NewCustomerID will hold the new number, and @Message the refusal, if there is one."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "INSERT INTO Customer",
+          "VALUES (@FirstName",
+          "Add the row",
+          "INSERT INTO names the table and the four columns to fill. VALUES gives the four parameters, in the same order. CustomerID and DateJoined are not listed, because the table fills them itself: the next number, and today's date."
+         ],
+         [
+          "SET @NewCustomerID = SCOPE_IDENTITY();",
+          "$end",
+          "Hand back the new number",
+          "SCOPE_IDENTITY() is the number the database gave to the row that was added a moment ago. SET puts it into the OUTPUT parameter, so whoever ran the stored procedure gets it back. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Customer_Add\n    @FirstName     VARCHAR(40),\n    @LastName      VARCHAR(40),\n    @Phone         VARCHAR(15),\n    @Email         VARCHAR(100),\n    @NewCustomerID INT OUTPUT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    INSERT INTO Customer (FirstName, LastName, Phone, Email)\n    VALUES (@FirstName, @LastName, @Phone, @Email);\n    SET @NewCustomerID = SCOPE_IDENTITY();\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          7,
+          "The name, and what goes in and out",
+          "Four parameters carry the customer's details in: first name, last name, phone and email, each with the same size as its column in the table. The last two have the word OUTPUT after them, which means they carry an answer back out: @NewCustomerID will hold the new number, and @Message the refusal, if there is one."
+         ],
+         [
+          8,
+          10,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          11,
+          12,
+          "Add the row",
+          "INSERT INTO names the table and the four columns to fill. VALUES gives the four parameters, in the same order. CustomerID and DateJoined are not listed, because the table fills them itself: the next number, and today's date."
+         ],
+         [
+          13,
+          15,
+          "Hand back the new number",
+          "SCOPE_IDENTITY() is the number the database gave to the row that was added a moment ago. SET puts it into the OUTPUT parameter, so whoever ran the stored procedure gets it back. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.3.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.3-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.3.2",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.3.3",
+         "do": "Press Ctrl and V together to paste usp_Customer_Add.",
+         "see": "usp_Customer_Add is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.3.4",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.3.5",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test the add, and read how a test collects the answers.",
+     "blocks": [
+      {
+       "p": "A stored procedure with OUTPUT parameters needs somewhere to put its answers. The test makes two variables, runs the stored procedure, and then looks at what came back. If the message is blank, it prints the new number. Then it fetches the new row with the stored procedure from the last stage, using that number."
+      },
+      {
+       "code": {
+        "id": "4.3-try-add",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that adds Eimear Hughes and prints her new number",
+        "src": "try:ch04_procedures.sql#add",
+        "parts": [
+         [
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Customer_Add",
+          "@NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with every parameter named, so the order does not matter. The two OUTPUT ones are given a variable to fill, and the word OUTPUT is written again here, in the test that runs the stored procedure."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_Customer_GetByID @CustomerID = @NewID;",
+          "$end",
+          "Fetch the new row by its number",
+          "The number that came back is handed straight to the fetch from stage 2, so the new row appears under Results."
+         ]
+        ],
+        "text": "-- Add a new customer, print the number the database gave her, then fetch\n-- her row back by that number.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Eimear', @LastName = 'Hughes', @Phone = '07700 900 123',\n     @Email = 'eimear.hughes@example.com',\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
+        "partLines": [
+         [
+          3,
+          3,
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          5,
+          8,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with every parameter named, so the order does not matter. The two OUTPUT ones are given a variable to fill, and the word OUTPUT is written again here, in the test that runs the stored procedure."
+         ],
+         [
+          10,
+          13,
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          14,
+          17,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          19,
+          19,
+          "Fetch the new row by its number",
+          "The number that came back is handed straight to the fetch from stage 2, so the new row appears under Results."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.3.6",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.3-try-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.3.7",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.3.8",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Customer_Add."
+        },
+        {
+         "id": "4.3.9",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows one row for Eimear Hughes with CustomerID 13. Click Messages: Added. New customer number 13.",
+         "img": {
+          "img": "img/ch04-ssms-added.png",
+          "alt": "The query window in SQL Server Management Studio (SSMS) after the add test: the Results tab shows one row, CustomerID 13, Eimear, Hughes, 07700 900 123, eimear.hughes@example.com and DateJoined today, with the Messages tab beside the Results tab.",
+          "cap": "The database chose the number 13 for Eimear Hughes, handed it back through @NewCustomerID, and the second EXEC fetched her row with it.",
+          "w": 857,
+          "h": 67,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 75,
+            "say": "The new row, fetched by the number the database chose."
+           },
+           {
+            "n": 2,
+            "x": 13,
+            "y": 20,
+            "say": "Click Messages to see the printed line: Added. New customer number 13."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ],
+          [
+           "Must declare the scalar variable @NewID",
+           "The DECLARE line at the top of the test did not run with the rest. Select nothing, so that the whole test window runs, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.3.10",
+         "do": "Press F5 again, changing nothing.",
+         "see": "A second Eimear Hughes, with CustomerID 14. The database never gives a number twice, and this stored procedure has no rule against the same name twice. The whole script will put the sample data back later."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Type the lines that make an Update different from an Add.",
+     "blocks": [
+      {
+       "p": "An Update changes one row that is already there. It is the Add with two things changed: the customer's number comes in as well, so the stored procedure knows which row, and the INSERT becomes an UPDATE with a WHERE. Everything else is the same, so this one is pasted with a gap, and you type the four lines that differ."
+      },
+      {
+       "code": {
+        "id": "4.3-update",
+        "kind": "type",
+        "lang": "sql",
+        "title": "usp_Customer_Update: change one customer",
+        "src": "sql:usp_Customer_Update",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Customer_Update",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "The customer's number comes first, then the same four details as the Add. @Message comes back out. There is no new number to hand back, because the row already has one."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "UPDATE Customer",
+          "$end",
+          "Change the one row",
+          "UPDATE names the table. SET gives each column its new value from the matching parameter, with commas between. WHERE picks the one row whose number matches, and without it every customer would get these details. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "UPDATE Customer",
+          "WHERE CustomerID = @CustomerID;"
+         ]
+        ],
+        "why": "UPDATE without a WHERE changes every row in the table. Typing the WHERE yourself, once, is the best way to never forget it.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Customer_Update\n    @CustomerID INT,\n    @FirstName  VARCHAR(40),\n    @LastName   VARCHAR(40),\n    @Phone      VARCHAR(15),\n    @Email      VARCHAR(100),\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    UPDATE Customer\n    SET FirstName = @FirstName, LastName = @LastName, Phone = @Phone,\n        Email = @Email\n    WHERE CustomerID = @CustomerID;\nEND\nGO",
+        "focusLines": [
+         [
+          11,
+          14
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          7,
+          "The name, and what goes in and out",
+          "The customer's number comes first, then the same four details as the Add. @Message comes back out. There is no new number to hand back, because the row already has one."
+         ],
+         [
+          8,
+          10,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          11,
+          16,
+          "Change the one row",
+          "UPDATE names the table. SET gives each column its new value from the matching parameter, with commas between. WHERE picks the one row whose number matches, and without it every customer would get these details. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.3.11",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.3-update",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.3.12",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.3.13",
+         "do": "Press Ctrl and V together to paste usp_Customer_Update.",
+         "see": "The stored procedure is in your script, with a line that says YOU TYPE THIS PART where each yellow block goes.",
+         "img": {
+          "img": "img/ch07-ssms-paste-gap.png",
+          "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 20,
+            "y": 64,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.3.14",
+         "do": "Type the yellow lines in place of each line that says YOU TYPE THIS PART, so that no marker line is left.",
+         "see": "Four lines of your own, from UPDATE Customer to the WHERE line, and no marker line.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that each line ends the way the yellow line ends."
+          ],
+          [
+           "'Must declare the scalar variable …'",
+           "A name beginning with @ is spelled differently from the line that declares it. Make the two match."
+          ]
+         ]
+        },
+        {
+         "id": "4.3.15",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.3.16",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Test the update on Ben Toner.",
+     "blocks": [
+      {
+       "code": {
+        "id": "4.3-try-update",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that changes Ben Toner's phone number",
+        "src": "try:ch04_procedures.sql#update",
+        "parts": [
+         [
+          "DECLARE @Message VARCHAR(200);",
+          "DECLARE @Message VARCHAR(200);",
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Customer_Update",
+          "@Message = @Message OUTPUT;",
+          "Run the stored procedure",
+          "Customer 12 is Ben Toner. His name and email are given again unchanged, and the phone is new. An Update always sends every column, and the screen in chapter 6 will do the same."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was changed, and one line says so."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_Customer_GetByID @CustomerID = 12;",
+          "$end",
+          "Fetch the row to see the change",
+          "The fetch from stage 2 shows Ben's row with the new phone number in it."
+         ]
+        ],
+        "text": "-- Change Ben Toner's phone number (customer 12), then fetch his row back.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Update\n     @CustomerID = 12, @FirstName = 'Ben', @LastName = 'Toner',\n     @Phone = '07388 640 999', @Email = 'ben.toner@example.com',\n     @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated customer number 12.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = 12;",
+        "partLines": [
+         [
+          2,
+          2,
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          4,
+          7,
+          "Run the stored procedure",
+          "Customer 12 is Ben Toner. His name and email are given again unchanged, and the phone is new. An Update always sends every column, and the screen in chapter 6 will do the same."
+         ],
+         [
+          9,
+          12,
+          "If the message is blank, it worked",
+          "A blank message means the row was changed, and one line says so."
+         ],
+         [
+          13,
+          16,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          18,
+          18,
+          "Fetch the row to see the change",
+          "The fetch from stage 2 shows Ben's row with the new phone number in it."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.3.17",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.3-try-update",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.3.18",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.3.19",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Customer_Update."
+        },
+        {
+         "id": "4.3.20",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows Ben Toner with the phone 07388 640 999. Click Messages: Updated customer number 12.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "Every customer now has the phone 07388 640 999",
+         "a": "The WHERE line is missing from your UPDATE, so every row was changed. Put the WHERE line in, select the block, press F5, then click in BikeShop.sql and press F5 with nothing selected to put the sample data back."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "The Delete that refuses",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Copy the delete, and read how a stored procedure says no.",
+     "blocks": [
+      {
+       "p": "A customer with bookings on record cannot be deleted, because the bookings would be left pointing at nobody. The database would refuse the DELETE anyway, with a long red error, but the shop should get a sentence, not an error. So the stored procedure checks first. If any booking, hire, sale or bike belongs to this customer, it writes a sentence into @Message and stops. Nothing below the stop runs, so the DELETE never happens."
+      },
+      {
+       "code": {
+        "id": "4.4-delete",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Customer_Delete: take one customer out, unless they have history",
+        "src": "sql:usp_Customer_Delete",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Customer_Delete",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "The customer's number goes in, and @Message comes back out."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "IF EXISTS (SELECT * FROM Appointment",
+          "OR EXISTS (SELECT * FROM Bike",
+          "Look in four tables",
+          "IF EXISTS is true when the SELECT inside the brackets finds at least one row. Four tables are looked in, joined by OR: a booking, a hire, a part sale or a bike that belongs to this customer. One match is enough."
+         ],
+         [
+          "BEGIN",
+          "RETURN;",
+          "Say no and stop",
+          "When the test is true, the lines between BEGIN and END run. SET puts a plain sentence into @Message. The sentence is split over two lines with a plus sign, which joins the two halves into one. RETURN means stop here: nothing below this line runs."
+         ],
+         [
+          "DELETE FROM Customer WHERE CustomerID = @CustomerID;",
+          "$end",
+          "Delete the row",
+          "This line only runs when the test above was false. DELETE FROM names the table, and WHERE picks the one row. Without the WHERE, every customer would go. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Customer_Delete\n    @CustomerID INT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    IF EXISTS (SELECT * FROM Appointment WHERE CustomerID = @CustomerID)\n       OR EXISTS (SELECT * FROM Hire     WHERE CustomerID = @CustomerID)\n       OR EXISTS (SELECT * FROM PartSale WHERE CustomerID = @CustomerID)\n       OR EXISTS (SELECT * FROM Bike     WHERE CustomerID = @CustomerID)\n    BEGIN\n        SET @Message =\n            'This customer has bookings or sales on record, so they cannot ' +\n            'be deleted.';\n        RETURN;\n    END\n\n    DELETE FROM Customer WHERE CustomerID = @CustomerID;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and what goes in and out",
+          "The customer's number goes in, and @Message comes back out."
+         ],
+         [
+          4,
+          6,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          7,
+          10,
+          "Look in four tables",
+          "IF EXISTS is true when the SELECT inside the brackets finds at least one row. Four tables are looked in, joined by OR: a booking, a hire, a part sale or a bike that belongs to this customer. One match is enough."
+         ],
+         [
+          11,
+          16,
+          "Say no and stop",
+          "When the test is true, the lines between BEGIN and END run. SET puts a plain sentence into @Message. The sentence is split over two lines with a plus sign, which joins the two halves into one. RETURN means stop here: nothing below this line runs."
+         ],
+         [
+          18,
+          20,
+          "Delete the row",
+          "This line only runs when the test above was false. DELETE FROM names the table, and WHERE picks the one row. Without the WHERE, every customer would go. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.4.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.4-delete",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.4.2",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.4.3",
+         "do": "Press Ctrl and V together to paste usp_Customer_Delete.",
+         "see": "usp_Customer_Delete is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.4.4",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.4.5",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test the delete on a customer who has bookings.",
+     "blocks": [
+      {
+       "p": "Aoife McCann is customer 1, and she has two bookings. The test tries to delete her, then prints whichever came back: the refusal, or a line that says the rule is broken."
+      },
+      {
+       "code": {
+        "id": "4.4-try-refused",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that tries to delete customer 1",
+        "src": "try:ch04_procedures.sql#delete-refused",
+        "parts": [
+         [
+          "DECLARE @Message VARCHAR(200);",
+          "DECLARE @Message VARCHAR(200);",
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Customer_Delete",
+          "EXEC usp_Customer_Delete",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with customer 1 and a variable for the message to come back in."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, the rule is broken",
+          "A blank message would mean the row was deleted, and for customer 1 that must never happen. The printed line says so, so that you cannot miss it."
+         ],
+         [
+          "ELSE",
+          "$end",
+          "Otherwise, print the refusal",
+          "The sentence from inside the stored procedure is printed after the word Refused."
+         ]
+        ],
+        "text": "-- Try to delete Aoife McCann (customer 1). She has bookings on record, so\n-- the stored procedure refuses and hands back its sentence.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Delete @CustomerID = 1, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number 1. The rule is broken: she had bookings.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
+        "partLines": [
+         [
+          3,
+          3,
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          5,
+          5,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with customer 1 and a variable for the message to come back in."
+         ],
+         [
+          7,
+          10,
+          "If the message is blank, the rule is broken",
+          "A blank message would mean the row was deleted, and for customer 1 that must never happen. The printed line says so, so that you cannot miss it."
+         ],
+         [
+          11,
+          14,
+          "Otherwise, print the refusal",
+          "The sentence from inside the stored procedure is printed after the word Refused."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.4.6",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.4-try-refused",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.4.7",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.4.8",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Customer_Delete."
+        },
+        {
+         "id": "4.4.9",
+         "do": "Press F5 to run the test.",
+         "see": "The Messages tab says: Refused: This customer has bookings or sales on record, so they cannot be deleted.",
+         "img": {
+          "img": "img/ch04-ssms-delete-refused.png",
+          "alt": "The Messages tab in SQL Server Management Studio (SSMS) after the delete test on customer 1, reading: Refused: This customer has bookings or sales on record, so they cannot be deleted.",
+          "cap": "Aoife McCann has two bookings, so the stored procedure set @Message and stopped. The DELETE line never ran.",
+          "w": 918,
+          "h": 67,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 42,
+            "say": "The sentence came from inside the stored procedure, word for word."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "The Messages tab says Deleted customer number 1. The rule is broken: she had bookings.",
+         "a": "The IF EXISTS test did not find her bookings. Check that the four table names inside the brackets are spelled the way the tables are, and that each test reads CustomerID = @CustomerID."
+        },
+        {
+         "q": "A long red error that mentions FK_Appointment_Customer",
+         "a": "The stored procedure ran the DELETE without checking first, and the table itself refused. The IF EXISTS lines are missing or the RETURN is missing. Compare your block with the one above."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Test the delete on a customer who has nothing on record.",
+     "blocks": [
+      {
+       "p": "Every customer in the sample data has at least one booking, so the test makes its own customer first. It adds Niall Keenan, deletes him by the number that came back, and then looks for him. No row should come back, because he is gone."
+      },
+      {
+       "code": {
+        "id": "4.4-try-gone",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that adds a customer, deletes them, and looks for them",
+        "src": "try:ch04_procedures.sql#delete-gone",
+        "parts": [
+         [
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Customer_Add",
+          "PRINT 'Added customer number '",
+          "Add a customer with nothing on record",
+          "This is the Add from stage 3, with NULL for the email, which means no email at all. The new number comes back in @NewID, and one line prints it."
+         ],
+         [
+          "EXEC usp_Customer_Delete",
+          "EXEC usp_Customer_Delete",
+          "Delete by that number",
+          "The Delete is given the number that the Add handed back a moment ago."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was deleted, and one line says so, with the number."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_Customer_GetByID @CustomerID = @NewID;",
+          "$end",
+          "Look for the deleted customer",
+          "The fetch by number finds nothing, so the Results tab shows the headings with no row under them."
+         ]
+        ],
+        "text": "-- Add a customer who has no bookings, delete them straight away, then\n-- look for them by number: no row comes back.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Niall', @LastName = 'Keenan', @Phone = '07700 900 000',\n     @Email = NULL,\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\nPRINT 'Added customer number ' + CAST(@NewID AS VARCHAR) + '.';\n\nEXEC usp_Customer_Delete @CustomerID = @NewID, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
+        "partLines": [
+         [
+          3,
+          3,
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          5,
+          9,
+          "Add a customer with nothing on record",
+          "This is the Add from stage 3, with NULL for the email, which means no email at all. The new number comes back in @NewID, and one line prints it."
+         ],
+         [
+          11,
+          11,
+          "Delete by that number",
+          "The Delete is given the number that the Add handed back a moment ago."
+         ],
+         [
+          13,
+          16,
+          "If the message is blank, it worked",
+          "A blank message means the row was deleted, and one line says so, with the number."
+         ],
+         [
+          17,
+          20,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          22,
+          22,
+          "Look for the deleted customer",
+          "The fetch by number finds nothing, so the Results tab shows the headings with no row under them."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.4.10",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.4-try-gone",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.4.11",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.4.12",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Customer_Add, then usp_Customer_Delete."
+        },
+        {
+         "id": "4.4.13",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows column headings and no row. Click the Messages tab. It says Added customer number 15, then Deleted customer number 15. The number is 15 if you ran the add test twice in stage 3, and 14 if you ran it once. The picture was taken on fresh sample data, so it shows 13. The two numbers must match each other.",
+         "img": {
+          "img": "img/ch04-ssms-delete-gone.png",
+          "alt": "The query window in SQL Server Management Studio (SSMS) after the delete test on a new customer: two views stacked: the Results tab shows column headings and no rows, and below it the Messages tab reads Added customer number 13, then Deleted customer number 13.",
+          "cap": "Niall Keenan was added, had no bookings, and was deleted. The last EXEC looks for him by number and finds no row.",
+          "w": 857,
+          "h": 155,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 25,
+            "y": 20,
+            "say": "Headings with nothing under them: the row is gone."
+           },
+           {
+            "n": 2,
+            "x": 14,
+            "y": 80,
+            "say": "The Messages tab shows the two printed lines."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.4.14",
+         "do": "Click anywhere in the script in your BikeShop.sql tab, so that no line is highlighted.",
+         "see": "Your script is at the front, and nothing in it is highlighted."
+        },
+        {
+         "id": "4.4.15",
+         "do": "Press F5 with nothing selected, so that the sample data is put back and the customers you added are gone.",
+         "see": "The Messages pane ends with BikeShop is ready. The two Eimear Hughes rows and the changed phone number are gone, and Aoife McCann is still customer 1."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Names, not numbers",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Copy the stored procedure that lists a customer's bookings with names in it.",
+     "blocks": [
+      {
+       "p": "A booking row holds numbers: the mechanic is 4, the service is 4. Nobody in the shop knows who 4 is. A Get that shows bookings has to swap each number for the name it stands for, and JOIN is how. JOIN lines up the rows of two tables where a number in one matches a number in the other. This stored procedure joins the bookings to Staff for the mechanic's name and to ServiceType for the service's name. The customers screen in chapter 6 will show its rows in a grid."
+      },
+      {
+       "code": {
+        "id": "4.5-bookings",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Appointment_GetForCustomer: one customer's bookings, with names",
+        "src": "sql:usp_Appointment_GetForCustomer",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Appointment_GetForCustomer",
+          "@CustomerID INT",
+          "The name, and what goes in",
+          "The one parameter is the customer's number."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT a.AppointmentID",
+          "a.BikeDescription, a.Status",
+          "What comes back",
+          "Each column has a short letter and a dot in front, which says which table it comes from: a for Appointment, m for the mechanic's row in Staff, st for ServiceType. The mechanic's two names are joined into one column called Mechanic, and the service's name is called Service. The booking's own columns come as they are."
+         ],
+         [
+          "FROM Appointment a",
+          "FROM Appointment a",
+          "Start from the bookings",
+          "The rows start from the Appointment table. The a after the table name is the short letter the SELECT used, and it saves typing the whole word each time."
+         ],
+         [
+          "JOIN Staff",
+          "JOIN ServiceType",
+          "Two joins: the mechanic and the service",
+          "The first JOIN lines up each booking with the Staff row whose StaffID matches the booking's MechanicID, and calls it m. The second lines up each booking with the ServiceType row whose number matches, and calls it st. ON says which numbers must match. After the joins, every name is within reach."
+         ],
+         [
+          "WHERE a.CustomerID = @CustomerID",
+          "WHERE a.CustomerID = @CustomerID",
+          "Only this customer",
+          "The WHERE line keeps only the bookings whose customer number matches the parameter."
+         ],
+         [
+          "ORDER BY a.StartTime DESC;",
+          "$end",
+          "Newest first",
+          "DESC means descending, so the latest booking is at the top of the list. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Appointment_GetForCustomer\n    @CustomerID INT\nAS\nBEGIN\n    SELECT a.AppointmentID, a.StartTime, a.EndTime,\n           m.FirstName + ' ' + m.LastName AS Mechanic,\n           st.Name AS Service, st.Price, a.BikeDescription, a.Status\n    FROM Appointment a\n    JOIN Staff       m  ON m.StaffID        = a.MechanicID\n    JOIN ServiceType st ON st.ServiceTypeID = a.ServiceTypeID\n    WHERE a.CustomerID = @CustomerID\n    ORDER BY a.StartTime DESC;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "The name, and what goes in",
+          "The one parameter is the customer's number."
+         ],
+         [
+          3,
+          4,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          5,
+          7,
+          "What comes back",
+          "Each column has a short letter and a dot in front, which says which table it comes from: a for Appointment, m for the mechanic's row in Staff, st for ServiceType. The mechanic's two names are joined into one column called Mechanic, and the service's name is called Service. The booking's own columns come as they are."
+         ],
+         [
+          8,
+          8,
+          "Start from the bookings",
+          "The rows start from the Appointment table. The a after the table name is the short letter the SELECT used, and it saves typing the whole word each time."
+         ],
+         [
+          9,
+          10,
+          "Two joins: the mechanic and the service",
+          "The first JOIN lines up each booking with the Staff row whose StaffID matches the booking's MechanicID, and calls it m. The second lines up each booking with the ServiceType row whose number matches, and calls it st. ON says which numbers must match. After the joins, every name is within reach."
+         ],
+         [
+          11,
+          11,
+          "Only this customer",
+          "The WHERE line keeps only the bookings whose customer number matches the parameter."
+         ],
+         [
+          12,
+          14,
+          "Newest first",
+          "DESC means descending, so the latest booking is at the top of the list. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.1",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-bookings",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.2",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.5.3",
+         "do": "Press Ctrl and V together to paste usp_Appointment_GetForCustomer.",
+         "see": "usp_Appointment_GetForCustomer is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.5.4",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.5.5",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Test the bookings list for Aoife McCann.",
+     "blocks": [
+      {
+       "code": {
+        "id": "4.5-try-bookings",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that lists the bookings of customer 1",
+        "src": "try:ch04_procedures.sql#bookings",
+        "parts": [
+         [
+          "EXEC usp_Appointment_GetForCustomer",
+          "$end",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with customer 1, who is Aoife McCann. Her bookings come back under Results, newest first."
+         ]
+        ],
+        "text": "-- Every booking Aoife McCann (customer 1) has, newest first, with the\n-- mechanic and the service as names.\nEXEC usp_Appointment_GetForCustomer @CustomerID = 1;",
+        "partLines": [
+         [
+          3,
+          3,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with customer 1, who is Aoife McCann. Her bookings come back under Results, newest first."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.6",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-bookings",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.7",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.8",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Appointment_GetForCustomer."
+        },
+        {
+         "id": "4.5.9",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows two rows. The first is a Wheel true with Conor Walsh, 20.00, marked Booked. The second is a Basic service with Aoife Byrne, 40.00, marked Done. Both are for a Blue Trek hybrid.",
+         "img": {
+          "img": "img/ch04-ssms-bookings.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the bookings test for customer 1: two rows, the first a Wheel true with Conor Walsh at 20.00 marked Booked, the second a Basic service with Aoife Byrne at 40.00 marked Done, both for a Blue Trek hybrid.",
+          "cap": "Aoife McCann's two bookings, newest first. The Mechanic and Service columns hold names, not numbers, because of the two JOINs.",
+          "w": 857,
+          "h": 86,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 52,
+            "y": 56,
+            "say": "Mechanic reads Conor Walsh, not 4. Service reads Wheel true, not 4."
+           },
+           {
+            "n": 2,
+            "x": 60,
+            "y": 84,
+            "say": "Last week's Basic service, marked Done."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.5.10",
+         "do": "In the EXEC line, change the 1 to 2.",
+         "see": "The EXEC line now ends with @CustomerID = 2, followed by a semicolon."
+        },
+        {
+         "id": "4.5.11",
+         "do": "Press F5 to run the test again.",
+         "see": "The Results tab shows two rows for Seán Devlin, both a Full service on a Black Giant road bike: one with Niamh Hughes marked Booked, and one with Conor Walsh marked Done."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "'The multi-part identifier could not be bound'",
+         "a": "A short letter in front of a column does not match the one given after a table name. Check that Appointment is called a, Staff is called m, and ServiceType is called st, in the FROM and JOIN lines."
+        },
+        {
+         "q": "Numbers in the Mechanic column instead of names",
+         "a": "The SELECT is reading a.MechanicID instead of the two name columns from m. Compare the SELECT with the block above."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Copy the sign-in stored procedure, and read how one row means yes.",
+     "blocks": [
+      {
+       "p": "The program's first screen in chapter 5 is the sign-in. The staff member types a username and a password, and the program hands both to this stored procedure. If one row comes back, the sign-in is right, and the row says who it is and whether they are the manager. If no row comes back, the sign-in is wrong. There is no @Message here, because no row is the whole answer."
+      },
+      {
+       "code": {
+        "id": "4.5-login",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "usp_Staff_Login: one row for the right username and password, or none",
+        "src": "sql:usp_Staff_Login",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Staff_Login",
+          "@Password VARCHAR(30)",
+          "The name, and what goes in",
+          "Two parameters go in: the username and the password, each up to 30 characters."
+         ],
+         [
+          "AS",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT StaffID, FirstName",
+          "FROM Staff",
+          "What comes back, and from where",
+          "The SELECT brings back three things from the Staff table: the number, the two names joined into FullName, and the Role, which is Manager, Counter or Mechanic. The password never comes back out."
+         ],
+         [
+          "WHERE Username = @Username",
+          "$end",
+          "Three tests, all of which must pass",
+          "The username must match, AND the password must match, AND IsActive must be 1. A staff member who has left is switched off with IsActive set to 0, not deleted, so their history stays and their sign-in stops working. One row comes back when all three pass, and none otherwise. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Staff_Login\n    @Username VARCHAR(30),\n    @Password VARCHAR(30)\nAS\nBEGIN\n    SELECT StaffID, FirstName + ' ' + LastName AS FullName, Role\n    FROM Staff\n    WHERE Username = @Username AND Password = @Password AND IsActive = 1;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "The name, and what goes in",
+          "Two parameters go in: the username and the password, each up to 30 characters."
+         ],
+         [
+          4,
+          5,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          6,
+          7,
+          "What comes back, and from where",
+          "The SELECT brings back three things from the Staff table: the number, the two names joined into FullName, and the Role, which is Manager, Counter or Mechanic. The password never comes back out."
+         ],
+         [
+          8,
+          10,
+          "Three tests, all of which must pass",
+          "The username must match, AND the password must match, AND IsActive must be 1. A staff member who has left is switched off with IsActive set to 0, not deleted, so their history stays and their sign-in stops working. One row comes back when all three pass, and none otherwise. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.12",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-login",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.13",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.5.14",
+         "do": "Press Ctrl and V together to paste usp_Staff_Login.",
+         "see": "usp_Staff_Login is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.5.15",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.5.16",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Test the sign-in three times: right, left the shop, and wrong password.",
+     "blocks": [
+      {
+       "p": "Three tests, one after another. Siobhán Rooney is the manager, with the username siobhan and the password canal01. Liam Doran left in the summer, so IsActive is 0 for him. The third test is the right username with a made-up password."
+      },
+      {
+       "code": {
+        "id": "4.5-try-login",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that signs in as the manager",
+        "src": "try:ch04_procedures.sql#login",
+        "parts": [
+         [
+          "EXEC usp_Staff_Login",
+          "$end",
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with the username siobhan and the password canal01, both inside single quotes because they are text."
+         ]
+        ],
+        "text": "-- Sign in as Siobhán Rooney, the manager: one row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'canal01';",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "EXEC runs the stored procedure with the username siobhan and the password canal01, both inside single quotes because they are text."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.5-try-liam",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that signs in as someone who left",
+        "src": "try:ch04_procedures.sql#login-liam",
+        "parts": [
+         [
+          "EXEC usp_Staff_Login",
+          "$end",
+          "Run the stored procedure",
+          "Liam's username and password are right, but his IsActive is 0, so the IsActive test in the WHERE line fails and no row comes back."
+         ]
+        ],
+        "text": "-- Liam Doran left the shop, so IsActive is 0: no row comes back.\nEXEC usp_Staff_Login @Username = 'liam', @Password = 'canal06';",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "Liam's username and password are right, but his IsActive is 0, so the IsActive test in the WHERE line fails and no row comes back."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.5-try-wrong",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that signs in with the wrong password",
+        "src": "try:ch04_procedures.sql#login-wrong",
+        "parts": [
+         [
+          "EXEC usp_Staff_Login",
+          "$end",
+          "Run the stored procedure",
+          "This sign-in uses the right username with the wrong password, so the password test in the WHERE line fails and no row comes back."
+         ]
+        ],
+        "text": "-- The right username with the wrong password: no row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'wrong';",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "This sign-in uses the right username with the wrong password, so the password test in the WHERE line fails and no row comes back."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.17",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-login",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.18",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.19",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Staff_Login."
+        },
+        {
+         "id": "4.5.20",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows one row: StaffID 1, Siobhán Rooney, Manager.",
+         "img": {
+          "img": "img/ch04-ssms-login.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the login test: one row, StaffID 1, FullName Siobhán Rooney, Role Manager.",
+          "cap": "The right username and password find exactly one row. The program in chapter 5 will use this row to know who signed in.",
+          "w": 612,
+          "h": 67,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 25,
+            "y": 75,
+            "say": "One row: StaffID 1, Siobhán Rooney, Manager."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.5.21",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-liam",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.22",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.23",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Staff_Login."
+        },
+        {
+         "id": "4.5.24",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows the three column headings with no row under them. Liam left, so the sign-in is refused."
+        },
+        {
+         "id": "4.5.25",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-wrong",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.26",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.27",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Staff_Login."
+        },
+        {
+         "id": "4.5.28",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows the three column headings with no row under them again. A wrong password gets nothing back."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "Liam Doran comes back as a row",
+         "a": "The IsActive = 1 test is missing from the WHERE line, or it reads IsActive = 0. Compare your WHERE line with the block above, select the block, and press F5."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Read the three Staff stored procedures, and add them.",
+     "blocks": [
+      {
+       "p": "Three more for the Staff table, and nothing in them is new. Two are Gets: the mechanics who are still working, for the diary in chapter 7, and everyone, for the manager. The third is an Add with a check in it: a username that is already taken is refused, the way the delete refused, with a sentence and a RETURN."
+      },
+      {
+       "code": {
+        "id": "4.5-mechanics",
+        "kind": "read",
+        "lang": "sql",
+        "title": "usp_Staff_GetMechanics: the mechanics still working",
+        "src": "sql:usp_Staff_GetMechanics",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Staff_GetMechanics",
+          "BEGIN",
+          "AS and BEGIN",
+          "There are no parameters at all, because the stored procedure needs nothing to do its work. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT StaffID, FirstName",
+          "FROM Staff",
+          "What comes back, and from where",
+          "This stored procedure sends back the number and the full name from the Staff table."
+         ],
+         [
+          "WHERE Role = 'Mechanic'",
+          "$end",
+          "Only working mechanics, in first-name order",
+          "The role must be Mechanic and IsActive must be 1, so Liam Doran is left out. First names are put in order, because that is how the diary will show them. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Staff_GetMechanics\nAS\nBEGIN\n    SELECT StaffID, FirstName + ' ' + LastName AS FullName\n    FROM Staff\n    WHERE Role = 'Mechanic' AND IsActive = 1\n    ORDER BY FirstName, LastName;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "AS and BEGIN",
+          "There are no parameters at all, because the stored procedure needs nothing to do its work. AS and BEGIN mark where the work starts."
+         ],
+         [
+          4,
+          5,
+          "What comes back, and from where",
+          "This stored procedure sends back the number and the full name from the Staff table."
+         ],
+         [
+          6,
+          9,
+          "Only working mechanics, in first-name order",
+          "The role must be Mechanic and IsActive must be 1, so Liam Doran is left out. First names are put in order, because that is how the diary will show them. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.5-staff-all",
+        "kind": "read",
+        "lang": "sql",
+        "title": "usp_Staff_GetAll: everyone, working or not",
+        "src": "sql:usp_Staff_GetAll",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Staff_GetAll",
+          "BEGIN",
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT StaffID, FirstName",
+          "IsActive",
+          "What comes back",
+          "The SELECT brings back the number, the full name, the role, the username and the IsActive flag. The password is never sent out of the database."
+         ],
+         [
+          "FROM Staff",
+          "$end",
+          "Everyone, in surname order",
+          "There is no WHERE, so every row comes back, including Liam Doran with IsActive 0. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Staff_GetAll\nAS\nBEGIN\n    SELECT StaffID, FirstName + ' ' + LastName AS FullName, Role, Username,\n        IsActive\n    FROM Staff\n    ORDER BY LastName, FirstName;\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          3,
+          "AS and BEGIN",
+          "This stored procedure only reads, so it has no @Message. AS and BEGIN mark where the work starts."
+         ],
+         [
+          4,
+          5,
+          "What comes back",
+          "The SELECT brings back the number, the full name, the role, the username and the IsActive flag. The password is never sent out of the database."
+         ],
+         [
+          6,
+          9,
+          "Everyone, in surname order",
+          "There is no WHERE, so every row comes back, including Liam Doran with IsActive 0. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.5-staff-add",
+        "kind": "read",
+        "lang": "sql",
+        "title": "usp_Staff_Add: add a staff member, unless the username is taken",
+        "src": "sql:usp_Staff_Add",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Staff_Add",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "Five details go in: the two names, the role, the username and the password. The new number and @Message come back out."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "IF EXISTS (SELECT * FROM Staff WHERE Username = @Username)",
+          "RETURN;",
+          "Refuse a username that is taken",
+          "If any row already has this username, @Message gets a sentence and RETURN stops the stored procedure, so the INSERT below never runs."
+         ],
+         [
+          "INSERT INTO Staff",
+          "$end",
+          "Add the row and hand back the number",
+          "The same INSERT and SCOPE_IDENTITY() as the customer Add, with five columns instead of four. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "text": "CREATE OR ALTER PROCEDURE usp_Staff_Add\n    @FirstName  VARCHAR(40),\n    @LastName   VARCHAR(40),\n    @Role       VARCHAR(10),\n    @Username   VARCHAR(30),\n    @Password   VARCHAR(30),\n    @NewStaffID INT OUTPUT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    IF EXISTS (SELECT * FROM Staff WHERE Username = @Username)\n    BEGIN\n        SET @Message = 'That username is already taken.';\n        RETURN;\n    END\n\n    INSERT INTO Staff (FirstName, LastName, Role, Username, Password)\n    VALUES (@FirstName, @LastName, @Role, @Username, @Password);\n    SET @NewStaffID = SCOPE_IDENTITY();\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          8,
+          "The name, and what goes in and out",
+          "Five details go in: the two names, the role, the username and the password. The new number and @Message come back out."
+         ],
+         [
+          9,
+          11,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          12,
+          16,
+          "Refuse a username that is taken",
+          "If any row already has this username, @Message gets a sentence and RETURN stops the stored procedure, so the INSERT below never runs."
+         ],
+         [
+          18,
+          22,
+          "Add the row and hand back the number",
+          "The same INSERT and SCOPE_IDENTITY() as the customer Add, with five columns instead of four. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.29",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-mechanics",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.30",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.5.31",
+         "do": "Press Ctrl and V together to paste usp_Staff_GetMechanics.",
+         "see": "usp_Staff_GetMechanics is in your script, ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.5.32",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-staff-all",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.33",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.5.34",
+         "do": "Press Ctrl and V together to paste usp_Staff_GetAll.",
+         "see": "usp_Staff_GetAll is in your script, under usp_Staff_GetMechanics."
+        },
+        {
+         "id": "4.5.35",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-staff-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.36",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.5.37",
+         "do": "Press Ctrl and V together to paste usp_Staff_Add.",
+         "see": "All three are in your script, each ending with GO, and the line that prints BikeShop is ready is still last."
+        },
+        {
+         "id": "4.5.38",
+         "do": "Select the three stored procedures you added, by dragging from the first CREATE OR ALTER PROCEDURE down to the last GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.5.39",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "4.5-try-staff",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that lists the mechanics, then everyone",
+        "src": "try:ch04_procedures.sql#staff",
+        "parts": [
+         [
+          "EXEC usp_Staff_GetMechanics;",
+          "EXEC usp_Staff_GetMechanics;",
+          "The working mechanics",
+          "There are no parameters, so nothing follows the name. Three rows come back."
+         ],
+         [
+          "EXEC usp_Staff_GetAll;",
+          "$end",
+          "Everyone",
+          "Two EXECs in one test give two grids under Results, one above the other. Six rows come back in the second."
+         ]
+        ],
+        "text": "-- The mechanics still working (three rows), then everyone (six rows).\nEXEC usp_Staff_GetMechanics;\nEXEC usp_Staff_GetAll;",
+        "partLines": [
+         [
+          2,
+          2,
+          "The working mechanics",
+          "There are no parameters, so nothing follows the name. Three rows come back."
+         ],
+         [
+          3,
+          3,
+          "Everyone",
+          "Two EXECs in one test give two grids under Results, one above the other. Six rows come back in the second."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.5-try-staff-add",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that adds Eoin Daly, then tries Aoife's username",
+        "src": "try:ch04_procedures.sql#staff-add",
+        "parts": [
+         [
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Staff_Add",
+          "@NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;",
+          "Add Eoin Daly at the counter",
+          "The first EXEC adds a new counter worker with the username eoin. His new number comes back in @NewID."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means he was added, and one line prints his number."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_Staff_Add",
+          "@NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;",
+          "The same person with a taken username",
+          "The second EXEC tries Eoin again, this time with the username aoife, which Aoife Byrne already has. The IF EXISTS inside the stored procedure finds her row."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, the rule is broken",
+          "A blank message here would mean two staff members with the same username, which must never happen."
+         ],
+         [
+          "ELSE",
+          "$end",
+          "Otherwise, print the refusal",
+          "The refusal is printed: That username is already taken."
+         ]
+        ],
+        "text": "-- Add a new counter worker, then try to add him again with Aoife's\n-- username: the second one is refused.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'eoin', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'aoife', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
+        "partLines": [
+         [
+          3,
+          3,
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          5,
+          8,
+          "Add Eoin Daly at the counter",
+          "The first EXEC adds a new counter worker with the username eoin. His new number comes back in @NewID."
+         ],
+         [
+          10,
+          13,
+          "If the message is blank, it worked",
+          "A blank message means he was added, and one line prints his number."
+         ],
+         [
+          14,
+          17,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          19,
+          22,
+          "The same person with a taken username",
+          "The second EXEC tries Eoin again, this time with the username aoife, which Aoife Byrne already has. The IF EXISTS inside the stored procedure finds her row."
+         ],
+         [
+          24,
+          27,
+          "If the message is blank, the rule is broken",
+          "A blank message here would mean two staff members with the same username, which must never happen."
+         ],
+         [
+          28,
+          31,
+          "Otherwise, print the refusal",
+          "The refusal is printed: That username is already taken."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.5.40",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-staff",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.41",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.42",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Staff_GetMechanics, then usp_Staff_GetAll."
+        },
+        {
+         "id": "4.5.43",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows two grids. The first has three rows: Aoife Byrne, Conor Walsh and Niamh Hughes. The second has six, from Aoife Byrne to Conor Walsh in surname order, with Liam Doran showing IsActive 0.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.5.44",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.5-try-staff-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.5.45",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.5.46",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Staff_Add twice."
+        },
+        {
+         "id": "4.5.47",
+         "do": "Press F5 to run the test.",
+         "see": "The Messages tab says: Added staff number 7. Then: Refused: That username is already taken."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "Both lines say Refused: That username is already taken",
+         "a": "The test ran twice, so eoin was taken by the first run. That is the rule working. Click in BikeShop.sql and press F5 with nothing selected to put the sample data back."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Type one, then write your own",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Type the whole of the stored procedure that lists the services.",
+     "blocks": [
+      {
+       "p": "Every stored procedure so far was pasted. This one you type, every line, because it is short and because the whole shape should be in your fingers before you write your own. It lists the services the shop offers, shortest first, and makes one extra column called Display: the name, the minutes and the price in one piece of text, which the diary in chapter 7 will show in a drop-down list."
+      },
+      {
+       "code": {
+        "id": "4.6-services",
+        "kind": "type",
+        "lang": "sql",
+        "title": "usp_ServiceType_GetAll: every service, with a Display column",
+        "src": "sql:usp_ServiceType_GetAll",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_ServiceType_GetAll",
+          "BEGIN",
+          "AS and BEGIN",
+          "There are no parameters, because every service is wanted. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT ServiceTypeID, Name, DurationMinutes, Price,",
+          "AS Display",
+          "What comes back",
+          "The SELECT brings back the four columns of the table, then Display, which is built from three of them. CAST turns a number into text so that it can be joined on with plus signs. VARCHAR(5) is room for up to five characters of minutes. The pound sign is typed as it is, inside the quotes."
+         ],
+         [
+          "FROM ServiceType",
+          "$end",
+          "Every service, shortest first",
+          "There is no WHERE, so every row comes back. ORDER BY puts the shortest services first, and two with the same minutes in name order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_ServiceType_GetAll",
+          "GO"
+         ]
+        ],
+        "why": "This is the first stored procedure that is wholly yours. Typing every line, from the name to the GO, puts the shape of a Get into your fingers for the two you write next.",
+        "text": "CREATE OR ALTER PROCEDURE usp_ServiceType_GetAll\nAS\nBEGIN\n    SELECT ServiceTypeID, Name, DurationMinutes, Price,\n           Name + ' (' + CAST(DurationMinutes AS VARCHAR(5)) + ' min, £'\n               + CAST(Price AS VARCHAR) + ')' AS Display\n    FROM ServiceType\n    ORDER BY DurationMinutes, Name;\nEND\nGO",
+        "focusLines": [
+         [
+          1,
+          10
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "AS and BEGIN",
+          "There are no parameters, because every service is wanted. AS and BEGIN mark where the work starts."
+         ],
+         [
+          4,
+          6,
+          "What comes back",
+          "The SELECT brings back the four columns of the table, then Display, which is built from three of them. CAST turns a number into text so that it can be joined on with plus signs. VARCHAR(5) is room for up to five characters of minutes. The pound sign is typed as it is, inside the quotes."
+         ],
+         [
+          7,
+          10,
+          "Every service, shortest first",
+          "There is no WHERE, so every row comes back. ORDER BY puts the shortest services first, and two with the same minutes in name order. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.1",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it.",
+         "img": {
+          "img": "img/ch07-ssms-end-of-script.png",
+          "alt": "The BikeShop.sql script scrolled to its last lines: the sample data, an empty line, then PRINT BikeShop is ready, then GO. The text cursor sits on the empty line above the PRINT line.",
+          "cap": "The end of your script. Every stored procedure in this chapter goes on the empty line above the line that prints BikeShop is ready, one after another, each ending with GO.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 5,
+            "y": 70,
+            "say": "Click on the empty line above the line that prints BikeShop is ready, so the cursor blinks there."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.6.2",
+         "do": "Type the whole block above, every line from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Your own usp_ServiceType_GetAll is in your script, ending with GO, and the line that prints BikeShop is ready is still last.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that each line ends the way the yellow line ends."
+          ],
+          [
+           "'Must declare the scalar variable …'",
+           "A name beginning with @ is spelled differently from the line that declares it. Make the two match."
+          ]
+         ]
+        },
+        {
+         "id": "4.6.3",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the lines you added, then press F5. Only the highlighted lines run.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.6.4",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "4.6-try-services",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that lists every service",
+        "src": "try:ch04_procedures.sql#services",
+        "parts": [
+         [
+          "EXEC usp_ServiceType_GetAll;",
+          "$end",
+          "Run the stored procedure",
+          "There are no parameters, so nothing follows the name. Seven rows come back."
+         ]
+        ],
+        "text": "-- Every service the shop offers, shortest first: seven rows.\nEXEC usp_ServiceType_GetAll;",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "There are no parameters, so nothing follows the name. Seven rows come back."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.5",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-try-services",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.6",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.6.7",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_ServiceType_GetAll."
+        },
+        {
+         "id": "4.6.8",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows seven rows, Puncture repair first and Full service last, with a Display column such as Basic service (60 min, £40.00).",
+         "img": {
+          "img": "img/ch04-ssms-services.png",
+          "alt": "The Results tab in SQL Server Management Studio (SSMS) after the services test: seven rows from Puncture repair with 30 minutes and 15.00 to Full service with 120 minutes and 85.00, and a Display column reading, for example, Basic service (60 min, £40.00).",
+          "cap": "Every service, shortest first. The Display column is the text the program will show in a drop-down list in chapter 7.",
+          "w": 734,
+          "h": 184,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 24,
+            "y": 30,
+            "say": "Puncture repair and Safety check both take 30 minutes, so they are put in name order."
+           },
+           {
+            "n": 2,
+            "x": 66,
+            "y": 30,
+            "say": "Display: the name, the minutes and the price in one piece of text."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ],
+          [
+           "'Incorrect syntax near'",
+           "A bracket, a quote or a plus sign is missing in the Display line. Count the opening and closing brackets in your line against the block above, and check that each piece of text is inside single quotes."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Type the lines that make the service Add different from the customer Add.",
+     "blocks": [
+      {
+       "p": "The Add for a service is the customer Add with different ingredients. The parameters change, and the INSERT names a different table and different columns. The middle is the same: a blank message, an INSERT, and SCOPE_IDENTITY() handed back. You type the lines that differ."
+      },
+      {
+       "code": {
+        "id": "4.6-service-add",
+        "kind": "type",
+        "lang": "sql",
+        "title": "usp_ServiceType_Add: put one service in",
+        "src": "sql:usp_ServiceType_Add",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_ServiceType_Add",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "Three details go in: the name, the minutes it takes, and the price. DECIMAL(8,2) is a number with two places after the point, which is how the table keeps money. The new number and @Message come back out."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "INSERT INTO ServiceType",
+          "$end",
+          "Add the row and hand back the number",
+          "INSERT INTO names the ServiceType table and its three columns, VALUES gives the three parameters in the same order, and SCOPE_IDENTITY() hands back the number the database chose. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "@Name             VARCHAR(40),",
+          "@NewServiceTypeID INT OUTPUT,"
+         ],
+         [
+          "INSERT INTO ServiceType",
+          "SET @NewServiceTypeID = SCOPE_IDENTITY();"
+         ]
+        ],
+        "why": "The parameters and the INSERT are the two places an Add changes from table to table. Typing them here is the practice for writing the supplier Add on your own.",
+        "text": "CREATE OR ALTER PROCEDURE usp_ServiceType_Add\n    @Name             VARCHAR(40),\n    @DurationMinutes  INT,\n    @Price            DECIMAL(8,2),\n    @NewServiceTypeID INT OUTPUT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    INSERT INTO ServiceType (Name, DurationMinutes, Price)\n    VALUES (@Name, @DurationMinutes, @Price);\n    SET @NewServiceTypeID = SCOPE_IDENTITY();\nEND\nGO",
+        "focusLines": [
+         [
+          2,
+          5
+         ],
+         [
+          10,
+          12
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          6,
+          "The name, and what goes in and out",
+          "Three details go in: the name, the minutes it takes, and the price. DECIMAL(8,2) is a number with two places after the point, which is how the table keeps money. The new number and @Message come back out."
+         ],
+         [
+          7,
+          9,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          10,
+          14,
+          "Add the row and hand back the number",
+          "INSERT INTO names the ServiceType table and its three columns, VALUES gives the three parameters in the same order, and SCOPE_IDENTITY() hands back the number the database chose. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.9",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-service-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.10",
+         "do": "Click on the empty line above the line that prints BikeShop is ready, in your BikeShop.sql tab.",
+         "see": "The cursor blinks on the empty line, and the line that prints BikeShop is ready is under it."
+        },
+        {
+         "id": "4.6.11",
+         "do": "Press Ctrl and V together to paste usp_ServiceType_Add.",
+         "see": "The stored procedure is in your script, with a line that says YOU TYPE THIS PART where each yellow block goes.",
+         "img": {
+          "img": "img/ch07-ssms-paste-gap.png",
+          "alt": "The pasted stored procedure in the script, with the line that says YOU TYPE THIS PART in the middle of it.",
+          "cap": "After the paste. Everything is in except the yellow lines. Each marker line shows where a yellow block goes.",
+          "w": 900,
+          "h": 560,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 20,
+            "y": 64,
+            "say": "Click on the marker line, type the yellow lines in its place, and delete the marker."
+           }
+          ]
+         }
+        },
+        {
+         "id": "4.6.12",
+         "do": "Type the yellow lines in place of each line that says YOU TYPE THIS PART, so that no marker line is left.",
+         "see": "The first gap now holds four parameter lines, the second holds three lines from INSERT to SCOPE_IDENTITY(), and no marker line is left.",
+         "wrong": [
+          [
+           "A red wavy line under a word",
+           "A spelling slip. Compare your line with the yellow line, letter by letter, and check that each line ends the way the yellow line ends."
+          ],
+          [
+           "'Must declare the scalar variable …'",
+           "A name beginning with @ is spelled differently from the line that declares it. Make the two match."
+          ]
+         ]
+        },
+        {
+         "id": "4.6.13",
+         "do": "Select the lines you added, by dragging from CREATE OR ALTER PROCEDURE down to GO.",
+         "see": "Every line from CREATE OR ALTER PROCEDURE down to GO is highlighted."
+        },
+        {
+         "id": "4.6.14",
+         "do": "Press F5 to run the highlighted lines.",
+         "see": "The Messages pane says: Commands completed successfully. Only the highlighted lines ran.",
+         "wrong": [
+          [
+           "The Messages pane shows (12 rows affected) and BikeShop is ready",
+           "Nothing was selected, so the whole script ran and the sample data was put back. Nothing is broken. Carry on."
+          ],
+          [
+           "A red error in the Messages pane",
+           "Double-click the error. SQL Server Management Studio (SSMS) jumps to the line it is about. Compare that line with the block above, letter by letter."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "4.6-try-service-add",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that adds a Chain replacement service",
+        "src": "try:ch04_procedures.sql#service-add",
+        "parts": [
+         [
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_ServiceType_Add",
+          "@NewServiceTypeID = @NewID OUTPUT, @Message = @Message OUTPUT;",
+          "Run the stored procedure",
+          "The EXEC adds a 30-minute Chain replacement at 18.00. The price is typed as a plain number, with no pound sign and no quotes."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_ServiceType_GetAll;",
+          "$end",
+          "List every service again",
+          "The stored procedure you typed on the last screen shows the new row among the others."
+         ]
+        ],
+        "text": "-- Add a new service, print its number, then list every service again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Add\n     @Name = 'Chain replacement', @DurationMinutes = 30, @Price = 18.00,\n     @NewServiceTypeID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New service number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
+        "partLines": [
+         [
+          2,
+          2,
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          4,
+          6,
+          "Run the stored procedure",
+          "The EXEC adds a 30-minute Chain replacement at 18.00. The price is typed as a plain number, with no pound sign and no quotes."
+         ],
+         [
+          8,
+          11,
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          12,
+          15,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          17,
+          17,
+          "List every service again",
+          "The stored procedure you typed on the last screen shows the new row among the others."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.15",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-try-service-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.16",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.6.17",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_ServiceType_Add."
+        },
+        {
+         "id": "4.6.18",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows eight rows, with Chain replacement first, because it takes 30 minutes and C comes before P. Click the Messages tab. It says: Added. New service number 8.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Your turn: write the stored procedure that changes a service.",
+     "blocks": [
+      {
+       "p": "You have the customer Update from stage 3 and the service Add from the last screen. The service Update is the two put together: the service's number and its three details go in, @Message comes back out, and an UPDATE with a WHERE changes the one row. Write it in your script, on the empty line above the line that prints BikeShop is ready, select it and press F5 as before, then test it on the next screen."
+      },
+      {
+       "code": {
+        "id": "4.6-service-update",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "usp_ServiceType_Update: change one service",
+        "src": "sql:usp_ServiceType_Update",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_ServiceType_Update",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "The service's number goes in first, then the same three details as the Add, and @Message comes back out."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "UPDATE ServiceType",
+          "$end",
+          "Change the one row",
+          "SET gives each of the three columns its new value from the matching parameter, and WHERE picks the one row by number. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_ServiceType_Update",
+          "GO"
+         ]
+        ],
+        "task": [
+         "In SQL Server Management Studio (SSMS), click on the empty line above the line that prints BikeShop is ready and type the first line: CREATE OR ALTER PROCEDURE usp_ServiceType_Update.",
+         "Type five parameters, one per line with a comma after each but the last: @ServiceTypeID INT, then @Name VARCHAR(40), @DurationMinutes INT and @Price DECIMAL(8,2) as in the Add, then @Message VARCHAR(200) OUTPUT.",
+         "Type AS, BEGIN, and the line that makes the message blank: SET @Message = '';",
+         "Type UPDATE ServiceType, then SET with the three columns given their parameters, separated by commas, then WHERE ServiceTypeID = @ServiceTypeID; and then END and GO.",
+         "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
+        ],
+        "test": "The ready-made test on the next screen changes the price of Wheel true, which is service 4, to 22.00.",
+        "expect": "The Messages tab says Updated service number 4, and the list shows Wheel true at 22.00 with every other price unchanged. If every price has become 22.00, the WHERE line is missing.",
+        "hint": "Open usp_Customer_Update in your script beside you and change one name at a time: the table, the columns and the parameters. The shape stays the same.",
+        "text": "CREATE OR ALTER PROCEDURE usp_ServiceType_Update\n    @ServiceTypeID   INT,\n    @Name            VARCHAR(40),\n    @DurationMinutes INT,\n    @Price           DECIMAL(8,2),\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    UPDATE ServiceType\n    SET Name = @Name, DurationMinutes = @DurationMinutes, Price = @Price\n    WHERE ServiceTypeID = @ServiceTypeID;\nEND\nGO",
+        "focusLines": [
+         [
+          1,
+          14
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          6,
+          "The name, and what goes in and out",
+          "The service's number goes in first, then the same three details as the Add, and @Message comes back out."
+         ],
+         [
+          7,
+          9,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          10,
+          14,
+          "Change the one row",
+          "SET gives each of the three columns its new value from the matching parameter, and WHERE picks the one row by number. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Test your service Update, and compare it with the finished one.",
+     "blocks": [
+      {
+       "code": {
+        "id": "4.6-try-service-update",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that changes the price of Wheel true",
+        "src": "try:ch04_procedures.sql#service-update",
+        "parts": [
+         [
+          "DECLARE @Message VARCHAR(200);",
+          "DECLARE @Message VARCHAR(200);",
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_ServiceType_Update",
+          "@Price = 22.00, @Message = @Message OUTPUT;",
+          "Run the stored procedure",
+          "Service 4 is Wheel true. Its name and minutes are sent again unchanged, and the price is new."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was changed, and one line says so."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_ServiceType_GetAll;",
+          "$end",
+          "List every service again",
+          "Wheel true shows its new price among the others."
+         ]
+        ],
+        "text": "-- Put the price of Wheel true (service 4) up to 22.00, then list every\n-- service again.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Update\n     @ServiceTypeID = 4, @Name = 'Wheel true', @DurationMinutes = 45,\n     @Price = 22.00, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated service number 4.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
+        "partLines": [
+         [
+          3,
+          3,
+          "One box for the message",
+          "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
+         ],
+         [
+          5,
+          7,
+          "Run the stored procedure",
+          "Service 4 is Wheel true. Its name and minutes are sent again unchanged, and the price is new."
+         ],
+         [
+          9,
+          12,
+          "If the message is blank, it worked",
+          "A blank message means the row was changed, and one line says so."
+         ],
+         [
+          13,
+          16,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          18,
+          18,
+          "List every service again",
+          "Wheel true shows its new price among the others."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.19",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-try-service-update",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.20",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.6.21",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_ServiceType_Update."
+        },
+        {
+         "id": "4.6.22",
+         "do": "Press F5 to run the test.",
+         "see": "The list shows Wheel true at 22.00, with Display reading Wheel true (45 min, £22.00), and every other price as it was. Click the Messages tab. It says: Updated service number 4.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "p": "This is the UPDATE part of the finished stored procedure, to hold beside yours. Yours may have different spacing, and that is fine, as long as the test passes."
+      },
+      {
+       "code": {
+        "id": "4.6-service-update-answer",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The finished usp_ServiceType_Update, from UPDATE to the WHERE line",
+        "src": "sql:usp_ServiceType_Update",
+        "parts": [
+         [
+          "UPDATE ServiceType",
+          "WHERE ServiceTypeID = @ServiceTypeID;",
+          "The UPDATE with its WHERE",
+          "The UPDATE sets three columns from three parameters, and the WHERE picks one row."
+         ]
+        ],
+        "from": "UPDATE ServiceType",
+        "to": "WHERE ServiceTypeID = @ServiceTypeID;",
+        "text": "UPDATE ServiceType\nSET Name = @Name, DurationMinutes = @DurationMinutes, Price = @Price\nWHERE ServiceTypeID = @ServiceTypeID;",
+        "partLines": [
+         [
+          1,
+          3,
+          "The UPDATE with its WHERE",
+          "The UPDATE sets three columns from three parameters, and the WHERE picks one row."
+         ]
+        ]
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "Every service now costs 22.00",
+         "a": "The WHERE line is missing from your UPDATE. Put it in, select the block, press F5, then click in BikeShop.sql and press F5 with nothing selected to put the sample data back."
+        },
+        {
+         "q": "'Procedure or function usp_ServiceType_Update has too many arguments specified'",
+         "a": "The test sends five parameters and yours takes fewer. Check that all five are in the list at the top, each with a comma after it except the last."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "5",
+     "title": "Your turn: write the two Supplier stored procedures.",
+     "blocks": [
+      {
+       "p": "The Supplier table has three columns besides its number: Name, Phone and Email. Write usp_Supplier_GetAll, which lists every supplier in name order, and usp_Supplier_Add, which puts one in and hands back the new number. You have written both kinds already, for other tables. Name the parameters @Name, @Phone and @Email, with @NewSupplierID and @Message as the two OUTPUT ones. Write both in your script, one under the other, on the empty line above the line that prints BikeShop is ready. Then select both and press F5. You will test them on the next screen."
+      },
+      {
+       "code": {
+        "id": "4.6-supplier-all",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "usp_Supplier_GetAll: every supplier, in name order",
+        "src": "sql:usp_Supplier_GetAll",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Supplier_GetAll",
+          "BEGIN",
+          "AS and BEGIN",
+          "There are no parameters, because every supplier is wanted. AS and BEGIN mark where the work starts."
+         ],
+         [
+          "SELECT SupplierID, Name, Phone, Email",
+          "$end",
+          "Every supplier, in name order",
+          "The SELECT brings back the four columns from the Supplier table, with no WHERE, in order of name. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Supplier_GetAll",
+          "GO"
+         ]
+        ],
+        "task": [
+         "In SQL Server Management Studio (SSMS), click on the empty line above the line that prints BikeShop is ready and type the first line: CREATE OR ALTER PROCEDURE usp_Supplier_GetAll, with no parameters.",
+         "Type AS and BEGIN.",
+         "Type a SELECT of the four columns: SupplierID, Name, Phone, Email, then FROM Supplier, then ORDER BY Name; and then END and GO.",
+         "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
+        ],
+        "test": "The ready-made test on the next screen lists every supplier.",
+        "expect": "Three rows: Lagan Bike Parts, Mourne Cycle Supplies and Northern Components Ltd, in that order.",
+        "hint": "Open usp_Staff_GetAll in your script beside you. The shape is the same with no WHERE, four plain columns, and one column to order by.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Supplier_GetAll\nAS\nBEGIN\n    SELECT SupplierID, Name, Phone, Email\n    FROM Supplier\n    ORDER BY Name;\nEND\nGO",
+        "focusLines": [
+         [
+          1,
+          8
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          3,
+          "AS and BEGIN",
+          "There are no parameters, because every supplier is wanted. AS and BEGIN mark where the work starts."
+         ],
+         [
+          4,
+          8,
+          "Every supplier, in name order",
+          "The SELECT brings back the four columns from the Supplier table, with no WHERE, in order of name. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.6-supplier-add",
+        "kind": "turn",
+        "lang": "sql",
+        "title": "usp_Supplier_Add: put one supplier in",
+        "src": "sql:usp_Supplier_Add",
+        "parts": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Supplier_Add",
+          "@Message VARCHAR(200) OUTPUT",
+          "The name, and what goes in and out",
+          "The three details go in, with the same sizes as their columns in the table. The new number and @Message come back out."
+         ],
+         [
+          "AS",
+          "SET @Message = '';",
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          "INSERT INTO Supplier",
+          "$end",
+          "Add the row and hand back the number",
+          "INSERT INTO names the table and its three columns, VALUES gives the three parameters, and SCOPE_IDENTITY() hands back the number the database chose. GO ends the batch, ready for the next stored procedure."
+         ]
+        ],
+        "focus": [
+         [
+          "CREATE OR ALTER PROCEDURE usp_Supplier_Add",
+          "GO"
+         ]
+        ],
+        "task": [
+         "Under the GO of usp_Supplier_GetAll, type the first line: CREATE OR ALTER PROCEDURE usp_Supplier_Add.",
+         "Type five parameters, one per line with a comma after each but the last: @Name VARCHAR(60), @Phone VARCHAR(15), @Email VARCHAR(100), @NewSupplierID INT OUTPUT, and @Message VARCHAR(200) OUTPUT.",
+         "Type AS, BEGIN, and the line that makes the message blank: SET @Message = '';",
+         "Type INSERT INTO Supplier (Name, Phone, Email) and then VALUES (@Name, @Phone, @Email); on the next line.",
+         "Type SET @NewSupplierID = SCOPE_IDENTITY(); and then END and GO.",
+         "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
+        ],
+        "test": "The ready-made test on the next screen adds Carlingford Cycles and lists every supplier again.",
+        "expect": "The Messages tab says Added. New supplier number 4, and the list has four rows with Carlingford Cycles first.",
+        "hint": "Open usp_ServiceType_Add in your script beside you and change one name at a time: the table, the three columns, the three parameters, and the name of the OUTPUT number.",
+        "text": "CREATE OR ALTER PROCEDURE usp_Supplier_Add\n    @Name          VARCHAR(60),\n    @Phone         VARCHAR(15),\n    @Email         VARCHAR(100),\n    @NewSupplierID INT OUTPUT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    INSERT INTO Supplier (Name, Phone, Email)\n    VALUES (@Name, @Phone, @Email);\n    SET @NewSupplierID = SCOPE_IDENTITY();\nEND\nGO",
+        "focusLines": [
+         [
+          1,
+          14
+         ]
+        ],
+        "partLines": [
+         [
+          1,
+          6,
+          "The name, and what goes in and out",
+          "The three details go in, with the same sizes as their columns in the table. The new number and @Message come back out."
+         ],
+         [
+          7,
+          9,
+          "Start with a blank message",
+          "AS and BEGIN mark where the work starts. The first line of work makes @Message blank. A blank message is the sign that everything worked, so it must be blank before any check can change it."
+         ],
+         [
+          10,
+          14,
+          "Add the row and hand back the number",
+          "INSERT INTO names the table and its three columns, VALUES gives the three parameters, and SCOPE_IDENTITY() hands back the number the database chose. GO ends the batch, ready for the next stored procedure."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Test your Supplier stored procedures, and compare them with the finished ones.",
+     "blocks": [
+      {
+       "code": {
+        "id": "4.6-try-suppliers",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that lists every supplier",
+        "src": "try:ch04_procedures.sql#suppliers",
+        "parts": [
+         [
+          "EXEC usp_Supplier_GetAll;",
+          "$end",
+          "Run the stored procedure",
+          "There are no parameters, so nothing follows the name. Three rows come back."
+         ]
+        ],
+        "text": "-- Every supplier, in name order: three rows.\nEXEC usp_Supplier_GetAll;",
+        "partLines": [
+         [
+          2,
+          2,
+          "Run the stored procedure",
+          "There are no parameters, so nothing follows the name. Three rows come back."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.6-try-supplier-add",
+        "kind": "copy",
+        "lang": "sql",
+        "title": "A test that adds Carlingford Cycles and lists every supplier again",
+        "src": "try:ch04_procedures.sql#supplier-add",
+        "parts": [
+         [
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "DECLARE @NewID INT, @Message VARCHAR(200);",
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          "EXEC usp_Supplier_Add",
+          "@NewSupplierID = @NewID OUTPUT, @Message = @Message OUTPUT;",
+          "Run the stored procedure",
+          "The EXEC adds a new supplier with a name, a phone and an email. The new number comes back in @NewID."
+         ],
+         [
+          "IF @Message = ''",
+          "END",
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          "ELSE",
+          "END",
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          "EXEC usp_Supplier_GetAll;",
+          "$end",
+          "List every supplier again",
+          "Your own Get shows the row that your own Add put in."
+         ]
+        ],
+        "text": "-- Add a new supplier, print its number, then list every supplier again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Supplier_Add\n     @Name = 'Carlingford Cycles', @Phone = '028 4175 3030',\n     @Email = 'hello@carlingfordcycles.example',\n     @NewSupplierID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New supplier number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Supplier_GetAll;",
+        "partLines": [
+         [
+          2,
+          2,
+          "Two boxes to hold the answers",
+          "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
+         ],
+         [
+          4,
+          7,
+          "Run the stored procedure",
+          "The EXEC adds a new supplier with a name, a phone and an email. The new number comes back in @NewID."
+         ],
+         [
+          9,
+          12,
+          "If the message is blank, it worked",
+          "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
+         ],
+         [
+          13,
+          16,
+          "Otherwise, print the refusal",
+          "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
+         ],
+         [
+          18,
+          18,
+          "List every supplier again",
+          "Your own Get shows the row that your own Add put in."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.6.23",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-try-suppliers",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.24",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.6.25",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Supplier_GetAll."
+        },
+        {
+         "id": "4.6.26",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows three rows: Lagan Bike Parts, Mourne Cycle Supplies and Northern Components Ltd.",
+         "wrong": [
+          [
+           "'Could not find stored procedure'",
+           "The database has not got the stored procedure yet, or the test window is talking to a different database. Check that the lines you added ran without a red error. Then look at the box on the toolbar that names the database: if it says master, choose BikeShop, and press F5 again."
+          ]
+         ]
+        },
+        {
+         "id": "4.6.27",
+         "do": "Press the Copy button under this step.",
+         "copy": "4.6-try-supplier-add",
+         "see": "The button reads Copied for a moment."
+        },
+        {
+         "id": "4.6.28",
+         "do": "Click in your test window and press Ctrl and A together to select the old test.",
+         "see": "The whole of the old test is highlighted."
+        },
+        {
+         "id": "4.6.29",
+         "do": "Press Ctrl and V together to paste the new test over the old one.",
+         "see": "The new test has replaced the old one, and it runs usp_Supplier_Add."
+        },
+        {
+         "id": "4.6.30",
+         "do": "Press F5 to run the test.",
+         "see": "The Results tab shows four rows, with Carlingford Cycles first and the number 4. Click the Messages tab. It says: Added. New supplier number 4.",
+         "img": {
+          "img": "img/ch04-ssms-suppliers.png",
+          "alt": "The query window in SQL Server Management Studio (SSMS) after the supplier add test: the Results tab shows four rows, Carlingford Cycles with SupplierID 4, Lagan Bike Parts, Mourne Cycle Supplies and Northern Components Ltd, whose Email is NULL, with the Messages tab beside the Results tab.",
+          "cap": "Your own stored procedures at work: the supplier you added is in the list, in name order, with the number 4.",
+          "w": 734,
+          "h": 122,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 22,
+            "y": 41,
+            "say": "Carlingford Cycles, number 4, first because C comes before L."
+           },
+           {
+            "n": 2,
+            "x": 48,
+            "y": 89,
+            "say": "Northern Components Ltd has NULL for Email."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "p": "These are the key parts of the two finished stored procedures, to hold beside yours."
+      },
+      {
+       "code": {
+        "id": "4.6-supplier-all-answer",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The finished usp_Supplier_GetAll, from SELECT to ORDER BY",
+        "src": "sql:usp_Supplier_GetAll",
+        "parts": [
+         [
+          "SELECT SupplierID, Name, Phone, Email",
+          "ORDER BY Name;",
+          "The SELECT",
+          "The SELECT lists four columns from the Supplier table, in order of name."
+         ]
+        ],
+        "from": "SELECT SupplierID, Name, Phone, Email",
+        "to": "ORDER BY Name;",
+        "text": "SELECT SupplierID, Name, Phone, Email\nFROM Supplier\nORDER BY Name;",
+        "partLines": [
+         [
+          1,
+          3,
+          "The SELECT",
+          "The SELECT lists four columns from the Supplier table, in order of name."
+         ]
+        ]
+       }
+      },
+      {
+       "code": {
+        "id": "4.6-supplier-add-answer",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The finished usp_Supplier_Add, from INSERT to SCOPE_IDENTITY()",
+        "src": "sql:usp_Supplier_Add",
+        "parts": [
+         [
+          "INSERT INTO Supplier",
+          "SET @NewSupplierID = SCOPE_IDENTITY();",
+          "The INSERT and the number handed back",
+          "The INSERT puts three parameters into three columns, and the new number is put into the OUTPUT parameter."
+         ]
+        ],
+        "from": "INSERT INTO Supplier",
+        "to": "SET @NewSupplierID = SCOPE_IDENTITY();",
+        "text": "INSERT INTO Supplier (Name, Phone, Email)\nVALUES (@Name, @Phone, @Email);\nSET @NewSupplierID = SCOPE_IDENTITY();",
+        "partLines": [
+         [
+          1,
+          3,
+          "The INSERT and the number handed back",
+          "The INSERT puts three parameters into three columns, and the new number is put into the OUTPUT parameter."
+         ]
+        ]
+       }
+      },
+      {
+       "wrong": [
+        {
+         "q": "'Procedure or function usp_Supplier_Add has too many arguments specified'",
+         "a": "The test sends five parameters and yours takes fewer. Check that all five are in the list at the top, each with a comma after it except the last."
+        },
+        {
+         "q": "The Messages tab says Added. New supplier number 4, but the list has three rows",
+         "a": "The Results tab is still showing the list from an earlier test, or the EXEC usp_Supplier_GetAll line at the end of the add test is missing. Click in BikeShop.sql and press F5 with nothing selected to put the sample data back. Then paste the add test again, check that it ends with EXEC usp_Supplier_GetAll;, and press F5. Running the add test a second time without putting the data back would try to add Carlingford Cycles twice, and the table refuses a name it already has."
+        },
+        {
+         "q": "Carlingford Cycles is last instead of first",
+         "a": "The ORDER BY Name line is missing from your Get, so the rows come in the order they were added. Put it in, select the block, and press F5. Then run the suppliers test, the one that only lists, not the add test."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Prove it",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Tick the table: every stored procedure, and the three refusals.",
+     "blocks": [
+      {
+       "p": "Every row below is a test the examiner would run. Three of them are refusals that must happen: deleting customer 1, signing in as Liam, and signing in with the wrong password. Start by clicking in BikeShop.sql and pressing F5 with nothing selected, so that the sample data is back. Then paste each test from the chapter into your test window, press F5, and tick the row when you have seen the result."
+      },
+      {
+       "check": [
+        {
+         "id": "4.7.1",
+         "what": "The whole script runs clean",
+         "expect": "allowed",
+         "how": "Click in BikeShop.sql and press F5 with nothing selected. The Messages pane ends with BikeShop is ready, with no red text above it."
+        },
+        {
+         "id": "4.7.2",
+         "what": "Fifteen stored procedures are listed",
+         "expect": "allowed",
+         "how": "In Object Explorer, right-click Stored Procedures under Programmability and click Refresh. Fifteen are listed, from dbo.usp_Appointment_GetForCustomer to dbo.usp_Supplier_GetAll."
+        },
+        {
+         "id": "4.7.3",
+         "what": "Search for ar",
+         "expect": "allowed",
+         "how": "Run the search test from stage 2 with ar as the search text. The Results tab shows three rows: Jack O'Hare, Ciara Quinn and Darragh Rice."
+        },
+        {
+         "id": "4.7.4",
+         "what": "Search for 028",
+         "expect": "allowed",
+         "how": "Run the search test from stage 2 again with 028 as the search text. The Results tab shows six rows, and every phone number starts with 028."
+        },
+        {
+         "id": "4.7.5",
+         "what": "Fetch customer 3",
+         "expect": "allowed",
+         "how": "Run the fetch test from stage 2 for customer 3. The Results tab shows one row: Ciara Quinn, with NULL under Email."
+        },
+        {
+         "id": "4.7.6",
+         "what": "Add Eimear Hughes",
+         "expect": "allowed",
+         "how": "Run the add test from stage 3. The Messages tab says Added. New customer number 13, and her row is under Results."
+        },
+        {
+         "id": "4.7.7",
+         "what": "Change Ben Toner's phone",
+         "expect": "allowed",
+         "how": "Run the update test from stage 3. The Messages tab says Updated customer number 12, and his row shows 07388 640 999."
+        },
+        {
+         "id": "4.7.8",
+         "what": "Delete customer 1 is refused",
+         "expect": "control",
+         "how": "Run the first delete test from stage 4. The Messages tab says: Refused: This customer has bookings or sales on record, so they cannot be deleted. Then run the search test from stage 2 with McCann as the search text, and check that Aoife McCann is still there."
+        },
+        {
+         "id": "4.7.9",
+         "what": "Delete a customer with nothing on record",
+         "expect": "allowed",
+         "how": "Run the second delete test from stage 4. The Messages tab says Added customer number 14, then Deleted customer number 14, and the Results tab shows column headings with no row under them."
+        },
+        {
+         "id": "4.7.10",
+         "what": "Bookings for customer 1 show names",
+         "expect": "allowed",
+         "how": "Run the bookings test from stage 5 for customer 1. The Results tab shows two rows, with Conor Walsh and Aoife Byrne in the Mechanic column and Wheel true and Basic service in the Service column, and no numbers in either column."
+        },
+        {
+         "id": "4.7.11",
+         "what": "Sign in as siobhan",
+         "expect": "allowed",
+         "how": "Run the first sign-in test from stage 5. The Results tab shows one row: StaffID 1, Siobhán Rooney, Manager."
+        },
+        {
+         "id": "4.7.12",
+         "what": "Sign in as liam is refused",
+         "expect": "control",
+         "how": "Run the second sign-in test from stage 5, with the username liam and the password canal06. Only the column headings appear, with no row under them, because his IsActive is 0."
+        },
+        {
+         "id": "4.7.13",
+         "what": "Sign in with a wrong password is refused",
+         "expect": "control",
+         "how": "Run the third sign-in test from stage 5, with the username siobhan and the password wrong. Only the column headings appear, with no row under them."
+        },
+        {
+         "id": "4.7.14",
+         "what": "The mechanics and everyone",
+         "expect": "allowed",
+         "how": "Run the staff test from stage 5. The first grid has three rows and Liam Doran is not in it. The second grid has six rows and Liam Doran is in it with IsActive 0."
+        },
+        {
+         "id": "4.7.15",
+         "what": "A taken username is refused",
+         "expect": "control",
+         "how": "Run the staff add test from stage 5. The Messages tab says Added staff number 7, then Refused: That username is already taken."
+        },
+        {
+         "id": "4.7.16",
+         "what": "Every service, with Display",
+         "expect": "allowed",
+         "how": "Run the services test from stage 6. The Results tab shows seven rows, with Puncture repair first and Full service last, and a Display column such as Basic service (60 min, £40.00)."
+        },
+        {
+         "id": "4.7.17",
+         "what": "Add a service",
+         "expect": "allowed",
+         "how": "Run the service add test from stage 6. The Results tab shows eight rows with Chain replacement first, and the Messages tab says Added. New service number 8."
+        },
+        {
+         "id": "4.7.18",
+         "what": "Change a service",
+         "expect": "allowed",
+         "how": "Run the service update test from stage 6. The price for Wheel true shows 22.00, and every other price is unchanged."
+        },
+        {
+         "id": "4.7.19",
+         "what": "Every supplier",
+         "expect": "allowed",
+         "how": "Run the suppliers test from stage 6. The Results tab shows three rows in name order: Lagan Bike Parts, Mourne Cycle Supplies, Northern Components Ltd."
+        },
+        {
+         "id": "4.7.20",
+         "what": "Add a supplier",
+         "expect": "allowed",
+         "how": "Run the supplier add test from stage 6. The Results tab shows four rows with Carlingford Cycles first, and the Messages tab says Added. New supplier number 4."
+        }
+       ]
+      },
+      {
+       "p": "The numbers in the add rows are the ones you see when the sample data has been put back first. Each extra run of an add test makes the next number one higher, and that is the database doing its job."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Twenty ticks are your evidence that every action on customers, staff, services and suppliers goes through a stored procedure, and that the database says no in a sentence when it should. Keep screenshots of the three refusals for your testing evidence in chapter 10. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected. Save your script with Ctrl and S together before you close SQL Server Management Studio (SSMS)."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Your scenario has its own tables, and most tables need four stored procedures: a Get, an Add, an Update and a Delete. A table that other tables point at, such as a customer with bookings, needs a Delete that refuses. For each table, write down which of the four it needs. Then write one plain sentence for the rule each Add or Delete checks before it acts, because that sentence is what goes into @Message. Name each stored procedure with usp, then the table, then the action, for example usp_Customer_Add. In every Add, Update and Delete, set @Message to a blank message first and use RETURN after a refusal. In every Add, hand back SCOPE_IDENTITY()."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

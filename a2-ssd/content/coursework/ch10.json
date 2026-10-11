@@ -1,0 +1,855 @@
+{
+ "id": "10",
+ "n": 10,
+ "title": "Testing evidence and user guide",
+ "one": "The two short chapters of the write-up this guide covers.",
+ "marks": "This chapter is where the examiner looks for tests that try the edges of each rule, for a picture that proves what happened in each test, for a mistake that was found, fixed and tested again, and for a guide that a member of staff could follow without help.",
+ "prev": {
+  "id": "09",
+  "title": "Report across tables",
+  "n": 9
+ },
+ "next": {
+  "id": "11",
+  "title": "Mistakes that cost marks",
+  "n": 11
+ },
+ "stages": [
+  {
+   "id": "1",
+   "title": "The test table",
+   "screens": [
+    {
+     "id": "1",
+     "title": "See what you will make in this chapter.",
+     "blocks": [
+      {
+       "p": "Your program works. This chapter turns that into two pieces of writing for your write-up. The first piece is your testing evidence: a table of tests in Word, with a picture under it for each test. The second piece is a user guide: a short document that shows a member of staff how to use each window of your program."
+      },
+      {
+       "p": "There is no code in this chapter. You use your running program, the Snipping Tool and Word. Most of the tests are ones you have already ticked at the end of chapters 7, 8 and 9, so the work here is writing them down and taking the pictures."
+      },
+      {
+       "need": [
+        "Chapters 7, 8 and 9 are finished, and every row of their test tables is ticked.",
+        "Your BikeShop solution is open in Visual Studio 2019, and it builds.",
+        "Word is open with a new, empty document.",
+        "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
+       ]
+      },
+      {
+       "words": [
+        [
+         "Test",
+         "One thing you do to your program, written down with what should happen and what did happen."
+        ],
+        [
+         "Test table",
+         "A table in Word with one row for each test."
+        ],
+        [
+         "Valid data",
+         "Data the program should accept, such as a booking in a free slot."
+        ],
+        [
+         "Invalid data",
+         "Data the program should refuse, such as a booking on a Sunday."
+        ],
+        [
+         "Extreme data",
+         "Data right on the edge of what is allowed, such as selling exactly the number in stock. It should be accepted."
+        ],
+        [
+         "Boundary",
+         "The edge between allowed and refused, such as the moment one booking ends and the next one starts."
+        ],
+        [
+         "Expected result",
+         "What should happen, written before you run the test."
+        ],
+        [
+         "Actual result",
+         "What did happen when you ran the test."
+        ],
+        [
+         "Evidence",
+         "A picture of the screen that proves the actual result."
+        ],
+        [
+         "Corrective action",
+         "What you changed when a test did not give the expected result, and the test run again afterwards."
+        ],
+        [
+         "User guide",
+         "A short document that shows a member of staff how to use each window of your program."
+        ],
+        [
+         "Snipping Tool",
+         "The program on the Start menu that takes a picture of part of the screen."
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the eight columns of the test table, and six real rows.",
+     "blocks": [
+      {
+       "p": "A test table has eight columns. Test is the number of the test. What is tested says what the test is about, in a few words. Type says whether the data is valid, invalid or extreme. What you do says exactly what you type or press. Expected result is what should happen. Actual result is what did happen. Evidence names the picture that proves it. Fixed? says what you changed, if anything was wrong."
+      },
+      {
+       "p": "Here are six rows, taken from the test tables at the end of chapters 7 and 8. The words are the same words you ticked there. Rows 1 to 3 are about bookings, and rows 4 to 6 are about stock and the workshop days. Row 5 is the one that went wrong the first time, and stage 2 shows how it was put right."
+      },
+      {
+       "box": {
+        "title": "Test 1: A booking in a free slot",
+        "text": "Type: valid. What you do: New booking, a free mechanic, a free time. Expected result: It appears in the grid. Actual result: As expected. Evidence: Figure 1, the diary with the new booking in it. Fixed?: Nothing to fix."
+       }
+      },
+      {
+       "box": {
+        "title": "Test 2: The same mechanic, the same start time",
+        "text": "Type: invalid. What you do: Book it again for the same mechanic. Expected result: Message: That mechanic already has a booking in that time. Actual result: As expected. Evidence: Figure 2, the message box. Fixed?: Nothing to fix."
+       }
+      },
+      {
+       "box": {
+        "title": "Test 3: A booking that starts exactly when another ends",
+        "text": "Type: extreme. What you do: Start at the first booking's end time. Expected result: Allowed: touching is not overlapping. Actual result: As expected. Evidence: Figure 3, the diary with both bookings in it. Fixed?: Nothing to fix."
+       }
+      },
+      {
+       "box": {
+        "title": "Test 4: Sell more than is in stock",
+        "text": "Type: invalid. What you do: Pick PADS-DISC with 2 in stock, Sell, quantity 3. Expected result: Message: Only 2 in stock. Actual result: As expected. Evidence: Figure 4, the message box. Fixed?: Nothing to fix."
+       }
+      },
+      {
+       "box": {
+        "title": "Test 5: Sell exactly what is in stock",
+        "text": "Type: extreme. What you do: PADS-DISC, Sell, quantity 2. Expected result: The row shows 0, and it is pink. Actual result: The first time, the sale was refused with the message Only 2 in stock. After the fix, as expected. Evidence: Figure 5, the wrong refusal, and Figure 6, the row showing 0 after the fix. Fixed?: Yes. The check in usp_PartSale_Add said <= where it should say <. It was changed to <, and the test was run again."
+       }
+      },
+      {
+       "box": {
+        "title": "Test 6: A Sunday",
+        "text": "Type: invalid. What you do: Pick a Sunday. Expected result: Message: The workshop is closed on Sundays. Actual result: As expected. Evidence: Figure 7, the message box. Fixed?: Nothing to fix."
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Make the test table in Word.",
+     "blocks": [
+      {
+       "p": "Make the table once, with its heading row, and add a row for each test as you go. Put the pictures under the table, each with a figure number and one line that says what it shows. The Evidence column then names the figure, so the examiner can find the picture for any row."
+      },
+      {
+       "steps": [
+        {
+         "id": "10.1.1",
+         "do": "In Word, click the Layout tab at the top, between Design and References, click Orientation, and click Landscape.",
+         "see": "The page turns on its side, so that eight columns have room for their words."
+        },
+        {
+         "id": "10.1.2",
+         "do": "Type the heading Testing on the first line and press Enter.",
+         "see": "The heading is on the first line, and the cursor is on the line under it."
+        },
+        {
+         "id": "10.1.3",
+         "do": "Click the Insert tab, click Table, and click Insert Table…",
+         "see": "The Insert Table box opens, with boxes for the number of columns and rows."
+        },
+        {
+         "id": "10.1.4",
+         "do": "Type 8 in the Number of columns box and 2 in the Number of rows box, and press OK.",
+         "see": "A table with eight columns and two rows appears in the document."
+        },
+        {
+         "id": "10.1.5",
+         "do": "Type the eight headings in the top row, pressing Tab between them: Test, What is tested, Type, What you do, Expected result, Actual result, Evidence, Fixed?",
+         "see": "The heading row is full, with one heading in each column."
+        },
+        {
+         "id": "10.1.6",
+         "do": "Type the parts of test 1 from the last screen into the second row, pressing Tab to move from box to box.",
+         "see": "The second row holds test 1, one part in each column."
+        },
+        {
+         "id": "10.1.6b",
+         "do": "Press Tab in the last box of the second row to add a new row, and type test 2 in it.",
+         "see": "The third row holds test 2, one part in each column."
+        },
+        {
+         "id": "10.1.6c",
+         "do": "Add a row for each of tests 3 to 6 in the same way, one row each.",
+         "see": "The six tests are in the table, one row each, as in the picture.",
+         "img": {
+          "img": "img/ch10-word-test-table.png",
+          "alt": "A test table in a Word document, under the heading Testing: the BikeShop booking and stock tests. It has eight columns: Test, What is tested, Type, What you do, Expected result, Actual result, Evidence and Fixed?. Six rows are filled in, from A booking in a free slot down to A Sunday, and the Evidence column names Figure 1 to Figure 7.",
+          "cap": "The test table in Word, with the six rows from this chapter. Your own table has a row for every test you show.",
+          "w": 1198,
+          "h": 404,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 42,
+            "y": 17,
+            "say": "The heading row: eight headings, in this order."
+           },
+           {
+            "n": 2,
+            "x": 22,
+            "y": 50,
+            "say": "The Type column says valid, invalid or extreme."
+           },
+           {
+            "n": 3,
+            "x": 75,
+            "y": 74,
+            "say": "The Evidence column names a figure under the table."
+           }
+          ]
+         },
+         "wrong": [
+          [
+           "The columns are too narrow to read",
+           "Check that the page is Landscape, then drag the column edges so that What you do and Expected result are the widest columns."
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Which tests to show, and how to show a fix",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Choose the tests that try the edges of each rule.",
+     "blocks": [
+      {
+       "p": "You cannot show every test you ran, and you do not need to. The examiner is looking for the tests that try the edges. A test in the middle, such as one booking on an empty day, shows very little. A test right on the edge shows that you thought about where the rule stops."
+      },
+      {
+       "box": {
+        "title": "The tests to show first",
+        "text": "Two bookings that touch: one starts at the exact minute the other ends. It must be allowed. Selling exactly the number in stock: the count goes down to 0. It must be allowed. The refusals: the same mechanic at the same time, selling more than is in stock, a Sunday, a time that has passed, refunding the same sale twice. Each one must be refused with its own sentence. The reports: the From date after the To date, and two days with nothing in them."
+       }
+      },
+      {
+       "rule": {
+        "which": "double",
+        "text": "Show the test where two bookings touch and the test where they overlap by one step. Together they prove that the line between allowed and refused is in the right place."
+       }
+      },
+      {
+       "rule": {
+        "which": "stock",
+        "text": "Show the test that sells exactly what is in stock and the test that sells one more. Together they prove that the count can reach 0 and can never go below it."
+       }
+      },
+      {
+       "p": "For each rule, aim for at least one valid row, one invalid row and one extreme row. The six rows in stage 1 do that for bookings and for stock."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Show a fix in three pictures: the test, the fix, the retest.",
+     "blocks": [
+      {
+       "p": "A test that fails is not a problem in your write-up. A failed test that you found, fixed and tested again is some of the best evidence you can show, because it proves that the testing was real. The examiner calls this corrective action."
+      },
+      {
+       "p": "Test 5 is a real example. The check in usp_PartSale_Add was typed as IF @InStock <= @Quantity. With 2 pairs of disc brake pads in stock, a sale of 2 was refused, and the message said Only 2 in stock. That message makes no sense: 2 in stock is enough for a sale of 2. That is the clue that the edge is in the wrong place."
+      },
+      {
+       "steps": [
+        {
+         "id": "10.2.1",
+         "do": "In SQL Server Management Studio (SSMS), find the line IF @InStock < @Quantity in usp_PartSale_Add and type = straight after the <.",
+         "see": "The line reads IF @InStock <= @Quantity. This is the mistake from the bike shop story, put in on purpose so that you can practise showing a fix."
+        },
+        {
+         "id": "10.2.1b",
+         "do": "Select the stored procedure, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.2.1c",
+         "do": "Press F5 in Visual Studio 2019 to run the program.",
+         "see": "The sign-in window opens."
+        },
+        {
+         "id": "10.2.1d",
+         "do": "Sign in as siobhan with the password canal01.",
+         "see": "The main menu opens with Siobhán Rooney at the top."
+        },
+        {
+         "id": "10.2.1e",
+         "do": "Click the Parts and stock button on the main menu.",
+         "see": "The Parts and stock window opens, with a grid of parts."
+        },
+        {
+         "id": "10.2.1f",
+         "do": "Click the PADS-DISC row in the grid.",
+         "see": "The PADS-DISC row is highlighted, and it shows 2 in stock."
+        },
+        {
+         "id": "10.2.1g",
+         "do": "Click the Sell button under the grid.",
+         "see": "The Sell window opens for PADS-DISC."
+        },
+        {
+         "id": "10.2.1h",
+         "do": "Set the quantity to 2 in the Sell window, and click the Sell button in that window.",
+         "see": "A message box says Only 2 in stock. This is what Figure 5 shows; the next screen shows how to take the picture.",
+         "img": {
+          "img": "img/ch08-run-sell-refused.png",
+          "alt": "A message box over the counter sale form reading: Only 2 in stock.",
+          "cap": "The refusal, as the program shows it. The words came from the stored procedure, with the real count in them.",
+          "w": 540,
+          "h": 348,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 67,
+            "y": 59,
+            "say": "The sentence from @Message, shown by Msg.Problem."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.2.2",
+         "do": "Close your program and go back to SQL Server Management Studio (SSMS).",
+         "see": "usp_PartSale_Add is on the screen, with the line IF @InStock <= @Quantity."
+        },
+        {
+         "id": "10.2.2b",
+         "do": "Delete the = so that the line reads IF @InStock < @Quantity.",
+         "see": "The line reads IF @InStock < @Quantity, the same as the yellow line in chapter 8."
+        },
+        {
+         "id": "10.2.3",
+         "do": "Select the stored procedure, from CREATE OR ALTER PROCEDURE down to GO, and press F5.",
+         "see": "The Messages pane says: Commands completed successfully.",
+         "img": {
+          "img": "img/ch07-ssms-select-run.png",
+          "alt": "The script window with one stored procedure highlighted, from CREATE OR ALTER PROCEDURE down to GO, and the Messages pane underneath reading Commands completed successfully.",
+          "cap": "Select the stored procedure you changed, then press F5. Only the highlighted lines run, so the test data you have made stays in the database.",
+          "w": 1004,
+          "h": 483,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 40,
+            "y": 45,
+            "say": "Drag from CREATE OR ALTER PROCEDURE down to GO, so the whole block is highlighted."
+           },
+           {
+            "n": 2,
+            "x": 30,
+            "y": 82,
+            "say": "The Messages pane says: Commands completed successfully."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.2.4",
+         "do": "Press F5 in Visual Studio 2019 to run the program.",
+         "see": "The sign-in window opens."
+        },
+        {
+         "id": "10.2.4b",
+         "do": "Sign in as siobhan with the password canal01.",
+         "see": "The main menu opens with Siobhán Rooney at the top."
+        },
+        {
+         "id": "10.2.4c",
+         "do": "Click the Parts and stock button, then click the PADS-DISC row.",
+         "see": "The PADS-DISC row is highlighted, and it shows 2 in stock."
+        },
+        {
+         "id": "10.2.4d",
+         "do": "Click the Sell button, set the quantity to 2, and click the Sell button in the Sell window.",
+         "see": "The Sell window closes, and the PADS-DISC row shows 0 in stock and is pink. This is what Figure 6, the retest picture, shows.",
+         "img": {
+          "img": "img/ch10-run-sold-exact.png",
+          "alt": "The Parts and stock screen running after the retest: the PADS-DISC row in the top grid shows 0 in stock and is tinted pink.",
+          "cap": "The retest after the fix. Two pairs of disc brake pads were sold, and the count went down to 0, not below it.",
+          "w": 900,
+          "h": 632,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 70,
+            "y": 21,
+            "say": "PADS-DISC shows 0 in stock, and the row is pink because 0 is below its reorder level of 4."
+           }
+          ]
+         }
+        }
+       ]
+      },
+      {
+       "p": "In the table, the row for test 5 says what happened the first time, what you changed, and that the retest gave the expected result. Both figures are named in the Evidence column. If your own program had no mistakes like this, that is fine; show the tests that passed, and write Nothing to fix."
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Take a picture for each test and put it under the table.",
+     "blocks": [
+      {
+       "p": "Every row needs a picture that proves the actual result. Take the picture at the moment the result is on the screen: the message box while it is still open, or the grid straight after the change. A picture of the message box is enough for a refusal. For a test that changes data, show the row that changed."
+      },
+      {
+       "steps": [
+        {
+         "id": "10.2.5",
+         "do": "Run the test in your program and leave the result on the screen.",
+         "see": "The message box or the changed grid is on the screen."
+        },
+        {
+         "id": "10.2.6",
+         "do": "Click the Start button, type Snipping Tool, and press Enter to open it.",
+         "see": "The Snipping Tool window opens, with a New button at the top left."
+        },
+        {
+         "id": "10.2.6b",
+         "do": "Press New, then drag a box round the window you want.",
+         "see": "The Snipping Tool shows your picture, and the picture is copied, ready to paste.",
+         "wrong": [
+          [
+           "The Snipping Tool picture shows the wrong window",
+           "The Snipping Tool takes whatever is on the screen when you press New. Bring the window you want to the front first, then press New again."
+          ]
+         ]
+        },
+        {
+         "id": "10.2.7",
+         "do": "In Word, click on the empty line under your table and press Ctrl and V together.",
+         "see": "The picture is under the table."
+        },
+        {
+         "id": "10.2.7b",
+         "do": "Type a line under the picture, such as Figure 2: the refusal for the same mechanic at the same start time.",
+         "see": "The picture has its figure number and one line under it."
+        },
+        {
+         "id": "10.2.8",
+         "do": "Type the figure number, such as Figure 2, in the Evidence box of that test's row.",
+         "see": "The row names its picture, and the picture is under the table with the same number."
+        }
+       ]
+      },
+      {
+       "box": {
+        "title": "Before the tests, put the sample data back",
+        "text": "The numbers in the six rows are for the sample data. Click in BikeShop.sql in SQL Server Management Studio (SSMS) and press F5 with nothing selected. The whole script runs, and PADS-DISC has 2 in stock again."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "The user guide",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Read what goes on each page of the user guide.",
+     "blocks": [
+      {
+       "p": "The user guide is for the people in the scenario, not for the examiner and not for a programmer. Write it for a member of staff on their first day at Towpath Cycles. There is no code in it, and no table names."
+      },
+      {
+       "p": "Give each window of your program one page. The sign-in window comes first, because it is the first thing anyone sees, then the main menu, then each window in the order a member of staff would meet it. Every page has the same three parts."
+      },
+      {
+       "box": {
+        "title": "The three parts of every page",
+        "text": "What it is for: one or two sentences that say what the window does for the shop. The steps: numbered steps, each one starting with a doing word, such as Type, Pick or Press, with a picture of the window. What can go wrong: each message the window can show, word for word, and what to do about it."
+       }
+      },
+      {
+       "p": "The pictures come from your own running program, taken with the Snipping Tool, the same way as your test pictures. A picture of the window with real names and numbers in it is worth more than a paragraph of description."
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Read the sign-in page, the first page of the guide.",
+     "blocks": [
+      {
+       "p": "Here is the first page of the Towpath Cycles user guide. Yours follows the same pattern with your own names and messages."
+      },
+      {
+       "box": {
+        "title": "Page 1: Signing in",
+        "text": "What it is for: The sign-in window lets a member of staff into the program. Each person has their own username, so the program can record who made each booking, hire and sale. The steps: 1. Type your username in the Username box. 2. Type your password in the Password box. It shows as dots. 3. Press Sign in, or press Enter. The main menu opens with your name at the top. What can go wrong: If you press Sign in with a box empty, the message Type your username and your password. appears, and you fill in both boxes. If the username or the password is wrong, the message Those details are not recognised. Check them and try again. appears, and the password box is emptied. If the program cannot reach the database, the message Could not reach the database. Is SQL Server running? appears, and you ask the manager."
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-app-login.png",
+        "alt": "The Towpath Cycles sign-in window with the username siobhan typed and the password hidden as dots.",
+        "cap": "The sign-in window of the finished program.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 58,
+          "y": 46,
+          "say": "Type the username."
+         },
+         {
+          "n": 2,
+          "x": 58,
+          "y": 55,
+          "say": "Type the password."
+         },
+         {
+          "n": 3,
+          "x": 68,
+          "y": 76,
+          "say": "Click Sign in."
+         }
+        ]
+       }
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-app-refused.png",
+        "alt": "The Towpath Cycles sign-in window with liam in the Username box, an empty Password box, and the red message Those details are not recognised. Check them and try again. under them.",
+        "cap": "Sign in as liam with canal06. The sign-in stored procedure, usp_Staff_Login, sends back no rows, because Liam Doran is marked as left, so the program refuses and empties the password box.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 50,
+          "y": 72,
+          "say": "The database said no, and the program turned that into a sentence."
+         },
+         {
+          "n": 2,
+          "x": 30,
+          "y": 58,
+          "say": "The password box is emptied and the cursor is put back in it."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Write a page for every window, from your own running program.",
+     "blocks": [
+      {
+       "p": "Towpath Cycles has sixteen windows, so its user guide has sixteen pages. Each small window that opens from a bigger one, such as New booking from the Workshop diary, gets its own page straight after the bigger one."
+      },
+      {
+       "box": {
+        "title": "The pages of the Towpath Cycles user guide, in order",
+        "text": "Signing in. The main menu. Customers, then Customer. Workshop diary, then New booking. Bike hire, then New hire. Bikes, then Add a bike. Parts and stock, then Part, Sell a part, Place an order and Receive a delivery. Reports."
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "10.3.1",
+         "do": "Press F5 in Visual Studio 2019 to run your program.",
+         "see": "The sign-in window opens.",
+         "img": {
+          "img": "img/sh-vs-run.png",
+          "alt": "The Visual Studio toolbar with the green Start button.",
+          "cap": "Start runs your program. Close the program window to come back to Visual Studio.",
+          "w": 784,
+          "h": 61,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 61,
+            "y": 75,
+            "say": "Click Start, or press F5."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.3.2",
+         "do": "Take a picture of the sign-in window with the Snipping Tool.",
+         "see": "The Snipping Tool shows the sign-in window, ready to paste.",
+         "img": {
+          "img": "img/sh-app-login.png",
+          "alt": "The Towpath Cycles sign-in window with the username siobhan typed and the password hidden as dots.",
+          "cap": "The sign-in window of the finished program.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 58,
+            "y": 46,
+            "say": "Type the username."
+           },
+           {
+            "n": 2,
+            "x": 58,
+            "y": 55,
+            "say": "Type the password."
+           },
+           {
+            "n": 3,
+            "x": 68,
+            "y": 76,
+            "say": "Click Sign in."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.3.2b",
+         "do": "Open a new Word document and save it with the name User guide.",
+         "see": "The Word title bar reads User guide."
+        },
+        {
+         "id": "10.3.2c",
+         "do": "Paste the picture on page 1 of the User guide document.",
+         "see": "Page 1 has the picture of the sign-in window."
+        },
+        {
+         "id": "10.3.3",
+         "do": "Press Sign in with both boxes empty, and take a picture of the message for the What can go wrong part.",
+         "see": "The red message reads: Type your username and your password.",
+         "img": {
+          "img": "img/ch05-app-blank.png",
+          "alt": "The Towpath Cycles sign-in window with both boxes empty and the red message Type your username and your password. under them.",
+          "cap": "Sign in with both boxes empty. The program refuses before it asks the database anything.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 50,
+            "y": 72,
+            "say": "The red message appears here and the window stays open."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.3.4",
+         "do": "Write the three parts of page 1: What it is for, The steps, and What can go wrong.",
+         "see": "Page 1 looks like the sign-in page on the last screen, with your own names and messages."
+        },
+        {
+         "id": "10.3.5",
+         "do": "Sign in as siobhan with the password canal01.",
+         "see": "The main menu opens with Siobhán Rooney at the top."
+        },
+        {
+         "id": "10.3.5b",
+         "do": "Take a picture of the main menu with the Snipping Tool, paste it on page 2 of the User guide document, and write its three parts under it.",
+         "see": "Page 2 shows the main menu with Siobhán Rooney at the top, and its three parts.",
+         "img": {
+          "img": "img/sh-app-menu.png",
+          "alt": "The BikeShop main menu after signing in as siobhan, with a button for each screen and her name at the top.",
+          "cap": "The main menu. A manager sees every button; a mechanic sees fewer.",
+          "w": 700,
+          "h": 450,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 30,
+            "y": 22,
+            "say": "Who is signed in."
+           },
+           {
+            "n": 2,
+            "x": 72,
+            "y": 60,
+            "say": "One button for each screen."
+           }
+          ]
+         }
+        },
+        {
+         "id": "10.3.6",
+         "do": "Work through every other window in the order of the list above, one page each.",
+         "see": "Every window of your program has a page, with a picture, numbered steps and its messages word for word."
+        }
+       ]
+      },
+      {
+       "wrong": [
+        {
+         "q": "A message in the guide does not match the program",
+         "a": "Copy each message from your picture, letter by letter. The examiner compares the guide with the program, and a message that differs looks like the guide was written before the program was finished."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Prove it: the write-up checklist",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Tick the checklist: the table, the pictures, the two edges and the user guide.",
+     "blocks": [
+      {
+       "p": "Every row below checks one thing the examiner will look for. Three rows are marked Must be refused. Rows 10.4.4 and 10.4.5 put a mistake back on purpose, to prove that your edge tests would catch it; put each one right straight afterwards. Before you start, click in BikeShop.sql in SQL Server Management Studio (SSMS) and press F5 with nothing selected, so that the sample data is back."
+      },
+      {
+       "check": [
+        {
+         "id": "10.4.1",
+         "what": "The test table has its eight headings",
+         "expect": "allowed",
+         "how": "Open your Word document. The heading row reads Test, What is tested, Type, What you do, Expected result, Actual result, Evidence and Fixed?, in that order."
+        },
+        {
+         "id": "10.4.2",
+         "what": "Every row has a type",
+         "expect": "allowed",
+         "how": "Read down the Type column. Every row says valid, invalid or extreme, and each rule has at least one of each."
+        },
+        {
+         "id": "10.4.3",
+         "what": "Every row has its picture",
+         "expect": "allowed",
+         "how": "Read down the Evidence column. Every row names a figure, and that figure is under the table with a line that says what it shows."
+        },
+        {
+         "id": "10.4.4",
+         "what": "The touching-booking test catches the mistake",
+         "expect": "control",
+         "how": "1. In usp_Appointment_Add in SSMS, change the check to @StartTime <= EndTime. 2. Select the stored procedure and press F5. 3. Book the same mechanic at the end time of one of their bookings. The message reads: That mechanic already has a booking in that time. 4. Change the check back to @StartTime < EndTime, select the stored procedure and press F5 again."
+        },
+        {
+         "id": "10.4.5",
+         "what": "The exact-stock test catches the mistake",
+         "expect": "control",
+         "how": "1. In usp_PartSale_Add in SSMS, change the line to IF @InStock <= @Quantity. 2. Select the stored procedure and press F5. 3. Sell 2 of PADS-DISC. The message reads: Only 2 in stock. 4. Change the line back to IF @InStock < @Quantity, select the stored procedure and press F5 again."
+        },
+        {
+         "id": "10.4.6",
+         "what": "The exact-stock test passes after the fix",
+         "expect": "allowed",
+         "how": "Sell 2 of PADS-DISC again. The row shows 0, and it is pink."
+        },
+        {
+         "id": "10.4.7",
+         "what": "The user guide starts with the sign-in page",
+         "expect": "allowed",
+         "how": "Page 1 is Signing in, with a picture from your own program, numbered steps, and the messages word for word."
+        },
+        {
+         "id": "10.4.8",
+         "what": "A wrong password gives the message the guide says",
+         "expect": "control",
+         "how": "Sign in as liam with the password canal06. The red message reads: Those details are not recognised. Check them and try again. The user guide's first page has the same words."
+        },
+        {
+         "id": "10.4.9",
+         "what": "Every window has its page",
+         "expect": "allowed",
+         "how": "Count the pages of your user guide. There is one page for each window of your program, each with its three parts."
+        }
+       ]
+      },
+      {
+       "screenshot": {
+        "img": "img/ch05-app-refused.png",
+        "alt": "The Towpath Cycles sign-in window with liam in the Username box, an empty Password box, and the red message Those details are not recognised. Check them and try again. under them.",
+        "cap": "Sign in as liam with canal06. The sign-in stored procedure, usp_Staff_Login, sends back no rows, because Liam Doran is marked as left, so the program refuses and empties the password box.",
+        "w": 700,
+        "h": 450,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 50,
+          "y": 72,
+          "say": "The database said no, and the program turned that into a sentence."
+         },
+         {
+          "n": 2,
+          "x": 30,
+          "y": 58,
+          "say": "The password box is emptied and the cursor is put back in it."
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Finish the chapter.",
+     "blocks": [
+      {
+       "p": "Nine ticks are your evidence that the test table and the user guide are complete. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Your scenario has its own two rules. First, write down the edge of each one: the exact moment two of your bookings touch, and the exact count that empties your stock. Next, write one valid row, one invalid row and one extreme row for each rule in your test table, before you run them, with the expected result filled in. Last, list every window of your program in the order a member of staff would meet them. That list is the contents page of your user guide."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
