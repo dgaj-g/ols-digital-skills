@@ -7,6 +7,9 @@
 | 28 Sep 2026 15:04 | 3 | b50b28c59f-aa1a6edc | v3 A2 SSD b50b28c59f-aa1a6edc spelling rule + re-mark | /exec carries the v3 token and not v2's; pupils' calls land on Version 3 in Executions; the owner-only re-mark dry run ran on live (11 records, 194 attempts re-judged, 10 marks would go up, nothing changed) |
 | 29 Sep 2026 15:59 | 4 | 1faf886c6a-bb8ebc49 | v4 A2 SSD 1faf886c6a-bb8ebc49 activity tracking | deployed after the class had finished; /exec carries the v4 token; encrypted bundle branch deleted |
 | 11 Oct 2026 12:34 | 5 | ea32e53ed6-928db73a | v5 A2 SSD ea32e53ed6-928db73a coursework guide + class grid | /exec carries the v5 token; staff page loads for the owner; the Coursework tab shows class U6-26-27, 12 pupils, chapters 0–12 and 0/934 screens; Code.gs reached the editor through a file input on the editor page (nothing public), Index.html from main 8b95c7c by commit hash |
+| 11 Oct 2026 13:46 | 6 | ea32e53ed6-fd6702b4 | (description did not stick: shows Untitled) chapter links fix | the pupil check found that opening a chapter gave a blank page (the page's links went to Google's sandbox frame); links now stay inside the page; main ac3eb39 (PR #60) |
+| 11 Oct 2026 13:49 | 7 | db5ae55e3f-7ee35a4e | (shows Untitled) tile wording | home tile reads "Build a bike shop system…"; main 72738e8 (PR #61) |
+| 11 Oct 2026 13:55 | 8 | db5ae55e3f-0858c8a2 | v8 A2 SSD db5ae55e3f-0858c8a2 Reload fix | the "papers were updated" Reload button gave a blank page; it now reloads the real address; Code.gs SHA-1 8317a62bde matches local, Index.html = main 7d81ee5 (PR #62). Pupil smoke as the dummy account in TEST-CW: chapter list, chapters 0 and 3 open, crumbs work, a ticked step shows on the staff Coursework grid (ch 3 1/165, whole guide 1/934); TEST-CW then deleted |
 
 - Project: OLS A2 SSD Platform (owner dgartland021@c2ken.net)
 - Script ID: 1B53FthiVBjLCQYsDCtKimL2ueSD7qpNbZBx26W4O-eFPRtKwNXbWsF1X
