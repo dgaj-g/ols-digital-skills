@@ -92,7 +92,7 @@
       {
        "box": {
         "title": "What The Gallery needs your program to do",
-        "text": "Every artwork is one of a kind. Staff put a blue dot on an artwork when a customer reserves it, and a red dot when it is sold. A reserved artwork can go back to stock. Art supplies are counted. The Gallery orders pottery materials and photography materials from suppliers, and those orders are never written down anywhere at the moment. Customers book photo appointments, and the same photographer must never be booked twice at once. Pottery classes run for 1 day, 3 days or 5 days. A pottery consultation needs a deposit of 15 per cent, which is not paid back. Framing needs a deposit of 10 per cent. A customer who buys at an exhibition pays a deposit of 20 per cent and collects the artwork within 2 working days."
+        "text": "Every artwork is one of a kind. Staff put a blue sticker on an artwork when a customer reserves it, and a red sticker when it is sold. A reserved artwork can go back to stock. Art supplies are counted. The Gallery orders pottery materials and photography materials from suppliers, and those orders are never written down anywhere at the moment. Customers book photo appointments, and the same photographer must never be booked twice at once. Pottery classes run for 1 day, 3 days or 5 days. A pottery consultation needs a deposit of 15 per cent, which is not paid back. Framing needs a deposit of 10 per cent. A customer who buys at an exhibition pays a deposit of 20 per cent and collects the artwork within 2 working days."
        }
       },
       {
@@ -107,7 +107,7 @@
       {
        "box": {
         "title": "An artwork is a bike for sale",
-        "text": "A bike for sale is one of a kind, and so is an artwork. Your Artwork table is the Bike table with its own columns: the title, the artist and the price in place of the make, the model and the frame number. The Status column keeps the same three words. Available has no dot. Reserved is the blue dot. Sold is the red dot. Back to stock is what usp_Bike_Unreserve did: the status goes back to Available and the customer number is cleared."
+        "text": "A bike for sale is one of a kind, and so is an artwork. Your Artwork table is the Bike table with its own columns: the title, the artist and the price in place of the make, the model and the frame number. The Status column keeps the same three words. Available has no sticker. Reserved is the blue sticker. Sold is the red sticker. Back to stock is what usp_Bike_Unreserve did: the status goes back to Available and the customer number is cleared."
        }
       },
       {
@@ -218,7 +218,7 @@
         },
         {
          "id": "12.2.4",
-         "do": "Beside each of the six bike shop names on your paper, write its Gallery name from the first card on the next screen, Reserve an artwork with a blue dot. Beside the Purpose test, write taken out.",
+         "do": "Beside each of the six bike shop names on your paper, write its Gallery name from the first card on the next screen, Reserve an artwork with a blue sticker. Beside the Purpose test, write taken out.",
          "see": "Your paper has two columns. The left column holds usp_Bike_Reserve and the right column holds usp_Artwork_Reserve, and so on down the page. The two columns are the whole change."
         }
        ]
@@ -231,7 +231,7 @@
      "blocks": [
       {
        "box": {
-        "title": "Reserve an artwork with a blue dot",
+        "title": "Reserve an artwork with a blue sticker",
         "text": "Copy usp_Bike_Reserve. Rename it usp_Artwork_Reserve. Bike becomes Artwork, BikeID becomes ArtworkID and @BikeID becomes @ArtworkID. Take out the test Purpose = 'Sale', because every artwork is for sale. The refusal sentence becomes Only an available artwork can be reserved."
        }
       },
@@ -243,7 +243,7 @@
       },
       {
        "box": {
-        "title": "Sell an artwork with a red dot",
+        "title": "Sell an artwork with a red sticker",
         "text": "Copy usp_Bike_Sell. Rename it usp_Artwork_Sell. Bike becomes Artwork and @BikeID becomes @ArtworkID. Take out the Purpose test again. Each sentence that says bike says artwork."
        }
       },
@@ -685,7 +685,7 @@
          "id": "12.4.1",
          "what": "Reserve an available artwork",
          "expect": "allowed",
-         "how": "Reserve an artwork with the status Available for a customer in your program. Its status becomes Reserved, the blue dot, with the customer's number beside it."
+         "how": "Reserve an artwork with the status Available for a customer in your program. Its status becomes Reserved, the blue sticker, with the customer's number beside it."
         },
         {
          "id": "12.4.2",
