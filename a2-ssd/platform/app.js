@@ -736,6 +736,13 @@
   }
 
   // ---------- routing ----------
+  // The served page sits in Google's sandbox frame: location.reload() reloads only the frame, which comes back blank.
+  // Reload the whole page at its real address instead.
+  function reloadPage() {
+    const B = window.OLS_BOOT || {};
+    if (!B.baseUrl) { location.reload(); return; }
+    window.open(B.baseUrl + (B.classCode ? '?class=' + encodeURIComponent(B.classCode) : '') + location.hash, '_top');
+  }
   function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
   function route() {
     if (!ME.cls) return;
@@ -777,7 +784,7 @@
     app = document.getElementById('app');
     document.addEventListener('click', (e) => {
       const s = e.target.closest('[data-sys]');
-      if (s) { if (s.dataset.sys === 'reload') location.reload(); else if (SYS.retry) { const f = SYS.retry; SYS.retry = null; f().then(() => route(), () => {}); } return; }
+      if (s) { if (s.dataset.sys === 'reload') reloadPage(); else if (SYS.retry) { const f = SYS.retry; SYS.retry = null; f().then(() => route(), () => {}); } return; }
       const t = e.target.closest('[data-go]');
       if (t) { e.preventDefault(); go(t.dataset.go); return; }
       const tab = e.target.closest('.figure .tabs button');
@@ -799,7 +806,7 @@
       }
       if (r.staff) { window.Staff.boot(app, r); return; }
       if (r.needName) askName(r); else start(r);
-    }, () => { SYS.offline = true; SYS.retry = () => { location.reload(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
+    }, () => { SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
   }
   window.App = { boot, T, h };
 })();
