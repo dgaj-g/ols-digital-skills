@@ -261,13 +261,13 @@
        "p": "It has a report that brings together records from several linked tables and works with them, such as adding up totals."
       },
       {
-       "p": "You hand in the script that makes and fills the database, and all the code of the program."
+       "p": "You hand in the script (a file of lines that makes the tables and fills them) and all the code of the program."
       },
       {
        "p": "You write a user guide that shows a member of staff how to use every screen, step by step."
       },
       {
-       "p": "You write a test plan that covers the whole program, with the result of every test."
+       "p": "You write a test plan (chapter 10 calls it your testing evidence) that covers the whole program, with the result of every test."
       },
       {
        "p": "This guide builds every one of those, in the bike shop first, so that you can build the same for your own case study."
@@ -338,7 +338,7 @@
       {
        "box": {
         "title": "Read this one",
-        "text": "You read this code to see how something works, and you do not copy it or type it. It has no Copy button."
+        "text": "You read this code to see how something works, and you do not type it. The block has no Copy button of its own. When a step tells you to paste it into your script, that step has a Copy button under it, and you press that one."
        }
       },
       {
@@ -354,7 +354,7 @@
        "p": "There is one file to download for the whole coursework. It is called BikeShop-sample-data.sql, and it holds sample data, which is made-up records for the shop, such as twelve customers and the parts on the shelf."
       },
       {
-       "p": "You will use it in chapter 3, and the button for it is there too. It is also in the Sample data box on the front page of this guide, under the list of chapters."
+       "p": "You will use it in chapter 3, and chapter 3 tells you when to download it. You find the download in the Sample data card on the front page of this guide, under the list of chapters."
       },
       {
        "p": "Everything else you build yourself, chapter by chapter. Chapter 1 sets up the place where you work: SQL Server Management Studio (SSMS), Visual Studio 2019 and your OneDrive folder, inside the Programming Environment."

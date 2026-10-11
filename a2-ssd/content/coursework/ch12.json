@@ -145,6 +145,9 @@
         "title": "Every deposit is the hire deposit rule",
         "text": "A bike hire needs a deposit of at least 20 per cent of the total cost, and usp_Hire_Add refuses anything less. The Gallery has three deposits, and each one is the same deposit lines with a different number. Framing uses 0.10 in place of 0.20. A pottery consultation uses 0.15. Collecting from an exhibition keeps 0.20. Change the number in the refusal sentence too, so that it says 10% or 15%. The consultation deposit is not paid back, so the stored procedure that cancels a consultation leaves the DepositPaid column as it is. The 2 working days to collect from an exhibition is a deadline, and stage 3 shows how to keep one."
        }
+      },
+      {
+       "p": "On your paper, write each Gallery table beside the bike shop table it copies. Use this screen and the one before it."
       }
      ]
     }
@@ -215,7 +218,7 @@
         },
         {
          "id": "12.2.4",
-         "do": "Beside each of the six bike shop names on your paper, write its Gallery name from the first card on the next screen, Reserve an artwork with a blue dot.",
+         "do": "Beside each of the six bike shop names on your paper, write its Gallery name from the first card on the next screen, Reserve an artwork with a blue dot. Beside the Purpose test, write taken out.",
          "see": "Your paper has two columns. The left column holds usp_Bike_Reserve and the right column holds usp_Artwork_Reserve, and so on down the page. The two columns are the whole change."
         }
        ]
@@ -229,7 +232,7 @@
       {
        "box": {
         "title": "Reserve an artwork with a blue dot",
-        "text": "Copy usp_Bike_Reserve. Rename it usp_Artwork_Reserve. Bike becomes Artwork and @BikeID becomes @ArtworkID. Take out the test Purpose = 'Sale', because every artwork is for sale. The refusal sentence becomes Only an available artwork can be reserved."
+        "text": "Copy usp_Bike_Reserve. Rename it usp_Artwork_Reserve. Bike becomes Artwork, BikeID becomes ArtworkID and @BikeID becomes @ArtworkID. Take out the test Purpose = 'Sale', because every artwork is for sale. The refusal sentence becomes Only an available artwork can be reserved."
        }
       },
       {
@@ -301,7 +304,7 @@
       {
        "box": {
         "title": "Hold an exhibition sale for collection, with a 20 per cent deposit",
-        "text": "Copy usp_Bike_Reserve, then the deposit lines from usp_Hire_Add. Rename it usp_Artwork_ReserveForCollection. Keep 0.20. Add an ExpiresOn date, 2 working days after today. Stage 3 shows how to let the sale go when that date has passed."
+        "text": "Copy usp_Bike_Reserve, then the deposit lines from usp_Hire_Add. Rename it usp_Artwork_ReserveForCollection. Keep 0.20. Add an ExpiresOn date, 2 working days after today. Stage 3 shows how to let a held booking go when its date has passed. Do the same for the artwork: when ExpiresOn has passed and the Status is still Reserved, set the Status back to Available and clear the customer number."
        }
       },
       {
@@ -315,6 +318,9 @@
         "title": "Every report",
         "text": "Copy usp_Report_MechanicWorkload and the other four reports. Rename them for The Gallery's own questions, such as usp_Report_PhotographerWorkload or usp_Report_IncomeBySource. Keep the LEFT JOIN with the date test after ON."
        }
+      },
+      {
+       "p": "On your paper, write each Gallery stored procedure beside the bike shop one it copies, with the names that change. Use this screen and the one before it."
       }
      ]
     }
@@ -344,7 +350,7 @@
        }
       },
       {
-       "p": "Both upgrades are code blocks to read, not to copy. Read them here, part by part. Do not paste them into your BikeShop script, because the bike shop does not need them. You build them in your own project, with your own names, when you reach chapters 3 and 8."
+       "p": "Both upgrades are code blocks to read, not to copy. Read them here, part by part. Do not paste them into your BikeShop script, because the bike shop does not need them. You build them in your own project, with your own names, when you reach chapters 3, 7 and 8."
       }
      ]
     },
@@ -656,7 +662,7 @@
        }
       },
       {
-       "p": "To make a provisional booking, the stored procedure that adds the booking sets Status to Provisional and ExpiresOn to `DATEADD(HOUR, 48, GETDATE())`, which is 48 hours from now. To confirm it when the deposit is paid, copy usp_Appointment_MarkDone and change two words: the status it looks for is Provisional, and the status it sets is Booked."
+       "p": "To make a provisional booking, the stored procedure that adds the booking sets Status to Provisional and ExpiresOn to `DATEADD(HOUR, 48, GETDATE())`, which is 48 hours from now. To confirm it when the deposit is paid, copy usp_Appointment_MarkDone and change three things: Booked becomes Provisional in both places where it looks for the status, Done becomes Booked, and the refusal sentence becomes Only a provisional booking can be confirmed."
       }
      ]
     }

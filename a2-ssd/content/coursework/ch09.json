@@ -55,7 +55,7 @@
        }
       },
       {
-       "p": "By the end, the shop's manager can pick one of five reports, choose two dates, and press Run. The grid fills, and one plain sentence under it gives the answer. Five stored procedures do the work, one per report. The form checks one thing only: that the From date is not after the To date. That check is the one mistake this chapter catches, and it is caught with a class you write from nothing."
+       "p": "By the end, the shop's manager can pick one of five reports, choose two dates, and press Run. The grid fills, and one plain sentence under it gives the answer. Five stored procedures do the work, one per report. The report code checks one thing only: that the From date is not after the To date. That check is the one mistake this chapter catches, and it is caught with a class you write from nothing."
       }
      ]
     },
@@ -513,7 +513,7 @@
        "wrong": [
         {
          "q": "Liam Doran is in the list, but he left the shop",
-         "a": "The report asks about the Role column, which still says Mechanic, not the IsActive column. That is right: a mechanic who left in the summer still did jobs earlier in the year, and the shop wants them counted."
+         "a": "The report asks about the Role column, which still says Mechanic, not the IsActive column. That is right: the report lists every mechanic, so one who left and did no jobs in these dates still appears, with zeros."
         },
         {
          "q": "Conor Walsh shows 2.75 hours, not 2.8",
@@ -683,7 +683,7 @@
        "steps": [
         {
          "id": "9.3.1",
-         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "do": "Click the tab that holds BikeShop.sql. Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
          "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
          "img": {
           "img": "img/ch07-ssms-end-of-script.png",
@@ -1033,7 +1033,7 @@
        "steps": [
         {
          "id": "9.4.1",
-         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "do": "Click the tab that holds BikeShop.sql. Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
          "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
          "img": {
           "img": "img/ch07-ssms-end-of-script.png",
@@ -1360,7 +1360,7 @@
        "steps": [
         {
          "id": "9.5.1",
-         "do": "Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
+         "do": "Click the tab that holds BikeShop.sql. Scroll to the very end of the script and click on the empty line above the line that prints BikeShop is ready. That line always stays last.",
          "see": "The cursor blinks on the empty line, with the stored procedures you added before it above it.",
          "img": {
           "img": "img/ch07-ssms-end-of-script.png",
@@ -1626,7 +1626,7 @@
          ]
         ],
         "task": [
-         "In SQL Server Management Studio (SSMS), click on the empty line above the line that prints BikeShop is ready and type the first lines of the stored procedure: CREATE OR ALTER PROCEDURE usp_Report_PopularParts, the two date parameters, AS and BEGIN.",
+         "In SQL Server Management Studio (SSMS), click the tab that holds BikeShop.sql, then click on the empty line above the line that prints BikeShop is ready and type the first lines of the stored procedure: CREATE OR ALTER PROCEDURE usp_Report_PopularParts, the two date parameters, AS and BEGIN.",
          "Type the SELECT with three columns: p.Name AS Part, then ISNULL(SUM(ps.Quantity), 0) AS Sold, then ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income.",
          "Type FROM Part p, then LEFT JOIN PartSale ps with three tests after ON: ps.PartID = p.PartID, AND ps.Status = 'Sold', AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate AND @ToDate.",
          "Type GROUP BY p.PartID, p.Name and then ORDER BY Sold DESC, Part; and finish with END and GO.",
@@ -2489,6 +2489,7 @@
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "Five reports across several tables for a date range, each with a one-line summary and a Copy button for the user guide and test evidence.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -2554,7 +2555,7 @@
            "Text = Run"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnRun_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnRun_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2562,7 +2563,7 @@
           "toolbox": "DataGridView",
           "name": "dgvReport",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [],
           "note": ""
@@ -2570,9 +2571,11 @@
          {
           "toolbox": "Label",
           "name": "lblTotal",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
-          "note": "\"Services listed: 12. Most popular: Full service, booked 5 times.\""
+          "note": "\"Services listed: 7. Most popular: Basic service, booked 3 times.\""
          },
          {
           "toolbox": "Button",
@@ -2582,7 +2585,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCopy_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCopy_Click`, which the code you paste later replaces."
           ],
           "note": "Copies the grid with its headings, ready for Word or Excel."
          },
@@ -2593,7 +2596,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -2905,7 +2908,7 @@
           ],
           [
            "'The name Grid does not exist' or 'The name Msg does not exist'",
-           "Your grid and message helpers from chapter 6 are called something else, or are in a different namespace. Match the names you used."
+           "Your grid and message helpers from chapters 5 and 6 are called something else, or are in a different namespace. Match the names you used."
           ],
           [
            "'The name ReportData does not exist'",

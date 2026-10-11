@@ -280,7 +280,7 @@
   function cwState() {
     let done = 0, ticks = 0;
     for (let i = 0; i <= 12; i++) { const c = String(i).padStart(2, '0'); if (cwLS.get('cw:done:' + c)) done++; ticks += (cwLS.get('cw:ticks:' + c) || []).length; }
-    return done ? T('home.cwDone', { n: done }) : ticks ? T('home.cwTicks', { n: ticks }) : T('home.notStarted');
+    return done ? (done === 1 ? T('home.cwDoneOne') : T('home.cwDone', { n: done })) : ticks ? (ticks === 1 ? T('home.cwTick') : T('home.cwTicks', { n: ticks })) : T('home.notStarted');
   }
   function cwSync() {
     if (!cwSynced) cwSynced = call('apiCw', { op: 'state' }).then((r) => {

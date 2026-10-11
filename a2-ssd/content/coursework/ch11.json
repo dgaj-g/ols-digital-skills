@@ -91,7 +91,7 @@
       {
        "box": {
         "title": "Dates kept as text",
-        "text": "One project kept its dates in VARCHAR columns, which hold text, and turned each date into words with ToString. Some dates came out cut short, and the program could not put the bookings in order by day or find the ones between two dates. Wrong data in normal use costs marks for the database and for the testing. Chapter 2, stage 4, screen 1, 'Choose a type for every column', explains why dates are DATE or DATETIME and never text. Chapter 3, stage 3, screen 1, 'Read the Appointment table part by part, then add it to your script', uses DATETIME for a day with a clock time, and DATE for a day on its own."
+        "text": "One project kept its dates in VARCHAR columns, which hold text, and turned each date into words with ToString. Some dates came out cut short, and the program could not put the bookings in order by day or find the ones between two dates. Wrong data in normal use costs marks for the database and for the testing. Chapter 2, stage 4, screen 1, 'Choose a type for every column', explains why dates are DATE or DATETIME and never text. Chapter 3, stage 3, screen 1, 'Read the Appointment table part by part, then add it to your script', uses DATETIME for a day with a clock time. Chapter 3, stage 3, screen 3, 'Add the Hire table, and read the deposit check', uses DATE for a day on its own."
        }
       },
       {
@@ -181,7 +181,7 @@
       {
        "box": {
         "title": "The get part that reads itself",
-        "text": "One project wrote a property whose get part handed back the property itself, as in get { return Price; } inside the property called Price. Reading the property ran the get part, which read the property again, over and over, until the program crashed. Chapter 6, stage 1, screen 3, 'A class is one row in your hands', gives every plain property { get; set; }. FullName, the one property in that class with its own code, reads FirstName and LastName and never reads FullName."
+        "text": "One project wrote a property whose get part handed back the property itself, as in get { return Price; } inside the property called Price. Reading the property ran the get part, which read the property again, over and over, until the program crashed. Chapter 6, stage 1, screen 3, 'A class holds one customer in the program', gives every plain property { get; set; }. FullName, the one property in that class with its own code, reads FirstName and LastName and never reads FullName."
        }
       }
      ]

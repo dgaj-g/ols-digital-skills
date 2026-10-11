@@ -51,6 +51,7 @@ window.CW = (function () {
 
   /* ---------- clipboard ---------- */
   function copyText(text) {
+    if (!/\n$/.test(text)) text += '\n';
     if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
     return new Promise(function (ok, no) {
       var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -105,9 +106,18 @@ window.CW = (function () {
       fig.appendChild(el('<div class="frame" style="max-width:' + w + 'px;aspect-ratio:' + w + '/' + hh + '"><div><b>Screenshot to come</b>' + h(x.alt) + '</div></div>'));
     } else {
       var pic = el('<div class="pic" style="max-width:' + w + 'px"><img src="' + h(S.base + x.img) + '" alt="' + h(x.alt) + '"></div>');
+      // a box's badge sits above its top-left corner, unless another mark is already there: then it goes beside the box
+      function crowded(m) {
+        return marks.some(function (o) {
+          if (o === m) return false;
+          if (o.w == null) return Math.abs(+o.x - m.x) < 5 && +o.y < +m.y + 1 && +o.y > +m.y - 8;
+          var bottom = +o.y + (+o.h);
+          return +o.x < +m.x + 4 && +o.x + (+o.w) > +m.x - 1 && bottom > +m.y - 6 && bottom < +m.y + 1;
+        });
+      }
       marks.forEach(function (m) {
         var box = m.w != null;
-        pic.appendChild(el('<span class="mk ' + (box ? 'box' + (+m.y < 5 ? (+m.x < 4 ? ' corner' : ' side') : '') : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
+        pic.appendChild(el('<span class="mk ' + (box ? 'box' + (+m.y < 5 ? (+m.x < 4 ? ' corner' : ' side') : (crowded(m) && +m.x >= 4 ? ' side' : '')) : 'ring') + '" style="left:' + (+m.x) + '%;top:' + (+m.y) + '%' + (box ? ';width:' + (+m.w) + '%;height:' + (+m.h) + '%' : '') + '"><i>' + h(m.n) + '</i></span>'));
       });
       fig.appendChild(pic);
     }
@@ -153,10 +163,11 @@ window.CW = (function () {
        "Copy the test" / "Copy the code" when it starts with a sentence. */
     var name = c.title.split(':')[0].trim();
     if (/\s/.test(name) && !/\.(cs|sql|config)$/i.test(name)) name = /test/i.test(name) ? 'the test' : 'the code';
+    if (/^(The|A|An|Your) /.test(name)) name = name.charAt(0).toLowerCase() + name.slice(1);
     return 'Copy ' + name;
   }
   function stepCopyButton(c) {
-    if (c.kind === 'type' && c.focusLines && c.focusLines.length) return copyButton(stepCopyLabel(c) + ', with a gap for the yellow lines', codeWithGap(c), c.id);
+    if (c.kind === 'type' && hasGap(c)) return copyButton(stepCopyLabel(c) + ', with a gap for the yellow lines', codeWithGap(c), c.id);
     return copyButton(stepCopyLabel(c), c.text, c.id);
   }
   /* ids of code blocks that a step on this screen carries a Copy button for: the block header then shows none */
@@ -168,6 +179,8 @@ window.CW = (function () {
     return acc;
   }
   function inFocus(ranges, ln) { return (ranges || []).some(function (r) { return ln >= r[0] && ln <= r[1]; }); }
+  // a gap copy only helps when some lines are not yellow; a card that is all yellow is typed whole, so it gets no Copy button
+  function hasGap(c) { if (!c.focusLines || !c.focusLines.length) return false; for (var i = 1, n = c.text.split('\n').length; i <= n; i++) if (!inFocus(c.focusLines, i)) return true; return false; }
   function codeWithGap(c) {
     var lines = c.text.split('\n'), out = [], mark = c.lang === 'sql' ? '-- YOU TYPE THIS PART' : '// YOU TYPE THIS PART';
     for (var i = 1; i <= lines.length; i++) {
@@ -286,6 +299,7 @@ window.CW = (function () {
       if (c.test) t.appendChild(el('<div class="tst"><b class="lab">The test</b>' + md(c.test) + '</div>'));
       if (c.expect) t.appendChild(el('<div class="exp"><b class="lab">You should see</b>' + md(c.expect) + '</div>'));
       if (c.hint) t.appendChild(el('<div class="hint"><b class="lab">Hint</b>' + md(c.hint) + '</div>'));
+      if (c.gapCopy && c.focusLines) head.appendChild(copyButton('Copy it, with a gap for the part you write', codeWithGap(c), c.id));
       box.appendChild(t);
       var d = el('<details class="reveal"><summary>Stuck? Show me the finished ' + (/^sql_table:/.test(c.src || '') ? 'table' : c.lang === 'cs' ? 'code' : 'procedure') + '</summary></details>');
       var inner = el('<div class="cw-code"></div>');
@@ -298,7 +312,7 @@ window.CW = (function () {
     }
     var stepHasCopy = !!(S.stepCopies && S.stepCopies[c.id]);
     if (c.kind === 'copy' && !stepHasCopy) head.appendChild(copyButton('Copy it', c.text, c.id));
-    else if (c.kind === 'type' && c.focusLines && !stepHasCopy) head.appendChild(copyButton('Copy it, with a gap for the yellow lines', codeWithGap(c), c.id));
+    else if (c.kind === 'type' && hasGap(c) && !stepHasCopy) head.appendChild(copyButton('Copy it, with a gap for the yellow lines', codeWithGap(c), c.id));
     box.appendChild(codeBody(c));
     if (c.why) box.appendChild(el('<div class="cw-why"><b>Why you type it</b><span>' + md(c.why) + '</span></div>'));
     return box;
@@ -312,7 +326,7 @@ window.CW = (function () {
     if (x.acceptButton) props.push('AcceptButton = ' + x.acceptButton + ' (after you add it)');
     if (x.cancelButton) props.push('CancelButton = ' + x.cancelButton + ' (after you add it)');
     wrap.appendChild(el('<p class="fp">' + md(x.formNote) + '</p>'));
-    wrap.appendChild(el('<div class="fp-props"><b>Click the form itself, then set these in the Properties window</b><ul>' + props.map(function (p) { var kv = p.split(' = '); return '<li><span>' + h(kv[0]) + '</span><code>' + h(kv.slice(1).join(' = ')) + '</code></li>'; }).join('') + '</ul></div>'));
+    wrap.appendChild(el('<div class="fp-props"><b>Click the form itself, then set these in the Properties window</b><ul>' + props.map(function (p) { var kv = p.split(' = '); return '<li><span>' + h(kv[0]) + '</span><code>' + h(kv.slice(1).join(' = ')) + '</code></li>'; }).join('') + '</ul>' + (x.load ? '<p class="fp-load"><b>Then make its Load event.</b> With the form itself still picked, press the lightning bolt at the top of the Properties window and double-click the empty box beside Load, which is part of the way down, after Leave. Visual Studio makes <code>' + h(x.form) + '_Load</code> for you; the code goes inside it. Press the Properties button, just left of the lightning bolt, to go back to the properties.</p>' : '') + '</div>'));
     if (x.img) wrap.appendChild(rShot(x.img));
     var rows = x.rows.map(function (r) {
       return '<tr><td>' + h(r.toolbox) + '</td><td class="nm">' + h(r.name) + '</td><td>' + (r.settings.length ? r.settings.map(function (s) { return '<span class="set">' + h(s) + '</span>'; }).join('') : '<span class="note">nothing else</span>') + (r.note ? '<span class="note">' + md(r.note) + '</span>' : '') + '</td><td>' + (r.then ? md(r.then) : '') + '</td></tr>';
@@ -676,22 +690,23 @@ window.CW = (function () {
     return getJSON('index.json').then(function (ix) {
       var root = el('<article class="cw"></article>');
       root.appendChild(el('<h1>Coursework guide</h1>'));
-      root.appendChild(el('<p class="sub">Build a bike shop system one chapter at a time, then turn it into your own system. Each chapter is one sitting. Tick the steps as you do them. Your ticks are saved.</p>'));
+      root.appendChild(el('<p class="sub">Build a bike shop system one chapter at a time, then turn it into your own system. Tick the steps as you do them. Your ticks are saved, so a chapter can run over more than one lesson.</p>'));
       var ol = el('<ol class="cw-list"></ol>');
       ix.chapters.forEach(function (c) {
         var ticks = loadTicks(c.id).size, done = !!load('cw:done:' + c.id, false), at = load('cw:at:' + c.id, null);
         var link = '#cw/' + c.id + (at ? '/' + at : '');
-        var state = !c.built ? '<span class="cw-pill">Coming</span>' : done ? '<span class="pill done">Done</span>' : '<a class="btn sec sm" href="' + link + '">' + (at ? 'Carry on' : 'Open') + '</a>';
-        ol.appendChild(el('<li class="' + (c.built ? 'live' : 'soon') + '"><span class="n">' + c.n + '</span><div><h3>' + h(c.title) + '</h3><p>' + h(c.one) + (c.built && ticks ? ' · ' + ticks + ' steps ticked' : '') + '</p></div><span class="st">' + state + '</span></li>'));
+        var state = !c.built ? '<span class="cw-pill">Coming</span>' : done ? '<span class="pill done">Done</span><a class="btn sec sm" href="' + link + '">Open</a>' : '<a class="btn sec sm" href="' + link + '">' + (at ? 'Carry on' : 'Open') + '</a>';
+        ol.appendChild(el('<li class="' + (c.built ? 'live' : 'soon') + '"><span class="n">' + c.n + '</span><div><h3>' + h(c.title) + '</h3><p>' + h(c.one) + (c.built && ticks ? ' · ' + ticks + (ticks === 1 ? ' step ticked' : ' steps ticked') : '') + '</p></div><span class="st">' + state + '</span></li>'));
       });
       root.appendChild(ol);
-      var files = el('<div class="card cw-files"><h3>Sample data</h3><p class="note">Download this inside the Programming Environment and keep it in your OneDrive folder for the coursework.</p><ul></ul></div>');
+      var files = el('<div class="card cw-files"><h3>Sample data</h3><p class="note">Download this inside the Programming Environment when chapter 3 asks for it. Chapter 3 shows you how to put its lines into your script.</p><ul></ul></div>');
       ix.files.forEach(function (f) {
         var li = el('<li><a href="' + h(S.base) + 'files/' + h(f.name) + '" download>' + h(f.name) + '</a><span>' + h(f.what) + '</span></li>');
         li.querySelector('a').addEventListener('click', function () { call('download', f.name); });
         files.querySelector('ul').appendChild(li);
       });
       root.appendChild(files);
+      root.appendChild(el('<div class="card cw-files"><h3>The whole guide as a PDF</h3><p class="note">Every chapter in one large file, to read away from the computer or to print one chapter.</p><ul><li><a href="' + h(S.base) + 'A2-Coursework-Guide.pdf" target="_blank" rel="noopener">A2-Coursework-Guide.pdf</a><span>All 13 chapters, with every picture.</span></li></ul></div>'));
       S.host.innerHTML = ''; S.host.appendChild(root);
       var m = mainEl(); if (m) m.scrollTop = 0;
     }, function (e) { S.host.innerHTML = '<div class="banner">The guide could not be loaded (' + h(e.message) + ').</div>'; });

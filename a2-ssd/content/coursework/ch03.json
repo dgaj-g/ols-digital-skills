@@ -65,7 +65,7 @@
      "blocks": [
       {
        "need": [
-        "Chapter 2 is finished: your plan of the ten tables, with their columns and rules, is beside you.",
+        "Chapter 2 is finished: you have seen the drawing of the ten tables, and your own plan for your case study is beside you.",
         "SQL Server Management Studio (SSMS) is open and connected, as in chapter 1.",
         "BikeShop.sql is saved in your OneDrive coursework folder, and it is still empty.",
         "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
@@ -159,7 +159,7 @@
       {
        "box": {
         "title": "Children before parents",
-        "text": "A table that holds a foreign key points at another table. Appointment points at Customer, because every booking is for one customer. Call Appointment the child and Customer the parent. The server will not drop a parent while a child still points at it, so the children go first. That is why the ten DROP TABLE lines run in the opposite order to the ten CREATE TABLE lines: PartSale is dropped first and Customer last, and Customer is made first and PartSale last."
+        "text": "A table that holds a foreign key points at another table. Appointment points at Customer, because every booking is for one customer. Call Appointment the child and Customer the parent. The server will not drop a parent while a child still points at it, so the children go first. That is why the ten DROP TABLE lines put every child before its parent: PartSale is dropped first and Customer last, while Customer is made first and PartSale last."
        }
       },
       {
@@ -245,6 +245,37 @@
           "A heading for the tables",
           "This is one more note line, so that you can find the tables in a long script. The first CREATE TABLE goes on the empty line under this heading."
          ]
+        ]
+       }
+      },
+      {
+       "p": "SQL Server Management Studio (SSMS) shows what a script did in the space under it, on tabs. The Results tab shows rows of a table, as a grid. The Messages tab shows what the script printed, and any error in red. This script brings back no rows, so you see only the Messages tab."
+      },
+      {
+       "screenshot": {
+        "img": "img/sh-ssms-tabs.png",
+        "alt": "The bottom of a query window in SQL Server Management Studio (SSMS) with two tabs, Results and Messages. Results shows a grid of rows; Messages shows the lines the query printed.",
+        "cap": "Results shows the rows a question returns. Messages shows what it printed and any error, in red.",
+        "w": 857,
+        "h": 365,
+        "missing": false,
+        "marks": [
+         {
+          "n": 1,
+          "x": 0.5,
+          "y": 3.2,
+          "say": "Results: the rows, as a grid.",
+          "w": 8,
+          "h": 5.5
+         },
+         {
+          "n": 2,
+          "x": 8.6,
+          "y": 3.2,
+          "say": "Messages: printed lines and errors, in red.",
+          "w": 9.2,
+          "h": 5.5
+         }
         ]
        }
       },
@@ -349,11 +380,11 @@
         },
         {
          "id": "3.1.9",
-         "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. In Object Explorer, BikeShop appears under Databases, with nothing in its Tables folder yet.",
+         "do": "Press F5 to run the whole script. Then, in Object Explorer, right-click Databases and click Refresh.",
+         "see": "The Messages tab, under the script, says: Commands completed successfully. In Object Explorer, BikeShop appears under Databases, with nothing in its Tables folder yet.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -369,7 +400,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -377,7 +408,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -507,8 +538,8 @@
         },
         {
          "id": "3.2.2",
-         "do": "Click on the empty line under the heading for the tables, at the very end of the script.",
-         "see": "The cursor blinks on the empty line under the line that says 3. Tables, with nothing after it."
+         "do": "Click at the end of the line that says 3. Tables, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the line that says 3. Tables, with nothing after it."
         },
         {
          "id": "3.2.3",
@@ -554,10 +585,10 @@
         {
          "id": "3.2.6",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -573,7 +604,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -581,7 +612,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -641,7 +672,7 @@
           "Username",
           "Password",
           "The sign-in details",
-          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would scramble the password before storing it, and this coursework keeps it plain and says so."
+          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
          ],
          [
           "IsActive",
@@ -680,7 +711,7 @@
           6,
           8,
           "The sign-in details",
-          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would scramble the password before storing it, and this coursework keeps it plain and says so."
+          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
          ],
          [
           9,
@@ -713,8 +744,8 @@
         },
         {
          "id": "3.2.8",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.2.9",
@@ -758,10 +789,10 @@
         {
          "id": "3.2.12",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -777,7 +808,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -785,7 +816,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -906,8 +937,8 @@
         },
         {
          "id": "3.2.14",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.2.15",
@@ -956,10 +987,10 @@
         {
          "id": "3.2.19",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -975,7 +1006,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -983,7 +1014,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -1181,8 +1212,8 @@
         },
         {
          "id": "3.3.2",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.3.3",
@@ -1226,10 +1257,10 @@
         {
          "id": "3.3.6",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -1245,7 +1276,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -1253,7 +1284,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -1409,8 +1440,8 @@
         },
         {
          "id": "3.3.8",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.3.9",
@@ -1454,10 +1485,10 @@
         {
          "id": "3.3.12",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -1473,7 +1504,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -1481,7 +1512,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -1637,8 +1668,8 @@
         },
         {
          "id": "3.3.14",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.3.15",
@@ -1682,10 +1713,10 @@
         {
          "id": "3.3.18",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -1701,7 +1732,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -1709,7 +1740,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -1779,13 +1810,13 @@
          ]
         ],
         "task": [
-         "In SQL Server Management Studio (SSMS), click on the empty line under the last GO at the end of your script and type CREATE TABLE Supplier, a space and an opening bracket.",
+         "In SQL Server Management Studio (SSMS), click at the end of the last GO, at the very end of your script, press Enter, and type CREATE TABLE Supplier, a space and an opening bracket.",
          "Type four columns, one per line with a comma after each: SupplierID as an INT that the table gives out itself and can never be empty; Name as text of up to 60 letters that must be filled; Phone as text of up to 15 characters that must be filled; Email as text of up to 100 characters that may be empty.",
          "Type a CONSTRAINT line that makes SupplierID the primary key, named PK_Supplier, with a comma after it.",
          "Type a CONSTRAINT line named UQ_Supplier_Name that makes Name UNIQUE, with no comma after it.",
          "Close the bracket with a semicolon after it, and type GO on the next line."
         ],
-        "test": "Running the whole script with nothing highlighted is the test: the Messages pane must say Commands completed successfully, and after a Refresh, Supplier must be in the Tables folder in Object Explorer.",
+        "test": "Running the whole script with nothing highlighted is the test: the Messages tab must say Commands completed successfully, and after a Refresh, Supplier must be in the Tables folder in Object Explorer.",
         "expect": "Commands completed successfully, and seven tables in the Tables folder once you right-click it and click Refresh. Red text means a line to fix: the line number in it is the one to look at.",
         "hint": "Customer is the pattern. Its first line is CustomerID INT IDENTITY(1,1) NOT NULL, and its UNIQUE rule would be written CONSTRAINT UQ_Supplier_Name UNIQUE (Name). A column that may be empty says NULL where the others say NOT NULL.",
         "text": "CREATE TABLE Supplier (\n    SupplierID INT IDENTITY(1,1) NOT NULL,\n    Name       VARCHAR(60)  NOT NULL,\n    Phone      VARCHAR(15)   NOT NULL,\n    Email      VARCHAR(100) NULL,\n    CONSTRAINT PK_Supplier PRIMARY KEY (SupplierID),\n    CONSTRAINT UQ_Supplier_Name UNIQUE (Name)\n);\nGO",
@@ -1831,10 +1862,10 @@
         {
          "id": "3.4.4",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully.",
+         "see": "The Messages tab says: Commands completed successfully.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -1850,7 +1881,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -1858,7 +1889,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -1971,7 +2002,7 @@
          ]
         ],
         "task": [
-         "Click on the empty line under the last GO and type CREATE TABLE Part, a space and an opening bracket.",
+         "Click at the end of the last GO, at the very end of your script, press Enter, and type CREATE TABLE Part, a space and an opening bracket.",
          "Type the columns, one per line with a comma after each: PartID, an INT the table gives out itself; PartCode, text of up to 12 characters; Name, text of up to 60; SupplierID, an INT; UnitCost and SellPrice, each DECIMAL(7,2); QtyInStock, an INT with a DEFAULT of 0 named DF_Part_QtyInStock; ReorderLevel and ReorderQty, each an INT. Every column is NOT NULL.",
          "Type the primary key on PartID, named PK_Part, and a UNIQUE rule on PartCode, named UQ_Part_PartCode.",
          "Type a FOREIGN KEY named FK_Part_Supplier that says SupplierID must be a real row in Supplier, in the shape of FK_Bike_Customer.",
@@ -2038,7 +2069,7 @@
        "steps": [
         {
          "id": "3.4.8",
-         "do": "Do the five numbered tasks in the Part box above, in order.",
+         "do": "Do the six numbered tasks in the Part box above, in order.",
          "see": "Your Part table is under the last GO, ending with a closing bracket, a semicolon and GO on its own line."
         },
         {
@@ -2054,10 +2085,10 @@
         {
          "id": "3.4.11",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully.",
+         "see": "The Messages tab says: Commands completed successfully.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -2073,7 +2104,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -2081,7 +2112,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -2244,8 +2275,8 @@
         },
         {
          "id": "3.4.16",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.4.17",
@@ -2289,10 +2320,10 @@
         {
          "id": "3.4.20",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. Every table so far was dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. Every table so far was dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -2308,7 +2339,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -2316,7 +2347,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -2448,8 +2479,8 @@
         },
         {
          "id": "3.4.22",
-         "do": "Click on the empty line under the last GO, at the very end of the script.",
-         "see": "The cursor blinks on an empty line under the last GO, with nothing after it."
+         "do": "Click at the end of the last GO, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.4.23",
@@ -2493,10 +2524,10 @@
         {
          "id": "3.4.26",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane says: Commands completed successfully. All ten tables were dropped and made again.",
+         "see": "The Messages tab says: Commands completed successfully. All ten tables were dropped and made again.",
          "img": {
           "img": "img/ch03-ssms-head-run.png",
-          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages pane at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
+          "alt": "The SQL Server Management Studio (SSMS) window after F5 with nothing highlighted. The Messages tab at the bottom reads Commands completed successfully, then a Completion time. Object Explorer on the left shows BikeShop under Databases.",
           "cap": "Running the whole script with nothing highlighted. Commands completed successfully means every line ran, and the database appears in Object Explorer.",
           "w": 900,
           "h": 560,
@@ -2512,7 +2543,7 @@
             "n": 2,
             "x": 27.5,
             "y": 57.5,
-            "say": "The Messages pane says: Commands completed successfully.",
+            "say": "The Messages tab says: Commands completed successfully.",
             "w": 24,
             "h": 4.5
            },
@@ -2520,7 +2551,7 @@
             "n": 3,
             "x": 6,
             "y": 23.8,
-            "say": "BikeShop appears under Databases.",
+            "say": "After Refresh, BikeShop appears under Databases.",
             "w": 9,
             "h": 3.6
            }
@@ -2571,8 +2602,8 @@
         },
         {
          "id": "3.5.2",
-         "do": "Click BikeShop-sample-data.sql in the Sample data card.",
-         "see": "Edge shows the file in its Downloads pop-up at the top right. It is now in your Downloads folder.",
+         "do": "Click BikeShop-sample-data.sql in the Sample data card. Then click Carry on beside chapter 3 in the list, to come back to this screen.",
+         "see": "Edge shows the file in its Downloads pop-up at the top right. It is now in your Downloads folder. Then this screen of chapter 3 is showing again.",
          "img": {
           "img": "img/ch03-edge-download.png",
           "alt": "The front page of this guide in the Edge browser, with the Sample data card under the list of chapters and the link BikeShop-sample-data.sql in it. The Downloads pop-up at the top right shows BikeShop-sample-data.sql.",
@@ -2655,7 +2686,7 @@
         },
         {
          "id": "3.5.6",
-         "do": "In the Open File box, double-click BikeShop-sample-data.sql in your Downloads folder.",
+         "do": "In the Open File box, click Downloads in the list on the left, then double-click BikeShop-sample-data.sql.",
          "see": "A second tab opens, named BikeShop-sample-data.sql. Its first line is a comment that says BikeShop sample data, and INSERT INTO Customer is a few lines down."
         }
        ]
@@ -2714,8 +2745,8 @@
         },
         {
          "id": "3.5.10",
-         "do": "Click on the empty line under the GO that ends the PartSale table, at the very end of the script.",
-         "see": "The cursor blinks on the empty line under the last GO."
+         "do": "Click at the end of the GO that ends the PartSale table, at the very end of the script, and press Enter.",
+         "see": "The cursor blinks on a new empty line under the last GO, with nothing after it."
         },
         {
          "id": "3.5.11",
@@ -2827,7 +2858,7 @@
      "title": "Type the last line of the script.",
      "blocks": [
       {
-       "p": "The script ends with one line that prints the words BikeShop is ready, and a GO. Those two lines are typed, not copied, because from now on they are the landmark of the script: every stored procedure in chapters 4 to 9 goes on the empty line above the PRINT line, so that the PRINT line is always last and the last thing the Messages pane says is always BikeShop is ready."
+       "p": "The script ends with one line that prints the words BikeShop is ready, and a GO. Those two lines are typed, not copied, because from now on they are the landmark of the script: every stored procedure in chapters 4 to 9 goes on the empty line above the PRINT line, so that the PRINT line is always last and the last thing the Messages tab says is always BikeShop is ready."
       },
       {
        "code": {
@@ -2841,7 +2872,7 @@
           "PRINT",
           "$end",
           "The words that mean the script got to the end",
-          "PRINT writes a line in the Messages pane. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
+          "PRINT writes a line in the Messages tab. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
          ]
         ],
         "focus": [
@@ -2863,7 +2894,7 @@
           1,
           2,
           "The words that mean the script got to the end",
-          "PRINT writes a line in the Messages pane. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
+          "PRINT writes a line in the Messages tab. The words are in single quotes because they are text, and the semicolon ends the statement. GO on its own line sends it. Nothing goes after this GO, ever."
          ]
         ]
        }
@@ -2942,7 +2973,7 @@
      "title": "Run the whole script and see the sample rows go in.",
      "blocks": [
       {
-       "p": "The script is complete. Run it with nothing highlighted and read the Messages pane from the top: one line per INSERT counting the rows that went in, then BikeShop is ready. Run it a second time and the counts are the same, because the tables were dropped and made again before the rows went in. That second run is the proof that the script can be run again."
+       "p": "The script is complete. Run it with nothing highlighted and read the Messages tab from the top: one line per INSERT counting the rows that went in, then BikeShop is ready. Run it a second time and the counts are the same, because the tables were dropped and made again before the rows went in. That second run is the proof that the script can be run again."
       },
       {
        "steps": [
@@ -2954,11 +2985,11 @@
         {
          "id": "3.6.2",
          "do": "Press F5 to run the whole script.",
-         "see": "The Messages pane shows a line for each table, such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
+         "see": "The Messages tab shows a line for each table, such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
          "img": {
           "img": "img/ch07-ssms-execute.png",
-          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
-          "cap": "Execute with nothing highlighted runs the whole script. The Messages pane counts the sample rows it put in, one line per table, then says BikeShop is ready.",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages tab underneath with lines such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
+          "cap": "Execute with nothing highlighted runs the whole script. The Messages tab counts the sample rows it put in, one line per table, then says BikeShop is ready.",
           "w": 900,
           "h": 520,
           "missing": false,
@@ -3057,7 +3088,13 @@
         {
          "id": "3.6.4",
          "do": "In Object Explorer, click the plus sign beside Databases.",
-         "see": "Databases opens out, and BikeShop is in the list under it."
+         "see": "Databases opens out, and BikeShop is in the list under it.",
+         "wrong": [
+          [
+           "BikeShop is not under Databases",
+           "Object Explorer does not look again by itself. Right-click Databases and click Refresh."
+          ]
+         ]
         },
         {
          "id": "3.6.5",
@@ -3076,7 +3113,7 @@
          "wrong": [
           [
            "Fewer than ten tables",
-           "One CREATE TABLE block is missing from the script, or the script stopped at a red error before it reached that table. Scroll the Messages pane up to the first red line and fix that."
+           "One CREATE TABLE block is missing from the script, or the script stopped at a red error before it reached that table. Scroll the Messages tab up to the first red line and fix that."
           ]
          ]
         }
@@ -3211,7 +3248,7 @@
      "title": "Tick the table: the tables, the rows, and two rows the tables must refuse.",
      "blocks": [
       {
-       "p": "Every row below is a test the examiner would run, and the last two are the ones that matter most. A table with a CHECK rule refuses a bad row by itself, with red text that names the rule, before any program exists. You type each refused INSERT into your New Query window, over the SELECT, and the red text is the evidence. Nothing is added, and SELECT * FROM Customer; afterwards still shows twelve rows."
+       "p": "Every row below is a test the examiner would run, and the last two are the ones that matter most. A table with a CHECK rule refuses a bad row by itself, with red text that names the rule, before any program exists. You type each refused INSERT into your New Query window, over the SELECT, and the red text is the evidence. Nothing is added, and SELECT * FROM Customer; afterwards still shows twelve rows. Take a screenshot of each refusal while its red text is on the screen, and another of the twelve rows. A screenshot is a picture of what is on the screen. To take one, click the Start button, type Snipping Tool, and press Enter to open it. Press New, drag a box round the red text or the rows, press Ctrl and S together, type a name such as refusal-1 or customers, and save it in your OneDrive coursework folder, the same folder as BikeShop.sql."
       },
       {
        "check": [
@@ -3231,7 +3268,7 @@
          "id": "3.6.13",
          "what": "The script runs again and the rows are not doubled",
          "expect": "allowed",
-         "how": "Click in the BikeShop.sql tab and press F5 with nothing highlighted. Then click the New Query tab and press F5 to run SELECT * FROM Customer; again. You still see twelve rows, not twenty-four."
+         "how": "Click in the BikeShop.sql tab and press F5 with nothing highlighted. Then click the other tab, the one whose name starts with SQLQuery, and press F5 to run SELECT * FROM Customer; again. You still see twelve rows, not twenty-four."
         },
         {
          "id": "3.6.14",
@@ -3282,7 +3319,7 @@
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Five ticks are your evidence that one script makes the whole database, that it can be run again, and that the rules in the tables refuse bad rows before any program is written. Keep a screenshot of the red refusal and of the twelve customers for your testing evidence in chapter 10. Close the New Query window without saving it: the script is the only file that matters, and it is saved in your OneDrive folder."
+       "p": "Five ticks are your evidence that one script makes the whole database, that it can be run again, and that the rules in the tables refuse bad rows before any program is written. Keep your screenshots of the two red refusals and of the twelve customers for your testing evidence in chapter 10. Close the New Query window by clicking the small cross on its tab. When it asks whether to save the changes, click No: the script is the only file that matters, and it is saved in your OneDrive folder."
       },
       {
        "box": {

@@ -261,7 +261,7 @@
       {
        "rule": {
         "which": "double",
-        "text": "The database refuses a double booking. The check is in one stored procedure, so every form on every computer that uses the database gets the same answer. You will type the two questions three times in this chapter, so that you can write them for your own tables without looking."
+        "text": "The database refuses a double booking. The check is in one stored procedure, so every form on every computer that uses the database gets the same answer. You will type the two questions four times in this chapter, so that you can write them for your own tables without looking."
        }
       }
      ]
@@ -350,7 +350,7 @@
      "title": "Read the stored procedure, then add it to your script.",
      "blocks": [
       {
-       "p": "This is the stored procedure that the booking form will call. Most of it is checks of the kind you wrote in chapter 4, so that part is copied. The yellow lines are the clash test, and you type those yourself. The Copy button under the first step leaves a gap for them."
+       "p": "This is the stored procedure that the booking form will call. Most of it is checks of the kind you wrote in chapter 4, so that part is copied. The yellow lines are the clash test, and you type those yourself. The Copy button under step 3 leaves a gap for them."
       },
       {
        "code": {
@@ -735,7 +735,7 @@
            {
             "n": 1,
             "x": 2,
-            "y": 11,
+            "y": 13,
             "say": "The sentence came from @Message. This is the refusal.",
             "w": 41.5,
             "h": 11
@@ -760,7 +760,7 @@
         },
         {
          "id": "7.2.9",
-         "do": "Change the 7 back to 13. Leave this test window open: stage 6 uses it again.",
+         "do": "Change the 7 back to 13. Leave this test window open: stage 6 uses it again. If it gets closed, copy the test from screen 3 of this stage again.",
          "see": "The test reads exactly as it did when you pasted it. If you press F5 by mistake, it is refused again, because Aoife already has 13:00, and nothing changes."
         }
        ]
@@ -780,6 +780,37 @@
          "a": "A basic service is 60 minutes, so 17:00 is the last start that fits. Check that the hour in DATEADD(HOUR, 13, …) is 13 again."
         }
        ]
+      },
+      {
+       "box": {
+        "title": "Before you log off: save your database",
+        "blocks": [
+         {
+          "p": "Booking 15 is a row in your database, and the cloud PC wipes the database when you log off. Stage 7 cancels that booking. Whenever you stop before the end of this chapter, save the whole database, rows and all, to a script before you log off:"
+         },
+         {
+          "p": "1. In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts…."
+         },
+         {
+          "p": "2. Click Next, then Next again. Leave Script entire database and all database objects chosen."
+         },
+         {
+          "p": "3. Click Advanced. Find Types of data to script at the bottom of the General list, change Schema only to Schema and data, and click OK."
+         },
+         {
+          "p": "4. Click Save as script file. Click the … button beside File name, open your OneDrive coursework folder, type BikeShop-saved.sql as the file name and click Save. If Windows asks whether to replace the file, click Yes."
+         },
+         {
+          "p": "5. Click Next, then Next again. When every line says Success, click Finish."
+         },
+         {
+          "p": "At the start of your next lesson, open BikeShop-saved.sql the way you open BikeShop.sql (File, Open, File…) and press F5 with nothing selected, instead of running BikeShop.sql. Your database comes back exactly as you left it, test rows and numbers included. Keep adding new work to BikeShop.sql: it is still the master copy. Never type in BikeShop-saved.sql."
+         },
+         {
+          "p": "If red lines say Database 'BikeShop' already exists, BikeShop.sql was run first this lesson. In Object Explorer, right-click BikeShop, click Delete, tick Close existing connections at the bottom and click OK. Then press F5 in BikeShop-saved.sql again."
+         }
+        ]
+       }
       }
      ]
     }
@@ -1052,10 +1083,10 @@
           "SET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));",
           "$end",
           "Move 3: onto the 13:00 booking",
-          "13:30 is inside Aoife's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
+          "13:30 is inside Aoife Byrne's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
          ]
         ],
-        "text": "-- Book Aoife at 15:00, then move that booking three times: onto itself, to\n-- 15:15, and onto her 13:00 booking.\nDECLARE @Day DATE, @Start DATETIME, @B INT, @Message VARCHAR(200);\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 15:00 on the test day\nSET @Start = DATEADD(HOUR, 15, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 2, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Black Giant road bike', @Notes = NULL,\n         @BookedByStaffID = 2,\n     @NewAppointmentID = @B OUTPUT, @Message = @Message OUTPUT;\nIF @Message <> ''\nBEGIN\n    PRINT 'Could not make the 15:00 booking: ' + @Message;\n    -- stop here\n    RETURN;\nEND\nPRINT 'Booked number ' + CAST(@B AS VARCHAR) + ' at 15:00.';\n\n-- 1. Onto its own time: a booking never clashes with itself.\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved onto itself: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved onto itself: ' + @Message;\nEND\n\n-- 2. To 15:15: the only booking it overlaps is itself, so still allowed.\nSET @Start = DATEADD(MINUTE, 15, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 15:15: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved to 15:15: ' + @Message;\nEND\n\n-- 3. To 13:30: inside the 13:00 booking from the first section, so refused.\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\nSET @Start = DATEADD(MINUTE, 30, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 13:30: allowed. (Run the first section first and this ' +\n        'move is refused.)';\nEND\nELSE BEGIN PRINT 'Move to 13:30 refused: ' + @Message; END",
+        "text": "-- Book Aoife at 15:00, then move that booking three times: onto itself, to\n-- 15:15, and onto her 13:00 booking.\nDECLARE @Day DATE, @Start DATETIME, @B INT, @Message VARCHAR(200);\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 15:00 on the test day\nSET @Start = DATEADD(HOUR, 15, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 2, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Black Giant road bike', @Notes = NULL,\n         @BookedByStaffID = 2,\n     @NewAppointmentID = @B OUTPUT, @Message = @Message OUTPUT;\nIF @Message <> ''\nBEGIN\n    PRINT 'Could not make the 15:00 booking: ' + @Message;\n    -- stop here\n    RETURN;\nEND\nPRINT 'Booked number ' + CAST(@B AS VARCHAR) + ' at 15:00.';\n\n-- 1. Onto its own time: a booking never clashes with itself.\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved onto itself: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved onto itself: ' + @Message;\nEND\n\n-- 2. To 15:15: the only booking it overlaps is itself, so still allowed.\nSET @Start = DATEADD(MINUTE, 15, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 15:15: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved to 15:15: ' + @Message;\nEND\n\n-- 3. To 13:30: inside the 13:00 booking from the stage 2 test, so refused.\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\nSET @Start = DATEADD(MINUTE, 30, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 13:30: allowed. (Run the stage 2 test first and this ' +\n        'move is refused.)';\nEND\nELSE BEGIN PRINT 'Move to 13:30 refused: ' + @Message; END",
         "partLines": [
          [
           3,
@@ -1085,7 +1116,7 @@
           48,
           57,
           "Move 3: onto the 13:00 booking",
-          "13:30 is inside Aoife's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
+          "13:30 is inside Aoife Byrne's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
          ]
         ]
        }
@@ -1147,7 +1178,7 @@
        "p": "A live hire has a Status of Booked or Out. A hire that is Returned or Cancelled does not block the bike. So the clash test for hires looks at the Hire table, for the same BikeID, with a status of Booked or Out, and asks the same two questions with the dates."
       },
       {
-       "p": "Your usp_Hire_Add stored procedure from chapter 4 already looks up the bike, works out the cost and checks the deposit. It is missing only the clash test. You write that part yourself."
+       "p": "The next screen gives you the hire stored procedure, usp_Hire_Add, with one part missing. It already looks up the bike, works out the cost and checks the deposit. You write the clash test yourself."
       }
      ]
     },
@@ -1242,11 +1273,12 @@
           "END"
          ]
         ],
+        "gapCopy": true,
         "task": [
-         "In SQL Server Management Studio (SSMS), find your usp_Hire_Add stored procedure in your script. It already works out the total cost and checks the deposit.",
-         "Just before its INSERT line, add an IF EXISTS test on the Hire table: the same BikeID, a Status of Booked or Out, and the two overlap questions with @StartDate and @EndDate in place of the times.",
+         "At the top of this box, press the button called Copy it, with a gap for the part you write. In SQL Server Management Studio (SSMS), click on the empty line above the line that prints BikeShop is ready and press Ctrl and V together. The stored procedure already works out the total cost and checks the deposit.",
+         "Find the line that says YOU TYPE THIS PART, just before the INSERT line. In its place, write an IF EXISTS test on the Hire table: the same BikeID, a Status of Booked or Out, and the two overlap questions with @StartDate and @EndDate in place of the times.",
          "Refuse the way the booking stored procedure does: SET @Message = 'That bike is already out on those dates.'; and then RETURN;",
-         "Press F5 to run your script."
+         "Select the lines from CREATE OR ALTER PROCEDURE usp_Hire_Add down to its GO, and press F5."
         ],
         "test": "The ready-made test that follows hires bike 1 for three days, starting ten days from now. Then it tries the same bike for three days starting two days into that hire.",
         "expect": "'Hired. New hire number …' and then 'Overlapping hire refused: That bike is already out on those dates.' If you see 'The overlapping hire got through: the rule is broken.', your test is letting it through. Check both questions and the status list.",
@@ -1423,7 +1455,7 @@
             "y": 41,
             "say": "If the second line says the rule is broken, go back to your clash test.",
             "w": 53,
-            "h": 10
+            "h": 11.5
            }
           ]
          }
@@ -1652,7 +1684,7 @@
           "Service 6 is a basic service. The answer is a list, so it appears in the Results pane, not the Messages pane."
          ]
         ],
-        "text": "-- Who is free at 13:00 on the test day for a basic service?  After the first\n-- section, Aoife is missing from the list.\nDECLARE @Day DATE, @Start DATETIME;\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_GetFreeMechanics @StartTime = @Start, @ServiceTypeID = 6;",
+        "text": "-- Who is free at 13:00 on the test day for a basic service?  After the\n-- stage 2 test, Aoife is missing from the list.\nDECLARE @Day DATE, @Start DATETIME;\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_GetFreeMechanics @StartTime = @Start, @ServiceTypeID = 6;",
         "partLines": [
          [
           3,
@@ -2109,6 +2141,12 @@
          ]
         }
        ]
+      },
+      {
+       "box": {
+        "title": "Now swap the lines in frmCustomers.cs",
+        "text": "Come back to frmCustomers.cs, as chapter 6 said. Delete the two lines you typed under the three green lines in ShowBookings. Select the three green lines, and press Ctrl and K together, then Ctrl and U together: the slashes come off, and ShowBookings calls AppointmentData the way the finished program does. Press F6, and the bookings grid works as before, through the data class this time."
+       }
       }
      ]
     },
@@ -2117,7 +2155,7 @@
      "title": "Add the booking form.",
      "blocks": [
       {
-       "p": "Now the form. It is a small window with six boxes down it, a grey note that only shows once the program is running, and two buttons. You add an empty form first, then drag each control on to it from the Toolbox."
+       "p": "Now the form. It is a small window with seven boxes down it, a grey note that only shows once the program is running, and two buttons. You add an empty form first, then drag each control on to it from the Toolbox."
       },
       {
        "steps": [
@@ -2215,7 +2253,7 @@
         "form": "frmAppointmentEdit",
         "img": {
          "img": "img/ch07-frmAppointmentEdit-design.png",
-         "alt": "The booking form in the Visual Studio designer with every control in place: six labels and boxes down the form, and the Book and Cancel buttons. The grey note is an empty label, so nothing shows where it sits.",
+         "alt": "The booking form in the Visual Studio designer with every control in place: seven labels and boxes down the form, and the Book and Cancel buttons. The grey note is an empty label, so nothing shows where it sits.",
          "cap": "frmAppointmentEdit in the designer. Yours should look like this before you add any code. The grey note has no words yet, so there is nothing to see where it sits.",
          "w": 560,
          "h": 520,
@@ -2240,11 +2278,14 @@
         "acceptButton": "btnBook",
         "cancelButton": "btnCancel",
         "formNote": "Books a repair. The mechanic list only ever shows mechanics who are free for that service at that time; the database checks again when you click Book.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
           "name": "lblMoving",
-          "settings": [],
+          "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)"
+          ],
           "then": [],
           "note": "Empty for a new booking. When moving, says which booking is being moved."
          },
@@ -2282,7 +2323,7 @@
            "DropDownStyle = DropDownList"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `cboService_SelectedIndexChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `cboService_SelectedIndexChanged`, which the code you paste later replaces."
           ],
           "note": "Each service with its minutes and price."
          },
@@ -2302,7 +2343,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpDate_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpDate_ValueChanged`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2322,7 +2363,7 @@
            "DropDownStyle = DropDownList"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `cboStart_SelectedIndexChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `cboStart_SelectedIndexChanged`, which the code you paste later replaces."
           ],
           "note": "Every quarter hour from 08:30 to 17:15. Filled by code when the window opens."
          },
@@ -2348,7 +2389,8 @@
           "toolbox": "Label",
           "name": "lblMechanicNote",
           "settings": [
-           "ForeColor = grey (92, 103, 116)"
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)",
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": "\"2 mechanics are free.\" or \"No mechanic is free then.\""
@@ -2394,7 +2436,7 @@
            "Text = Book"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnBook_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnBook_Click`, which the code you paste later replaces."
           ],
           "note": "Says \"Move\" when moving."
          },
@@ -3013,17 +3055,17 @@
             "n": 1,
             "x": 0.5,
             "y": 1,
-            "say": "The code tab, frmAppointmentEdit.cs, is in front.",
-            "w": 18,
-            "h": 4.8
+            "say": "The code tab is in front.",
+            "w": 20,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 10,
-            "y": 91.3,
-            "say": "Paste inside the class, after the last method the designer made.",
-            "w": 35,
-            "h": 3.3
+            "x": 2.5,
+            "y": 9.5,
+            "say": "Select everything here before you paste over it.",
+            "w": 96.5,
+            "h": 89.5
            }
           ]
          }
@@ -3053,8 +3095,8 @@
          },
          "wrong": [
           [
-           "frmAppointmentEdit_Load or btnBook_Click is underlined: no suitable method found",
-           "The designer did not make that event. Go back to the designer, click the form (or the Book button), open the Properties window, press the lightning bolt, find Load (or Click) and double-click the empty box beside it."
+           "The Customer and Service lists are empty when the form opens",
+           "The form's Load event was not made. Go back to the designer, with the form itself picked, press the lightning bolt at the top of the Properties window and double-click the empty box beside Load, which is part of the way down, after Leave. Visual Studio connects it to the frmAppointmentEdit_Load method in your file. Press the Properties button, just left of the lightning bolt, to go back to the properties."
           ],
           [
            "'The name Session does not exist'",
@@ -3083,7 +3125,7 @@
           "n": 2,
           "x": 37.5,
           "y": 33.8,
-          "say": "Double-click the empty box beside the event named in the table. Load is part of the way down, just after Leave.",
+          "say": "Double-click the empty box beside the event you need. Load is part of the way down, just after Leave.",
           "w": 61.5,
           "h": 4
          }
@@ -3595,7 +3637,7 @@
      "title": "Drag the diary’s controls from the Toolbox and set their properties.",
      "blocks": [
       {
-       "p": "Set the form's own properties first, then work down the table. The grid gets the same settings you gave the customers grid in chapter 5. DiaryTimeline is your own control from the last build. Drag it from the top of the Toolbox like any other, name it timeline, and size it 968 by 200."
+       "p": "Set the form's own properties first, then work down the table. The grid gets the same settings you gave the customers grid in chapter 6. DiaryTimeline is your own control from the last build. Drag it from the top of the Toolbox like any other, name it timeline, and size it 968 by 200."
       },
       {
        "controls": {
@@ -3619,26 +3661,26 @@
           {
            "n": 2,
            "x": 4,
+           "y": 12.4,
+           "say": "The time line. In the designer it says there are no bookings, because there is no day yet.",
+           "w": 92.2,
+           "h": 27.4
+          },
+          {
+           "n": 3,
+           "x": 4,
            "y": 41.5,
            "say": "The grid.",
            "w": 92.2,
            "h": 45.8
           },
           {
-           "n": 3,
+           "n": 4,
            "x": 4,
            "y": 88.8,
            "say": "New booking, Move, Mark done, Cancel booking and Close along the bottom.",
            "w": 92.3,
            "h": 5
-          },
-          {
-           "n": 4,
-           "x": 4,
-           "y": 12.4,
-           "say": "The time line. In the designer it says there are no bookings, because there is no day yet.",
-           "w": 92.2,
-           "h": 27.4
           }
          ]
         },
@@ -3651,6 +3693,7 @@
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "One day of repair bookings: a picture of each mechanic's day on top, the same bookings as a grid below.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -3668,7 +3711,7 @@
            "Format = Long"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `dtpDay_ValueChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `dtpDay_ValueChanged`, which the code you paste later replaces."
           ],
           "note": "Pick a day; the diary reloads."
          },
@@ -3679,7 +3722,7 @@
            "Text = Today"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnToday_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnToday_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3696,7 +3739,7 @@
           "toolbox": "DataGridView",
           "name": "dgvBookings",
           "settings": [
-           "the grid settings (chapter 6)"
+           "the grid settings (chapter 6, stage 3, screen 1)"
           ],
           "then": [
            "Events tab (the lightning bolt) → SelectionChanged: type `dgvBookings_SelectionChanged` beside it and press Enter."
@@ -3710,7 +3753,7 @@
            "Text = New booking"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnNew_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnNew_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3722,7 +3765,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnMove_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnMove_Click`, which the code you paste later replaces."
           ],
           "note": "Only for a booking that is still \"Booked\"."
          },
@@ -3734,7 +3777,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnDone_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnDone_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -3746,7 +3789,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCancelBooking_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCancelBooking_Click`, which the code you paste later replaces."
           ],
           "note": "A status change, not a delete: the booking stays in the diary as Cancelled."
          },
@@ -3757,7 +3800,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -3811,7 +3854,7 @@
           "DataTable bookings = AppointmentData.GetByDay(dtpDay.Value);",
           "Grid.Tidy(dgvBookings, \"AppointmentID\", \"MechanicID\");",
           "Fetch the day and show it in the grid",
-          "One trip to the database. The table becomes the grid's DataSource. Grid.Tidy is your helper from chapter 5: it hides the two number columns and tidies the headings."
+          "One trip to the database. The table becomes the grid's DataSource. Grid.Tidy is your helper from chapter 6: it hides the two number columns and tidies the headings."
          ],
          [
           "timeline.ShowDay(dtpDay.Value, bookings);",
@@ -3832,7 +3875,7 @@
           5,
           7,
           "Fetch the day and show it in the grid",
-          "One trip to the database. The table becomes the grid's DataSource. Grid.Tidy is your helper from chapter 5: it hides the two number columns and tidies the headings."
+          "One trip to the database. The table becomes the grid's DataSource. Grid.Tidy is your helper from chapter 6: it hides the two number columns and tidies the headings."
          ],
          [
           8,
@@ -3929,7 +3972,7 @@
           "private void btnMove_Click",
           "LoadDay();",
           "Move opens the same form with the booking in it",
-          "The booking number, the start time and a one-line summary come from the selected row of the grid. Grid.SelectedID and Grid.SelectedText are your helpers from chapter 5."
+          "The booking number, the start time and a one-line summary come from the selected row of the grid. Grid.SelectedID and Grid.SelectedText are your helpers from chapter 6."
          ],
          [
           "private void btnDone_Click",
@@ -3969,7 +4012,7 @@
           10,
           25,
           "Move opens the same form with the booking in it",
-          "The booking number, the start time and a one-line summary come from the selected row of the grid. Grid.SelectedID and Grid.SelectedText are your helpers from chapter 5."
+          "The booking number, the start time and a one-line summary come from the selected row of the grid. Grid.SelectedID and Grid.SelectedText are your helpers from chapter 6."
          ],
          [
           27,
@@ -4136,29 +4179,29 @@
             "n": 1,
             "x": 0.5,
             "y": 1,
-            "say": "The code tab, frmAppointmentEdit.cs, is in front.",
-            "w": 18,
-            "h": 4.8
+            "say": "The code tab is in front.",
+            "w": 20,
+            "h": 5.5
            },
            {
             "n": 2,
-            "x": 10,
-            "y": 91.3,
-            "say": "Paste inside the class, after the last method the designer made.",
-            "w": 35,
-            "h": 3.3
+            "x": 2.5,
+            "y": 9.5,
+            "say": "Select everything here before you paste over it.",
+            "w": 96.5,
+            "h": 89.5
            }
           ]
          }
         },
         {
          "id": "7.6.8",
-         "do": "Open frmMain in the designer and double-click its Diary button. Inside the method that appears, type the same two lines you typed for the Customers button in chapter 6, with frmDiary in place of frmCustomers: frmDiary diary = new frmDiary(); and then diary.ShowDialog(this);",
-         "see": "Build succeeded. Press F5 to run the program, sign in, and press Diary.",
+         "do": "Open frmMain in the designer and double-click its Workshop diary button. Inside the method that appears, type the same two lines you typed for the Customers button in chapter 6, with frmDiary in place of frmCustomers: frmDiary diary = new frmDiary(); and then diary.ShowDialog(this);",
+         "see": "Build succeeded. Press F5 to run the program, sign in, and press Workshop diary.",
          "img": {
           "img": "img/ch07-vs-main-diary-button.png",
-          "alt": "frmMain in the designer with its Diary button selected, and the code window beside it showing the two lines inside btnDiary_Click.",
-          "cap": "The Diary button on your main menu opens the diary.",
+          "alt": "frmMain in the designer with its Workshop diary button selected, and the code window beside it showing the two lines inside btnDiary_Click.",
+          "cap": "The Workshop diary button on your main menu opens the diary.",
           "w": 900,
           "h": 520,
           "missing": false,
@@ -4167,7 +4210,7 @@
             "n": 1,
             "x": 3.3,
             "y": 29.8,
-            "say": "Double-click the Diary button to make its Click method.",
+            "say": "Double-click the Workshop diary button to make its Click method.",
             "w": 24.5,
             "h": 12.5
            },
@@ -4224,7 +4267,13 @@
             "h": 4.7
            }
           ]
-         }
+         },
+         "wrong": [
+          [
+           "Only the two sample bookings, not four",
+           "Your test bookings are not in your database: a new lesson, or running BikeShop.sql with nothing selected, leaves only the sample data. If you saved your database at the end of last lesson, open BikeShop-saved.sql and press F5 with nothing selected. If not, click New Query, copy the test from stage 2, screen 3, paste it and press F5. Do the same with the test from stage 3, screen 2. Write the two new numbers down: stage 7 uses them. Then close the diary, open it again and pick the test day."
+          ]
+         ]
         },
         {
          "id": "7.6.10",
@@ -4281,7 +4330,13 @@
             "h": 8.5
            }
           ]
-         }
+         },
+         "wrong": [
+          [
+           "Your test window from stage 2 is closed",
+           "Click New Query, copy the test from stage 2, screen 3, paste it, make the three changes in this step, and press F5."
+          ]
+         ]
         },
         {
          "id": "7.6.13",
@@ -4342,7 +4397,7 @@
          "a": "The list filled again and lost your choice. Pick Niamh in the list, then press Book."
         },
         {
-         "q": "Nothing happens when you press Diary",
+         "q": "Nothing happens when you press Workshop diary",
          "a": "The Click event is not wired. In the designer, click the button, open the Properties window, press the lightning bolt and check that Click has a method beside it."
         },
         {
@@ -4620,7 +4675,7 @@
           "The same day as your tests. The cancelled row is still in the list, with its Status reading Cancelled."
          ]
         ],
-        "text": "-- Cancel one booking by its number, then look at the day: the row is still\n-- there, marked Cancelled.\nDECLARE @ID INT, @Day DATE, @Message VARCHAR(200);\n-- <-- put the number that the first section printed for you here\nSET @ID = 0;\n\nEXEC usp_Appointment_Cancel @AppointmentID = @ID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled number ' + CAST(@ID AS VARCHAR)\n        + '. It is still in the diary, marked Cancelled.';\nEND\nELSE BEGIN PRINT @Message; END\n\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nEXEC usp_Appointment_GetByDay @Day = @Day;",
+        "text": "-- Cancel one booking by its number, then look at the day: the row is still\n-- there, marked Cancelled.\nDECLARE @ID INT, @Day DATE, @Message VARCHAR(200);\n-- <-- put the number that the stage 2 test printed for you here\nSET @ID = 0;\n\nEXEC usp_Appointment_Cancel @AppointmentID = @ID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled number ' + CAST(@ID AS VARCHAR)\n        + '. It is still in the diary, marked Cancelled.';\nEND\nELSE BEGIN PRINT @Message; END\n\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nEXEC usp_Appointment_GetByDay @Day = @Day;",
         "partLines": [
          [
           3,
@@ -4649,7 +4704,13 @@
          "id": "7.7.5",
          "do": "Click New Query, press the Copy button under this step, paste the test, replace the 0 on the SET @ID line with your first booking number from stage 2, and press F5.",
          "copy": "7.7-try",
-         "see": "The Messages pane says (1 row affected), then Cancelled number 15. It is still in the diary, marked Cancelled, then (6 rows affected). Your number is the one you typed."
+         "see": "The Messages pane says (1 row affected), then Cancelled number 15. It is still in the diary, marked Cancelled, then (6 rows affected). Your number is the one you typed.",
+         "wrong": [
+          [
+           "'Only an open booking can be cancelled.' the first time you run it",
+           "Check the number on the SET @ID line against the one you wrote down at stage 2. If this is a new lesson, open BikeShop-saved.sql, the copy you saved before you logged off, and press F5 with nothing selected. If you did not save one, run the stage 2 test and the stage 3 test again, each in a New Query window, and use the numbers they print."
+          ]
+         ]
         },
         {
          "id": "7.7.6",
@@ -4687,7 +4748,7 @@
         {
          "id": "7.7.7",
          "do": "Go to your stage 2 test window and put the EXEC line back as it was: @CustomerID = 1, @MechanicID = 3, and 'Blue Trek hybrid'. Press F5.",
-         "see": "Booked, with a new number. Aoife's 13:00 slot is free again, because the clash test leaves out cancelled rows."
+         "see": "Booked, with a new number. Aoife Byrne's 13:00 slot is free again, because the clash test leaves out cancelled rows."
         },
         {
          "id": "7.7.8",
@@ -4840,7 +4901,7 @@
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your scenario will not have mechanics and bikes. Write down what the equivalent is: the thing that cannot be in two places at once, such as a room, a pod, a van or a tutor, and the start and end of its use. The lines you typed three times are the same for all of them. Only the table and column names change. Chapter 12 goes through this for your own tables."
+        "text": "Your scenario will not have mechanics and bikes. Write down what the equivalent is: the thing that cannot be in two places at once, such as a room, a pod, a van or a tutor, and the start and end of its use. The lines you typed four times are the same for all of them. Only the table and column names change. Chapter 12 goes through this for your own tables."
        }
       }
      ]

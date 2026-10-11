@@ -71,7 +71,7 @@
      "blocks": [
       {
        "need": [
-        "Chapter 4 finished: BikeShop.sql runs clean in SQL Server Management Studio (SSMS) and ends with the line BikeShop is ready.",
+        "Chapter 4 finished, and the database made fresh in this session: open BikeShop.sql in SQL Server Management Studio (SSMS), make sure nothing is highlighted, press F5, and wait for the line BikeShop is ready. The school computer clears the database between sessions, so do this at the start of every session.",
         "The stored procedure usp_Staff_Login in your script, from chapter 4.",
         "Visual Studio 2019 open, inside the Programming Environment, as you did in chapter 1.",
         "Your OneDrive folder for this course, the one that holds BikeShop.sql."
@@ -253,8 +253,8 @@
         },
         {
          "id": "5.1.4b",
-         "do": "Click your OneDrive folder for this course, the one that holds BikeShop.sql, and press Select Folder.",
-         "see": "The Location box shows a path that ends in your OneDrive folder."
+         "do": "In the Project Location window, find the A2 SSD Coursework folder, the one that holds BikeShop.sql. If the window opened somewhere else, click OneDrive - C2k in the list on the left first. Double-click A2 SSD Coursework to open it, and press Select Folder.",
+         "see": "The Location box shows a path that ends in A2 SSD Coursework."
         },
         {
          "id": "5.1.5",
@@ -305,7 +305,7 @@
          "wrong": [
           [
            "The Framework box offers nothing called 4.7.2",
-           "Pick the highest 4.x number it offers. Write the number down: you will match it in App.config in the next stage."
+           "Pick the highest 4.x number it offers. Write the number down: in the next stage, after you paste App.config, you change 4.7.2 in it to your number."
           ]
          ]
         }
@@ -458,7 +458,7 @@
         {
          "id": "5.2.4",
          "do": "Press Ctrl and V together to paste the copied code over it.",
-         "see": "The file now has a connectionStrings part in the middle, with a line that names BikeShop.",
+         "see": "The file now has a connectionStrings part in the middle, with a line that names BikeShop. If you picked a number other than 4.7.2 in stage 1, find 4.7.2 in the line near the top that begins with supportedRuntime, and change it to your number.",
          "img": {
           "img": "img/ch05-vs-app-config.png",
           "alt": "The App.config file open in Visual Studio 2019, showing the connectionStrings part with the add line that names BikeShop and the connection string on the line under it.",
@@ -575,8 +575,8 @@
        "steps": [
         {
          "id": "5.2.6",
-         "do": "In Solution Explorer, right-click References, and click Add Reference…",
-         "see": "The Reference Manager window opens with a long list of names and a search box at the top right.",
+         "do": "In Solution Explorer, right-click References, and click Add Reference… When the Reference Manager window opens, click Assemblies on the left of it.",
+         "see": "Assemblies is chosen on the left, and the window shows a long list of names and a search box at the top right.",
          "img": {
           "img": "img/sh-vs-add-reference.png",
           "alt": "The Reference Manager window in Visual Studio with Assemblies chosen on the left and System.Configuration ticked in the list.",
@@ -630,7 +630,7 @@
          "wrong": [
           [
            "Two lines both say System.Configuration",
-           "Tick the one whose version number begins with 4, which matches .NET Framework 4.7.2."
+           "The second line is System.Configuration.Install. Tick the line that says exactly System.Configuration, with nothing after it."
           ]
          ]
         }
@@ -649,7 +649,7 @@
      "title": "Read what the helper class does.",
      "blocks": [
       {
-       "p": "In Visual Studio 2019 you now add the most important file in the program: Db.cs. Db is one class that every other class goes through to reach the database. Nothing else in the program opens a connection or names a stored procedure. When a screen needs rows, it asks Db. When a screen needs to change data, it asks Db. That is the second rule from chapter 0: every table is touched through a stored procedure, and in C# every stored procedure is run through Db."
+       "p": "In Visual Studio 2019 you now add the most important file in the program: Db.cs. Db is one class that every other class goes through to reach the database. Nothing else in the program opens a connection or names a stored procedure. When a screen needs rows, it asks Db. When a screen needs to change data, it asks Db. That is the rule of this program: every table is touched through a stored procedure, and in C# every stored procedure is run through Db."
       },
       {
        "p": "Db has four methods. P makes a parameter, which is one value to send to a stored procedure, such as a username. Out makes an output parameter, a slot the stored procedure fills in and the program reads afterwards, such as the new ID of a row that was just added. GetTable runs a stored procedure that selects rows and hands back a table. Run runs a stored procedure that changes data and hands back its message: an empty message means it worked."
@@ -968,7 +968,7 @@
      "title": "Read what the four small classes do.",
      "blocks": [
       {
-       "p": "In this stage you add four short files to Visual Studio 2019. StaffMember describes one member of staff: it is a class with six properties and no methods, one property per column of the Staff table. Session remembers who is signed in, for the whole program, from sign-in to sign-out. StaffData is the class that asks Db to run the Staff stored procedures. Msg shows message boxes, so that every form says things the same way."
+       "p": "In this stage you add four short files to Visual Studio 2019. StaffMember describes one member of staff: it is a class with six properties and no methods, one for each column of the Staff table except IsActive. Session remembers who is signed in, for the whole program, from sign-in to sign-out. StaffData is the class that asks Db to run the Staff stored procedures. Msg shows message boxes, so that every form says things the same way."
       },
       {
        "p": "The pattern of StaffData is the one every later chapter repeats: a class in the Data folder, one method per stored procedure, each method one call to Db. Read it closely here, because chapters 6 to 9 add CustomerData, PartData and the rest in exactly this shape."
@@ -1060,8 +1060,8 @@
          [
           "public int StaffID",
           "$end",
-          "Six properties, one per column",
-          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text."
+          "Six properties, one for each column except IsActive",
+          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text. IsActive is left out, because the login stored procedure only lets active staff through, so the program never needs to hold it."
          ]
         ],
         "text": "namespace BikeShop.Models\n{\n    // One member of staff.  Plain properties only.\n    public class StaffMember\n    {\n        public int StaffID { get; set; }\n        public string FirstName { get; set; }\n        public string LastName { get; set; }\n        public string Role { get; set; }\n        public string Username { get; set; }\n        public string Password { get; set; }\n    }\n}",
@@ -1075,8 +1075,8 @@
          [
           6,
           13,
-          "Six properties, one per column",
-          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text."
+          "Six properties, one for each column except IsActive",
+          "Each line is a property: a named value the class holds. get; set; means that other code can read the value and change it. The names and the kinds match the Staff table: StaffID is a whole number, and the other five are text. IsActive is left out, because the login stored procedure only lets active staff through, so the program never needs to hold it."
          ]
         ]
        }
@@ -1581,8 +1581,8 @@
         },
         {
          "id": "5.5.3",
-         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
-         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right."
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open. In the Properties window, click the small A-Z button directly under the box that names the form (its tip says Alphabetical), so the properties are listed in alphabetical order.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right with the A-Z button pressed in."
         }
        ]
       }
@@ -1590,10 +1590,10 @@
     },
     {
      "id": "2",
-     "title": "Set the form and its nine controls.",
+     "title": "Set the form and its eight controls.",
      "blocks": [
       {
-       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you and opens the code tab. To come back to the form, click the tab that has the form's name and [Design] after it, such as frmLogin.cs [Design], or press Shift and F7 together."
       },
       {
        "controls": {
@@ -1610,7 +1610,7 @@
            "n": 1,
            "x": 7.5,
            "y": 15.5,
-           "say": "lblTitle, in 16 point bold.",
+           "say": "lblTitle, in 16 point bold, with lblSub, the smaller line, under it.",
            "w": 39,
            "h": 8.5
           },
@@ -1648,15 +1648,16 @@
           }
          ]
         },
-        "title": "Towpath Cycles — sign in",
+        "title": "Towpath Cycles - sign in",
         "size": [
-         420,
-         300
+         436,
+         339
         ],
         "border": "FixedDialog",
         "acceptButton": "btnSignIn",
         "cancelButton": null,
         "formNote": "The first window. A member of staff types their username and password; the database says whether they match.",
+        "load": false,
         "rows": [
          {
           "toolbox": "Label",
@@ -1715,6 +1716,7 @@
           "toolbox": "Label",
           "name": "lblMessage",
           "settings": [
+           "Text = (nothing: delete the word Visual Studio puts there, such as label1, then press Enter)",
            "ForeColor = Firebrick"
           ],
           "then": [],
@@ -1727,7 +1729,7 @@
            "Text = Sign in"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSignIn_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSignIn_Click`, which the code you paste later replaces."
           ],
           "note": "Checks the details against the Staff table."
          }
@@ -1910,7 +1912,7 @@
         {
          "id": "5.5.8",
          "do": "Press F6 to build.",
-         "see": "The Error List at the bottom shows one error: \"The type or namespace name 'frmMain' could not be found\". That is expected, and you fix it in stage 6.",
+         "see": "The Error List at the bottom shows two errors, both saying \"The type or namespace name 'frmMain' could not be found\". That is expected, and you fix it in stage 6.",
          "wrong": [
           [
            "'frmLogin' does not contain a definition for 'button1_Click' (or another old name)",
@@ -2287,7 +2289,7 @@
         {
          "id": "5.5.17",
          "do": "Close the six designer tabs you opened, by clicking the X on each tab.",
-         "see": "Only the frmLogin tabs and Program.cs are left open."
+         "see": "The six empty form tabs, frmCustomers to frmReports, are gone."
         }
        ]
       }
@@ -2349,13 +2351,13 @@
         },
         {
          "id": "5.6.2",
-         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open.",
-         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right."
+         "do": "Open the Toolbox (View, then Toolbox) and the Properties window (View, then Properties Window), if they are not already open. In the Properties window, click the small A-Z button directly under the box that names the form (its tip says Alphabetical), so the properties are listed in alphabetical order.",
+         "see": "The Toolbox is on the left, the form in the middle, the Properties window on the right with the A-Z button pressed in."
         }
        ]
       },
       {
-       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+       "p": "Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you and opens the code tab. To come back to the form, click the tab that has the form's name and [Design] after it, such as frmLogin.cs [Design], or press Shift and F7 together. Make each of the six big buttons 280 wide and 80 high: click the button, find Size in the Properties window, and type 280, 80. Make Sign out 100, 32. Put the six big ones in two columns of three, with a small gap between, as in the picture with the table."
       },
       {
        "controls": {
@@ -2412,13 +2414,14 @@
         },
         "title": "Towpath Cycles",
         "size": [
-         640,
-         420
+         656,
+         459
         ],
         "border": "FixedSingle",
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "The menu. One big button for each part of the system; the Reports button is switched off unless the manager is signed in.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -2446,7 +2449,7 @@
            "Text = Workshop diary"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnDiary_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnDiary_Click`, which the code you paste later replaces."
           ],
           "note": "Opens the day-by-day diary of repair bookings."
          },
@@ -2457,7 +2460,7 @@
            "Text = Customers"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnCustomers_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnCustomers_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2468,7 +2471,7 @@
            "Text = Bike hire"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnHires_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnHires_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2479,7 +2482,7 @@
            "Text = Bikes for sale and hire"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnBikes_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnBikes_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2490,7 +2493,7 @@
            "Text = Parts and stock"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnParts_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnParts_Click`, which the code you paste later replaces."
           ],
           "note": ""
          },
@@ -2501,7 +2504,7 @@
            "Text = Reports"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnReports_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnReports_Click`, which the code you paste later replaces."
           ],
           "note": "Manager only. The code switches it off for everyone else."
          },
@@ -2512,7 +2515,7 @@
            "Text = Sign out"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSignOut_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSignOut_Click`, which the code you paste later replaces."
           ],
           "note": "Closes this window and shows the sign-in window again."
          }
@@ -2520,7 +2523,7 @@
        }
       },
       {
-       "p": "The Load event is made from the form itself, not from a button. Click the title bar of the form, and in the Properties window press the lightning bolt at the top, which switches the window from properties to events. The events are listed in alphabetical order, so Load comes after Leave. Double-click the empty box beside Load, and the designer makes frmMain_Load for you."
+       "p": "The Load event is made from the form itself, not from a button. Come back to the form first: click the frmMain.cs [Design] tab, or press Shift and F7 together. Click the title bar of the form, and in the Properties window press the lightning bolt at the top, which switches the window from properties to events. The events are listed in alphabetical order, so Load comes after Leave. Double-click the empty box beside Load, and the designer makes frmMain_Load for you."
       },
       {
        "screenshot": {
@@ -2567,7 +2570,7 @@
      "title": "Put the code behind the main menu.",
      "blocks": [
       {
-       "p": "Double-clicking the last button opened the code tab. Paste the whole file over everything there, build, and then read the Load method and the Open region below."
+       "p": "Double-clicking the empty box beside Load opened the code tab. Paste the whole file over everything in the frmMain.cs code tab, build, and then read the Load method and the Open region below."
       },
       {
        "steps": [
@@ -2743,7 +2746,7 @@
         {
          "id": "5.6.8",
          "do": "Press F5 to run your program.",
-         "see": "The sign-in window opens, with Towpath Cycles — sign in in its title bar and the cursor in the Username box.",
+         "see": "The sign-in window opens, with Towpath Cycles - sign in in its title bar and the cursor in the Username box.",
          "img": {
           "img": "img/sh-vs-run.png",
           "alt": "The Visual Studio toolbar with the green Start button.",
@@ -2814,7 +2817,7 @@
          "wrong": [
           [
            "The red label says Could not reach the database. Is SQL Server running?",
-           "The connection string in App.config does not match a running server. In SQL Server Management Studio (SSMS), check the server name you connect with, and make it the same as the part after Server= in App.config."
+           "Close the sign-in window first. The likeliest cause is that the database BikeShop does not exist yet in this session, because the school computer clears it between sessions. In SQL Server Management Studio (SSMS), open BikeShop.sql, make sure nothing is highlighted, press F5, and wait for the line BikeShop is ready. Then press F5 in Visual Studio 2019 to run your program again. If it still happens, the connection string in App.config does not match a running server: in SQL Server Management Studio (SSMS), check the server name you connect with, and make it the same as the part after Server= in App.config."
           ],
           [
            "The red label says Those details are not recognised",
@@ -2825,7 +2828,7 @@
         {
          "id": "5.6.10",
          "do": "Press the Sign out button.",
-         "see": "The main menu closes and the sign-in window comes back, with the password box empty."
+         "see": "The main menu closes and the sign-in window comes back, with the password box empty and siobhan still in the Username box."
         }
        ]
       }
@@ -2842,7 +2845,7 @@
        "steps": [
         {
          "id": "5.6.11",
-         "do": "Type padraig in the Username box, type canal02 in the Password box, and press Enter.",
+         "do": "Double-click siobhan in the Username box to highlight it, type padraig over it, type canal02 in the Password box, and press Enter.",
          "see": "The main menu opens, with Signed in: Pádraig Maguire (Counter) under the title. The Reports button is greyed out and reads Reports (manager only).",
          "img": {
           "img": "img/ch05-app-menu-padraig.png",
@@ -2902,7 +2905,7 @@
      "title": "Run each sign-in once.",
      "blocks": [
       {
-       "p": "The table on the next screen is evidence for your write-up: each row is one sign-in you tried and what the program did. Run your program from Visual Studio 2019 with F5, and work down the rows. Three rows are sign-ins that must be refused, and a refusal that happens is a pass, not a fail. Take a screenshot of each refusal, because chapter 10 asks for them."
+       "p": "The table on the next screen is evidence for your write-up: each row is one sign-in you tried and what the program did. Run your program from Visual Studio 2019 with F5, and work down the rows. Three rows are sign-ins that must be refused, and a refusal that happens is a pass, not a fail. In chapter 10 you take the pictures that prove each test, so you do not need to take any now."
       },
       {
        "p": "The sixth member of staff, Liam Doran, left in the summer. His row in the Staff table is still there, with IsActive set to 0, so that the appointments he did still have a mechanic's name on them. Your stored procedure checks IsActive, so his old username and password should no longer get in. That is the database saying no, inside your program."
@@ -2911,7 +2914,7 @@
     },
     {
      "id": "2",
-     "title": "Tick the table: four sign-ins, three refusals.",
+     "title": "Tick the table: three sign-ins, one sign-out, three refusals.",
      "blocks": [
       {
        "check": [
@@ -2925,25 +2928,25 @@
          "id": "5.7.2",
          "what": "A counter worker signs in and sees Reports switched off",
          "expect": "allowed",
-         "how": "Press Sign out, sign in as padraig with canal02 and press Enter. The main menu opens with Signed in: Pádraig Maguire (Counter), and the Reports button is greyed out and reads Reports (manager only)."
+         "how": "Press Sign out, double-click the old name in the Username box and type padraig over it, type canal02 in the Password box, and press Enter. The main menu opens with Signed in: Pádraig Maguire (Counter), and the Reports button is greyed out and reads Reports (manager only)."
         },
         {
          "id": "5.7.3",
          "what": "A mechanic signs in and sees Reports switched off",
          "expect": "allowed",
-         "how": "Press Sign out, sign in as aoife with canal03 and press Enter. The main menu opens with Signed in: Aoife Byrne (Mechanic), and the Reports button is greyed out."
+         "how": "Press Sign out, double-click the old name in the Username box and type aoife over it, type canal03 in the Password box, and press Enter. The main menu opens with Signed in: Aoife Byrne (Mechanic), and the Reports button is greyed out."
         },
         {
          "id": "5.7.4",
          "what": "Sign out brings the sign-in window back with the password box empty",
          "expect": "allowed",
-         "how": "Press Sign out. The main menu closes and the sign-in window comes back with the password box empty and the cursor in the Username box."
+         "how": "Press Sign out. The main menu closes and the sign-in window comes back with the password box empty and the cursor in the Username box, which still holds the name you used last."
         },
         {
          "id": "5.7.5",
          "what": "Two empty boxes are refused before the database is asked",
          "expect": "control",
-         "how": "Leave both boxes empty and press Enter. The red label says \"Type your username and your password.\" and the window stays open."
+         "how": "Double-click the old name in the Username box and press Delete, so that both boxes are empty, then press Enter. The red label says \"Type your username and your password.\" and the window stays open."
         },
         {
          "id": "5.7.6",
@@ -2955,7 +2958,7 @@
          "id": "5.7.7",
          "what": "A member of staff who has left is refused",
          "expect": "control",
-         "how": "Type liam in the Username box, type canal06 in the Password box, and press Enter. The red label says Those details are not recognised, even though both are the right words, because Liam Doran has IsActive set to 0."
+         "how": "Double-click the old name in the Username box and type liam over it, type canal06 in the Password box, and press Enter. The red label says Those details are not recognised, even though both are the right words, because Liam Doran has IsActive set to 0."
         }
        ]
       },
@@ -3019,7 +3022,7 @@
         },
         {
          "q": "Every sign-in says Could not reach the database",
-         "a": "The program cannot find SQL Server. Check that SQL Server Management Studio (SSMS) can connect to the same server name that App.config has after Server=, and that the database there is called BikeShop."
+         "a": "The program cannot find the database. First open BikeShop.sql in SQL Server Management Studio (SSMS), make sure nothing is highlighted, and press F5, so that the database BikeShop exists in this session. If it still says that, check that SQL Server Management Studio (SSMS) can connect to the same server name that App.config has after Server=, and that the database there is called BikeShop."
         }
        ]
       }
@@ -3081,8 +3084,7 @@
         "App.config holds a connection string named BikeShop, and System.Configuration is under References.",
         "Db.cs builds, and nothing else in the project opens a connection.",
         "siobhan with canal01 gets in and sees Reports switched on; padraig with canal02 sees it switched off.",
-        "liam with canal06 is refused, and two empty boxes are refused.",
-        "Screenshots of the three refusals are saved for chapter 10."
+        "liam with canal06 is refused, and two empty boxes are refused."
        ]
       },
       {

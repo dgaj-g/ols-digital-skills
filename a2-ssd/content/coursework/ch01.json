@@ -595,7 +595,7 @@
             "n": 1,
             "x": 2,
             "y": 59.5,
-            "say": "Click OneDrive - C2k on the left.",
+            "say": "Click OneDrive - C2k on the left, then double-click A2 SSD Coursework.",
             "w": 13,
             "h": 5
            },
@@ -843,11 +843,14 @@
       {
        "box": {
         "title": "The five things you hand in",
-        "text": "The first is BikeShop.sql, the script that makes your database. The second is the BikeShop solution folder from Visual Studio 2019, zipped into one file, with its bin and obj folders left out. The third is your write-up. The fourth is your user guide. The fifth is your test evidence, which is the screenshots you take at the end of each chapter."
+        "text": "The first is BikeShop.sql, the script that makes your database. The second is the BikeShop solution folder from Visual Studio 2019, zipped into one file, with its bin and obj folders left out. The third is your write-up, which holds your project plan, your list of what the users need and your look back at what you made. The fourth is your user guide. The fifth is your testing evidence: the table of tests with a picture under each, which chapter 10 shows you how to make. Chapter 10 also shows you how to make the user guide."
        }
       },
       {
        "p": "Visual Studio 2019 makes the bin and obj folders every time it builds your program. They are large, and they are made again from your code, so the examiner does not need them. You zip the solution folder once, at the very end, when the program is finished."
+      },
+      {
+       "p": "To zip it, close Visual Studio 2019 first. Open File Explorer, open your A2 SSD Coursework folder, then open the BikeShop solution folder inside it, then open the BikeShop project folder inside that, which is the one that holds the bin and obj folders. Delete the folder named bin and the folder named obj. Go back to A2 SSD Coursework, right-click the BikeShop solution folder, point at Send to, and click Compressed (zipped) folder. A file named BikeShop.zip appears beside the folder, and that is the file you hand in."
       }
      ]
     },
@@ -864,7 +867,7 @@
       {
        "box": {
         "title": "When to run your script",
-        "text": "BikeShop.sql is the master copy of your database. Run it at the start of every session; it takes two seconds."
+        "text": "BikeShop.sql is the master copy of your database. At the start of every session, open it in SQL Server Management Studio: click File, point at Open, click File…, and double-click BikeShop.sql in your OneDrive coursework folder. Then press F5 with nothing highlighted. It takes two seconds. From chapter 7, when your tests leave rows you need next lesson, you save the whole database before you log off and run that saved copy instead. Chapter 7 shows you how."
        }
       }
      ]
@@ -986,7 +989,7 @@
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Seven ticks mean your workspace is ready. Close the query window without saving it, because the test lines in it are not part of your script. Your one saved file, BikeShop.sql, is empty and waiting in your OneDrive folder. Chapter 3 opens it and fills it with the tables."
+       "p": "Seven ticks mean your workspace is ready. Close the query window without saving it, because the test lines in it are not part of your script. Click the cross on its tab, which is named SQLQuery1.sql, above the white window. When SQL Server Management Studio asks whether to save changes, click No, or Don't Save if that is the word on the button. Your one saved file, BikeShop.sql, is empty and waiting in your OneDrive folder. Chapter 3 opens it and fills it with the tables."
       },
       {
        "need": [
