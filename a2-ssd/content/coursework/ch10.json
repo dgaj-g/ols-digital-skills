@@ -24,7 +24,7 @@
      "title": "See what you will make in this chapter.",
      "blocks": [
       {
-       "p": "Your program works. This chapter turns that into two pieces of writing for your write-up. The first piece is your testing evidence: a table of tests in Word, with a picture under it for each test. The second piece is a user guide: a short document that shows a member of staff how to use each window of your program."
+       "p": "Your program works. This chapter turns that into two of the things you hand in. The first piece is your testing evidence: a table of tests in Word, with a picture under it for each test. The second piece is a user guide: a short document that shows a member of staff how to use each window of your program."
       },
       {
        "p": "There is no code in this chapter. You use your running program, the Snipping Tool and Word. Most of the tests are ones you have already ticked at the end of chapters 7, 8 and 9, so the work here is writing them down and taking the pictures."
@@ -254,7 +254,7 @@
       {
        "rule": {
         "which": "double",
-        "text": "Show the test where two bookings touch and the test where they overlap by one step. Together they prove that the line between allowed and refused is in the right place."
+        "text": "Show the test where two bookings touch and the test where they overlap by 15 minutes. Together they prove that the line between allowed and refused is in the right place."
        }
       },
       {
@@ -264,7 +264,7 @@
        }
       },
       {
-       "p": "For each rule, aim for at least one valid row, one invalid row and one extreme row. The six rows in stage 1 do that for bookings and for stock."
+       "p": "For each rule, aim for at least one valid row, one invalid row and one extreme row. The six rows in stage 1 do that for bookings. For stock they give an invalid row and an extreme row, so use the chapter 8 test that sells 1 of CHAIN-9 as the valid row."
       }
      ]
     },
@@ -277,6 +277,12 @@
       },
       {
        "p": "Test 5 is a real example. The check in usp_PartSale_Add was typed as IF @InStock <= @Quantity. With 2 pairs of disc brake pads in stock, a sale of 2 was refused, and the message said Only 2 in stock. That message makes no sense: 2 in stock is enough for a sale of 2. That is the clue that the edge is in the wrong place."
+      },
+      {
+       "box": {
+        "title": "Before you start, put the sample data back",
+        "text": "This screen needs the sample data as the script first built it, with PADS-DISC at 2 in stock. Click the tab that holds BikeShop.sql in SQL Server Management Studio (SSMS) and press F5 with nothing selected. The Messages pane ends with BikeShop is ready, and PADS-DISC has 2 in stock."
+       }
       },
       {
        "steps": [
@@ -343,8 +349,8 @@
         },
         {
          "id": "10.2.1h",
-         "do": "Set the quantity to 2 in the Sell window, and click the Sell button in that window.",
-         "see": "A message box says Only 2 in stock. This is what Figure 5 shows; the next screen shows how to take the picture.",
+         "do": "Set the quantity to 2 in the Sell window, and click the Sell button in that window. Before you click OK on the message box that appears, take a picture of it with the Snipping Tool (stage 2, screen 3 shows how).",
+         "see": "A message box says Only 2 in stock. This is what Figure 5 shows.",
          "img": {
           "img": "img/ch08-run-sell-refused.png",
           "alt": "A message box over the counter sale form reading: Only 2 in stock.",
@@ -422,7 +428,7 @@
         },
         {
          "id": "10.2.4d",
-         "do": "Click the Sell button, set the quantity to 2, and click the Sell button in the Sell window.",
+         "do": "Click the Sell button, set the quantity to 2, and click the Sell button in the Sell window. Before you close the program, take a picture of the grid with the Snipping Tool (stage 2, screen 3 shows how).",
          "see": "The Sell window closes, and the PADS-DISC row shows 0 in stock and is pink. This is what Figure 6, the retest picture, shows.",
          "img": {
           "img": "img/ch10-run-sold-exact.png",

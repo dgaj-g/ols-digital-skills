@@ -735,7 +735,7 @@
          "img": {
           "img": "img/ch09-vs-add-class-root.png",
           "alt": "Solution Explorer in Visual Studio 2019 with the BikeShop project line right-clicked, above its Data, Forms and Models folders. The menu shows Add, and its small menu shows Class…",
-          "cap": "Adding a class to the project itself, not to a folder. Grid.cs sits at the top, beside Program.cs, Session.cs and Msg.cs.",
+          "cap": "Adding a class to the project itself, not to a folder. Taken in the finished project, so Solution Explorer lists more files than yours, Grid.cs among them. Grid.cs sits at the top, beside Program.cs, Session.cs and Msg.cs.",
           "w": 842,
           "h": 613,
           "missing": false,
@@ -856,7 +856,7 @@
      "title": "Set out the controls on frmCustomers in Visual Studio 2019.",
      "blocks": [
       {
-       "p": "Chapter 5 added frmCustomers as an empty form. Now it gets its controls: a Search box with a label and a grey hint, the customers grid, a label and a second grid for the picked customer's bookings, and four buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you."
+       "p": "Chapter 5 added frmCustomers as an empty form. Now it gets its controls: a Search box with a label and a grey hint, the customers grid, a label and a second grid for the picked customer's bookings, and four buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click or gives an Events tab step, do not do it yet: the steps for this form make each event method, after every control is on the form. Both grids are the DataGridView control: find it under the heading Data in the Toolbox, or type DataGridView in the Search Toolbox box at the top of the Toolbox."
       },
       {
        "controls": {
@@ -912,6 +912,7 @@
         "acceptButton": null,
         "cancelButton": null,
         "formNote": "Search, add, edit and delete customers. The lower grid shows the bookings of whichever customer is picked.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -927,7 +928,7 @@
           "name": "txtSearch",
           "settings": [],
           "then": [
-           "Double-click it. Visual Studio makes `txtSearch_TextChanged` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `txtSearch_TextChanged`, which the code you paste later replaces."
           ],
           "note": "The list narrows as you type."
          },
@@ -936,7 +937,7 @@
           "name": "lblHint",
           "settings": [
            "Text = Type part of a name or a phone number.",
-           "ForeColor = grey (92, 103, 116)"
+           "ForeColor = 92, 103, 116 (type the three numbers with their commas, then press Enter)"
           ],
           "then": [],
           "note": ""
@@ -969,7 +970,7 @@
            "the grid settings (chapter 6)"
           ],
           "then": [],
-          "note": "Read-only: that customer's bookings, newest first."
+          "note": "Read-only: that customer's bookings."
          },
          {
           "toolbox": "Button",
@@ -978,7 +979,7 @@
            "Text = Add"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnAdd_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnAdd_Click`, which the code you paste later replaces."
           ],
           "note": "Opens the edit window empty."
          },
@@ -990,7 +991,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnEdit_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnEdit_Click`, which the code you paste later replaces."
           ],
           "note": "Switched off until a row is picked."
          },
@@ -1002,7 +1003,7 @@
            "Enabled = False"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnDelete_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnDelete_Click`, which the code you paste later replaces."
           ],
           "note": "Asks first. The database refuses if the customer has bookings or sales."
          },
@@ -1013,7 +1014,7 @@
            "Text = Close"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnClose_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnClose_Click`, which the code you paste later replaces."
           ],
           "note": ""
          }
@@ -1085,7 +1086,7 @@
         },
         {
          "id": "6.3.4",
-         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row.",
+         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row. Leave the Then column for the steps below.",
          "see": "The form looks like the picture, with every control named as the table says.",
          "img": {
           "img": "img/ch06-frmCustomers-design.png",
@@ -1776,7 +1777,7 @@
      "title": "Set out the controls on frmCustomerEdit.",
      "blocks": [
       {
-       "p": "Four labels, four boxes and two buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click, double-clicking the control makes its event method for you. Two settings on the form itself matter here: AcceptButton = btnSave means the Enter key presses Save, and CancelButton = btnCancel means the Escape key presses Cancel."
+       "p": "Four labels, four boxes and two buttons. Click the form itself first and set the form's own properties. Then work down the table: drag the control from the Toolbox, drop it on the form, set its Name in the Properties window, and set the other settings in the row. Where the Then column says double-click or gives an Events tab step, do not do it yet: the steps for this form make each event method, after every control is on the form. Two settings on the form itself matter here: AcceptButton = btnSave means the Enter key presses Save, and CancelButton = btnCancel means the Escape key presses Cancel."
       },
       {
        "controls": {
@@ -1824,6 +1825,7 @@
         "acceptButton": "btnSave",
         "cancelButton": "btnCancel",
         "formNote": "One window does both Add and Edit. It opens empty for a new customer, or filled in for an existing one.",
+        "load": true,
         "rows": [
          {
           "toolbox": "Label",
@@ -1896,7 +1898,7 @@
            "Text = Save"
           ],
           "then": [
-           "Double-click it. Visual Studio makes `btnSave_Click` for you; the code goes inside it."
+           "Double-click it. Visual Studio makes an empty `btnSave_Click`, which the code you paste later replaces."
           ],
           "note": "Checks every box, stops at the first problem and shows it in a message, then saves."
          },
@@ -1922,7 +1924,7 @@
         },
         {
          "id": "6.4.5",
-         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row.",
+         "do": "Work down the table: drag each control from the Toolbox on to the form, set its Name, then set the rest of its row. Leave the Then column for the steps below.",
          "see": "The form looks like the picture, with every control named as the table says.",
          "img": {
           "img": "img/ch06-frmCustomerEdit-design.png",
@@ -2458,7 +2460,7 @@
           ],
           [
            "'The name AppointmentData does not exist in the current context'",
-           "The three AppointmentData lines in frmCustomers.cs do not start with two slashes. Go back to step 6.3.14 and type two slashes (//) at the start of each of the three lines."
+           "The three AppointmentData lines in frmCustomers.cs do not start with two slashes. Go back to step 6.3.14, select the three AppointmentData lines again, and press Ctrl and K together, then Ctrl and C together."
           ]
          ]
         }
@@ -2603,11 +2605,11 @@
         {
          "id": "6.5.4",
          "do": "Click the row Aoife McCann.",
-         "see": "The row is highlighted, Edit and Delete switch on, and the bookings grid shows her two bookings, newest first, with the mechanic's name in each row.",
+         "see": "The row is highlighted, Edit and Delete switch on, and the bookings grid shows her two bookings, with the mechanic's name in each row.",
          "img": {
           "img": "img/ch06-customers-picked.png",
           "alt": "The Customers screen with the row Aoife McCann highlighted, Edit and Delete now switched on, and two rows in the Bookings grid: the newer one marked Booked with Conor Walsh at the top, and an older one marked Done with Aoife Byrne under it.",
-          "cap": "One click on a row switches the buttons on and fills the lower grid with that customer's bookings, newest first.",
+          "cap": "One click on a row switches the buttons on and fills the lower grid with that customer's bookings.",
           "w": 960,
           "h": 660,
           "missing": false,
@@ -2624,7 +2626,7 @@
             "n": 2,
             "x": 4.5,
             "y": 65,
-            "say": "Her bookings, newest first, with the status in words and the mechanic's name in each row.",
+            "say": "Her bookings, with the status in words and the mechanic's name in each row.",
             "w": 91,
             "h": 23
            },
@@ -2749,7 +2751,7 @@
         {
          "id": "6.5.11b",
          "do": "Click the Save button.",
-         "see": "A message reads: A phone number needs at least 10 digits. Nine digits were typed. Press OK, and the cursor is in the Phone box.",
+         "see": "A message reads: A phone number needs at least 10 digits. Press OK, and the cursor is in the Phone box.",
          "img": {
           "img": "img/ch06-refused-phone.png",
           "alt": "A small Towpath Cycles message window with a warning sign reading: A phone number needs at least 10 digits. with one OK button.",
@@ -3383,7 +3385,7 @@
         },
         {
          "id": "6.7.3",
-         "what": "The bookings grid shows the picked customer's bookings, newest first",
+         "what": "The bookings grid shows the picked customer's bookings",
          "expect": "allowed",
          "how": "Click Aoife McCann and count the rows in the lower grid: two, with a mechanic's name in each."
         },
