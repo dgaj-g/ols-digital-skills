@@ -205,6 +205,9 @@ textarea.comment{width:100%;font:inherit;padding:10px;border:1px solid var(--lin
 .cwd .stg{border-top:1px solid var(--line);padding:10px 0}.cwd .stg b{display:block;margin-bottom:6px;font-weight:600}
 .cwd p{margin:6px 0}
 
+/* Coursework guide: printing is turned off (his ruling 11 Oct 2026: the guide is read signed in, never as paper or PDF). */
+@media print{#cw>*{display:none !important}#cw::before{content:"The coursework guide can only be read on the A2 SSD platform, signed in with your school account.";display:block;padding:24px;font-size:14pt}}
+
 /* ---- cw.css: the coursework guide ---- */
 /* Coursework guide: chapter pages, in the platform's register. Loads after style.css. */
 .cw{max-width:1040px}
@@ -590,7 +593,7 @@ details.cw-box>div{margin-top:8px}
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "a2ssd-9ff5601479-fa23be53";
+window.A2_DEPLOY = "a2ssd-9ff5601479-72bebe96";
 window.A2_CW = "https://dgaj-g.github.io/ols-digital-skills/a2-ssd/content/coursework/";</script>
 <div class="app" id="app"></div>
 <script>
@@ -1862,7 +1865,6 @@ window.CW = (function () {
         files.querySelector('ul').appendChild(li);
       });
       root.appendChild(files);
-      root.appendChild(el('<div class="card cw-files"><h3>The whole guide as a PDF</h3><p class="note">Every chapter in one large file, to read away from the computer or to print one chapter.</p><ul><li><a href="' + h(S.base) + 'A2-Coursework-Guide.pdf" target="_blank" rel="noopener">A2-Coursework-Guide.pdf</a><span>All 13 chapters, with every picture.</span></li></ul></div>'));
       S.host.innerHTML = ''; S.host.appendChild(root);
       var m = mainEl(); if (m) m.scrollTop = 0;
     }, function (e) { S.host.innerHTML = '<div class="banner">The guide could not be loaded (' + h(e.message) + ').</div>'; });
