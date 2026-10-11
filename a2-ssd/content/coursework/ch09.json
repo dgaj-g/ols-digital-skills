@@ -405,24 +405,24 @@
     },
     {
      "id": "2",
-     "title": "Test it: the workload for this year.",
+     "title": "Test it: the workload for all the sample data.",
      "blocks": [
       {
-       "p": "The test asks for the whole of this year. The sample data is dated around today, so a whole year catches every job in it. A report hands back rows, not a message, so the answer appears in the Results tab, not the Messages pane."
+       "p": "The test asks for every date from 1 January 2020 to 31 December 2099. The sample data is dated around today, so dates this far apart catch every job in it, whatever year you run the test. A report hands back rows, not a message, so the answer appears in the Results tab, not the Messages pane."
       },
       {
        "code": {
         "id": "9.2-try",
         "kind": "copy",
         "lang": "sql",
-        "title": "A test that runs the workload report for this year",
+        "title": "A test that runs the workload report for all the sample data",
         "src": "try:ch09_reports.sql#workload",
         "parts": [
          [
           "DECLARE @From DATE, @To DATE;",
-          "SET @To = '2026-12-31';",
+          "SET @To = '2099-12-31';",
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           "EXEC usp_Report_MechanicWorkload",
@@ -431,13 +431,13 @@
           "EXEC runs the stored procedure with the two dates. The rows it makes come back as a table in the Results tab."
          ]
         ],
-        "text": "-- Which mechanic did the most work this year?\n-- Four rows, one per mechanic, biggest earner first.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_MechanicWorkload @FromDate = @From, @ToDate = @To;",
+        "text": "-- Which mechanic did the most work?\n-- Four rows, one per mechanic, biggest earner first.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_MechanicWorkload @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
           3,
           5,
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           7,
@@ -473,7 +473,7 @@
          "img": {
           "img": "img/ch09-ssms-workload.png",
           "alt": "The Results tab in SQL Server Management Studio (SSMS) after the workload test: four rows, Conor Walsh with 2 jobs, 2.8 hours and 113.00, Niamh Hughes with 2, 1.8 and 65.00, Aoife Byrne with 2, 1.5 and 55.00, and Liam Doran with 0, 0.0 and 0.00.",
-          "cap": "The workload report for the year. Liam Doran left in the summer and did no jobs this year, and he is still listed, with zeros, because of the LEFT JOIN.",
+          "cap": "The workload report for all the sample data. Liam Doran left in the summer and did no jobs in it, and he is still listed, with zeros, because of the LEFT JOIN.",
           "w": 490,
           "h": 122,
           "missing": false,
@@ -504,7 +504,7 @@
         },
         {
          "id": "9.2.10",
-         "do": "Change the two dates back to this year, and leave the window open.",
+         "do": "Change the two dates back to '2020-01-01' and '2099-12-31', and leave the window open.",
          "see": "The four rows with their real numbers are back. The next stages paste their tests into this same window."
         }
        ]
@@ -797,14 +797,14 @@
         "id": "9.3-try",
         "kind": "copy",
         "lang": "sql",
-        "title": "A test that runs the income report for this year",
+        "title": "A test that runs the income report for all the sample data",
         "src": "try:ch09_reports.sql#income",
         "parts": [
          [
           "DECLARE @From DATE, @To DATE;",
-          "SET @To = '2026-12-31';",
+          "SET @To = '2099-12-31';",
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           "EXEC usp_Report_Income",
@@ -813,13 +813,13 @@
           "EXEC runs the stored procedure with the two dates. The stacked rows come back as one table in the Results tab."
          ]
         ],
-        "text": "-- Where did the money come from this year, day by day?\n-- One row per day per source: Workshop, Bike hire or Parts.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_Income @FromDate = @From, @ToDate = @To;",
+        "text": "-- Where did the money come from, day by day?\n-- One row per day per source: Workshop, Bike hire or Parts.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Income @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
           3,
           5,
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           7,
@@ -855,7 +855,7 @@
          "img": {
           "img": "img/ch09-ssms-income.png",
           "alt": "The Results tab in SQL Server Management Studio (SSMS) after the income test: fourteen rows, each with a Day, a Source of Workshop, Bike hire or Parts, a count of Items and an Income, oldest day first.",
-          "cap": "The income report for the year: fourteen lines from three tables, sorted into one list by day.",
+          "cap": "The income report for all the sample data: fourteen lines from three tables, sorted into one list by day.",
           "w": 392,
           "h": 311,
           "missing": false,
@@ -886,7 +886,7 @@
         },
         {
          "id": "9.3.10",
-         "do": "Change the two dates back to this year.",
+         "do": "Change the two dates back to '2020-01-01' and '2099-12-31', and press F5.",
          "see": "The fourteen rows are back."
         }
        ]
@@ -1140,21 +1140,21 @@
     },
     {
      "id": "2",
-     "title": "Test it: five counts for this year.",
+     "title": "Test it: five counts for all the sample data.",
      "blocks": [
       {
        "code": {
         "id": "9.4-try",
         "kind": "copy",
         "lang": "sql",
-        "title": "A test that runs the activity report for this year",
+        "title": "A test that runs the activity report for all the sample data",
         "src": "try:ch09_reports.sql#activity",
         "parts": [
          [
           "DECLARE @From DATE, @To DATE;",
-          "SET @To = '2026-12-31';",
+          "SET @To = '2099-12-31';",
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           "EXEC usp_Report_Activity",
@@ -1163,13 +1163,13 @@
           "EXEC runs the stored procedure with the two dates. Five rows come back in the Results tab, in the order the SELECTs are stacked."
          ]
         ],
-        "text": "-- How much happened this year?  Five rows, one count each.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_Activity @FromDate = @From, @ToDate = @To;",
+        "text": "-- How much happened?  Five rows, one count each.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Activity @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
           2,
           4,
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           6,
@@ -1205,7 +1205,7 @@
          "img": {
           "img": "img/ch09-ssms-activity.png",
           "alt": "The Results tab in SQL Server Management Studio (SSMS) after the activity test: five rows, Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3.",
-          "cap": "The activity report for the year. Each row is one SELECT, and its label is the text in quotes.",
+          "cap": "The activity report for all the sample data. Each row is one SELECT, and its label is the text in quotes.",
           "w": 343,
           "h": 142,
           "missing": false,
@@ -1440,14 +1440,14 @@
         "id": "9.5-try",
         "kind": "copy",
         "lang": "sql",
-        "title": "A test that runs the popular services report for this year",
+        "title": "A test that runs the popular services report for all the sample data",
         "src": "try:ch09_reports.sql#services",
         "parts": [
          [
           "DECLARE @From DATE, @To DATE;",
-          "SET @To = '2026-12-31';",
+          "SET @To = '2099-12-31';",
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           "EXEC usp_Report_PopularServices",
@@ -1456,13 +1456,13 @@
           "EXEC runs the stored procedure with the two dates. One row per service comes back in the Results tab."
          ]
         ],
-        "text": "-- Which services were booked most this year?\n-- Every service is listed, even one that nobody booked.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_PopularServices @FromDate = @From, @ToDate = @To;",
+        "text": "-- Which services were booked most?\n-- Every service is listed, even one that nobody booked.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularServices @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
           3,
           5,
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           7,
@@ -1498,7 +1498,7 @@
          "img": {
           "img": "img/ch09-ssms-services.png",
           "alt": "The Results tab in SQL Server Management Studio (SSMS) after the services test: seven rows, Basic service 3 and 40.00, Full service 3 and 85.00, Brake pad replacement 2 and 28.00, Gear tune-up 2 and 25.00, Puncture repair 2 and 15.00, Wheel true 1 and 20.00, Safety check 0 and 0.00.",
-          "cap": "Every service, most booked first. Safety check has no bookings this year and is still there, with 0.",
+          "cap": "Every service, most booked first. Safety check has no bookings in the sample data and is still there, with 0.",
           "w": 367,
           "h": 180,
           "missing": false,
@@ -1554,7 +1554,7 @@
         },
         {
          "id": "9.5.14",
-         "do": "Click back in the test tab, change the two dates back to this year, and press F5.",
+         "do": "Click back in the test tab, change the two dates back to '2020-01-01' and '2099-12-31', and press F5.",
          "see": "The seven rows are back, Basic service at the top with 3, Safety check at the bottom with 0."
         }
        ]
@@ -1632,7 +1632,7 @@
          "Type GROUP BY p.PartID, p.Name and then ORDER BY Sold DESC, Part; and finish with END and GO.",
          "Select the lines you typed, from CREATE OR ALTER PROCEDURE down to GO, and press F5."
         ],
-        "test": "The ready-made test on the next screen runs your stored procedure for this year.",
+        "test": "The ready-made test on the next screen runs your stored procedure for all the sample data.",
         "expect": "Twelve rows, one per part. Brake cable and Inner tube 700c are at the top with 3 each, and six parts at the bottom show 0 and 0.00. If you see six rows instead of twelve, the LEFT is missing or the date test has moved into a WHERE.",
         "hint": "Open usp_Report_PopularServices in your script beside you and change one name at a time. The ISNULL round each SUM is new: a part with no sales has nothing to add up, and ISNULL turns that empty answer into 0.",
         "text": "CREATE OR ALTER PROCEDURE usp_Report_PopularParts\n    @FromDate DATE,\n    @ToDate   DATE\nAS\nBEGIN\n    SELECT p.Name AS Part,\n           ISNULL(SUM(ps.Quantity), 0) AS Sold,\n           ISNULL(SUM(ps.Quantity * ps.UnitPrice), 0) AS Income\n    FROM Part p\n    LEFT JOIN PartSale ps\n           ON ps.PartID = p.PartID\n          AND ps.Status = 'Sold'\n          AND CAST(ps.SoldOn AS DATE) BETWEEN @FromDate AND @ToDate\n    GROUP BY p.PartID, p.Name\n    ORDER BY Sold DESC, Part;\nEND\nGO",
@@ -1699,14 +1699,14 @@
         "id": "9.5-try-parts",
         "kind": "copy",
         "lang": "sql",
-        "title": "A test that runs the popular parts report for this year",
+        "title": "A test that runs the popular parts report for all the sample data",
         "src": "try:ch09_reports.sql#parts",
         "parts": [
          [
           "DECLARE @From DATE, @To DATE;",
-          "SET @To = '2026-12-31';",
+          "SET @To = '2099-12-31';",
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           "EXEC usp_Report_PopularParts",
@@ -1715,13 +1715,13 @@
           "EXEC runs your stored procedure with the two dates. One row per part comes back in the Results tab."
          ]
         ],
-        "text": "-- Which parts sold most this year?\n-- Every part is listed, even one that nobody bought.\nDECLARE @From DATE, @To DATE;\nSET @From = '2026-01-01';\nSET @To = '2026-12-31';\n\nEXEC usp_Report_PopularParts @FromDate = @From, @ToDate = @To;",
+        "text": "-- Which parts sold most?\n-- Every part is listed, even one that nobody bought.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularParts @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
           3,
           5,
           "Two dates in two boxes",
-          "A variable is a named box that holds one value while the script runs. The two boxes hold the first and last day of this year. Change either SET line to ask about different dates."
+          "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
           7,
@@ -1766,7 +1766,7 @@
             "n": 1,
             "x": 10,
             "y": 14.5,
-            "say": "Brake cable and Inner tube 700c both sold 3 this year.",
+            "say": "Brake cable and Inner tube 700c both sold 3.",
             "w": 60,
             "h": 16
            },
@@ -1908,7 +1908,7 @@
           "public InvalidDateRangeException(DateTime fromDate, DateTime toDate)",
           "\"). Choose a From date on or before the To date.\")",
           "The constructor, and base",
-          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2026, so the sentence reads like English."
+          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2099, so the sentence reads like English."
          ],
          [
           "FromDate = fromDate;",
@@ -1948,7 +1948,7 @@
           13,
           17,
           "The constructor, and base",
-          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2026, so the sentence reads like English."
+          "The constructor takes the two dates. The line that starts with a colon and base hands one sentence to the Exception underneath, and that sentence becomes the Message. ToString with d MMM yyyy writes a date as 31 Dec 2099, so the sentence reads like English."
          ],
          [
           18,
@@ -2955,7 +2955,7 @@
      "title": "Run the program and open the reports.",
      "blocks": [
       {
-       "p": "The Reports button has been on your main menu since chapter 5, switched on for a manager only. It opens this form. Sign in as the manager, open the reports, set the dates to the whole of this year, and run the first one."
+       "p": "The Reports button has been on your main menu since chapter 5, switched on for a manager only. It opens this form. Sign in as the manager, open the reports, set the dates from 01/01/2020 to 31/12/2099, and run the first one."
       },
       {
        "steps": [
@@ -3054,13 +3054,13 @@
         },
         {
          "id": "9.7.12",
-         "do": "Click on the day number in the From box and type 01. Press the right arrow key and type 01. Press the right arrow key again and type 2026.",
-         "see": "The From box reads 01/01/2026. The right arrow key moves you from the day to the month, then to the year."
+         "do": "Click on the day number in the From box and type 01. Press the right arrow key and type 01. Press the right arrow key again and type 2020.",
+         "see": "The From box reads 01/01/2020. The right arrow key moves you from the day to the month, then to the year."
         },
         {
          "id": "9.7.13",
-         "do": "Click on the day number in the To box and type 31. Press the right arrow key and type 12. Press the right arrow key again and type 2026.",
-         "see": "The To box reads 31/12/2026."
+         "do": "Click on the day number in the To box and type 31. Press the right arrow key and type 12. Press the right arrow key again and type 2099.",
+         "see": "The To box reads 31/12/2099. Dates this far apart take in every record in the sample data, whatever year you run it, so your numbers match the ones in this chapter."
         },
         {
          "id": "9.7.14",
@@ -3089,10 +3089,10 @@
    "screens": [
     {
      "id": "1",
-     "title": "Run each report once for this year.",
+     "title": "Run each report once for all the sample data.",
      "blocks": [
       {
-       "p": "With the dates still set to 1 Jan 2026 and 31 Dec 2026, run the other four reports. Each one gets its own sentence under the grid. The numbers below are for the sample data as the whole-script run in stage 2 left it; if you sold or refunded parts since, your parts numbers will differ, and that is right."
+       "p": "With the dates still set to 1 Jan 2020 and 31 Dec 2099, run the other four reports. Each one gets its own sentence under the grid. The numbers below are for the sample data as the whole-script run in stage 2 left it; if you sold or refunded parts since, your parts numbers will differ, and that is right."
       },
       {
        "steps": [
@@ -3107,8 +3107,8 @@
          "see": "Five rows: Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3. The sentence reads: Each line counts one kind of thing in these dates.",
          "img": {
           "img": "img/ch09-activity.png",
-          "alt": "The Reports screen showing How many bookings, hires, sales and orders for 1 Jan 2026 to 31 Dec 2026: five rows, Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3, and under the grid the sentence Each line counts one kind of thing in these dates.",
-          "cap": "The activity report for the year. Five counts from four tables in one grid.",
+          "alt": "The Reports screen showing How many bookings, hires, sales and orders for 1 Jan 2020 to 31 Dec 2099: five rows, Workshop bookings 13, Bookings cancelled 1, Bike hires 5, Parts sold 11, Part orders placed 3, and under the grid the sentence Each line counts one kind of thing in these dates.",
+          "cap": "The activity report for all the sample data. Five counts from four tables in one grid.",
           "w": 960,
           "h": 620,
           "missing": false,
@@ -3138,8 +3138,8 @@
          "see": "Seven rows, Basic service at the top with 3 and Safety check at the bottom with 0, and the sentence: Services listed: 7. Most popular: Basic service, booked 3 times.",
          "img": {
           "img": "img/ch09-popular-services.png",
-          "alt": "The Reports screen showing Most popular services for the year: seven rows with Basic service and Full service at the top with 3 bookings each, Safety check at the bottom with 0, and the sentence Services listed: 7. Most popular: Basic service, booked 3 times.",
-          "cap": "Every service, most booked first. Safety check has no bookings this year and is still in the list, with 0.",
+          "alt": "The Reports screen showing Most popular services for 1 Jan 2020 to 31 Dec 2099: seven rows with Basic service and Full service at the top with 3 bookings each, Safety check at the bottom with 0, and the sentence Services listed: 7. Most popular: Basic service, booked 3 times.",
+          "cap": "Every service, most booked first. Safety check has no bookings in the sample data and is still in the list, with 0.",
           "w": 960,
           "h": 620,
           "missing": false,
@@ -3169,8 +3169,8 @@
          "see": "Twelve rows, Brake cable at the top with 3 sold and £12.00, six parts with 0 at the bottom, and the sentence: Parts listed: 12. Best seller: Brake cable, 3 sold.",
          "img": {
           "img": "img/ch09-popular-parts.png",
-          "alt": "The Reports screen showing Most popular parts for the year: twelve rows with Brake cable at the top, 3 sold and £12.00, then Inner tube 700c, 3 sold and £18.00, six parts with 0 at the bottom, and the sentence Parts listed: 12. Best seller: Brake cable, 3 sold.",
-          "cap": "Every part, best seller first. The six parts nobody bought this year are still listed, with 0.",
+          "alt": "The Reports screen showing Most popular parts for 1 Jan 2020 to 31 Dec 2099: twelve rows with Brake cable at the top, 3 sold and £12.00, then Inner tube 700c, 3 sold and £18.00, six parts with 0 at the bottom, and the sentence Parts listed: 12. Best seller: Brake cable, 3 sold.",
+          "cap": "Every part, best seller first. The six parts nobody bought are still listed, with 0.",
           "w": 960,
           "h": 620,
           "missing": false,
@@ -3209,31 +3209,31 @@
        "check": [
         {
          "id": "9.8.5",
-         "what": "Mechanic workload for the year",
+         "what": "Mechanic workload for all the sample data",
          "expect": "allowed",
-         "how": "Set the dates to 01/01/2026 and 31/12/2026, pick Mechanic workload, and press Run. You should see four rows, Conor Walsh first with 113.00 and Liam Doran last with zeros, and the sentence: Mechanics listed: 4. Workshop income in these dates: £233.00."
+         "how": "Set the dates to 01/01/2020 and 31/12/2099, pick Mechanic workload, and press Run. You should see four rows, Conor Walsh first with 113.00 and Liam Doran last with zeros, and the sentence: Mechanics listed: 4. Workshop income in these dates: £233.00."
         },
         {
          "id": "9.8.6",
-         "what": "Income by day and source for the year",
+         "what": "Income by day and source for all the sample data",
          "expect": "allowed",
          "how": "Fourteen rows. Sentence: Lines listed: 14. Total income in these dates: £483.50."
         },
         {
          "id": "9.8.7",
-         "what": "How many bookings, hires, sales and orders for the year",
+         "what": "How many bookings, hires, sales and orders for all the sample data",
          "expect": "allowed",
          "how": "Five rows: 13, 1, 5, 11 and 3. Sentence: Each line counts one kind of thing in these dates."
         },
         {
          "id": "9.8.8",
-         "what": "Most popular services for the year",
+         "what": "Most popular services for all the sample data",
          "expect": "allowed",
          "how": "Seven rows. Sentence: Services listed: 7. Most popular: Basic service, booked 3 times."
         },
         {
          "id": "9.8.9",
-         "what": "Most popular parts for the year",
+         "what": "Most popular parts for all the sample data",
          "expect": "allowed",
          "how": "Twelve rows. Sentence: Parts listed: 12. Best seller: Brake cable, 3 sold."
         },
@@ -3241,7 +3241,7 @@
          "id": "9.8.10",
          "what": "The From date after the To date",
          "expect": "control",
-         "how": "Set From to 31/12/2026 and To to 01/01/2026, any report, Run. Message: The From date (31 Dec 2026) is after the To date (1 Jan 2026). Choose a From date on or before the To date. Press OK: the grid still shows the last report, and the cursor is back in the From box."
+         "how": "Set From to 31/12/2099 and To to 01/01/2020, any report, Run. Message: The From date (31 Dec 2099) is after the To date (1 Jan 2020). Choose a From date on or before the To date. Press OK: the grid still shows the last report, and the cursor is back in the From box."
         },
         {
          "id": "9.8.11",
@@ -3265,7 +3265,7 @@
          "id": "9.8.14",
          "what": "Copy to clipboard pastes into Notepad",
          "expect": "allowed",
-         "how": "Set the dates back to 01/01/2026 and 31/12/2026, pick Most popular services, press Run, press Copy to clipboard, and press OK on the message. Open Notepad and press Ctrl and V together. The first line is the headings Service, Bookings and Price, and seven rows follow."
+         "how": "Set the dates back to 01/01/2020 and 31/12/2099, pick Most popular services, press Run, press Copy to clipboard, and press OK on the message. Open Notepad and press Ctrl and V together. The first line is the headings Service, Bookings and Price, and seven rows follow."
         },
         {
          "id": "9.8.15",
@@ -3284,7 +3284,7 @@
       {
        "screenshot": {
         "img": "img/ch09-from-after-to.png",
-        "alt": "The Reports screen with From set to 31/12/2026 and To set to 01/01/2026, and a message box in front reading: The From date (31 Dec 2026) is after the To date (1 Jan 2026). Choose a From date on or before the To date.",
+        "alt": "The Reports screen with From set to 31/12/2099 and To set to 01/01/2020, and a message box in front reading: The From date (31 Dec 2099) is after the To date (1 Jan 2020). Choose a From date on or before the To date.",
         "cap": "The one mistake a report can be asked to make, caught before SQL Server is asked anything. The grid behind the message is unchanged.",
         "w": 960,
         "h": 620,

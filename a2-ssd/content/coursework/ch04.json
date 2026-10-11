@@ -1230,43 +1230,43 @@
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          "EXEC usp_Customer_GetByID @CustomerID = 12;",
+          "EXEC usp_Customer_Search @SearchText = '';",
           "$end",
-          "Fetch the row to see the change",
-          "The fetch from stage 2 shows Ben's row with the new phone number in it."
+          "List every customer to check the change",
+          "Two quote marks with nothing between them give the search from stage 2 nothing to look for, so it matches every customer and lists the whole table by surname. Only Ben's row should have the new phone number. If every row has it, the WHERE line is missing."
          ]
         ],
-        "text": "-- Change Ben Toner's phone number (customer 12), then fetch his row back.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Update\n     @CustomerID = 12, @FirstName = 'Ben', @LastName = 'Toner',\n     @Phone = '07388 640 999', @Email = 'ben.toner@example.com',\n     @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated customer number 12.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = 12;",
+        "text": "-- Change Ben Toner's phone number (customer 12), then list every customer\n-- to check that only his row changed.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Update\n     @CustomerID = 12, @FirstName = 'Ben', @LastName = 'Toner',\n     @Phone = '07388 640 999', @Email = 'ben.toner@example.com',\n     @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated customer number 12.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_Search @SearchText = '';",
         "partLines": [
          [
-          2,
-          2,
+          3,
+          3,
           "One box for the message",
           "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
          ],
          [
-          4,
-          7,
+          5,
+          8,
           "Run the stored procedure",
           "Customer 12 is Ben Toner. His name and email are given again unchanged, and the phone is new. An Update always sends every column, and the screen in chapter 6 will do the same."
          ],
          [
-          9,
-          12,
+          10,
+          13,
           "If the message is blank, it worked",
           "A blank message means the row was changed, and one line says so."
          ],
          [
-          13,
-          16,
+          14,
+          17,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          18,
-          18,
-          "Fetch the row to see the change",
-          "The fetch from stage 2 shows Ben's row with the new phone number in it."
+          19,
+          19,
+          "List every customer to check the change",
+          "Two quote marks with nothing between them give the search from stage 2 nothing to look for, so it matches every customer and lists the whole table by surname. Only Ben's row should have the new phone number. If every row has it, the WHERE line is missing."
          ]
         ]
        }
@@ -1292,7 +1292,7 @@
         {
          "id": "4.3.20",
          "do": "Press F5 to run the test.",
-         "see": "The Results tab shows Ben Toner with the phone 07388 640 999. Click Messages: Updated customer number 12.",
+         "see": "The Results tab lists every customer by surname. Only Ben Toner has the phone 07388 640 999, and every other phone is unchanged. Click Messages: Updated customer number 12.",
          "wrong": [
           [
            "'Could not find stored procedure'",
@@ -3934,7 +3934,7 @@
          "id": "4.7.7",
          "what": "Change Ben Toner's phone",
          "expect": "allowed",
-         "how": "Run the update test from stage 3. The Messages tab says Updated customer number 12, and his row shows 07388 640 999."
+         "how": "Run the update test from stage 3. The Messages tab says Updated customer number 12. In the Results tab only Ben Toner has 07388 640 999, and every other customer keeps their own phone."
         },
         {
          "id": "4.7.8",
