@@ -786,7 +786,7 @@
         "title": "Before you log off: save your database",
         "blocks": [
          {
-          "p": "Booking 15 is a row in your database, and the cloud PC wipes the database when you log off. Stage 7 cancels that booking. Whenever you stop before the end of this chapter, save the whole database, rows and all, to a script before you log off:"
+          "p": "Booking 15 is a row in your database, and the Programming Environment wipes the database when you log off. Stage 7 cancels that booking. Whenever you stop before the end of this chapter, save the whole database, rows and all, to a script before you log off:"
          },
          {
           "p": "1. In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts…."
