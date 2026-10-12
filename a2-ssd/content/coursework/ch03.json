@@ -2987,8 +2987,8 @@
          "do": "Press F5 to run the whole script.",
          "see": "The Messages tab shows a line for each table, such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
          "img": {
-          "img": "img/ch07-ssms-execute.png",
-          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages tab underneath with lines such as (12 rows affected) and (6 rows affected), then BikeShop is ready, then a Completion time.",
+          "img": "img/ch03-ssms-execute.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button. The script window shows the end of the script: the last sample rows, then the line that prints BikeShop is ready. The Messages tab underneath has lines such as (6 rows affected) and (8 rows affected), then BikeShop is ready, then a Completion time.",
           "cap": "Execute with nothing highlighted runs the whole script. The Messages tab counts the sample rows it put in, one line per table, then says BikeShop is ready.",
           "w": 900,
           "h": 520,

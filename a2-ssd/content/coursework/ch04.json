@@ -350,8 +350,8 @@
          "do": "Press F5, or click Execute on the toolbar, with nothing selected. This runs the whole script, so your database is built again from nothing with the new stored procedure in it. Then press Ctrl and S together to save your script.",
          "see": "The Messages pane ends with BikeShop is ready and a Completion time, with no red text above it. The star after BikeShop.sql on the tab disappears, because the file is saved.",
          "img": {
-          "img": "img/ch07-ssms-execute.png",
-          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button, and the Messages pane underneath with lines such as (12 rows affected), then BikeShop is ready, then a Completion time.",
+          "img": "img/ch04-ssms-execute.png",
+          "alt": "The SQL Server Management Studio (SSMS) toolbar with the Execute button. The script window shows the end of the script: usp_Customer_Search, then the line that prints BikeShop is ready. The Messages pane underneath has lines such as (6 rows affected) and (8 rows affected), then BikeShop is ready, then a Completion time.",
           "cap": "Execute with nothing selected runs the whole script. The Messages pane counts the sample rows it put back, then says BikeShop is ready.",
           "w": 900,
           "h": 520,
