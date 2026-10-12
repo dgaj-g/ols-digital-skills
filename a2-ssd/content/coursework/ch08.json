@@ -629,7 +629,7 @@
         "title": "Before you log off: save your database",
         "blocks": [
          {
-          "p": "Your two test sales are rows in your database, and the cloud PC wipes the database when you log off. Stage 3 refunds them. Whenever you stop before the end of this chapter, save the whole database to a script before you log off, as you did in chapter 7:"
+          "p": "Your two test sales are rows in your database, and the Programming Environment wipes the database when you log off. Stage 3 refunds them. Whenever you stop before the end of this chapter, save the whole database to a script before you log off, as you did in chapter 7:"
          },
          {
           "p": "1. In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts…."
