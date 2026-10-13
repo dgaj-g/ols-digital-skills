@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* tools/build-server.js — assemble the two Apps Script files (modelled on a2-ssd/tools/build-server.js).
  *
- *   Code.gs     PRIVATE. The bank (DESIGN/content/bank_digital_data.js) + the judge (DESIGN/judge/judge.js, read in place,
+ *   Code.gs     PRIVATE. The banks (DESIGN/content/bank_digital_data.js and bank_software.js, v6) + the judge (DESIGN/judge/judge.js, read in place,
  *               never copied into this repo) + server/Code.gs.template with the owner email, the staff passcode's salt and
  *               hash, the build id and the title filled. Written to DESIGN/deploy/Code.gs (mode 600). Never committed.
  *   Index.html  PUBLIC. style.css inlined, index.html's body, the boot scriptlet, then strings.js, sitpolicy.js, app.js,
@@ -22,7 +22,7 @@ const PLATFORM = path.join(ROOT, 'platform');
 const SERVER = path.join(ROOT, 'server');
 const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude Work/S1 Unit 1 Platform';
 const DEPLOY = path.join(DESIGN, 'deploy');
-const BANK = path.join(DESIGN, 'content', 'bank_digital_data.js');
+const BANK = path.join(DESIGN, 'content', 'bank_digital_data.js'), BANK_SW = path.join(DESIGN, 'content', 'bank_software.js');
 const JUDGE = path.join(DESIGN, 'judge', 'judge.js');
 const OWNER_EMAIL = 'dgartland021@c2ken.net';
 const TEACHERS_FILE = path.join(DESIGN, 'TEACHERS.txt'); // private: one school address per line, # starts a comment; never in the repo
@@ -75,15 +75,16 @@ const scripts = pageReady ? scriptNames.map((n) => [n, need(path.join(PLATFORM, 
 const pageHash = sha(style + index + scripts.map((s) => s[1]).join('\n')).slice(0, 8);
 
 // ---- Code.gs
-const bank = need(BANK), judge = need(JUDGE), tpl = need(path.join(SERVER, 'Code.gs.template'));
+const bank = need(BANK), bankSw = need(BANK_SW), judge = need(JUDGE), tpl = need(path.join(SERVER, 'Code.gs.template'));
 if (!/var BANK_DIGITAL_DATA = /.test(bank)) { console.error('bank file is not BANK_DIGITAL_DATA'); process.exit(1); }
+if (!/var BANK_SOFTWARE = /.test(bankSw)) { console.error('bank file is not BANK_SOFTWARE'); process.exit(1); }
 if (!/root\.Judge = API/.test(judge)) { console.error('judge.js lost its UMD root'); process.exit(1); }
-const BUILD = sha(bank + judge + tpl).slice(0, 10) + '-' + pageHash;
+const BUILD = sha(bank + bankSw + judge + tpl).slice(0, 10) + '-' + pageHash;
 const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).replace("'@@STAFF_SALT@@'", JSON.stringify(STAFF.salt))
   .replace("'@@STAFF_HASH@@'", JSON.stringify(STAFF.hash)).replace("'@@BUILD@@'", JSON.stringify(BUILD)).replace("'@@TITLE@@'", JSON.stringify(TITLE)).replace("'@@TEACHERS@@'", JSON.stringify(TEACHERS));
 if (/@@[A-Z_]+@@/.test(filled)) { console.error('Code.gs.template: unfilled placeholder ' + filled.match(/@@[A-Z_]+@@/)[0]); process.exit(1); }
 const code = asciiJs(['/* OLS Unit 1 Revision - Code.gs - build ' + BUILD + ' - PRIVATE: holds the bank and the mark schemes. Never commit. */',
-  '/* ---- bank_digital_data.js ---- */\n' + bank.trim(), '/* ---- judge.js ---- */\n' + judge.trim(), filled].join('\n\n'));
+  '/* ---- bank_digital_data.js ---- */\n' + bank.trim(), '/* ---- bank_software.js ---- */\n' + bankSw.trim(), '/* ---- judge.js ---- */\n' + judge.trim(), filled].join('\n\n'));
 guardAscii('Code.gs', code);
 fs.writeFileSync(path.join(DEPLOY, 'Code.gs'), code, { mode: 0o600 });
 fs.chmodSync(path.join(DEPLOY, 'Code.gs'), 0o600);
@@ -124,7 +125,7 @@ guardAscii('Index.html', out);
 const closes = (out.match(/<\/script>/gi) || []).length;
 if (closes !== frags.length) { console.error('Index.html: ' + closes + ' </script> for ' + frags.length + ' blocks'); process.exit(1); }
 // the public page must never carry the bank or the judge
-const leak = ['BANK_DIGITAL_DATA', 'markTyped', 'keys:', '"keys"', 'dis:', STAFF.hash, STAFF.salt].find((t) => out.indexOf(t) !== -1);
+const leak = ['BANK_DIGITAL_DATA', 'BANK_SOFTWARE', 'markTyped', 'keys:', '"keys"', 'dis:', STAFF.hash, STAFF.salt].find((t) => out.indexOf(t) !== -1);
 if (leak) { console.error('Index.html: leak guard tripped on ' + JSON.stringify(leak.slice(0, 12))); process.exit(1); }
 fs.writeFileSync(path.join(SERVER, 'Index.html'), out);
 if (fontFiles.length) console.log('fonts      ' + fontFiles.join(', ') + ' (inlined)');

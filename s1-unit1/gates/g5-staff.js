@@ -33,7 +33,9 @@ function check(name, good, detail) { good ? res.pass++ : res.fail++; log.push((g
 async function post(p, body, user) { const r = await fetch(BASE + p, { method: 'POST', headers: { 'content-type': 'application/json', 'x-dev-user': user || OWNER }, body: JSON.stringify(body || {}) }); return r.json(); }
 const api = (fn, body, user) => post('/api/' + fn, body, user);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-const x = BANK.stages.map((s) => s.questions.reduce((t, q) => t + q.marks, 0)), nq = BANK.stages.map((s) => s.questions.length);
+// v6: round 1 holds only its own questions (from/upto, DECISIONS 19.7)
+const inR1 = (q) => !q.from || q.from <= 1;
+const x = BANK.stages.map((s) => s.questions.filter(inR1).reduce((t, q) => t + q.marks, 0)), nq = BANK.stages.map((s) => s.questions.filter(inR1).length);
 const syn = (e, m) => ({ s: { 1: { a: nq[0], m: m[0], f: [], e: e[0] }, 2: { a: nq[1], m: m[1], f: [], e: e[1] }, 3: { a: nq[2], m: m[2], f: [], e: e[2] }, 4: { a: nq[3], m: m[3], f: [], e: e[3] } } });
 const CONTROL_OK = syn([{ r: 3, t: [1] }, { r: 2, t: [1] }, { r: 4, t: [] }, { r: 1, t: [] }], [Math.ceil(x[0] * 0.5), Math.floor(x[1] * 0.74), x[2], 0]);
 const CONTROL_BAD = syn([{ r: 4, t: [1] }, null, null, null], [Math.floor(x[0] * 0.2), 0, 0, 0]);
@@ -109,11 +111,11 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const topicRows = () => page.evaluate(() => [...document.querySelectorAll('.tlist .trow')].map((r) => r.innerText.replace(/\s+/g, ' ').trim()));
     const pupilTile = async () => { const pp = await browser.newPage(); await pp.setViewport({ width: 1280, height: 800 }); pp.on('pageerror', (e) => errs.push('pupil pageerror: ' + e.message));
       await pp.goto(BASE + '/?class=' + CLS + '&as=' + encodeURIComponent(P), { waitUntil: 'domcontentloaded' }); await pp.waitForFunction(() => App.t.cur().screen === 'home', { timeout: 15000 });
-      const t = await pp.evaluate(() => ({ text: document.querySelector('.tiles .topic').innerText.replace(/\s+/g, ' '), open: !!document.getElementById('openLive') })); await pp.close(); return t; };
+      const t = await pp.evaluate(() => ({ text: document.querySelector('.tiles .topic').innerText.replace(/\s+/g, ' '), open: !!document.querySelector('.tiles .topic [data-open="digital-data"]'), sw: (document.querySelectorAll('.tiles .topic')[1] || {}).innerText.replace(/\s+/g, ' '), swOpen: !!document.querySelector('.tiles .topic [data-open="software"]') })); await pp.close(); return t; };
     const lockedTile = (t) => /Not opened yet/.test(t.text) && /Your teacher opens topics in class\./.test(t.text) && !t.open;
     await clickTab(page, 'Topics'); await page.waitForSelector('.tlist', { timeout: 10000 });
     let tr = await topicRows();
-    check('Topics: nine rows; Digital Data "Open" with a Lock button; the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && tr.slice(1).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 1, tr.join(' | '));
+    check('Topics: nine rows; Digital Data "Open" with a Lock button; Software "Locked" with an Open button (v6); the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && /^1\.2 Software Locked Open$/.test(tr[1]) && tr.slice(2).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 2, tr.join(' | ') + ' · buttons ' + (await page.$$eval('[data-t]', (b) => b.map((e) => e.outerHTML).join(' '))));
     const tText = await page.evaluate(() => document.getElementById('app').innerText);
     check('Topics: the note "Pupils see locked topics as “Not opened yet”."', tText.indexOf('Pupils see locked topics as “Not opened yet”.') !== -1, tText.slice(0, 300));
     lay = await page.evaluate(LAYOUT); check('Topics: nothing wider than its box', lay.length === 0, lay.join(' | '));
@@ -130,9 +132,28 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await page.click('[data-t="digital-data"]'); await page.waitForFunction(() => /Open Lock$/.test(((document.querySelector('.tlist .trow') || {}).innerText || '').replace(/\s+/g, ' ').trim()), { timeout: 10000 });
     const backTile = await pupilTile();
     check('Topics: Open pressed -> the pupil tile has Open again', !lockedTile(backTile) && backTile.open, JSON.stringify(backTile));
+    // ---- v6: Software opens on its own; the pupil sees a second live tile; the staff topic picker switches the tracker
+    check('CONTROL pupil home: Software, still locked, has no Open on its tile', !backTile.swOpen && /Not opened yet/.test(backTile.sw), JSON.stringify(backTile));
+    await page.click('[data-t="software"]'); await page.waitForFunction(() => /Open Lock$/.test((([...document.querySelectorAll('.tlist .trow')][1] || {}).innerText || '').replace(/\s+/g, ' ').trim()), { timeout: 10000 });
+    tr = await topicRows();
+    check('Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged', /^1\.2 Software Open Lock$/.test(tr[1]) && /^1\.1 Digital data Open Lock$/.test(tr[0]), tr.slice(0, 2).join(' | '));
+    const swTile = await pupilTile();
+    check('pupil home: the Software tile has Open and reads "4 stages · 29 questions · 59 marks"', swTile.swOpen && /4 stages · 29 questions · 59 marks/.test(swTile.sw) && swTile.open, JSON.stringify(swTile));
+    await clickTab(page, 'Tracker'); await page.waitForSelector('table.track', { timeout: 10000 });
+    const h1 = () => page.evaluate(() => (document.querySelector('h1') || {}).innerText || '');
+    const pk = await page.evaluate(() => { const q = document.getElementById('tq'); return q ? [...q.options].map((o) => o.value + '=' + o.text).join('|') : null; });
+    let h1t = await h1();
+    check('Tracker: a Topic picker lists Digital data and Software; the heading names Digital data', pk === 'digital-data=Digital data|software=Software' && /· Digital data ·/.test(h1t) && !/Software/.test(h1t), pk + ' · ' + h1t);
+    await page.select('#tq', 'software'); await page.waitForFunction(() => /· Software ·/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 }).catch(() => {});
+    h1t = await h1();
+    const swRows = await trackerRows(page);
+    check('Tracker: picking Software -> "Tracker · <class> · Software · Round 1", the picker still on Software, 4 pupils', /^Tracker · .+ · Software · Round 1$/.test(h1t) && (await page.$eval('#tq', (e) => e.value)) === 'software' && swRows.length === 4, h1t + ' · rows ' + swRows.length);
+    await page.select('#tq', 'digital-data'); await page.waitForFunction(() => /· Digital data ·/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 }).catch(() => {});
+    check('Tracker: picking Digital data again -> its heading is back', /· Digital data ·/.test(await h1()), await h1());
+    await clickTab(page, 'Topics'); await page.waitForSelector('.tlist', { timeout: 10000 });
     await clickTab(page, 'Rounds');
     const rText = await page.evaluate(() => document.getElementById('app').innerText);
-    check('Rounds: "Digital Data · Round 1 open" and the two open buttons', /Digital Data · Round 1 open/.test(rText) && /Open round 2 for the class/.test(rText) && /Open round 2 for one pupil/.test(rText), rText.slice(0, 300));
+    check('Rounds: "Digital data · Round 1 open" and the two open buttons', /Digital data · Round 1 open/.test(rText) && /Open round 2 for the class/.test(rText) && /Open round 2 for one pupil/.test(rText), rText.slice(0, 300));
     lay = await page.evaluate(LAYOUT); check('Rounds: nothing wider than its box', lay.length === 0, lay.join(' | '));
     await clickTab(page, 'Tracker');
     await page.waitForSelector('table.track', { timeout: 10000 });
@@ -176,7 +197,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].find((b) => b.innerText.trim() === 'Rounds').click()); await wait(400);
     const busy = await page.evaluate(() => { const b = document.querySelector('.busy'); return b ? { t: b.innerText.trim(), a: getComputedStyle(b).animationName, aria: b.getAttribute('aria-busy') } : null; });
     check('Pulse: during a slow call the Rounds tab pulses (class busy, animation "busy", aria-busy)', !!busy && busy.t === 'Rounds' && busy.a === 'busy' && busy.aria === 'true', JSON.stringify(busy));
-    await page.waitForFunction(() => /Digital Data · Round 1 open/.test(document.getElementById('app').innerText), { timeout: 15000 }); await wait(300);
+    await page.waitForFunction(() => /Digital data · Round 1 open/.test(document.getElementById('app').innerText), { timeout: 15000 }); await wait(300);
     const after = await page.evaluate(() => document.querySelectorAll('.busy, [aria-busy]').length);
     check('Pulse: gone once the call lands', after === 0, after + ' still pulsing');
     await page.evaluate(() => { window.fetch = window.__f; });

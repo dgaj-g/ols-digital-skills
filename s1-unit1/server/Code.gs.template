@@ -1,5 +1,5 @@
-/* OLS Unit 1 Revision - server (Apps Script, V8). Built by tools/build-server.js: the private bank (BANK_DIGITAL_DATA) and
- * the judge (globalThis.Judge) are prepended; the placeholders below are filled. Runs as the user accessing the web app
+/* OLS Unit 1 Revision - server (Apps Script, V8). Built by tools/build-server.js: the private banks (BANK_DIGITAL_DATA,
+ * BANK_SOFTWARE) and the judge (globalThis.Judge) are prepended; the placeholders below are filled. Runs as the user accessing the web app
  * (DOMAIN access), so Session.getActiveUser() is the pupil. Records live in Script Properties (ARCH.md "Storage").
  * The pupil path never touches a Sheet: the archive runs only on the owner's staff visit. */
 
@@ -10,20 +10,32 @@ var TEACHERS = '@@TEACHERS@@'; // named teachers (private list, filled at build)
 var BUILD = '@@BUILD@@';
 var TITLE = '@@TITLE@@';
 var DOMAIN = 'c2ken.net';
-var TOPIC = 'digital-data';
+var DD = 'digital-data'; // v5's only topic: its records keep their v5 keys, so no pupil's work moves (DECISIONS 19.9)
 var ARCHIVE_AT = 350 * 1024;
 var FLAG_HIGH = "Thinks it's fine, isn't";
 var FLAG_LOW = "Doing fine, doesn't think so";
 
-// ---------- the bank, indexed ----------
-var BANK = BANK_DIGITAL_DATA;
-var QBY = {};
-var STAGES = BANK.stages.map(function (s) {
-  var x = 0;
-  s.questions.forEach(function (q) { QBY[q.id] = { q: q, st: s.n }; x += q.marks; });
-  return { n: s.n, title: s.title, outcomes: s.outcomes || [], ids: s.questions.map(function (q) { return q.id; }), x: x };
+// ---------- the banks, indexed (v6: one entry per built topic; a question's from/upto puts it in some rounds only) ----------
+var QBY = {}, TOPICS = {}, TOPIC_IDS = [];
+[BANK_DIGITAL_DATA, BANK_SOFTWARE].forEach(function (B) {
+  TOPIC_IDS.push(B.id);
+  TOPICS[B.id] = { id: B.id, title: B.title, spec: B.spec, memo: {}, stages: B.stages.map(function (s) {
+    s.questions.forEach(function (q) { QBY[q.id] = { q: q, st: s.n, t: B.id }; });
+    return { n: s.n, title: s.title, outcomes: s.outcomes || [], qs: s.questions };
+  }) };
 });
-function stageOf_(n) { return STAGES[Number(n) - 1] || null; }
+function topicOf_(id) { return Object.prototype.hasOwnProperty.call(TOPICS, str_(id)) ? TOPICS[str_(id)] : null; }
+function topicArg_(req) { return req.topic == null || req.topic === '' ? TOPICS[DD] : topicOf_(req.topic); } // no topic = Digital Data (v5 callers)
+// the stages as one round sees them: only the questions in that round (Judge.inRound), with their marks
+function stagesFor_(T, round) {
+  var k = String(round || 1);
+  if (!T.memo[k]) T.memo[k] = T.stages.map(function (s) {
+    var qs = s.qs.filter(function (q) { return Judge.inRound(q, +k); });
+    return { n: s.n, title: s.title, outcomes: s.outcomes, ids: qs.map(function (q) { return q.id; }), x: qs.reduce(function (t, q) { return t + q.marks; }, 0) };
+  });
+  return T.memo[k];
+}
+function stageIn_(T, round, n) { return stagesFor_(T, round)[Number(n) - 1] || null; }
 
 // ---------- helpers (A2) ----------
 function sp_() { return PropertiesService.getScriptProperties(); }
@@ -64,14 +76,14 @@ function doGet(e) {
   var t = HtmlService.createTemplateFromFile('Index');
   t.classCode = p['class'] ? String(p['class']).replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) : '';
   t.baseUrl = ScriptApp.getService().getUrl();
-  t.sit = p.sit === '1' ? '1' : '';
+  t.sit = p.sit === '1' || TOPIC_IDS.indexOf(p.sit) !== -1 ? String(p.sit) : ''; // ?sit=1 plays Digital Data; ?sit=<topic id> plays that topic (owner only)
   t.showBuild = p.build !== undefined ? '1' : '';
   return t.evaluate().setTitle(TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover').setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 
 // ---------- draw, pack, unpack ----------
 function viewFor_(email, round, q) { return Judge.draw(q, email + '|' + round + '|' + q.id); }
-function orderFor_(email, round, st) { return Judge.shuffle(stageOf_(st).ids, Judge.rng(email + '|' + round + '|' + st)); }
+function orderFor_(email, round, T, st) { return Judge.shuffle(stageIn_(T, round, st).ids, Judge.rng(email + '|' + round + '|' + (T.id === DD ? '' : T.id + '|') + st)); } // Digital Data keeps v5's seed
 function idxs_(arr, picks) {
   var out = [];
   (Array.isArray(picks) ? picks : []).forEach(function (t) { var i = arr.indexOf(str_(t)); if (i >= 0 && out.indexOf(i) === -1) out.push(i); });
@@ -118,19 +130,22 @@ function answerWords_(v, a) {
 
 // ---------- records ----------
 function pKey_(slug, email) { return 'p:' + slug + ':' + email; }
-function qKey_(slug, email, round, st) { return 'q:' + slug + ':' + email + ':' + round + ':' + st; }
-function dKey_(slug, round, qid) { return 'd:' + slug + ':' + TOPIC + ':' + round + ':' + qid; }
+// Digital Data's rounds live in the header (v5 keys); each later topic has its own record beside it, so the header stays small
+function tKey_(slug, email, T) { return T.id === DD ? pKey_(slug, email) : 't:' + slug + ':' + email + ':' + T.id; }
+function qKey_(slug, email, round, T, st) { return 'q:' + slug + ':' + email + ':' + round + ':' + (T.id === DD ? '' : T.id + ':') + st; }
+function dKey_(slug, T, round, qid) { return 'd:' + slug + ':' + T.id + ':' + round + ':' + qid; }
 function hdrGet_(slug, email) { var h = jget_(sp_(), pKey_(slug, email), null); if (h) { h.o = h.o || {}; h.R = h.R || {}; } return h; }
-// a topic is open to pupils when the class lists it; a class made before topic locking (no list) keeps it open
-function topicOpen_(c) { return !c.op || c.op.indexOf(TOPIC) !== -1; }
-function curRound_(c, hdr) { return Math.max((c.r || {})[TOPIC] || 1, ((hdr && hdr.o) || {})[TOPIC] || 1); }
+function recGet_(slug, email, T, hdr) { if (T.id === DD) return hdr; var r = jget_(sp_(), tKey_(slug, email, T), null); if (r) r.R = r.R || {}; return r; }
+// a topic is open to pupils when the class lists it; a class made before topic locking (no list) keeps Digital Data open and nothing else
+function topicOpen_(c, T) { return c.op ? c.op.indexOf(T.id) !== -1 : T.id === DD; }
+function curRound_(c, hdr, T) { return Math.max((c.r || {})[T.id] || 1, ((hdr && hdr.o) || {})[T.id] || 1); }
 function rnd_(hdr, k) { k = String(k); if (!hdr.R[k]) hdr.R[k] = { s: {} }; if (!hdr.R[k].s) hdr.R[k].s = {}; return hdr.R[k]; }
 function stg_(rh, st) { st = String(st); if (!rh.s[st]) rh.s[st] = { a: 0, m: 0, f: [] }; if (!rh.s[st].f) rh.s[st].f = []; return rh.s[st]; }
 function eOut_(e) { return e ? { rating: e.r, ticks: e.t || [], stageNote: e.x || '' } : null; }
 function EOut_(E) { return E ? { rating: E.r, unsure: E.u || [], note: E.x || '' } : null; }
-function roundSum_(rh) {
+function roundSum_(rh, stages) {
   var s = {};
-  STAGES.forEach(function (S) {
+  stages.forEach(function (S) {
     var g = (rh && rh.s && rh.s[S.n]) || { a: 0, m: 0, f: [] };
     s[S.n] = { a: g.a || 0, m: g.m || 0, n: S.ids.length, x: S.x, e: !!g.e, f: (g.f || []).map(function (id) { return { id: id, src: QBY[id] ? QBY[id].q.src : id }; }) };
   });
@@ -165,14 +180,14 @@ function apiBoot_(req) {
     });
   }
   sp_().setProperty('s:' + x.slug + ':' + email, String(tmin_()));
-  var cur = curRound_(x.c, hdr), rounds = {};
-  Object.keys(hdr.R).forEach(function (k) { rounds[k] = roundSum_(hdr.R[k]); });
-  if (!rounds[cur]) rounds[cur] = roundSum_(null);
-  return ok_({
-    email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email),
-    topic: { id: TOPIC, title: BANK.title, open: topicOpen_(x.c), round: cur, rounds: rounds,
-      stages: STAGES.map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) }
+  var topics = TOPIC_IDS.map(function (id) {
+    var T = TOPICS[id], rec = recGet_(x.slug, email, T, hdr) || { R: {} }, cur = curRound_(x.c, hdr, T), rounds = {};
+    Object.keys(rec.R).forEach(function (k) { rounds[k] = roundSum_(rec.R[k], stagesFor_(T, +k)); });
+    if (!rounds[cur]) rounds[cur] = roundSum_(null, stagesFor_(T, cur));
+    return { id: id, title: T.title, spec: T.spec, open: topicOpen_(x.c, T), round: cur, rounds: rounds,
+      stages: stagesFor_(T, cur).map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) };
   });
+  return ok_({ email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email), topics: topics });
 }
 
 function apiName(req) { return safe_(apiName_)(req); }
@@ -190,21 +205,23 @@ function apiName_(req) {
 function apiStage(req) { return safe_(apiStage_)(req); }
 function apiStage_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
-  if (!topicOpen_(x.c)) return err_('locked');
-  var S = stageOf_(req.stage); if (!S) return err_('bad-stage');
+  var T = topicArg_(req); if (!T) return err_('bad-topic');
+  if (!topicOpen_(x.c, T)) return err_('locked');
   var hdr = hdrGet_(x.slug, x.email) || { o: {}, R: {} };
-  var cur = curRound_(x.c, hdr), round = roundArg_(req);
+  var cur = curRound_(x.c, hdr, T), round = roundArg_(req);
+  var S = stageIn_(T, round || cur, req.stage); if (!S) return err_('bad-stage');
   if (!round || round > cur) return err_('bad-round');
-  var rh = hdr.R[round] || { s: {} }, g = (rh.s || {})[S.n] || {};
-  var order = orderFor_(x.email, round, S.n), views = [], src = [], done = {}, drafts = {};
-  var shard = rh.z ? {} : jget_(sp_(), qKey_(x.slug, x.email, round, S.n), {});
+  var rec = recGet_(x.slug, x.email, T, hdr) || { R: {} };
+  var rh = rec.R[round] || { s: {} }, g = (rh.s || {})[S.n] || {};
+  var order = orderFor_(x.email, round, T, S.n), views = [], src = [], done = {}, drafts = {};
+  var shard = rh.z ? {} : jget_(sp_(), qKey_(x.slug, x.email, round, T, S.n), {});
   order.forEach(function (id) {
     var q = QBY[id].q, v = viewFor_(x.email, round, q);
     views.push(v); src.push(q.src);
     if (shard[id]) { var a = unpack_(v, shard[id][1]); done[id] = { a: a, r: Judge.judge(q, a, v), f: (g.f || []).indexOf(id) !== -1 }; }
   });
   if (round === cur) {
-    var all = up_().getProperties(), pre = 'd:' + x.slug + ':' + TOPIC + ':' + round + ':';
+    var all = up_().getProperties(), pre = 'd:' + x.slug + ':' + T.id + ':' + round + ':';
     Object.keys(all).forEach(function (k) { if (k.indexOf(pre) === 0) { var id = k.slice(pre.length); if (S.ids.indexOf(id) !== -1 && !done[id]) drafts[id] = all[k]; } });
   }
   return ok_({ stage: { n: S.n, title: S.title, outcomes: S.outcomes, q: S.ids.length, x: S.x }, order: order, views: views, src: src,
@@ -214,14 +231,17 @@ function apiStage_(req) {
 function apiMark(req) { return safe_(apiMark_)(req); }
 function apiMark_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
-  if (!topicOpen_(x.c)) return err_('locked');
   var qid = str_(req.qid), hit = QBY[qid]; if (!hit) return err_('bad-question');
+  var T = TOPICS[hit.t];
+  if (!topicOpen_(x.c, T)) return err_('locked');
   var round = roundArg_(req); if (!round) return err_('bad-round');
+  if (!Judge.inRound(hit.q, round)) return err_('bad-question'); // not a question of this round
   return withLock_(function () {
-    var hdr = hdrGet_(x.slug, x.email) || { n: '', j: tmin_(), o: {}, R: {} };
-    var cur = curRound_(x.c, hdr), q = hit.q, v = viewFor_(x.email, round, q);
-    var key = qKey_(x.slug, x.email, round, hit.st), shard = jget_(sp_(), key, {});
-    var rh = hdr.R[round], g = rh && rh.s && rh.s[hit.st];
+    var hdr0 = hdrGet_(x.slug, x.email), hdr = hdr0 || { n: '', j: tmin_(), o: {}, R: {} };
+    var rec = T.id === DD ? hdr : (recGet_(x.slug, x.email, T, hdr) || { R: {} });
+    var cur = curRound_(x.c, hdr, T), q = hit.q, v = viewFor_(x.email, round, q);
+    var key = qKey_(x.slug, x.email, round, T, hit.st), shard = jget_(sp_(), key, {});
+    var rh = rec.R[round], g = rh && rh.s && rh.s[hit.st];
     if (shard[qid]) {
       var a0 = unpack_(v, shard[qid][1]);
       return ok_({ r: Judge.judge(q, a0, v), a: a0, f: !!(g && (g.f || []).indexOf(qid) !== -1), repeat: true });
@@ -233,10 +253,11 @@ function apiMark_(req) {
     var r = Judge.judge(q, a, v);
     shard[qid] = [r.marks, pack_(v, a)];
     jset_(sp_(), key, shard);
-    rh = rnd_(hdr, round); g = stg_(rh, hit.st);
+    rh = rnd_(rec, round); g = stg_(rh, hit.st);
     g.a = (g.a || 0) + 1; g.m = (g.m || 0) + r.marks;
-    jset_(sp_(), pKey_(x.slug, x.email), hdr);
-    try { up_().deleteProperty(dKey_(x.slug, round, qid)); } catch (e) {}
+    jset_(sp_(), tKey_(x.slug, x.email, T), rec);
+    if (T.id !== DD && !hdr0) jset_(sp_(), pKey_(x.slug, x.email), hdr); // the header is who she is: it is there whichever topic she marks first
+    try { up_().deleteProperty(dKey_(x.slug, T, round, qid)); } catch (e) {}
     return ok_({ r: r, a: a, f: false, repeat: false });
   });
 }
@@ -245,15 +266,15 @@ function apiFlag(req) { return safe_(apiFlag_)(req); }
 function apiFlag_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
   var qid = str_(req.qid), hit = QBY[qid]; if (!hit) return err_('bad-question');
-  var round = roundArg_(req); if (!round) return err_('bad-round');
+  var T = TOPICS[hit.t], round = roundArg_(req); if (!round) return err_('bad-round');
   return withLock_(function () {
-    var hdr = hdrGet_(x.slug, x.email); if (!hdr || !hdr.R[round]) return err_('not-marked');
-    var rh = hdr.R[round];
-    if (!rh.z && !jget_(sp_(), qKey_(x.slug, x.email, round, hit.st), {})[qid]) return err_('not-marked');
+    var hdr = hdrGet_(x.slug, x.email), rec = hdr && recGet_(x.slug, x.email, T, hdr); if (!rec || !rec.R[round]) return err_('not-marked');
+    var rh = rec.R[round];
+    if (!rh.z && !jget_(sp_(), qKey_(x.slug, x.email, round, T, hit.st), {})[qid]) return err_('not-marked');
     var g = stg_(rh, hit.st), at = g.f.indexOf(qid);
     if (req.on && at === -1) g.f.push(qid);
     if (!req.on && at !== -1) g.f.splice(at, 1);
-    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    jset_(sp_(), tKey_(x.slug, x.email, T), rec);
     return ok_({ f: g.f.indexOf(qid) !== -1 });
   });
 }
@@ -261,25 +282,26 @@ function apiFlag_(req) {
 function apiEval(req) { return safe_(apiEval_)(req); }
 function apiEval_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
-  if (!topicOpen_(x.c)) return err_('locked');
+  var T = topicArg_(req); if (!T) return err_('bad-topic');
+  if (!topicOpen_(x.c, T)) return err_('locked');
   var round = roundArg_(req); if (!round) return err_('bad-round');
-  var p = req.payload || {}, rating = Math.floor(Number(p.rating));
+  var p = req.payload || {}, rating = Math.floor(Number(p.rating)), ST = stagesFor_(T, round);
   return withLock_(function () {
-    var hdr = hdrGet_(x.slug, x.email); if (!hdr) return err_('not-finished');
-    var cur = curRound_(x.c, hdr), rh = rnd_(hdr, round);
-    function allCards() { return STAGES.every(function (S) { return !!(rh.s[S.n] && rh.s[S.n].e); }); }
+    var hdr = hdrGet_(x.slug, x.email), rec = hdr && recGet_(x.slug, x.email, T, hdr); if (!rec) return err_('not-finished');
+    var cur = curRound_(x.c, hdr, T), rh = rnd_(rec, round);
+    function allCards() { return ST.every(function (S) { return !!(rh.s[S.n] && rh.s[S.n].e); }); }
     if (req.stage === 'topic') {
       if (rh.E) return ok_({ e: EOut_(rh.E), allCards: true, done: true, repeat: true });
       if (round !== cur) return err_('round-closed');
       if (!allCards()) return err_('not-finished');
       if (!(rating >= 1 && rating <= 4)) return err_('no-rating');
-      var u = []; (Array.isArray(p.unsure) ? p.unsure : []).forEach(function (n) { n = Math.floor(Number(n)); if (n >= 0 && n <= 4 && u.indexOf(n) === -1) u.push(n); });
+      var u = []; (Array.isArray(p.unsure) ? p.unsure : []).forEach(function (n) { n = Math.floor(Number(n)); if (n >= 0 && n <= ST.length && u.indexOf(n) === -1) u.push(n); });
       if (u.indexOf(0) !== -1) u = [0];
       rh.E = { r: rating, u: u.sort(), x: str_(p.note).trim().slice(0, 100) }; rh.d = tmin_();
-      jset_(sp_(), pKey_(x.slug, x.email), hdr);
+      jset_(sp_(), tKey_(x.slug, x.email, T), rec);
       return ok_({ e: EOut_(rh.E), allCards: true, done: true });
     }
-    var S = stageOf_(req.stage); if (!S) return err_('bad-stage');
+    var S = stageIn_(T, round, req.stage); if (!S) return err_('bad-stage');
     var g = stg_(rh, S.n);
     if (g.e) return ok_({ e: eOut_(g.e), allCards: allCards(), done: !!rh.d, repeat: true });
     if (round !== cur) return err_('round-closed');
@@ -287,7 +309,7 @@ function apiEval_(req) {
     if (!(rating >= 1 && rating <= 4)) return err_('no-rating');
     var ticks = S.outcomes.map(function (_, k) { return (p.ticks || [])[k] ? 1 : 0; });
     g.e = { r: rating, t: ticks, x: str_(p.stageNote).trim().slice(0, 100) };
-    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    jset_(sp_(), tKey_(x.slug, x.email, T), rec);
     return ok_({ e: eOut_(g.e), allCards: allCards(), done: !!rh.d });
   });
 }
@@ -297,8 +319,8 @@ function apiDraft_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
   var qid = str_(req.qid), round = roundArg_(req);
   if (!QBY[qid] || !round) return err_('bad-question');
-  var t = str_(req.text).slice(0, 400);
-  if (t) up_().setProperty(dKey_(x.slug, round, qid), t); else up_().deleteProperty(dKey_(x.slug, round, qid));
+  var T = TOPICS[QBY[qid].t], t = str_(req.text).slice(0, 400);
+  if (t) up_().setProperty(dKey_(x.slug, T, round, qid), t); else up_().deleteProperty(dKey_(x.slug, T, round, qid));
   return ok_({});
 }
 
@@ -323,19 +345,20 @@ function flagsFor_(rating, m, x) {
   if (rating && rating <= 2 && x && m / x >= 0.75) f.push(FLAG_LOW);
   return f;
 }
-function trackRow_(slug, c, email, round, all) {
+function trackRow_(slug, c, email, round, all, T) {
   var hdr = jget_(sp_(), pKey_(slug, email), null) || { o: {}, R: {} };
-  var rh = (hdr.R || {})[round] || { s: {} }, s = {};
-  STAGES.forEach(function (S) {
+  var rec = T.id === DD ? hdr : (jget_(sp_(), tKey_(slug, email, T), null) || { R: {} });
+  var rh = (rec.R || {})[round] || { s: {} }, s = {};
+  stagesFor_(T, round).forEach(function (S) {
     var g = (rh.s || {})[S.n] || { a: 0, m: 0, f: [] }, e = eOut_(g.e), sh = null;
-    if (!rh.z) { try { sh = JSON.parse(all[qKey_(slug, email, round, S.n)] || '{}'); } catch (x) { sh = {}; } }
+    if (!rh.z) { try { sh = JSON.parse(all[qKey_(slug, email, round, T, S.n)] || '{}'); } catch (x) { sh = {}; } }
     // ax = marks on offer in the questions answered so far, so a part-done stage still gets a fair percentage (v4)
     var ax = sh && Object.keys(sh).length ? Object.keys(sh).reduce(function (t, id) { return t + (QBY[id] ? QBY[id].q.marks : 0); }, 0) : ((g.a || 0) >= S.ids.length ? S.x : 0);
     s[S.n] = { m: g.m || 0, x: S.x, ax: ax, a: g.a || 0, n: S.ids.length, e: e, flags: e ? flagsFor_(e.rating, g.m || 0, S.x) : [],
       fl: (g.f || []).map(function (id) { return QBY[id] ? QBY[id].q.src : id; }) };
   });
   var seen = Number(all['s:' + slug + ':' + email] || 0);
-  return { email: email, name: hdr.n || email.split('@')[0], seen: tminIso_(seen), round: curRound_(c, hdr), s: s, E: EOut_(rh.E), done: !!rh.d };
+  return { email: email, name: hdr.n || email.split('@')[0], seen: tminIso_(seen), round: curRound_(c, hdr, T), s: s, E: EOut_(rh.E), done: !!rh.d };
 }
 function csvCell_(v) { v = str_(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
 function storeSize_(all) { return Object.keys(all).reduce(function (n, k) { return n + k.length + str_(all[k]).length; }, 0); }
@@ -345,7 +368,7 @@ function archive_(all) {
   var size = storeSize_(all); if (size < ARCHIVE_AT) return 0;
   var cands = [];
   Object.keys(all).forEach(function (k) {
-    if (k.indexOf('p:') !== 0) return;
+    if (k.indexOf('p:') !== 0 && k.indexOf('t:') !== 0) return; // a header (Digital Data's rounds) or a later topic's record
     var hdr = jget_(sp_(), k, null); if (!hdr || !hdr.R) return;
     Object.keys(hdr.R).forEach(function (r) { var rh = hdr.R[r]; if (rh.d && !rh.z) cands.push({ k: k, r: r, d: rh.d }); });
   });
@@ -356,9 +379,10 @@ function archive_(all) {
   if (!ss) { ss = SpreadsheetApp.create('OLS Unit 1 Revision — Archive'); sp_().setProperty('archiveId', ss.getId()); }
   var sheet = ss.getSheets()[0], moved = 0;
   for (var i = 0; i < cands.length && size >= ARCHIVE_AT * 0.8; i++) {
-    var cd = cands[i], rest = cd.k.slice(2), rows = [];
-    STAGES.forEach(function (S) {
-      var qk = 'q:' + rest + ':' + cd.r + ':' + S.n, v = all[qk];
+    var cd = cands[i], bits = cd.k.slice(2).split(':'), T = TOPICS[bits[2] || DD], rows = []; // p:slug:email or t:slug:email:topic
+    if (!T) continue;
+    T.stages.forEach(function (S) {
+      var qk = qKey_(bits[0], bits[1], cd.r, T, S.n), v = all[qk];
       if (v) { rows.push([new Date(), qk, v]); size -= qk.length + v.length; }
     });
     if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 3).setValues(rows);
@@ -386,10 +410,10 @@ function apiStaff_(req) {
   if (op === 'classes') {
     var archived = isOwner_(email) ? withLock_(function () { return archive_(all); }) : 0;
     if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
-    return ok_({ archived: archived, classes: classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null) || {}]; })
+    return ok_({ archived: archived, topics: TOPIC_IDS.map(function (id) { return { id: id, title: TOPICS[id].title, spec: TOPICS[id].spec }; }), classes: classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null) || {}]; })
       .filter(function (x) { return seesAll_(email) || x[1].o === email; }).map(function (x) {
       var s = x[0], c = x[1];
-      return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[TOPIC] || 1, open: topicOpen_(c), mine: c.o === email,
+      return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[DD] || 1, open: topicOpen_(c, TOPICS[DD]), mine: c.o === email,
         by: c.o && c.o !== email ? (c.on || c.o.split('@')[0]) : '' };
     }) });
   }
@@ -401,7 +425,7 @@ function apiStaff_(req) {
     return withLock_(function () {
       var list = classList_();
       if (list.indexOf(slug) !== -1 || sp_().getProperty('cls:' + slug)) return err_('taken');
-      jset_(sp_(), 'cls:' + slug, { name: name, o: email, on: maker, c: tmin_(), r: { 'digital-data': 1 }, op: [] });
+      jset_(sp_(), 'cls:' + slug, { name: name, o: email, on: maker, c: tmin_(), r: {}, op: [] });
       list.push(slug); jset_(sp_(), 'classes', list);
       return ok_({ slug: slug, name: name });
     });
@@ -411,89 +435,90 @@ function apiStaff_(req) {
   if (op === 'delete') {
     if (c.o !== email && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
-      var store = sp_(), pres = ['p:' + slugC + ':', 'q:' + slugC + ':', 's:' + slugC + ':'];
+      var store = sp_(), pres = ['p:' + slugC + ':', 't:' + slugC + ':', 'q:' + slugC + ':', 's:' + slugC + ':'];
       store.getKeys().forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
       store.deleteProperty('cls:' + slugC);
       jset_(store, 'classes', classList_().filter(function (x) { return x !== slugC; }));
       return ok_({});
     });
   }
-  if (op === 'topics') return ok_({ className: c.name, topics: [{ id: TOPIC, open: topicOpen_(c) }] });
+  if (op === 'topics') return ok_({ className: c.name, topics: TOPIC_IDS.map(function (id) { return { id: id, title: TOPICS[id].title, spec: TOPICS[id].spec, open: topicOpen_(c, TOPICS[id]) }; }) });
+  var T = topicArg_(req); if (!T) return err_('bad-topic');
   if (op === 'setTopic') {
-    if (str_(req.topic) !== TOPIC) return err_('bad-topic');
     return withLock_(function () {
       var cc = jget_(sp_(), 'cls:' + slugC, null), on = req.open === true;
-      cc.op = (cc.op || [TOPIC]).filter(function (t) { return t !== TOPIC; });
-      if (on) cc.op.push(TOPIC);
+      cc.op = (cc.op || [DD]).filter(function (t) { return t !== T.id; });
+      if (on) cc.op.push(T.id);
       jset_(sp_(), 'cls:' + slugC, cc);
-      return ok_({ id: TOPIC, open: on });
+      return ok_({ id: T.id, open: on });
     });
   }
   var pupils = pupilsOf_(slugC, keys);
   if (op === 'rounds') {
-    return ok_({ round: (c.r || {})[TOPIC] || 1, className: c.name, pupils: pupils.map(function (em) {
+    return ok_({ round: (c.r || {})[T.id] || 1, title: T.title, className: c.name, pupils: pupils.map(function (em) {
       var hdr = jget_(sp_(), pKey_(slugC, em), null) || {};
-      return { email: em, name: hdr.n || em.split('@')[0], round: curRound_(c, hdr) };
+      return { email: em, name: hdr.n || em.split('@')[0], round: curRound_(c, hdr, T) };
     }) });
   }
   if (op === 'openClass') {
     return withLock_(function () {
-      var cc = jget_(sp_(), 'cls:' + slugC, null); cc.r = cc.r || {}; cc.r[TOPIC] = (cc.r[TOPIC] || 1) + 1;
+      var cc = jget_(sp_(), 'cls:' + slugC, null); cc.r = cc.r || {}; cc.r[T.id] = (cc.r[T.id] || 1) + 1;
       jset_(sp_(), 'cls:' + slugC, cc);
-      return ok_({ round: cc.r[TOPIC] });
+      return ok_({ round: cc.r[T.id] });
     });
   }
   if (op === 'openPupil') {
     var em = str_(req.email).toLowerCase();
     return withLock_(function () {
       var hdr = jget_(sp_(), pKey_(slugC, em), null); if (!hdr) return err_('unknown-pupil');
-      hdr.o = hdr.o || {}; var next = curRound_(c, hdr) + 1; hdr.o[TOPIC] = next;
+      hdr.o = hdr.o || {}; var next = curRound_(c, hdr, T) + 1; hdr.o[T.id] = next;
       jset_(sp_(), pKey_(slugC, em), hdr);
       return ok_({ round: next });
     });
   }
-  var maxRound = pupils.reduce(function (m, em) { return Math.max(m, curRound_(c, jget_(sp_(), pKey_(slugC, em), null))); }, (c.r || {})[TOPIC] || 1);
-  var round = roundArg_(req) || ((c.r || {})[TOPIC] || 1);
+  var maxRound = pupils.reduce(function (m, em) { return Math.max(m, curRound_(c, jget_(sp_(), pKey_(slugC, em), null), T)); }, (c.r || {})[T.id] || 1);
+  var round = roundArg_(req) || ((c.r || {})[T.id] || 1), ST = stagesFor_(T, round);
   if (op === 'tracker') {
-    return ok_({ className: c.name, round: round, maxRound: maxRound, stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
-      rows: pupils.map(function (em) { return trackRow_(slugC, c, em, round, all); }) });
+    return ok_({ className: c.name, title: T.title, round: round, maxRound: maxRound, stages: ST.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
+      rows: pupils.map(function (em) { return trackRow_(slugC, c, em, round, all, T); }) });
   }
   if (op === 'pupil') {
     var pe = str_(req.email).toLowerCase(), hdrP = jget_(sp_(), pKey_(slugC, pe), null);
     if (!hdrP) return err_('unknown-pupil');
-    var rhP = (hdrP.R || {})[round] || { s: {} }, items = [];
-    STAGES.forEach(function (S) {
-      var g = (rhP.s || {})[S.n] || { f: [] }, shard = rhP.z ? {} : jget_(sp_(), qKey_(slugC, pe, round, S.n), {});
-      orderFor_(pe, round, S.n).forEach(function (id, i) {
+    var recP = T.id === DD ? hdrP : (jget_(sp_(), tKey_(slugC, pe, T), null) || { R: {} });
+    var rhP = (recP.R || {})[round] || { s: {} }, items = [];
+    ST.forEach(function (S) {
+      var g = (rhP.s || {})[S.n] || { f: [] }, shard = rhP.z ? {} : jget_(sp_(), qKey_(slugC, pe, round, T, S.n), {});
+      orderFor_(pe, round, T, S.n).forEach(function (id, i) {
         if (!shard[id]) return;
         var q = QBY[id].q, v = viewFor_(pe, round, q), a = unpack_(v, shard[id][1]);
         items.push({ st: S.n, i: i + 1, id: id, src: q.src, q: str_(v.q || v.text).slice(0, 240), m: shard[id][0], max: q.marks, ans: answerWords_(v, a),
           text: v.form === 'writepick' && !a.skipped ? a.text : '', skipped: v.form === 'writepick' && !!a.skipped, f: (g.f || []).indexOf(id) !== -1 });
       });
     });
-    return ok_({ name: hdrP.n || pe.split('@')[0], round: round, archived: !!rhP.z, items: items,
-      stages: STAGES.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
-      row: trackRow_(slugC, c, pe, round, all) });
+    return ok_({ name: hdrP.n || pe.split('@')[0], title: T.title, round: round, archived: !!rhP.z, items: items,
+      stages: ST.map(function (S) { return { n: S.n, title: S.title, x: S.x, q: S.ids.length, outcomes: S.outcomes }; }),
+      row: trackRow_(slugC, c, pe, round, all, T) });
   }
   if (op === 'csv') {
     var head = ['class', 'pupil', 'email', 'round', 'stage', 'marks', 'max', 'rating', 'ticks', 'stageNote', 'topicRating', 'unsure', 'note', 'flags', 'flagged', 'lastUsed'];
     var lines = [head.join(',')];
     pupils.forEach(function (em) {
-      var row = trackRow_(slugC, c, em, round, all);
-      STAGES.forEach(function (S) {
+      var row = trackRow_(slugC, c, em, round, all, T);
+      ST.forEach(function (S) {
         var g = row.s[S.n], e = g.e, E = row.E;
         var ticks = e ? e.ticks.filter(function (t) { return t; }).length + ' of ' + e.ticks.length : '';
-        var unsure = E ? E.unsure.map(function (u) { return u ? stageOf_(u).title : "No, I'm fine with all of it"; }).join('; ') : '';
+        var unsure = E ? E.unsure.map(function (u) { return u ? (ST[u - 1] || {}).title : "No, I'm fine with all of it"; }).join('; ') : '';
         lines.push([c.name, row.name, em, round, S.n + ' ' + S.title, g.m, g.x, e ? e.rating : '', ticks, e ? e.stageNote : '',
           E ? E.rating : '', unsure, E ? E.note : '', g.flags.join('; '), g.fl.join('; '), row.seen || ''].map(csvCell_).join(','));
       });
     });
-    return ok_({ filename: slugC + '-digital-data-round-' + round + '.csv', csv: lines.join('\r\n') + '\r\n' });
+    return ok_({ filename: slugC + '-' + T.id + '-round-' + round + '.csv', csv: lines.join('\r\n') + '\r\n' });
   }
   if (op === 'clearMe') {
     return withLock_(function () {
       var pre = ':' + slugC + ':' + email;
-      keys.forEach(function (k) { if (k === 'p' + pre || k === 's' + pre || k.indexOf('q' + pre + ':') === 0) sp_().deleteProperty(k); });
+      keys.forEach(function (k) { if (k === 'p' + pre || k === 's' + pre || k.indexOf('q' + pre + ':') === 0 || k.indexOf('t' + pre + ':') === 0) sp_().deleteProperty(k); });
       var mine = up_().getProperties(), dp = 'd:' + slugC + ':';
       Object.keys(mine).forEach(function (k) { if (k.indexOf(dp) === 0) up_().deleteProperty(k); });
       return ok_({});

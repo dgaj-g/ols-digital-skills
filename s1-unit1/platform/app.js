@@ -48,6 +48,10 @@ var App = (function () {
     });
   }
   // ---- record (from apiBoot / apiStage) ----
+  // v6: ME.topics holds every built topic; ME.topic is the one she has open (TOPIC), so the screens below read one topic at a time
+  function pick(id) { ME.topic = (ME.topics || []).filter(function (t) { return t.id === id; })[0] || (ME.topics || [])[0]; if (ME.topic) TOPIC = ME.topic.id; }
+  function stNs() { return ME.topic.stages.map(function (t) { return t.n; }); }
+  function ck(n, st) { return TOPIC + "|" + n + "|" + st; }
   function roundNo() { return ME.topic.round; }
   function RS(n) {
     n = n || roundNo(); var r = ME.topic.rounds[n];
@@ -55,16 +59,16 @@ var App = (function () {
     return r;
   }
   function stage(st) { return ME.topic.stages[st - 1]; }
-  function TOT() { return ME.topic.stages.reduce(function (t, s) { return t + s.x; }, 0); }
-  function QN() { return ME.topic.stages.reduce(function (t, s) { return t + s.q; }, 0); }
+  function TOT(n) { var r = RS(n); return stNs().reduce(function (t, st) { return t + r.s[st].x; }, 0); } // a round's own total: a later round can hold other questions
+  function QN(n) { var r = RS(n); return stNs().reduce(function (t, st) { return t + r.s[st].n; }, 0); }
   function stageTotals(st, n) { var g = RS(n).s[st]; return { a: g.a, m: g.m, n: g.n, x: g.x }; }
   function loadStage(n, st, fresh) {
-    var k = n + "|" + st; if (CACHE[k] && !fresh) return Promise.resolve(CACHE[k]);
+    var k = ck(n, st); if (CACHE[k] && !fresh) return Promise.resolve(CACHE[k]);
     if (PROM[k] && !fresh) return PROM[k];
     PROM[k] = call("apiStage", { round: n, stage: st }).then(function (r) { CACHE[k] = r; delete PROM[k]; return r; }, function (e) { delete PROM[k]; throw e; });
     return PROM[k];
   }
-  function reboot() { return call("apiBoot", {}).then(function (r) { ME = r; CACHE = {}; PROM = {}; return r; }); }
+  function reboot() { return call("apiBoot", {}).then(function (r) { ME = r; CACHE = {}; PROM = {}; pick(TOPIC); return r; }); }
   function closed(e) { if (e && e.code === "round-closed") reboot().then(topic).catch(function () {}); }
   // ---- shell ----
   function shell(crumb, body, bar) {
@@ -89,27 +93,33 @@ var App = (function () {
     nm.oninput = function () { b.disabled = !nm.value.trim(); }; nm.onkeydown = function (ev) { if (ev.key === "Enter") send(); }; b.onclick = send; nm.focus();
   }
   // ---- home ----
-  function home() {
+  function home() { // one live tile per built topic (v6), each with its own round line; the rest say "Comes later"
     CUR = { screen: "home" };
-    var n = roundNo(), r = RS(n), a = 0, m = 0; [1, 2, 3, 4].forEach(function (st) { var t = stageTotals(st, n); a += t.a; m += t.m; });
-    var line = S.round + n + (n > 1 ? " open" : "") + " · " + (r.done ? "done · " + m + " of " + TOT() + " marks" : a ? a + " of " + QN() + " questions done" : "not started");
     if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
-    var shut = !ME.topic.open, foot = shut ? '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>' : '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>';
-    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? (shut ? ' shut' : '') : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? foot : S.later) + '</div></div>'; }).join("");
-    shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>')); wire("openLive", topic);
+    var tiles = TOPICS.map(function (name, i) {
+      var tp = ME.topics.filter(function (t) { return t.spec === "1." + (i + 1); })[0];
+      if (!tp) return '<div class="topic off"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta"></div><div class="foot">' + S.later + '</div></div>';
+      var n = tp.round, r = tp.rounds[n] || { s: {} }, a = 0, m = 0, x = 0, q = 0;
+      Object.keys(r.s).forEach(function (st) { a += r.s[st].a; m += r.s[st].m; x += r.s[st].x; q += r.s[st].n; });
+      var line = S.round + n + (n > 1 ? " open" : "") + " · " + (r.done ? "done · " + m + " of " + x + " marks" : a ? a + " of " + q + " questions done" : "not started");
+      var foot = tp.open ? '<button class="btn sm" data-open="' + h(tp.id) + '">' + S.open + '</button><span>' + h(line) + '</span>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
+      return '<div class="topic' + (tp.open ? '' : ' shut') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta">' + fmt(S.liveMeta, { s: tp.stages.length, q: q, m: x }) + '</div><div class="foot">' + foot + '</div></div>';
+    }).join("");
+    shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
+    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { pick(b.dataset.open); topic(); }; });
   }
   // ---- topic front ----
   function topic() {
     CUR = { screen: "topic" };
-    var n = roundNo(), rows = [1, 2, 3, 4].map(function (st) {
+    var n = roundNo(), rows = stNs().map(function (st) {
       var t = stageTotals(st, n), s = RS(n).s[st], status, cls, btn;
       if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
       else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
       else { status = S.notStarted; cls = ""; btn = S.start; }
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' · ' + h(stage(st).title) + '<small>' + t.n + ' questions · ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
-    var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; [1, 2, 3, 4].forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' · ' + m + ' of ' + TOT() + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
-    var body = el('<div><h1>Digital Data</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
+    var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' · ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
+    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
     shell(crumbHome(), body); wire("cHome", home); wire("seeSum", function () { summary(n); });
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
@@ -118,10 +128,10 @@ var App = (function () {
       };
     });
     body.querySelectorAll("[data-lb]").forEach(function (x) { x.onclick = function () { summary(+x.dataset.lb); }; });
-    [1, 2, 3, 4].forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
+    stNs().forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
   }
   // ---- question ----
-  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
+  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, k: ME.topic.stages.length, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
   // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
   function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
   function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
@@ -140,7 +150,7 @@ var App = (function () {
   }
   function question(st, i, replay, n) {
     n = n || roundNo(); clearTimeout(draftT);
-    var D = CACHE[n + "|" + st], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
+    var D = CACHE[ck(n, st)], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
     CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
     else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
@@ -150,7 +160,7 @@ var App = (function () {
     else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text" maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
-    shell(crumbHome() + ' · <a id="cTopic">Digital Data</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
     function refresh() { var a = collect(); document.getElementById("check").disabled = sending || !complete(v, a); }
     function collect() {
@@ -232,15 +242,15 @@ var App = (function () {
       refresh();
     }
   }
-  function lookback(n, st, i) { var D = CACHE[n + "|" + st]; while (i < D.order.length && !D.done[D.order[i]]) i++; if (i >= D.order.length) return topic(); question(st, i, true, n); }
+  function lookback(n, st, i) { var D = CACHE[ck(n, st)]; while (i < D.order.length && !D.done[D.order[i]]) i++; if (i >= D.order.length) return topic(); question(st, i, true, n); }
   // ---- cards ----
   function rateHtml(id) { return '<div class="lead">' + S.closest + '</div><div class="opts rate" id="' + id + '">' + S.rates.map(function (t, k) { return '<div class="opt" data-r="' + (k + 1) + '"><i></i><span>' + t + '</span></div>'; }).join("") + '</div>'; }
   function wireRate(box, cb) { box.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { box.querySelectorAll(".opt").forEach(function (x) { x.classList.toggle("on", x === o); }); cb(+o.dataset.r); }; }); }
   function stagecard(st) {
     CUR = { screen: "stagecard", st: st };
-    var n = roundNo(), t = stage(st), D = CACHE[n + "|" + st], rating = 0;
+    var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' · ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
-    shell(crumbHome() + ' · <a id="cTopic">Digital Data</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -253,8 +263,8 @@ var App = (function () {
   function topiccard() {
     CUR = { screen: "topiccard" };
     var n = roundNo(), rating = 0;
-    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + S.wholeTopic + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + [1, 2, 3, 4].map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
-    shell(crumbHome() + ' · <a id="cTopic">Digital Data</a>', body); wire("cHome", home); wire("cTopic", topic);
+    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
+    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
@@ -267,14 +277,14 @@ var App = (function () {
   }
   function summary(n) {
     CUR = { screen: "summary", n: n };
-    var R = RS(n), m = 0, rows = [1, 2, 3, 4].map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r" data-hue="' + st + '"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b><div class="bar"><i style="--p:' + Math.round(100 * t.m / t.x) + '%"></i></div></div>'; }).join("");
-    var flagged = []; [1, 2, 3, 4].forEach(function (st) {
-      var D = CACHE[n + "|" + st], f = R.s[st].f.slice();
+    var R = RS(n), m = 0, rows = stNs().map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r" data-hue="' + st + '"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b><div class="bar"><i style="--p:' + Math.round(100 * t.m / t.x) + '%"></i></div></div>'; }).join("");
+    var flagged = []; stNs().forEach(function (st) {
+      var D = CACHE[ck(n, st)], f = R.s[st].f.slice();
       if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
       f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' · Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' · Stage ' + st + '</span>') + '</div>'); });
     });
-    var tot = TOT();
-    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · Digital Data</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
+    var tot = TOT(n);
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
     shell(crumbHome(), body); wire("cHome", home); wire("back", home);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
@@ -284,14 +294,14 @@ var App = (function () {
     guard(X.signing);
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
-      ME = r; r.needName ? nameScreen() : home();
+      ME = r; pick(TOPIC); r.needName ? nameScreen() : home();
       if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
         pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
-      if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
+      if (BOOT.sit && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
-    reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
+    pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
   return { boot: boot, t: T };
 })();

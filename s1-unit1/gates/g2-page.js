@@ -20,6 +20,7 @@ const STORE = path.join(DESIGN, 'gates', 'g2-store.json');
 const OUT = path.join(__dirname, 'out'); fs.mkdirSync(OUT, { recursive: true });
 const Judge = require(path.join(DESIGN, 'judge', 'judge.js'));
 const BANK = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_digital_data.js'), 'utf8') + '\n;BANK_DIGITAL_DATA', {});
+const BANK_SW = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_software.js'), 'utf8') + '\n;BANK_SOFTWARE', {});
 const Policy = require(path.join(ROOT, 'platform', 'sitpolicy.js'));
 const log = [], res = { pass: 0, fail: 0 };
 function check(name, good, detail) { good ? res.pass++ : res.fail++; log.push((good ? 'PASS ' : 'FAIL ') + name + (detail != null && !good ? ' · ' + detail : '')); }
@@ -27,7 +28,7 @@ async function api(fn, body, user) {
   const r = await fetch(BASE + '/api/' + fn, { method: 'POST', headers: { 'content-type': 'application/json', 'x-dev-user': user }, body: JSON.stringify(body) });
   return r.json();
 }
-async function sit(browser, user, cls, control, vw) {
+async function sit(browser, user, cls, control, vw, topic) {
   const page = await browser.newPage(), errs = [];
   await page.setViewport(vw || { width: 1280, height: 800 });
   page.on('console', (m) => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
@@ -41,20 +42,20 @@ async function sit(browser, user, cls, control, vw) {
     });
   }, control === true ? '.card{min-width:1500px}' : control, control === true);
   const t0 = Date.now();
-  await page.goto(BASE + '/?class=' + cls + '&as=' + encodeURIComponent(user) + '&sit=1', { waitUntil: 'domcontentloaded' });
+  await page.goto(BASE + '/?class=' + cls + '&as=' + encodeURIComponent(user) + '&sit=' + (topic || '1'), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction('window.__SIT && window.__SIT.done', { timeout: 900000, polling: 500 });
   const out = await page.evaluate(() => window.__SIT);
   return { page, errs, out, secs: Math.round((Date.now() - t0) / 1000) };
 }
 // the sit passed, the page saw no errors, and its marks equal the judge's for this pupil (same seed, same policy)
-function sitChecks(R, user, tag) {
+function sitChecks(R, user, tag, bank) {
     const fails = R.out.lines.filter((l) => /^SIT FAIL/.test(l));
     check(tag + 'sit run PASS (' + R.secs + ' s)', R.out.pass && fails.length === 0, fails.slice(0, 8).join(' | '));
     check(tag + 'no console errors or failed requests', R.errs.length === 0, R.errs.slice(0, 5).join(' | '));
     const marksLine = (R.out.lines.find((l) => l.indexOf('MARKS ') === 0) || '').slice(6);
     const got = {}; marksLine.split(',').filter(Boolean).forEach((p) => { const i = p.lastIndexOf(':'); got[p.slice(0, i)] = +p.slice(i + 1); });
     let n = 0, diff = [], tot = 0, max = 0;
-    BANK.stages.forEach((st) => st.questions.forEach((q) => {
+    (bank || BANK).stages.forEach((st) => st.questions.forEach((q) => { if (!Judge.inRound(q, 1)) return; // round 1 only: from:2 questions wait for round 2
       const v = Judge.draw(q, user + '|1|' + q.id), a = Policy.answer(v, user + '|1'), m = Judge.judge(q, a, v).marks;
       n++; tot += m; max += q.marks; if (got[q.id] !== m) diff.push(q.id + ' page ' + got[q.id] + ' judge ' + m);
     }));
@@ -97,6 +98,19 @@ function sitChecks(R, user, tag) {
     const pcl = PC.out.lines.filter((l) => /^SIT FAIL layout/.test(l));
     check('CONTROL phone with the desktop columns: sit reports layout failures', !PC.out.pass && pcl.some((l) => /scrolls sideways/.test(l)), 'layout fails ' + pcl.length);
     check('CONTROL phone with the chosen-words line hidden: sit reports list text cut off', pcl.some((l) => /list text cut off/.test(l)), 'layout fails ' + pcl.length);
+    // ---- v6: the Software topic (spec 1.2), opened on its own, sat through the page at desktop and phone width
+    const swo = await api('apiStaff', { op: 'setTopic', cls: '11a-dt', topic: 'software', open: true }, OWNER);
+    check('Software opened for the class', swo.ok && swo.open === true, JSON.stringify(swo));
+    const W = await sit(browser, OWNER, '11a-dt', false, null, 'software');
+    fs.writeFileSync(path.join(OUT, 'g2-sit-lines-software.txt'), W.out.lines.join('\n') + '\n');
+    try { await W.page.bringToFront(); await W.page.screenshot({ path: path.join(OUT, 'g2-summary-software.png'), captureBeyondViewport: false }); } catch (e) { log.push('INFO software screenshot skipped: ' + e.message.slice(0, 80)); }
+    check('SOFTWARE the sit played Software, not Digital Data', W.out.lines.some((l) => /^SIT PASS topic software is Software/.test(l)), W.out.lines.filter((l) => /topic /.test(l)).join(' | '));
+    sitChecks(W, OWNER, 'SOFTWARE · ', BANK_SW);
+    const WP = await sit(browser, OWNER, '11a-dt', false, PH, 'software');
+    sitChecks(WP, OWNER, 'SOFTWARE PHONE 390x844 · ', BANK_SW);
+    // Software has no figures, so its control keeps the long answer options on one line: at 390 px they must spill
+    const WC = await sit(browser, 'control9@c2ken.net', '11a-dt', '.opt,.opt span{white-space:nowrap!important}', PH, 'software');
+    check('CONTROL Software on a phone with each answer option forced onto one line: sit reports layout failures', !WC.out.pass && WC.out.lines.some((l) => /^SIT FAIL layout/.test(l)), 'layout fails ' + WC.out.lines.filter((l) => /^SIT FAIL layout/.test(l)).length);
   } catch (e) { check('run', false, e.stack || e.message); }
   finally { if (browser) await browser.close(); srv.kill(); }
   const txt = 'G2 render coverage + sit on the harness · ' + new Date().toISOString() + '\n' + log.join('\n') + '\n' + (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail\n';

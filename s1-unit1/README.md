@@ -1,6 +1,6 @@
 # OLS Unit 1 Revision — S1 GCSE Digital Technology
 
-CCEA GCSE Digital Technology Unit 1 revision for S1 (Year 11), past-paper questions marked to the written-paper standard. Digital Data is the pilot topic; the other eight topics show as "Comes later".
+CCEA GCSE Digital Technology Unit 1 revision for S1 (Year 11), past-paper questions marked to the written-paper standard. Two topics are built: Digital Data (1.1) and Software (1.2, from version 6); the other seven show as "Comes later".
 
 ## Links
 - Pupils: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec?class=11a-dt
@@ -8,7 +8,8 @@ CCEA GCSE Digital Technology Unit 1 revision for S1 (Year 11), past-paper questi
 - Staff: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec
 - Classes: on the staff page each class has a "Copy class link" button (paste it to pupils) and a "Delete class" button (press twice; it removes that class and every pupil record in it). Each teacher sees only the classes they made; the owner and heads of department see every class, with "made by" and the teacher's first name on classes other teachers made. Only the teacher who made a class, or the owner, can delete it.
 - Tracker: every score shows its percentage, ratings show in the pupils' own words, graphs sit at the top and "What pupils said" at the foot. Click a pupil's name to see every answer they gave. The second column, "Last used", shows when each pupil last used the app (Today 14:05, or the date and how many days ago); it is also on the pupil's page and in the CSV.
-- Topics: on the staff page, the Topics tab opens or locks each topic for a class. A new class starts with its topics locked; pupils see a locked topic as "Not opened yet".
+- Topics: on the staff page, the Topics tab opens or locks each topic for a class. A new class starts with its topics locked; pupils see a locked topic as "Not opened yet". Software starts locked in every class, older classes included: open it on the Topics tab when you teach it.
+- Topic picker: once two topics are built, the Rounds, Tracker and Export tabs have a Topic drop-down beside the class. Rounds are per topic, so opening round 2 of Digital Data leaves Software where it is. A CSV is named class-topic-round-n.csv.
 - The staff passcode is kept in Claude Work/S1 Unit 1 Platform/STAFF_PASSCODE.txt, never in this repo. The owner account, and teachers on the private named list, get in with their school account and no passcode.
 
 ## Folders

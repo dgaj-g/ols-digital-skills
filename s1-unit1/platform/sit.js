@@ -1,7 +1,7 @@
 /* sit.js — the scripted sit (G2 on the harness, G4 on the live /dev link). Runs only with ?sit=1 for the owner (or the
- * harness's dev user). It clears the owner's own record in the class, then plays all four stages through the page itself
+ * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=software Software) through the page itself
  * (tiles, boxes, lists, toggles, Check, Next) with SitPolicy's answers, flags every 7th question, reloads mid-stage, saves
- * every card, checks the summary, restores all 82 marked questions, tries a repeat mark, and opens round 2 for itself.
+ * every card, checks the summary, restores every marked question, tries a repeat mark, and opens round 2 for itself.
  * The report is a <pre id="sitReport"> (SIT PASS/FAIL lines, MARKS, a MARKS# hash the gate recomputes in node). */
 var Sit = (function () {
   var T, S = S1S.S, lines = [], fails = 0, errors = [];
@@ -51,7 +51,10 @@ var Sit = (function () {
     if ((v.form === "pick1" || v.form === "pickN") && all('.opts[data-part=""] .opt').length !== v.options.length) miss.push("tiles");
     return miss;
   }
-  var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n;
+  var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
+    TID = "digital-data";
+  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
+  function sts() { var a = []; for (var i = 1; i <= K; i++) a.push(i); return a; }
   function answerOne() { // fills the question on screen the way a pupil would, then presses Check (or I don't know)
     var c = cur(), v = c.v, a = SitPolicy.answer(v, email + "|" + n), miss = rendered(v);
     if (miss.length) ok("rendered " + c.qid, false, miss.join(","));
@@ -114,22 +117,24 @@ var Sit = (function () {
       var tick = $('.ticks input[type=checkbox]'); if (tick) tick.click();
       set($("#conf"), "sit run " + st);
       $("#save").click();
-      return until(function () { return cur().screen === (st < 4 ? "topic" : "topiccard"); }, 30000, "card " + st);
+      return until(function () { return cur().screen === (st < K ? "topic" : "topiccard"); }, 30000, "card " + st);
     });
   }
   function run(t) {
     T = t; window.addEventListener("error", function (e) { errors.push(String(e.message)); });
     window.addEventListener("unhandledrejection", function (e) { errors.push("promise: " + String(e.reason && (e.reason.code || e.reason.message) || e.reason)); });
     ok("started", true, T.boot.build);
-    var me = T.me(); email = me.email;
+    if (T.boot.sit && T.boot.sit !== "1") TID = T.boot.sit;
+    T.pick(TID); var me = T.me(); email = me.email;
     var fresh = me.topic.round === 1 && Object.keys(me.topic.rounds).every(function (k) { var r = me.topic.rounds[k]; return Object.keys(r.s).every(function (s) { return !r.s[s].a && !r.s[s].e; }); });
     (fresh ? Promise.resolve() : T.call("apiStaff", { op: "clearMe", cls: T.boot.cls }).then(T.reboot)).then(function () {
-      me = T.me(); n = me.topic.round;
+      me = T.me(); n = me.topic.round; K = me.topic.stages.length; NQ = me.topic.stages.reduce(function (s, st) { return s + st.q; }, 0);
       ok("fresh record", n === 1 && !me.needName, "round " + n);
       T.home(); layout("home");
-      ok("home line", (($(".topic .foot span") || {}).textContent || "") === S.round + "1 · not started", ($(".topic .foot span") || {}).textContent);
-      $("#openLive").click(); layout("topic");
-      return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
+      ok("home line", (foot().textContent || "") === S.round + "1 · not started", foot().textContent);
+      ok("topic " + TID + " is " + me.topic.title, me.topic.id === TID, me.topic.id);
+      $('[data-open="' + TID + '"]').click(); layout("topic");
+      return sts().reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
     }).then(function () {
       layout("topic card");
       $('.rate .opt[data-r="2"]').click(); $('input[data-u="0"]').click(); set($("#note"), "sit run");
@@ -138,7 +143,7 @@ var Sit = (function () {
     }).then(function () {
       var tot = 0, qs = Object.keys(MARKS); qs.forEach(function (k) { tot += MARKS[k]; });
       var x = me.topic.stages.reduce(function (s, st) { return s + st.x; }, 0);
-      ok("82 questions answered", qs.length === 82, qs.length);
+      ok(NQ + " questions answered", qs.length === NQ && NQ > 0, qs.length);
       ok("summary total", $(".card h2").textContent === T.fmt(S.scored, { m: tot, x: x, p: Math.round(100 * tot / x) }), $(".card h2").textContent);
       ok("summary flagged", all(".sumrows .link[data-id]").length === FLAGS.length, all(".sumrows .link[data-id]").length + " of " + FLAGS.length);
       layout("summary");
@@ -146,17 +151,17 @@ var Sit = (function () {
       // every marked question comes back after a reload
       return T.reboot().then(function () {
         var bad = [], seen = 0;
-        return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
+        return sts().reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
           D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); });
         }); }); }, Promise.resolve()).then(function () {
-          ok("all marked questions restore", seen === 82 && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          ok("all marked questions restore", seen === NQ && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
           T.home();
-          ok("home line done", $(".topic .foot span").textContent === S.round + "1 · done · " + tot + " of " + x + " marks", $(".topic .foot span").textContent);
+          ok("home line done", foot().textContent === S.round + "1 · done · " + tot + " of " + x + " marks", foot().textContent);
           return tot;
         });
       });
     }).then(function (tot) { // first answer wins
-      var D = T.cache()[n + "|1"], qid = D.order[0], v = D.views[0];
+      var D = T.cache()[TID + "|" + n + "|1"], qid = D.order[0], v = D.views[0];
       return T.call("apiMark", { round: n, qid: qid, answer: SitPolicy.answer(v, "another pupil") }).then(function (r) {
         ok("repeat mark keeps the first", r.repeat === true && r.r.marks === MARKS[qid], "repeat " + r.repeat + " · " + r.r.marks + " vs " + MARKS[qid]);
         return T.call("apiStaff", { op: "openPupil", cls: T.boot.cls, email: email });
@@ -165,11 +170,11 @@ var Sit = (function () {
         return T.reboot();
       }).then(function () {
         var m2 = T.me();
-        var r1 = [1, 2, 3, 4].reduce(function (s, st) { return s + m2.topic.rounds[1].s[st].m; }, 0);
+        var r1 = sts().reduce(function (s, st) { return s + m2.topic.rounds[1].s[st].m; }, 0);
         ok("round 1 kept", r1 === tot, r1 + " vs " + tot);
         ok("round 2 current", m2.topic.round === 2);
         T.home();
-        ok("home line round 2", $(".topic .foot span").textContent === S.round + "2 open · not started", $(".topic .foot span").textContent);
+        ok("home line round 2", foot().textContent === S.round + "2 open · not started", foot().textContent);
         return T.loadStage(2, 1).then(function (D2) { ok("round 2 new order", D2.order.join() !== D.order.join()); T.topic(); layout("topic round 2"); });
       });
     }).catch(function (e) { ok("run", false, e && (e.code || e.message)); }).then(function () {

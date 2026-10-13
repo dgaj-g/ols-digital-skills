@@ -1,4 +1,4 @@
-G5 staff page · 2026-09-28T19:40:05.218Z
+G5 staff page · 2026-10-13T21:11:58.883Z
 PASS a new class starts with Digital Data locked
 PASS records made (class, pupil stage 1 7/34, card)
 PASS door: passcode box, no tabs; build token on the body, no build footer
@@ -12,7 +12,7 @@ PASS Classes: the owner's own class has Delete and no "made by"
 PASS Classes: Copy class link puts …?class=11a-dt on the clipboard and says "Class link copied."
 PASS Classes: says a new class starts locked
 PASS Classes: nothing wider than its box
-PASS Topics: nine rows; Digital Data "Open" with a Lock button; the rest "Comes later"
+PASS Topics: nine rows; Digital Data "Open" with a Lock button; Software "Locked" with an Open button (v6); the rest "Comes later"
 PASS Topics: the note "Pupils see locked topics as “Not opened yet”."
 PASS Topics: nothing wider than its box
 PASS CONTROL the locked-tile check, run on the open topic, does not pass
@@ -20,7 +20,13 @@ PASS Topics: Lock pressed -> "Locked" with an Open button
 PASS pupil home: the locked tile says "Not opened yet" / "Your teacher opens topics in class." and has no Open
 PASS pupil: a stage of the locked topic is refused
 PASS Topics: Open pressed -> the pupil tile has Open again
-PASS Rounds: "Digital Data · Round 1 open" and the two open buttons
+PASS CONTROL pupil home: Software, still locked, has no Open on its tile
+PASS Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged
+PASS pupil home: the Software tile has Open and reads "4 stages · 29 questions · 59 marks"
+PASS Tracker: a Topic picker lists Digital data and Software; the heading names Digital data
+PASS Tracker: picking Software -> "Tracker · <class> · Software · Round 1", the picker still on Software, 4 pupils
+PASS Tracker: picking Digital data again -> its heading is back
+PASS Rounds: "Digital data · Round 1 open" and the two open buttons
 PASS Rounds: nothing wider than its box
 PASS Tracker: the second column is "Last used"
 PASS Tracker: Aoife, who used it just now, reads "Today hh:mm"
@@ -53,4 +59,4 @@ PASS named teacher: makes 12B DT and sees only it, with its Delete and no "made 
 PASS owner: sees both classes; 12B DT reads "12B DT · 0 pupils · created <date> · made by Orla"
 PASS CONTROL a teacher not on the named list meets the passcode door
 PASS CONTROL a widened tracker is caught by the layout check
-GREEN · 54 pass · 0 fail
+GREEN · 60 pass · 0 fail

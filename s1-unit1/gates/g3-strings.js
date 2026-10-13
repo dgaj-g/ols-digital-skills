@@ -32,7 +32,7 @@ function audit(W, pageSrc) {
   const dS = deepEq(W.S, P.S); if (dS) f.push('S differs from the prototype: ' + dS.slice(0, 300));
   const dT = deepEq(W.TOPICS, P.TOPICS); if (dT) f.push('TOPICS differ: ' + dT.slice(0, 200));
   Object.keys(W.X).forEach((k) => {
-    const v = W.X[k], vals = Array.isArray(v) ? v : [fmt(v, { n: /Round \{n\} open/.test(v) ? 1 : 2 })];
+    const v = W.X[k], vals = Array.isArray(v) ? v : [fmt(v, { n: /Round \{n\} open/.test(v) ? 1 : 2, t: "Digital data" })];
     vals.forEach((t) => { if (!ticks.has(t) && !bold.has(t) && !a2vals.has(t)) f.push('X.' + k + ' "' + t + '" is not in SPEC §3 or A2'); });
   });
   const used = (re) => { const out = new Set(); let m; while ((m = re.exec(pageSrc))) out.add(m[1]); return out; };
