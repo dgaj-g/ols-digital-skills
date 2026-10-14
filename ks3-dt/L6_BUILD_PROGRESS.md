@@ -71,3 +71,12 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - Deck/brief state at 16:56: no assets/img/deck/j1-06 or img/brief/j1-06 yet; content/j1/decks/j1-06.deck.json is packed (walk build). Teacher deck shots + brief shots must be captured (capture-teacher-layer.js --lesson j1-06; plan entries in deck-shot-plan.js may be needed).
 - Order: real pack → deck/brief shots → l6-channel-test → suites → sit report → server jobs → build-pathb → Apps Script deploy → smoke → PR + merge → RESUME_HERE V72 → done message.
 - Deck route (from RESUME_HERE lines 52, 110-145): the deck words live in content-src/j1/decks/j1-06.deck.json → pack → node tools/slides-deck/build-deck-gs.js writes OLS_KS3_DT_Slide_Decks.gs → paste into his Slide Decks Apps Script project and run runDeckRound (Chrome) → the Slides link goes into the j1-06 brief's Resources; staffDocsGate checks the brief is whole and the slide numbers match.
+
+## 19:15 — real pack GREEN, l6-channel-test GREEN
+- Real pack: stopped on (1) stale deck .gs without j1-06 → rebuilt with build-deck-gs.js; (2) stale PathB bundle → rebuilt by the pack; (3) DFM 305–331 had no audit rows → added to DFM_ENFORCEMENT_AUDIT.md (D: 311, 325, 330; E: the rest, 329 superseded); qa-dfm-audit ALL GREEN; (4) contentVersion bump → 2026-10-14a. Pack exit 0. Commit 46663ee-amended (screenshots kept out of git: 22 MB).
+- l6-channel-test.js (spec §6.4), against the REAL project ols-ks3-dt-live. First run 3 FAIL, both causes in the TEST, not the channel:
+    FAIL CONTROL a room still holding moves is caught as not deleted · 4 bytes mid-round   (the mid read came after the room was already deleted)
+    FAIL blocked: seat A falls back and its bar says the fallback line · {"fb":false,...}   (Playwright route abort does not stop a websocket)
+    FAIL blocked: seat B is sent to sit with seat A
+  Fixed: mid read after the first two beds; the block made by DNS (--host-resolver-rules … ~NOTFOUND), as a school filter would.
+  Second run: 17 checks, 0 failed. Round trip 24–101 ms (median 26). Room JSON 583 bytes, no @/name/class code. Ward round to done deletes the room. Wrong-length code 401; room list 401; extra field 401.
