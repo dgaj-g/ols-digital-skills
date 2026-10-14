@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live link test</title>
+<style>
+  body { margin: 0; font: 20px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+         background: #F4F6FA; color: #1A2433; display: grid; place-items: center; min-height: 100vh; }
+  main { max-width: 640px; padding: 32px 24px; text-align: center; }
+  h1 { font-size: 22px; color: #1A3A6B; margin: 0 0 24px; }
+  #line { font-size: 26px; font-weight: 650; margin: 0 0 16px; }
+  #line.ok { color: #1B6E3A; } #line.bad { color: #A12A1E; }
+  #detail { font-size: 15px; color: #56627A; margin: 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Live link test for Lesson 6</h1>
+  <p id="line">Testing the live link. This takes up to 20 seconds.</p>
+  <p id="detail"></p>
+</main>
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-database-compat.js"></script>
+<script src="live-config.js"></script>
+<script>
+(function () {
+  var line = document.getElementById('line'), detail = document.getElementById('detail');
+  var t0 = Date.now(), finished = false;
+  function say(ok, text, more) {
+    if (finished) return; finished = true;
+    line.textContent = text; line.className = ok ? 'ok' : 'bad';
+    detail.textContent = more || '';
+  }
+  if (!window.firebase || !window.LIVE_CONFIG) {
+    say(false, 'The live link is blocked: its files did not load on this laptop.', 'Code F');
+    return;
+  }
+  var a = 'abcdefghijklmnopqrstuvwxyz0123456789', code = '';
+  for (var i = 0; i < 12; i++) code += a[Math.floor(Math.random() * a.length)];
+  var db, ref;
+  try {
+    db = firebase.initializeApp(window.LIVE_CONFIG, 'livetest').database();
+    ref = db.ref('rooms/' + code);
+  } catch (e) { say(false, 'The live link is blocked: it could not start on this laptop.', 'Code S'); return; }
+  var sent = 0;
+  db.ref('.info/connected').on('value', function (s) {
+    if (s.val() !== true || sent) return;
+    sent = Date.now();
+    /* the promise settles only when the database itself confirms the write */
+    ref.child('A').push({ j: '{"type":"test"}', t: Date.now() }).then(function () {
+      var ms = Math.max(1, Date.now() - sent);
+      say(true, 'The live link works: a message went there and back in ' + ms + ' milliseconds.',
+          'Code OK · ' + ms + ' ms');
+      ref.remove();
+    }, function () {
+      say(false, 'The live link is refused: the database turned the message away.', 'Code R');
+    });
+  });
+  setTimeout(function () {
+    say(false, sent ? 'The live link is too slow: the message did not come back.'
+                    : 'The live link is blocked: this laptop could not reach the live service.',
+        sent ? 'Code T' : 'Code B');
+  }, 20000);
+})();
+</script>
+</body>
+</html>

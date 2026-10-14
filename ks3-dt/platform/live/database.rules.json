@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "rooms": {
+      "$code": {
+        ".read": "$code.length == 12 && $code.matches(/^[a-z0-9]+$/)",
+        ".write": "$code.length == 12 && $code.matches(/^[a-z0-9]+$/)",
+        "presence": {
+          "$s": { ".validate": "$s.matches(/^[ABC]$/) && newData.isNumber() && newData.val() > now - 43200000" }
+        },
+        "$seat": {
+          ".validate": "$seat.matches(/^[ABC]$/)",
+          "$n": {
+            ".validate": "newData.hasChildren(['j', 't']) && newData.child('j').isString() && newData.child('j').val().length < 200 && newData.child('t').isNumber() && newData.child('t').val() > now - 43200000",
+            "j": { ".validate": true },
+            "t": { ".validate": true },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}
