@@ -35,3 +35,11 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - N6: S1 (lamp_oon) and Q3 (lamp_on() call deleted) hit the same line, so S1 pairs only with Q1Q2 → 7 ch4 variants per seat (S1+Q1Q2; S2/S3 × Q1Q2,Q1Q3,Q2Q3) = 21 gated in real Python, not 27. Seeding base = hash(room)%7, seat i = VARIANTS[(base+2i)%7] → seats always distinct.
 - N7: traceback file names north_light.py / south_light.py / lightship.py.
 - R5 RESULT: A YES/YES/YES; B YES/NO/YES; control NO (correct). B's NO cites only "neutral"/"calm", which my prompt named in error. The sheet (and the lesson) uses asleep/awake/smile + worried/cheer, and B called every shown state distinct. ART GATE PASSED by judgement (eye + both readers agree on every state that exists). Step 2 DONE 18:35.
+
+## 19:45 · l5-redtext gate PASS
+- `node tools/record-tutorial/l5-redtext.js` → PASS · all 754 match python3 byte for byte (166 core, 588 generated mistakes; real script runs, python 3.14).
+  Outcomes in python3: IndentationError 119 · NameError 259 · SyntaxError 201 · TypeError 42 · UnboundLocalError 1 · ValueError 1 · clean 131.
+- CONTROL (`--control`: suggestion MOVE=1 + caret marks swapped) → `l5-redtext: FAIL · 151 of 754 differ from python3`
+  first FAIL line: `FAIL A ch1 stage 1 [red]` (caret line `^^^^^^^~~` vs `~~~~~~~^^`).
+- Script-mode rules learned: 'return' outside function shows the line + carets; EOF "expected an indented block" names the file's LAST line, shows it, no caret.
+- NEXT: judge.js + l5-judge-test.js, then effects/clock/words/walk gates, channel port, A1–A14.
