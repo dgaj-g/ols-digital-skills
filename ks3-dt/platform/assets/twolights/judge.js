@@ -116,6 +116,17 @@
     var faultAt = {}; c.faults.forEach(function (f) { if (mine.indexOf(f.id) >= 0) faultAt[f.idx] = f; });
 
     var a = align(her, canonN, canonIdx, c);
+    // a lost call typed back anywhere (help: "Type lamp_on() on a new last line.") is that call: order only moves prints
+    a.gaps.forEach(function (g) {
+      g.canon = g.canon.filter(function (ci) {
+        if (!c.repeatable[canonN[ci]]) return true;
+        for (var q = 0; q < a.gaps.length; q++) {
+          var hs = a.gaps[q].her;
+          for (var r = 0; r < hs.length; r++) if (her[hs[r]].n === canonN[ci]) { a.pairs.push([hs[r], ci]); hs.splice(r, 1); return false; }
+        }
+        return true;
+      });
+    });
     var matched = {}, matchedLine = {};
     a.pairs.forEach(function (p) { matched[canonIdx[p[1]]] = true; matchedLine[canonIdx[p[1]]] = her[p[0]].line; });
     var faults = {}, broken = [], repeats = [];

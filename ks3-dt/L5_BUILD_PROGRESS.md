@@ -50,3 +50,9 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - clock.js (pure f(room,now,budget)) · l5-clock-test PASS 188 · CONTROL (drift from chapter open) → `FAIL budget 300 s no drift before the first key at 6000` · `FAIL · 8 of 188`.
 - N8: shouting = Python shows red. S2 with Q3 sleeps (lamp_on never called → the + never runs) until she adds lamp_on(); then the TypeError appears. Found by the judge gate; Python's truth kept.
 - N9: pause is a room event (pauses[] in the room record) so every seat's boat agrees; reload recomputes exactly.
+
+## 20:20 · words gate PASS; lost calls typed anywhere
+- strings.js = every §8 string (90). l5-words PASS 371 checks · CONTROL → `FAIL ctl.long · 16 words in a line (max 12)` · `FAIL ctl.bare · a number without its thing` · `FAIL · 2 of 376`.
+- N10: solo symptoms "The light is out." / "The radio sent None." derived from §6's one example "The horn is silent.".
+- N11: tour spotlights and the top line are CARDS (each sentence its own line, ≤ 12 words each): tour 5/6 and the trio top line are 13 words as the spec writes them. Poster title and line shown apart.
+- N12: a lost call typed back anywhere (help: "Type lamp_on() on a new last line.") counts as that call. Judge gate now 1017 checks PASS.

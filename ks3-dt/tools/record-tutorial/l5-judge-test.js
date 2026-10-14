@@ -70,6 +70,12 @@ Object.keys(PR.SEATS).forEach(function (k) {
       var left = all.filter(function (y) { return y !== fx; });
       expect(k + ' ch4 ' + tag + ' fixed ' + fx, 'ch4', k, PR.ch4(s, left), { faults: left.slice().sort().join(''), clean: false }, { variant: v });
     });
+    // a lost call typed back as a new last line (the help ladder's own words) fixes it
+    all.filter(function (f) { return f === 'Q1' || f === 'Q3'; }).forEach(function (f) {
+      var left = all.filter(function (y) { return y !== f; });
+      expect(k + ' ch4 ' + tag + ' ' + f + ' fixed as a new last line', 'ch4', k, PR.ch4(s, all) + '\n' + (f === 'Q1' ? 'fog_horn()' : 'lamp_on()'),
+        { faults: left.slice().sort().join(''), broken: 0 }, { variant: v });
+    });
     var q = all.slice(1);
     expect(k + ' ch4 ' + tag + ' only Qs left', 'ch4', k, PR.ch4(s, q), { shout: false,
       effects: { lamp: q.indexOf('Q3') >= 0 ? 0 : 1, horn: q.indexOf('Q1') >= 0 ? 0 : 1, radio: q.indexOf('Q2') >= 0 ? 'None' : ch } }, { variant: v });
