@@ -24,3 +24,4 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - Control (flat smile/cheer) said NO as it should: the gate discriminates.
 - Two rounds used: per the prompt, stopped for Damien. Verdicts: L5_PROTOTYPES/art-gate-r2-*.md; image twolights-art-test.png.
 - Build notes still to record: N4 multi-line editor (Enter = new line; Ctrl/Cmd+Enter, Shift+Enter, RUN button run). N5 S3 = first body line not indented; ladder/bar line numbers come from the real fault line.
+- L6 peer (14 Oct): L6 now takes contentVersion 2026-10-14b → L5 bumps to 2026-10-14c or later. L6 also adds a DFM_ENFORCEMENT_AUDIT section D row for rules 332 + 333: rebase onto it, don't clash.
