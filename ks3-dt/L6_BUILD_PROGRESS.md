@@ -81,3 +81,9 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
   Fixed: mid read after the first two beds; the block made by DNS (--host-resolver-rules … ~NOTFOUND), as a school filter would.
   Second run: 17 checks, 0 failed. Round trip 24–101 ms (median 26). Room JSON 583 bytes, no @/name/class code. Ward round to done deletes the room. Wrong-length code 401; room list 401; extra field 401.
 - 19:35 SERVER: apiPairJoin already carries room (P.room from liveRoom_) and seat (mi) for j1-06 — confirmed in pairStateFor_. NEW: noteRoom_ (code + minute only), sweepRooms (nightly, deletes rooms > 6 h), pingLive (weekly, silent; throws → Google's failure email). No new scope (script.external_request already granted). l6-server-live-test.js: ping ok · sweep swept 1 kept 1 · old room null · CONTROL wrong address → ping fails (404). Triggers to add in the editor at deploy.
+
+## 20:05 — suites
+- pyrun, drag-ends, reply, smooth, wrongpath J1 L2–L5: all exit 0.
+- qa-click-safety FIRST RUN: 8 FAIL. j1-06 c6 and c8b: a body click on a placed step took it out, and there was no labelled remove control. Fix: trayClickEject false + takeBackLabel "Put this step back" (the house pattern from j1-03, "Put this block back"); ledger rows recorded. Re-run: exit 0.
+- DFM 332 + 333 rows added (section D). contentVersion 2026-10-14b (J3 L5 window told: 14c or later).
+- After the fix: l6-walk 31/0 at 1366 and 683, l6-look OK, l6-engine-test 89/89.
