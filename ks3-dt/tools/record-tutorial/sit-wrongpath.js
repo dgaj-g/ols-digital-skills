@@ -70,8 +70,8 @@ const LESSON_NUM = LESSON.replace(/^j[23]-/, '');
    The Rescue is walked by probes/rescue/hour-walk.js (the story) and probes/rescue/qa-rescue-platform.js (the shell). */
 if (/^j3-4$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 /* J1 Lesson 6 is THE OPERATION (14 Oct 2026): most of the hour is a page in a frame (assets/l6/operation.html),
-   so this walker cannot press it. It is walked by l6-harness.js, which reads LANDMARKS['6'] below and must stand on each. */
-if (/^6$/.test(LESSON)) { console.log('sit-wrongpath.js: J1 Lesson 6 is The Operation; walk it with l6-harness.js (it asserts LANDMARKS[\'6\']).'); process.exit(0); }
+   so this walker cannot press it. It is walked by l6-walk.js, which reads LANDMARKS['6'] below and must stand on each. */
+if (/^6$/.test(LESSON)) { console.log('sit-wrongpath.js: J1 Lesson 6 is The Operation; walk it with l6-walk.js (it asserts LANDMARKS[\'6\']).'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -362,7 +362,7 @@ const LANDMARKS = {
     ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
   ],
-  /* J1 Lesson 6, THE OPERATION: walked by l6-harness.js, which reaches inside the frame for the frame's surfaces */
+  /* J1 Lesson 6, THE OPERATION: walked by l6-walk.js, which reaches inside the frame for the frame's surfaces */
   '6': [
     ['the Do-Now', '.q-opt', '_recap'],
     ['the door: the patient and the Begin button', '#doorsay, #beginbtn', 'c1'],

@@ -44,3 +44,19 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - Walk coverage: LANDMARKS['6'] (20) in sit-wrongpath.js, EXPECT['6'] placeholder in sit-review.js, early exits in both pointing to new tools/record-tutorial/l6-harness.js.
 - l6-harness FIRST RUN = RED (21 of 29 failed: Lesson 6 not packed yet, tile locked). FAIL lines: "FAIL the lesson reaches its done card (null)", "FAIL stood on: the Do-Now" … "FAIL stood on: the closing screen".
 - Pack blocked by qa-deck-shots: 15 stale shots in j2-03, j2-04, j3-03 (packed content of 8 Oct newer than the shots; same on main). Re-capturing with capture-teacher-layer.js --base http://localhost:8126 (log in scratchpad capture.log).
+
+## 16:05 checkpoint
+- l6-look: LOOK OK (all sizes; 58%/42% control caught; off-screen control caught).
+- l6-harness (port of op2/harness2.js): first run RED, 5 FAIL lines (port expectations, not the build):
+  - FAIL door says the goal in three lines (expected "Tap a part")
+  - FAIL bar names the exact gesture (expected "Tap a part to take it out.")
+  - FAIL wrong card: bar stings "Not that one. Tap another job card."
+  - FAIL loser is told in plain words and has nothing out (expected "Tap another part.")
+  - FAIL fluff tile is the Commons dust photo (expected prototype path op/img/fluff.jpg)
+  Also a crash: second visit used a fresh two-seat room with no partner, so Begin stayed disabled; second visit now solo.
+  Now GREEN: 100 ok, 0 FAIL; CONTROL the same drag on the OLD build takes nothing out: caught.
+- l6-walk: first runs RED (door waited for a partner: walk now runs pairing off like sit-review; badge Onward card not clicked; wrong card driven around the DOM).
+  FOUND A REAL BUG: the Surgeon and Ward round badge cards showed a broken picture (no icon). Fixed in content-src j1-06.json (magnifier, shield); the walker now checks every badge picture loads.
+  Now GREEN at 1366 and 683: 31 checks, 0 failed. Control (--control --expect-fail): 3 FAIL as it must.
+  EXPECT['6'] pinned from two identical runs: xp 45, chunks 12, presses 99, marks 45, badges 2.
+- Deck shots: the capture was looping because dev-keys.json was missing (walk-build pack writes it). Re-running j2-03, j2-04, j3-03.
