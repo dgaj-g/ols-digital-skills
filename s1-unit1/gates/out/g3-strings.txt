@@ -1,9 +1,12 @@
-G3 strings · 2026-09-28T19:39:45.326Z
+G3 strings · 2026-10-14T08:46:29.543Z
 PASS strings.js = prototype S, TOPICS, SPEC §3 / A2 lines; every used key exists
-INFO 64 pupil strings · 9 topics · 31 guard/system/staff lines
+INFO 68 pupil strings · 9 topics · 31 guard/system/staff lines
 PASS the served Index.html carries strings.js unchanged
 PASS cold read on file (two readers, not rerun)
+PASS every pick question has a "Pick N." line and a limit line for its own n, and its label names the same n
 PASS CONTROL one changed word in S is caught
 PASS CONTROL one changed word in X is caught
 PASS CONTROL a page using a missing string is caught
-GREEN · 6 pass · 0 fail
+PASS CONTROL a four-pick question with no "Pick four." line is caught
+PASS CONTROL a label saying four on a three-pick part is caught
+GREEN · 9 pass · 0 fail

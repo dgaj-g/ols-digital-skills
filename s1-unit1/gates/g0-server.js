@@ -21,6 +21,8 @@ const ROOT = path.join(__dirname, '..');
 const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude Work/S1 Unit 1 Platform';
 const Judge = require(path.join(DESIGN, 'judge', 'judge.js'));
 const BANK = require(path.join(DESIGN, 'content', 'bank_digital_data.js'));
+const BANK_SW = require(path.join(DESIGN, 'content', 'bank_software.js')); // v6
+const BANK_V5 = require(path.join(DESIGN, 'build', 'v6-backup', 'bank_digital_data.v5.js')); // v6: the live v5 bank, to prove round-1 orders did not move
 const Policy = require(path.join(ROOT, 'platform', 'sitpolicy.js'));
 const OUT = path.join(ROOT, 'gates', 'out', 'g0-server.txt');
 const PORT = 8768;
@@ -31,7 +33,7 @@ const lines = [];
 let fails = 0;
 const ok = (cond, msg) => { lines.push((cond ? 'PASS ' : 'FAIL ') + msg); if (!cond) fails++; };
 const allQ = [];
-BANK.stages.forEach((s) => s.questions.forEach((q) => allQ.push(Object.assign({ st: s.n }, { q }))));
+[BANK, BANK_SW].forEach((B) => B.stages.forEach((s) => s.questions.forEach((q) => allQ.push(Object.assign({ st: s.n, t: B.id }, { q })))));
 
 // ---------- A: pack round trip in a vm ----------
 const ctx = { console, PropertiesService: {}, Session: {}, LockService: {}, UrlFetchApp: {}, ScriptApp: {}, Utilities: {}, SpreadsheetApp: {}, HtmlService: {} };
@@ -102,14 +104,15 @@ async function main() {
 }
 
 async function playStage(user, cls, round, st, opts) {
-  const s = await api('apiStage', { cls, topic: 'digital-data', round, stage: st }, user);
+  const topic = (opts && opts.topic) || 'digital-data';
+  const s = await api('apiStage', { cls, topic, round, stage: st }, user);
   let sum = 0, n = 0;
   for (let i = 0; i < s.order.length; i++) {
     if (opts && opts.limit != null && n >= opts.limit) break;
     const qid = s.order[i], v = s.views[i];
     if (s.done[qid]) continue;
     const a = Policy.answer(v, user + '|' + round);
-    const r = await api('apiMark', { cls, topic: 'digital-data', round, qid, answer: a, idk: !!a.idk }, user);
+    const r = await api('apiMark', { cls, topic, round, qid, answer: a, idk: !!a.idk }, user);
     if (!r.ok) throw new Error('mark ' + qid + ' ' + r.error);
     const q = allQ.find((x) => x.q.id === qid).q;
     const want = Judge.judge(q, a.idk ? { texts: v.items.map(() => '') } : a, v).marks;
@@ -120,7 +123,8 @@ async function playStage(user, cls, round, st, opts) {
 }
 
 async function flows() {
-  const T = 'digital-data';
+  const T = 'digital-data', SW = 'software';
+  const dd = (b) => (b.topics || []).filter((t) => t.id === T)[0] || {}, sw = (b) => (b.topics || []).filter((t) => t.id === SW)[0] || {};
   let r = await api('apiBoot', { cls: '' });
   ok(r.ok && r.staff === true, 'B boot with no class is the staff door');
   r = await api('apiBoot', { cls: 'nope' });
@@ -149,9 +153,9 @@ async function flows() {
 
   // topic locking (DECISIONS §16): a new class starts locked; staff open and lock it; a class made before locking stays open
   r = await api('apiStaff', { op: 'topics', cls }, OWNER);
-  ok(r.ok && r.topics.length === 1 && r.topics[0].id === T && r.topics[0].open === false, 'B a new class starts with Digital Data locked');
+  ok(r.ok && r.topics.length === 2 && r.topics[0].id === T && r.topics[1].id === "software" && r.topics.every((t) => t.open === false), "B a new class starts with Digital Data and Software both locked");
   r = await api('apiBoot', { cls }, 'early@c2ken.net');
-  ok(r.ok && r.topic.open === false, 'B pupil boot says the topic is locked');
+  ok(r.ok && dd(r).open === false, 'B pupil boot says the topic is locked');
   r = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
   ok(!r.ok && r.error === 'locked', 'B locked: a stage will not load (' + r.error + ')');
   r = await api('apiMark', { cls, topic: T, round: 1, qid: BANK.stages[0].questions[0].id, answer: {} }, 'early@c2ken.net');
@@ -180,10 +184,11 @@ async function flows() {
   await post('/__set', { script: { 'cls:old-9z': JSON.stringify({ name: 'Old 9Z', o: OWNER, c: 1, r: { 'digital-data': 1 } }) } });
   r = await api('apiBoot', { cls: 'old-9z' }, 'early@c2ken.net');
   const oldSt = await api('apiStage', { cls: 'old-9z', topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
-  ok(r.ok && r.topic.open === true && oldSt.ok, 'B a class made before topic locking stays open');
+  ok(r.ok && dd(r).open === true && oldSt.ok, 'B a class made before topic locking stays open');
+  ok(r.ok && sw(r).open === false && sw(r).title === 'Software', 'B v6: on that old class Software starts locked (only Digital Data was ever open there)');
 
   r = await api('apiBoot', { cls });
-  ok(r.ok && r.name === 'Aoife' && !r.needName && r.topic.round === 1 && r.topic.stages.length === 4, 'B pupil boot: name from the account, round 1, four stages');
+  ok(r.ok && r.name === 'Aoife' && !r.needName && dd(r).round === 1 && dd(r).stages.length === 4, 'B pupil boot: name from the account, round 1, four stages');
   const nn = await api('apiBoot', { cls }, 'noname7@c2ken.net');
   ok(nn.ok && nn.needName, 'B no readable name -> needName');
   r = await api('apiName', { cls, name: 'Orla' }, 'noname7@c2ken.net');
@@ -235,7 +240,7 @@ async function flows() {
   r = await api('apiEval', { cls, topic: T, round: 1, stage: 'topic', payload: { rating: 3, unsure: [0, 2], note: 'fine' } });
   ok(r.ok && r.done && JSON.stringify(r.e.unsure) === '[0]', 'B topic card saved; "fine" is exclusive');
   r = await api('apiBoot', { cls });
-  const R1 = r.topic.rounds['1'];
+  const R1 = dd(r).rounds['1'];
   const m1 = [1, 2, 3, 4].reduce((t, k) => t + R1.s[k].m, 0), a1 = [1, 2, 3, 4].reduce((t, k) => t + R1.s[k].a, 0);
   ok(R1.done && a1 === 82 && m1 === total, 'B round 1 done: 82 answered, totals ' + m1 + ' = node judge ' + total);
   ok(R1.s[1].f.length === 1 && R1.s[1].f[0].id === q0, 'B flag shows on the round summary');
@@ -254,8 +259,8 @@ async function flows() {
   r = await api('apiStaff', { op: 'openPupil', cls, email: 'pupil1@c2ken.net' }, OWNER);
   ok(r.ok && r.round === 2, 'B open round 2 for one pupil');
   const b1 = await api('apiBoot', { cls }), b3 = await api('apiBoot', { cls }, 'pupil3@c2ken.net'), b2 = await api('apiBoot', { cls }, 'pupil2@c2ken.net');
-  ok(b1.topic.round === 2 && b3.topic.round === 1 && b2.topic.round === 1, 'B only that pupil moved (pupil1 2, pupil2 1, pupil3 1)');
-  ok(b1.topic.rounds['1'].done && [1, 2, 3, 4].reduce((t, k) => t + b1.topic.rounds['1'].s[k].m, 0) === m1, 'B round 1 intact after round 2 opens');
+  ok(dd(b1).round === 2 && dd(b3).round === 1 && dd(b2).round === 1, 'B only that pupil moved (pupil1 2, pupil2 1, pupil3 1)');
+  ok(dd(b1).rounds['1'].done && [1, 2, 3, 4].reduce((t, k) => t + dd(b1).rounds['1'].s[k].m, 0) === m1, 'B round 1 intact after round 2 opens');
   const r2 = await api('apiStage', { cls, topic: T, round: 2, stage: 1 });
   ok(r2.ok && JSON.stringify(r2.order) !== JSON.stringify(s1.order) && Object.keys(r2.done).length === 0, 'B round 2 is a new draw with nothing marked');
   const ro = await api('apiStage', { cls, topic: T, round: 1, stage: 1 });
@@ -266,13 +271,16 @@ async function flows() {
   r = await api('apiMark', { cls, topic: T, round: 1, qid: unmarked, answer: Policy.answer(p2.s.views[p2.s.order.indexOf(unmarked)], 'x') }, 'pupil2@c2ken.net');
   ok(!r.ok && r.error === 'round-closed', 'B a closed round cannot be marked (' + r.error + ')');
   r = await api('apiBoot', { cls }, 'pupil2@c2ken.net');
-  ok(r.topic.round === 2 && r.topic.rounds['1'].s[1].a === 5, 'B pupil2 now on round 2; round 1 keeps its 5 answers');
+  ok(dd(r).round === 2 && dd(r).rounds['1'].s[1].a === 5, 'B pupil2 now on round 2; round 1 keeps its 5 answers');
   r = await api('apiStaff', { op: 'openPupil', cls, email: 'pupil1@c2ken.net' }, OWNER);
   ok(r.ok && r.round === 3, 'B a pupil ahead of the class goes one further (3)');
 
   // tracker flags on synthetic records
-  const syn = (e, m) => ({ s: { 1: { a: 27, m: m[0], f: [], e: e[0] }, 2: { a: 19, m: m[1], f: [], e: e[1] }, 3: { a: 14, m: m[2], f: [], e: e[2] }, 4: { a: 22, m: m[3], f: ['S4-N7'], e: e[3] } } });
-  const x = BANK.stages.map((s) => s.questions.reduce((t, q) => t + q.marks, 0));
+  // v6: a round holds only its own questions (from/upto, DECISIONS 19.7), so the totals are counted per round
+  const inR = (q, n) => (!q.from || n >= q.from) && (!q.upto || n <= q.upto);
+  const xr = (n) => BANK.stages.map((s) => s.questions.filter((q) => inR(q, n)).reduce((t, q) => t + q.marks, 0)), qr = (n) => BANK.stages.map((s) => s.questions.filter((q) => inR(q, n)).length);
+  const x = xr(2), q2 = qr(2), x1 = xr(1), q1n = qr(1);
+  const syn = (e, m) => ({ s: { 1: { a: q2[0], m: m[0], f: [], e: e[0] }, 2: { a: q2[1], m: m[1], f: [], e: e[1] }, 3: { a: q2[2], m: m[2], f: [], e: e[2] }, 4: { a: q2[3], m: m[3], f: ['S4-N8'], e: e[3] } } });
   await post('/__set', { script: {
     'p:11a-dt:flaghigh@c2ken.net': JSON.stringify({ n: 'High', j: 1, o: {}, R: { 2: syn([{ r: 4, t: [1] }, { r: 3, t: [1] }, null, null], [Math.floor(x[0] * 0.49), Math.floor(x[1] * 0.2), 0, 0]) } }),
     'p:11a-dt:flaglow@c2ken.net': JSON.stringify({ n: 'Low', j: 1, o: {}, R: { 2: syn([{ r: 1, t: [0] }, { r: 2, t: [0] }, null, null], [Math.ceil(x[0] * 0.75), x[1], 0, 0]) } }),
@@ -295,7 +303,7 @@ async function flows() {
   ok(p1rows.length === 4 && p1rows[0].indexOf(tk) !== -1 && /No, I'm fine with all of it/.test(p1rows[0]), 'B CSV: 4 rows per pupil, ticks "2 of ' + BANK.stages[0].outcomes.length + '" (padded to the outcomes), unsure spelled out');
   r = await api('apiStaff', { op: 'pupil', cls, email: 'pupil1@c2ken.net', round: 1 }, OWNER);
   ok(r.ok && r.items.length === 82 && r.items.some((it) => it.text) && r.items.every((it) => it.ans && typeof it.ans === 'string' && it.q && it.i >= 1 && it.max >= 1), 'B pupil page: 82 marked items, each with its question and the answer in words, and the writing');
-  ok(r.ok && r.row && [1, 2, 3, 4].every((k) => r.row.s[k].ax === x[k - 1] && r.row.s[k].a === BANK.stages[k - 1].questions.length) && r.stages.every((st, k) => st.outcomes.length === BANK.stages[k].outcomes.length), 'B pupil page: a finished pupil\'s percentage base is the whole stage; stage outcomes sent');
+  ok(r.ok && r.row && [1, 2, 3, 4].every((k) => r.row.s[k].ax === x1[k - 1] && r.row.s[k].a === q1n[k - 1]) && r.stages.every((st, k) => st.outcomes.length === BANK.stages[k].outcomes.length), 'B pupil page: a finished pupil\'s percentage base is the whole stage; stage outcomes sent');
   const typed = r.items.filter((it) => /I don't know/.test(it.ans)).length, pairs = r.items.filter((it) => / → /.test(it.ans)).length;
   ok(pairs > 0, 'B pupil page: a matching answer reads "left → right" (' + pairs + ' items; "I don\'t know" on ' + typed + ')');
   r = await api('apiStaff', { op: 'rounds', cls }, OWNER);
@@ -365,5 +373,75 @@ async function flows() {
   await post('/__set', { script: { hods: JSON.stringify(['hod@c2ken.net']) } });
   r = await api('apiStaff', { op: 'classes' }, 'hod@c2ken.net');
   ok(r.ok && r.classes.length >= 2, 'B a head of department sees every class');
+
+  // ---- v6 (DECISIONS 19.9): Software beside Digital Data. Digital Data keeps its v5 keys and orders; Software has its own keys.
+  const c6 = '11c-dt', P6 = 'six@c2ken.net', R6 = 'roundtwo@c2ken.net';
+  r = await api('apiStaff', { op: 'create', name: '11C DT' }, OWNER);
+  ok(r.ok && r.slug === c6, 'v6 class made: 11C DT');
+  r = await api('apiStaff', { op: 'setTopic', cls: c6, topic: SW, open: true }, OWNER);
+  ok(r.ok && r.open === true, 'v6 the owner opens Software on its own');
+  r = await api('apiBoot', { cls: c6 }, P6);
+  const swb = sw(r), swq = swb.stages ? swb.stages.reduce((t, s) => t + s.q, 0) : 0, swx = swb.stages ? swb.stages.reduce((t, s) => t + s.x, 0) : 0;
+  ok(r.ok && r.topics.length === 2 && swb.open === true && dd(r).open === false && swb.round === 1 && swb.stages.length === 4 && swq === 29 && swx === 59 && swb.spec === '1.2',
+    'v6 pupil boot: Software open (4 stages · ' + swq + ' questions · ' + swx + ' marks), Digital Data still locked');
+  r = await api('apiStage', { cls: c6, topic: T, round: 1, stage: 1 }, P6);
+  ok(!r.ok && r.error === 'locked', 'v6 control: Digital Data stays locked in that class (' + r.error + ')');
+  r = await api('apiStage', { cls: c6, topic: 'networks', round: 1, stage: 1 }, P6);
+  ok(!r.ok && r.error === 'bad-topic', 'v6 control: a topic not built is refused (' + r.error + ')');
+  r = await api('apiMark', { cls: c6, topic: SW, round: 1, qid: BANK.stages[0].questions[0].id, answer: {} }, P6);
+  ok(!r.ok && r.error === 'locked', 'v6 control: a Digital Data question cannot be marked through the open Software topic (' + r.error + ')');
+  let swAll = 0;
+  for (let st = 1; st <= 4; st++) { const p = await playStage(P6, c6, 1, st, { topic: SW }); swAll += p.n; }
+  ok(swAll === 29, 'v6 Software: all 29 questions marked by the server exactly as the judge marks them (' + swAll + ')');
+  const swq1 = BANK_SW.stages[0].questions[0].id;
+  await api('apiBoot', { cls: c6 }, 'drafter@c2ken.net');
+  const dr6 = await api('apiDraft', { cls: c6, topic: SW, round: 1, qid: swq1, text: 'software draft' }, 'drafter@c2ken.net');
+  let st6 = (await post('/__store', {})).script;
+  const k6 = Object.keys(st6).filter((k) => k.indexOf(P6) !== -1).sort();
+  ok(st6['t:' + c6 + ':' + P6 + ':software'] && JSON.parse(st6['t:' + c6 + ':' + P6 + ':software']).R[1] && st6['p:' + c6 + ':' + P6] &&
+    [1, 2, 3, 4].every((st) => st6['q:' + c6 + ':' + P6 + ':1:software:' + st]) && ![1, 2, 3, 4].some((st) => st6['q:' + c6 + ':' + P6 + ':1:' + st]),
+    'v6 Software keys: t:<class>:<pupil>:software holds the rounds; shards q:<class>:<pupil>:1:software:<stage>; no Digital Data shard written (' + k6.length + ' keys)');
+  const dl6 = await api('apiStage', { cls: c6, topic: SW, round: 1, stage: 1 }, 'drafter@c2ken.net'), dl6d = await api('apiStage', { cls: c6, topic: SW, round: 1, stage: 2 }, 'drafter@c2ken.net');
+  ok(dr6.ok && dl6.ok && dl6.drafts[swq1] === 'software draft' && dl6d.ok && !dl6d.drafts[swq1], 'v6 a Software draft comes back with its stage (and not with another stage)');
+  r = await api('apiBoot', { cls: c6 }, P6);
+  ok(sw(r).rounds['1'] && sw(r).rounds['1'].s[1].a === BANK_SW.stages[0].questions.length && dd(r).rounds['1'] && dd(r).rounds['1'].s[1].a === 0, 'v6 boot after play: Software round 1 answers counted; Digital Data untouched');
+  r = await api('apiStaff', { op: 'tracker', cls: c6, topic: SW }, OWNER);
+  const tr6 = r.ok && r.rows.find((w) => w.email === P6);
+  ok(r.ok && r.title === 'Software' && tr6 && [1, 2, 3, 4].every((k) => tr6.s[k].a === BANK_SW.stages[k - 1].questions.length), 'v6 tracker with topic Software: title and Software rows');
+  r = await api('apiStaff', { op: 'tracker', cls: c6 }, OWNER);
+  const tr6d = r.ok && r.rows.find((w) => w.email === P6);
+  ok(r.ok && r.title === 'Digital data' && (!tr6d || [1, 2, 3, 4].every((k) => !tr6d.s[k].a)), 'v6 control: the Digital Data tracker shows none of the Software answers');
+  r = await api('apiStaff', { op: 'csv', cls: c6, topic: SW, round: 1 }, OWNER);
+  ok(r.ok && r.filename === c6 + '-software-round-1.csv' && r.csv.split('\r\n').filter((l) => l.indexOf(P6) !== -1).length === 4, 'v6 CSV for Software: own file name, 4 rows for the pupil');
+  r = await api('apiStaff', { op: 'rounds', cls: c6, topic: SW }, OWNER);
+  ok(r.ok && r.title === 'Software' && r.round === 1, 'v6 Rounds tab with topic Software');
+
+  // Digital Data rounds: round 1 = the v5 questions in the v5 orders; round 2 adds the 2026 questions (from:2) and drops the upto:1 ones
+  r = await api('apiStaff', { op: 'setTopic', cls: c6, topic: T, open: true }, OWNER);
+  await api('apiBoot', { cls: c6 }, R6);
+  let same = 0, shown2 = [], r1ids = [];
+  for (let st = 1; st <= 4; st++) {
+    const s1 = await api('apiStage', { cls: c6, topic: T, round: 1, stage: st }, R6);
+    const v5ids = BANK_V5.stages[st - 1].questions.map((q) => q.id), want = Judge.shuffle(v5ids, Judge.rng(R6 + '|1|' + st));
+    if (s1.ok && JSON.stringify(s1.order) === JSON.stringify(want)) same++;
+    r1ids = r1ids.concat(s1.order || []);
+  }
+  ok(same === 4 && r1ids.length === 82, 'v6 Digital Data round 1: every stage order is exactly the v5 order for that pupil (' + same + ' of 4 stages, ' + r1ids.length + ' questions)');
+  const from2 = allQ.filter((y) => y.t === T && y.q.from === 2).map((y) => y.q), upto1 = allQ.filter((y) => y.t === T && y.q.upto === 1).map((y) => y.q);
+  ok(from2.length && !from2.some((q) => r1ids.indexOf(q.id) !== -1), 'v6 round 1 holds none of the ' + from2.length + ' round-2 questions');
+  r = await api('apiMark', { cls: c6, topic: T, round: 1, qid: from2[0].id, answer: {} }, R6);
+  ok(!r.ok && r.error === 'bad-question', 'v6 control: a round-2 question cannot be marked in round 1 (' + r.error + ')');
+  r = await api('apiStaff', { op: 'openPupil', cls: c6, topic: T, email: R6 }, OWNER);
+  ok(r.ok && r.round === 2, 'v6 Digital Data round 2 opened for one pupil');
+  r = await api('apiBoot', { cls: c6 }, R6);
+  const r2q = dd(r).stages ? dd(r).stages.reduce((t, s) => t + s.q, 0) : 0, r2x = dd(r).stages ? dd(r).stages.reduce((t, s) => t + s.x, 0) : 0;
+  ok(dd(r).round === 2 && r2q === 85 && r2x === 131 && sw(r).round === 1, 'v6 Digital Data round 2 = ' + r2q + ' questions · ' + r2x + ' marks; Software still round 1');
+  shown2 = [];
+  for (let st = 1; st <= 4; st++) { const s2 = await api('apiStage', { cls: c6, topic: T, round: 2, stage: st }, R6); shown2 = shown2.concat(s2.order || []); }
+  ok(from2.every((q) => shown2.indexOf(q.id) !== -1) && !upto1.some((q) => shown2.indexOf(q.id) !== -1) && shown2.length === 85, 'v6 round 2 holds every 2026 question and none of the ' + upto1.length + ' round-1-only questions');
+  r = await api('apiMark', { cls: c6, topic: T, round: 2, qid: upto1[0].id, answer: {} }, R6);
+  ok(!r.ok && r.error === 'bad-question', 'v6 control: a round-1-only question cannot be marked in round 2 (' + r.error + ')');
+  st6 = (await post('/__store', {})).script;
+  ok(st6['p:' + c6 + ':' + R6] && !st6['t:' + c6 + ':' + R6 + ':digital-data'] && !Object.keys(st6).some((k) => k.indexOf(':digital-data:') !== -1 && /^q:/.test(k)), 'v6 Digital Data still writes the v5 keys (p: header, q: shards without a topic)');
 }
 main();

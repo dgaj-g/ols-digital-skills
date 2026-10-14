@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-09-28T19:39:42.367Z
+G2 render coverage + sit on the harness · 2026-10-14T08:47:30.386Z
 PASS class made
 PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
@@ -6,7 +6,7 @@ PASS no console errors or failed requests
 PASS page marks = judge marks on all 82 questions
 PASS total line
 PASS MARKS# hash matches node
-INFO round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 29 sit checks passed
+INFO round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 36 sit checks passed
 PASS CONTROL wide cards: sit reports layout failures
 PASS CONTROL thrown error: the gate sees it
 PASS PHONE 390x844 · sit run PASS (7 s)
@@ -14,7 +14,25 @@ PASS PHONE 390x844 · no console errors or failed requests
 PASS PHONE 390x844 · page marks = judge marks on all 82 questions
 PASS PHONE 390x844 · total line
 PASS PHONE 390x844 · MARKS# hash matches node
-INFO PHONE 390x844 · round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 29 sit checks passed
+INFO PHONE 390x844 · round 1 · 35 of 126 marks · MARKS# a6eb5c62 · 36 sit checks passed
 PASS CONTROL phone with the desktop columns: sit reports layout failures
 PASS CONTROL phone with the chosen-words line hidden: sit reports list text cut off
-GREEN · 16 pass · 0 fail
+PASS Software opened for the class
+PASS SOFTWARE the sit played Software, not Digital Data
+PASS SOFTWARE · sit run PASS (3 s)
+PASS SOFTWARE · no console errors or failed requests
+PASS SOFTWARE · page marks = judge marks on all 29 questions
+PASS SOFTWARE · total line
+PASS SOFTWARE · MARKS# hash matches node
+INFO SOFTWARE · round 1 · 17 of 59 marks · MARKS# 60dd3cf2 · 36 sit checks passed
+PASS SOFTWARE PHONE 390x844 · sit run PASS (3 s)
+PASS SOFTWARE PHONE 390x844 · no console errors or failed requests
+PASS SOFTWARE PHONE 390x844 · page marks = judge marks on all 29 questions
+PASS SOFTWARE PHONE 390x844 · total line
+PASS SOFTWARE PHONE 390x844 · MARKS# hash matches node
+INFO SOFTWARE PHONE 390x844 · round 1 · 17 of 59 marks · MARKS# 60dd3cf2 · 36 sit checks passed
+PASS CONTROL drop-down narrower than its chosen words: sit reports list text cut off
+PASS CONTROL Software on a phone with each answer option forced onto one line: sit reports layout failures
+PASS CONTROL answer-first line kept on screen after answering: sit reports it
+PASS CONTROL a missed answer drawn in smaller type (same sit): sit reports it
+GREEN · 32 pass · 0 fail

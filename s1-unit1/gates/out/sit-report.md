@@ -29,3 +29,18 @@ Where it ran: the live test deployment, signed in with the owner's school accoun
 - A repeat Check keeps the first mark.
 - Round 2 opens with a new question order and keeps round 1.
 - No page errors.
+
+## Version 6 (14 Oct 2026): Software added, Digital data round 2 gains the 2026 paper
+Where it ran: the harness (owner, class 11A DT, desktop) and the live test deployment (owner, class "zz sit test", Chrome desktop), both topics, build 24d3d4f8ad-7f0b7102.
+
+What a pupil now sees that is new:
+- Home has two live tiles, Digital data and Software. Software stays locked in a class until the teacher opens it on the Topics tab.
+- Software: 4 stages, 29 questions, 59 marks (the operating system, modes of processing, utility programs, anti-virus software).
+- A question in parts shows each part's name as a small heading in the mark scheme. A one-part question's scheme no longer repeats its pick instruction.
+- Flagged questions on the summary are named by their opening words, with the stage and paper reference small and grey.
+- A finished stage set that still needs its topic card reads "All answered · one last step".
+- A Look back ends with "Back to the topic".
+
+Where a pupil could stall (new in v6): none found. Every pick instruction is said once. The rating warning goes as soon as a rating is picked. A skipped writing box leaves no empty "What you wrote" box.
+
+Sit results: Software 17 of 59, hash 60dd3cf2, 4 flags, PASS (harness and live). Digital data 35 of 126, hash a6eb5c62, 11 flags, PASS (harness and live). No page errors.

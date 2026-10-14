@@ -1,0 +1,40 @@
+SIT PASS started · s1u1-24d3d4f8ad-7f0b7102
+SIT PASS fresh record · round 1
+SIT PASS home line · Round 1 · not started
+SIT PASS topic software is Software · software
+SIT PASS stage 1 button · Start
+SIT PASS stage 1 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 2 button · Start
+SIT PASS reload shows Carry on · Carry on
+SIT PASS reload lands on question 6 · Stage 2 of 4 · Modes of processing · Question 6 of 7
+SIT PASS stage 2 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 3 button · Start
+SIT PASS stage 3 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 4 button · Start
+SIT PASS stage 4 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS 29 questions answered · 29
+SIT PASS summary total · You scored 17 of 59 marks (29%)
+SIT PASS summary flagged · 4 of 4
+SIT PASS flagged rows name the question · Explain how memory is allocated by system software when a user wants to access data … | Match each statement with the correct processing method. | Which term means a copy of data kept in case the original copy is damaged or lost? | Explain why anti-virus software must be updated regularly.
+TOTAL 17 of 59
+SIT PASS all marked questions restore · 29 seen
+SIT PASS look back ends with Back to the topic · every button right
+SIT PASS home line done · Round 1 · done · 17 of 59 marks
+SIT PASS repeat mark keeps the first · repeat true · 3 vs 3
+SIT PASS teacher opens round 2 · 2
+SIT PASS round 1 kept · 17 vs 17
+SIT PASS round 2 current
+SIT PASS home line round 2 · Round 2 open · not started
+SIT PASS round 2 new order
+SIT PASS no page errors
+MARKS SW1-01:0,SW1-02:3,SW1-03:0,SW1-04:0,SW1-05:1,SW1-06:1,SW1-N1:0,SW1-N2:0,SW2-01:2,SW2-02:1,SW2-03:1,SW2-04:0,SW2-05:0,SW2-N1:1,SW2-N2:1,SW3-01:0,SW3-02:0,SW3-03:0,SW3-04:0,SW3-05:0,SW3-06:1,SW3-07:1,SW3-08:0,SW3-09:1,SW4-01:0,SW4-02:0,SW4-03:1,SW4-N1:1,SW4-N2:1
+MARKS# 60dd3cf2 · 29 questions · flags 4
+SIT RESULT PASS

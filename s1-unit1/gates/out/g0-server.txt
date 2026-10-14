@@ -1,5 +1,5 @@
-G0 server GREEN · 2026-09-28T19:39:48.243Z · build fc41c997cb-a423e1de
-PASS A pack->unpack->judge == judge on 3280 answers across 82 questions (0 mismatches)
+G0 server GREEN · 2026-10-14T08:46:28.773Z · build 24d3d4f8ad-7f0b7102
+PASS A pack->unpack->judge == judge on 4720 answers across 118 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
 PASS B boot with no class is the staff door
@@ -14,7 +14,7 @@ PASS B owner admitted by email
 PASS B class made: 11A DT -> 11a-dt
 PASS B same class name refused
 PASS B blank class name refused
-PASS B a new class starts with Digital Data locked
+PASS B a new class starts with Digital Data and Software both locked
 PASS B pupil boot says the topic is locked
 PASS B locked: a stage will not load (locked)
 PASS B locked: nothing is marked (locked)
@@ -28,6 +28,7 @@ PASS B the class list shows it open
 PASS B locked again: the stage refuses again
 PASS B opened again: the stage loads with the writing typed while locked
 PASS B a class made before topic locking stays open
+PASS B v6: on that old class Software starts locked (only Digital Data was ever open there)
 PASS B pupil boot: name from the account, round 1, four stages
 PASS B no readable name -> needName
 PASS B name typed and kept
@@ -89,3 +90,25 @@ PASS B passcode staff who made no class see no classes
 PASS B control: every staff op on the owner's class is refused to the named teacher (10 of 10) and its records are unchanged
 PASS B the owner opens the named teacher's tracker
 PASS B a head of department sees every class
+PASS v6 class made: 11C DT
+PASS v6 the owner opens Software on its own
+PASS v6 pupil boot: Software open (4 stages · 29 questions · 59 marks), Digital Data still locked
+PASS v6 control: Digital Data stays locked in that class (locked)
+PASS v6 control: a topic not built is refused (bad-topic)
+PASS v6 control: a Digital Data question cannot be marked through the open Software topic (locked)
+PASS v6 Software: all 29 questions marked by the server exactly as the judge marks them (29)
+PASS v6 Software keys: t:<class>:<pupil>:software holds the rounds; shards q:<class>:<pupil>:1:software:<stage>; no Digital Data shard written (7 keys)
+PASS v6 a Software draft comes back with its stage (and not with another stage)
+PASS v6 boot after play: Software round 1 answers counted; Digital Data untouched
+PASS v6 tracker with topic Software: title and Software rows
+PASS v6 control: the Digital Data tracker shows none of the Software answers
+PASS v6 CSV for Software: own file name, 4 rows for the pupil
+PASS v6 Rounds tab with topic Software
+PASS v6 Digital Data round 1: every stage order is exactly the v5 order for that pupil (4 of 4 stages, 82 questions)
+PASS v6 round 1 holds none of the 7 round-2 questions
+PASS v6 control: a round-2 question cannot be marked in round 1 (bad-question)
+PASS v6 Digital Data round 2 opened for one pupil
+PASS v6 Digital Data round 2 = 85 questions · 131 marks; Software still round 1
+PASS v6 round 2 holds every 2026 question and none of the 4 round-1-only questions
+PASS v6 control: a round-1-only question cannot be marked in round 2 (bad-question)
+PASS v6 Digital Data still writes the v5 keys (p: header, q: shards without a topic)
