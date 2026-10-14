@@ -1908,13 +1908,15 @@
     });
     return out;
   }
+  function liveRoomD_() { var a = 'abcdefghijklmnopqrstuvwxyz0123456789', r = ''; for (var i = 0; i < 12; i++) r += a.charAt(Math.floor(Math.random() * a.length)); return r; }
   function pairStateD_(reg, hit) {
     var P = reg.P[hit.pid];
     return {
       ok: true, state: 'paired', pid: str_(hit.pid), mi: num_(hit.mi),
       trio: num_(P.trio), done: num_(P.done), rv: num_(P.rv),
       members: (P.cn || []).map(str_),
-      names: num_(P.rv) ? (P.n || []).map(str_) : null
+      names: num_(P.rv) ? (P.n || []).map(str_) : null,
+      room: str_(P.room || '')
     };
   }
   function callsignFillD_(formed, year) {
@@ -1924,7 +1926,7 @@
   }
   function newPairD_(s, reg, members, cns, trio, bot) {
     var pid = 'p' + tmin_() + '-' + Math.floor(Math.random() * 10000);
-    reg.P[pid] = { m: members, cn: cns, t: tmin_(), trio: trio ? 1 : 0, done: 0, rv: 0, bot: bot ? 1 : 0 };
+    reg.P[pid] = { m: members, cn: cns, t: tmin_(), trio: trio ? 1 : 0, done: 0, rv: 0, bot: bot ? 1 : 0, room: liveRoomD_() };
     var ch = chD_(s, pid);
     if (bot) ch.bot = { startS: tsecD_(), greeted: 0, wrongUsed: 0, msgKey: -1, msgAtS: 0, reactKey: -1, plan: null };
     return pid;

@@ -457,7 +457,8 @@
               pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
               trio: !!Number(r.trio), seq: 0,
               live: (r.members || []).map(function () { return 1; }),
-              done: Number(r.done), rv: Number(r.rv), names: r.names || null
+              done: Number(r.done), rv: Number(r.rv), names: r.names || null,
+              room: /^[a-z0-9]{12}$/.test(String(r.room || '')) ? String(r.room) : null
             };
             if (box) box.remove();
             PairKit._loop(ctx);   // channel stays live under the pop-up
