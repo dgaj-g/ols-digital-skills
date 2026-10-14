@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-09-28T19:43:42.986Z
+G6 deploy log + token · 2026-10-14T14:01:18.965Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 28 Sep 2026 20:42 | 5 | fc41c997cb-a423e1de | v5 S1 Unit 1 fc41c997cb-a423e1de | Named teachers get in with their school account (private list); every teacher
+INFO newest row: | 14 Oct 2026 15:00 | 6 | 24d3d4f8ad-7f0b7102 | v6 S1 Unit 1 24d3d4f8ad-7f0b7102 | Software topic added (29 past-paper questions, 59 marks, including 2026; LOCK
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
