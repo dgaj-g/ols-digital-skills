@@ -2,6 +2,18 @@
  "id": "j1-06.deck",
  "lesson": "j1-06",
  "deckName": "KS3 DT · J1 Lesson 6 — Inside the Machine (Teacher Deck)",
+ "theme": {
+  "id": "operating-theatre",
+  "name": "The Operating Theatre",
+  "ground": "#0A1C21",
+  "panel": "#10292F",
+  "accent": "#4FE3B8",
+  "accent2": "#E4B824",
+  "text": "#FFFFFF",
+  "dim": "#B9D0D2",
+  "display": "Bebas Neue",
+  "body": "Inter"
+ },
  "sections": [
   {
    "id": "opening",
