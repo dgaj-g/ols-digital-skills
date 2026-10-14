@@ -14,7 +14,7 @@ FIRST ACTIONS
 5. Server: room and seat in apiPairJoin (check), plus sweepRooms_ (nightly) and pingLive_ (weekly, emails only on failure).
 6. build-pathb, then the Apps Script deploy (hidden-window Chrome route), the two-pupil smoke test, then the PR to dgaj-g/ols-digital-skills with the gate counts and the sit report, then merge. Then the RESUME_HERE V72 top block and ONE plain done message.
 
-OWED BY DAMIEN: open https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/live-test.html on a pupil laptop at school and report its one sentence. The build is not done without it.
+DAMIEN'S PUPIL-LAPTOP CHECK: DONE (14 Oct 2026): "The live link works: a message went there and back in 26 milliseconds." Firebase reachable from school.
 
 METER: get_usage every 20 calls or 15 minutes; print METER hh:mm · context · 5h · week · calls. His "carry on" overrides the stops.
 macOS may show a permission popup (Chrome, Screen Recording, Automation) during deploy. If a step hangs over 60 s, say "POPUP: look at the Mac" and wait.

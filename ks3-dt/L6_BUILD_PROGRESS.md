@@ -60,3 +60,6 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
   Now GREEN at 1366 and 683: 31 checks, 0 failed. Control (--control --expect-fail): 3 FAIL as it must.
   EXPECT['6'] pinned from two identical runs: xp 45, chunks 12, presses 99, marks 45, badges 2.
 - Deck shots: the capture was looping because dev-keys.json was missing (walk-build pack writes it). Re-running j2-03, j2-04, j3-03.
+
+## 18:52 · DAMIEN pupil-laptop live-link check: PASSED
+- His reading of live-test.html: "The live link works: a message went there and back in 26 milliseconds." (Code OK · 26 ms). The owed Firebase answer is in.
