@@ -18,3 +18,9 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 7 gates run / walks / sit report — 
 8 deck deploy — 
 9 pack + deploy + PR — 
+
+## Step 2 art gate — STOPPED after round 2 (14 Oct 2026)
+- Round 2 readers A and B: Q1 YES, Q3 YES, Q2 NO. Both: worried puffins are not readable at boat size (fine in the close-up). Reader A also: awake is close to neutral. Reader B also: the cheer boat looks neutral until the hats go up.
+- Control (flat smile/cheer) said NO as it should: the gate discriminates.
+- Two rounds used: per the prompt, stopped for Damien. Verdicts: L5_PROTOTYPES/art-gate-r2-*.md; image twolights-art-test.png.
+- Build notes still to record: N4 multi-line editor (Enter = new line; Ctrl/Cmd+Enter, Shift+Enter, RUN button run). N5 S3 = first body line not indented; ladder/bar line numbers come from the real fault line.
