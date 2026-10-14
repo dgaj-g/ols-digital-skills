@@ -220,6 +220,16 @@ const THEMES = {
     ground: '#0E1218', panel: '#1A2029', accent: '#FFB347', accent2: '#5AA9FF',
     text: '#FFFFFF', dim: '#C4CBD8',
     motif: 'factory'          /* a machine with a hopper, a cog and a chute; cards leaving it */
+  },
+  /* J1 LESSON 6 — THE OPERATING THEATRE. The pupil side is the theatre's deep
+     green-black with a gold edge, so the board wears the same room: a heart
+     monitor's trace running low across the frame, and the round theatre lamp
+     hung top right. */
+  'j1-06': {
+    name: 'The Operating Theatre',
+    ground: '#0A1C21', panel: '#10292F', accent: '#4FE3B8', accent2: '#E4B824',
+    text: '#FFFFFF', dim: '#B9D0D2',
+    motif: 'theatre'          /* a heart-monitor trace + the round theatre lamp */
   }
 };
 
@@ -977,6 +987,35 @@ const MOTIFS = {
      that is a mixing desk: a bank of faders each at its own height, and the
      needle that answers back when something plays. Every straight line in it is
      a fader track, which is vertical by nature. */
+  /* J1 LESSON 6 — the operating theatre: the monitor's faint grid dots as the
+     dust, and as the lines a heart trace across the lower third with the round
+     theatre lamp, three rings, top right. */
+  theatre: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      const n = Math.round(o.starCount * 0.5);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H),
+          (r() * 1.4 + 0.5).toFixed(2), t.accent, (r() * 0.18 + 0.05).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      const y = 640;
+      let d = 'M0,' + y;
+      for (let x = 0; x < W; x += 240) {
+        d += ' H' + (x + 120) + ' L' + (x + 140) + ',' + (y - 70) + ' L' + (x + 160) +
+          ',' + (y + 40) + ' L' + (x + 175) + ',' + y + ' H' + (x + 240);
+      }
+      const rings = [150, 108, 66].map((rad, i) =>
+        `<circle cx="1220" cy="150" r="${rad}" fill="none" stroke="${t.accent2}" ` +
+        `stroke-width="2" opacity="${(op * (0.6 + i * 0.2)).toFixed(3)}"/>`).join('');
+      return `<path d="${d}" fill="none" stroke="${t.accent}" stroke-width="3" ` +
+        `opacity="${op}" stroke-linejoin="round"/>` + rings;
+    }
+  },
+
   desk: {
     dust: (t, o) => {
       const r = rng(o.seed);
