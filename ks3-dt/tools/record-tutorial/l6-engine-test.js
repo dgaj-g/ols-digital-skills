@@ -21,7 +21,7 @@ A.hello(); Bb.hello(); T.run(2100);
 gate('hello crosses: A sees B here, B sees A here', A.S.presence.B.here && Bb.S.presence.A.here);
 gate('door prompt before begin', A.prompt().kind === 'door');
 gate('begin → op, patient speaks the open line', A.begin() && A.S.stage === 'op' && last(A).text === B.open[2]);
-gate('bar at the table says the tap line', A.prompt().text === 'Tap a part to take it out.');
+gate('bar at the table says the tap line', A.prompt().text === 'Click a part to take it out.');
 Bb.begin();
 
 /* 2 · her tap: out at once on her side; on his side only after the lag */
@@ -31,12 +31,12 @@ T.run(1000); gate('B does not know yet (honest lag)', Bb.S.parts.fan.status === 
 T.run(1250); gate('B sees the fan out by A after the lag', Bb.S.parts.fan.status === 'out' && Bb.S.parts.fan.by === 'A');
 gate('B’s face is NOT changed by A’s part (each surgeon sees her own cut)', Bb.S.my.out === null);
 gate('B’s strip: Dr Marmalade has a part out', Bb.presence()[0].text === 'Dr Marmalade has a part out.');
-gate('B tapping A’s part is refused with the theirs line', Bb.tap('fan') === 'theirs' && Bb.prompt().text === 'Dr Marmalade has that one. Tap another part.');
+gate('B tapping A’s part is refused with the theirs line', Bb.tap('fan') === 'theirs' && Bb.prompt().text === 'Dr Marmalade has that one. Click another part.');
 gate('A tapping another part while hers is out is busy', A.tap('mem') === 'busy' && A.S.parts.mem.status === 'in');
 T.run(4000); gate('second symptom line after 4 s while still out', A.S.said.filter(function (s) { return s.tag === 'pulled2'; }).length === 1 && last(A).text === B.pulled2.fan);
 
 /* 3 · wrong card stings, second wrong is told */
-gate('wrong card → no line + Not that one', A.card('mem') === 'wrong' && last(A).text === B.no.fan && A.prompt().text === 'Not that one. Tap another job card.');
+gate('wrong card → no line + Not that one', A.card('mem') === 'wrong' && last(A).text === B.no.fan && A.prompt().text === 'Not that one. Click another job card.');
 gate('part still out after a wrong card (no force-correct)', A.S.my.out === 'fan' && A.S.parts.fan.status === 'out');
 T.run(3100); gate('after 3 s the bar returns to the card question', A.prompt().kind === 'card');
 gate('second wrong → told, sealed with the told tag', A.card('drive') === 'told' && last(A).text === B.told.fan && A.S.parts.fan.status === 'sealed' && A.S.parts.fan.told === true && A.S.my.out === null);
@@ -44,7 +44,7 @@ gate('told bar line', A.prompt().text === 'Bernadette told you the job. It is wr
 gate('chart has one line credited to A', A.S.chart.length === 1 && A.S.counts.A === 1 && A.sealedCount() === 1);
 T.run(2300); gate('B’s chart gains the line in A’s name after the lag, told tag kept', Bb.S.parts.fan.status === 'sealed' && Bb.S.parts.fan.by === 'A' && Bb.S.parts.fan.told === true && Bb.S.counts.A === 1 && Bb.S.chart[0] === 'fan');
 gate('B’s strip counts it: found a job. 1 of 7', Bb.presence()[0].text === 'Dr Marmalade found a job. 1 of 7 jobs found.');
-gate('tapping a sealed part is refused', Bb.tap('fan') === 'sealed' && Bb.prompt().text === 'That one is done. Tap another part.');
+gate('tapping a sealed part is refused', Bb.tap('fan') === 'sealed' && Bb.prompt().text === 'That one is done. Click another part.');
 
 /* 4 · right card first time */
 T.run(3100);
@@ -72,7 +72,7 @@ gate('both think they have the cpu for a moment', rA === 'out' && rB === 'out');
 T.run(2300);
 gate('after the lag exactly one owner (A, earlier stamp) on both sides', A.S.parts.cpu.by === 'A' && Bb.S.parts.cpu.by === 'A' && A.S.my.out === 'cpu' && Bb.S.my.out === null);
 gate('loser sees the plain line and is free to tap', Bb.S.stats.lost === 1 && Bb.S.log.some(function (e) { return e.k === 'notice' && e.d === 'lost'; }));
-gate('loser’s bar: Dr Marmalade got there first', Bb.S.notice.key === 'lost' && Bb.prompt().text === 'Dr Marmalade got there first. Tap another part.');
+gate('loser’s bar: Dr Marmalade got there first', Bb.S.notice.key === 'lost' && Bb.prompt().text === 'Dr Marmalade got there first. Click another part.');
 gate('A card right after the clash', A.card('cpu') === 'right');
 T.run(3100);
 

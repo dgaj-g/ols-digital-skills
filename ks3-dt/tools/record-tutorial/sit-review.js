@@ -53,6 +53,8 @@ const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 /* J3 Lesson 4 is The Rescue since 7 Oct 2026: one story step in a frame, typed lines judged by the story's own
    judge. This walker presses platform buttons and cannot walk it; its old j3-4 numbers were Function Factory's.
    The Rescue is walked by probes/rescue/hour-walk.js (the story) and probes/rescue/qa-rescue-platform.js (the shell). */
+/* J1 Lesson 6 is THE OPERATION (14 Oct 2026), walked by l6-harness.js against EXPECT['6'] below. */
+if (/^6$/.test(NUM)) { console.log('sit-review.js: J1 Lesson 6 is The Operation; walk it with l6-harness.js (it asserts EXPECT[\'6\']).'); process.exit(0); }
 if (/^j3-4$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
    keeps its bare-number legacy keys). `j2-1` is J2's Lesson 1; '1' is J1's. */
@@ -109,6 +111,8 @@ const EXPECT = {
      discipline as the qa-j1-unchanged re-pin of 23 Aug: prove it, then pin it,
      and write down why.) */
   '5': { xp: 42, chunks: 10, presses: 20, marks: 7, badges: 4 },
+  /* J1 Lesson 6, THE OPERATION: pinned from l6-harness.js runs (presses reported, not asserted) */
+  '6': { xp: 0, chunks: 0, presses: 0, marks: 0, badges: 0 },
   'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 },
   /* J2 Lesson 1, pinned from a real run on 16 Aug 2026 — deterministic values
      only (DFM 199). The turn count is still reported, never asserted. */

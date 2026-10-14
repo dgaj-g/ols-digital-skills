@@ -36,3 +36,11 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - Teacher brief + deck merged (qa-brief-shape PASS, j1-06 held to 60). Teacher/deck cold read packet-B (137 strings) running, two readers.
 - Engine test 89/89 after rewrites.
 - NEXT: walker cannot reach inside the operation iframe yet -> add operation movers + LANDMARKS/EXPECT for 6; l6-channel-test, l6-look, l6-harness; server sweep/ping; pack/deploy.
+
+## 14:35 checkpoint
+- Wording: "Tap" changed to "Click" across the lesson, brief, deck and frame (qa-language bans tap; DFM 138.1.6). The cold readers read "Tap"; same meaning. l6-engine-test re-pointed: 89/89 PASS.
+- Teacher brief merged into j1-06.json; DFM 65 (no she/her) and DFM 72 (no verbless lines) fixes; teacher cold read packet B r1+r2 done; only agreed rewrites applied. COLD_READ_VERDICTS_L6.md written (## LESSON 6).
+- Ledger: missing 0; qa-language ALL GREEN.
+- Walk coverage: LANDMARKS['6'] (20) in sit-wrongpath.js, EXPECT['6'] placeholder in sit-review.js, early exits in both pointing to new tools/record-tutorial/l6-harness.js.
+- l6-harness FIRST RUN = RED (21 of 29 failed: Lesson 6 not packed yet, tile locked). FAIL lines: "FAIL the lesson reaches its done card (null)", "FAIL stood on: the Do-Now" … "FAIL stood on: the closing screen".
+- Pack blocked by qa-deck-shots: 15 stale shots in j2-03, j2-04, j3-03 (packed content of 8 Oct newer than the shots; same on main). Re-capturing with capture-teacher-layer.js --base http://localhost:8126 (log in scratchpad capture.log).

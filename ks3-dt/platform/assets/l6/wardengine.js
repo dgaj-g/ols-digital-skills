@@ -9,8 +9,8 @@
   var NEED = { mem: 'memory part' };
   var NAME = { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' };
   var W = {
-    take: 'Tap a computer to look after it.',
-    which: 'Which part does this one need? Tap it on the tray.',
+    take: 'Click a computer to look after it.',
+    which: 'Which part does this one need? Click it on the tray.',
     still: 'Still broken. Try a different part.',
     watch: 'Watch {p} fix the last computers.',
     fixedBy: 'Fixed by {p}.',

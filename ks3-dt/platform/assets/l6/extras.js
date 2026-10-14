@@ -13,7 +13,7 @@
       pairs: [['Remembers what she is doing right now', 'memory (RAM)'], ['Keeps her files, even when she is off', 'storage (SSD or hard drive)'],
         ['Does all her thinking', 'processor (CPU)'], ['Draws the picture on her screen', 'graphics card (GPU)'], ['Stops her getting too hot', 'fan'],
         ['Brings the electricity in from the wall', 'power supply (PSU)'], ['Joins all the other parts together', 'motherboard']],
-      tap: 'Tap a job, then tap its real name.', check: 'Check my answers',
+      tap: 'Click a job, then click its real name.', check: 'Check my answers',
       again: 'Not quite. Some of your matches are wrong. Match those ones again.', shown: 'These are the right names. Read them once more.', allRight: 'All seven names are right.' },
     machine: { head: 'Your own machine', cores: 'This laptop’s processor can do {n} things at once.', mem: 'This laptop has about {n} GB of memory.',
       screen: 'This laptop’s screen is {w} dots wide and {h} dots tall.', priv: 'Your browser keeps that private.' }

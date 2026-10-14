@@ -69,6 +69,9 @@ const LESSON_NUM = LESSON.replace(/^j[23]-/, '');
    judge. This walker presses platform buttons and cannot walk it; its old j3-4 numbers were Function Factory's.
    The Rescue is walked by probes/rescue/hour-walk.js (the story) and probes/rescue/qa-rescue-platform.js (the shell). */
 if (/^j3-4$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
+/* J1 Lesson 6 is THE OPERATION (14 Oct 2026): most of the hour is a page in a frame (assets/l6/operation.html),
+   so this walker cannot press it. It is walked by l6-harness.js, which reads LANDMARKS['6'] below and must stand on each. */
+if (/^6$/.test(LESSON)) { console.log('sit-wrongpath.js: J1 Lesson 6 is The Operation; walk it with l6-harness.js (it asserts LANDMARKS[\'6\']).'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -358,6 +361,29 @@ const LANDMARKS = {
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
+  ],
+  /* J1 Lesson 6, THE OPERATION: walked by l6-harness.js, which reaches inside the frame for the frame's surfaces */
+  '6': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the door: the patient and the Begin button', '#doorsay, #beginbtn', 'c1'],
+    ['the open case with its parts', '#slots .slot', 'c2'],
+    ['the job cards for a part she pulled', '#cardlist .card', 'c2'],
+    ['a wrong job card, crossed out', '#cardlist .card.wrong', 'c2'],
+    ['the chart filling in', '#lines li, #chart', 'c2'],
+    ['the operation done, with its Continue', '#done.on #nextbtn', 'c2'],
+    ['the ward of broken computers', '#beds .bed', 'c3'],
+    ['the parts tray beside an open bed', '#tray .tpart', 'c3'],
+    ['the ward round done', '#wdone.on', 'c3'],
+    ['who is in charge, with its four answers', '.xopts .xopt', 'c4'],
+    ['the film', '.video-card, .vid-chapter', 'c5'],
+    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'c6'],
+    ['the real names to match', '.xmatch .xjob', 'c7'],
+    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job (265c)', '.xfinish', 'extras'],
+    ['the discharge letter', '#llines li', 'extras'],
+    ['the exit check', '.q-opt, .exit-q', 'c8'],
+    ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'c8b'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'c9']
   ],
   'j3-4': [
     ['the Do-Now', '.q-opt', '_recap'],

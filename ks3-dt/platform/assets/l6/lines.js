@@ -102,7 +102,7 @@ var LINES = {
     pull: 'Pull a part out of {me}.',
     keep: 'Keep it out. Your partner is watching {me}. {n} seconds.',
     back: 'Put the part back into {me}.',
-    look: 'Look at {them}. Something has happened. Tap what you see.',
+    look: 'Look at {them}. Something has happened. Click what you see.',
     cardTheirs: 'Which job did {them} lose? Pick the card.',
     cardBoard: 'That one stays in. What is its job? Pick the card.',
     cardMine: 'Your partner says: {chip}. Which job did {me} lose?',
