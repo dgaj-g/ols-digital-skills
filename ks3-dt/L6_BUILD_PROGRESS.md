@@ -25,3 +25,6 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - Rules = platform/live/database.rules.json, PUBLISHED via Cloud Shell REST PUT (console Publish button absent). Response {"status":"ok"}.
 - Rule checks by curl: good-code read null ✓; bad code / root read denied ✓; good write ok ✓; seat D denied ✓; extra field denied ✓; stale t denied ✓; presence ok ✓; test room deleted.
 - Next: register web app → platform/live-config.js; DAMIEN owner stop.
+- Web app "KS3 DT platform" appId 1:831317210522:web:8790b76f693937c21bb623 → platform/live-config.js (apiKey verified valid).
+- Personal Gmail added + accepted as Owner (13:30).
+- Vendored firebase compat 10.12.2 + CREDITS. live-test.html LIVE via PR #76 (merged a41411a): https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/live-test.html — 25 ms from the Mac. OWED: his pupil-laptop sentence.
