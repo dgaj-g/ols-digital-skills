@@ -457,9 +457,13 @@
               pid: String(r.pid), mi: Number(r.mi), members: (r.members || []).map(String),
               trio: !!Number(r.trio), seq: 0,
               live: (r.members || []).map(function () { return 1; }),
-              done: Number(r.done), rv: Number(r.rv), names: r.names || null
+              done: Number(r.done), rv: Number(r.rv), names: r.names || null,
+              room: /^[a-z0-9]{12}$/.test(String(r.room || '')) ? String(r.room) : null
             };
             if (box) box.remove();
+            /* THE OPERATION (J1 L6) passes hooks.quiet: its door screen says who is at the table, and the
+               live room carries the moves, so neither the pop-up nor the Apps Script channel is wanted. */
+            if (PairKit._hooks && PairKit._hooks.quiet) { cb('paired'); return; }
             PairKit._loop(ctx);   // channel stays live under the pop-up
             PairKit._matchPop(function () { cb('paired'); });
             return;
@@ -11334,5 +11338,99 @@
     }
   };
 
+
+  /* THE OPERATION (J1 L6, spec §3.1–3.3, §3.9, §7). One engine, four stages by chunk.config.stage:
+     door | op | ward | letter. The page (assets/l6/operation.html) runs in a frame, as the Rescue does;
+     this side owns the pairing (PairKit, per lesson, quiet), the saves and the partner reveal.
+     The frame is told its seat, the seats at the table and the live room by its hash; the live room
+     carries the moves (Firebase, no sign-in, nothing that names a pupil — DFM 325).
+     frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone}; here → frame: {op:1, type:'names'}. */
+  Engines.operation = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {}, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var stage = cfg.stage || 'door', job = null;
+      /* THE EXTRA JOBS (DFM 259/265): stage 'extras' is a list of jobs, each one a stage of the same page.
+         No points, the way out on every screen (the hub AND each job), leaving a job costs nothing. */
+      function hub() {
+        stage = 'extras'; job = null; host.innerHTML = '';
+        var done = draft.opExtras = draft.opExtras || {};
+        var lead = (ctx.review && cfg.reviewIntro) ? cfg.reviewIntro + '\n\n' + (cfg.intro || '') : (cfg.intro || '');
+        var jobs = (cfg.builds || []).map(function (b) {
+          return '<button class="pyrun-job" type="button" data-job="' + esc(b.id) + '"><b class="pyrun-job-title">' + esc(b.title || '') + '</b>' +
+            '<span class="pyrun-job-whiff">' + esc(b.whiff || '') + '</span>' +
+            (done[b.id] ? '<span class="pyrun-job-tick">' + esc(cfg.doneTick || 'job done') + '</span>' : '') + '</button>';
+        }).join('');
+        var c = el('<div class="card pyrun-hub op-hub"><span class="intro-kicker">' + esc(cfg.kicker || '') + '</span><h2>' + esc(cfg.title || '') + '</h2>' +
+          '<p class="intro-lead">' + esc(lead).replace(/\n\n/g, '<br><br>') + '</p><div class="pyrun-jobs">' + jobs + '</div>' +
+          '<div class="rung-actions pyrun-exit-row"><button class="btn btn-primary pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
+        host.appendChild(c);
+        c.querySelectorAll('.pyrun-job').forEach(function (b) {
+          App.armButton(b, function () { job = b.getAttribute('data-job'); stage = job; PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true }); });
+        });
+        App.armButton(c.querySelector('.pyrun-finish'), finishExtras);
+      }
+      function finishExtras() { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
+      function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
+      function open(mode) {
+        var st = PairKit.st, paired = mode === 'paired' && st;
+        var seats = paired ? st.members.map(function (_, i) { return 'ABC'[i]; }) : ['A'];
+        var H = { stage: stage, seat: paired ? 'ABC'[st.mi] : 'A', seats: seats,
+          room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
+          names: paired && st.names ? st.names : null,
+          round: Number(draft.opRound || 0), fallback: paired && st.room && draft.opFallback === st.room ? 1 : 0 };
+        if (stage === 'letter') H.letter = draft.op || null;
+        if (job) H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '' };
+        host.innerHTML = '';
+        var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+          '<iframe class="rescue-frame" title="' + esc(chunk.title || 'The operation') + '"></iframe></div>');
+        host.appendChild(wrap);
+        function fit() {
+          if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+          var bar = document.querySelector('#player .player-top');
+          wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+        }
+        fit(); window.addEventListener('resize', fit);
+        var frame = wrap.querySelector('iframe');
+        frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+        frame.src = App.asset(cfg.page || 'assets/l6/operation.html') + '#' + encodeURIComponent(JSON.stringify(H));
+        function tell(m) { m.op = 1; try { frame.contentWindow.postMessage(m, '*'); } catch (e) {} }
+        function save(extra) { if (ctx.review) return null; var ev = extra || {}; ev.draft = draft; return ctx.saveEvent(ev); }
+        function sendNames() {
+          if (!paired) return;
+          if (st.names) { tell({ type: 'names', names: st.names }); return; }
+          PairKit.complete(ctx).then(function (r) { if (r && r.names) tell({ type: 'names', names: r.names }); });
+        }
+        var gone = false;
+        function onMsg(e) {
+          if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+          var m = e.data;
+          if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
+          if (m.type === 'ready') { if (stage === 'letter') sendNames(); }
+          else if (job && (m.type === 'next' || m.type === 'xfinish')) {
+            gone = true; window.removeEventListener('message', onMsg);
+            if (m.type === 'next') { draft.opExtras = draft.opExtras || {}; draft.opExtras[job] = 1; save(); hub(); } else finishExtras();
+          }
+          else if (m.type === 'begin' || m.type === 'next') {
+            gone = true; window.removeEventListener('message', onMsg);
+            if (ctx.review) { ctx.next(); return; }
+            finishChunk(ctx, stage === 'op' && draft.op ? 'chart=' + (draft.op.chart || []).length : stage);
+          }
+          else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } }
+          else if (m.type === 'save') { draft.opRound = Number(m.round || 0); save(); }
+          else if (m.type === 'done' && m.save) {
+            draft.op = m.save; draft.opRound = Number(m.save.round || 0);
+            save();
+            sendNames();
+          } else if (m.type === 'wardDone') {
+            draft.ward = 1; save();
+          }
+        }
+        window.addEventListener('message', onMsg);
+      }
+      if (cfg.extrasMode) { hub(); return; }
+      PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true });
+    }
+  };
 
 })(window);
