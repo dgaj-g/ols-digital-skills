@@ -1501,7 +1501,69 @@ function pairStateFor_(reg, hit) {
 function liveRoom_() {
   var a = 'abcdefghijklmnopqrstuvwxyz0123456789', r = '';
   for (var i = 0; i < 12; i++) r += a.charAt(Math.floor(Math.random() * a.length));
+  noteRoom_(r);
   return r;
+}
+
+/* THE LIVE ROOMS' HOUSEKEEPING (spec section 4). The database rules refuse to list rooms, so the
+   server remembers the codes it hands out (only the code and the minute: nothing else) and
+   the nightly sweep deletes any older than six hours. A finished ward round deletes its own
+   room; this catches the pairs that fell back, left early or lost the link. */
+var LIVE_DB = 'https://ols-ks3-dt-live-default-rtdb.europe-west1.firebasedatabase.app';
+var LIVE_ROOMS_KEY = 'LIVE_ROOMS', LIVE_ROOMS_MAX = 300, LIVE_ROOM_AGE_MIN = 360;
+function noteRoom_(r) {
+  try {
+    var sp = sp_(), list = JSON.parse(sp.getProperty(LIVE_ROOMS_KEY) || '[]');
+    list.push([r, tmin_()]);
+    if (list.length > LIVE_ROOMS_MAX) list = list.slice(-LIVE_ROOMS_MAX);
+    sp.setProperty(LIVE_ROOMS_KEY, JSON.stringify(list));
+  } catch (e) { /* the sweep is a backstop; pairing never waits on it */ }
+}
+function liveFetch_(path, method, body) {
+  var o = { method: method || 'get', muteHttpExceptions: true, contentType: 'application/json' };
+  if (body != null) o.payload = JSON.stringify(body);
+  var r = UrlFetchApp.fetch(LIVE_DB + '/' + path + '.json', o);
+  return { code: r.getResponseCode(), text: r.getContentText() };
+}
+/* nightly trigger: Triggers > Add Trigger > sweepRooms > time-driven > day timer > 3am-4am */
+function sweepRooms() {
+  var m = sweepRooms_();
+  if (!m.ok) throw new Error('KS3 DT live-room sweep failed: ' + m.error);
+  Logger.log('swept ' + m.swept + ', kept ' + m.kept);
+}
+function sweepRooms_() {
+  return withLock_(function () {
+    var sp = sp_(), list = JSON.parse(sp.getProperty(LIVE_ROOMS_KEY) || '[]'), now = tmin_(), keep = [], swept = 0, bad = 0;
+    list.forEach(function (x) {
+      if (now - num_(x[1]) < LIVE_ROOM_AGE_MIN) { keep.push(x); return; }
+      var r = liveFetch_('rooms/' + str_(x[0]), 'delete');
+      if (r.code === 200) swept++; else { bad++; if (now - num_(x[1]) < 7 * 1440) keep.push(x); }
+    });
+    sp.setProperty(LIVE_ROOMS_KEY, JSON.stringify(keep));
+    return bad ? { ok: false, error: bad + ' room(s) could not be deleted', swept: swept, kept: keep.length } : { ok: true, swept: swept, kept: keep.length };
+  });
+}
+/* weekly trigger: Triggers > Add Trigger > pingLive > time-driven > week timer > Monday 7am-8am.
+   Silent when the live link works; throwing makes Google's own failure email reach the owner. */
+function pingLive() {
+  var m = pingLive_();
+  if (!m.ok) throw new Error('KS3 DT Lesson 6 live link check failed: ' + m.error + '. Lesson 6 still runs: pairs share one laptop.');
+  Logger.log('live link OK');
+}
+function pingLive_() {
+  try {
+    var r = 'ping', a = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < 8; i++) r += a.charAt(Math.floor(Math.random() * a.length));
+    var w = liveFetch_('rooms/' + r + '/A/x', 'put', { j: 'h|A|0', t: Date.now() });
+    if (w.code !== 200) return { ok: false, error: 'a write was refused (' + w.code + ')' };
+    var g = liveFetch_('rooms/' + r + '/A/x', 'get');
+    if (g.code !== 200 || g.text.indexOf('h|A|0') === -1) return { ok: false, error: 'a read did not come back (' + g.code + ')' };
+    var d = liveFetch_('rooms/' + r, 'delete');
+    if (d.code !== 200) return { ok: false, error: 'the test room could not be deleted (' + d.code + ')' };
+    var s = liveFetch_('rooms/abc/A/x', 'put', { j: 'h|A|0', t: Date.now() });
+    if (s.code === 200) { liveFetch_('rooms/abc', 'delete'); return { ok: false, error: 'the rules let a wrong-length room code in' }; }
+    return { ok: true };
+  } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
 }
 
 
