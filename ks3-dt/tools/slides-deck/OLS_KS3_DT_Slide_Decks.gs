@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-14 from contentVersion 2026-10-08a.
+ * Built 2026-10-14 from contentVersion 2026-10-14c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1206,6 +1206,18 @@ var DECKS = {
   "id": "j1-06.deck",
   "lesson": "j1-06",
   "deckName": "KS3 DT · J1 Lesson 6 — Inside the Machine (Teacher Deck)",
+  "theme": {
+   "id": "operating-theatre",
+   "name": "The Operating Theatre",
+   "ground": "#0A1C21",
+   "panel": "#10292F",
+   "accent": "#4FE3B8",
+   "accent2": "#E4B824",
+   "text": "#FFFFFF",
+   "dim": "#B9D0D2",
+   "display": "Bebas Neue",
+   "body": "Inter"
+  },
   "sections": [
    {
     "id": "opening",
