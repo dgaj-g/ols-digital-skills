@@ -19,9 +19,9 @@ canvas{display:block;margin:0 auto}
 document.fonts.load('700 12px "Space Grotesk"').then(function(){var A=TwoArt,T=+(new URLSearchParams(location.search).get('t')||1.3);
 function ctx(id){return document.getElementById(id).getContext('2d')}
 (function(){var c=ctx('w');A.sea(c,369,330,90,T);A.rocks(c,320,250,22,T);
-A.beam(c,255,85,260,T+1,1,-1);A.lighthouse(c,255,85,18,{awake:1,t:T});
+A.beam(c,262,92,260,T+1,1,-1);A.lighthouse(c,262,92,23,{awake:1,t:T});
 c.fillStyle='#F2C14E';c.font='700 12px "Space Grotesk"';c.textAlign='center';c.fillText('SOUTH LIGHT',255,26);
-A.fog(c,369,330,T,0.8);A.boat(c,110,212,21,'worried',T,0.05);
+A.fog(c,369,330,T,0.8);A.boat(c,110,212,21,'worried',T,0.05);A.inset(c,6,6,170,92,'worried',T);
 c.fillStyle='#0e1a30';c.fillRect(170,286,190,40);['Your light is out','No horn from you','I got None','All clear'].forEach(function(s,i){c.fillStyle='#1d2b48';A.rrect(c,174+(i%2)*92,289+Math.floor(i/2)*18,88,15,4);c.fill();c.fillStyle='#dfe6f2';c.font='600 9.5px "Space Grotesk"';c.fillText(s,218+(i%2)*92,300+Math.floor(i/2)*18)})})();
 (function(){var c=ctx('lh');A.sea(c,683,330,200,T);
 A.lighthouse(c,110,95,26,{awake:0,t:T});A.beam(c,340,95,230,T,1,1);A.lighthouse(c,340,95,26,{awake:1,t:T});

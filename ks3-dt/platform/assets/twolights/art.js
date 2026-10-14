@@ -149,7 +149,12 @@
       c.lineWidth = 0.09; c.beginPath(); c.moveTo(-0.5, 0.36); c.quadraticCurveTo(0, 0.36 + 0.7 * sm, 0.5, 0.36); c.closePath(); c.stroke();
       c.fillStyle = 'rgba(255,240,180,0.9)'; [[-1.35, -0.9], [1.4, -0.6], [1.25, -1.3]].forEach(function (p, i) { var k = 0.12 + 0.06 * Math.sin(t * 4 + i * 2); c.beginPath(); c.moveTo(p[0], p[1] - k * 2); c.lineTo(p[0] + k * 0.5, p[1]); c.lineTo(p[0], p[1] + k * 2); c.lineTo(p[0] - k * 0.5, p[1]); c.closePath(); c.fill(); c.beginPath(); c.moveTo(p[0] - k * 2, p[1]); c.lineTo(p[0], p[1] + k * 0.5); c.lineTo(p[0] + k * 2, p[1]); c.lineTo(p[0], p[1] - k * 0.5); c.closePath(); c.fill(); });
     } else if (aw > 0.5) {
-      c.lineWidth = 0.1; c.beginPath(); c.moveTo(-0.3, 0.4); c.quadraticCurveTo(0, 0.62, 0.3, 0.4); c.stroke();
+      // awake: an open, eager mouth (a "D") and raised brows, so it never reads as neutral
+      // an alert round "O": wide awake and watching, never the grin of the smile
+      c.fillStyle = '#5A1E22'; c.beginPath(); c.ellipse(0, 0.5, 0.17, 0.2, 0, 0, TAU); c.fill();
+      c.lineWidth = 0.09; c.beginPath(); c.ellipse(0, 0.5, 0.17, 0.2, 0, 0, TAU); c.stroke();
+      c.strokeStyle = '#FFE7A8'; c.lineWidth = 0.11;
+      [-0.47, 0.47].forEach(function (ex) { c.beginPath(); c.arc(ex, -0.72, 0.24, Math.PI * 1.15, Math.PI * 1.85); c.stroke(); });
     } else {
       c.beginPath(); c.ellipse(0, 0.5, 0.07, 0.05, 0, 0, TAU); c.stroke();
     }
@@ -231,8 +236,10 @@
     var ex = [-0.2, 0.3], ey = hy - 0.05;
     c.lineCap = 'round';
     ex.forEach(function (px) {
-      if (cheer) {
-        c.strokeStyle = '#16171C'; c.lineWidth = 0.08; c.beginPath(); c.arc(px, ey + 0.05, 0.11, Math.PI * 1.1, Math.PI * 1.9); c.stroke();
+      if (cheer) { // big shining open eyes, raised brows: joy, never calm
+        c.fillStyle = '#16171C'; c.beginPath(); c.arc(px, ey, 0.16, 0, TAU); c.fill();
+        c.fillStyle = '#fff'; c.beginPath(); c.arc(px + 0.05, ey - 0.06, 0.065, 0, TAU); c.fill(); c.beginPath(); c.arc(px - 0.05, ey + 0.06, 0.03, 0, TAU); c.fill();
+        c.strokeStyle = '#16171C'; c.lineWidth = 0.08; c.beginPath(); c.arc(px, ey - 0.12, 0.2, Math.PI * 1.2, Math.PI * 1.8); c.stroke();
       } else {
         if (worried) {
           c.fillStyle = '#fff'; c.strokeStyle = '#16171C'; c.lineWidth = 0.05; c.beginPath(); c.arc(px, ey, 0.17, 0, TAU); c.fill(); c.stroke();
@@ -256,11 +263,16 @@
     if (open) { c.fillStyle = '#8A2A30'; c.beginPath(); c.moveTo(0.12, -open * 0.3); c.lineTo(bl * 0.9, -open + 0.02); c.lineTo(bl * 0.9, open - 0.02); c.lineTo(0.12, open * 0.3); c.closePath(); c.fill(); }
     c.strokeStyle = '#F7D24A'; c.lineWidth = 0.045; c.beginPath(); c.moveTo(0.2, -0.22 * big); c.lineTo(0.2, -open * 0.2); c.stroke();
     c.restore();
+    // cheer: a wide open laughing mouth under the beak
+    if (cheer) {
+      c.fillStyle = '#7A1E28'; c.beginPath(); c.moveTo(-0.32, hy + 0.3); c.quadraticCurveTo(0.0, hy + 0.85, 0.32, hy + 0.3); c.closePath(); c.fill();
+      c.fillStyle = '#F07A8A'; c.beginPath(); c.ellipse(0, hy + 0.52, 0.15, 0.08, 0, 0, TAU); c.fill();
+    }
     // a worried bead of sweat and a wobbly mouth line under the beak
     if (worried) {
       var sw = (t * 0.7) % 1;
       c.fillStyle = 'rgba(170,215,255,' + (1 - sw * 0.6) + ')'; c.beginPath(); c.moveTo(-0.66, hy - 0.45 + sw * 0.3); c.quadraticCurveTo(-0.5, hy - 0.2 + sw * 0.3, -0.66, hy - 0.1 + sw * 0.3); c.quadraticCurveTo(-0.82, hy - 0.2 + sw * 0.3, -0.66, hy - 0.45 + sw * 0.3); c.fill();
-      c.strokeStyle = '#16171C'; c.lineWidth = 0.07; c.beginPath(); c.moveTo(-0.15, hy + 0.42); c.quadraticCurveTo(-0.05, hy + 0.34, 0.05, hy + 0.42); c.quadraticCurveTo(0.15, hy + 0.5, 0.25, hy + 0.42); c.stroke();
+      c.fillStyle = '#7A1E28'; c.beginPath(); c.ellipse(-0.02, hy + 0.42, 0.13, 0.11, 0, 0, TAU); c.fill(); c.strokeStyle = '#16171C'; c.lineWidth = 0.08; c.beginPath(); c.arc(-0.02, hy + 0.62, 0.26, Math.PI * 1.25, Math.PI * 1.75); c.stroke();
     }
     // sou'wester: on the head, or thrown up when cheering
     var hl = cheer ? 0.55 + Math.abs(Math.sin(t * 6)) * 0.35 : 0;
@@ -279,6 +291,22 @@
     c.fillStyle = '#2B2F3A'; c.fillRect(-0.22, -0.4, 0.44, 0.08); c.fillRect(-0.22, 0.3, 0.44, 0.08);
     c.fillStyle = '#FFE39A'; rrect(c, -0.18, -0.32, 0.36, 0.62, 0.08); c.fill();
     c.strokeStyle = '#2B2F3A'; c.lineWidth = 0.05; c.beginPath(); c.arc(0, -0.45, 0.14, Math.PI, 0); c.stroke();
+    c.restore();
+  }
+  /* close-up inset of the crew's faces, for the corner of the small window.
+     (x, y) top-left, w x h in px; mood as puffin(). */
+  function inset(c, x, y, w, h, mood, t) {
+    c.save();
+    c.fillStyle = 'rgba(8,14,28,0.92)'; rrect(c, x, y, w, h, 8); c.fill();
+    c.strokeStyle = mood === 'worried' ? '#E8735A' : '#F2C14E'; c.lineWidth = 2; rrect(c, x, y, w, h, 8); c.stroke();
+    rrect(c, x + 2, y + 2, w - 4, h - 4, 6); c.clip();
+    // three individuals: Finn small and leaning in, Nuala tall in the middle, Pip big and turned away
+    var hx = [0.18, 0.5, 0.83], sz = [0.28, 0.34, 0.37], dy = [0.70, 0.60, 0.66], rot = [0.18, 0, -0.16];
+    ['finn', 'nuala', 'pip'].forEach(function (who, i) {
+      var s = h * sz[i], tr = mood === 'worried' ? Math.sin(t * 40 + i) * 0.6 : 0;
+      c.save(); c.translate(x + w * hx[i] + tr, y + h * dy[i] + s); c.rotate(rot[i]);
+      puffin(c, 0, 0, s, who, mood, t + i * 0.7); c.restore();
+    });
     c.restore();
   }
   /* Marigold with her crew. mood as puffin(). tilt in radians. */
@@ -314,5 +342,5 @@
   }
 
   window.TwoArt = { C: C, rng: rng, smooth: smooth, sea: sea, rocks: rocks, fog: fog, beam: beam, head: head,
-    lighthouse: lighthouse, lightship: lightship, puffin: puffin, boat: boat, lantern: lantern, grille: grille, rrect: rrect };
+    lighthouse: lighthouse, lightship: lightship, puffin: puffin, boat: boat, inset: inset, lantern: lantern, grille: grille, rrect: rrect };
 })();
