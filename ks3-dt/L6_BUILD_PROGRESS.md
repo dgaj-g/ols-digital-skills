@@ -63,3 +63,10 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 
 ## 18:52 · live-test.html run OFF the school network (not the pupil-laptop check)
 - His reading: "The live link works: a message went there and back in 26 milliseconds." (Code OK · 26 ms). Proves the page and Firebase work; does NOT prove C2k lets it through. The pupil-laptop-at-school check is STILL OWED.
+
+## 16:56 · HIS INSTRUCTION (verbatim gist): build it, deploy it, make it LIVE, teacher decks and brief too, in THIS window at medium.
+"i will be away and can't do anything so this MUST be automated by you. check before taking over my chrome browser in case another session using it, but to carry on once it's finished and not to wait for me to check for you."
+- So: no his-check stops. Pupil-laptop-at-school check stays owed (fallback = shared laptop, never a dead screen); ship anyway.
+- Before Chrome: list sessions, leave any other session's Chrome work alone; once free, carry on.
+- Deck/brief state at 16:56: no assets/img/deck/j1-06 or img/brief/j1-06 yet; content/j1/decks/j1-06.deck.json is packed (walk build). Teacher deck shots + brief shots must be captured (capture-teacher-layer.js --lesson j1-06; plan entries in deck-shot-plan.js may be needed).
+- Order: real pack → deck/brief shots → l6-channel-test → suites → sit report → server jobs → build-pathb → Apps Script deploy → smoke → PR + merge → RESUME_HERE V72 → done message.
