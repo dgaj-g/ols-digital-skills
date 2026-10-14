@@ -32,5 +32,34 @@ if (judgeSrc.indexOf('function judge(q, answer, drawn) {') === -1) check('mutati
   check('CONTROL ' + name + ': controls.js goes RED', m.code !== 0 && last !== 'GREEN', 'exit ' + m.code + ' · ' + last);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+// ---- every "Any N of these" scheme line names the question's own n (live sit, 14 Oct 2026: a four-pick part read "Any three")
+const vm = require('vm'), NW = ['zero', 'one', 'two', 'three', 'four', 'five', 'six'];
+const loadJudge = (src) => { const ctx = { module: { exports: {} } }; vm.runInNewContext(src, ctx); return ctx.module.exports; };
+const BANKS = [['bank_digital_data.js', 'BANK_DIGITAL_DATA'], ['bank_software.js', 'BANK_SOFTWARE']].map(([f, v]) => vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', f), 'utf8') + '\n;' + v, {}));
+function anyAudit(J) {
+  const f = []; let seen = 0;
+  BANKS.forEach((B) => B.stages.forEach((st) => st.questions.forEach((q) => (J.scheme(q).lines || []).forEach((l) => {
+    const m = /^Any (\w+) of these/.exec(l.text); if (!m) return; seen++;
+    if (NW.indexOf(m[1]) !== l.marks) f.push(q.id + ': "Any ' + m[1] + '" on a ' + l.marks + '-mark line');
+  }))));
+  return { f, seen };
+}
+const AA = anyAudit(loadJudge(judgeSrc));
+check('every "Any N of these" scheme line names its own count (' + AA.seen + ' lines)', AA.seen > 0 && AA.f.length === 0, AA.f.join(' | '));
+const oldWord = judgeSrc.replace('["zero", "one", "two", "three", "four", "five", "six"][n]', '(n === 1 ? "one" : n === 2 ? "two" : "three")');
+check('CONTROL the old one/two/three wording is caught on the four-pick part', oldWord !== judgeSrc && anyAudit(loadJudge(oldWord)).f.some((x) => /^SW4-N1: "Any three" on a 4-mark line/.test(x)));
+function headAudit(J) { // a one-part question's label is the pick instruction, never a mark-scheme line (live look, 14 Oct 2026)
+  const f = []; let multi = 0;
+  BANKS.forEach((B) => B.stages.forEach((st) => st.questions.forEach((q) => { if (q.form !== "writepick") return;
+    const heads = (J.scheme(q).lines || []).filter((l) => l.head).length;
+    if (q.parts.length === 1 && heads) f.push(q.id + ": one-part question shows its instruction in the scheme");
+    if (q.parts.length > 1) { multi++; if (heads !== q.parts.filter((p) => p.label).length) f.push(q.id + ": part headings missing"); }
+  })));
+  return { f, multi };
+}
+const HA = headAudit(loadJudge(judgeSrc));
+check('the mark scheme never repeats a pick instruction; multi-part headings kept (' + HA.multi + ' multi-part questions)', HA.multi > 0 && HA.f.length === 0, HA.f.join(' | '));
+const oldHead = judgeSrc.replace('if (p.label && q.parts.length > 1)', 'if (p.label)');
+check('CONTROL the old judge that listed every label is caught on SW4-N2', oldHead !== judgeSrc && headAudit(loadJudge(oldHead)).f.some((x) => /^SW4-N2: one-part/.test(x)));
 const txt = 'G1 judge controls · ' + new Date().toISOString() + '\n' + log.join('\n') + '\n' + (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail\n';
 fs.writeFileSync(path.join(OUT, 'g1-judge.txt'), txt); process.stdout.write(txt); process.exit(res.fail ? 1 : 0);

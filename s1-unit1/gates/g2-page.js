@@ -9,6 +9,8 @@
  * must report layout failures and the gate must see the page error.
  * PHONE: the owner's sit again at 390x844, same checks; its control forces the desktop columns back and hides the line that
  * repeats a long chosen answer under its list, and must fail on both.
+ * SOFTWARE (v6): the same sit on the Software topic at desktop and phone width; three controls must fail: answer options forced
+ * onto one line on a phone, a drop-down held narrower than its chosen words, the answer-first line kept after answering, and a missed answer in smaller type.
  * Run: node s1-unit1/gates/g2-page.js  (exit 0 = GREEN). Output: gates/out/g2-page.txt, gates/out/g2-summary.png */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), { spawn, execSync } = require('child_process');
@@ -108,9 +110,19 @@ function sitChecks(R, user, tag, bank) {
     sitChecks(W, OWNER, 'SOFTWARE · ', BANK_SW);
     const WP = await sit(browser, OWNER, '11a-dt', false, PH, 'software');
     sitChecks(WP, OWNER, 'SOFTWARE PHONE 390x844 · ', BANK_SW);
+    // ---- control (must fail), live sit 14 Oct 2026: a drop-down held narrower than its chosen words
+    const WC = await sit(browser, 'control9@c2ken.net', '11a-dt', '.gapsent select{max-width:100px!important}', null, 'software');
+    const wcl = WC.out.lines.filter((l) => /list text cut off/.test(l));
+    check('CONTROL drop-down narrower than its chosen words: sit reports list text cut off', !WC.out.pass && wcl.length > 0, 'cut-off lines ' + wcl.length);
     // Software has no figures, so its control keeps the long answer options on one line: at 390 px they must spill
-    const WC = await sit(browser, 'control9@c2ken.net', '11a-dt', '.opt,.opt span{white-space:nowrap!important}', PH, 'software');
-    check('CONTROL Software on a phone with each answer option forced onto one line: sit reports layout failures', !WC.out.pass && WC.out.lines.some((l) => /^SIT FAIL layout/.test(l)), 'layout fails ' + WC.out.lines.filter((l) => /^SIT FAIL layout/.test(l)).length);
+    const WN = await sit(browser, 'control10@c2ken.net', '11a-dt', '.opt,.opt span{white-space:nowrap!important}', PH, 'software');
+    check('CONTROL Software on a phone with each answer option forced onto one line: sit reports layout failures', !WN.out.pass && WN.out.lines.some((l) => /^SIT FAIL layout/.test(l)), 'layout fails ' + WN.out.lines.filter((l) => /^SIT FAIL layout/.test(l)).length);
+    // ---- control (must fail), live look 14 Oct 2026: the "Answer every part first." line kept on screen after she has answered
+    const WH = await sit(browser, 'control11@c2ken.net', '11a-dt', '#help[hidden]{display:inline!important}.opt.key>span{font-size:11px!important}', null, 'software');
+    const whl = WH.out.lines.filter((l) => /answer-first line gone/.test(l));
+    check('CONTROL answer-first line kept on screen after answering: sit reports it', !WH.out.pass && whl.length > 0, 'lines ' + whl.length);
+    const wkl = WH.out.lines.filter((l) => /marked answers all one size/.test(l));
+    check('CONTROL a missed answer drawn in smaller type (same sit): sit reports it', wkl.length > 0, 'lines ' + wkl.length);
   } catch (e) { check('run', false, e.stack || e.message); }
   finally { if (browser) await browser.close(); srv.kill(); }
   const txt = 'G2 render coverage + sit on the harness · ' + new Date().toISOString() + '\n' + log.join('\n') + '\n' + (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail\n';

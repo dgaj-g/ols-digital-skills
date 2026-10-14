@@ -41,6 +41,8 @@ function stageIn_(T, round, n) { return stagesFor_(T, round)[Number(n) - 1] || n
 function sp_() { return PropertiesService.getScriptProperties(); }
 function up_() { return PropertiesService.getUserProperties(); }
 function str_(v) { return String(v == null ? '' : v); }
+// the opening words of a question, so a flagged row says which question it was (live look, 14 Oct 2026: it said "new · Stage 4")
+function qWords_(q) { var t = str_(Array.isArray(q.q) ? q.q[0] : (q.q || q.text)).replace(/___/g, '…'); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, '') + ' …' : t; }
 function tmin_() { return Math.floor((Date.now() - 1767225600000) / 60000); }
 function tminIso_(t) { return t ? new Date(1767225600000 + t * 60000).toISOString() : ''; }
 function userEmail_() { try { return String(Session.getActiveUser().getEmail() || '').toLowerCase(); } catch (e) { return ''; } }
@@ -147,7 +149,7 @@ function roundSum_(rh, stages) {
   var s = {};
   stages.forEach(function (S) {
     var g = (rh && rh.s && rh.s[S.n]) || { a: 0, m: 0, f: [] };
-    s[S.n] = { a: g.a || 0, m: g.m || 0, n: S.ids.length, x: S.x, e: !!g.e, f: (g.f || []).map(function (id) { return { id: id, src: QBY[id] ? QBY[id].q.src : id }; }) };
+    s[S.n] = { a: g.a || 0, m: g.m || 0, n: S.ids.length, x: S.x, e: !!g.e, f: (g.f || []).map(function (id) { return { id: id, src: QBY[id] ? QBY[id].q.src : id, q: QBY[id] ? qWords_(QBY[id].q) : '' }; }) };
   });
   return { s: s, E: !!(rh && rh.E), done: !!(rh && rh.d), z: !!(rh && rh.z) };
 }

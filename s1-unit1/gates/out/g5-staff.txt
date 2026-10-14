@@ -1,4 +1,4 @@
-G5 staff page · 2026-10-13T21:11:58.883Z
+G5 staff page · 2026-10-14T08:46:43.190Z
 PASS a new class starts with Digital Data locked
 PASS records made (class, pupil stage 1 7/34, card)
 PASS door: passcode box, no tabs; build token on the body, no build footer

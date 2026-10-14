@@ -4,6 +4,8 @@
 var App = (function () {
   var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
   var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
+  // a question's opening words for the flagged list; the server sends the same (qWords_ in Code.gs)
+  function qWords(t) { t = String(t || "").replace(/___/g, "…"); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, "") + " …" : t; }
   function h(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
@@ -114,7 +116,7 @@ var App = (function () {
     var n = roundNo(), rows = stNs().map(function (st) {
       var t = stageTotals(st, n), s = RS(n).s[st], status, cls, btn;
       if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
-      else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
+      else if (t.a) { status = t.a === t.n ? S.allIn : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
       else { status = S.notStarted; cls = ""; btn = S.start; }
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' · ' + h(stage(st).title) + '<small>' + t.n + ' questions · ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
@@ -135,8 +137,8 @@ var App = (function () {
   // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
   function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
   function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
-  function tiles(options, n, lead, partIdx) { return '<div class="lead">' + lead + '</div><div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
-  function leadFor(n) { return n === 1 ? S.pick1 : n === 2 ? S.pick2 : S.pick3; }
+  function tiles(options, n, lead, partIdx) { return (lead ? '<div class="lead">' + lead + '</div>' : "") + '<div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
+  function leadFor(n) { return S["pick" + n]; } // "Pick four." for a four-pick question, never "Pick three." (live sit, 14 Oct 2026)
   function complete(view, answer) { // the judge's complete(), key-free: Check waits for every part
     answer = answer || {};
     function picksOk(n, picks) { return Array.isArray(picks) && picks.length === n; }
@@ -153,7 +155,7 @@ var App = (function () {
     var D = CACHE[ck(n, st)], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
     CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
-    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
+    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, /\bpick\b/i.test(p.label || "") ? "" : leadFor(p.n), k) /* a label that already says "pick two" gets no second "Pick two." (live look, 14 Oct 2026) */; }).join("") + '</div>';
     else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
     else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">→</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select><span class="said"></span> <span class="mk"></span></span></div>'; }).join("") + '</div>';
     else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
@@ -162,7 +164,7 @@ var App = (function () {
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
     shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
-    function refresh() { var a = collect(); document.getElementById("check").disabled = sending || !complete(v, a); }
+    function refresh() { var a = collect(), ok = complete(v, a); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; } // the "Answer every part first." line goes once she has (live look, 14 Oct 2026)
     function collect() {
       var a = {};
       if (v.form === "pick1" || v.form === "pickN") a.picks = ans.picks.slice();
@@ -181,7 +183,7 @@ var App = (function () {
     }
     body.querySelectorAll(".opts").forEach(function (grp) {
       var nn = +grp.dataset.n, part = grp.dataset.part === "" ? null : +grp.dataset.part, bucket = part == null ? ans : ans.parts[part];
-      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(nn === 2 ? S.only2 : S.only3); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
+      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(S["only" + nn]); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
     });
     body.querySelectorAll(".ch").forEach(function (ch) { var k = +ch.dataset.k; ch.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { if (ch.classList.contains("locked")) return; ans.choices[k] = b.dataset.t; ch.querySelectorAll(".tog").forEach(function (x) { x.classList.toggle("on", x === b); }); refresh(); }; }); });
     body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { said(body); if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
@@ -189,7 +191,7 @@ var App = (function () {
     wire("wdone", function () { reveal(false); });
     wire("skipW", function () { reveal(true); });
     wire("idk", function () { if (sending || stored) return; body.querySelectorAll("input[data-k]").forEach(function (x) { x.value = ""; }); submit(true); });
-    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; };
+    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; };
     function submit(idk) {
       if (sending) return;
       var a = collect(); if (idk) a.texts = a.texts.map(function () { return ""; });
@@ -209,18 +211,18 @@ var App = (function () {
       var parts = r.parts ? r.parts : [r];
       parts.forEach(function (pr, k) { var grp = body.querySelector('.opts[data-part="' + (r.parts ? k : '') + '"]'); if (!grp || !pr.options) return; pr.options.forEach(function (o) { var t = grp.querySelector('.opt[data-t="' + h(o.text).replace(/"/g, '&quot;') + '"]'); if (!t) return; var picked = t.classList.contains("on"); t.classList.remove("on"); if (picked && o.key) { t.classList.add("hit"); t.querySelector(".mk").textContent = "✓"; } else if (picked) { t.classList.add("miss"); t.querySelector(".mk").textContent = "✗"; } else if (o.key) { t.classList.add("key"); t.querySelector(".mk").textContent = "✓"; } }); });
       if (v.form === "type") body.querySelectorAll(".item").forEach(function (it, k) { var p = r.per[k]; it.querySelector(".mk").textContent = p && p.hit ? " ✓" : " ✗"; it.querySelector(".mk").style.color = p && p.hit ? "var(--ok)" : "var(--bad)"; });
-      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">✓</span>' : '<span style="color:var(--bad)">✗ ' + h(p.want) + '</span>'; });
-      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">✓</span>' : '<span style="color:var(--bad)">✗ ' + h(p.gaps ? p.want[j] : p.want) + '</span>'; }); });
+      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">✓</span>' : '<span style="color:var(--bad)">✗</span> <b style="color:var(--ok)">' + h(p.want) + '</b>'; });
+      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">✓</span>' : '<span style="color:var(--bad)">✗</span> <b style="color:var(--ok)">' + h(p.gaps ? p.want[j] : p.want) + '</b>'; }); });
       var cls = r.marks === r.max ? "ok" : r.marks ? "part" : "bad";
-      var lines = r.scheme.lines.map(function (l) { return '<li>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
-      var wrote = (v.form === "writepick" || v.form === "type") ? '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" · ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
-      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : S.finish) + '</button></div>';
+      var lines = r.scheme.lines.map(function (l) { return '<li' + (l.head ? ' class="head"' : "") + '>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
+      var wrote = ((v.form === "type" && a.texts.some(Boolean)) || (v.form === "writepick" && a.text)) ? /* a skipped writing box or "I don't know" leaves no empty "What you wrote" (live look, 14 Oct 2026) */ '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" · ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
+      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : replay ? S.lbEnd : S.finish) + '</button></div>';
       document.getElementById("check").parentNode.style.display = "none";
       wire("flag", function () { // saved at once; put back if the server says no
         var on = !stored.f, box = document.getElementById("flag"); stored.f = on; box.classList.toggle("on", on);
         call("apiFlag", { round: n, qid: qid, on: on }, { save: true }).then(function (res) {
           stored.f = !!res.f; if (box.isConnected) box.classList.toggle("on", stored.f);
-          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src });
+          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src, q: qWords(v.q || v.text) });
         }, function () { stored.f = !on; if (box.isConnected) box.classList.toggle("on", stored.f); });
       });
       wire("next", function () { if (replay) return i + 1 < ids.length ? lookback(n, st, i + 1) : topic(); i + 1 < ids.length ? question(st, i + 1) : stagecard(st); });
@@ -251,7 +253,7 @@ var App = (function () {
     var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' · ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
     shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
       b.disabled = true;
@@ -265,7 +267,7 @@ var App = (function () {
     var n = roundNo(), rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
     shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
       var err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -281,7 +283,7 @@ var App = (function () {
     var flagged = []; stNs().forEach(function (st) {
       var D = CACHE[ck(n, st)], f = R.s[st].f.slice();
       if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
-      f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' · Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' · Stage ' + st + '</span>') + '</div>'); });
+      f.forEach(function (x) { var w = h(x.q || x.src), where = '<span class="src">Stage ' + st + (x.src && x.src !== "new" ? ' · ' + h(x.src) : '') + '</span>'; flagged.push('<div class="r fl">' + (R.z ? '<span>' + w + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + w + '</span>') + where + '</div>'); });
     });
     var tot = TOT(n);
     var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');

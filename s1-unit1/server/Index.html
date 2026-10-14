@@ -96,7 +96,7 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .opt i{width:18px;height:18px;border-radius:50%;border:2px solid #b7a192;flex:none;margin-top:2px;transition:background .2s,border-color .2s}
 .opt.on i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),linear-gradient(135deg,var(--berry),var(--ember));border-color:var(--berry);animation:pop .32s var(--ease)}
 @keyframes pop{0%{transform:scale(.55)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
-.opt.hit{border-color:var(--ok);background:var(--okbg);box-shadow:none}.opt.miss{border-color:var(--bad);background:var(--badbg);box-shadow:none}.opt.key{border-color:var(--ok);border-style:dashed}
+.opt.hit{border-color:var(--ok);background:var(--okbg);box-shadow:none}.opt.miss{border-color:var(--bad);background:var(--badbg);box-shadow:none}.opt.key{border-color:var(--ok);border-style:dashed}.opt.hit i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),var(--ok);border-color:var(--ok)}.opt.miss i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),var(--bad);border-color:var(--bad)} /* after Check her own pick keeps its dot, so a key she missed (dashed) never looks like one she chose (live look, 14 Oct 2026) */
 .opt .mk{margin-left:auto;font-weight:700;flex:none}.opt.hit .mk,.opt.key .mk{color:var(--ok)}.opt.miss .mk{color:var(--bad)}
 /* marks arrive after Check: the tick on a tile grows into place (never past its full size, so nothing spills); the
    words beside a list or gap fade in and stay inline, so a long answer still wraps on a narrow screen */
@@ -108,7 +108,8 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .locked .opt:not(.hit):not(.miss):not(.key):hover{border-color:var(--line)}
 textarea,input[type=text],select{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;transition:border-color .2s,box-shadow .2s}
 textarea:focus,input[type=text]:focus,input[type=password]:focus,select:focus{outline:0;border-color:var(--berry);box-shadow:0 0 0 3px rgba(242,181,68,.35)}
-textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{padding:6px 8px}
+textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{-webkit-appearance:none;appearance:none;padding:6px 32px 6px 9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.2 1.5 6 6.3l4.8-4.8' fill='none' stroke='%238f2d56' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px 8px;cursor:pointer} /* the page draws its own arrow, inside the right padding, so a chosen word never runs under it on any browser (live sit, 14 Oct 2026) */
+select:disabled,input[type=text]:disabled,textarea:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;background-color:#fbf6ef;cursor:default}select:disabled{background-image:none} /* after Check the pupil's own answer stays readable */
 .items .item{margin-bottom:10px}.items label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:700}
 .pairs .pr{display:grid;grid-template-columns:1fr 24px 230px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.pairs .pr:first-child{border-top:0}
 .pairs .arrow{color:var(--acc);text-align:center;font-weight:700}
@@ -117,11 +118,11 @@ textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}
 .tog:hover:not(:disabled){border-color:var(--berry);transform:translateY(-1px)}
 .tog:disabled{color:var(--mute);cursor:default}.tog.on:disabled{color:var(--ink)} /* after Check the picked word stays readable */
 .tog.on{border-color:var(--berry);background:var(--peach);font-weight:700;box-shadow:0 0 0 3px rgba(242,181,68,.25)}
-.gapsent{font-size:16px;line-height:2.1}.gapsent select,.gapsent input{display:inline-block;width:auto;min-width:110px;margin:0 3px;padding:4px 8px;vertical-align:baseline}
+.gapsent{font-size:16px;line-height:2.1}.gapsent select,.gapsent input{display:inline-block;width:auto;min-width:110px;margin:0 3px;padding:4px 8px;vertical-align:baseline}.gapsent select{padding-right:30px}
 .result{margin:16px 0 0;font-family:var(--disp);font-size:21px;font-weight:700}.result.ok{color:var(--ok)}.result.bad{color:var(--bad)}.result.part{color:#8a5200}
 #after>*{animation:rise .5s var(--ease) both}#after>:nth-child(2){animation-delay:.08s}#after>:nth-child(3){animation-delay:.16s}#after>:nth-child(4){animation-delay:.22s}#after>:nth-child(n+5){animation-delay:.28s}
 .scheme{background:linear-gradient(90deg,var(--acc2),var(--acc)) left/5px 100% no-repeat,#fdf3e6;border-color:#f0dcc5;box-shadow:none;padding-left:26px}
-.scheme h3{margin:0 0 8px;font-family:var(--disp);font-weight:600;font-size:17px;color:var(--plum)}.scheme ul{margin:0;padding-left:20px}.scheme li{margin:3px 0}.scheme li::marker{color:var(--acc)}.scheme .note{font-size:13px;color:var(--mute);margin-top:8px;font-style:italic}
+.scheme h3{margin:0 0 8px;font-family:var(--disp);font-weight:600;font-size:17px;color:var(--plum)}.scheme ul{margin:0;padding-left:20px}.scheme li{margin:3px 0}.scheme li::marker{color:var(--acc)}.scheme li.head{list-style:none;margin:10px 0 2px -20px;font-weight:600;color:var(--plum)}.scheme li.head:first-child{margin-top:0}.scheme .note{font-size:13px;color:var(--mute);margin-top:8px;font-style:italic}
 .wrote{white-space:pre-wrap;background:#fff;border:1.5px dashed #e3c9b2;border-radius:10px;padding:8px 10px;font-size:14px;min-height:34px}
 .flag{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--mute);user-select:none}.flag i{width:16px;height:16px;border:2px solid #b7a192;border-radius:5px;display:inline-block;transition:background .2s,border-color .2s}
 .flag.on{color:var(--berry)}.flag.on i{background:linear-gradient(135deg,var(--berry),var(--ember));border-color:var(--berry);animation:pop .32s var(--ease)}
@@ -132,7 +133,7 @@ textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}
 .figure tr:nth-child(odd) td{background:rgba(253,241,227,.55)}
 .rate .opt{padding:9px 14px}.ticks label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.ticks input{margin-top:4px;accent-color:var(--berry)}
 .sumrows .r{display:flex;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.sumrows .r:first-child{border-top:0}
-.sumrows .r b{color:var(--accd)}
+.sumrows .r b{color:var(--accd)}.sumrows .r.fl{gap:2px 16px;align-items:baseline}.sumrows .r.fl .src{white-space:nowrap;margin-left:auto}
 .meter,.sumrows .bar{flex-basis:100%;height:8px;border-radius:99px;background:#f1e3d3;overflow:hidden;margin:4px 0 2px}
 .meter{height:12px;margin:2px 0 14px}
 .meter i,.sumrows .bar i{display:block;height:100%;width:var(--p);border-radius:99px;background:linear-gradient(90deg,var(--acc2),var(--acc));animation:fill 1.2s .25s var(--ease) both}
@@ -206,12 +207,12 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
 .btn.arm,.btn.ghost.arm{background:var(--bad);color:#fff;border-color:var(--bad)}
 .sc{font-weight:700;white-space:nowrap}.sc.hi{color:var(--ok)}.sc.mid{color:var(--accd)}.sc.lo{color:var(--bad)}
 .rchip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700;margin:2px 4px 2px 0;line-height:1.35}
-.rchip.r1,.hb i.r1,.key i.r1{background:#fbe0dc;color:#8d1d16}.rchip.r2,.hb i.r2,.key i.r2{background:#fde7c8;color:#7a4200}.rchip.r3,.hb i.r3,.key i.r3{background:#dcefd9;color:#1d5e2c}.rchip.r4,.hb i.r4,.key i.r4{background:#bfe3c4;color:#0f4a1f}
+.rchip.r1,.hb i.r1,.legend i.r1{background:#fbe0dc;color:#8d1d16}.rchip.r2,.hb i.r2,.legend i.r2{background:#fde7c8;color:#7a4200}.rchip.r3,.hb i.r3,.legend i.r3{background:#dcefd9;color:#1d5e2c}.rchip.r4,.hb i.r4,.legend i.r4{background:#bfe3c4;color:#0f4a1f}
 .charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}h3.sh{font-size:15px;color:var(--plum);margin:6px 0 10px}
 .hb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) 8.8em;gap:8px;align-items:center;font-size:13px;margin:0 0 8px}.hb .hl{color:var(--ink)}.hb .hv{color:var(--mute);white-space:nowrap}
 .hb .ht{display:flex;height:16px;background:#f3e7da;border-radius:6px;overflow:hidden}.hb .ht i{display:block;height:100%;font-style:normal;font-size:11px;font-weight:700;text-align:center;line-height:16px}
 .hb .ht i.hi,.cb i.hi{background:linear-gradient(90deg,#2f9a57,#1b7f3b)}.hb .ht i.mid,.cb i.mid{background:linear-gradient(90deg,#f2b544,#e88a3a)}.hb .ht i.lo,.cb i.lo{background:linear-gradient(90deg,#e0574c,#b3261e)}
-.key{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:6px}.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:6px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 .cols4{display:flex;gap:10px;align-items:flex-end;height:150px}.cb{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;font-size:12px}.cb .cv{font-weight:700;color:var(--plum)}.cb .ct{flex:1;width:70%;display:flex;align-items:flex-end;border-bottom:2px solid var(--line)}.cb .ct i{display:block;width:100%;border-radius:6px 6px 0 0}.cb .cl{color:var(--mute);margin-top:4px;white-space:nowrap}
 .tscroll{overflow-x:auto}.ev{padding:9px 0;border-top:1px solid var(--line);font-size:14px}.said h3+.ev{border-top:0}.ev>b{margin-right:8px;color:var(--plum)}.ev .nt{margin-top:3px;color:var(--bad);font-size:13px}.ev .nt.ok{color:var(--ok)}.ev .nq{margin-top:3px;font-style:italic}
 .phead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.phead h2{margin:0 auto 0 0}.big{font-size:16px;margin:8px 0 12px}.big small{color:var(--mute);font-size:13px;margin-left:6px}
@@ -227,8 +228,8 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 
 </style>
 </head>
-<body data-build="s1u1-112f41a86f-d84bac80">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-112f41a86f-d84bac80" };</script>
+<body data-build="s1u1-24d3d4f8ad-7f0b7102">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-24d3d4f8ad-7f0b7102" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -239,14 +240,14 @@ var S1S = {
     liveMeta: "{s} stages \u00b7 {q} questions \u00b7 {m} marks", back: "Back to my topics",
     topicLine: "Answer every question in each stage. You see the mark scheme straight after each answer.",
     earlier: "Earlier rounds", lookback: "Look back", start: "Start", carry: "Carry on", openedBy: " \u00b7 opened by your teacher",
-    notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", done: "Done \u00b7 {m} of {x} marks",
+    notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", allIn: "All answered \u00b7 one last step", done: "Done \u00b7 {m} of {x} marks",
     stagebar: "Stage {s} of {k} \u00b7 {name} \u00b7 Question {i} of {n}",
-    pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", only2: "You can only pick two.", only3: "You can only pick three.",
+    pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", pick4: "Pick four.", only2: "You can only pick two.", only3: "You can only pick three.", only4: "You can only pick four.",
     writeFirst: "Write your answer in your own words first.", writeNote: "This writing is not marked. The marked parts come next.", writeDone: "I've written my answer", writeKept: "Your writing is kept. Now answer the marked parts below.", wroteHint: "Compare it with the mark scheme above.", writePh: "Type your answer here.", skipWrite: "I'd rather skip the writing",
     typeIt: "Type your answer.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose\u2026",
     chooseLine: "Pick the right word in each line.", gapsPool: "Fill each gap with a word from the list.", gapsType: "Fill each gap.",
     check: "Check my answer", help: "Answer every part first.", got: "You got {m} of {x} {w}.", mark: "mark", marks: "marks",
-    scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage",
+    scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage", lbEnd: "Back to the topic",
     howGo: "How did it go?", closest: "Pick the one that is closest:", rates: ["I couldn't do most of these", "I got some, but I'm not sure why", "I got most of these", "I could explain these to someone else"],
     tick: "Tick what you can do now:", added: "Is there anything else you'd like to add?", addPh: "Type it here, in a few words.",
     saveCarry: "Save and carry on", wholeTopic: "{t} \u2014 the whole topic", unsure: "Is there any part you are still unsure about?", fine: "No, I'm fine with all of it",
@@ -318,6 +319,8 @@ var S1S = {
 var App = (function () {
   var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
   var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
+  // a question's opening words for the flagged list; the server sends the same (qWords_ in Code.gs)
+  function qWords(t) { t = String(t || "").replace(/___/g, "\u2026"); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, "") + " \u2026" : t; }
   function h(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
@@ -428,7 +431,7 @@ var App = (function () {
     var n = roundNo(), rows = stNs().map(function (st) {
       var t = stageTotals(st, n), s = RS(n).s[st], status, cls, btn;
       if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
-      else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
+      else if (t.a) { status = t.a === t.n ? S.allIn : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
       else { status = S.notStarted; cls = ""; btn = S.start; }
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' \u00b7 ' + h(stage(st).title) + '<small>' + t.n + ' questions \u00b7 ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
@@ -449,8 +452,8 @@ var App = (function () {
   // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
   function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
   function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
-  function tiles(options, n, lead, partIdx) { return '<div class="lead">' + lead + '</div><div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
-  function leadFor(n) { return n === 1 ? S.pick1 : n === 2 ? S.pick2 : S.pick3; }
+  function tiles(options, n, lead, partIdx) { return (lead ? '<div class="lead">' + lead + '</div>' : "") + '<div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
+  function leadFor(n) { return S["pick" + n]; } // "Pick four." for a four-pick question, never "Pick three." (live sit, 14 Oct 2026)
   function complete(view, answer) { // the judge's complete(), key-free: Check waits for every part
     answer = answer || {};
     function picksOk(n, picks) { return Array.isArray(picks) && picks.length === n; }
@@ -467,7 +470,7 @@ var App = (function () {
     var D = CACHE[ck(n, st)], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
     CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
-    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
+    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, /\bpick\b/i.test(p.label || "") ? "" : leadFor(p.n), k) /* a label that already says "pick two" gets no second "Pick two." (live look, 14 Oct 2026) */; }).join("") + '</div>';
     else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
     else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">\u2192</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select><span class="said"></span> <span class="mk"></span></span></div>'; }).join("") + '</div>';
     else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
@@ -476,7 +479,7 @@ var App = (function () {
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
     shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
-    function refresh() { var a = collect(); document.getElementById("check").disabled = sending || !complete(v, a); }
+    function refresh() { var a = collect(), ok = complete(v, a); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; } // the "Answer every part first." line goes once she has (live look, 14 Oct 2026)
     function collect() {
       var a = {};
       if (v.form === "pick1" || v.form === "pickN") a.picks = ans.picks.slice();
@@ -495,7 +498,7 @@ var App = (function () {
     }
     body.querySelectorAll(".opts").forEach(function (grp) {
       var nn = +grp.dataset.n, part = grp.dataset.part === "" ? null : +grp.dataset.part, bucket = part == null ? ans : ans.parts[part];
-      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(nn === 2 ? S.only2 : S.only3); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
+      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(S["only" + nn]); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
     });
     body.querySelectorAll(".ch").forEach(function (ch) { var k = +ch.dataset.k; ch.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { if (ch.classList.contains("locked")) return; ans.choices[k] = b.dataset.t; ch.querySelectorAll(".tog").forEach(function (x) { x.classList.toggle("on", x === b); }); refresh(); }; }); });
     body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { said(body); if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
@@ -503,7 +506,7 @@ var App = (function () {
     wire("wdone", function () { reveal(false); });
     wire("skipW", function () { reveal(true); });
     wire("idk", function () { if (sending || stored) return; body.querySelectorAll("input[data-k]").forEach(function (x) { x.value = ""; }); submit(true); });
-    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; };
+    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; };
     function submit(idk) {
       if (sending) return;
       var a = collect(); if (idk) a.texts = a.texts.map(function () { return ""; });
@@ -523,18 +526,18 @@ var App = (function () {
       var parts = r.parts ? r.parts : [r];
       parts.forEach(function (pr, k) { var grp = body.querySelector('.opts[data-part="' + (r.parts ? k : '') + '"]'); if (!grp || !pr.options) return; pr.options.forEach(function (o) { var t = grp.querySelector('.opt[data-t="' + h(o.text).replace(/"/g, '&quot;') + '"]'); if (!t) return; var picked = t.classList.contains("on"); t.classList.remove("on"); if (picked && o.key) { t.classList.add("hit"); t.querySelector(".mk").textContent = "\u2713"; } else if (picked) { t.classList.add("miss"); t.querySelector(".mk").textContent = "\u2717"; } else if (o.key) { t.classList.add("key"); t.querySelector(".mk").textContent = "\u2713"; } }); });
       if (v.form === "type") body.querySelectorAll(".item").forEach(function (it, k) { var p = r.per[k]; it.querySelector(".mk").textContent = p && p.hit ? " \u2713" : " \u2717"; it.querySelector(".mk").style.color = p && p.hit ? "var(--ok)" : "var(--bad)"; });
-      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.want) + '</span>'; });
-      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.gaps ? p.want[j] : p.want) + '</span>'; }); });
+      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717</span> <b style="color:var(--ok)">' + h(p.want) + '</b>'; });
+      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717</span> <b style="color:var(--ok)">' + h(p.gaps ? p.want[j] : p.want) + '</b>'; }); });
       var cls = r.marks === r.max ? "ok" : r.marks ? "part" : "bad";
-      var lines = r.scheme.lines.map(function (l) { return '<li>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
-      var wrote = (v.form === "writepick" || v.form === "type") ? '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" \u00b7 ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
-      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : S.finish) + '</button></div>';
+      var lines = r.scheme.lines.map(function (l) { return '<li' + (l.head ? ' class="head"' : "") + '>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
+      var wrote = ((v.form === "type" && a.texts.some(Boolean)) || (v.form === "writepick" && a.text)) ? /* a skipped writing box or "I don't know" leaves no empty "What you wrote" (live look, 14 Oct 2026) */ '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" \u00b7 ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
+      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : replay ? S.lbEnd : S.finish) + '</button></div>';
       document.getElementById("check").parentNode.style.display = "none";
       wire("flag", function () { // saved at once; put back if the server says no
         var on = !stored.f, box = document.getElementById("flag"); stored.f = on; box.classList.toggle("on", on);
         call("apiFlag", { round: n, qid: qid, on: on }, { save: true }).then(function (res) {
           stored.f = !!res.f; if (box.isConnected) box.classList.toggle("on", stored.f);
-          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src });
+          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src, q: qWords(v.q || v.text) });
         }, function () { stored.f = !on; if (box.isConnected) box.classList.toggle("on", stored.f); });
       });
       wire("next", function () { if (replay) return i + 1 < ids.length ? lookback(n, st, i + 1) : topic(); i + 1 < ids.length ? question(st, i + 1) : stagecard(st); });
@@ -565,7 +568,7 @@ var App = (function () {
     var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' \u00b7 ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
     shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
       b.disabled = true;
@@ -579,7 +582,7 @@ var App = (function () {
     var n = roundNo(), rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
     shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
       var err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -595,7 +598,7 @@ var App = (function () {
     var flagged = []; stNs().forEach(function (st) {
       var D = CACHE[ck(n, st)], f = R.s[st].f.slice();
       if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
-      f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' \u00b7 Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' \u00b7 Stage ' + st + '</span>') + '</div>'); });
+      f.forEach(function (x) { var w = h(x.q || x.src), where = '<span class="src">Stage ' + st + (x.src && x.src !== "new" ? ' \u00b7 ' + h(x.src) : '') + '</span>'; flagged.push('<div class="r fl">' + (R.z ? '<span>' + w + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + w + '</span>') + where + '</div>'); });
     });
     var tot = TOT(n);
     var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
@@ -760,7 +763,7 @@ var Staff = (function () {
     var rate = r.stages.map(function (st) {
       var k = [0, 0, 0, 0], n = 0; r.rows.forEach(function (p) { var e = p.s[st.n].e; if (e && e.rating) { k[e.rating - 1]++; n++; } });
       return '<div class="hb"><span class="hl">' + h(stTitle(st)) + '</span><span class="ht stack">' + (n ? k.map(function (c, i) { return c ? '<i class="' + RC[i] + '" style="width:' + (100 * c / n) + '%" title="' + h(S.rates[i]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + (n ? (n === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: n })) : W.noCards) + '</span></div>';
-    }).join("") + '<div class="key">' + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+    }).join("") + '<div class="legend">' /* not "key": that is the pupil page's missed-answer row (live look, 14 Oct 2026) */ + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
     var bands = [0, 0, 0, 0], names = ["0\u201324%", "25\u201349%", "50\u201374%", "75\u2013100%"], any = 0;
     r.rows.forEach(function (p) { var t = tot(p, r.stages); if (t.ax) { var q = pc(t.m, t.ax); bands[q >= 75 ? 3 : q >= 50 ? 2 : q >= 25 ? 1 : 0]++; any++; } });
     var top = Math.max(1, Math.max.apply(null, bands));
@@ -884,7 +887,8 @@ var Sit = (function () {
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 <= x.clientWidth) return;
+      var arrow = (cs.appearance || cs.webkitAppearance) === "none" ? 0 : 18; // the page's own arrow sits inside the right padding; a browser's own arrow needs room of its own
+      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + arrow <= x.clientWidth + 1) return;
       var said = x.parentNode.querySelector(".said"); // on a phone the chosen words may show whole in the line under the list instead
       if (said && said.clientWidth && said.textContent === x.options[x.selectedIndex].text && said.scrollWidth <= said.clientWidth + 1) return;
       bad.push("list text cut off: " + x.value.slice(0, 30));
@@ -924,6 +928,7 @@ var Sit = (function () {
     if (v.form === "gaps") all("[data-k]").forEach(function (x, k) { set(x, a.fills[k]); });
     var chk = $("#check");
     if (chk.disabled) ok("check enabled " + c.qid, false, v.form);
+    var hp = $("#help"); if (hp && getComputedStyle(hp).display !== "none") ok("answer-first line gone once answered " + c.qid, false, hp.textContent); // live look, 14 Oct 2026
     chk.click();
   }
   function playStage(st) {
@@ -939,7 +944,12 @@ var Sit = (function () {
         var want = T.fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks });
         if ($("#after .result").textContent !== want) ok("result line " + c.qid, false, $("#after .result").textContent);
         if (!$(".scheme li")) ok("scheme " + c.qid, false, "no mark scheme lines");
+        if ($(".wrote") && !$(".wrote").textContent.trim()) ok("no empty What you wrote " + c.qid, false, "empty box");
+        var leads = all("#qcard .lead").map(function (x) { return x.textContent.trim(); });
+        leads.forEach(function (t, k) { if (/\bpick\b/i.test(t) && /^Pick (one|two|three|four|five|six)\.$/.test(leads[k + 1] || "")) ok("no instruction said twice " + c.qid, false, t + " / " + leads[k + 1]); });
+        all(".scheme li:not(.head)").forEach(function (x) { if (leads.indexOf(x.textContent.replace(/\s*\(\d+ marks?\)$/, "").trim()) !== -1) ok("mark scheme never repeats an instruction " + c.qid, false, x.textContent); });
         layout("after " + c.qid);
+        all(".opts").forEach(function (g) { var z = [].map.call(g.querySelectorAll(".opt>span:not(.mk)"), function (x) { return getComputedStyle(x).fontSize; }); if (z.some(function (q) { return q !== z[0]; })) ok("marked answers all one size " + c.qid, false, z.join(" ")); }); // a missed answer once took the tracker legend's small type (live look, 14 Oct 2026)
         var flag = G % SitPolicy.flagEvery === 0 ? (function () {
           $("#flag").click(); FLAGS.push(c.qid);
           return until(function () { return T.me().topic.rounds[n].s[st].f.some(function (x) { return x.id === c.qid; }); }, 30000, "flag " + c.qid);
@@ -968,6 +978,7 @@ var Sit = (function () {
       ok("stage card needs a rating", $("#err").textContent === S.rateErr && cur().screen === "stagecard");
       var rating = 1 + SitPolicy.h32(email + "|" + st) % 4;
       $('.rate .opt[data-r="' + rating + '"]').click();
+      ok("the warning goes once a rating is picked", $("#err").textContent === "", $("#err").textContent);
       var tick = $('.ticks input[type=checkbox]'); if (tick) tick.click();
       set($("#conf"), "sit run " + st);
       $("#save").click();
@@ -1000,15 +1011,17 @@ var Sit = (function () {
       ok(NQ + " questions answered", qs.length === NQ && NQ > 0, qs.length);
       ok("summary total", $(".card h2").textContent === T.fmt(S.scored, { m: tot, x: x, p: Math.round(100 * tot / x) }), $(".card h2").textContent);
       ok("summary flagged", all(".sumrows .link[data-id]").length === FLAGS.length, all(".sumrows .link[data-id]").length + " of " + FLAGS.length);
+      ok("flagged rows name the question", all(".sumrows .link[data-id]").every(function (l) { var t = l.textContent.trim(); return t.length >= 12 && !/^new\b| \u00b7 Stage \d$/.test(t); }), all(".sumrows .link[data-id]").map(function (l) { return l.textContent; }).join(" | "));
       layout("summary");
       lines.push("TOTAL " + tot + " of " + x);
       // every marked question comes back after a reload
       return T.reboot().then(function () {
-        var bad = [], seen = 0;
+        var bad = [], badBtn = [], seen = 0;
         return sts().reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
-          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); });
+          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); var nb = $("#next"); if (!nb || nb.textContent !== (i + 1 < D.order.length ? S.next : S.lbEnd)) badBtn.push(qid); });
         }); }); }, Promise.resolve()).then(function () {
           ok("all marked questions restore", seen === NQ && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          ok("look back ends with Back to the topic", !badBtn.length, badBtn.slice(0, 4).join(",") || "every button right");
           T.home();
           ok("home line done", foot().textContent === S.round + "1 \u00b7 done \u00b7 " + tot + " of " + x + " marks", foot().textContent);
           return tot;

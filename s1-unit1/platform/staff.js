@@ -136,7 +136,7 @@ var Staff = (function () {
     var rate = r.stages.map(function (st) {
       var k = [0, 0, 0, 0], n = 0; r.rows.forEach(function (p) { var e = p.s[st.n].e; if (e && e.rating) { k[e.rating - 1]++; n++; } });
       return '<div class="hb"><span class="hl">' + h(stTitle(st)) + '</span><span class="ht stack">' + (n ? k.map(function (c, i) { return c ? '<i class="' + RC[i] + '" style="width:' + (100 * c / n) + '%" title="' + h(S.rates[i]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + (n ? (n === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: n })) : W.noCards) + '</span></div>';
-    }).join("") + '<div class="key">' + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+    }).join("") + '<div class="legend">' /* not "key": that is the pupil page's missed-answer row (live look, 14 Oct 2026) */ + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
     var bands = [0, 0, 0, 0], names = ["0–24%", "25–49%", "50–74%", "75–100%"], any = 0;
     r.rows.forEach(function (p) { var t = tot(p, r.stages); if (t.ax) { var q = pc(t.m, t.ax); bands[q >= 75 ? 3 : q >= 50 ? 2 : q >= 25 ? 1 : 0]++; any++; } });
     var top = Math.max(1, Math.max.apply(null, bands));

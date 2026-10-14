@@ -30,7 +30,8 @@ var Sit = (function () {
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 <= x.clientWidth) return;
+      var arrow = (cs.appearance || cs.webkitAppearance) === "none" ? 0 : 18; // the page's own arrow sits inside the right padding; a browser's own arrow needs room of its own
+      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + arrow <= x.clientWidth + 1) return;
       var said = x.parentNode.querySelector(".said"); // on a phone the chosen words may show whole in the line under the list instead
       if (said && said.clientWidth && said.textContent === x.options[x.selectedIndex].text && said.scrollWidth <= said.clientWidth + 1) return;
       bad.push("list text cut off: " + x.value.slice(0, 30));
@@ -70,6 +71,7 @@ var Sit = (function () {
     if (v.form === "gaps") all("[data-k]").forEach(function (x, k) { set(x, a.fills[k]); });
     var chk = $("#check");
     if (chk.disabled) ok("check enabled " + c.qid, false, v.form);
+    var hp = $("#help"); if (hp && getComputedStyle(hp).display !== "none") ok("answer-first line gone once answered " + c.qid, false, hp.textContent); // live look, 14 Oct 2026
     chk.click();
   }
   function playStage(st) {
@@ -85,7 +87,12 @@ var Sit = (function () {
         var want = T.fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks });
         if ($("#after .result").textContent !== want) ok("result line " + c.qid, false, $("#after .result").textContent);
         if (!$(".scheme li")) ok("scheme " + c.qid, false, "no mark scheme lines");
+        if ($(".wrote") && !$(".wrote").textContent.trim()) ok("no empty What you wrote " + c.qid, false, "empty box");
+        var leads = all("#qcard .lead").map(function (x) { return x.textContent.trim(); });
+        leads.forEach(function (t, k) { if (/\bpick\b/i.test(t) && /^Pick (one|two|three|four|five|six)\.$/.test(leads[k + 1] || "")) ok("no instruction said twice " + c.qid, false, t + " / " + leads[k + 1]); });
+        all(".scheme li:not(.head)").forEach(function (x) { if (leads.indexOf(x.textContent.replace(/\s*\(\d+ marks?\)$/, "").trim()) !== -1) ok("mark scheme never repeats an instruction " + c.qid, false, x.textContent); });
         layout("after " + c.qid);
+        all(".opts").forEach(function (g) { var z = [].map.call(g.querySelectorAll(".opt>span:not(.mk)"), function (x) { return getComputedStyle(x).fontSize; }); if (z.some(function (q) { return q !== z[0]; })) ok("marked answers all one size " + c.qid, false, z.join(" ")); }); // a missed answer once took the tracker legend's small type (live look, 14 Oct 2026)
         var flag = G % SitPolicy.flagEvery === 0 ? (function () {
           $("#flag").click(); FLAGS.push(c.qid);
           return until(function () { return T.me().topic.rounds[n].s[st].f.some(function (x) { return x.id === c.qid; }); }, 30000, "flag " + c.qid);
@@ -114,6 +121,7 @@ var Sit = (function () {
       ok("stage card needs a rating", $("#err").textContent === S.rateErr && cur().screen === "stagecard");
       var rating = 1 + SitPolicy.h32(email + "|" + st) % 4;
       $('.rate .opt[data-r="' + rating + '"]').click();
+      ok("the warning goes once a rating is picked", $("#err").textContent === "", $("#err").textContent);
       var tick = $('.ticks input[type=checkbox]'); if (tick) tick.click();
       set($("#conf"), "sit run " + st);
       $("#save").click();
@@ -146,15 +154,17 @@ var Sit = (function () {
       ok(NQ + " questions answered", qs.length === NQ && NQ > 0, qs.length);
       ok("summary total", $(".card h2").textContent === T.fmt(S.scored, { m: tot, x: x, p: Math.round(100 * tot / x) }), $(".card h2").textContent);
       ok("summary flagged", all(".sumrows .link[data-id]").length === FLAGS.length, all(".sumrows .link[data-id]").length + " of " + FLAGS.length);
+      ok("flagged rows name the question", all(".sumrows .link[data-id]").every(function (l) { var t = l.textContent.trim(); return t.length >= 12 && !/^new\b| · Stage \d$/.test(t); }), all(".sumrows .link[data-id]").map(function (l) { return l.textContent; }).join(" | "));
       layout("summary");
       lines.push("TOTAL " + tot + " of " + x);
       // every marked question comes back after a reload
       return T.reboot().then(function () {
-        var bad = [], seen = 0;
+        var bad = [], badBtn = [], seen = 0;
         return sts().reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
-          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); });
+          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); var nb = $("#next"); if (!nb || nb.textContent !== (i + 1 < D.order.length ? S.next : S.lbEnd)) badBtn.push(qid); });
         }); }); }, Promise.resolve()).then(function () {
           ok("all marked questions restore", seen === NQ && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          ok("look back ends with Back to the topic", !badBtn.length, badBtn.slice(0, 4).join(",") || "every button right");
           T.home();
           ok("home line done", foot().textContent === S.round + "1 · done · " + tot + " of " + x + " marks", foot().textContent);
           return tot;

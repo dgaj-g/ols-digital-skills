@@ -1,4 +1,4 @@
-G1 judge controls · 2026-10-13T21:10:44.991Z
+G1 judge controls · 2026-10-14T08:46:29.504Z
 PASS controls.js GREEN on the real judge
 INFO S1 Unit 1 judge controls — 19867 checks
 INFO exact agreement with his 2024 marking: 22/22 (within 1: 22)
@@ -6,4 +6,8 @@ INFO chance (adapted, must be ≤ 0.333): max 0.340
 PASS the built Code.gs carries judge.js and the bank unchanged
 PASS CONTROL every answer full marks: controls.js goes RED
 PASS CONTROL every answer no marks: controls.js goes RED
-GREEN · 4 pass · 0 fail
+PASS every "Any N of these" scheme line names its own count (29 lines)
+PASS CONTROL the old one/two/three wording is caught on the four-pick part
+PASS the mark scheme never repeats a pick instruction; multi-part headings kept (4 multi-part questions)
+PASS CONTROL the old judge that listed every label is caught on SW4-N2
+GREEN · 8 pass · 0 fail
