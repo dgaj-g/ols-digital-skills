@@ -71,6 +71,7 @@
       say(noLine(P(), part, job), 'no'); notice('again'); return 'wrong';
     }
     function seal(part, told) { S.my.out = null; markSealed(part, seat, told); send('seal', { part: part, told: !!told }); }
+    function setRound(n) { if (n > S.round) { S.round = n; reset(PIDS[n % PIDS.length]); log('again', S.pid); } } /* she came back to a later patient */
     function again() { if (S.stage !== 'done') return false; S.round++; reset(PIDS[S.round % PIDS.length]); send('again'); log('again', S.pid); return true; }
     /* ---------- the bus ---------- */
     function receive(m) {
@@ -127,7 +128,7 @@
       return others.map(function (s) { var pr = S.presence[s], st = pr.here ? (S.stage === 'done' ? 'done' : pr.state) : 'away'; var tpl = U[st] || U.look; return { seat: s, state: st, text: fmt(tpl, { p: L.callsigns[s], n: n }) }; });
     }
     function cards() { return shuffle(PARTS, rnd).map(function (k) { return { key: k, job: fmt(L.jobs[k].card) }; }); }
-    return { S: S, hello: hello, begin: begin, tap: tap, card: card, again: again, receive: receive, tick: tick, prompt: prompt, presence: presence, free: free, cards: cards, fmt: fmt, sealedCount: sealedCount, PARTS: PARTS, PULLABLE: PULLABLE, L: L };
+    return { S: S, setRound: setRound, hello: hello, begin: begin, tap: tap, card: card, again: again, receive: receive, tick: tick, prompt: prompt, presence: presence, free: free, cards: cards, fmt: fmt, sealedCount: sealedCount, PARTS: PARTS, PULLABLE: PULLABLE, L: L };
   }
   /* The computer as a surgeon: a human pace, right four times in five. */
   function makeRobot(E, rnd, clock, speed) {

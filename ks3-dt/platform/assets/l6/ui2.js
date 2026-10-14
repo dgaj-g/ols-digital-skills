@@ -3,10 +3,24 @@
 (function () {
   var L = LINES, OP = OPENGINE2, U = L.ui2, $ = function (id) { return document.getElementById(id); };
   var Q = {}; location.search.slice(1).split('&').forEach(function (kv) { if (!kv) return; var p = kv.split('='); Q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || '1'); });
+  /* THE LESSON ROUTE (spec §7): the platform hands the stage, seat and room in the hash; the query string above is the tester's
+     only, and only on this machine (DFM 323: pupils never see a tester lobby). */
+  var H = null; try { if (location.hash.length > 1) H = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch (e) { H = null; }
+  var LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === 'file:';
+  if (!LOCAL) Q = {};
+  if (H) { Q = {}; Q.at = H.stage === 'op' ? 'table' : null; if (H.seed != null) Q.seed = String(H.seed); }
+  var STAGE = H ? (H.stage || 'door') : (Q.stage || 'door');
+  if (STAGE === 'ward' || STAGE === 'letter') { window.OPHASH = H || { stage: STAGE, seat: Q.seat || 'A', seats: (Q.seats || 'A').split(''), room: Q.room || null }; return; }
+  function post(type, data) { if (window.parent === window) return; var m = { op: 1, type: type }; for (var k in data || {}) m[k] = data[k]; window.parent.postMessage(m, '*'); }
+  var NAMES = (H && H.names) || null;
   var FAST = Q.fast === '1', PACE = FAST ? 0.3 : 1;
   var LAG = Q.lag != null ? +Q.lag : (FAST ? 500 : 2000), IDLE = Q.idle != null ? +Q.idle : (FAST ? 12000 : 40000);
   var solo = Q.solo === '1', bot = Q.bot === '1', seat = Q.seat || (solo ? 'A' : null), room = Q.room, robotMe = Q.robot === '1', AT = Q.at;
   var seats = Q.trio === '1' ? ['A', 'B', 'C'] : (solo && !bot ? ['A'] : ['A', 'B']);
+  var live = false; /* true: the Firebase room (the lesson route, or the tester with fire=1) */
+  if (H) { seats = (H.seats && H.seats.length) ? H.seats : ['A']; seat = H.seat || 'A'; room = H.room || null; solo = seats.length < 2 || !room; live = !solo; }
+  else if (!LOCAL) { solo = true; seat = 'A'; seats = ['A']; }
+  else if (Q.fire === '1' && room) live = true;
   if (Q.still === '1') document.documentElement.classList.add('still');
   var clock = { now: function () { return Date.now(); }, setTimeout: function (f, ms) { return setTimeout(f, ms); } };
   function seeded(s) { s = s >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
@@ -17,12 +31,13 @@
   function pace(t) { return (1200 + 350 * words(t)) * PACE; }
   /* ---------- lobby ---------- */
   $('openpair').textContent = U.lobby.pair; $('openbot').textContent = U.lobby.robot; $('opensolo').textContent = U.lobby.solo; $('lobbynote').textContent = U.lobby.note;
-  if (!seat) {
+  if (!seat && LOCAL && !H) {
     $('openpair').onclick = function () { var r = Math.random().toString(36).slice(2, 6); var w = Math.round(screen.availWidth / 2); window.open(qs({ seat: 'B', room: r }), 'op-B', 'width=' + w + ',height=' + screen.availHeight + ',left=' + w + ',top=0'); location.replace(qs({ seat: 'A', room: r })); };
     $('openbot').onclick = function () { location.replace(qs({ solo: 1, bot: 1 })); };
     $('opensolo').onclick = function () { location.replace(qs({ solo: 1 })); };
     document.title = 'ready'; window.OPUI = { stage: 'lobby' }; return;
   }
+  if (!seat) { solo = true; seat = 'A'; seats = ['A']; }
   $('lobby').classList.remove('on');
   /* ---------- bus ---------- */
   function makeChannelBus(room, lag) {
@@ -33,40 +48,52 @@
     window.addEventListener('storage', function (e) { if (e.key === key && e.newValue) { try { deliver(JSON.parse(e.newValue)); } catch (_) { } } });
     return { on: function (h) { hs.push(h); }, send: function (type, data) { var m = Object.assign({ type: type, t: Date.now(), id: id + '-' + (++n) }, data); if (bc) bc.postMessage(m); try { localStorage.setItem(key, JSON.stringify(m)); } catch (_) { } } };
   }
+  /* ---------- the live room (spec §4): Firebase, no sign-in; never a dead screen ---------- */
+  var FALLBACK = false, FB = { A: 'The live link is slow. Share one laptop and take turns.', B: 'Go and sit with {p}. You share one laptop.' };
+  function openLive() {
+    var hs = [], fb = null, timer;
+    var w = { on: function (h) { hs.push(h); }, send: function (t, d) { if (fb && !FALLBACK) fb.send(t, d); } };
+    try {
+      if (!window.firebase || !window.LIVE_CONFIG || !window.OPLIVE) throw new Error('files');
+      var app = firebase.apps.length ? firebase.app() : firebase.initializeApp(window.LIVE_CONFIG);
+      fb = OPLIVE.makeFireBus(app.database(), room, seat);
+      fb.on(function (m) { if (!FALLBACK) hs.forEach(function (h) { h(m); }); });
+      window.OPBUS = fb;
+    } catch (e) { fb = null; }
+    if (!fb || (H && H.fallback)) { setTimeout(goFallback, 0); return w; }
+    timer = setTimeout(function () { if (!fb.connected()) goFallback(); }, OPLIVE.FALLBACK_MS);
+    fb.whenConnected(function () { clearTimeout(timer); });
+    return w;
+  }
+  function goFallback() {
+    if (FALLBACK) return; FALLBACK = true; post('fallback');
+    if (window.OPBUS) window.OPBUS.close();
+    if (seat !== 'A') { $('door').classList.remove('on'); $('app').hidden = true; $('tour').hidden = true; $('away').hidden = false; $('awaysay').textContent = FB.B.replace('{p}', L.callsigns.A); document.title = 'ready'; return; }
+    /* seat A's laptop runs both surgeons, taking turns, part by part */
+    var pair = ['A', 'B'], lb = OP.makeLocalBus(150, clock), ea = lb.endpoint(), eb = lb.endpoint();
+    var stage = S.stage; E = OP.makeEngine({ seat: 'A', seats: pair, bus: ea, rnd: rnd, clock: clock, idleMs: IDLE }); ea.on(E.receive);
+    EB = OP.makeEngine({ seat: 'B', seats: pair, bus: eb, rnd: rnd, clock: clock, idleMs: IDLE }); eb.on(EB.receive);
+    if (stage !== 'door') { E.begin(); EB.begin(); }
+    S = E.S; E.hello(); EB.hello(); turns.on = true; turns.n = 0; resetSpeech(); cardsFor = null; last.chart = ''; last.strip = ''; $('team').innerHTML = teamHTML(); render();
+  }
+  var turns = { on: false, n: 0 };
+  function turnTick() { /* the part is back in: hand the laptop to the other surgeon */
+    if (!turns.on || S.stage !== 'op' || S.my.out) return; var n = E.sealedCount(); if (n === turns.n) return; turns.n = n;
+    var t = E; E = EB; EB = t; S = E.S; sp.seen = S.said.length; sp.q = []; cardsFor = null; last.chart = ''; last.strip = ''; $('team').innerHTML = teamHTML();
+  }
   var E, EB, robot, robotB, bus;
   if (solo) {
     bus = OP.makeLocalBus(LAG, clock); var epA = bus.endpoint(); E = OP.makeEngine({ seat: 'A', seats: seats, bus: epA, rnd: rnd, clock: clock, idleMs: IDLE }); epA.on(E.receive);
     if (bot) { var epB = bus.endpoint(); EB = OP.makeEngine({ seat: 'B', seats: seats, bus: epB, rnd: rnd, clock: clock, idleMs: IDLE }); epB.on(EB.receive); robotB = OP.makeRobot(EB, rnd, clock, FAST ? 0.35 : 1); EB.hello(); }
+  } else if (live) {
+    bus = openLive(); E = OP.makeEngine({ seat: seat, seats: seats, bus: bus, rnd: rnd, clock: clock, idleMs: IDLE }); bus.on(E.receive);
   } else { bus = makeChannelBus(room, LAG); E = OP.makeEngine({ seat: seat, seats: seats, bus: bus, rnd: rnd, clock: clock, idleMs: IDLE }); bus.on(E.receive); }
   if (robotMe) robot = OP.makeRobot(E, rnd, clock, FAST ? 0.35 : 1);
   var S = E.S, P = function () { return L.patients[S.pid]; };
+  if (H && H.round > 0) E.setRound(+H.round);
   E.hello(); var helloTimer = setInterval(function () { if (S.others.every(function (s) { return S.presence[s].here; })) clearInterval(helloTimer); else E.hello(); }, 1500);
   /* ---------- face (carried from mechanic 1: it was never the fault) ---------- */
-  var FACE_CSS = '<style>.pup{transition:transform .3s}.m-drive .pup{animation:dart 1.1s infinite}@keyframes dart{0%,100%{transform:translateX(-14px)}50%{transform:translateX(14px)}}.m-fan .drop{animation:drip 1.2s infinite}@keyframes drip{0%{opacity:0;transform:translateY(-6px)}50%{opacity:1}100%{opacity:0;transform:translateY(16px)}}.m-mem .q{animation:floatq 1.8s infinite}@keyframes floatq{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.m-cpu .spin{transform-origin:270px 60px;animation:none}.shake{animation:fshake .5s}@keyframes fshake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}</style>';
-  function face(mood) {
-    var screenFill = mood === 'gpu' ? '#07090c' : mood === 'psu' ? '#2c3134' : mood === 'fan' ? '#ff9a7a' : mood === 'cpu' ? '#cfe6ff' : '#f6f1e6';
-    var led = mood === 'psu' ? '#3a3f42' : '#5fd48a';
-    var inner = '';
-    if (mood !== 'gpu' && mood !== 'psu') {
-      var eyes = mood === 'cpu' ? '<ellipse cx="120" cy="95" rx="22" ry="12" fill="#1a1a1a"/><ellipse cx="200" cy="95" rx="22" ry="12" fill="#1a1a1a"/>'
-        : mood === 'fan' ? '<path d="M98 92 q22 -16 44 0" stroke="#1a1a1a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M178 92 q22 -16 44 0" stroke="#1a1a1a" stroke-width="7" fill="none" stroke-linecap="round"/>'
-        : '<ellipse cx="120" cy="92" rx="24" ry="' + (mood === 'mem' ? 30 : 24) + '" fill="#fff" stroke="#1a1a1a" stroke-width="4"/><ellipse cx="200" cy="92" rx="24" ry="' + (mood === 'mem' ? 30 : 24) + '" fill="#fff" stroke="#1a1a1a" stroke-width="4"/>'
-          + '<g class="pup"><circle cx="' + (mood === 'mem' ? 112 : 120) + '" cy="' + (mood === 'mem' ? 80 : 92) + '" r="10" fill="#1a1a1a"/><circle cx="' + (mood === 'mem' ? 192 : 200) + '" cy="' + (mood === 'mem' ? 80 : 92) + '" r="10" fill="#1a1a1a"/></g>';
-      var mouth = mood === 'happy' || mood === 'nothing' ? '<path d="M120 150 q40 34 80 0" stroke="#1a1a1a" stroke-width="7" fill="none" stroke-linecap="round"/>'
-        : mood === 'mem' ? '<ellipse cx="160" cy="152" rx="12" ry="14" fill="#1a1a1a"/>'
-        : mood === 'drive' ? '<path d="M118 152 q14 -10 28 0 t28 0 t28 0" stroke="#1a1a1a" stroke-width="7" fill="none" stroke-linecap="round"/>'
-        : mood === 'cpu' ? '<ellipse cx="160" cy="152" rx="20" ry="12" fill="#1a1a1a"/><text x="196" y="160" font-size="34" font-family="Space Grotesk,sans-serif" font-weight="700" fill="#1a1a1a">…</text>'
-        : mood === 'fan' ? '<ellipse cx="160" cy="154" rx="26" ry="18" fill="#1a1a1a"/><ellipse cx="160" cy="160" rx="14" ry="8" fill="#ff6b8a"/>' : '';
-      var extra = mood === 'mem' ? '<g class="q" font-family="Space Grotesk,sans-serif" font-weight="700" fill="#5a4a9e"><text x="54" y="60" font-size="34">?</text><text x="246" y="56" font-size="40">?</text><text x="150" y="40" font-size="28">?</text></g>'
-        : mood === 'fan' ? '<g class="drop" fill="#4aa3ff"><ellipse cx="70" cy="70" rx="7" ry="11"/><ellipse cx="250" cy="110" rx="7" ry="11"/></g><g stroke="#ff3b3b" stroke-width="4" fill="none" opacity=".7"><path d="M40 190 q10 -10 20 0 t20 0"/><path d="M240 190 q10 -10 20 0 t20 0"/></g>'
-        : mood === 'cpu' ? '<g class="spin" stroke="#2a66c4" stroke-width="6" fill="none"><circle cx="270" cy="60" r="16" stroke-dasharray="60 40"/></g><g fill="#2a66c4" font-size="26"><text x="40" y="60">✻</text><text x="60" y="200">✻</text></g>'
-        : mood === 'drive' ? '<g fill="#1a1a1a" opacity=".8"><rect x="36" y="44" width="40" height="30" rx="4" fill="none" stroke="#1a1a1a" stroke-width="3"/><text x="44" y="67" font-size="18" font-family="Space Grotesk,sans-serif" font-weight="700">0</text></g>' : '';
-      inner = eyes + mouth + extra;
-    } else if (mood === 'gpu') { inner = ''; }
-    return '<svg viewBox="0 0 320 250" class="m-' + mood + '" xmlns="http://www.w3.org/2000/svg">' + FACE_CSS
-      + '<rect x="6" y="6" width="308" height="214" rx="18" fill="#30383d"/><rect x="20" y="20" width="280" height="186" rx="10" fill="' + screenFill + '"/>'
-      + '<g>' + inner + '</g><circle cx="290" cy="212" r="4" fill="' + led + '"/><rect x="130" y="222" width="60" height="10" rx="3" fill="#30383d"/><rect x="100" y="232" width="120" height="12" rx="5" fill="#30383d"/></svg>';
-  }
+  var face = window.OPFACE;
   var faceKey = null; function setFace(el, mood, shake) { var k = el.id + mood + (shake ? '!' : ''); if (k === faceKey && !shake) return; faceKey = k; el.innerHTML = face(mood); if (shake) el.firstElementChild.classList.add('shake'); }
   var NAME = { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' };
   /* ---------- build once ---------- */
@@ -104,8 +131,18 @@
     var ps = $('goal').querySelectorAll('p'); ps.forEach(function (p) { p.classList.remove('on'); }); $('begin').classList.remove('on');
     $('together').innerHTML = bold(E.fmt(U.team, { p: S.me }) + ' ' + E.fmt(S.others.length === 0 ? U.alone : S.others.length === 1 ? U.together : U.together3, { p: L.callsigns[S.others[0]], q: L.callsigns[S.others[1]] }));
     var t = pace(P().open[0]) * 0.6;
-    U.door.forEach(function (line, i) { var txt = E.fmt(line); door.timers.push(setTimeout(function () { ps[i].textContent = txt; ps[i].classList.add('on'); if (i === 2) $('begin').classList.add('on'); }, t)); t += pace(txt); });
+    door.ready = false; door.togetherHtml = $('together').innerHTML;
+    U.door.forEach(function (line, i) { var txt = E.fmt(line); door.timers.push(setTimeout(function () { ps[i].textContent = txt; ps[i].classList.add('on'); if (i === 2) door.ready = true; doorBegin(); }, t)); t += pace(txt); });
     document.title = 'ready';
+  }
+  function allHere() { return solo || turns.on || S.others.every(function (s) { return S.presence[s].here; }); }
+  function doorBegin() {
+    if (!door.shown) return; var here = allHere();
+    cls($('begin'), 'on', door.ready);
+    $('beginbtn').disabled = !here;
+    var away = S.others.filter(function (s) { return !S.presence[s].here; });
+    var html = here ? door.togetherHtml : bold(away.map(function (s) { return E.fmt(U.presence.away, { p: L.callsigns[s] }); }).join(' '));
+    if ($('together').innerHTML !== html) $('together').innerHTML = html;
   }
   function hideDoor() { door.shown = false; door.timers.forEach(clearTimeout); $('door').classList.remove('on'); $('app').hidden = false; $('bubble').classList.add('empty'); }
   function bold(t) { return t.replace(/Dr \w+/g, function (m) { return '<b class="' + (m === S.me ? 'me' : 'them') + '">' + m + '</b>'; }); }
@@ -113,7 +150,7 @@
   /* ---------- the spotlight tour (DFM 322): each area lit in turn, one sentence, Next; once, reopenable ---------- */
   var TOUR = (function () {
     var KEY = 'op2.tour.seen', steps = [], i = -1, on = false;
-    function enabled() { if (Q.tour === '0' || AT) return false; if (Q.tour === '1') return true; try { return !localStorage.getItem(KEY); } catch (e) { return true; } }
+    function enabled() { if (Q.tour === '0' || (AT && !H)) return false; if (Q.tour === '1') return true; try { return !localStorage.getItem(KEY); } catch (e) { return true; } }
     function build() {
       steps = []; var o = S.others;
       U.tour.forEach(function (t) {
@@ -143,7 +180,12 @@
     window.addEventListener('resize', function () { if (on) place(); });
     return { enabled: enabled, start: start, end: end, next: next, active: function () { return on; }, step: function () { return i; }, steps: function () { return steps; } };
   })();
-  $('beginbtn').onclick = function () { if (E.begin()) { hideDoor(); render(); if (TOUR.enabled()) TOUR.start(); } };
+  $('beginbtn').onclick = function () {
+    if (!allHere()) return;
+    if (H && STAGE === 'door') { $('beginbtn').disabled = true; post('begin'); return; }
+    if (turns.on && EB) EB.begin();
+    if (E.begin()) { hideDoor(); render(); if (TOUR.enabled()) TOUR.start(); }
+  };
   /* ---------- her hand: tap, or a drag that starts on a part (a teacher will drag) ---------- */
   var press = null;
   $('slots').addEventListener('pointerdown', function (e) { var b = e.target.closest('.slot'); if (!b) return; press = { part: b.dataset.part, t: clock.now() }; e.preventDefault(); });
@@ -159,13 +201,14 @@
     render();
   }
   $('cardlist').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (!c || c.classList.contains('wrong')) return; var r = E.card(c.dataset.key); if (r === 'wrong') { c.classList.add('wrong'); wrongLocal[c.dataset.key] = 1; } render(); });
-  $('againbtn').onclick = function () { if (E.again()) { cardsFor = null; showDoor(); } };
+  $('againbtn').onclick = function () { if (E.again()) { if (turns.on && EB) { EB.setRound(S.round); turns.n = 0; } cardsFor = null; post('save', { round: S.round }); showDoor(); } };
   /* ---------- render: patch, never rebuild ---------- */
   var last = { bar: '', count: -1, chart: '', strip: '', stage: '', face: '', pr: '' };
   function cls(el, name, on) { if (el.classList.contains(name) !== !!on) el.classList.toggle(name, !!on); }
   function render() {
     var now = clock.now(), pr = E.prompt();
-    if (S.stage === 'door') { if (!door.shown) showDoor(); } else if (door.shown || $('app').hidden) hideDoor();
+    if (FALLBACK && seat !== 'A') return;
+    if (S.stage === 'door') { if (!door.shown) showDoor(); doorBegin(); } else if (door.shown || $('app').hidden) hideDoor();
     var stage = S.stage === 'door' ? 0 : S.stage === 'done' ? 2 : 1;
     $('stages').querySelectorAll('span').forEach(function (s, i) { cls(s, 'lit', i === stage); });
     /* face: her own cut, nothing else */
@@ -210,18 +253,37 @@
     if (pr.text !== last.bar) { last.bar = pr.text; $('instr').textContent = pr.text; cls($('instr'), 'sting', /again|lost|theirs|sealed/.test(pr.kind)); }
     /* done */
     var done = S.stage === 'done'; cls($('done'), 'on', done);
-    if (done && last.stage !== 'done') { $('doneh').textContent = U.done; $('donep').textContent = S.seats.map(function (s) { return E.fmt(U.found, { p: L.callsigns[s], n: S.counts[s] }); }).join(' '); $('donereveal').textContent = S.others.length ? E.fmt(S.others.length === 1 ? U.reveal : U.reveal3) : ''; $('donenote').textContent = S.others.length ? U.revealNote : ''; }
+    if (done && last.stage !== 'done') {
+      $('doneh').textContent = U.done; $('donep').textContent = S.seats.map(function (s) { return E.fmt(U.found, { p: L.callsigns[s], n: S.counts[s] }); }).join(' ');
+      revealNames(); $('donenote').textContent = S.others.length && !H ? U.revealNote : '';
+      post('done', { save: { pid: S.pid, round: S.round, seats: S.seats, counts: S.counts, chart: S.chart.map(function (p) { return { part: p, by: S.parts[p].by, told: !!S.parts[p].told }; }) } });
+    }
     last.stage = S.stage;
     speechTick(now);
-    $('hint').textContent = S.others.length && !solo ? U.lobby.note : '';
+    var hint = S.others.length && !solo && !H ? U.lobby.note : ''; if ($('hint').textContent !== hint) $('hint').textContent = hint;
+    var ln = turns.on ? FB.A : ''; if ($('livenote').textContent !== ln) { $('livenote').textContent = ln; $('livenote').hidden = !ln; }
   }
+  /* the real names, from the platform once the chart is complete (as Lesson 1's reveal) */
+  function revealNames() {
+    var o = turns.on ? [] : S.others, el = $('donereveal');
+    if (!o.length) { el.textContent = ''; return; }
+    if (H && !NAMES) { el.textContent = ''; return; }
+    var nm = function (s) { var i = S.seats.indexOf(s); return NAMES && NAMES[i] ? NAMES[i] : L.callsigns[s]; };
+    el.textContent = E.fmt(o.length === 1 ? U.reveal : U.reveal3, { p: nm(o[0]) }).replace(L.callsigns[o[1]] || '\u0000', o[1] ? nm(o[1]) : '');
+  }
+  window.addEventListener('message', function (e) {
+    var m = e.data; if (e.source !== window.parent || !m || m.op !== 1) return;
+    if (m.type === 'names' && m.names) { NAMES = m.names; if (S.stage === 'done') revealNames(); }
+  });
+  if (H) { $('nextbtn').textContent = 'Continue'; $('nextbtn').hidden = false; $('nextbtn').onclick = function () { post('next'); }; $('awaybtn').textContent = 'Continue'; $('awaybtn').onclick = function () { post('next'); }; }
   build();
   var cardsOnce = false;
-  function loop() { E.tick(); if (EB) { EB.tick(); if (!TOUR.active()) robotB.tick(); } if (robot) robot.tick(); render(); }
+  function loop() { if (FALLBACK && seat !== 'A') return; E.tick(); if (EB) { EB.tick(); if (robotB && !TOUR.active()) robotB.tick(); } if (robot) robot.tick(); turnTick(); render(); }
   setInterval(loop, 100);
   /* jumps for the look and the harness */
   if (AT === 'table' || AT === 'done') { E.begin(); }
   if (AT === 'done') { OP.PARTS.forEach(function (p) { E.tap(p); E.card(p); }); }
   render(); document.title = 'ready';
-  window.OPUI = { tour: TOUR, E: E, EB: EB, S: S, act: act, card: function (k) { var r = E.card(k); render(); return r; }, begin: function () { var r = E.begin(); render(); return r; }, render: render, speech: sp, Q: Q };
+  post('ready', { stage: STAGE });
+  window.OPUI = { tour: TOUR, get E() { return E; }, get EB() { return EB; }, get S() { return S; }, fallback: function () { return FALLBACK; }, goFallback: goFallback, act: act, card: function (k) { var r = E.card(k); render(); return r; }, begin: function () { var r = E.begin(); render(); return r; }, render: render, speech: sp, Q: Q };
 })();
