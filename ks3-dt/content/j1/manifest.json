@@ -109,13 +109,12 @@
    "id": "j1-06",
    "num": 6,
    "title": "Inside the Machine",
-   "tagline": "What is inside a computer?",
+   "tagline": "What's actually in the box?",
    "block": "b3",
    "icon": "🖥️",
-   "status": "ready",
+   "status": "soon",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true,
-   "file": "j1/lessons/j1-06.json"
+   "absenceInferenceEligible": true
   },
   {
    "id": "j1-07",
