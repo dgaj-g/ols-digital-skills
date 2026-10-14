@@ -43,3 +43,10 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
   first FAIL line: `FAIL A ch1 stage 1 [red]` (caret line `^^^^^^^~~` vs `~~~~~~~^^`).
 - Script-mode rules learned: 'return' outside function shows the line + carets; EOF "expected an indented block" names the file's LAST line, shows it, no caret.
 - NEXT: judge.js + l5-judge-test.js, then effects/clock/words/walk gates, channel port, A1–A14.
+
+## 20:05 · judge, effects, clock gates PASS (each control fails)
+- judge.js (line reader, §5.5; red/console words from PyRun) · l5-judge-test PASS 909 checks · CONTROL (case-folded judge) → `FAIL control capital L faults · got [] want [S1]` · `l5-judge-test: FAIL · 2 of 909`.
+- l5-effects-test PASS 207 states vs python3 · CONTROL (radio ignores return) → `l5-effects-test: FAIL · 78 of 207`.
+- clock.js (pure f(room,now,budget)) · l5-clock-test PASS 188 · CONTROL (drift from chapter open) → `FAIL budget 300 s no drift before the first key at 6000` · `FAIL · 8 of 188`.
+- N8: shouting = Python shows red. S2 with Q3 sleeps (lamp_on never called → the + never runs) until she adds lamp_on(); then the TypeError appears. Found by the judge gate; Python's truth kept.
+- N9: pause is a room event (pauses[] in the room record) so every seat's boat agrees; reload recomputes exactly.
