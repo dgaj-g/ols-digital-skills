@@ -19,3 +19,5 @@ OWED BY DAMIEN: open https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform
 METER: get_usage every 20 calls or 15 minutes; print METER hh:mm · context · 5h · week · calls. His "carry on" overrides the stops.
 macOS may show a permission popup (Chrome, Screen Recording, Automation) during deploy. If a step hangs over 60 s, say "POPUP: look at the Mac" and wait.
 Never enter credentials; never approve pupil share requests; no pupil identity in Firebase; LC_CTYPE=en_US.UTF-8 pbcopy for anything he pastes.
+
+FIREBASE OWNERS (DFM 330 / K79): one owner: the school account; Gmail removed. Write it that way in RESUME_HERE V72. Nothing in the build depends on the owner list.
