@@ -1491,9 +1491,19 @@ function pairStateFor_(reg, hit) {
     ok: true, state: 'paired', pid: str_(hit.pid), mi: num_(hit.mi),
     trio: num_(P.trio), done: num_(P.done), rv: num_(P.rv),
     members: (P.cn || []).map(function (c) { return str_(c); }),
-    names: num_(P.rv) ? (P.n || []).map(function (n) { return str_(n); }) : null
+    names: num_(P.rv) ? (P.n || []).map(function (n) { return str_(n); }) : null,
+    room: str_(P.room || '')
   };
 }
+
+/* A random 12-character room code for the Lesson 6 live channel (Firebase).
+   It names nothing: only the pair's own laptops ever hold it. */
+function liveRoom_() {
+  var a = 'abcdefghijklmnopqrstuvwxyz0123456789', r = '';
+  for (var i = 0; i < 12; i++) r += a.charAt(Math.floor(Math.random() * a.length));
+  return r;
+}
+
 
 /* Form pairs/trios from the queue under the agreed rules. Runs INSIDE the lock.
    E = pupils still expected to reach the stage (union of live-present pupils on
@@ -1540,7 +1550,7 @@ function pairMatch_(cls, lessonId, numStr, stageIdx, reg, q) {
     reg.P[pid] = {
       m: formed.map(function (w) { return str_(w.e); }),
       cn: callsignFill_(formed, pmYear),
-      t: tmin_(), trio: formed.length === 3 ? 1 : 0, done: 0, rv: 0
+      t: tmin_(), trio: formed.length === 3 ? 1 : 0, done: 0, rv: 0, room: liveRoom_()
     };
     pPut_(chPKey_(cls, pid), { seq: 0, ev: [], ls: [] });
   }
@@ -2770,7 +2780,7 @@ function apiAdmin(req) {
         pfReg.P[pid2] = {
           m: formed.map(function (w) { return str_(w.e); }),
           cn: callsignFill_(formed, classYear_(cls)),
-          t: tmin_(), trio: take === 3 ? 1 : 0, done: 0, rv: 0
+          t: tmin_(), trio: take === 3 ? 1 : 0, done: 0, rv: 0, room: liveRoom_()
         };
         pPut_(chPKey_(cls, pid2), { seq: 0, ev: [], ls: [] });
         made++;

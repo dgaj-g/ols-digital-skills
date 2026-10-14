@@ -8,3 +8,7 @@ ks3-dt/content/dev-keys.json
 # are a working step and would only grow a repo that is already 821MB
 ks3-dt/platform/assets/img/deck/*/_raw/
 geography/my-amazing-world/tests/shots/
+ks3-dt/tools/record-tutorial/qa-l2-l5-review/l6-*/**/*.png
+ks3-dt/tools/record-tutorial/qa-l2-l5-review/l6-*/*.png
+ks3-dt/tools/record-tutorial/qa-l2-l5-review/l6-*/**/*.jpg
+ks3-dt/tools/record-tutorial/qa-l2-l5-review/l6-*/*.webm

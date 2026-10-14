@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-07 from contentVersion 2026-10-07b.
+ * Built 2026-10-14 from contentVersion 2026-10-08a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1197,6 +1197,194 @@ var DECKS = {
        "Keep your reviews in mind: your V2 note is a real plan, and studios grow by building version 2."
       ],
       "notes": "SAY: end on the achievement — five lessons in, she has logged in like a professional, built a program on a micro:bit, kept score, found and fixed four bugs in Shark Attack, a game that was already out to players, and today released a game of her own. The third bullet is the take-home: her game is in her Drive, so she can open drive.google.com at home this evening and show somebody."
+     }
+    ]
+   }
+  ]
+ },
+ "j1-06": {
+  "id": "j1-06.deck",
+  "lesson": "j1-06",
+  "deckName": "KS3 DT · J1 Lesson 6 — Inside the Machine (Teacher Deck)",
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "c1",
+    "label": "The opening and scrubbing in",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 6 · Inside the Machine",
+      "sub": "You are the surgeons. A computer is the patient. — J1 · Lesson 6 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, sitting beside their partner, logging in.\n\nSAY: welcome them in. Today they take a computer apart and put it right.\n\nWHEN TO MOVE: when most pupils are logged in, stop the room. Eyes front."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "In this lesson you will…",
+      "bullets": [
+       "Name the seven main parts inside a computer from their photographs.",
+       "Say the job of each part in one plain sentence.",
+       "Say what goes wrong when a part is missing, and which part a broken computer needs."
+      ],
+      "notes": "SAY: read the three lines slowly. The third is the one that matters most.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Scrub in",
+      "size": 15,
+      "bullets": [
+       "You work in a pair, on two laptops.",
+       "One of you is Dr Marmalade. The other is Dr Custard.",
+       "A computer lies on the table. It can talk.",
+       "Press Begin when your partner is there."
+      ],
+      "notes": "WHERE THE CLASS IS: eyes front, about to open the lesson.\n\nSAY: read the four lines. If the class is an odd number, say that the last three work as a team of three. If the link between the two laptops is slow, the screen says: Share one laptop and take turns. That is fine.\n\nWHEN TO MOVE: send them in. The room now runs itself."
+     }
+    ]
+   },
+   {
+    "id": "operation",
+    "chunk": "c2",
+    "label": "The operation",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The operation",
+      "size": 15,
+      "bullets": [
+       "Click a part to take it out of the patient.",
+       "Listen to what the patient says.",
+       "Then click the job card that matches.",
+       "Take your time. Your patient will tell you."
+      ],
+      "notes": "WHERE THE CLASS IS: working in pairs on the operating table, for about eighteen minutes.\n\nSAY: nothing, once they are in. Walk round and ask one question: what did the patient just say? Never tell them which card is right.\n\nWHEN TO MOVE: when most pairs show the chart complete, move on. Pairs who finish early can operate on a second patient."
+     }
+    ]
+   },
+   {
+    "id": "ward",
+    "chunk": "c3",
+    "label": "Ward round",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Ward round",
+      "size": 15,
+      "bullets": [
+       "Six broken computers are waiting for you.",
+       "Each one is missing one part.",
+       "Read what it says, then click the part it needs.",
+       "You have two tries on each one."
+      ],
+      "notes": "WHERE THE CLASS IS: the operation is done. They now open the ward round on their own screens.\n\nSAY: read the four lines. This is the same skill again, but now the patient is a computer in the real world.\n\nWHEN TO MOVE: send them in. About ten minutes."
+     }
+    ]
+   },
+   {
+    "id": "boss",
+    "chunk": "c4",
+    "label": "Who is in charge",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Who is in charge?",
+      "size": 15,
+      "bullets": [
+       "You know the seven parts.",
+       "But someone has to tell them what to do.",
+       "Read the three lines on your screen.",
+       "Then answer one question on your own."
+      ],
+      "notes": "WHERE THE CLASS IS: the ward round is finished. They open a short card with three lines and one question.\n\nSAY: read the four lines. Say nothing more. The answer is on their screens and not on yours.\n\nWHEN TO MOVE: send them in. Five minutes."
+     }
+    ]
+   },
+   {
+    "id": "head",
+    "chunk": "c5",
+    "label": "Inside her head",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Inside her head",
+      "size": 15,
+      "bullets": [
+       "Watch a short film. It has no sound.",
+       "Read the captions as it plays.",
+       "You can watch it again as often as you like.",
+       "Then you will put four steps in order."
+      ],
+      "notes": "WHERE THE CLASS IS: opening a film on their own screens, then a puzzle. About eight minutes in all.\n\nSAY: read the four lines. If the film will not play for a pupil, show it on the board. Do not read out the steps.\n\nWHEN TO MOVE: send them in."
+     }
+    ]
+   },
+   {
+    "id": "names",
+    "chunk": "c7",
+    "label": "The names",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The names",
+      "size": 15,
+      "bullets": [
+       "You know the jobs. Now learn the real names.",
+       "Match each job to its name.",
+       "Place all seven, then check.",
+       "RAM, CPU, GPU and PSU are short names you will hear."
+      ],
+      "notes": "WHERE THE CLASS IS: the film and the puzzle are done. They open the matching screen.\n\nSAY: read the four lines. Do not say which name goes with which job.\n\nWHEN TO MOVE: send them in. Five minutes."
+     }
+    ]
+   },
+   {
+    "id": "exit",
+    "chunk": "c8",
+    "label": "STOP · Exit check",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — Exit check",
+      "size": 15,
+      "bullets": [
+       "Answer on your own now.",
+       "Your partner cannot help you.",
+       "Four questions about today.",
+       "Then finish How did it go? before you leave."
+      ],
+      "notes": "WHERE THE CLASS IS: the names are matched. Eyes front for one minute.\n\nSAY: read the four lines. Remind them these questions are marked and you can see every answer. Tell them the extra jobs are there for anyone who finishes early.\n\nWHEN TO MOVE: send them in. As they finish, put the last slide up."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "c9",
+    "label": "Before you leave",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out properly. If you stay signed in, the next person to use this laptop can see your work.",
+       "Push your chair in. Tidy your area.",
+       "Today you took a computer apart and put it right.",
+       "Finish How did it go? before you go."
+      ],
+      "notes": "SAY: end on the achievement. Six lessons in, they can now name every main part inside a computer and say what it does.\n\nBefore anyone leaves, check that every pupil has finished How did it go?"
      }
     ]
    }
@@ -4019,6 +4207,7 @@ function createLesson2Deck() { return createDeck_('j1-02'); }
 function createLesson3Deck() { return createDeck_('j1-03'); }
 function createLesson4Deck() { return createDeck_('j1-04'); }
 function createLesson5Deck() { return createDeck_('j1-05'); }
+function createLesson6Deck() { return createDeck_('j1-06'); }
 function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
 function createJ2Lesson2Deck() { return createDeck_('j2-02'); }
 function createJ2Lesson3Deck() { return createDeck_('j2-03'); }
@@ -4033,6 +4222,7 @@ function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
 function rebuildLesson3Deck() { return rebuildDeck_('j1-03'); }
 function rebuildLesson4Deck() { return rebuildDeck_('j1-04'); }
 function rebuildLesson5Deck() { return rebuildDeck_('j1-05'); }
+function rebuildLesson6Deck() { return rebuildDeck_('j1-06'); }
 function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
 function rebuildJ2Lesson2Deck() { return rebuildDeck_('j2-02'); }
 function rebuildJ2Lesson3Deck() { return rebuildDeck_('j2-03'); }
@@ -4127,6 +4317,7 @@ function exportLesson2Proofs() { return exportDeckProofs_('j1-02'); }
 function exportLesson3Proofs() { return exportDeckProofs_('j1-03'); }
 function exportLesson4Proofs() { return exportDeckProofs_('j1-04'); }
 function exportLesson5Proofs() { return exportDeckProofs_('j1-05'); }
+function exportLesson6Proofs() { return exportDeckProofs_('j1-06'); }
 function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
 function exportJ2Lesson2Proofs() { return exportDeckProofs_('j2-02'); }
 function exportJ2Lesson3Proofs() { return exportDeckProofs_('j2-03'); }
