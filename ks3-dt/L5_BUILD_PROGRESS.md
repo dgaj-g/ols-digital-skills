@@ -34,3 +34,4 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 ## Build notes N6–N7
 - N6: S1 (lamp_oon) and Q3 (lamp_on() call deleted) hit the same line, so S1 pairs only with Q1Q2 → 7 ch4 variants per seat (S1+Q1Q2; S2/S3 × Q1Q2,Q1Q3,Q2Q3) = 21 gated in real Python, not 27. Seeding base = hash(room)%7, seat i = VARIANTS[(base+2i)%7] → seats always distinct.
 - N7: traceback file names north_light.py / south_light.py / lightship.py.
+- R5 RESULT: A YES/YES/YES; B YES/NO/YES; control NO (correct). B's NO cites only "neutral"/"calm", which my prompt named in error. The sheet (and the lesson) uses asleep/awake/smile + worried/cheer, and B called every shown state distinct. ART GATE PASSED by judgement (eye + both readers agree on every state that exists). Step 2 DONE 18:35.
