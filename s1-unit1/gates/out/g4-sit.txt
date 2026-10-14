@@ -1,3 +1,13 @@
+G4 scripted sit, version 6 · 2026-10-14 ~10:10 BST · live test deployment (/dev), build s1u1-24d3d4f8ad-7f0b7102
+Account: the owner (school account), class "zz sit test" (made for the sit, deleted after), Chrome desktop
+Lines read off #sitReport (platform/sit.js), key lines transcribed:
+Software (?sit=software): every line SIT PASS, incl. the warning goes once a rating is picked (x4), flagged rows name the question, look back ends with Back to the topic, all marked questions restore · 29 seen, no page errors
+  TOTAL 17 of 59 · MARKS# 60dd3cf2 · 29 questions · flags 4 · SIT RESULT PASS
+Digital data (?sit=1): every line SIT PASS, incl. reload lands on question 6 · Stage 2 of 4 · Representing images · Question 6 of 19, flagged rows name the question (11), look back ends with Back to the topic, all marked questions restore · 82 seen, round 1 kept · 35 vs 35, no page errors
+  TOTAL 35 of 126 · MARKS# a6eb5c62 · 82 questions · flags 11 · SIT RESULT PASS
+Both hashes equal the harness sits on the same build (localhost, 14 Oct 2026).
+
+----- earlier runs below -----
 G4 scripted sit on the dev deployment · 2026-09-27 17:18 BST (last pupil call 17:18:37 on the Apps Script Executions page)
 URL: https://script.google.com/a/macros/c2ken.net/s/AKfycbzgJEZBoed1zoW0Ks2l0QBOrmsDZb3C4IaB808EVf1G/dev?class=11a-dt&sit=1
 Account: the owner (school account), class "11A DT", Chrome foreground tab, 1200x785 viewport
