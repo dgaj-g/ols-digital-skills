@@ -113,7 +113,7 @@ function page(q) {
     "      .then(function (r) { return r.json(); }).then(function (j) { if (j && j.__error) (bad || function () {})(new Error(j.__error)); else (ok || function () {})(j); })\n" +
     "      .catch(function (e) { (bad || function () {})(e); }); };\n" +
     '  } }); }\n  return runner(null, null);\n})() } };</script>';
-  const sit = q.get('sit') === '1' ? '1' : '';
+  const sit = /^(1|[a-z-]{1,30})$/.test(q.get('sit') || '') ? q.get('sit') : '';
   const html = fs.readFileSync(INDEX, 'utf8').replace('<?= classCode ?>', cls).replace('<?= baseUrl ?>', 'http://localhost:' + PORT + '/').replace('<?= sit ?>', sit).replace('<?= showBuild ?>', q.has('build') ? '1' : '');
   return html.replace('<script>window.S1BOOT', shim + '\n<script>window.S1BOOT');
 }

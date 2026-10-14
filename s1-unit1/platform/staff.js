@@ -3,7 +3,7 @@
  * or one pupil), Tracker (v4, DECISIONS §17: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false;
+  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = []; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -38,13 +38,15 @@ var Staff = (function () {
   }
   function bar() { return '<div class="tabs">' + X.tabs.map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>'; }).join("") + '</div>'; }
   function clsPick() { return CLASSES.length > 1 ? '<label for="cp">' + W.cls + '</label><select id="cp">' + CLASSES.map(function (c) { return '<option value="' + h(c.slug) + '"' + (c.slug === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>'; }).join("") + '</select>' : '<b>' + h((CLASSES[0] || {}).name || "") + '</b>'; }
+  function topPick() { return BUILT.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + BUILT.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
   function wireCommon(body) {
     body.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { TAB = +b.dataset.tab; armed = false; tabs(); }; });
     var cp = body.querySelector("#cp"); if (cp) cp.onchange = function () { CLS = cp.value; ROUND = 0; armed = false; tabs(); };
+    var tq = body.querySelector("#tq"); if (tq) tq.onchange = function () { TP = tq.value; ROUND = 0; armed = false; tabs(); };
   }
   function tabs() {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
-      CLASSES = r.classes; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
+      CLASSES = r.classes; BUILT = r.topics || BUILT; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
       [classes, topics, rounds, tracker, exporter][TAB]();
     }).catch(fail);
@@ -85,25 +87,25 @@ var Staff = (function () {
     T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
       var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
       var rows = S1S.TOPICS.map(function (name, i) {
-        var id = i === 0 ? "digital-data" : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
+        var tp = BUILT.filter(function (t) { return t.spec === "1." + (i + 1); })[0], id = tp ? tp.id : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
         return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
       }).join("");
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + h(r.className) + '</h2><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
       page(body); wireCommon(body);
       body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
     }).catch(fail);
   }
   // ---- Rounds ----
   function rounds() {
-    T.call("apiStaff", { op: "rounds", cls: CLS }).then(function (r) {
+    T.call("apiStaff", { op: "rounds", cls: CLS, topic: TP }).then(function (r) {
       var pup = r.pupils.map(function (p, k) { return '<option value="' + k + '">' + h(p.name) + ' · ' + S.round + p.round + '</option>'; }).join("");
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + T.fmt(X.roundOpen, { n: r.round }) + '</h2><div class="actions"><button class="btn" id="oc">' + T.fmt(X.openClass, { n: r.round + 1 }) + '</button></div></div><div class="card">' + (r.pupils.length ? '<div class="srow"><select id="pp">' + pup + '</select><button class="btn sm ghost" id="op"></button></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><span class="link" id="clr">' + W.clearMine + '</span></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + topPick() + '</div><h2>' + T.fmt(X.roundOpen, { t: h(r.title), n: r.round }) + '</h2><div class="actions"><button class="btn" id="oc">' + T.fmt(X.openClass, { n: r.round + 1 }) + '</button></div></div><div class="card">' + (r.pupils.length ? '<div class="srow"><select id="pp">' + pup + '</select><button class="btn sm ghost" id="op"></button></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><span class="link" id="clr">' + W.clearMine + '</span></div>');
       page(body); wireCommon(body);
       var pp = document.getElementById("pp"), op = document.getElementById("op");
       function label() { if (op) op.textContent = T.fmt(X.openPupil, { n: r.pupils[+pp.value].round + 1 }); }
       if (pp) { pp.onchange = label; label(); }
-      T.wire("oc", function () { this.disabled = true; T.call("apiStaff", { op: "openClass", cls: CLS }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }).catch(fail); });
-      T.wire("op", function () { var p = r.pupils[+pp.value]; op.disabled = true; T.call("apiStaff", { op: "openPupil", cls: CLS, email: p.email }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }, function () { op.disabled = false; }); });
+      T.wire("oc", function () { this.disabled = true; T.call("apiStaff", { op: "openClass", cls: CLS, topic: TP }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }).catch(fail); });
+      T.wire("op", function () { var p = r.pupils[+pp.value]; op.disabled = true; T.call("apiStaff", { op: "openPupil", cls: CLS, topic: TP, email: p.email }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }, function () { op.disabled = false; }); });
       T.wire("clr", function () {
         var x = document.getElementById("clr");
         if (!armed) { armed = true; x.textContent = T.fmt(W.clearConfirm, { name: r.className }); return; }
@@ -134,7 +136,7 @@ var Staff = (function () {
     var rate = r.stages.map(function (st) {
       var k = [0, 0, 0, 0], n = 0; r.rows.forEach(function (p) { var e = p.s[st.n].e; if (e && e.rating) { k[e.rating - 1]++; n++; } });
       return '<div class="hb"><span class="hl">' + h(stTitle(st)) + '</span><span class="ht stack">' + (n ? k.map(function (c, i) { return c ? '<i class="' + RC[i] + '" style="width:' + (100 * c / n) + '%" title="' + h(S.rates[i]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + (n ? (n === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: n })) : W.noCards) + '</span></div>';
-    }).join("") + '<div class="key">' + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+    }).join("") + '<div class="legend">' /* not "key": that is the pupil page's missed-answer row (live look, 14 Oct 2026) */ + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
     var bands = [0, 0, 0, 0], names = ["0–24%", "25–49%", "50–74%", "75–100%"], any = 0;
     r.rows.forEach(function (p) { var t = tot(p, r.stages); if (t.ax) { var q = pc(t.m, t.ax); bands[q >= 75 ? 3 : q >= 50 ? 2 : q >= 25 ? 1 : 0]++; any++; } });
     var top = Math.max(1, Math.max.apply(null, bands));
@@ -158,7 +160,7 @@ var Staff = (function () {
     return '<div class="card said"><h2>' + W.said + '</h2><p class="hint">' + W.saidNote + '</p>' + parts + '</div>';
   }
   function tracker() {
-    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+    T.call("apiStaff", { op: "tracker", cls: CLS, topic: TP, round: ROUND || undefined }).then(function (r) {
       ROUND = r.round;
       var rows = r.rows.map(function (p, k) {
         var t = tot(p, r.stages), fl = [];
@@ -170,7 +172,7 @@ var Staff = (function () {
         }).join("");
         return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td><td class="seen">' + seen(p.seen) + '</td><td>' + (t.a ? score(t.m, t.ax) + (t.a < t.n ? '<br><small>' + T.fmt(W.notDone, { a: t.a, n: t.n }) + '</small>' : '') : '—') + '</td>' + cells + '<td>' + (p.E ? rateChip(p.E.rating) : '—') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '—') + '</td></tr>';
       }).join("");
-      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker · ' + h(r.className) + ' · Digital Data · ' + S.round + r.round + '</h1>' +
+      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + topPick() + roundPick(r.maxRound) + '</div><h1>Tracker · ' + h(r.className) + ' · ' + h(r.title) + ' · ' + S.round + r.round + '</h1>' +
         (r.rows.length ? graphs(r) : '') + '<div class="card">' + (r.rows.length ? '<p class="hint">' + W.soFar + '</p><div class="tscroll"><table class="track"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th><th>' + W.total + '</th>' + r.stages.map(function (st) { return '<th>' + h(stTitle(st)) + '</th>'; }).join("") + '<th>' + W.whole + '</th><th>' + W.flagged + '</th></tr>' + rows + '</table></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div>' +
         (r.rows.length ? saidCard(r) : '') + '</div>');
       page(body); wireCommon(body);
@@ -180,7 +182,7 @@ var Staff = (function () {
   }
   // ---- One pupil (v4): totals and a chart, the topic card, then each stage with its card and every answered question in words ----
   function pupilPage(p) {
-    T.call("apiStaff", { op: "pupil", cls: CLS, email: p.email, round: ROUND }).then(function (r) {
+    T.call("apiStaff", { op: "pupil", cls: CLS, topic: TP, email: p.email, round: ROUND }).then(function (r) {
       var row = r.row, t = tot(row, r.stages), E = row.E, title = function (n) { return r.stages[n - 1].title; };
       var head = '<div class="card"><div class="phead"><h2>' + h(r.name) + ' · ' + S.round + r.round + '</h2><button class="btn sm ghost" id="back">' + W.back + '</button></div>' +
         '<p class="sub seen">' + T.fmt(W.lastUsed, { when: seen(row.seen, true) }) + '</p>' +
@@ -205,14 +207,14 @@ var Staff = (function () {
   }
   // ---- Export ----
   function exporter() {
-    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+    T.call("apiStaff", { op: "tracker", cls: CLS, topic: TP, round: ROUND || undefined }).then(function (r) {
       ROUND = r.round;
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><div class="actions"><button class="btn" id="csv">' + X.csv + '</button></div></div></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + topPick() + roundPick(r.maxRound) + '</div><div class="actions"><button class="btn" id="csv">' + X.csv + '</button></div></div></div>');
       page(body); wireCommon(body);
       var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; };
       T.wire("csv", function () {
         var b = document.getElementById("csv"); b.disabled = true;
-        T.call("apiStaff", { op: "csv", cls: CLS, round: ROUND }).then(function (x) {
+        T.call("apiStaff", { op: "csv", cls: CLS, topic: TP, round: ROUND }).then(function (x) {
           b.disabled = false;
           var blob = new Blob(["﻿" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
           a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();

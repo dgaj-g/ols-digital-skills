@@ -32,7 +32,7 @@ function audit(W, pageSrc) {
   const dS = deepEq(W.S, P.S); if (dS) f.push('S differs from the prototype: ' + dS.slice(0, 300));
   const dT = deepEq(W.TOPICS, P.TOPICS); if (dT) f.push('TOPICS differ: ' + dT.slice(0, 200));
   Object.keys(W.X).forEach((k) => {
-    const v = W.X[k], vals = Array.isArray(v) ? v : [fmt(v, { n: /Round \{n\} open/.test(v) ? 1 : 2 })];
+    const v = W.X[k], vals = Array.isArray(v) ? v : [fmt(v, { n: /Round \{n\} open/.test(v) ? 1 : 2, t: "Digital data" })];
     vals.forEach((t) => { if (!ticks.has(t) && !bold.has(t) && !a2vals.has(t)) f.push('X.' + k + ' "' + t + '" is not in SPEC §3 or A2'); });
   });
   const used = (re) => { const out = new Set(); let m; while ((m = re.exec(pageSrc))) out.add(m[1]); return out; };
@@ -56,11 +56,32 @@ check('the served Index.html carries strings.js unchanged', served && !deepEq(se
 // ---- the cold read is on file
 const cr = path.join(DESIGN, 'coldread', 'COLD_READ_VERDICTS.md');
 check('cold read on file (two readers, not rerun)', fs.existsSync(cr) && /Two separated readers/.test(read(cr)) && /Reader A/.test(read(cr)) && /Reader B/.test(read(cr)));
+// ---- every pick question names its own count (live sit, 14 Oct 2026: a four-pick question said "Pick three.")
+const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six'];
+function pickAudit(banks, SS) {
+  const f = [];
+  banks.forEach((B) => B.stages.forEach((st) => st.questions.forEach((it) => [it].concat(it.parts || []).forEach((p) => {
+    if (p.form !== 'pick1' && p.form !== 'pickN') return;
+    const n = p.form === 'pick1' ? 1 : p.n;
+    if (!SS['pick' + n]) f.push(it.id + ': no "Pick ' + WORDS[n] + '." line for n ' + n);
+    if (n > 1 && !SS['only' + n]) f.push(it.id + ': no "You can only pick ' + WORDS[n] + '." line for n ' + n);
+    const m = String(p.label || '').match(/pick (?:the )?(one|two|three|four|five|six)\b/i);
+    if (m && WORDS.indexOf(m[1].toLowerCase()) !== n) f.push(it.id + ': label says ' + m[1] + ' but n is ' + n);
+  }))));
+  return f;
+}
+const BANKS = ['bank_digital_data.js', 'bank_software.js'].map((b) => vm.runInNewContext(read(path.join(DESIGN, 'content', b)) + '\n;(typeof BANK_SOFTWARE !== "undefined" ? BANK_SOFTWARE : BANK_DIGITAL_DATA)', {}));
+const pa = pickAudit(BANKS, W.S);
+check('every pick question has a "Pick N." line and a limit line for its own n, and its label names the same n', pa.length === 0, pa.join(' | '));
 // ---- controls: each must fail
 const mS = JSON.parse(JSON.stringify(W)); mS.S.check = 'Check my answers';
 check('CONTROL one changed word in S is caught', audit(mS, pageSrc).length > 0);
 const mX = JSON.parse(JSON.stringify(W)); mX.X.offline = "We can't reach the server. Check the WiFi, then press Try again.";
 check('CONTROL one changed word in X is caught', audit(mX, pageSrc).length > 0);
 check('CONTROL a page using a missing string is caught', audit(W, pageSrc + '\nS.nextQuestion; X.wrongPass;').filter((f) => /^page uses/.test(f)).length === 2);
+const noFour = JSON.parse(JSON.stringify(W.S)); delete noFour.pick4;
+check('CONTROL a four-pick question with no "Pick four." line is caught', pickAudit(BANKS, noFour).some((x) => /SW4-N1: no "Pick four/.test(x)));
+const badLabel = JSON.parse(JSON.stringify(BANKS)); badLabel[1].stages[3].questions.forEach((it) => { if (it.id === 'SW4-N1') it.parts[0].n = 3; });
+check('CONTROL a label saying four on a three-pick part is caught', pickAudit(badLabel, W.S).some((x) => /SW4-N1: label says four but n is 3/.test(x)));
 const txt = 'G3 strings · ' + new Date().toISOString() + '\n' + log.join('\n') + '\n' + (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail\n';
 fs.writeFileSync(path.join(OUT, 'g3-strings.txt'), txt); process.stdout.write(txt); process.exit(res.fail ? 1 : 0);

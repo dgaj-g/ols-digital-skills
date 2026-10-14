@@ -96,7 +96,7 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .opt i{width:18px;height:18px;border-radius:50%;border:2px solid #b7a192;flex:none;margin-top:2px;transition:background .2s,border-color .2s}
 .opt.on i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),linear-gradient(135deg,var(--berry),var(--ember));border-color:var(--berry);animation:pop .32s var(--ease)}
 @keyframes pop{0%{transform:scale(.55)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
-.opt.hit{border-color:var(--ok);background:var(--okbg);box-shadow:none}.opt.miss{border-color:var(--bad);background:var(--badbg);box-shadow:none}.opt.key{border-color:var(--ok);border-style:dashed}
+.opt.hit{border-color:var(--ok);background:var(--okbg);box-shadow:none}.opt.miss{border-color:var(--bad);background:var(--badbg);box-shadow:none}.opt.key{border-color:var(--ok);border-style:dashed}.opt.hit i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),var(--ok);border-color:var(--ok)}.opt.miss i{background:radial-gradient(circle,#fff 0 3px,transparent 3.5px),var(--bad);border-color:var(--bad)} /* after Check her own pick keeps its dot, so a key she missed (dashed) never looks like one she chose (live look, 14 Oct 2026) */
 .opt .mk{margin-left:auto;font-weight:700;flex:none}.opt.hit .mk,.opt.key .mk{color:var(--ok)}.opt.miss .mk{color:var(--bad)}
 /* marks arrive after Check: the tick on a tile grows into place (never past its full size, so nothing spills); the
    words beside a list or gap fade in and stay inline, so a long answer still wraps on a narrow screen */
@@ -108,7 +108,8 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .locked .opt:not(.hit):not(.miss):not(.key):hover{border-color:var(--line)}
 textarea,input[type=text],select{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;transition:border-color .2s,box-shadow .2s}
 textarea:focus,input[type=text]:focus,input[type=password]:focus,select:focus{outline:0;border-color:var(--berry);box-shadow:0 0 0 3px rgba(242,181,68,.35)}
-textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{padding:6px 8px}
+textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{-webkit-appearance:none;appearance:none;padding:6px 32px 6px 9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.2 1.5 6 6.3l4.8-4.8' fill='none' stroke='%238f2d56' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px 8px;cursor:pointer} /* the page draws its own arrow, inside the right padding, so a chosen word never runs under it on any browser (live sit, 14 Oct 2026) */
+select:disabled,input[type=text]:disabled,textarea:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;background-color:#fbf6ef;cursor:default}select:disabled{background-image:none} /* after Check the pupil's own answer stays readable */
 .items .item{margin-bottom:10px}.items label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:700}
 .pairs .pr{display:grid;grid-template-columns:1fr 24px 230px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.pairs .pr:first-child{border-top:0}
 .pairs .arrow{color:var(--acc);text-align:center;font-weight:700}
@@ -117,11 +118,11 @@ textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}
 .tog:hover:not(:disabled){border-color:var(--berry);transform:translateY(-1px)}
 .tog:disabled{color:var(--mute);cursor:default}.tog.on:disabled{color:var(--ink)} /* after Check the picked word stays readable */
 .tog.on{border-color:var(--berry);background:var(--peach);font-weight:700;box-shadow:0 0 0 3px rgba(242,181,68,.25)}
-.gapsent{font-size:16px;line-height:2.1}.gapsent select,.gapsent input{display:inline-block;width:auto;min-width:110px;margin:0 3px;padding:4px 8px;vertical-align:baseline}
+.gapsent{font-size:16px;line-height:2.1}.gapsent select,.gapsent input{display:inline-block;width:auto;min-width:110px;margin:0 3px;padding:4px 8px;vertical-align:baseline}.gapsent select{padding-right:30px}
 .result{margin:16px 0 0;font-family:var(--disp);font-size:21px;font-weight:700}.result.ok{color:var(--ok)}.result.bad{color:var(--bad)}.result.part{color:#8a5200}
 #after>*{animation:rise .5s var(--ease) both}#after>:nth-child(2){animation-delay:.08s}#after>:nth-child(3){animation-delay:.16s}#after>:nth-child(4){animation-delay:.22s}#after>:nth-child(n+5){animation-delay:.28s}
 .scheme{background:linear-gradient(90deg,var(--acc2),var(--acc)) left/5px 100% no-repeat,#fdf3e6;border-color:#f0dcc5;box-shadow:none;padding-left:26px}
-.scheme h3{margin:0 0 8px;font-family:var(--disp);font-weight:600;font-size:17px;color:var(--plum)}.scheme ul{margin:0;padding-left:20px}.scheme li{margin:3px 0}.scheme li::marker{color:var(--acc)}.scheme .note{font-size:13px;color:var(--mute);margin-top:8px;font-style:italic}
+.scheme h3{margin:0 0 8px;font-family:var(--disp);font-weight:600;font-size:17px;color:var(--plum)}.scheme ul{margin:0;padding-left:20px}.scheme li{margin:3px 0}.scheme li::marker{color:var(--acc)}.scheme li.head{list-style:none;margin:10px 0 2px -20px;font-weight:600;color:var(--plum)}.scheme li.head:first-child{margin-top:0}.scheme .note{font-size:13px;color:var(--mute);margin-top:8px;font-style:italic}
 .wrote{white-space:pre-wrap;background:#fff;border:1.5px dashed #e3c9b2;border-radius:10px;padding:8px 10px;font-size:14px;min-height:34px}
 .flag{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--mute);user-select:none}.flag i{width:16px;height:16px;border:2px solid #b7a192;border-radius:5px;display:inline-block;transition:background .2s,border-color .2s}
 .flag.on{color:var(--berry)}.flag.on i{background:linear-gradient(135deg,var(--berry),var(--ember));border-color:var(--berry);animation:pop .32s var(--ease)}
@@ -132,7 +133,7 @@ textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}
 .figure tr:nth-child(odd) td{background:rgba(253,241,227,.55)}
 .rate .opt{padding:9px 14px}.ticks label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.ticks input{margin-top:4px;accent-color:var(--berry)}
 .sumrows .r{display:flex;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.sumrows .r:first-child{border-top:0}
-.sumrows .r b{color:var(--accd)}
+.sumrows .r b{color:var(--accd)}.sumrows .r.fl{gap:2px 16px;align-items:baseline}.sumrows .r.fl .src{white-space:nowrap;margin-left:auto}
 .meter,.sumrows .bar{flex-basis:100%;height:8px;border-radius:99px;background:#f1e3d3;overflow:hidden;margin:4px 0 2px}
 .meter{height:12px;margin:2px 0 14px}
 .meter i,.sumrows .bar i{display:block;height:100%;width:var(--p);border-radius:99px;background:linear-gradient(90deg,var(--acc2),var(--acc));animation:fill 1.2s .25s var(--ease) both}
@@ -206,12 +207,12 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
 .btn.arm,.btn.ghost.arm{background:var(--bad);color:#fff;border-color:var(--bad)}
 .sc{font-weight:700;white-space:nowrap}.sc.hi{color:var(--ok)}.sc.mid{color:var(--accd)}.sc.lo{color:var(--bad)}
 .rchip{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700;margin:2px 4px 2px 0;line-height:1.35}
-.rchip.r1,.hb i.r1,.key i.r1{background:#fbe0dc;color:#8d1d16}.rchip.r2,.hb i.r2,.key i.r2{background:#fde7c8;color:#7a4200}.rchip.r3,.hb i.r3,.key i.r3{background:#dcefd9;color:#1d5e2c}.rchip.r4,.hb i.r4,.key i.r4{background:#bfe3c4;color:#0f4a1f}
+.rchip.r1,.hb i.r1,.legend i.r1{background:#fbe0dc;color:#8d1d16}.rchip.r2,.hb i.r2,.legend i.r2{background:#fde7c8;color:#7a4200}.rchip.r3,.hb i.r3,.legend i.r3{background:#dcefd9;color:#1d5e2c}.rchip.r4,.hb i.r4,.legend i.r4{background:#bfe3c4;color:#0f4a1f}
 .charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}h3.sh{font-size:15px;color:var(--plum);margin:6px 0 10px}
-.hb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) auto;gap:8px;align-items:center;font-size:13px;margin:0 0 8px}.hb .hl{color:var(--ink)}.hb .hv{color:var(--mute);white-space:nowrap}
+.hb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) 8.8em;gap:8px;align-items:center;font-size:13px;margin:0 0 8px}.hb .hl{color:var(--ink)}.hb .hv{color:var(--mute);white-space:nowrap}
 .hb .ht{display:flex;height:16px;background:#f3e7da;border-radius:6px;overflow:hidden}.hb .ht i{display:block;height:100%;font-style:normal;font-size:11px;font-weight:700;text-align:center;line-height:16px}
 .hb .ht i.hi,.cb i.hi{background:linear-gradient(90deg,#2f9a57,#1b7f3b)}.hb .ht i.mid,.cb i.mid{background:linear-gradient(90deg,#f2b544,#e88a3a)}.hb .ht i.lo,.cb i.lo{background:linear-gradient(90deg,#e0574c,#b3261e)}
-.key{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:6px}.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:6px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 .cols4{display:flex;gap:10px;align-items:flex-end;height:150px}.cb{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;font-size:12px}.cb .cv{font-weight:700;color:var(--plum)}.cb .ct{flex:1;width:70%;display:flex;align-items:flex-end;border-bottom:2px solid var(--line)}.cb .ct i{display:block;width:100%;border-radius:6px 6px 0 0}.cb .cl{color:var(--mute);margin-top:4px;white-space:nowrap}
 .tscroll{overflow-x:auto}.ev{padding:9px 0;border-top:1px solid var(--line);font-size:14px}.said h3+.ev{border-top:0}.ev>b{margin-right:8px;color:var(--plum)}.ev .nt{margin-top:3px;color:var(--bad);font-size:13px}.ev .nt.ok{color:var(--ok)}.ev .nq{margin-top:3px;font-style:italic}
 .phead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.phead h2{margin:0 auto 0 0}.big{font-size:16px;margin:8px 0 12px}.big small{color:var(--mute);font-size:13px;margin-left:6px}
@@ -227,8 +228,8 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 
 </style>
 </head>
-<body data-build="s1u1-fc41c997cb-a423e1de">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-fc41c997cb-a423e1de" };</script>
+<body data-build="s1u1-24d3d4f8ad-7f0b7102">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-24d3d4f8ad-7f0b7102" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -236,20 +237,20 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 var S1S = {
   S: { // every pupil string, verbatim from the prototype (SPEC \u00a73); G3 checks it
     app: "OLS Unit 1 Revision", hello: "Hello, ", staff: "Staff", home: "Unit 1 revision", later: "Comes later", open: "Open",
-    liveMeta: "4 stages \u00b7 82 questions \u00b7 126 marks", back: "Back to my topics",
+    liveMeta: "{s} stages \u00b7 {q} questions \u00b7 {m} marks", back: "Back to my topics",
     topicLine: "Answer every question in each stage. You see the mark scheme straight after each answer.",
     earlier: "Earlier rounds", lookback: "Look back", start: "Start", carry: "Carry on", openedBy: " \u00b7 opened by your teacher",
-    notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", done: "Done \u00b7 {m} of {x} marks",
-    stagebar: "Stage {s} of 4 \u00b7 {name} \u00b7 Question {i} of {n}",
-    pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", only2: "You can only pick two.", only3: "You can only pick three.",
+    notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", allIn: "All answered \u00b7 one last step", done: "Done \u00b7 {m} of {x} marks",
+    stagebar: "Stage {s} of {k} \u00b7 {name} \u00b7 Question {i} of {n}",
+    pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", pick4: "Pick four.", only2: "You can only pick two.", only3: "You can only pick three.", only4: "You can only pick four.",
     writeFirst: "Write your answer in your own words first.", writeNote: "This writing is not marked. The marked parts come next.", writeDone: "I've written my answer", writeKept: "Your writing is kept. Now answer the marked parts below.", wroteHint: "Compare it with the mark scheme above.", writePh: "Type your answer here.", skipWrite: "I'd rather skip the writing",
     typeIt: "Type your answer.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose\u2026",
     chooseLine: "Pick the right word in each line.", gapsPool: "Fill each gap with a word from the list.", gapsType: "Fill each gap.",
     check: "Check my answer", help: "Answer every part first.", got: "You got {m} of {x} {w}.", mark: "mark", marks: "marks",
-    scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage",
+    scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage", lbEnd: "Back to the topic",
     howGo: "How did it go?", closest: "Pick the one that is closest:", rates: ["I couldn't do most of these", "I got some, but I'm not sure why", "I got most of these", "I could explain these to someone else"],
     tick: "Tick what you can do now:", added: "Is there anything else you'd like to add?", addPh: "Type it here, in a few words.",
-    saveCarry: "Save and carry on", wholeTopic: "Digital Data \u2014 the whole topic", unsure: "Is there any part you are still unsure about?", fine: "No, I'm fine with all of it",
+    saveCarry: "Save and carry on", wholeTopic: "{t} \u2014 the whole topic", unsure: "Is there any part you are still unsure about?", fine: "No, I'm fine with all of it",
     anything: "Anything else your teacher should know?", saveSee: "Save and see my marks", scored: "You scored {m} of {x} marks ({p}%)", flagged: "Questions you flagged", noFlag: "You flagged nothing.",
     round: "Round ", rateErr: "Pick the one that is closest before you carry on."
   },
@@ -263,7 +264,7 @@ var S1S = {
     expired: "Your sign-in has expired. Reload the page.",
     pass: "Staff passcode", enter: "Enter", badPass: "Passcode not recognised.",
     tabs: ["Classes", "Topics", "Rounds", "Tracker", "Export"], className: "Class name", classPh: "11A DT", make: "Create",
-    roundOpen: "Digital Data \u00b7 Round {n} open", openClass: "Open round {n} for the class", openPupil: "Open round {n} for one pupil",
+    roundOpen: "{t} \u00b7 Round {n} open", openClass: "Open round {n} for the class", openPupil: "Open round {n} for one pupil",
     csv: "Download CSV", flagHigh: "Thinks it's fine, isn't", flagLow: "Doing fine, doesn't think so",
     locked: "Not opened yet", lockedSub: "Your teacher opens topics in class.",
     lockedMark: "This topic is locked for now, so it cannot be marked. Anything you typed is kept; ask your teacher to open the topic.",
@@ -318,6 +319,8 @@ var S1S = {
 var App = (function () {
   var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
   var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
+  // a question's opening words for the flagged list; the server sends the same (qWords_ in Code.gs)
+  function qWords(t) { t = String(t || "").replace(/___/g, "\u2026"); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, "") + " \u2026" : t; }
   function h(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
@@ -362,6 +365,10 @@ var App = (function () {
     });
   }
   // ---- record (from apiBoot / apiStage) ----
+  // v6: ME.topics holds every built topic; ME.topic is the one she has open (TOPIC), so the screens below read one topic at a time
+  function pick(id) { ME.topic = (ME.topics || []).filter(function (t) { return t.id === id; })[0] || (ME.topics || [])[0]; if (ME.topic) TOPIC = ME.topic.id; }
+  function stNs() { return ME.topic.stages.map(function (t) { return t.n; }); }
+  function ck(n, st) { return TOPIC + "|" + n + "|" + st; }
   function roundNo() { return ME.topic.round; }
   function RS(n) {
     n = n || roundNo(); var r = ME.topic.rounds[n];
@@ -369,16 +376,16 @@ var App = (function () {
     return r;
   }
   function stage(st) { return ME.topic.stages[st - 1]; }
-  function TOT() { return ME.topic.stages.reduce(function (t, s) { return t + s.x; }, 0); }
-  function QN() { return ME.topic.stages.reduce(function (t, s) { return t + s.q; }, 0); }
+  function TOT(n) { var r = RS(n); return stNs().reduce(function (t, st) { return t + r.s[st].x; }, 0); } // a round's own total: a later round can hold other questions
+  function QN(n) { var r = RS(n); return stNs().reduce(function (t, st) { return t + r.s[st].n; }, 0); }
   function stageTotals(st, n) { var g = RS(n).s[st]; return { a: g.a, m: g.m, n: g.n, x: g.x }; }
   function loadStage(n, st, fresh) {
-    var k = n + "|" + st; if (CACHE[k] && !fresh) return Promise.resolve(CACHE[k]);
+    var k = ck(n, st); if (CACHE[k] && !fresh) return Promise.resolve(CACHE[k]);
     if (PROM[k] && !fresh) return PROM[k];
     PROM[k] = call("apiStage", { round: n, stage: st }).then(function (r) { CACHE[k] = r; delete PROM[k]; return r; }, function (e) { delete PROM[k]; throw e; });
     return PROM[k];
   }
-  function reboot() { return call("apiBoot", {}).then(function (r) { ME = r; CACHE = {}; PROM = {}; return r; }); }
+  function reboot() { return call("apiBoot", {}).then(function (r) { ME = r; CACHE = {}; PROM = {}; pick(TOPIC); return r; }); }
   function closed(e) { if (e && e.code === "round-closed") reboot().then(topic).catch(function () {}); }
   // ---- shell ----
   function shell(crumb, body, bar) {
@@ -403,27 +410,33 @@ var App = (function () {
     nm.oninput = function () { b.disabled = !nm.value.trim(); }; nm.onkeydown = function (ev) { if (ev.key === "Enter") send(); }; b.onclick = send; nm.focus();
   }
   // ---- home ----
-  function home() {
+  function home() { // one live tile per built topic (v6), each with its own round line; the rest say "Comes later"
     CUR = { screen: "home" };
-    var n = roundNo(), r = RS(n), a = 0, m = 0; [1, 2, 3, 4].forEach(function (st) { var t = stageTotals(st, n); a += t.a; m += t.m; });
-    var line = S.round + n + (n > 1 ? " open" : "") + " \u00b7 " + (r.done ? "done \u00b7 " + m + " of " + TOT() + " marks" : a ? a + " of " + QN() + " questions done" : "not started");
     if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
-    var shut = !ME.topic.open, foot = shut ? '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>' : '<button class="btn sm" id="openLive">' + S.open + '</button><span>' + h(line) + '</span>';
-    var tiles = TOPICS.map(function (t, i) { var live = i === 0; return '<div class="topic' + (live ? (shut ? ' shut' : '') : ' off') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(t) + '</div><div class="meta">' + (live ? S.liveMeta : '') + '</div><div class="foot">' + (live ? foot : S.later) + '</div></div>'; }).join("");
-    shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>')); wire("openLive", topic);
+    var tiles = TOPICS.map(function (name, i) {
+      var tp = ME.topics.filter(function (t) { return t.spec === "1." + (i + 1); })[0];
+      if (!tp) return '<div class="topic off"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta"></div><div class="foot">' + S.later + '</div></div>';
+      var n = tp.round, r = tp.rounds[n] || { s: {} }, a = 0, m = 0, x = 0, q = 0;
+      Object.keys(r.s).forEach(function (st) { a += r.s[st].a; m += r.s[st].m; x += r.s[st].x; q += r.s[st].n; });
+      var line = S.round + n + (n > 1 ? " open" : "") + " \u00b7 " + (r.done ? "done \u00b7 " + m + " of " + x + " marks" : a ? a + " of " + q + " questions done" : "not started");
+      var foot = tp.open ? '<button class="btn sm" data-open="' + h(tp.id) + '">' + S.open + '</button><span>' + h(line) + '</span>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
+      return '<div class="topic' + (tp.open ? '' : ' shut') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta">' + fmt(S.liveMeta, { s: tp.stages.length, q: q, m: x }) + '</div><div class="foot">' + foot + '</div></div>';
+    }).join("");
+    shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
+    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { pick(b.dataset.open); topic(); }; });
   }
   // ---- topic front ----
   function topic() {
     CUR = { screen: "topic" };
-    var n = roundNo(), rows = [1, 2, 3, 4].map(function (st) {
+    var n = roundNo(), rows = stNs().map(function (st) {
       var t = stageTotals(st, n), s = RS(n).s[st], status, cls, btn;
       if (s.e) { status = fmt(S.done, { m: t.m, x: t.x }); cls = "done"; btn = S.lookback; }
-      else if (t.a) { status = t.a === t.n ? fmt(S.done, { m: t.m, x: t.x }) : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
+      else if (t.a) { status = t.a === t.n ? S.allIn : fmt(S.inProg, { a: t.a, b: t.n }); cls = "now"; btn = S.carry; }
       else { status = S.notStarted; cls = ""; btn = S.start; }
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' \u00b7 ' + h(stage(st).title) + '<small>' + t.n + ' questions \u00b7 ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
-    var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; [1, 2, 3, 4].forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' \u00b7 ' + m + ' of ' + TOT() + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
-    var body = el('<div><h1>Digital Data</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
+    var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' \u00b7 ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
+    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
     shell(crumbHome(), body); wire("cHome", home); wire("seeSum", function () { summary(n); });
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
@@ -432,15 +445,15 @@ var App = (function () {
       };
     });
     body.querySelectorAll("[data-lb]").forEach(function (x) { x.onclick = function () { summary(+x.dataset.lb); }; });
-    [1, 2, 3, 4].forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
+    stNs().forEach(function (st) { if (!RS(n).s[st].e) loadStage(n, st).catch(function () {}); }); // warm the stages she is likely to open
   }
   // ---- question ----
-  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
+  function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, k: ME.topic.stages.length, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
   // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
   function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
   function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
-  function tiles(options, n, lead, partIdx) { return '<div class="lead">' + lead + '</div><div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
-  function leadFor(n) { return n === 1 ? S.pick1 : n === 2 ? S.pick2 : S.pick3; }
+  function tiles(options, n, lead, partIdx) { return (lead ? '<div class="lead">' + lead + '</div>' : "") + '<div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
+  function leadFor(n) { return S["pick" + n]; } // "Pick four." for a four-pick question, never "Pick three." (live sit, 14 Oct 2026)
   function complete(view, answer) { // the judge's complete(), key-free: Check waits for every part
     answer = answer || {};
     function picksOk(n, picks) { return Array.isArray(picks) && picks.length === n; }
@@ -454,19 +467,19 @@ var App = (function () {
   }
   function question(st, i, replay, n) {
     n = n || roundNo(); clearTimeout(draftT);
-    var D = CACHE[n + "|" + st], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
+    var D = CACHE[ck(n, st)], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
     CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
-    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, leadFor(p.n), k); }).join("") + '</div>';
+    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, /\bpick\b/i.test(p.label || "") ? "" : leadFor(p.n), k) /* a label that already says "pick two" gets no second "Pick two." (live look, 14 Oct 2026) */; }).join("") + '</div>';
     else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
     else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">\u2192</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select><span class="said"></span> <span class="mk"></span></span></div>'; }).join("") + '</div>';
     else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
     else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text" maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
-    function refresh() { var a = collect(); document.getElementById("check").disabled = sending || !complete(v, a); }
+    function refresh() { var a = collect(), ok = complete(v, a); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; } // the "Answer every part first." line goes once she has (live look, 14 Oct 2026)
     function collect() {
       var a = {};
       if (v.form === "pick1" || v.form === "pickN") a.picks = ans.picks.slice();
@@ -485,7 +498,7 @@ var App = (function () {
     }
     body.querySelectorAll(".opts").forEach(function (grp) {
       var nn = +grp.dataset.n, part = grp.dataset.part === "" ? null : +grp.dataset.part, bucket = part == null ? ans : ans.parts[part];
-      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(nn === 2 ? S.only2 : S.only3); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
+      grp.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { if (grp.classList.contains("locked")) return; var t = o.dataset.t, at = bucket.picks.indexOf(t); if (at !== -1) { bucket.picks.splice(at, 1); o.classList.remove("on"); } else if (nn === 1) { bucket.picks = [t]; grp.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("on"); }); o.classList.add("on"); } else if (bucket.picks.length >= nn) { toast(S["only" + nn]); return; } else { bucket.picks.push(t); o.classList.add("on"); } refresh(); }; });
     });
     body.querySelectorAll(".ch").forEach(function (ch) { var k = +ch.dataset.k; ch.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { if (ch.classList.contains("locked")) return; ans.choices[k] = b.dataset.t; ch.querySelectorAll(".tog").forEach(function (x) { x.classList.toggle("on", x === b); }); refresh(); }; }); });
     body.querySelectorAll("input,select,textarea").forEach(function (x) { x.oninput = x.onchange = function () { said(body); if (v.form === "writepick" && x.id === "wtext" && !ans.revealed) { document.getElementById("wdone").disabled = !x.value.trim(); document.getElementById("skipW").style.display = x.value.trim() ? "none" : ""; } refresh(); draft(); }; });
@@ -493,7 +506,7 @@ var App = (function () {
     wire("wdone", function () { reveal(false); });
     wire("skipW", function () { reveal(true); });
     wire("idk", function () { if (sending || stored) return; body.querySelectorAll("input[data-k]").forEach(function (x) { x.value = ""; }); submit(true); });
-    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; };
+    if (v.form === "writepick") refresh = function () { var a = collect(); var ok = a.parts.every(function (p, k) { return p.picks.length === v.parts[k].n; }) && (a.text.trim() || ans.skipped); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; };
     function submit(idk) {
       if (sending) return;
       var a = collect(); if (idk) a.texts = a.texts.map(function () { return ""; });
@@ -513,18 +526,18 @@ var App = (function () {
       var parts = r.parts ? r.parts : [r];
       parts.forEach(function (pr, k) { var grp = body.querySelector('.opts[data-part="' + (r.parts ? k : '') + '"]'); if (!grp || !pr.options) return; pr.options.forEach(function (o) { var t = grp.querySelector('.opt[data-t="' + h(o.text).replace(/"/g, '&quot;') + '"]'); if (!t) return; var picked = t.classList.contains("on"); t.classList.remove("on"); if (picked && o.key) { t.classList.add("hit"); t.querySelector(".mk").textContent = "\u2713"; } else if (picked) { t.classList.add("miss"); t.querySelector(".mk").textContent = "\u2717"; } else if (o.key) { t.classList.add("key"); t.querySelector(".mk").textContent = "\u2713"; } }); });
       if (v.form === "type") body.querySelectorAll(".item").forEach(function (it, k) { var p = r.per[k]; it.querySelector(".mk").textContent = p && p.hit ? " \u2713" : " \u2717"; it.querySelector(".mk").style.color = p && p.hit ? "var(--ok)" : "var(--bad)"; });
-      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.want) + '</span>'; });
-      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717 ' + h(p.gaps ? p.want[j] : p.want) + '</span>'; }); });
+      if (v.form === "pairs" || v.form === "choose") body.querySelectorAll(".pr,.ch").forEach(function (row, k) { var p = r.per[k]; row.querySelector(".mk").innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717</span> <b style="color:var(--ok)">' + h(p.want) + '</b>'; });
+      if (v.form === "gaps") r.per.forEach(function (p) { (p.gaps || [p.gap]).forEach(function (g, j) { var m = body.querySelector('.mk[data-g="' + g + '"]'); if (m) m.innerHTML = p.hit ? '<span style="color:var(--ok)">\u2713</span>' : '<span style="color:var(--bad)">\u2717</span> <b style="color:var(--ok)">' + h(p.gaps ? p.want[j] : p.want) + '</b>'; }); });
       var cls = r.marks === r.max ? "ok" : r.marks ? "part" : "bad";
-      var lines = r.scheme.lines.map(function (l) { return '<li>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
-      var wrote = (v.form === "writepick" || v.form === "type") ? '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" \u00b7 ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
-      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : S.finish) + '</button></div>';
+      var lines = r.scheme.lines.map(function (l) { return '<li' + (l.head ? ' class="head"' : "") + '>' + h(l.text) + (l.marks ? ' <span class="src">(' + l.marks + (l.marks === 1 ? ' mark' : ' marks') + ')</span>' : '') + '</li>'; }).join("");
+      var wrote = ((v.form === "type" && a.texts.some(Boolean)) || (v.form === "writepick" && a.text)) ? /* a skipped writing box or "I don't know" leaves no empty "What you wrote" (live look, 14 Oct 2026) */ '<div class="lead">' + S.wrote + '</div><div class="wrote">' + h(v.form === "type" ? a.texts.filter(Boolean).join(" \u00b7 ") : a.text) + '</div>' + (v.form === "writepick" && a.text ? '<div class="help">' + S.wroteHint + '</div>' : '') : '';
+      document.getElementById("after").innerHTML = '<p class="result ' + cls + '">' + fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks }) + '</p><div class="card scheme"><h3>' + S.scheme + '</h3><ul>' + lines + '</ul>' + (r.scheme.note ? '<div class="note">' + h(r.scheme.note) + '</div>' : '') + '</div>' + wrote + '<div class="actions"><span class="flag' + (stored.f ? ' on' : '') + '" id="flag"><i></i>' + S.flag + '</span><button class="btn" id="next" style="margin-left:auto">' + (i + 1 < ids.length ? S.next : replay ? S.lbEnd : S.finish) + '</button></div>';
       document.getElementById("check").parentNode.style.display = "none";
       wire("flag", function () { // saved at once; put back if the server says no
         var on = !stored.f, box = document.getElementById("flag"); stored.f = on; box.classList.toggle("on", on);
         call("apiFlag", { round: n, qid: qid, on: on }, { save: true }).then(function (res) {
           stored.f = !!res.f; if (box.isConnected) box.classList.toggle("on", stored.f);
-          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src });
+          var g = RS(n).s[st]; g.f = g.f.filter(function (x) { return x.id !== qid; }); if (stored.f) g.f.push({ id: qid, src: src, q: qWords(v.q || v.text) });
         }, function () { stored.f = !on; if (box.isConnected) box.classList.toggle("on", stored.f); });
       });
       wire("next", function () { if (replay) return i + 1 < ids.length ? lookback(n, st, i + 1) : topic(); i + 1 < ids.length ? question(st, i + 1) : stagecard(st); });
@@ -546,16 +559,16 @@ var App = (function () {
       refresh();
     }
   }
-  function lookback(n, st, i) { var D = CACHE[n + "|" + st]; while (i < D.order.length && !D.done[D.order[i]]) i++; if (i >= D.order.length) return topic(); question(st, i, true, n); }
+  function lookback(n, st, i) { var D = CACHE[ck(n, st)]; while (i < D.order.length && !D.done[D.order[i]]) i++; if (i >= D.order.length) return topic(); question(st, i, true, n); }
   // ---- cards ----
   function rateHtml(id) { return '<div class="lead">' + S.closest + '</div><div class="opts rate" id="' + id + '">' + S.rates.map(function (t, k) { return '<div class="opt" data-r="' + (k + 1) + '"><i></i><span>' + t + '</span></div>'; }).join("") + '</div>'; }
   function wireRate(box, cb) { box.querySelectorAll(".opt").forEach(function (o) { o.onclick = function () { box.querySelectorAll(".opt").forEach(function (x) { x.classList.toggle("on", x === o); }); cb(+o.dataset.r); }; }); }
   function stagecard(st) {
     CUR = { screen: "stagecard", st: st };
-    var n = roundNo(), t = stage(st), D = CACHE[n + "|" + st], rating = 0;
+    var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' \u00b7 ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
       b.disabled = true;
@@ -567,9 +580,9 @@ var App = (function () {
   function topiccard() {
     CUR = { screen: "topiccard" };
     var n = roundNo(), rating = 0;
-    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + S.wholeTopic + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + [1, 2, 3, 4].map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">Digital Data</a>', body); wire("cHome", home); wire("cTopic", topic);
-    wireRate(document.getElementById("rate"), function (r) { rating = r; });
+    var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
+    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
+    wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
       var err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -581,14 +594,14 @@ var App = (function () {
   }
   function summary(n) {
     CUR = { screen: "summary", n: n };
-    var R = RS(n), m = 0, rows = [1, 2, 3, 4].map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r" data-hue="' + st + '"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b><div class="bar"><i style="--p:' + Math.round(100 * t.m / t.x) + '%"></i></div></div>'; }).join("");
-    var flagged = []; [1, 2, 3, 4].forEach(function (st) {
-      var D = CACHE[n + "|" + st], f = R.s[st].f.slice();
+    var R = RS(n), m = 0, rows = stNs().map(function (st) { var t = stageTotals(st, n); m += t.m; return '<div class="r" data-hue="' + st + '"><span>' + h(stage(st).title) + '</span><b>' + t.m + ' of ' + t.x + '</b><div class="bar"><i style="--p:' + Math.round(100 * t.m / t.x) + '%"></i></div></div>'; }).join("");
+    var flagged = []; stNs().forEach(function (st) {
+      var D = CACHE[ck(n, st)], f = R.s[st].f.slice();
       if (D) f.sort(function (x, y) { return D.order.indexOf(x.id) - D.order.indexOf(y.id); });
-      f.forEach(function (x) { flagged.push('<div class="r">' + (R.z ? '<span>' + h(x.src) + ' \u00b7 Stage ' + st + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + h(x.src) + ' \u00b7 Stage ' + st + '</span>') + '</div>'); });
+      f.forEach(function (x) { var w = h(x.q || x.src), where = '<span class="src">Stage ' + st + (x.src && x.src !== "new" ? ' \u00b7 ' + h(x.src) : '') + '</span>'; flagged.push('<div class="r fl">' + (R.z ? '<span>' + w + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + w + '</span>') + where + '</div>'); });
     });
-    var tot = TOT();
-    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 Digital Data</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
+    var tot = TOT(n);
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
     shell(crumbHome(), body); wire("cHome", home); wire("back", home);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
@@ -598,15 +611,15 @@ var App = (function () {
     guard(X.signing);
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
-      ME = r; r.needName ? nameScreen() : home();
+      ME = r; pick(TOPIC); r.needName ? nameScreen() : home();
       if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
         pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
-      if (BOOT.sit === "1" && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
+      if (BOOT.sit && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
-    reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
+    pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
   return { boot: boot, t: T };
 })();
 
@@ -617,7 +630,7 @@ var App = (function () {
  * or one pupil), Tracker (v4, DECISIONS \u00a717: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false;
+  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = []; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -652,13 +665,15 @@ var Staff = (function () {
   }
   function bar() { return '<div class="tabs">' + X.tabs.map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>'; }).join("") + '</div>'; }
   function clsPick() { return CLASSES.length > 1 ? '<label for="cp">' + W.cls + '</label><select id="cp">' + CLASSES.map(function (c) { return '<option value="' + h(c.slug) + '"' + (c.slug === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>'; }).join("") + '</select>' : '<b>' + h((CLASSES[0] || {}).name || "") + '</b>'; }
+  function topPick() { return BUILT.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + BUILT.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
   function wireCommon(body) {
     body.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { TAB = +b.dataset.tab; armed = false; tabs(); }; });
     var cp = body.querySelector("#cp"); if (cp) cp.onchange = function () { CLS = cp.value; ROUND = 0; armed = false; tabs(); };
+    var tq = body.querySelector("#tq"); if (tq) tq.onchange = function () { TP = tq.value; ROUND = 0; armed = false; tabs(); };
   }
   function tabs() {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
-      CLASSES = r.classes; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
+      CLASSES = r.classes; BUILT = r.topics || BUILT; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
       [classes, topics, rounds, tracker, exporter][TAB]();
     }).catch(fail);
@@ -699,25 +714,25 @@ var Staff = (function () {
     T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
       var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
       var rows = S1S.TOPICS.map(function (name, i) {
-        var id = i === 0 ? "digital-data" : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
+        var tp = BUILT.filter(function (t) { return t.spec === "1." + (i + 1); })[0], id = tp ? tp.id : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
         return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
       }).join("");
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + h(r.className) + '</h2><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
       page(body); wireCommon(body);
       body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
     }).catch(fail);
   }
   // ---- Rounds ----
   function rounds() {
-    T.call("apiStaff", { op: "rounds", cls: CLS }).then(function (r) {
+    T.call("apiStaff", { op: "rounds", cls: CLS, topic: TP }).then(function (r) {
       var pup = r.pupils.map(function (p, k) { return '<option value="' + k + '">' + h(p.name) + ' \u00b7 ' + S.round + p.round + '</option>'; }).join("");
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><h2>' + T.fmt(X.roundOpen, { n: r.round }) + '</h2><div class="actions"><button class="btn" id="oc">' + T.fmt(X.openClass, { n: r.round + 1 }) + '</button></div></div><div class="card">' + (r.pupils.length ? '<div class="srow"><select id="pp">' + pup + '</select><button class="btn sm ghost" id="op"></button></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><span class="link" id="clr">' + W.clearMine + '</span></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + topPick() + '</div><h2>' + T.fmt(X.roundOpen, { t: h(r.title), n: r.round }) + '</h2><div class="actions"><button class="btn" id="oc">' + T.fmt(X.openClass, { n: r.round + 1 }) + '</button></div></div><div class="card">' + (r.pupils.length ? '<div class="srow"><select id="pp">' + pup + '</select><button class="btn sm ghost" id="op"></button></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div><span class="link" id="clr">' + W.clearMine + '</span></div>');
       page(body); wireCommon(body);
       var pp = document.getElementById("pp"), op = document.getElementById("op");
       function label() { if (op) op.textContent = T.fmt(X.openPupil, { n: r.pupils[+pp.value].round + 1 }); }
       if (pp) { pp.onchange = label; label(); }
-      T.wire("oc", function () { this.disabled = true; T.call("apiStaff", { op: "openClass", cls: CLS }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }).catch(fail); });
-      T.wire("op", function () { var p = r.pupils[+pp.value]; op.disabled = true; T.call("apiStaff", { op: "openPupil", cls: CLS, email: p.email }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }, function () { op.disabled = false; }); });
+      T.wire("oc", function () { this.disabled = true; T.call("apiStaff", { op: "openClass", cls: CLS, topic: TP }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }).catch(fail); });
+      T.wire("op", function () { var p = r.pupils[+pp.value]; op.disabled = true; T.call("apiStaff", { op: "openPupil", cls: CLS, topic: TP, email: p.email }).then(function (x) { T.toast(T.fmt(W.opened, { n: x.round })); rounds(); }, function () { op.disabled = false; }); });
       T.wire("clr", function () {
         var x = document.getElementById("clr");
         if (!armed) { armed = true; x.textContent = T.fmt(W.clearConfirm, { name: r.className }); return; }
@@ -748,7 +763,7 @@ var Staff = (function () {
     var rate = r.stages.map(function (st) {
       var k = [0, 0, 0, 0], n = 0; r.rows.forEach(function (p) { var e = p.s[st.n].e; if (e && e.rating) { k[e.rating - 1]++; n++; } });
       return '<div class="hb"><span class="hl">' + h(stTitle(st)) + '</span><span class="ht stack">' + (n ? k.map(function (c, i) { return c ? '<i class="' + RC[i] + '" style="width:' + (100 * c / n) + '%" title="' + h(S.rates[i]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + (n ? (n === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: n })) : W.noCards) + '</span></div>';
-    }).join("") + '<div class="key">' + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+    }).join("") + '<div class="legend">' /* not "key": that is the pupil page's missed-answer row (live look, 14 Oct 2026) */ + S.rates.map(function (t, i) { return '<span><i class="' + RC[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
     var bands = [0, 0, 0, 0], names = ["0\u201324%", "25\u201349%", "50\u201374%", "75\u2013100%"], any = 0;
     r.rows.forEach(function (p) { var t = tot(p, r.stages); if (t.ax) { var q = pc(t.m, t.ax); bands[q >= 75 ? 3 : q >= 50 ? 2 : q >= 25 ? 1 : 0]++; any++; } });
     var top = Math.max(1, Math.max.apply(null, bands));
@@ -772,7 +787,7 @@ var Staff = (function () {
     return '<div class="card said"><h2>' + W.said + '</h2><p class="hint">' + W.saidNote + '</p>' + parts + '</div>';
   }
   function tracker() {
-    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+    T.call("apiStaff", { op: "tracker", cls: CLS, topic: TP, round: ROUND || undefined }).then(function (r) {
       ROUND = r.round;
       var rows = r.rows.map(function (p, k) {
         var t = tot(p, r.stages), fl = [];
@@ -784,7 +799,7 @@ var Staff = (function () {
         }).join("");
         return '<tr><td><span class="link" data-p="' + k + '">' + h(p.name) + '</span></td><td class="seen">' + seen(p.seen) + '</td><td>' + (t.a ? score(t.m, t.ax) + (t.a < t.n ? '<br><small>' + T.fmt(W.notDone, { a: t.a, n: t.n }) + '</small>' : '') : '\u2014') + '</td>' + cells + '<td>' + (p.E ? rateChip(p.E.rating) : '\u2014') + '</td><td>' + (fl.length ? h(fl.join(", ")) : '\u2014') + '</td></tr>';
       }).join("");
-      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 Digital Data \u00b7 ' + S.round + r.round + '</h1>' +
+      var body = T.el('<div>' + bar() + '<div class="srow">' + clsPick() + topPick() + roundPick(r.maxRound) + '</div><h1>Tracker \u00b7 ' + h(r.className) + ' \u00b7 ' + h(r.title) + ' \u00b7 ' + S.round + r.round + '</h1>' +
         (r.rows.length ? graphs(r) : '') + '<div class="card">' + (r.rows.length ? '<p class="hint">' + W.soFar + '</p><div class="tscroll"><table class="track"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th><th>' + W.total + '</th>' + r.stages.map(function (st) { return '<th>' + h(stTitle(st)) + '</th>'; }).join("") + '<th>' + W.whole + '</th><th>' + W.flagged + '</th></tr>' + rows + '</table></div>' : '<p class="sub" style="margin:0">' + W.noPupils + '</p>') + '</div>' +
         (r.rows.length ? saidCard(r) : '') + '</div>');
       page(body); wireCommon(body);
@@ -794,7 +809,7 @@ var Staff = (function () {
   }
   // ---- One pupil (v4): totals and a chart, the topic card, then each stage with its card and every answered question in words ----
   function pupilPage(p) {
-    T.call("apiStaff", { op: "pupil", cls: CLS, email: p.email, round: ROUND }).then(function (r) {
+    T.call("apiStaff", { op: "pupil", cls: CLS, topic: TP, email: p.email, round: ROUND }).then(function (r) {
       var row = r.row, t = tot(row, r.stages), E = row.E, title = function (n) { return r.stages[n - 1].title; };
       var head = '<div class="card"><div class="phead"><h2>' + h(r.name) + ' \u00b7 ' + S.round + r.round + '</h2><button class="btn sm ghost" id="back">' + W.back + '</button></div>' +
         '<p class="sub seen">' + T.fmt(W.lastUsed, { when: seen(row.seen, true) }) + '</p>' +
@@ -819,14 +834,14 @@ var Staff = (function () {
   }
   // ---- Export ----
   function exporter() {
-    T.call("apiStaff", { op: "tracker", cls: CLS, round: ROUND || undefined }).then(function (r) {
+    T.call("apiStaff", { op: "tracker", cls: CLS, topic: TP, round: ROUND || undefined }).then(function (r) {
       ROUND = r.round;
-      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + roundPick(r.maxRound) + '</div><div class="actions"><button class="btn" id="csv">' + X.csv + '</button></div></div></div>');
+      var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + topPick() + roundPick(r.maxRound) + '</div><div class="actions"><button class="btn" id="csv">' + X.csv + '</button></div></div></div>');
       page(body); wireCommon(body);
       var rp = document.getElementById("rp"); rp.onchange = function () { ROUND = +rp.value; };
       T.wire("csv", function () {
         var b = document.getElementById("csv"); b.disabled = true;
-        T.call("apiStaff", { op: "csv", cls: CLS, round: ROUND }).then(function (x) {
+        T.call("apiStaff", { op: "csv", cls: CLS, topic: TP, round: ROUND }).then(function (x) {
           b.disabled = false;
           var blob = new Blob(["\ufeff" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
           a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
@@ -841,9 +856,9 @@ var Staff = (function () {
 </script>
 <script>
 /* sit.js \u2014 the scripted sit (G2 on the harness, G4 on the live /dev link). Runs only with ?sit=1 for the owner (or the
- * harness's dev user). It clears the owner's own record in the class, then plays all four stages through the page itself
+ * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=software Software) through the page itself
  * (tiles, boxes, lists, toggles, Check, Next) with SitPolicy's answers, flags every 7th question, reloads mid-stage, saves
- * every card, checks the summary, restores all 82 marked questions, tries a repeat mark, and opens round 2 for itself.
+ * every card, checks the summary, restores every marked question, tries a repeat mark, and opens round 2 for itself.
  * The report is a <pre id="sitReport"> (SIT PASS/FAIL lines, MARKS, a MARKS# hash the gate recomputes in node). */
 var Sit = (function () {
   var T, S = S1S.S, lines = [], fails = 0, errors = [];
@@ -872,7 +887,8 @@ var Sit = (function () {
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 18 <= x.clientWidth) return;
+      var arrow = (cs.appearance || cs.webkitAppearance) === "none" ? 0 : 18; // the page's own arrow sits inside the right padding; a browser's own arrow needs room of its own
+      if (cv.measureText(x.options[x.selectedIndex].text).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + arrow <= x.clientWidth + 1) return;
       var said = x.parentNode.querySelector(".said"); // on a phone the chosen words may show whole in the line under the list instead
       if (said && said.clientWidth && said.textContent === x.options[x.selectedIndex].text && said.scrollWidth <= said.clientWidth + 1) return;
       bad.push("list text cut off: " + x.value.slice(0, 30));
@@ -893,7 +909,10 @@ var Sit = (function () {
     if ((v.form === "pick1" || v.form === "pickN") && all('.opts[data-part=""] .opt').length !== v.options.length) miss.push("tiles");
     return miss;
   }
-  var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n;
+  var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
+    TID = "digital-data";
+  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
+  function sts() { var a = []; for (var i = 1; i <= K; i++) a.push(i); return a; }
   function answerOne() { // fills the question on screen the way a pupil would, then presses Check (or I don't know)
     var c = cur(), v = c.v, a = SitPolicy.answer(v, email + "|" + n), miss = rendered(v);
     if (miss.length) ok("rendered " + c.qid, false, miss.join(","));
@@ -909,6 +928,7 @@ var Sit = (function () {
     if (v.form === "gaps") all("[data-k]").forEach(function (x, k) { set(x, a.fills[k]); });
     var chk = $("#check");
     if (chk.disabled) ok("check enabled " + c.qid, false, v.form);
+    var hp = $("#help"); if (hp && getComputedStyle(hp).display !== "none") ok("answer-first line gone once answered " + c.qid, false, hp.textContent); // live look, 14 Oct 2026
     chk.click();
   }
   function playStage(st) {
@@ -924,7 +944,12 @@ var Sit = (function () {
         var want = T.fmt(S.got, { m: r.marks, x: r.max, w: r.max === 1 ? S.mark : S.marks });
         if ($("#after .result").textContent !== want) ok("result line " + c.qid, false, $("#after .result").textContent);
         if (!$(".scheme li")) ok("scheme " + c.qid, false, "no mark scheme lines");
+        if ($(".wrote") && !$(".wrote").textContent.trim()) ok("no empty What you wrote " + c.qid, false, "empty box");
+        var leads = all("#qcard .lead").map(function (x) { return x.textContent.trim(); });
+        leads.forEach(function (t, k) { if (/\bpick\b/i.test(t) && /^Pick (one|two|three|four|five|six)\.$/.test(leads[k + 1] || "")) ok("no instruction said twice " + c.qid, false, t + " / " + leads[k + 1]); });
+        all(".scheme li:not(.head)").forEach(function (x) { if (leads.indexOf(x.textContent.replace(/\s*\(\d+ marks?\)$/, "").trim()) !== -1) ok("mark scheme never repeats an instruction " + c.qid, false, x.textContent); });
         layout("after " + c.qid);
+        all(".opts").forEach(function (g) { var z = [].map.call(g.querySelectorAll(".opt>span:not(.mk)"), function (x) { return getComputedStyle(x).fontSize; }); if (z.some(function (q) { return q !== z[0]; })) ok("marked answers all one size " + c.qid, false, z.join(" ")); }); // a missed answer once took the tracker legend's small type (live look, 14 Oct 2026)
         var flag = G % SitPolicy.flagEvery === 0 ? (function () {
           $("#flag").click(); FLAGS.push(c.qid);
           return until(function () { return T.me().topic.rounds[n].s[st].f.some(function (x) { return x.id === c.qid; }); }, 30000, "flag " + c.qid);
@@ -953,25 +978,28 @@ var Sit = (function () {
       ok("stage card needs a rating", $("#err").textContent === S.rateErr && cur().screen === "stagecard");
       var rating = 1 + SitPolicy.h32(email + "|" + st) % 4;
       $('.rate .opt[data-r="' + rating + '"]').click();
+      ok("the warning goes once a rating is picked", $("#err").textContent === "", $("#err").textContent);
       var tick = $('.ticks input[type=checkbox]'); if (tick) tick.click();
       set($("#conf"), "sit run " + st);
       $("#save").click();
-      return until(function () { return cur().screen === (st < 4 ? "topic" : "topiccard"); }, 30000, "card " + st);
+      return until(function () { return cur().screen === (st < K ? "topic" : "topiccard"); }, 30000, "card " + st);
     });
   }
   function run(t) {
     T = t; window.addEventListener("error", function (e) { errors.push(String(e.message)); });
     window.addEventListener("unhandledrejection", function (e) { errors.push("promise: " + String(e.reason && (e.reason.code || e.reason.message) || e.reason)); });
     ok("started", true, T.boot.build);
-    var me = T.me(); email = me.email;
+    if (T.boot.sit && T.boot.sit !== "1") TID = T.boot.sit;
+    T.pick(TID); var me = T.me(); email = me.email;
     var fresh = me.topic.round === 1 && Object.keys(me.topic.rounds).every(function (k) { var r = me.topic.rounds[k]; return Object.keys(r.s).every(function (s) { return !r.s[s].a && !r.s[s].e; }); });
     (fresh ? Promise.resolve() : T.call("apiStaff", { op: "clearMe", cls: T.boot.cls }).then(T.reboot)).then(function () {
-      me = T.me(); n = me.topic.round;
+      me = T.me(); n = me.topic.round; K = me.topic.stages.length; NQ = me.topic.stages.reduce(function (s, st) { return s + st.q; }, 0);
       ok("fresh record", n === 1 && !me.needName, "round " + n);
       T.home(); layout("home");
-      ok("home line", (($(".topic .foot span") || {}).textContent || "") === S.round + "1 \u00b7 not started", ($(".topic .foot span") || {}).textContent);
-      $("#openLive").click(); layout("topic");
-      return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
+      ok("home line", (foot().textContent || "") === S.round + "1 \u00b7 not started", foot().textContent);
+      ok("topic " + TID + " is " + me.topic.title, me.topic.id === TID, me.topic.id);
+      $('[data-open="' + TID + '"]').click(); layout("topic");
+      return sts().reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
     }).then(function () {
       layout("topic card");
       $('.rate .opt[data-r="2"]').click(); $('input[data-u="0"]').click(); set($("#note"), "sit run");
@@ -980,25 +1008,27 @@ var Sit = (function () {
     }).then(function () {
       var tot = 0, qs = Object.keys(MARKS); qs.forEach(function (k) { tot += MARKS[k]; });
       var x = me.topic.stages.reduce(function (s, st) { return s + st.x; }, 0);
-      ok("82 questions answered", qs.length === 82, qs.length);
+      ok(NQ + " questions answered", qs.length === NQ && NQ > 0, qs.length);
       ok("summary total", $(".card h2").textContent === T.fmt(S.scored, { m: tot, x: x, p: Math.round(100 * tot / x) }), $(".card h2").textContent);
       ok("summary flagged", all(".sumrows .link[data-id]").length === FLAGS.length, all(".sumrows .link[data-id]").length + " of " + FLAGS.length);
+      ok("flagged rows name the question", all(".sumrows .link[data-id]").every(function (l) { var t = l.textContent.trim(); return t.length >= 12 && !/^new\b| \u00b7 Stage \d$/.test(t); }), all(".sumrows .link[data-id]").map(function (l) { return l.textContent; }).join(" | "));
       layout("summary");
       lines.push("TOTAL " + tot + " of " + x);
       // every marked question comes back after a reload
       return T.reboot().then(function () {
-        var bad = [], seen = 0;
-        return [1, 2, 3, 4].reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
-          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); });
+        var bad = [], badBtn = [], seen = 0;
+        return sts().reduce(function (p, st) { return p.then(function () { return T.loadStage(n, st).then(function (D) {
+          D.order.forEach(function (qid, i) { T.question(st, i, true, n); seen++; var r = $("#after .result"); if (!r || cur().r.marks !== MARKS[qid]) bad.push(qid); var nb = $("#next"); if (!nb || nb.textContent !== (i + 1 < D.order.length ? S.next : S.lbEnd)) badBtn.push(qid); });
         }); }); }, Promise.resolve()).then(function () {
-          ok("all marked questions restore", seen === 82 && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          ok("all marked questions restore", seen === NQ && !bad.length, seen + " seen" + (bad.length ? ", wrong " + bad.slice(0, 4).join(",") : ""));
+          ok("look back ends with Back to the topic", !badBtn.length, badBtn.slice(0, 4).join(",") || "every button right");
           T.home();
-          ok("home line done", $(".topic .foot span").textContent === S.round + "1 \u00b7 done \u00b7 " + tot + " of " + x + " marks", $(".topic .foot span").textContent);
+          ok("home line done", foot().textContent === S.round + "1 \u00b7 done \u00b7 " + tot + " of " + x + " marks", foot().textContent);
           return tot;
         });
       });
     }).then(function (tot) { // first answer wins
-      var D = T.cache()[n + "|1"], qid = D.order[0], v = D.views[0];
+      var D = T.cache()[TID + "|" + n + "|1"], qid = D.order[0], v = D.views[0];
       return T.call("apiMark", { round: n, qid: qid, answer: SitPolicy.answer(v, "another pupil") }).then(function (r) {
         ok("repeat mark keeps the first", r.repeat === true && r.r.marks === MARKS[qid], "repeat " + r.repeat + " \u00b7 " + r.r.marks + " vs " + MARKS[qid]);
         return T.call("apiStaff", { op: "openPupil", cls: T.boot.cls, email: email });
@@ -1007,11 +1037,11 @@ var Sit = (function () {
         return T.reboot();
       }).then(function () {
         var m2 = T.me();
-        var r1 = [1, 2, 3, 4].reduce(function (s, st) { return s + m2.topic.rounds[1].s[st].m; }, 0);
+        var r1 = sts().reduce(function (s, st) { return s + m2.topic.rounds[1].s[st].m; }, 0);
         ok("round 1 kept", r1 === tot, r1 + " vs " + tot);
         ok("round 2 current", m2.topic.round === 2);
         T.home();
-        ok("home line round 2", $(".topic .foot span").textContent === S.round + "2 open \u00b7 not started", $(".topic .foot span").textContent);
+        ok("home line round 2", foot().textContent === S.round + "2 open \u00b7 not started", foot().textContent);
         return T.loadStage(2, 1).then(function (D2) { ok("round 2 new order", D2.order.join() !== D.order.join()); T.topic(); layout("topic round 2"); });
       });
     }).catch(function (e) { ok("run", false, e && (e.code || e.message)); }).then(function () {
