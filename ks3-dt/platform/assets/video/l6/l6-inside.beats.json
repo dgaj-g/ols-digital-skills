@@ -1,0 +1,26 @@
+[
+ {
+  "say": "Bernadette wants to add two numbers.",
+  "hold": 3.9
+ },
+ {
+  "say": "Her memory holds the next step.",
+  "hold": 3.9
+ },
+ {
+  "say": "Her processor reads the step.",
+  "hold": 3.8
+ },
+ {
+  "say": "Her processor does the step.",
+  "hold": 3.8
+ },
+ {
+  "say": "The answer goes back into memory.",
+  "hold": 3.9
+ },
+ {
+  "say": "Next step. Round and round, millions of times a second.",
+  "hold": 5.3
+ }
+]

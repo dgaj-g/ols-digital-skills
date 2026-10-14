@@ -243,6 +243,32 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 #lteam,#lreveal{margin:6px 0;font-size:clamp(15px,1.25vw,19px)}
 #lteam b.me{color:#2a5bc4}#lteam b.them{color:#b0336a}
 #lreveal{font-weight:700}
+/* the three short screens */
+#extra{height:100%;overflow:auto;display:flex;justify-content:center;padding:18px 16px;box-sizing:border-box}
+#extra[hidden]{display:none}
+#xpaper{background:var(--paper);color:#1a1a1a;border-radius:14px;max-width:860px;width:100%;padding:18px 22px;box-sizing:border-box;align-self:flex-start;box-shadow:0 12px 36px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:10px}
+#xhead{font-family:Caveat,cursive;font-size:clamp(30px,3vw,44px);color:#8a6412}
+.xtop{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center}
+.xface svg{width:100%;height:auto;display:block}
+.xline{margin:4px 0;font-size:clamp(16px,1.4vw,21px);line-height:1.35}
+.xask{font-weight:700;font-size:clamp(17px,1.5vw,22px);margin:6px 0 0}
+.xsay{min-height:1.4em;font-weight:600;color:#8a3a12;margin:0;font-size:clamp(15px,1.3vw,19px)}
+.xopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.xopt,.xjob,.xname{font:inherit;text-align:left;background:#fff;border:2px solid #d8d2c4;border-radius:10px;padding:10px 12px;cursor:pointer;color:#1a1a1a;font-size:clamp(15px,1.25vw,19px)}
+.xopt:hover,.xjob:hover,.xname:hover{border-color:var(--gold)}
+.xopt.wrong{opacity:.45;text-decoration:line-through}
+.xopt.right,.xjob.right{background:#dff5e7;border-color:#2f9e62}
+.xmatch{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px}
+.xcol{display:flex;flex-direction:column;gap:8px}
+.xjob{display:flex;flex-direction:column;gap:3px}
+.xjob b{color:#2a5bc4}
+.xjob.pick{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,184,36,.45)}
+.xjob.shake{animation:fshake2 .5s;border-color:#c0392b}
+.xname[hidden]{display:none}
+#xcheck{align-self:flex-start}
+#xcheck:disabled{opacity:.45;cursor:default}
+#xnext{align-self:flex-start}
+@media (max-width:760px){.xopts{grid-template-columns:1fr}.xmatch{grid-template-columns:1fr}}
 .still *{transition:none!important;animation:none!important}
 #jump{font-size:12px;color:#3f5b63;margin-top:10px}
 #jump a{color:#5f7f88;text-decoration:none;margin-left:7px}
@@ -302,6 +328,7 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   <p id="lteam"></p><p id="lreveal"></p>
   <button class="btn" id="lnext" type="button"></button>
 </div></div>
+<div id="extra" hidden><div id="xpaper"><div id="xhead"></div><div id="xbody"></div><button class="btn" id="xnext" type="button" hidden></button></div></div>
 <script src="../../vendor/firebase-app-compat.js"></script>
 <script src="../../vendor/firebase-database-compat.js"></script>
 <script src="../../live-config.js"></script>
@@ -313,4 +340,5 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 <script src="wardengine.js"></script>
 <script src="ui2.js"></script>
 <script src="ward2.js"></script>
+<script src="extras.js"></script>
 </body></html>

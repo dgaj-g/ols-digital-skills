@@ -10,7 +10,7 @@
   if (!LOCAL) Q = {};
   if (H) { Q = {}; Q.at = H.stage === 'op' ? 'table' : null; if (H.seed != null) Q.seed = String(H.seed); }
   var STAGE = H ? (H.stage || 'door') : (Q.stage || 'door');
-  if (STAGE === 'ward' || STAGE === 'letter') { window.OPHASH = H || { stage: STAGE, seat: Q.seat || 'A', seats: (Q.seats || 'A').split(''), room: Q.room || null }; return; }
+  if (['ward', 'letter', 'boss', 'names', 'machine'].indexOf(STAGE) !== -1) { window.OPHASH = H || { stage: STAGE, seat: Q.seat || 'A', seats: (Q.seats || 'A').split(''), room: Q.room || null }; return; }
   function post(type, data) { if (window.parent === window) return; var m = { op: 1, type: type }; for (var k in data || {}) m[k] = data[k]; window.parent.postMessage(m, '*'); }
   var NAMES = (H && H.names) || null;
   var FAST = Q.fast === '1', PACE = FAST ? 0.3 : 1;

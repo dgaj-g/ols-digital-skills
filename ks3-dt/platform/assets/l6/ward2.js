@@ -1,7 +1,7 @@
 /* THE OPERATION · ward round and discharge letter screens (spec §3.3, §3.9). Runs when the hash says stage ward|letter
    (ui2.js stands aside and leaves window.OPHASH). Same live room as the operation; same fallback law: never a dead screen. */
 (function () {
-  var H = window.OPHASH; if (!H) return;
+  var H = window.OPHASH; if (!H || (H.stage !== 'ward' && H.stage !== 'letter')) return;
   var L = LINES, U = L.ui2, WD = OPWARD, W = WD.W, $ = function (id) { return document.getElementById(id); };
   var face = window.OPFACE;
   $('lobby').classList.remove('on');
