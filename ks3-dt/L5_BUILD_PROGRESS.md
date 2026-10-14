@@ -56,3 +56,9 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - N10: solo symptoms "The light is out." / "The radio sent None." derived from §6's one example "The horn is silent.".
 - N11: tour spotlights and the top line are CARDS (each sentence its own line, ≤ 12 words each): tour 5/6 and the trio top line are 13 words as the spec writes them. Poster title and line shown apart.
 - N12: a lost call typed back anywhere (help: "Type lamp_on() on a new last line.") counts as that call. Judge gate now 1017 checks PASS.
+
+## 20:35 · surfaces begun
+- Survey done: every pair already gets a 12-char live room from the server (Code.gs pair formation, liveRoom_) → NO server change needed for j3-05 pairing; PairKit.ensure in the engine is enough.
+- Shape decided (as L6): one chunk per stage (radio, coldopen, tour, ch1–ch4, home, extras), page assets/twolights/hour.html in an iframe, hash carries {stage, seat, seats, room, names, draft}.
+- Files now being written: twolights/live.js (codec + fire bus, L6 shape {j,t} so L6's rules accept it), twolights/engine.js (pure room/seat model: boat, bar, help ladder, bounties, lookout cards, solo/fallback/dark), sound.js, ui.js, hour.html.
+- Platform strings not in the spec (pairWords, exit/close chrome, extras finish label) are taken from j1-06 / j3-04 as the spec says ("as j3-04's").
