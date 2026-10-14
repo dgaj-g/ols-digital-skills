@@ -18,3 +18,10 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - [ ] l6-look · l6-harness · l6-channel-test
 - [ ] Firebase (DAMIEN stops) · vendor SDK · live-test.html
 - [ ] engine + server · content · film · gates · walker + SIT REPORT · pack · deploy · smoke · PR · RESUME_HERE
+
+## Firebase (14 Oct 2026, 13:16)
+- Project `ols-ks3-dt-live` (Spark), parent org c2ken.net, owner dgartland021. Analytics off, Gemini off.
+- RTDB europe-west1: https://ols-ks3-dt-live-default-rtdb.europe-west1.firebasedatabase.app
+- Rules = platform/live/database.rules.json, PUBLISHED via Cloud Shell REST PUT (console Publish button absent). Response {"status":"ok"}.
+- Rule checks by curl: good-code read null ✓; bad code / root read denied ✓; good write ok ✓; seat D denied ✓; extra field denied ✓; stale t denied ✓; presence ok ✓; test room deleted.
+- Next: register web app → platform/live-config.js; DAMIEN owner stop.
