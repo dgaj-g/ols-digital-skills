@@ -147,6 +147,9 @@ const MACHINE_KEYS = new Set([
      exactly like `src`, and `storyChunk` is the id of the chunk the 5 questions go back to. Neither
      reaches a screen. */
   'page', 'storyChunk',
+  /* THE OPERATION'S STAGE (J1 Lesson 6, 14 Oct 2026): `stage` names which screen of the page to open
+     (door | op | ward | boss | names | extras). It never reaches a screen. */
+  'stage',
   /* THE INSPECT ENGINE'S TWO MACHINE FIELDS (16 Aug 2026, found while writing
      J2 Lesson 1's ledger records). `art` is a file path exactly like `src`, and
      `breaks` never reaches a screen at all: the engine reads it as the flag that
@@ -1255,6 +1258,7 @@ const FILM_MAP = {
   l3: { lesson: 'j1-03', chunkId: 'ladder' },
   l4: { lesson: 'j1-04', chunkId: 'board' },
   l5: { lesson: 'j1-05', chunkId: 'masterclass' },
+  l6: { lesson: 'j1-06', chunkId: 'c5' },
   /* THE TWO LESSON 2 FILMS (19 Aug 2026). Both are text-based and both are
      served on their lesson's `film` chunk, which is also where vocab.json says
      J2's own spine teaches the word "variable" — so this entry is what makes

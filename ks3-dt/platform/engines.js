@@ -11349,7 +11349,28 @@
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {}, s = App.state;
       var draft = s.draft = s.draft || {};
-      var stage = cfg.stage || 'door';
+      var stage = cfg.stage || 'door', job = null;
+      /* THE EXTRA JOBS (DFM 259/265): stage 'extras' is a list of jobs, each one a stage of the same page.
+         No points, the way out on every screen (the hub AND each job), leaving a job costs nothing. */
+      function hub() {
+        stage = 'extras'; job = null; host.innerHTML = '';
+        var done = draft.opExtras = draft.opExtras || {};
+        var lead = (ctx.review && cfg.reviewIntro) ? cfg.reviewIntro + '\n\n' + (cfg.intro || '') : (cfg.intro || '');
+        var jobs = (cfg.builds || []).map(function (b) {
+          return '<button class="pyrun-job" type="button" data-job="' + esc(b.id) + '"><b class="pyrun-job-title">' + esc(b.title || '') + '</b>' +
+            '<span class="pyrun-job-whiff">' + esc(b.whiff || '') + '</span>' +
+            (done[b.id] ? '<span class="pyrun-job-tick">' + esc(cfg.doneTick || 'job done') + '</span>' : '') + '</button>';
+        }).join('');
+        var c = el('<div class="card pyrun-hub op-hub"><span class="intro-kicker">' + esc(cfg.kicker || '') + '</span><h2>' + esc(cfg.title || '') + '</h2>' +
+          '<p class="intro-lead">' + esc(lead).replace(/\n\n/g, '<br><br>') + '</p><div class="pyrun-jobs">' + jobs + '</div>' +
+          '<div class="rung-actions pyrun-exit-row"><button class="btn btn-primary pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
+        host.appendChild(c);
+        c.querySelectorAll('.pyrun-job').forEach(function (b) {
+          App.armButton(b, function () { job = b.getAttribute('data-job'); stage = job; PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true }); });
+        });
+        App.armButton(c.querySelector('.pyrun-finish'), finishExtras);
+      }
+      function finishExtras() { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
       function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
       function open(mode) {
         var st = PairKit.st, paired = mode === 'paired' && st;
@@ -11359,6 +11380,7 @@
           names: paired && st.names ? st.names : null,
           round: Number(draft.opRound || 0), fallback: paired && st.room && draft.opFallback === st.room ? 1 : 0 };
         if (stage === 'letter') H.letter = draft.op || null;
+        if (job) H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '' };
         host.innerHTML = '';
         var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
           '<iframe class="rescue-frame" title="' + esc(chunk.title || 'The operation') + '"></iframe></div>');
@@ -11385,6 +11407,10 @@
           var m = e.data;
           if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
           if (m.type === 'ready') { if (stage === 'letter') sendNames(); }
+          else if (job && (m.type === 'next' || m.type === 'xfinish')) {
+            gone = true; window.removeEventListener('message', onMsg);
+            if (m.type === 'next') { draft.opExtras = draft.opExtras || {}; draft.opExtras[job] = 1; save(); hub(); } else finishExtras();
+          }
           else if (m.type === 'begin' || m.type === 'next') {
             gone = true; window.removeEventListener('message', onMsg);
             if (ctx.review) { ctx.next(); return; }
@@ -11402,6 +11428,7 @@
         }
         window.addEventListener('message', onMsg);
       }
+      if (cfg.extrasMode) { hub(); return; }
       PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true });
     }
   };

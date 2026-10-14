@@ -8,14 +8,7 @@ const fs = require('fs'), path = require('path'), os = require('os');
 const ROOT = path.join(__dirname, '..', '..', 'platform', 'assets');
 const OUT = path.join(ROOT, 'video', 'l6', 'l6-inside.mp4');
 const W = 1280, H = 720;
-const BEATS = [
-  { say: 'Bernadette wants to add two numbers.', show: 'sum' },
-  { say: 'Her memory holds the next step.', show: 'mem' },
-  { say: 'Her processor reads the step.', show: 'read' },
-  { say: 'Her processor does the step.', show: 'do' },
-  { say: 'The answer goes back into memory.', show: 'back' },
-  { say: 'Next step. Round and round, millions of times a second.', show: 'loop' }
-];
+const { BEATS } = require('./scenes/l6.js');
 const hold = s => Math.max(1.2 + 0.35 * s.split(/\s+/).length, 3.2) + 0.6;   // floor 3.2 s so nobody is rushed
 function scene(b) {
   const u = p => 'file://' + path.join(ROOT, p);

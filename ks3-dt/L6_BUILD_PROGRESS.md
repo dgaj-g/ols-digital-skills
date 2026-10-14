@@ -28,3 +28,11 @@ Usage at open: 5h 13% · week 51% — week hard stop OVERRIDDEN by his "carry on
 - Web app "KS3 DT platform" appId 1:831317210522:web:8790b76f693937c21bb623 → platform/live-config.js (apiKey verified valid).
 - Personal Gmail added + accepted as Owner (13:30).
 - Vendored firebase compat 10.12.2 + CREDITS. live-test.html LIVE via PR #76 (merged a41411a): https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/live-test.html — 25 ms from the Mac. OWED: his pupil-laptop sentence.
+
+## 14:02 checkpoint
+- Film gate qa-l6-film.js PASS (24.7 s). Controls caught: "film is 70.0 s, over 60 s"; "beat 3 holds 1 s, needs 2.95 s"; "burned captions differ from scenes/l6.js"; "beat 4 has no caption on screen".
+- Design calls: boss/names/machine = operation frame stages; exit item 3 = parsons chunk c8b; extras zone (machine + letter jobs) sits BEFORE the exit check (DFM 265), finish label on hub + every job; new strings use "Tap" to match approved frame.
+- Pupil cold read packet-A (116 strings): r1 107/9, r2 98/18. Applied only BOTH-agreed rewrites (tagline, trioHoldSay, soloTitle, exit item 1 stem, c8b doneText, names.again, ward needed "memory part", darkStill). 97 ledger rows written; lesson strings missing = 0.
+- Teacher brief + deck merged (qa-brief-shape PASS, j1-06 held to 60). Teacher/deck cold read packet-B (137 strings) running, two readers.
+- Engine test 89/89 after rewrites.
+- NEXT: walker cannot reach inside the operation iframe yet -> add operation movers + LANDMARKS/EXPECT for 6; l6-channel-test, l6-look, l6-harness; server sweep/ping; pack/deploy.

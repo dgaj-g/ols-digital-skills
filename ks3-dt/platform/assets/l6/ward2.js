@@ -12,7 +12,7 @@
   var seat = H.seat || 'A', seats = (H.seats && H.seats.length) ? H.seats : ['A'], ME = L.callsigns[seat];
   var NAMES = H.names || null;
   window.addEventListener('message', function (e) { var m = e.data; if (e.source !== window.parent || !m || m.op !== 1) return; if (m.type === 'names' && m.names) { NAMES = m.names; if (H.stage === 'letter') letter(); } });
-  function cont(btn) { btn.textContent = 'Continue'; btn.onclick = function () { post('next'); }; }
+  function cont(btn) { OPCONT(btn, post); }
   if (H.stage === 'letter') { letter(); post('ready', { stage: 'letter' }); document.title = 'ready'; return; }
 
   /* ================= the ward round ================= */
@@ -74,7 +74,7 @@
     $('beds').querySelectorAll('.bed').forEach(function (el) {
       var b = S.beds[el.dataset.bed], st = el.querySelector('.bstat');
       el.classList.toggle('fixed', b.done); el.classList.toggle('mine', b.by === S.seat && !b.done); el.classList.toggle('theirs', !!b.by && b.by !== S.seat && !b.done); el.classList.toggle('open', S.open === b.id);
-      var txt = b.done ? (b.told ? W.needed.replace('{part}', WD.NAME[WARD.bed(b.id).missing]) : W.fixedBy.replace('{p}', L.callsigns[b.by] || ME)) : (b.by ? L.callsigns[b.by] : '');
+      var txt = b.done ? (b.told ? W.needed.replace('{part}', WD.NEED[WARD.bed(b.id).missing] || WD.NAME[WARD.bed(b.id).missing]) : W.fixedBy.replace('{p}', L.callsigns[b.by] || ME)) : (b.by ? L.callsigns[b.by] : '');
       if (st.textContent !== txt) st.textContent = txt;
       if (b.done) el.querySelector('.bface').innerHTML.indexOf('m-happy') === -1 && (el.querySelector('.bface').innerHTML = face('happy'));
     });

@@ -5,6 +5,8 @@
 (function (root) {
   var L = root.LINES || (typeof require !== 'undefined' ? require('./lines.js') : null);
   var PARTS = ['mem', 'drive', 'cpu', 'gpu', 'fan', 'psu', 'board'];
+  /* the told line says "a new memory part": both cold readers heard "a new memory" as a remembered thing */
+  var NEED = { mem: 'memory part' };
   var NAME = { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' };
   var W = {
     take: 'Tap a computer to look after it.',
@@ -15,7 +17,7 @@
     needed: 'It needed a new {part}.',
     done: 'Ward round done. Every computer is working.',
     dark: 'The till’s screen is dark. It says nothing at all.',
-    darkStill: 'Still dark. Still silent.'
+    darkStill: 'The screen is still dark and the till is still silent.'
   };
   function seeded(s) { s = s >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
   function shuffle(a, rnd) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -55,7 +57,7 @@
       if (part === c.missing) { b.done = true; say(c.fixed, 'fixed', id); send('fix', { bed: id, told: false }); after(); return 'right'; }
       b.tries++;
       if (b.tries < 2) { say(c.still || W.darkStill, c.still ? 'still' : 'stage', id); S.notice = { key: 'still' }; return 'wrong'; }
-      b.done = true; b.told = true; say(W.needed.replace('{part}', NAME[c.missing]), 'told', id); send('fix', { bed: id, told: true }); after(); return 'told';
+      b.done = true; b.told = true; say(W.needed.replace('{part}', NEED[c.missing] || NAME[c.missing]), 'told', id); send('fix', { bed: id, told: true }); after(); return 'told';
     }
     function after() { S.notice = null; if (doneAll()) say(W.done, 'done'); }
     function state() { return ids.map(function (id) { var b = S.beds[id]; return { bed: id, by: b.by, done: b.done, told: b.told }; }); }
@@ -94,7 +96,7 @@
     }
     return { S: S, hello: hello, take: take, fit: fit, receive: receive, tray: tray, mine: mine, prompt: prompt, doneAll: doneAll, bed: bed, state: state };
   }
-  var api = { makeWard: makeWard, pickBeds: pickBeds, W: W, NAME: NAME, PARTS: PARTS };
+  var api = { makeWard: makeWard, pickBeds: pickBeds, W: W, NAME: NAME, NEED: NEED, PARTS: PARTS };
   root.OPWARD = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
