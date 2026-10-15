@@ -43,7 +43,7 @@ header.bar .who{margin-left:auto;font-size:14px;color:#fff3e8}header.bar .staff{
 .stagebar .line i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:0 99px 99px 0;box-shadow:0 0 10px rgba(232,138,58,.45);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 60%,transparent);transition:width .3s;animation:glide .8s var(--ease) both}
 @keyframes glide{from{width:var(--from,0%)}}
 .work{overflow:auto;padding:22px 26px 60px;flex:1}
-.cols{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+.cols{display:grid;grid-template-columns:minmax(400px,min-content) minmax(360px,1fr);gap:22px;align-items:start} /* v7: a wide table (a database table, a spreadsheet grid) widens its column to its longest words, the card keeps at least 360 px; a figure that fits 400 px stays 400 px */
 h1{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.15;margin:0 0 6px;color:var(--plum);letter-spacing:-.005em}
 h1::after{content:"";display:block;width:72px;height:4px;border-radius:99px;margin:10px 0 4px;background:linear-gradient(90deg,#f2b544,#e88a3a,#e0574c,#9a4fc4);transform-origin:left;animation:rule .9s .15s var(--ease) both}
 @keyframes rule{from{transform:scaleX(0)}}
@@ -123,6 +123,13 @@ select:disabled,input[type=text]:disabled,textarea:disabled{color:var(--ink);-we
 .figure h4{margin:0;padding:9px 12px;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.01em;background:#fdf1e3;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 22%,#fff7ee),#fff7ee);border-bottom:1px solid var(--line);color:var(--plum)}
 .figure table{border-collapse:collapse;width:100%;font-size:14px}.figure th{text-align:left;padding:6px 10px;background:#fffaf3;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.figure td{padding:5px 10px;border-bottom:1px solid #f3e7da}
 .figure tr:nth-child(odd) td{background:rgba(253,241,227,.55)}
+/* v7: formula answer boxes and spreadsheet grid figures */
+.figure td,.figure th{overflow-wrap:break-word} /* v7: long cells wrap at their spaces */
+input[type=text].fml{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.01em}
+.hint{font-size:13px;color:var(--mute);margin-top:6px}
+.figure.grid th{text-align:center;background:#eef0f4;color:#555}
+.figure.grid th.rn{width:2.2em;background:#eef0f4;color:#555;text-align:center}
+.figure.grid .f{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 .rate .opt{padding:9px 14px}.ticks label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.ticks input{margin-top:4px;accent-color:var(--berry)}
 .sumrows .r{display:flex;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.sumrows .r:first-child{border-top:0}
 .sumrows .r b{color:var(--accd)}.sumrows .r.fl{gap:2px 16px;align-items:baseline}.sumrows .r.fl .src{white-space:nowrap;margin-left:auto}
@@ -169,6 +176,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:640px){
+  .figure.grid table{font-size:12px}.figure.grid th,.figure.grid td{padding:4px 3px;overflow-wrap:anywhere;word-break:break-word}.figure.grid .f{font-size:12px} /* v7: a wide grid shrinks and its long cells wrap, so nothing spills sideways */
   header.bar{height:auto;flex-wrap:wrap;column-gap:10px;row-gap:2px;padding:9px 14px 11px}
   header.bar .title{font-size:17px}
   header.bar .who{font-size:13px}header.bar .staff{margin-left:4px}

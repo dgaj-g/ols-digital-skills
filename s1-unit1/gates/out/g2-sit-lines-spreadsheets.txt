@@ -1,0 +1,46 @@
+SIT PASS started · s1u1-853b3f0215-51cc841b
+SIT PASS fresh record · round 1
+SIT PASS home line · Round 1 · not started
+SIT PASS topic spreadsheets is Spreadsheet applications · spreadsheets
+SIT PASS stage 1 button · Start
+SIT PASS stage 1 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 2 button · Start
+SIT PASS reload shows Carry on · Carry on
+SIT PASS reload lands on question 6 · Stage 2 of 5 · Formulas and functions · Question 6 of 15
+SIT PASS stage 2 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 3 button · Start
+SIT PASS stage 3 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 4 button · Start
+SIT PASS stage 4 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS stage 5 button · Start
+SIT PASS stage 5 card · stagecard
+SIT PASS stage card needs a rating
+SIT PASS the warning goes once a rating is picked
+SIT PASS 72 questions answered · 72
+SIT PASS summary total · You scored 18 of 110 marks (16%)
+SIT PASS summary flagged · 10 of 10
+SIT PASS flagged rows name the question · Column C of Piotr's spreadsheet holds each Student ID, a number such as 54852. What … | Jen uses this spreadsheet to work out staff pay. The words Hours worked sit in the … | In the Stationery Supplies spreadsheet, cell G10 holds the Mean Sales for May (£71.88): … | Match each function to what it gives for a range of cells. One description is not used. | In Piotr's Science sheet, the formula in F6 is =E6*$F$4, and the copies below it are … | Fill each gap from the words given. One word is not used. | Select the correct meaning of the term VLOOKUP, which is used with spreadsheet … | Bill could use a VLOOKUP in his invoice sheet. What is a VLOOKUP? | What information does SPORTZONE's pie chart provide? | Jen will add a macro to her spreadsheet so that she can print it. What is a macro?
+TOTAL 18 of 110
+SIT PASS all marked questions restore · 72 seen
+SIT PASS look back ends with Back to the topic · every button right
+SIT PASS home line done · Round 1 · done · 18 of 110 marks
+SIT PASS repeat mark keeps the first · repeat true · 0 vs 0
+SIT PASS teacher opens round 2 · 2
+SIT PASS round 1 kept · 18 vs 18
+SIT PASS round 2 current
+SIT PASS home line round 2 · Round 2 open · not started
+SIT PASS round 2 new order
+SIT PASS no page errors
+SIT PASS every formula item shows the hint line and a monospace box · 18 shown, 0 wrong
+SIT PASS every grid figure shows its row-number column · 43 shown, 0 wrong
+MARKS SS1-01:0,SS1-02:0,SS1-03:1,SS1-04:0,SS1-05:0,SS1-06:0,SS1-07:0,SS1-08:0,SS1-09:1,SS1-10:0,SS1-11:1,SS1-12:0,SS1-13:0,SS1-14:0,SS1-15:0,SS1-N1:1,SS1-N2:0,SS1-N3:0,SS2-01:0,SS2-02:0,SS2-03:0,SS2-04:0,SS2-05:0,SS2-06:0,SS2-07:0,SS2-08:0,SS2-09:0,SS2-10:0,SS2-11:0,SS2-12:0,SS2-13:0,SS2-N1:1,SS2-N2:0,SS3-01:0,SS3-02:0,SS3-03:0,SS3-04:1,SS3-05:0,SS3-06:1,SS3-07:1,SS3-N1:2,SS3-N2:0,SS3-N3:1,SS4-01:0,SS4-02:0,SS4-03:0,SS4-04:0,SS4-05:1,SS4-06:0,SS4-07:0,SS4-08:1,SS4-09:0,SS4-10:0,SS4-11:0,SS4-N1:1,SS4-N2:0,SS5-01:0,SS5-02:0,SS5-03:2,SS5-04:0,SS5-05:0,SS5-06:0,SS5-07:0,SS5-08:0,SS5-09:0,SS5-10:1,SS5-11:0,SS5-12:0,SS5-13:1,SS5-14:0,SS5-15:0,SS5-N1:0
+MARKS# 72bf05b3 · 72 questions · flags 10
+SIT RESULT PASS

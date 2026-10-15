@@ -1,5 +1,5 @@
-G0 server GREEN · 2026-10-14T08:46:28.773Z · build 24d3d4f8ad-7f0b7102
-PASS A pack->unpack->judge == judge on 4720 answers across 118 questions (0 mismatches)
+G0 server GREEN · 2026-10-15T06:36:46.853Z · build 853b3f0215-51cc841b
+PASS A pack->unpack->judge == judge on 10080 answers across 252 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
 PASS B boot with no class is the staff door
@@ -14,7 +14,7 @@ PASS B owner admitted by email
 PASS B class made: 11A DT -> 11a-dt
 PASS B same class name refused
 PASS B blank class name refused
-PASS B a new class starts with Digital Data and Software both locked
+PASS B v7 a new class starts with its four topics (Digital Data, Software, Databases, Spreadsheets) all locked (digital-data:false software:false databases:false spreadsheets:false)
 PASS B pupil boot says the topic is locked
 PASS B locked: a stage will not load (locked)
 PASS B locked: nothing is marked (locked)
@@ -29,6 +29,9 @@ PASS B locked again: the stage refuses again
 PASS B opened again: the stage loads with the writing typed while locked
 PASS B a class made before topic locking stays open
 PASS B v6: on that old class Software starts locked (only Digital Data was ever open there)
+PASS B v7: on that old class Databases and Spreadsheets start locked too (the stays-open rule is Digital Data only)
+PASS B v7 control: on the old class a databases stage will not load (locked)
+PASS B v7 control: on the old class a spreadsheets stage will not load (locked)
 PASS B pupil boot: name from the account, round 1, four stages
 PASS B no readable name -> needName
 PASS B name typed and kept
@@ -112,3 +115,18 @@ PASS v6 Digital Data round 2 = 85 questions · 131 marks; Software still round 1
 PASS v6 round 2 holds every 2026 question and none of the 4 round-1-only questions
 PASS v6 control: a round-1-only question cannot be marked in round 2 (bad-question)
 PASS v6 Digital Data still writes the v5 keys (p: header, q: shards without a topic)
+PASS v7 class made: 11D DT
+PASS v7 databases locked: stage, mark and stage card all refused to a pupil (locked locked locked)
+PASS v7 the owner opens Database applications
+PASS v7 pupil boot: Database applications (1.3) open, 5 stages · 62 questions · 123 marks
+PASS v7 databases stage 1 loads (18 questions)
+PASS v7 databases DB1-10: the right pick scores 1 of 1, a wrong pick scores 0
+PASS v7 spreadsheets locked: stage, mark and stage card all refused to a pupil (locked locked locked)
+PASS v7 the owner opens Spreadsheet applications
+PASS v7 pupil boot: Spreadsheet applications (1.4) open, 5 stages · 72 questions · 110 marks
+PASS v7 spreadsheets stage 1 loads (18 questions)
+PASS v7 spreadsheets SS1-03: the right pick scores 1 of 1, a wrong pick scores 0
+PASS v7 formula SS2-02: "F4*D4" (no =) scores 1 of 1; rejected "=F4*C4" scores 0
+PASS v7 Spreadsheets carries 26 formula answers (26 designed: 24 type items, 2 gaps)
+PASS v7 a formula gap (SS4-09) reaches the page view as fml [true,true]
+PASS v7 tracker with topic Spreadsheets: title and the pupil's row

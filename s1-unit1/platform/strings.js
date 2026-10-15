@@ -10,7 +10,7 @@ var S1S = {
     stagebar: "Stage {s} of {k} · {name} · Question {i} of {n}",
     pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", pick4: "Pick four.", only2: "You can only pick two.", only3: "You can only pick three.", only4: "You can only pick four.",
     writeFirst: "Write your answer in your own words first.", writeNote: "This writing is not marked. The marked parts come next.", writeDone: "I've written my answer", writeKept: "Your writing is kept. Now answer the marked parts below.", wroteHint: "Compare it with the mark scheme above.", writePh: "Type your answer here.", skipWrite: "I'd rather skip the writing",
-    typeIt: "Type your answer.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose…",
+    typeIt: "Type your answer.", formulaHint: "Type it as you would in the spreadsheet. The = at the start is optional.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose…",
     chooseLine: "Pick the right word in each line.", gapsPool: "Fill each gap with a word from the list.", gapsType: "Fill each gap.",
     check: "Check my answer", help: "Answer every part first.", got: "You got {m} of {x} {w}.", mark: "mark", marks: "marks",
     scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage", lbEnd: "Back to the topic",

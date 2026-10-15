@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-10-14T08:47:30.386Z
+G2 render coverage + sit on the harness · 2026-10-15T06:36:32.959Z
 PASS class made
 PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
@@ -35,4 +35,39 @@ PASS CONTROL drop-down narrower than its chosen words: sit reports list text cut
 PASS CONTROL Software on a phone with each answer option forced onto one line: sit reports layout failures
 PASS CONTROL answer-first line kept on screen after answering: sit reports it
 PASS CONTROL a missed answer drawn in smaller type (same sit): sit reports it
-GREEN · 32 pass · 0 fail
+PASS databases opened for the class
+PASS DATABASES the sit played Database applications
+PASS DATABASES · sit run PASS (6 s)
+PASS DATABASES · no console errors or failed requests
+PASS DATABASES · page marks = judge marks on all 62 questions
+PASS DATABASES · total line
+PASS DATABASES · MARKS# hash matches node
+INFO DATABASES · round 1 · 31 of 123 marks · MARKS# e11fa3bc · 41 sit checks passed
+PASS DATABASES PHONE 390x844 · sit run PASS (6 s)
+PASS DATABASES PHONE 390x844 · no console errors or failed requests
+PASS DATABASES PHONE 390x844 · page marks = judge marks on all 62 questions
+PASS DATABASES PHONE 390x844 · total line
+PASS DATABASES PHONE 390x844 · MARKS# hash matches node
+INFO DATABASES PHONE 390x844 · round 1 · 31 of 123 marks · MARKS# e11fa3bc · 41 sit checks passed
+PASS spreadsheets opened for the class
+PASS SPREADSHEETS the sit played Spreadsheet applications
+PASS SPREADSHEETS · sit run PASS (6 s)
+PASS SPREADSHEETS · no console errors or failed requests
+PASS SPREADSHEETS · page marks = judge marks on all 72 questions
+PASS SPREADSHEETS · total line
+PASS SPREADSHEETS · MARKS# hash matches node
+INFO SPREADSHEETS · round 1 · 18 of 110 marks · MARKS# 72bf05b3 · 42 sit checks passed
+PASS SPREADSHEETS every formula item shows the hint line and a monospace box
+PASS SPREADSHEETS every grid figure shows its row-number column
+PASS SPREADSHEETS PHONE 390x844 · sit run PASS (6 s)
+PASS SPREADSHEETS PHONE 390x844 · no console errors or failed requests
+PASS SPREADSHEETS PHONE 390x844 · page marks = judge marks on all 72 questions
+PASS SPREADSHEETS PHONE 390x844 · total line
+PASS SPREADSHEETS PHONE 390x844 · MARKS# hash matches node
+INFO SPREADSHEETS PHONE 390x844 · round 1 · 18 of 110 marks · MARKS# 72bf05b3 · 42 sit checks passed
+PASS SPREADSHEETS PHONE formula and grid checks pass at 390 px
+PASS CONTROL formula boxes in serif: sit reports the formula-box check failing
+PASS CONTROL formula hint hidden: sit reports the hint check failing
+PASS CONTROL a 1400 px grid table on a phone: sit reports layout failures on the figure
+INFO v7 controls: 26 serif-box fails, 17 hidden-hint fails, 86 grid layout fails
+GREEN · 62 pass · 0 fail
