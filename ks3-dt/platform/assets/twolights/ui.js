@@ -65,6 +65,7 @@
   function pills() {
     var at = PILLS.indexOf(STAGE);
     $('pills').innerHTML = PILLS.map(function (p, i) { return '<span class="' + (i === at ? 'lit' : i < at ? 'past' : '') + '">' + esc(R('pill.' + p)) + '</span>'; }).join('');
+    var lit = $('pills').querySelector('.lit'); if (lit) $('pills').scrollLeft = Math.max(0, lit.offsetLeft - $('pills').clientWidth / 2 + lit.offsetWidth / 2);   // a narrow screen keeps her stage in view
   }
   function topLine(s) {
     var o = othersOf(s);
@@ -106,13 +107,13 @@
     var ws = isCh || STAGE === 'tour' ? E.windowSeats() : othersOf(seat).map(function (s) { return { seat: s, lamp: 0, horn: 0 }; });
     var lit = 0, sz = Math.min(23, h / 9.5);
     ws.forEach(function (v, i) {
-      var x = ws.length > 1 ? 70 + i * 140 : 150, y = Math.max(8, h * 0.08);
+      var x = ws.length > 1 ? 70 + i * 140 : 150, y = Math.max(8, h * 0.08) + sz * 0.7;   // the lantern roof stands above y: keep it in the window
       drawLight(c, v, x, y, ws.length > 1 ? sz * 0.82 : sz, T); if (v.lamp) lit++;
     });
     A.rocks(c, 325, h * 0.72, 22, T);
     var p = isCh ? E.boat() : { x: 0, drifting: false };
     var turning = isCh && (E.allDone(STAGE));
-    var bx = 30 + (p.x || 0) * 255, by = h * 0.76;
+    var bx = 52 + (p.x || 0) * 233, by = h * 0.76;   // the whole hull stays in the window at the start
     A.fog(c, 369, h, T, Math.max(0.25, 0.85 - lit * 0.28 - (turning ? 0.3 : 0)));
     A.boat(c, bx, by, Math.min(21, h / 12), turning ? 'cheer' : 'worried', T, turning ? 0 : 0.05);
     if (p.drifting && p.x > 0.35) A.inset(c, 6, 6, 150, 82, 'worried', T);   // the puffins' faces, close up (art round 3)

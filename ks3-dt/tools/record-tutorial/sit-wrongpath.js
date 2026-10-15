@@ -72,6 +72,9 @@ if (/^j3-4$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 4 is The 
 /* J1 Lesson 6 is THE OPERATION (14 Oct 2026): most of the hour is a page in a frame (assets/l6/operation.html),
    so this walker cannot press it. It is walked by l6-walk.js, which reads LANDMARKS['6'] below and must stand on each. */
 if (/^6$/.test(LESSON)) { console.log('sit-wrongpath.js: J1 Lesson 6 is The Operation; walk it with l6-walk.js (it asserts LANDMARKS[\'6\']).'); process.exit(0); }
+/* J3 Lesson 5 is BUG BOUNTY (TWO LIGHTS, 15 Oct 2026): the hour is a page in a frame (assets/twolights/hour.html),
+   so this walker cannot press it. It is walked by l5-walk.js, which reads LANDMARKS['j3-5'] below and must stand on each. */
+if (/^j3-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 5 is Bug Bounty; walk it with l5-walk.js (it asserts LANDMARKS[\'j3-5\']).'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -384,6 +387,24 @@ const LANDMARKS = {
     ['the exit check', '.q-opt, .exit-q', 'c8'],
     ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'c8b'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'c9']
+  ],
+  'j3-5': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the radio check, read line by line', '#stage #slines', 'radio'],
+    ['the fog over the harbour, with its Begin', '#stage #snext', 'coldopen'],
+    ['the tour, pointing at each part of the screen', '#tourbox #toursay', 'tour'],
+    ['the bar with its line', '#barline', 'ch1'],
+    ['the program box', '#ed', 'ch1'],
+    ['the RUN button', '#run', 'ch1'],
+    ['red text in the console', '#con .r', 'ch1'],
+    ['the window onto the other light', '#bay', 'ch2'],
+    ['the bounty board', '#board .poster', 'ch4'],
+    ['the chapter done, with its Next', '#go', 'ch4'],
+    ['Home: the harbour and what she found', '#home #hbody', 'home'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close'],
+    ['the extra posters, a program to fix', '#extras .xsrc', 'extras'],
+    ['the way out, INSIDE a poster (265c)', '#xfin', 'extras']
   ],
   'j3-4': [
     ['the Do-Now', '.q-opt', '_recap'],

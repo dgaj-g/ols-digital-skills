@@ -62,7 +62,7 @@
     function ch() { return S.stage; }
     function isCh(st) { return CHS.indexOf(st) >= 0; }
     function code(s, c) {
-      var L = S.L[s]; c = c || ch();
+      var L = S.L[s]; c = c || ch(); if (!isCh(c)) c = 'ch1';   // the tour stands on the first chapter's program
       if (L.code[c] == null) L.code[c] = J.givenProgram(c, s, L.variant);
       return L.code[c];
     }

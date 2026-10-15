@@ -85,3 +85,15 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - Engine faults found by the walk and fixed: (1) last ch4 fix could never be named (turning overrode naming); (2) endless "Press RUN" when a sleeping shout fault outranked the silent one after a quiet run.
 - Judgement: solo/fallback/dark-partner keepers fix two programs → drift budget × lights kept (N13).
 - NEXT: prototype copy; browser walker A9/A10/A12/A13; j3-05.json + content; A14; cold reads.
+
+## 21:05 · A12/A13 browser walk PASS at both widths (l5-walk.js)
+- `node l5-walk.js --base http://localhost:8135` → 49 checks, 0 failed (1366) · `--width 683` → 49 checks, 0 failed.
+- SHAPE {xp 49, marks 49, chunks 12, badges 3, presses 81–82} pinned as sit-review.js EXPECT['j3-5'] (presses reported, not asserted).
+- CONTROL `--control --expect-fail` → `FAIL stood on: CONTROL: a landmark nobody can stand on` · `CONTROL OK`.
+- New check in the walk: every button pressed sits wholly on screen. Fixes made from the walk's screenshots:
+  story scene sized by height (Begin was clipped at 768 high); narrow screen: pills scroll and keep her stage centred,
+  "Show me around again" never wraps, posters wrap 3+2, #app column pinned to the viewport (page spilled past 683);
+  window scene: lighthouse lowered so its roof shows, boat starts with its whole hull in view.
+- Lesson end: extras is the last chunk, so the lesson ends on the platform finish card (glyph, no picture) — the walk accepts that.
+- All engine gates re-run PASS: channel 17, clock 188, effects 207, judge 1017, redtext 766, walk-model 13, words 387.
+NEXT: cold reads → full pack → commit/push → sit report → Chrome deck → pathb/Apps Script → PR.
