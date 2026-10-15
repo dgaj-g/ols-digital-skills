@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-15 from contentVersion 2026-10-14c.
+ * Built 2026-10-15 from contentVersion 2026-10-15b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3576,7 +3576,7 @@ var DECKS = {
   },
   "id": "j3-05.deck",
   "lesson": "j3-05",
-  "driveFileId": "",
+  "driveFileId": "1SD1-XW5KmBXLnvde1SrwPca10f7HLxslikDyL97pgdE",
   "deckName": "KS3 DT · J3 Lesson 5 — Bug Bounty (Teacher Deck)",
   "sections": [
    {
