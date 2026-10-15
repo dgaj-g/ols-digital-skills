@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-10-14T14:01:18.965Z
+G6 deploy log + token · 2026-10-15T09:19:31.172Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 14 Oct 2026 15:00 | 6 | 24d3d4f8ad-7f0b7102 | v6 S1 Unit 1 24d3d4f8ad-7f0b7102 | Software topic added (29 past-paper questions, 59 marks, including 2026; LOCK
+INFO newest row: | 15 Oct 2026 09:05 | 7 | d082cb2a5b-fa15c989 | v7 S1 Unit 1 d082cb2a5b-fa15c989 | Database applications (62 questions, 123 marks, 5 stages) and Spreadsheet app
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
