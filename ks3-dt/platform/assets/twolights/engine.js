@@ -253,7 +253,7 @@
         var b = boat(c);
         if (b.doneAt == null && allDone(c)) { b.doneAt = t; emit('turning', { ch: c }); }
         var pos = CK.position(boatRoom(c), t, budgets[c]);
-        if (!pos.black && pos.x >= 1 && b.doneAt == null) { if (addFail(c, t)) send('fail', { ch: c, at: t }); }
+        if (!pos.black && pos.x >= 1 && b.doneAt == null) { if (addFail(c, t) && failWriter(t) === S.seat) send('fail', { ch: c, at: t }); }
       }
       if (S.mode === 'pair') {
         S.seats.forEach(function (s) {
@@ -265,6 +265,9 @@
       S.local.forEach(function (s) { var L = S.L[s]; if (L.typing && t - L.keyAt > 4000) L.typing = 0; });
       S.slips.forEach(function (x) { if (!x.read && x.shownAt && t - x.shownAt > SLIP_READ) x.read = t; });
       broadcast();
+    }
+    function failWriter(t) {   // the rocks are written once: by the first seat still heard from (every seat rewinds by itself)
+      return S.seats.filter(function (s) { return S.local.indexOf(s) >= 0 || (S.P[s] && S.P[s].at != null && t - S.P[s].at < 15000); })[0];
     }
     function goDark(s) {   // silent partner 3 min (§6): she keeps both lights from her place
       addLocal(s); delete S.P[s];

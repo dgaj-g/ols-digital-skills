@@ -406,6 +406,7 @@
     }
     body(NAMES);
     window.addEventListener('message', function (ev) { var d = ev.data || {}; if (d.type === 'names' && d.names) { NAMES = d.names; body(NAMES); } });
+    if (bus && bus.fb) setTimeout(function () { bus.fb.destroy(); }, Q.fast ? 1500 : 6000);   // Home deletes the room (§10)
     setTimeout(function () {
       $('hnext').hidden = false; $('hnext').textContent = R('btn.exit');
       $('hnext').onclick = function () { $('hnext').disabled = true; post('next'); };
@@ -449,7 +450,7 @@
   }
 
   /* ---------- go ---------- */
-  window.TLUI = { E: E, R: R, render: render, goFallback: goFallback, stage: STAGE, tour: startTour };
+  window.TLUI = { E: E, R: R, bus: bus, render: render, goFallback: goFallback, stage: STAGE, tour: startTour };
   if (STAGE === 'radio') ceremony();
   else if (STAGE === 'coldopen') coldOpen();
   else if (STAGE === 'tour') { startMain(); setTimeout(function () { startTour(true); }, 300); }

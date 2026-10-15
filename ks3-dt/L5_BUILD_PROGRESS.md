@@ -68,3 +68,11 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - Local check (http://localhost:8766/assets/twolights/hour.html): solo ch1 fix flow OK (red → fixline → clean → switches to South Light);
   pair ch2 over BroadcastChannel OK (slip arrives, partner's horn drawn on the window, presence line).
 - NEXT: Engines.twolights in platform/engines.js (after Engines.operation); prototype copy; gates A6–A14; walk for B1–B4; content.
+
+## 15 Oct 2026 · Engines.twolights + A6–A8 PASS
+- Engines.twolights added (engines.js, after Engines.operation): one chunk per stage; draft.tlSave / tlT0 / tlFallback; badges ride on chunk.badge via finishChunk.
+- Home deletes the room (seat page calls fb.destroy 6 s after Home). Rocks written ONCE: failWriter = first seat still heard from (each seat rewinds by itself).
+- `l5-channel-test.js` (real Firebase, real page, playwright) PASS 17 checks: slip 284 ms; presence; horn only on other seat; 1 fail record, both rewind with lines kept; reveal both; room deleted; 2000 ms lag robot; trio BC/AC/AB, slip to C only, M = 9; fallback never-connect + resolver-blocked; connect at 9 s does NOT fall back.
+- CONTROL `--control` → `l5-channel: FAIL · 17 of 17` (first: `FAIL A6 both laptops reach the live room`).
+- Blocking note: WebSockets skip page.route → block with --host-resolver-rules.
+- NEXT: l5-walk (A9 solo/handover, A10 reload boat, A11 hour length, A12 no dead screen, A13 reload every stage), content json, A14 coverage.
