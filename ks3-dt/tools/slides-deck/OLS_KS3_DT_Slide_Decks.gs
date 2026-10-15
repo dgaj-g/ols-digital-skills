@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-14 from contentVersion 2026-10-14c.
+ * Built 2026-10-15 from contentVersion 2026-10-14c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3559,6 +3559,136 @@ var DECKS = {
     ]
    }
   ]
+ },
+ "j3-05": {
+  "year": "j3",
+  "theme": {
+   "id": "control-room",
+   "name": "The Control Room",
+   "ground": "#08090F",
+   "panel": "#14161F",
+   "accent": "#5AA9FF",
+   "accent2": "#FF6EC7",
+   "text": "#FFFFFF",
+   "dim": "#B9C2D6",
+   "display": "IBM Plex Mono",
+   "body": "Inter"
+  },
+  "id": "j3-05.deck",
+  "lesson": "j3-05",
+  "driveFileId": "",
+  "deckName": "KS3 DT · J3 Lesson 5 — Bug Bounty (Teacher Deck)",
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "radio",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 5 · Bug Bounty",
+      "sub": "J3 · Lesson 5 of 17",
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now, a short set of questions from earlier lessons that mark themselves. Take the register while it runs.\n\nSAY: \"Log in, open the class link and do the warm-up questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the warm-up. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "Today you find faults",
+      "bullets": [
+       "Python's red lines name the line and the fault. You will read them first.",
+       "Some faults are silent: nothing is red and nothing happens. You will find those too.",
+       "You will meet one new word, return. The lesson teaches it when it is needed."
+      ],
+      "notes": "SAY these as they are written. Do not explain return now: the lesson teaches it when it is needed."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Headphones on",
+      "bullets": [
+       "Put your headphones on now.",
+       "Sound is part of this lesson.",
+       "No headphones? Every step still works with the sound off."
+      ],
+      "notes": "SAY: \"Headphones on now, please. Sound is part of today. If you have no headphones, every step still works with the sound off.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "On your own screen",
+      "bullets": [
+       "Every step shows you what to do.",
+       "Read every screen before you type.",
+       "More help appears by itself if a line is not right."
+      ],
+      "notes": "SAY: \"Everything you need is on your own screen. Every step shows you what to do. Read every screen before you type. If a line is not right, more help appears by itself.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Stay on the class link",
+      "bullets": [
+       "Keep the class link open the whole hour.",
+       "If a screen says to share one laptop, share with the person beside you and take turns.",
+       "Do not close the tab; your place is saved."
+      ],
+      "notes": "SAY: \"Keep the class link open the whole hour. If your screen ever says to share one laptop, share with the person beside you and take turns. Do not close the tab. Your place is saved.\"\n\nDO NOT say anything about who works with whom. The screen does it."
+     }
+    ]
+   },
+   {
+    "id": "story",
+    "chunk": "ch4",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "STOP — eyes front · Running out of time?",
+      "bullets": [
+       "At minute 48 a button appears. Press it only if you are still in the story.",
+       "It shows the lines that are left."
+      ],
+      "notes": "SAY at minute 48 only: \"Eyes front for a moment. If you are still in the story, a button called Running out of time? has appeared. Press it, and it shows you the lines that are left. Type them and you reach the end.\"\n\nTHEN: back to circulating."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "chunk": "exit",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The last screens",
+      "bullets": [
+       "Five questions, then How did it go.",
+       "Then extra posters if you want them."
+      ],
+      "notes": "SAY: \"At the end there are five questions. They are marked, so answer on your own. Then everybody does How did it go?. After that, there are extra posters if you have time.\""
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "close",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Sign out.",
+       "Lesson 6 is Data and AI."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most. Remind them to keep today a surprise for other classes."
+     }
+    ]
+   }
+  ]
  }
 };
 var CONSENT = {
@@ -4228,6 +4358,7 @@ function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 function createJ3Lesson2Deck() { return createDeck_('j3-02'); }
 function createJ3Lesson3Deck() { return createDeck_('j3-03'); }
 function createJ3Lesson4Deck() { return createDeck_('j3-04'); }
+function createJ3Lesson5Deck() { return createDeck_('j3-05'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
@@ -4243,6 +4374,7 @@ function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 function rebuildJ3Lesson2Deck() { return rebuildDeck_('j3-02'); }
 function rebuildJ3Lesson3Deck() { return rebuildDeck_('j3-03'); }
 function rebuildJ3Lesson4Deck() { return rebuildDeck_('j3-04'); }
+function rebuildJ3Lesson5Deck() { return rebuildDeck_('j3-05'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -4338,6 +4470,7 @@ function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 function exportJ3Lesson2Proofs() { return exportDeckProofs_('j3-02'); }
 function exportJ3Lesson3Proofs() { return exportDeckProofs_('j3-03'); }
 function exportJ3Lesson4Proofs() { return exportDeckProofs_('j3-04'); }
+function exportJ3Lesson5Proofs() { return exportDeckProofs_('j3-05'); }
 
 /* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
    than typed. It used to be a hardcoded array of five, which was true on the day

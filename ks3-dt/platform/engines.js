@@ -11433,4 +11433,60 @@
     }
   };
 
+  /* TWO LIGHTS (J3 L5, spec J3_L5_TWO_LIGHTS_SPEC.md §10): the Operation's mount, one stage of the hour per chunk. The page
+     keeps her lines, bounties and the room's boat in draft.tlSave (law 11); draft.tlT0 is the start of the story, for
+     "Running out of time?" from lesson minute 48. Badges ride on the chunk (ch1, ch3, home). */
+  Engines.twolights = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {}, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var stage = cfg.stage || 'ch1';
+      function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
+      function finish(detail) { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, detail || stage); }
+      function open(mode) {
+        var st = PairKit.st, paired = mode === 'paired' && st && !cfg.extrasMode;
+        var seats = paired ? st.members.map(function (_, i) { return 'ABC'[i]; }) : ['A'];
+        if (draft.tlT0 == null && !ctx.review) draft.tlT0 = Date.now();
+        var H = { stage: stage, seat: paired ? 'ABC'[st.mi] : 'A', seats: seats,
+          room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
+          names: paired && st.names ? st.names : null, save: draft.tlSave || null, t0: draft.tlT0 || null,
+          budgets: cfg.budgets || null, finishLabel: cfg.finishLabel || null,
+          fallback: paired && st.room && draft.tlFallback === st.room ? 1 : 0 };
+        host.innerHTML = '';
+        var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+          '<iframe class="rescue-frame" title="' + esc(chunk.title || 'Bug Bounty') + '"></iframe></div>');
+        host.appendChild(wrap);
+        function fit() {
+          if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+          var bar = document.querySelector('#player .player-top');
+          wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+        }
+        fit(); window.addEventListener('resize', fit);
+        var frame = wrap.querySelector('iframe');
+        frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+        frame.src = App.asset(cfg.page || 'assets/twolights/hour.html') + '#' + encodeURIComponent(JSON.stringify(H));
+        function tell(m) { m.op = 1; try { frame.contentWindow.postMessage(m, '*'); } catch (e) {} }
+        function save() { if (ctx.review) return null; return ctx.saveEvent({ draft: draft }); }
+        function sendNames() {
+          if (!paired) return;
+          if (st.names) { tell({ type: 'names', names: st.names }); return; }
+          PairKit.complete(ctx).then(function (r) { if (r && r.names) tell({ type: 'names', names: r.names }); });
+        }
+        var gone = false;
+        function onMsg(e) {
+          if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+          var m = e.data;
+          if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
+          if (m.type === 'begin' || m.type === 'next') { gone = true; window.removeEventListener('message', onMsg); finish(stage); }
+          else if (m.type === 'fallback') { if (paired && st.room) { draft.tlFallback = st.room; save(); } }
+          else if (m.type === 'save') { if (m.save) draft.tlSave = m.save; save(); }
+          else if (m.type === 'done') { if (m.save) draft.tlSave = m.save; save(); sendNames(); }
+        }
+        window.addEventListener('message', onMsg);
+      }
+      if (cfg.extrasMode) { open('solo'); return; }
+      PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true });
+    }
+  };
+
 })(window);

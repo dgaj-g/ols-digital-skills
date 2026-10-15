@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TWO LIGHTS art test</title>
+<style>@font-face{font-family:"Space Grotesk";src:url("FONTURL") format("woff2");font-weight:300 700}
+body{margin:0;background:#050912;color:#dfe6f2;font-family:"Space Grotesk",sans-serif;width:683px}
+h2{font-size:15px;letter-spacing:.18em;color:#F2C14E;margin:18px 14px 6px}
+.cap{font-size:13px;color:#aab3c5;margin:0 14px 4px}
+canvas{display:block;margin:0 auto}
+.hdr{font-size:15px;font-weight:700;text-align:center;padding:6px 8px;background:#0e1a30;border-bottom:1px solid #26324c}
+.win{width:369px;margin:0 auto;border:1px solid #26324c}</style></head><body>
+<h2>THE WINDOW, AT REAL SIZE (her screen, North Light)</h2>
+<div class="win"><div class="hdr">You keep the North Light. Someone keeps the South Light.</div><canvas id="w" width="369" height="330"></canvas></div>
+<p class="cap">Her lighthouse is never drawn. The window shows THEIR light, labelled with its name, with its radio under it.</p>
+<h2>LIGHTHOUSE: ASLEEP · AWAKE · SMILE</h2><canvas id="lh" width="683" height="330"></canvas>
+<h2>THE LIGHTSHIP (awake)</h2><canvas id="ls" width="683" height="230"></canvas>
+<h2>PUFFINS: WORRIED (drifting)</h2><canvas id="pw" width="683" height="250"></canvas>
+<h2>PUFFINS: CHEER (home)</h2><canvas id="pc" width="683" height="250"></canvas>
+<h2>CLOSE: PIP · NUALA · WEE FINN (worried, then cheer)</h2><canvas id="cl" width="683" height="260"></canvas>
+<script>ARTJS</script>
+<script>
+document.fonts.load('700 12px "Space Grotesk"').then(function(){var A=TwoArt,T=+(new URLSearchParams(location.search).get('t')||1.3);
+function ctx(id){return document.getElementById(id).getContext('2d')}
+(function(){var c=ctx('w');A.sea(c,369,330,90,T);A.rocks(c,320,250,22,T);
+A.beam(c,262,92,260,T+1,1,-1);A.lighthouse(c,262,92,23,{awake:1,t:T});
+c.fillStyle='#F2C14E';c.font='700 12px "Space Grotesk"';c.textAlign='center';c.fillText('SOUTH LIGHT',255,26);
+A.fog(c,369,330,T,0.8);A.boat(c,110,212,21,'worried',T,0.05);A.inset(c,6,6,170,92,'worried',T);
+c.fillStyle='#0e1a30';c.fillRect(170,286,190,40);['Your light is out','No horn from you','I got None','All clear'].forEach(function(s,i){c.fillStyle='#1d2b48';A.rrect(c,174+(i%2)*92,289+Math.floor(i/2)*18,88,15,4);c.fill();c.fillStyle='#dfe6f2';c.font='600 9.5px "Space Grotesk"';c.fillText(s,218+(i%2)*92,300+Math.floor(i/2)*18)})})();
+(function(){var c=ctx('lh');A.sea(c,683,330,200,T);
+A.lighthouse(c,110,95,26,{awake:0,t:T});A.beam(c,340,95,230,T,1,1);A.lighthouse(c,340,95,26,{awake:1,t:T});
+A.beam(c,570,95,180,T+2,1,-1);A.lighthouse(c,570,95,26,{awake:1,smile:1,t:T});})();
+(function(){var c=ctx('ls');A.sea(c,683,230,120,T);A.beam(c,340,70,250,T,1,-1);A.lightship(c,340,70,24,{awake:1,t:T});})();
+(function(){var c=ctx('pw');A.sea(c,683,250,40,T);A.fog(c,683,250,T,1);A.rocks(c,600,210,40,T);A.boat(c,300,170,38,'worried',T,0.06);})();
+(function(){var c=ctx('pc');A.sea(c,683,250,40,T);A.beam(c,600,40,500,T,1,-1);A.boat(c,330,175,38,'cheer',T,0);})();
+(function(){var c=ctx('cl');A.sea(c,683,260,0,T);
+A.puffin(c,90,150,52,'pip','worried',T);A.puffin(c,225,150,46,'nuala','worried',T);A.puffin(c,340,160,36,'finn','worried',T);
+A.puffin(c,450,150,52,'pip','cheer',T);A.puffin(c,565,150,46,'nuala','cheer',T);A.puffin(c,650,160,36,'finn','cheer',T);})();
+});</script></body></html>
