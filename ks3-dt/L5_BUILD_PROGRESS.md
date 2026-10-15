@@ -62,3 +62,9 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - Shape decided (as L6): one chunk per stage (radio, coldopen, tour, ch1–ch4, home, extras), page assets/twolights/hour.html in an iframe, hash carries {stage, seat, seats, room, names, draft}.
 - Files now being written: twolights/live.js (codec + fire bus, L6 shape {j,t} so L6's rules accept it), twolights/engine.js (pure room/seat model: boat, bar, help ladder, bounties, lookout cards, solo/fallback/dark), sound.js, ui.js, hour.html.
 - Platform strings not in the spec (pairWords, exit/close chrome, extras finish label) are taken from j1-06 / j3-04 as the spec says ("as j3-04's").
+
+## Checkpoint 15 Oct 2026 (page)
+- live.js, sound.js, hour.html, ui.js written. Stage pills added to strings.js (pill.*).
+- Local check (http://localhost:8766/assets/twolights/hour.html): solo ch1 fix flow OK (red → fixline → clean → switches to South Light);
+  pair ch2 over BroadcastChannel OK (slip arrives, partner's horn drawn on the window, presence line).
+- NEXT: Engines.twolights in platform/engines.js (after Engines.operation); prototype copy; gates A6–A14; walk for B1–B4; content.

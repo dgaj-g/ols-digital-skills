@@ -10,6 +10,15 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
   var S = {
+    // stage pills (§3 TOP)
+    'pill.radio': { t: 'label', s: 'Another light' },
+    'pill.coldopen': { t: 'label', s: 'Fog' },
+    'pill.tour': { t: 'label', s: 'Tour' },
+    'pill.ch1': { t: 'label', s: 'Read the red' },
+    'pill.ch2': { t: 'label', s: 'Silent' },
+    'pill.ch3': { t: 'label', s: 'Hand it back' },
+    'pill.ch4': { t: 'label', s: 'Bug Bounty' },
+    'pill.home': { t: 'label', s: 'Home' },
     // ceremony (stage radio)
     'cer.1': { t: 'line', s: 'ANOTHER LIGHT ANSWERS.' },
     'cer.2': { t: 'line', s: 'You are the keeper of the {mine}.', ex: { mine: 'North Light' } },
