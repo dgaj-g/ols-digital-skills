@@ -42,6 +42,8 @@ Object.keys(PR.SEATS).forEach(function (k) {
     all.forEach(function (fx) { add(k + ' ch4 ' + tag + ' minus ' + fx, PR.ch4(s, all.filter(function (y) { return y !== fx; })), f, true); });
   });
 });
+// the six extra posters (A3), given and fixed
+PR.EXTRAS.forEach(function (x) { add('extras ' + x.id + ' given', x.src, 'harbour.py', true); add('extras ' + x.id + ' fixed', x.fixed, 'harbour.py', true); });
 var N = PR.SEATS.A, fixed1 = PR.ch1(N, 2), night = PR.ch4(N, []);
 // §5.5 judge controls, as Python sees them
 add('control capital L', fixed1.replace('\nlamp_on()', '\nLamp_on()'), 0, true);

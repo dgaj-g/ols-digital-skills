@@ -61,6 +61,28 @@
     l.push('b = bearing()', 'radio(b)');
     return lines(l);
   }
+  /* the six extra posters (§8 EXTRAS; also the lookout's cards, law 4): 5–7 lines, one fault each.
+     kind = the poster that names it; want = what a fixed program does (checked on a clean run). */
+  var EXTRAS = [
+    { id: 'x1', kind: 'name', src: lines(['# Harbour bell', 'rings = 3', '', 'def bell():', '    print("Bell rings " + str(rings) + " times")', '', 'bel()']),
+      fixed: lines(['# Harbour bell', 'rings = 3', '', 'def bell():', '    print("Bell rings " + str(rings) + " times")', '', 'bell()']),
+      want: { print: 'Bell rings 3 times' } },
+    { id: 'x2', kind: 'type', src: lines(['# Tide board', 'tide = 4', 'place = "Harbour"', '', 'def tide_board():', '    print(place + " tide " + tide + " metres")', 'tide_board()']),
+      fixed: lines(['# Tide board', 'tide = 4', 'place = "Harbour"', '', 'def tide_board():', '    print(place + " tide " + str(tide) + " metres")', 'tide_board()']),
+      want: { print: 'Harbour tide 4 metres' } },
+    { id: 'x3', kind: 'indent', src: lines(['# Pier lamp', 'glow = 9', '', 'def pier_lamp():', 'light(glow)', '', 'pier_lamp()']),
+      fixed: lines(['# Pier lamp', 'glow = 9', '', 'def pier_lamp():', '    light(glow)', '', 'pier_lamp()']),
+      want: { fx: 'light' } },
+    { id: 'x4', kind: 'called', src: lines(['# Night horn', 'blasts = 4', '', 'def night_horn():', '    print("Night horn")', '    horn(blasts)']),
+      fixed: lines(['# Night horn', 'blasts = 4', '', 'def night_horn():', '    print("Night horn")', '    horn(blasts)', 'night_horn()']),
+      want: { fx: 'horn' } },
+    { id: 'x5', kind: 'return', src: lines(['# Depth call', 'depth = 20', '', 'def sounding():', '    print("Depth " + str(depth))', 'd = sounding()', 'radio(d)']),
+      fixed: lines(['# Depth call', 'depth = 20', '', 'def sounding():', '    print("Depth " + str(depth))', '    return depth', 'd = sounding()', 'radio(d)']),
+      want: { radio: '20' } },
+    { id: 'x6', kind: 'name', src: lines(['# Cliff light', 'beam = 15', '', 'def cliff_light():', '    print("Cliff light on")', '    light(beam)', 'Cliff_light()']),
+      fixed: lines(['# Cliff light', 'beam = 15', '', 'def cliff_light():', '    print("Cliff light on")', '    light(beam)', 'cliff_light()']),
+      want: { fx: 'light' } }
+  ];
   function variantFaults(v) { return [v.S].concat(v.Q); }
   function hash(str) { var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0; return h; }
   // seats in one room never share a variant: base + 2i over seven
@@ -69,5 +91,5 @@
     return VARIANTS[(base + 2 * i) % VARIANTS.length];
   }
   return { SEATS: SEATS, VARIANTS: VARIANTS, ch1: ch1, ch2: ch2, ch3: ch3, ch4: ch4, variantFaults: variantFaults,
-    seatVariant: seatVariant, hash: hash };
+    seatVariant: seatVariant, hash: hash, EXTRAS: EXTRAS };
 }));
