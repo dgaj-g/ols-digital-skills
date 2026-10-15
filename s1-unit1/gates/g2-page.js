@@ -13,7 +13,7 @@
  * onto one line on a phone, a drop-down held narrower than its chosen words, the answer-first line kept after answering, and a missed answer in smaller type.
  * DATABASES and SPREADSHEETS (v7): the same sit on each at desktop and phone width (summary g2-summary-<topic>.png, lines
  * g2-sit-lines-<topic>.txt); every formula item shows the hint and a monospace box, every grid figure its row numbers.
- * Controls that must fail: formula boxes in serif, the hint hidden, a grid table forced to 1400 px on a phone.
+ * Controls that must fail: formula boxes in serif, the hint hidden, a grid table forced to 1400 px on a phone with its scroll box opened up.
  * Run: node s1-unit1/gates/g2-page.js  (exit 0 = GREEN). Output: gates/out/g2-page.txt, gates/out/g2-summary.png */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), { spawn, execSync } = require('child_process');
@@ -153,7 +153,7 @@ function sitChecks(R, user, tag, bank) {
     const fcm = FC.out.lines.filter((l) => /^SIT FAIL formula box is monospace/.test(l)), fch = FC.out.lines.filter((l) => /^SIT FAIL formula hint shows/.test(l));
     check('CONTROL formula boxes in serif: sit reports the formula-box check failing', !FC.out.pass && fcm.length > 0, 'lines ' + fcm.length);
     check('CONTROL formula hint hidden: sit reports the hint check failing', !FC.out.pass && fch.length > 0, 'lines ' + fch.length);
-    const GC = await sit(browser, 'control13@c2ken.net', '11a-dt', '.figure.grid table{min-width:1400px!important}', PH, 'spreadsheets');
+    const GC = await sit(browser, 'control13@c2ken.net', '11a-dt', '.figure .tscroll{overflow:visible!important}.figure.grid table{min-width:1400px!important}', PH, 'spreadsheets');
     const gcl = GC.out.lines.filter((l) => /^SIT FAIL layout/.test(l) && /figure/.test(l));
     check('CONTROL a 1400 px grid table on a phone: sit reports layout failures on the figure', !GC.out.pass && gcl.length > 0, 'lines ' + gcl.length);
     log.push('INFO v7 controls: ' + fcm.length + ' serif-box fails, ' + fch.length + ' hidden-hint fails, ' + gcl.length + ' grid layout fails');

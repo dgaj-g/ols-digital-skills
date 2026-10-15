@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-10-15T06:36:32.959Z
+G2 render coverage + sit on the harness · 2026-10-15T07:12:24.426Z
 PASS class made
 PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
@@ -42,13 +42,13 @@ PASS DATABASES · no console errors or failed requests
 PASS DATABASES · page marks = judge marks on all 62 questions
 PASS DATABASES · total line
 PASS DATABASES · MARKS# hash matches node
-INFO DATABASES · round 1 · 31 of 123 marks · MARKS# e11fa3bc · 41 sit checks passed
+INFO DATABASES · round 1 · 30 of 123 marks · MARKS# 33056cb1 · 41 sit checks passed
 PASS DATABASES PHONE 390x844 · sit run PASS (6 s)
 PASS DATABASES PHONE 390x844 · no console errors or failed requests
 PASS DATABASES PHONE 390x844 · page marks = judge marks on all 62 questions
 PASS DATABASES PHONE 390x844 · total line
 PASS DATABASES PHONE 390x844 · MARKS# hash matches node
-INFO DATABASES PHONE 390x844 · round 1 · 31 of 123 marks · MARKS# e11fa3bc · 41 sit checks passed
+INFO DATABASES PHONE 390x844 · round 1 · 30 of 123 marks · MARKS# 33056cb1 · 41 sit checks passed
 PASS spreadsheets opened for the class
 PASS SPREADSHEETS the sit played Spreadsheet applications
 PASS SPREADSHEETS · sit run PASS (6 s)

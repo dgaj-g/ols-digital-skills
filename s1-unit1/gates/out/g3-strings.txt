@@ -1,6 +1,6 @@
-G3 strings · 2026-10-15T06:36:46.492Z
+G3 strings · 2026-10-15T07:10:50.648Z
 PASS strings.js = prototype S, TOPICS, SPEC §3 / A2 lines; every used key exists
-INFO 69 pupil strings · 9 topics · 31 guard/system/staff lines
+INFO 72 pupil strings · 9 topics · 31 guard/system/staff lines
 PASS the served Index.html carries strings.js unchanged
 PASS cold read on file (two readers, not rerun)
 PASS every pick question has a "Pick N." line and a limit line for its own n, and its label names the same n

@@ -1,4 +1,4 @@
-SIT PASS started · s1u1-853b3f0215-51cc841b
+SIT PASS started · s1u1-d082cb2a5b-fa15c989
 SIT PASS fresh record · round 1
 SIT PASS home line · Round 1 · not started
 SIT PASS topic databases is Database applications · databases
@@ -25,21 +25,21 @@ SIT PASS stage 5 card · stagecard
 SIT PASS stage card needs a rating
 SIT PASS the warning goes once a rating is picked
 SIT PASS 62 questions answered · 62
-SIT PASS summary total · You scored 31 of 123 marks (25%)
+SIT PASS summary total · You scored 30 of 123 marks (24%)
 SIT PASS summary flagged · 8 of 8
-SIT PASS flagged rows name the question · A relational database is … | Jack has stored his customers' details in a text file, one customer per line, with … | In John's MEMBERS table there is a tick-box field called OVEREIGHTEEN. How is the value … | Jack's repair-shop database has two tables. cust_TBL has the fields cust_ID, surname, … | Piotr has a customer-details form on his website and wants to add validation. What is … | John wants a query that lists all the DVDs that have not been returned. RETURNED is a … | Look at the records in tblCARS. State how the data has been sorted. | Big data can be defined by 3V's. What do the 3V's stand for?
-TOTAL 31 of 123
+SIT PASS flagged rows name the question · A relational database is … | Jack has stored his customers' details in a text file, one customer per line, with … | In John's MEMBERS table the tick-box field OVEREIGHTEEN is filled in automatically, not … | Jack's repair-shop database has two tables. cust_TBL has the fields cust_ID, surname, … | Piotr has a customer-details form on his website and wants to add validation. What is … | John wants a query that lists all the DVDs that have not been returned. RETURNED is a … | Look at the records in tblCARS. State how the data has been sorted. | Big data can be defined by 3V's. What do the 3V's stand for?
+TOTAL 30 of 123
 SIT PASS all marked questions restore · 62 seen
 SIT PASS look back ends with Back to the topic · every button right
-SIT PASS home line done · Round 1 · done · 31 of 123 marks
+SIT PASS home line done · Round 1 · done · 30 of 123 marks
 SIT PASS repeat mark keeps the first · repeat true · 0 vs 0
 SIT PASS teacher opens round 2 · 2
-SIT PASS round 1 kept · 31 vs 31
+SIT PASS round 1 kept · 30 vs 30
 SIT PASS round 2 current
 SIT PASS home line round 2 · Round 2 open · not started
 SIT PASS round 2 new order
 SIT PASS no page errors
 SIT PASS every grid figure shows its row-number column · 1 shown, 0 wrong
-MARKS DB1-01:0,DB1-02:4,DB1-03:1,DB1-04:0,DB1-05:0,DB1-06:0,DB1-07:0,DB1-08:0,DB1-09:0,DB1-10:0,DB1-11:1,DB1-12:1,DB1-13:1,DB1-14:0,DB1-15:1,DB1-16:0,DB1-N1:0,DB1-N2:0,DB2-01:0,DB2-02:0,DB2-03:0,DB2-04:0,DB2-05:0,DB2-06:0,DB2-07:0,DB2-08:0,DB2-09:0,DB2-10:0,DB2-N1:0,DB2-N2:1,DB3-01:1,DB3-02:0,DB3-03:0,DB3-04:0,DB3-05:0,DB3-06:1,DB3-07:0,DB3-08:0,DB3-N1:3,DB3-N2:0,DB4-01:0,DB4-02:0,DB4-03:0,DB4-04:0,DB4-05:3,DB4-06:0,DB4-07:2,DB4-08:1,DB4-09:0,DB4-10:0,DB4-11:0,DB4-12:0,DB4-13:0,DB4-N1:2,DB5-01:1,DB5-02:0,DB5-03:1,DB5-04:1,DB5-05:3,DB5-06:1,DB5-N1:1,DB5-N2:0
-MARKS# e11fa3bc · 62 questions · flags 8
+MARKS DB1-01:0,DB1-02:4,DB1-03:1,DB1-04:0,DB1-05:0,DB1-06:0,DB1-07:0,DB1-08:0,DB1-09:0,DB1-10:0,DB1-11:0,DB1-12:1,DB1-13:1,DB1-14:0,DB1-15:1,DB1-16:0,DB1-N1:0,DB1-N2:0,DB2-01:0,DB2-02:0,DB2-03:0,DB2-04:0,DB2-05:0,DB2-06:0,DB2-07:0,DB2-08:0,DB2-09:0,DB2-10:0,DB2-N1:0,DB2-N2:1,DB3-01:1,DB3-02:0,DB3-03:0,DB3-04:0,DB3-05:0,DB3-06:1,DB3-07:0,DB3-08:0,DB3-N1:3,DB3-N2:0,DB4-01:0,DB4-02:0,DB4-03:0,DB4-04:0,DB4-05:3,DB4-06:0,DB4-07:2,DB4-08:1,DB4-09:0,DB4-10:0,DB4-11:0,DB4-12:0,DB4-13:0,DB4-N1:2,DB5-01:1,DB5-02:0,DB5-03:1,DB5-04:1,DB5-05:3,DB5-06:1,DB5-N1:1,DB5-N2:0
+MARKS# 33056cb1 · 62 questions · flags 8
 SIT RESULT PASS

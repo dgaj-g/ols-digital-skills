@@ -27,6 +27,11 @@ var Sit = (function () {
     all("header.bar, .stagebar, .card, .opt, .figure, .items .item, .pairs .pr, .choose .ch, .gapsent, .scheme, .wrote, .actions, .sumrows .r, .row, .figure td, .figure th, .ticks label, .item label, .opt span, .tog, .btn, .qtext, .lead").forEach(function (e) {
       if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) bad.push((e.className || e.tagName) + " " + e.scrollWidth + ">" + e.clientWidth);
     });
+    all(".figure .tscroll").forEach(function (s) { // v7 own look: a table wider than its box must scroll inside it, with the swipe line under it
+      if (s.scrollWidth <= s.clientWidth + 1) return; var cue = s.parentNode.querySelector(".swipe");
+      if (!/auto|scroll/.test(getComputedStyle(s).overflowX)) bad.push("wide table not scrollable " + s.scrollWidth + ">" + s.clientWidth);
+      if (!(cue && cue.offsetHeight)) bad.push("wide table without the swipe line");
+    });
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
@@ -54,7 +59,7 @@ var Sit = (function () {
       FX.n++; var bx = all("[data-k]");
       fx.forEach(function (f, k) { var x = bx[k]; if (f && !(x && x.classList.contains("fml") && /Menlo|monospace/.test(getComputedStyle(x).fontFamily))) { FX.bad++; ok("formula box is monospace " + v.id, false, x ? getComputedStyle(x).fontFamily : "no box " + k); } });
       var hn = $("#qcard .hint");
-      if (v.form === "type" && !(hn && hn.offsetHeight && hn.textContent === S.formulaHint)) { FX.bad++; ok("formula hint shows " + v.id, false, hn ? "hidden or wrong words" : "no hint line"); }
+      if (v.form === "type" && !(hn && hn.offsetHeight && hn.textContent === (v.items.some(function (it) { return it.formula && !it.ref; }) ? S.formulaHint : v.items.some(function (it) { return it.ref === "range"; }) ? S.rangeHint : S.refHint))) { FX.bad++; ok("formula hint shows " + v.id, false, hn ? "hidden or wrong words" : "no hint line"); }
     }
     if (v.figure && v.figure.head[0] === "") {
       GX.n++; var rn = all(".figure.grid th.rn").filter(function (x) { return x.offsetWidth; });
