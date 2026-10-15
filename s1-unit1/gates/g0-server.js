@@ -118,8 +118,11 @@ async function playStage(user, cls, round, st, opts) {
     const q = allQ.find((x) => x.q.id === qid).q;
     const want = Judge.judge(q, a.idk ? { texts: v.items.map(() => '') } : a, v).marks;
     if (r.r.marks !== want) throw new Error('marks differ on ' + qid + ': server ' + r.r.marks + ' node ' + want);
+    if (v.form === 'writepick' && a.text && (!r.a || r.a.text !== a.text)) throw new Error('writing not kept whole on ' + qid + ': ' + (r.a && r.a.text || '').length + ' of ' + a.text.length);
     sum += r.r.marks; n++;
   }
+  const back = await api('apiStage', { cls, topic, round, stage: st }, user); // her writing comes back whole on the look back (1,000 characters, 15 Oct 2026)
+  s.order.forEach((qid, i) => { const v = s.views[i], d = back.done && back.done[qid]; if (v.form !== 'writepick' || !d) return; const a = Policy.answer(v, user + '|' + round); if (a.text && d.a.text !== a.text) throw new Error('writing not kept whole on ' + qid + ': ' + (d.a.text || '').length + ' of ' + a.text.length); });
   return { s, sum, n };
 }
 
@@ -253,8 +256,11 @@ async function flows() {
   // storage cost of one pupil-round
   const store = await post('/__store', {});
   const mine = Object.entries(store.script).filter(([k]) => k.indexOf(':pupil1@c2ken.net') !== -1);
-  const bytes = mine.reduce((n, [k, v]) => n + k.length + v.length, 0);
-  ok(bytes < 4096, 'B one pupil-round costs ' + bytes + ' bytes of Script Properties (budget 4096)');
+  const writ = mine.reduce((n, [k, v]) => n + ((v.match(/"t":"[^"]*"/g) || []).join('').length), 0); // the unmarked writing, full length in this sit
+  const bytes = mine.reduce((n, [k, v]) => n + k.length + v.length, 0) - writ;
+  ok(bytes < 4096, 'B one pupil-round costs ' + bytes + ' bytes of Script Properties besides her writing (budget 4096)');
+  const bigW = mine.reduce((m, [k, v]) => Math.max(m, Buffer.byteLength(k) + Buffer.byteLength(v)), 0);
+  ok(writ > 5000 && bigW < 9216, 'B every record stays under the 9 KB a property holds with every writing box full (largest ' + bigW + ' bytes, writing ' + writ + ')');
   const big = Object.entries(store.script).reduce((m, [k, v]) => Math.max(m, k.length + v.length), 0);
   ok(big < 9216, 'B largest single value ' + big + ' bytes (< 9 KB)');
 

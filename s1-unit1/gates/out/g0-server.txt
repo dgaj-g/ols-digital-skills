@@ -1,4 +1,4 @@
-G0 server GREEN · 2026-10-15T07:10:50.984Z · build d082cb2a5b-fa15c989
+G0 server GREEN · 2026-10-15T11:12:05.802Z · build ea4110fe09-c59479cf
 PASS A pack->unpack->judge == judge on 10080 answers across 252 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
@@ -53,8 +53,9 @@ PASS B first save wins on a stage card
 PASS B topic card saved; "fine" is exclusive
 PASS B round 1 done: 82 answered, totals 32 = node judge 32
 PASS B flag shows on the round summary
-PASS B one pupil-round costs 3327 bytes of Script Properties (budget 4096)
-PASS B largest single value 858 bytes (< 9 KB)
+PASS B one pupil-round costs 2682 bytes of Script Properties besides her writing (budget 4096)
+PASS B every record stays under the 9 KB a property holds with every writing box full (largest 3793 bytes, writing 9078)
+PASS B largest single value 3667 bytes (< 9 KB)
 PASS B open round 2 for one pupil
 PASS B only that pupil moved (pupil1 2, pupil2 1, pupil3 1)
 PASS B round 1 intact after round 2 opens
