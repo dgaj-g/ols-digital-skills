@@ -40,7 +40,7 @@
     'tour.3': { t: 'card', s: 'The window. That is THEIR light. You can never see your own.' },
     'tour.4': { t: 'card', s: 'The radio. Four buttons. The only way to reach them.' },
     'tour.5': { t: 'card', s: 'The bounty board. Five kinds of fault. Name one to earn a bounty.' },
-    'tour.6': { t: 'card', s: 'The bay. Marigold drifts while any job is undone. The rocks are real.' },
+    'tour.6': { t: 'card', s: 'The bay. Marigold the boat drifts to the rocks while a fault is left.' },
     'tour.last': { t: 'instruction', s: 'You cannot see your own light. They can. Tell them what you see.' },
     'btn.next': { t: 'label', s: 'Next' },
     'btn.again': { t: 'label', s: 'Show me around again' },
@@ -59,11 +59,11 @@
     'bar.tell.horn': { t: 'instruction', s: 'Their horn is silent. Tell them.' },
     'bar.tell.none': { t: 'instruction', s: 'Their radio sent None. Tell them.' },
     'bar.slip': { t: 'instruction', s: 'A slip has arrived. Read your radio.' },
-    'bar.hunt': { t: 'instruction', s: 'Nothing is red and nothing happened. Hunt.' },
-    'bar.name': { t: 'instruction', s: 'Name it.' },
+    'bar.hunt': { t: 'instruction', s: 'Nothing is red and nothing happened. Find the fault in your code.' },
+    'bar.name': { t: 'instruction', s: 'Click the poster that names this fault.' },
     'bar.turning': { t: 'line', s: 'Every light is on. Marigold is turning.' },
     'bar.putback': { t: 'instruction', s: 'Line {n} was right before. Put it back.', ex: { n: 4 } },
-    'bar.slow': { t: 'instruction', s: 'The live link is slow. Share one laptop and take turns.' },
+    'bar.slow': { t: 'instruction', s: 'The link to your partner is slow. Share one computer and take turns.' },
     'bar.dark': { t: 'instruction', s: 'The {other} has gone dark. Keep both lights yourself.', ex: { other: 'South Light' } },
     // solo symptoms (§6: the bar carries the symptom)
     'solo.light': { t: 'line', s: 'The light is out.' },
@@ -103,7 +103,7 @@
     'help.return.2': { t: 'instruction', s: 'bearing prints the number but hands nothing back.' },
     'help.return.3': { t: 'instruction', s: 'Type return channel inside bearing, after the print.' },
     // rewind, running out of time, pause
-    'rewind': { t: 'line', s: 'That hasn\'t happened yet.' },
+    'rewind': { t: 'line', s: 'You have not reached that part of the story yet.' },
     'btn.late': { t: 'label', s: 'Running out of time?' },
     'late.line': { t: 'instruction', s: 'Here are the lines that are left. Type them and Marigold comes home.' },
     'btn.pause': { t: 'label', s: 'Pause the story' },
@@ -119,8 +119,8 @@
     'home.1': { t: 'line', s: 'Marigold is home. Every light was lit.' },
     'home.reveal': { t: 'line', s: 'The {other} was kept by {first}.', ex: { other: 'South Light', first: 'Aoife' } },
     'home.solo': { t: 'line', s: 'You kept both lights tonight.' },
-    'home.bounties': { t: 'line', s: 'Bounties: {n} of {m}. {badges} earned.', ex: { n: 5, m: 6, badges: 'Red Reader, Radio Keeper, Bounty Hunter' } },
-    'btn.exit': { t: 'label', s: 'Five questions' },
+    'home.bounties': { t: 'line', s: 'Bounties earned: {badges}.', ex: { n: 5, m: 6, badges: 'Red Reader, Radio Keeper, Bounty Hunter' } },
+    'btn.exit': { t: 'label', s: 'Go to the five questions' },
     // extras
     'extras.1': { t: 'instruction', s: 'More posters. One fault each. Stop whenever you like.' }
   };

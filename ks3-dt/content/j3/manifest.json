@@ -92,9 +92,10 @@
    "tagline": "You learn to find a fault in code, name it properly and fix it.",
    "block": "b2",
    "icon": "🐞",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-05.json"
   },
   {
    "id": "j3-06",

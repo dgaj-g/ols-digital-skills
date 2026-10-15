@@ -97,3 +97,10 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - Lesson end: extras is the last chunk, so the lesson ends on the platform finish card (glyph, no picture) — the walk accepts that.
 - All engine gates re-run PASS: channel 17, clock 188, effects 207, judge 1017, redtext 766, walk-model 13, words 387.
 NEXT: cold reads → full pack → commit/push → sit report → Chrome deck → pathb/Apps Script → PR.
+
+## 22:20 · cold read closed, pack green, walks green, sit report written
+- Agreed rewrites applied (exit items 2 and 5, the pier whiff, 7 strings.js lines); spec §8 synced; l5-channel test accepts "one computer".
+- Round 2: A 10/10 PASS, B 9/10 (rewind only: a split, so it stands). Verdicts: KS3 DT Platform/COLD_READ_VERDICTS_V73_j3-05.md, hash b77973e687b4300e.
+- Ledger: 19 records. qa-cold-read default now includes j3-05. Full pack exit 0.
+- l5-walk 49/0 at 1366 and 683. ks3-dt/L5_SIT_REPORT.md written. Stale sorting flag marked resolved in KICKOFF_NOTES.
+- NEXT: Chrome deck deploy (createJ3Lesson5Deck) → write_j3_05.py --deck-id → pack → build-pathb → version → smoke → PR.

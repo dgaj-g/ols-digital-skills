@@ -144,7 +144,7 @@ const NAMES = ['Aoife', 'Bríd', 'Ciara'];
       away: await E(B, () => !document.getElementById('away').hidden && document.getElementById('away').textContent) };
     await ctx.close(); if (block) await br.close(); return out;
   }
-  const fellBack = o => o.modeA === 'slow' && /slow/i.test(o.barA) && !!o.away && /one laptop/i.test(o.away);
+  const fellBack = o => o.modeA === 'slow' && /slow/i.test(o.barA) && !!o.away && /one (laptop|computer)/i.test(o.away);
   const never = await fallbackCase(0, false);
   gate('A8 no connect in 10 s → seat A keeps both lights, seat B shows the one-laptop line', fellBack(never), `A ${never.modeA} "${never.barA}" · B "${never.away || ''}"`);
   const blocked = await fallbackCase(0, true);
