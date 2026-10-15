@@ -225,6 +225,16 @@ const THEMES = {
      green-black with a gold edge, so the board wears the same room: a heart
      monitor's trace running low across the frame, and the round theatre lamp
      hung top right. */
+  /* J3 LESSON 5 — TWO LIGHTS. Two lighthouse keepers on one dark bay, and a
+     boat drifting toward the rocks until every fault is fixed. The board wears
+     the bay at night: a lighthouse low right with its beam swept across the
+     frame, a second, smaller light far left, and a slow swell along the foot. */
+  'j3-05': {
+    name: 'Two Lights',
+    ground: '#0B1424', panel: '#16223A', accent: '#FFC94A', accent2: '#5FC8E8',
+    text: '#FFFFFF', dim: '#B8C6DA',
+    motif: 'lighthouse'       /* two lights on a night bay, one beam, a low swell */
+  },
   'j1-06': {
     name: 'The Operating Theatre',
     ground: '#0A1C21', panel: '#10292F', accent: '#4FE3B8', accent2: '#E4B824',
@@ -1013,6 +1023,40 @@ const MOTIFS = {
         `stroke-width="2" opacity="${(op * (0.6 + i * 0.2)).toFixed(3)}"/>`).join('');
       return `<path d="${d}" fill="none" stroke="${t.accent}" stroke-width="3" ` +
         `opacity="${op}" stroke-linejoin="round"/>` + rings;
+    }
+  },
+
+  /* J3 LESSON 5 — the night bay: sea-spray stars as the dust; as the lines a
+     lighthouse low right throwing one soft beam, a far second light left, and
+     a swell across the foot drawn as long arcs, never a rule. */
+  lighthouse: {
+    dust: (t, o) => {
+      const r = rng(o.seed);
+      let out = '';
+      const n = Math.round(o.starCount * 0.7);
+      for (let i = 0; i < n; i++) {
+        out += ledDot(Math.round(r() * W), Math.round(r() * H * 0.7),
+          (r() * 1.3 + 0.4).toFixed(2), t.dim, (r() * 0.16 + 0.04).toFixed(2));
+      }
+      return out;
+    },
+    lines: (t, op) => {
+      const lx = 1150, base = 600, top = 360;
+      const beam = `<path d="M${lx},${top - 18} L${W + 40},${top - 170} L${W + 40},${top + 110} Z" ` +
+        `fill="${t.accent}" opacity="${(op * 0.5).toFixed(3)}" filter="url(#soft)"/>` +
+        `<path d="M${lx},${top - 18} L120,${top - 120} L120,${top + 60} Z" ` +
+        `fill="${t.accent}" opacity="${(op * 0.35).toFixed(3)}" filter="url(#soft)"/>`;
+      const tower = `<g opacity="${(op * 1.8).toFixed(3)}">` +
+        `<path d="M${lx - 34},${base} L${lx - 20},${top} L${lx + 20},${top} L${lx + 34},${base} Z" fill="${t.dim}"/>` +
+        `<rect x="${lx - 26}" y="${top - 36}" width="52" height="36" rx="4" fill="${t.accent}"/>` +
+        `<path d="M${lx - 32},${top - 36} L${lx},${top - 66} L${lx + 32},${top - 36} Z" fill="${t.dim}"/></g>`;
+      const far = `<g opacity="${(op * 1.5).toFixed(3)}">` +
+        `<path d="M196,${base + 10} L203,${base - 90} L221,${base - 90} L228,${base + 10} Z" fill="${t.dim}"/>` +
+        `<circle cx="212" cy="${base - 102}" r="10" fill="${t.accent2}"/></g>`;
+      let d = 'M0,' + (base + 40);
+      for (let x = 0; x < W; x += 160) d += ` Q${x + 80},${base + 10} ${x + 160},${base + 40}`;
+      const swell = `<path d="${d}" fill="none" stroke="${t.accent2}" stroke-width="3" opacity="${op}"/>`;
+      return beam + far + tower + swell;
     }
   },
 
