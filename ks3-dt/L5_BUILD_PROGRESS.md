@@ -76,3 +76,12 @@ Spec of record: Claude Work/KS3 DT Platform/J3_L5_TWO_LIGHTS_SPEC.md
 - CONTROL `--control` → `l5-channel: FAIL · 17 of 17` (first: `FAIL A6 both laptops reach the live room`).
 - Blocking note: WebSockets skip page.route → block with --host-resolver-rules.
 - NEXT: l5-walk (A9 solo/handover, A10 reload boat, A11 hour length, A12 no dead screen, A13 reload every stage), content json, A14 coverage.
+
+## Checkpoint 15 Oct 2026 — walk model + budgets (A11) PASS
+- l5-walk-model.js: real engine, virtual clock, 7 rooms (every ch4 base) × AB/ABC, 4 keys/s, 0.35 s/word.
+- Slower seat: ch1 43.5 s, ch2 46.3, ch3 48.0, ch4 184.8 → B1–B4 = 90/90/90/231 s (written to engine.js BUDGETS).
+- Home at 13.6 min (no ladder) / 19.1 min (every ladder step once a chapter). Pairing 18.3 s, fog 13.9 s, tour 37.4 s.
+- Control (radio cut): `FAIL walked ch2 · slower seat Infinity s`, `FAIL A11 Home by minute 47 · Home at Infinity min`.
+- Engine faults found by the walk and fixed: (1) last ch4 fix could never be named (turning overrode naming); (2) endless "Press RUN" when a sleeping shout fault outranked the silent one after a quiet run.
+- Judgement: solo/fallback/dark-partner keepers fix two programs → drift budget × lights kept (N13).
+- NEXT: prototype copy; browser walker A9/A10/A12/A13; j3-05.json + content; A14; cold reads.

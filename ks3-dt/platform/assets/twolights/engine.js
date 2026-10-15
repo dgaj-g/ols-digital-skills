@@ -21,7 +21,7 @@
   var SLIPS = ['light', 'horn', 'none', 'clear'];
   var HELP_STEP = 40000, SILENT_FIRST = 60000, TELL_AFTER = 30000, QUIET = 60000, DARK = 180000, BEAT = 5000;
   var READ_RED = 6000, SLIP_READ = 8000, NOTICE = 9000;
-  var BUDGETS = { ch1: 300000, ch2: 240000, ch3: 300000, ch4: 600000 };   // replaced by the walk's B1–B4 (§1)
+  var BUDGETS = { ch1: 90000, ch2: 90000, ch3: 90000, ch4: 231000 };   // replaced by the walk's B1–B4 (§1)
 
   function seatName(s) { return PR.SEATS[s].name; }
   function wantFx(ch, r) {   // which effect is missing from a clean run, in the order the night needs them
@@ -41,7 +41,7 @@
     var S = {
       seat: o.seat || 'A', seats: seats, room: o.room || 'solo', stage: o.stage || 'ch1',
       mode: o.mode || (seats.length > 1 && o.bus ? 'pair' : 'solo'),
-      local: [], active: null, L: {}, P: {}, boat: {}, slips: [], sent: {}, said: {},
+      local: [], active: null, turned: {}, L: {}, P: {}, boat: {}, slips: [], sent: {}, said: {},
       notice: null, late: false, lateAt: null, card: 0, cardPick: null, cardsDone: 0, events: [], seenRun: {}, homeAt: null
     };
     if (S.mode === 'solo' && seats.length < 2) { seats = S.seats = ['A', 'B']; }
@@ -244,15 +244,17 @@
       var b = boat(c);
       return { t0: b.t0, pauses: b.pauses, fails: b.fails, doneAt: b.doneAt };
     }
-    function boatNow() { return CK.position(boatRoom(ch()), now(), budgets[ch()] || 300000); }
+    function budgetOf(c) { return (budgets[c] || 300000) * (S.mode === 'pair' ? 1 : Math.max(1, S.local.length)); }   // N13: per light kept
+    function boatNow() { return CK.position(boatRoom(ch()), now(), budgetOf(ch())); }
 
     /* ---------- the tick: rocks, chapter end, dark partner, heartbeat ---------- */
     function tick() {
       var t = now(), c = ch();
       if (isCh(c)) {
         var b = boat(c);
-        if (b.doneAt == null && allDone(c)) { b.doneAt = t; emit('turning', { ch: c }); }
-        var pos = CK.position(boatRoom(c), t, budgets[c]);
+        if (b.doneAt == null && allDone(c)) b.doneAt = t;   // every light on: the boat is safe from here
+        if (b.doneAt != null && !S.turned[c] && !naming()) { S.turned[c] = 1; emit('turning', { ch: c }); }   // after her last name
+        var pos = CK.position(boatRoom(c), t, budgetOf(c));
         if (!pos.black && pos.x >= 1 && b.doneAt == null) { if (addFail(c, t) && failWriter(t) === S.seat) send('fail', { ch: c, at: t }); }
       }
       if (S.mode === 'pair') {
@@ -321,7 +323,8 @@
       var ids = Object.keys(r.faults).filter(function (id) { return r.faults[id].present; });
       if (!ids.length) return null;
       var rl = r.shout ? redLine(r.red) : null;   // follow the red: the fault on the line Python names comes first
-      ids.sort(function (a, b) { var A = r.faults[a], B = r.faults[b]; return ((B.line === rl) - (A.line === rl)) || (B.shout - A.shout) || (A.line - B.line); });
+      var quiet = res && res.ran && !res.red;   // her last run showed no red: a sleeping shout (N8) waits behind the silent fault
+      ids.sort(function (a, b) { var A = r.faults[a], B = r.faults[b]; return ((B.line === rl) - (A.line === rl)) || (quiet ? A.shout - B.shout : B.shout - A.shout) || (A.line - B.line); });
       var id = ids[0], f = r.faults[id], cc = J.chapter(c, s), fd = cc.faults.filter(function (x) { return x.id === id; })[0];
       var shoutNow = res && res.red;
       return { kind: f.kind, id: id, line: f.line, shout: f.shout, fix: cc.canon[fd.idx].trim(), red: !!shoutNow,
@@ -331,6 +334,7 @@
       var t = now(), c = ch();
       if (S.notice && t - S.notice.at < NOTICE) return S.notice;
       if (!isCh(c)) return null;
+      var nq = naming(); if (nq) { S.active = nq; return { id: 'bar.name' }; }   // the last fix is named before the turning
       if (boat().doneAt != null || allDone(c)) return { id: 'bar.turning' };
       var need = tellNeed(); if (need) return { id: 'bar.tell.' + need.slip, seat: need.seat };
       var slip = unreadSlip(); if (slip) { if (!slip.shownAt) slip.shownAt = t; return { id: 'bar.slip' }; }
@@ -355,6 +359,7 @@
       }
       return { id: 'bar.run' };
     }
+    function naming() { for (var i = 0; i < S.local.length; i++) if (S.L[S.local[i]].nameQ.length) return S.local[i]; return null; }
     function lookout() {
       var c = ch(), L = S.L[S.active];
       if (c === 'ch1' && now() - (L.ranAt[c] || 0) < 10000) return { id: 'bar.lampon' };
