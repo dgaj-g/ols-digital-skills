@@ -3469,7 +3469,7 @@
       {
        "box": {
         "title": "Make it yours",
-        "text": "Choose one sentence in frmCustomers.cs, such as the question Delete asks, and change the words between its quotation marks. Then press F5, open Customers, click a row, click Delete and read your own words on the screen."
+        "text": "In your own project, give each table the same four parts: a class in Models, a data class in Data, a list form and an edit form."
        }
       },
       {

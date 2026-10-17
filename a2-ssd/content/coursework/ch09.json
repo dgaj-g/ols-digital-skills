@@ -10,8 +10,8 @@
   "n": 8
  },
  "next": {
-  "id": "10",
-  "title": "Testing evidence and user guide",
+  "id": "11",
+  "title": "Mistakes that cost marks",
   "n": 10
  },
  "stages": [
@@ -3352,12 +3352,12 @@
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Twelve ticks are your evidence that every report answers its question, that the one mistake and an empty answer are each handled with a sentence, and that the rows nobody would think to look for are still there. Take a screenshot of each result as you tick it, and keep the screenshots for your testing evidence in chapter 10. Paste one copied report into your user guide. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected."
+       "p": "Twelve ticks show that every report answers its question. They also show that a From date after the To date gives a sentence, and that two dates with nothing sold or booked between them give an empty grid and a sentence. They show that a service or a part nobody bought still appears in its report, and that taking LEFT out of the join loses the service. Last, they show that Copy to clipboard works and that counter staff cannot open the reports. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected."
       },
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your scenario has its own questions. First, write down the five questions a manager would ask, each in one sentence with the word between in it, such as how many tickets were sold between two dates, or which room was booked most between two dates. Next, for each question, write down the table it starts from and the table joined to it. If the answer should list every one of something, even the ones with nothing to count, use a LEFT JOIN with the date test after ON. If the answer comes from two or three different tables, use a UNION ALL stack. Last, build one report form like frmReports, with your five questions in its list and the check that the From date is not after the To date."
+        "text": "In your own project, build one report form like frmReports, answering the questions a manager of your case study would ask between two dates."
        }
       }
      ]

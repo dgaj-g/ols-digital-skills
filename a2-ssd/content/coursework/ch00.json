@@ -264,13 +264,10 @@
        "p": "You hand in the script (a file of lines that makes the tables and fills them) and all the code of the program."
       },
       {
-       "p": "You write a user guide that shows a member of staff how to use every screen, step by step."
+       "p": "You also write a user guide and a test plan, and those are taught separately, outside this guide."
       },
       {
-       "p": "You write a test plan (chapter 10 calls it your testing evidence) that covers the whole program, with the result of every test."
-      },
-      {
-       "p": "This guide builds every one of those, in the bike shop first, so that you can build the same for your own case study."
+       "p": "This guide builds the program and the script, in the bike shop first, so that you can build the same for your own case study."
       }
      ]
     }

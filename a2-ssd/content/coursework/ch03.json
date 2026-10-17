@@ -24,7 +24,7 @@
      "title": "See what you will build in this chapter.",
      "blocks": [
       {
-       "p": "In chapter 2 you planned ten tables on paper. In this chapter you make them, by writing one script, BikeShop.sql, that the server runs from top to bottom. By the end of the chapter the script makes the database, makes the ten tables, puts in the sample data, and prints the words BikeShop is ready. Then you ask the Customer table for its rows and see twelve names come back."
+       "p": "In chapter 2 you saw the plan of ten tables. In this chapter you make them, by writing one script, BikeShop.sql, that the server runs from top to bottom. By the end of the chapter the script makes the database, makes the ten tables, puts in the sample data, and prints the words BikeShop is ready. Then you ask the Customer table for its rows and see twelve names come back."
       },
       {
        "screenshot": {
@@ -65,7 +65,7 @@
      "blocks": [
       {
        "need": [
-        "Chapter 2 is finished: you have seen the drawing of the ten tables, and your own plan for your case study is beside you.",
+        "Chapter 2 is finished: you have seen the drawing of the ten tables and ticked its eight checks.",
         "SQL Server Management Studio (SSMS) is open and connected, as in chapter 1.",
         "BikeShop.sql is saved in your OneDrive coursework folder, and it is still empty.",
         "This guide is open in the Edge browser beside you. Tick each step as you do it, and the chapter remembers where you are."
@@ -672,7 +672,7 @@
           "Username",
           "Password",
           "The sign-in details",
-          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
+          "Username and Password are what a person types to sign in. The comment line says what a real system would do instead: it would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
          ],
          [
           "IsActive",
@@ -711,7 +711,7 @@
           6,
           8,
           "The sign-in details",
-          "Username and Password are what a person types to sign in. The comment line is a reminder for your user guide: a real system would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
+          "Username and Password are what a person types to sign in. The comment line says what a real system would do instead: it would store a hash, which is a scrambled copy of the password that cannot be turned back into the password, and this coursework keeps it plain and says so."
          ],
          [
           9,
@@ -3248,7 +3248,7 @@
      "title": "Tick the table: the tables, the rows, and two rows the tables must refuse.",
      "blocks": [
       {
-       "p": "Every row below is a test the examiner would run, and the last two are the ones that matter most. A table with a CHECK rule refuses a bad row by itself, with red text that names the rule, before any program exists. You type each refused INSERT into your New Query window, over the SELECT, and the red text is the evidence. Nothing is added, and SELECT * FROM Customer; afterwards still shows twelve rows. Take a screenshot of each refusal while its red text is on the screen, and another of the twelve rows. A screenshot is a picture of what is on the screen. To take one, click the Start button, type Snipping Tool, and press Enter to open it. Press New, drag a box round the red text or the rows, press Ctrl and S together, type a name such as refusal-1 or customers, and save it in your OneDrive coursework folder, the same folder as BikeShop.sql."
+       "p": "Every row below is a test the examiner would run, and the last two are the ones that matter most. A table with a CHECK rule refuses a bad row by itself, with red text that names the rule, before any program exists. You type each refused INSERT into your New Query window, over the SELECT, and the red text is the proof. Nothing is added, and SELECT * FROM Customer; afterwards still shows twelve rows."
       },
       {
        "check": [
@@ -3313,18 +3313,536 @@
        }
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Read the script that SQL Server Management Studio writes",
+   "screens": [
+    {
+     "id": "1",
+     "title": "Make SQL Server Management Studio write a script of your database.",
+     "blocks": [
+      {
+       "p": "SQL Server Management Studio (SSMS) can write a script of the whole database for you, with its Generate Scripts window: the tables, the rules, the links and every row. Chapter 7 uses this to save your work before you log off, and you may have seen a file like this already. It looks nothing like BikeShop.sql, so in this stage you make one and learn to read it. BikeShop.sql stays your master copy: it is the only script you type in, and the only one you run in this chapter."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.1",
+         "do": "In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts….",
+         "see": "The Generate Scripts window opens on its Introduction page."
+        },
+        {
+         "id": "3.7.2",
+         "do": "Click Next, then Next again. Leave Script entire database and all database objects chosen.",
+         "see": "The Set Scripting Options page is showing, with an Advanced button on it."
+        },
+        {
+         "id": "3.7.3",
+         "do": "Click the Advanced button on that page.",
+         "see": "The Advanced Scripting Options window opens, with a long list under General."
+        },
+        {
+         "id": "3.7.4",
+         "do": "Scroll to the bottom of the General list, and click Schema only beside Types of data to script.",
+         "see": "A small arrow appears at the right of Schema only.",
+         "wrong": [
+          [
+           "Types of data to script is not in the list",
+           "It is the last line under General, just above Table/View Options. Drag the scroll bar at the right of the list down a little at a time until you can see Types of data to script."
+          ]
+         ]
+        },
+        {
+         "id": "3.7.5",
+         "do": "Click the small arrow, and click Schema and data in the list that drops down.",
+         "see": "Types of data to script says Schema and data, so the rows are written as well as the tables."
+        },
+        {
+         "id": "3.7.6",
+         "do": "Click OK in the Advanced Scripting Options window.",
+         "see": "The Advanced Scripting Options window closes, and the Set Scripting Options page is showing again."
+        },
+        {
+         "id": "3.7.7",
+         "do": "Click Save as script file.",
+         "see": "The circle beside Save as script file is filled in."
+        },
+        {
+         "id": "3.7.8",
+         "do": "Click the … button beside File name.",
+         "see": "A window opens for choosing where to save the file."
+        },
+        {
+         "id": "3.7.9",
+         "do": "Open your OneDrive coursework folder in that window.",
+         "see": "The window shows the files in your OneDrive coursework folder, with BikeShop.sql among them."
+        },
+        {
+         "id": "3.7.10",
+         "do": "Type BikeShop-saved.sql as the file name, and click Save.",
+         "see": "The window closes, and the File name box ends with BikeShop-saved.sql.",
+         "wrong": [
+          [
+           "Windows asks whether to replace the file",
+           "You saved a file with this name before. Click Yes: the new script takes the place of the old one."
+          ]
+         ]
+        },
+        {
+         "id": "3.7.11",
+         "do": "Click Next, then Next again. When every line says Success, click Finish.",
+         "see": "The window closes. BikeShop-saved.sql is in your OneDrive coursework folder, beside BikeShop.sql."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "title": "Open it to read, and read the top.",
+     "blocks": [
+      {
+       "p": "Open the file to read it, and do not press F5 in it. The script has square brackets round every name and [dbo]. in front of every table, which change nothing: [BikeShop] is BikeShop. Lines too long for the block below are split, with the rest moved in four spaces. In your file each one is a single line."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.12",
+         "do": "Click File, point at Open and click File….",
+         "see": "The Open File window opens.",
+         "img": {
+          "img": "img/ch07-ssms-open-file.png",
+          "alt": "SQL Server Management Studio with the File menu open. Open is highlighted and its small menu shows File…",
+          "cap": "The File menu in SQL Server Management Studio (SSMS). Your script opens from here.",
+          "w": 900,
+          "h": 520,
+          "missing": false,
+          "marks": [
+           {
+            "n": 1,
+            "x": 2,
+            "y": 8,
+            "say": "Click File at the top left."
+           },
+           {
+            "n": 2,
+            "x": 0.5,
+            "y": 23.2,
+            "say": "Point at Open.",
+            "w": 35,
+            "h": 4.8
+           },
+           {
+            "n": 3,
+            "x": 36,
+            "y": 45.2,
+            "say": "Click File… in the small menu.",
+            "w": 37.5,
+            "h": 5
+           }
+          ]
+         }
+        },
+        {
+         "id": "3.7.13",
+         "do": "In the Open File window, click BikeShop-saved.sql in your OneDrive coursework folder, then click Open.",
+         "see": "BikeShop-saved.sql opens in a new tab beside BikeShop.sql. Its first line is USE [master]."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "3.7-top",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The top of BikeShop-saved.sql",
+        "src": "file:Generated/1-top.sql",
+        "parts": [
+         [
+          "USE [master]",
+          "GO",
+          "Start in master",
+          "master is the server's own database, the one that lists every other database. The script starts there, because a database is made from outside it."
+         ],
+         [
+          "/******",
+          "WITH CATALOG_COLLATION >> GO",
+          "Make the database",
+          "Anything between /* and */ is a note. Generate Scripts writes one above everything it makes, with the date and time the script was made. CREATE DATABASE makes BikeShop and the two files that hold it on the computer it was made on. In your file, yourname is your own username. There is no IF in front of it, as there is at the top of BikeShop.sql, so it only works where BikeShop does not exist yet. Where BikeShop already exists, this line fails with red text that says Database 'BikeShop' already exists, and more red lines follow, because every table is already there too."
+         ],
+         [
+          "COMPATIBILITY_LEVEL",
+          "QUERY_STORE",
+          "Settings to leave alone",
+          "About thirty ALTER DATABASE lines, each sent with GO, set how the database behaves, and the short IF block turns on a search feature where the server has it. They are the server's normal settings. Generate Scripts writes them every time. You never type them and never change them."
+         ],
+         [
+          "GO",
+          "$end",
+          "Into BikeShop",
+          "The GO sends the last setting. USE [BikeShop] switches into the new database, so everything after it happens in BikeShop."
+         ]
+        ],
+        "text": "USE [master]\nGO\n/****** Object:  Database [BikeShop]\n    Script Date: 10/17/2026 5:14:16 PM ******/\nCREATE DATABASE [BikeShop]\n CONTAINMENT = NONE\n ON  PRIMARY\n( NAME = N'BikeShop', FILENAME = N'C:\\Users\\yourname\\BikeShop.mdf' ,\n    SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )\n LOG ON\n( NAME = N'BikeShop_log', FILENAME = N'C:\\Users\\yourname\\BikeShop_log.ldf' ,\n    SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )\n WITH CATALOG_COLLATION = DATABASE_DEFAULT\nGO\nALTER DATABASE [BikeShop] SET COMPATIBILITY_LEVEL = 150\nGO\nIF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))\nbegin\nEXEC [BikeShop].[dbo].[sp_fulltext_database] @action = 'enable'\nend\nGO\nALTER DATABASE [BikeShop] SET ANSI_NULL_DEFAULT OFF\nGO\nALTER DATABASE [BikeShop] SET ANSI_NULLS OFF\nGO\nALTER DATABASE [BikeShop] SET ANSI_PADDING OFF\nGO\nALTER DATABASE [BikeShop] SET ANSI_WARNINGS OFF\nGO\nALTER DATABASE [BikeShop] SET ARITHABORT OFF\nGO\nALTER DATABASE [BikeShop] SET AUTO_CLOSE ON\nGO\nALTER DATABASE [BikeShop] SET AUTO_SHRINK OFF\nGO\nALTER DATABASE [BikeShop] SET AUTO_UPDATE_STATISTICS ON\nGO\nALTER DATABASE [BikeShop] SET CURSOR_CLOSE_ON_COMMIT OFF\nGO\nALTER DATABASE [BikeShop] SET CURSOR_DEFAULT  GLOBAL\nGO\nALTER DATABASE [BikeShop] SET CONCAT_NULL_YIELDS_NULL OFF\nGO\nALTER DATABASE [BikeShop] SET NUMERIC_ROUNDABORT OFF\nGO\nALTER DATABASE [BikeShop] SET QUOTED_IDENTIFIER OFF\nGO\nALTER DATABASE [BikeShop] SET RECURSIVE_TRIGGERS OFF\nGO\nALTER DATABASE [BikeShop] SET  ENABLE_BROKER\nGO\nALTER DATABASE [BikeShop] SET AUTO_UPDATE_STATISTICS_ASYNC OFF\nGO\nALTER DATABASE [BikeShop] SET DATE_CORRELATION_OPTIMIZATION OFF\nGO\nALTER DATABASE [BikeShop] SET TRUSTWORTHY OFF\nGO\nALTER DATABASE [BikeShop] SET ALLOW_SNAPSHOT_ISOLATION OFF\nGO\nALTER DATABASE [BikeShop] SET PARAMETERIZATION SIMPLE\nGO\nALTER DATABASE [BikeShop] SET READ_COMMITTED_SNAPSHOT OFF\nGO\nALTER DATABASE [BikeShop] SET HONOR_BROKER_PRIORITY OFF\nGO\nALTER DATABASE [BikeShop] SET RECOVERY SIMPLE\nGO\nALTER DATABASE [BikeShop] SET  MULTI_USER\nGO\nALTER DATABASE [BikeShop] SET PAGE_VERIFY CHECKSUM\nGO\nALTER DATABASE [BikeShop] SET DB_CHAINING OFF\nGO\nALTER DATABASE [BikeShop] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF )\nGO\nALTER DATABASE [BikeShop] SET TARGET_RECOVERY_TIME = 60 SECONDS\nGO\nALTER DATABASE [BikeShop] SET DELAYED_DURABILITY = DISABLED\nGO\nALTER DATABASE [BikeShop] SET ACCELERATED_DATABASE_RECOVERY = OFF\nGO\nALTER DATABASE [BikeShop] SET QUERY_STORE = OFF\nGO\nUSE [BikeShop]\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "Start in master",
+          "master is the server's own database, the one that lists every other database. The script starts there, because a database is made from outside it."
+         ],
+         [
+          3,
+          14,
+          "Make the database",
+          "Anything between /* and */ is a note. Generate Scripts writes one above everything it makes, with the date and time the script was made. CREATE DATABASE makes BikeShop and the two files that hold it on the computer it was made on. In your file, yourname is your own username. There is no IF in front of it, as there is at the top of BikeShop.sql, so it only works where BikeShop does not exist yet. Where BikeShop already exists, this line fails with red text that says Database 'BikeShop' already exists, and more red lines follow, because every table is already there too."
+         ],
+         [
+          15,
+          82,
+          "Settings to leave alone",
+          "About thirty ALTER DATABASE lines, each sent with GO, set how the database behaves, and the short IF block turns on a search feature where the server has it. They are the server's normal settings. Generate Scripts writes them every time. You never type them and never change them."
+         ],
+         [
+          83,
+          85,
+          "Into BikeShop",
+          "The GO sends the last setting. USE [BikeShop] switches into the new database, so everything after it happens in BikeShop."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "title": "Find your Customer table.",
+     "blocks": [
+      {
+       "p": "After the top come the ten tables, in alphabetical order, not in the order you typed them. The fastest way to one is to search for it."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.14",
+         "do": "Press Ctrl and F together.",
+         "see": "A small search box opens at the top right of the script, with the cursor in it."
+        },
+        {
+         "id": "3.7.15",
+         "do": "Type CREATE TABLE [dbo].[Customer] and press Enter.",
+         "see": "The script jumps to the Customer table, with those words highlighted.",
+         "wrong": [
+          [
+           "A box says the text was not found",
+           "Check the square brackets and the full stop between [dbo] and [Customer], and that the cursor was in BikeShop-saved.sql, not BikeShop.sql."
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "3.7-table",
+        "kind": "read",
+        "lang": "sql",
+        "title": "Your Customer table, as Generate Scripts writes it",
+        "src": "file:Generated/2-customer-table.sql",
+        "parts": [
+         [
+          "/******",
+          "QUOTED_IDENTIFIER >> GO",
+          "The lines above every table",
+          "A note with the date and time, then SET ANSI_NULLS ON and SET QUOTED_IDENTIFIER ON, each sent with GO. They are the normal settings for empty boxes and quote marks. Generate Scripts writes them above every table and every stored procedure."
+         ],
+         [
+          "CREATE TABLE",
+          "DateJoined",
+          "The columns you typed",
+          "This is your CREATE TABLE Customer, with [dbo]. in front, square brackets round every name and every type, and the spaces closed up. The columns, their types, IDENTITY(1,1), NULL and NOT NULL are the same as the ones you typed."
+         ],
+         [
+          "CONSTRAINT [PK_Customer]",
+          "$end",
+          "The primary key, and how the rows are stored",
+          "Your PK_Customer rule. CLUSTERED and ASC mean the rows are kept in CustomerID order. The WITH list and ON [PRIMARY] say how and where the rows are stored, and are the same on every key. GO ends the table. Your DEFAULT for DateJoined and your CHECK on Phone are not in the table: Generate Scripts adds them near the end of the file, once every table exists."
+         ]
+        ],
+        "text": "/****** Object:  Table [dbo].[Customer]\n    Script Date: 10/17/2026 5:14:16 PM ******/\nSET ANSI_NULLS ON\nGO\nSET QUOTED_IDENTIFIER ON\nGO\nCREATE TABLE [dbo].[Customer](\n    [CustomerID] [int] IDENTITY(1,1) NOT NULL,\n    [FirstName] [varchar](40) NOT NULL,\n    [LastName] [varchar](40) NOT NULL,\n    [Phone] [varchar](15) NOT NULL,\n    [Email] [varchar](100) NULL,\n    [DateJoined] [date] NOT NULL,\n CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED\n(\n    [CustomerID] ASC\n)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,\n    ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON,\n    OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n) ON [PRIMARY]\nGO",
+        "partLines": [
+         [
+          1,
+          6,
+          "The lines above every table",
+          "A note with the date and time, then SET ANSI_NULLS ON and SET QUOTED_IDENTIFIER ON, each sent with GO. They are the normal settings for empty boxes and quote marks. Generate Scripts writes them above every table and every stored procedure."
+         ],
+         [
+          7,
+          13,
+          "The columns you typed",
+          "This is your CREATE TABLE Customer, with [dbo]. in front, square brackets round every name and every type, and the spaces closed up. The columns, their types, IDENTITY(1,1), NULL and NOT NULL are the same as the ones you typed."
+         ],
+         [
+          14,
+          21,
+          "The primary key, and how the rows are stored",
+          "Your PK_Customer rule. CLUSTERED and ASC mean the rows are kept in CustomerID order. The WITH list and ON [PRIMARY] say how and where the rows are stored, and are the same on every key. GO ends the table. Your DEFAULT for DateJoined and your CHECK on Phone are not in the table: Generate Scripts adds them near the end of the file, once every table exists."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "4",
+     "title": "Find the rows.",
+     "blocks": [
+      {
+       "p": "After the last table come the rows, one table after another, again in alphabetical order. Generate Scripts writes one INSERT for every row, with the values the row has now. The Appointment rows come before the Customer rows, although every booking points at a customer. That works, because the links are added after all the rows."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.16",
+         "do": "Click in the search box, type INSERT [dbo].[Customer] in place of what is there, and press Enter.",
+         "see": "The script jumps to the first customer row. The line above it starts SET IDENTITY_INSERT."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "3.7-rows",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The Customer rows, as Generate Scripts writes them",
+        "src": "file:Generated/3-customer-rows.sql",
+        "parts": [
+         [
+          "SET IDENTITY_INSERT",
+          "GO",
+          "Let the numbers in",
+          "CustomerID is an IDENTITY column, which gives out its own numbers and normally refuses a typed one. IDENTITY_INSERT ON lets this script type them, so every customer keeps the same number and every booking that points at a customer still points at the right one."
+         ],
+         [
+          "INSERT",
+          "VALUES (1, >> GO",
+          "One row, one INSERT",
+          "Your sample data put all twelve customers in one INSERT. Generate Scripts writes one INSERT for each row, names every column, CustomerID too, and sends each row with GO. N in front of a quote means the text can hold any letter, such as the á in Seán. Each date is written out in full, such as CAST(N'2025-09-12' AS Date): the date the row was given when you ran BikeShop.sql, not @Today, so in this file the dates never move."
+         ],
+         [
+          "INSERT",
+          "VALUES (12, >> GO",
+          "Eleven more",
+          "The other eleven customers, each one an INSERT and a GO. Jack O'Hare still has two apostrophes, and Ciara Quinn and Hannah Boyle still have NULL where the email address goes."
+         ],
+         [
+          "SET IDENTITY_INSERT",
+          "$end",
+          "Back to normal",
+          "IDENTITY_INSERT OFF puts the column back the way it was, so a new customer gets the next number by itself."
+         ]
+        ],
+        "text": "SET IDENTITY_INSERT [dbo].[Customer] ON\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (1, N'Aoife', N'McCann', N'028 3026 4411',\n    N'aoife.mccann@example.com', CAST(N'2025-09-12' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (2, N'Seán', N'Devlin', N'07712 334 918',\n    N'sean.devlin@example.com', CAST(N'2025-10-02' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (3, N'Ciara', N'Quinn', N'028 3025 7720',\n    NULL, CAST(N'2025-12-21' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (4, N'Oisín', N'Fegan', N'07855 201 377',\n    N'oisin.fegan@example.com', CAST(N'2026-01-30' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (5, N'Gráinne', N'Murphy', N'028 3083 1190',\n    N'grainne.murphy@example.com', CAST(N'2026-03-31' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (6, N'Tomás', N'Loughran', N'07400 556 212',\n    N'tomas.loughran@example.com', CAST(N'2026-05-20' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (7, N'Hannah', N'Boyle', N'028 3026 9034',\n    NULL, CAST(N'2026-06-19' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (8, N'Darragh', N'Rice', N'07911 782 450',\n    N'darragh.rice@example.com', CAST(N'2026-07-19' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (9, N'Méabh', N'Cunningham', N'028 3083 2278',\n    N'meabh.c@example.com', CAST(N'2026-08-18' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (10, N'Jack', N'O''Hare', N'07525 118 906',\n    N'jack.ohare@example.com', CAST(N'2026-09-07' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (11, N'Róisín', N'Campbell', N'028 3026 1552',\n    N'roisin.campbell@example.com', CAST(N'2026-09-26' AS Date))\nGO\nINSERT [dbo].[Customer] ([CustomerID], [FirstName], [LastName], [Phone],\n    [Email], [DateJoined]) VALUES (12, N'Ben', N'Toner', N'07388 640 271',\n    N'ben.toner@example.com', CAST(N'2026-10-12' AS Date))\nGO\nSET IDENTITY_INSERT [dbo].[Customer] OFF\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "Let the numbers in",
+          "CustomerID is an IDENTITY column, which gives out its own numbers and normally refuses a typed one. IDENTITY_INSERT ON lets this script type them, so every customer keeps the same number and every booking that points at a customer still points at the right one."
+         ],
+         [
+          3,
+          6,
+          "One row, one INSERT",
+          "Your sample data put all twelve customers in one INSERT. Generate Scripts writes one INSERT for each row, names every column, CustomerID too, and sends each row with GO. N in front of a quote means the text can hold any letter, such as the á in Seán. Each date is written out in full, such as CAST(N'2025-09-12' AS Date): the date the row was given when you ran BikeShop.sql, not @Today, so in this file the dates never move."
+         ],
+         [
+          7,
+          50,
+          "Eleven more",
+          "The other eleven customers, each one an INSERT and a GO. Jack O'Hare still has two apostrophes, and Ciara Quinn and Hannah Boyle still have NULL where the email address goes."
+         ],
+         [
+          51,
+          52,
+          "Back to normal",
+          "IDENTITY_INSERT OFF puts the column back the way it was, so a new customer gets the next number by itself."
+         ]
+        ]
+       }
+      }
+     ]
     },
     {
      "id": "5",
+     "title": "Find the links and the rules.",
+     "blocks": [
+      {
+       "p": "After the rows come the rules that Generate Scripts keeps apart from the tables: every UNIQUE, then every DEFAULT, then every FOREIGN KEY, then every CHECK. They come last, so that every table and every row is already there when each rule is added. The block shows one of each kind, from four places near the end of the file."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.17",
+         "do": "Click in the search box, type FOREIGN KEY in place of what is there, and press Enter.",
+         "see": "The script jumps to the first link, FK_Appointment_Customer, near the end of the file."
+        },
+        {
+         "id": "3.7.18",
+         "do": "Search for CK_Customer_Phone in the same way.",
+         "see": "The script jumps to the line that adds your phone rule, written as CHECK ((len([Phone])>=(10)))."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "3.7-rules",
+        "kind": "read",
+        "lang": "sql",
+        "title": "One of each kind of rule, from near the end of BikeShop-saved.sql",
+        "src": "file:Generated/4-rules.sql",
+        "parts": [
+         [
+          "SET ANSI_PADDING",
+          "ON [PRIMARY] >> GO",
+          "A UNIQUE rule",
+          "Your UQ_Staff_Username, from the Staff table, added to the table with ALTER TABLE and ADD CONSTRAINT. The note calls it an Index, because the server keeps a sorted list of usernames to check the rule quickly. SET ANSI_PADDING ON and the WITH list are storage settings, the same on every UNIQUE."
+         ],
+         [
+          "DF_Customer_DateJoined",
+          "GO",
+          "A DEFAULT",
+          "Your DEFAULT for DateJoined. CAST(GETDATE() AS DATE) is written as CONVERT([date],getdate()), which means the same thing, today's date, in the server's own words."
+         ],
+         [
+          "ALTER TABLE [dbo].[Appointment]",
+          "CHECK CONSTRAINT >> GO",
+          "A link, written twice",
+          "Your FOREIGN KEY from Appointment to Customer. The first ALTER TABLE adds the link WITH CHECK, which means the rows already there are checked against it. The second, CHECK CONSTRAINT, switches the link on. Generate Scripts writes every link in these two steps."
+         ],
+         [
+          "CK_Customer_Phone",
+          "$end",
+          "A CHECK, written twice",
+          "Your CHECK on Phone, LEN(Phone) >= 10, in the server's own words: in small letters, with brackets round every part. It is added and switched on in the same two steps as a link."
+         ]
+        ],
+        "text": "SET ANSI_PADDING ON\nGO\n/****** Object:  Index [UQ_Staff_Username]\n    Script Date: 10/17/2026 5:14:16 PM ******/\nALTER TABLE [dbo].[Staff] ADD  CONSTRAINT [UQ_Staff_Username]\n    UNIQUE NONCLUSTERED\n(\n    [Username] ASC\n)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF,\n    IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON,\n    ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\nGO\n\nALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_DateJoined]\n    DEFAULT (CONVERT([date],getdate())) FOR [DateJoined]\nGO\n\nALTER TABLE [dbo].[Appointment]  WITH CHECK ADD\n    CONSTRAINT [FK_Appointment_Customer] FOREIGN KEY([CustomerID])\nREFERENCES [dbo].[Customer] ([CustomerID])\nGO\nALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Customer]\nGO\n\nALTER TABLE [dbo].[Customer]  WITH CHECK ADD  CONSTRAINT [CK_Customer_Phone]\n    CHECK  ((len([Phone])>=(10)))\nGO\nALTER TABLE [dbo].[Customer] CHECK CONSTRAINT [CK_Customer_Phone]\nGO",
+        "partLines": [
+         [
+          1,
+          12,
+          "A UNIQUE rule",
+          "Your UQ_Staff_Username, from the Staff table, added to the table with ALTER TABLE and ADD CONSTRAINT. The note calls it an Index, because the server keeps a sorted list of usernames to check the rule quickly. SET ANSI_PADDING ON and the WITH list are storage settings, the same on every UNIQUE."
+         ],
+         [
+          14,
+          16,
+          "A DEFAULT",
+          "Your DEFAULT for DateJoined. CAST(GETDATE() AS DATE) is written as CONVERT([date],getdate()), which means the same thing, today's date, in the server's own words."
+         ],
+         [
+          18,
+          23,
+          "A link, written twice",
+          "Your FOREIGN KEY from Appointment to Customer. The first ALTER TABLE adds the link WITH CHECK, which means the rows already there are checked against it. The second, CHECK CONSTRAINT, switches the link on. Generate Scripts writes every link in these two steps."
+         ],
+         [
+          25,
+          29,
+          "A CHECK, written twice",
+          "Your CHECK on Phone, LEN(Phone) >= 10, in the server's own words: in small letters, with brackets round every part. It is added and switched on in the same two steps as a link."
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "6",
+     "title": "Read the end, then close the file.",
+     "blocks": [
+      {
+       "p": "The file ends the way it starts, in master. That is why nothing may ever go below its last line."
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.19",
+         "do": "Press Ctrl and End together.",
+         "see": "The script jumps to its end. The last lines are the four lines in the block below."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "3.7-end",
+        "kind": "read",
+        "lang": "sql",
+        "title": "The end of BikeShop-saved.sql",
+        "src": "file:Generated/5-end.sql",
+        "parts": [
+         [
+          "USE [master]",
+          "GO",
+          "Back to master",
+          "The file switches back to master, the server's own database, for its last line."
+         ],
+         [
+          "ALTER DATABASE",
+          "$end",
+          "The last setting",
+          "This makes sure BikeShop can be changed, not only read. Nothing in the file comes after this GO."
+         ]
+        ],
+        "text": "USE [master]\nGO\nALTER DATABASE [BikeShop] SET  READ_WRITE\nGO",
+        "partLines": [
+         [
+          1,
+          2,
+          "Back to master",
+          "The file switches back to master, the server's own database, for its last line."
+         ],
+         [
+          3,
+          4,
+          "The last setting",
+          "This makes sure BikeShop can be changed, not only read. Nothing in the file comes after this GO."
+         ]
+        ]
+       }
+      },
+      {
+       "box": {
+        "title": "Two rules for this file",
+        "text": "Never type in BikeShop-saved.sql, and never paste anything below its last line. A line pasted there runs in master, not in BikeShop, so a table or a row added there never reaches BikeShop. Never paste this file into BikeShop.sql either. New work always goes into BikeShop.sql, the master copy, and BikeShop.sql is the script you run."
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "3.7.20",
+         "do": "Close the BikeShop-saved.sql tab by clicking the small cross on its tab. If it asks whether to save the changes, click No.",
+         "see": "The BikeShop-saved.sql tab is gone, and BikeShop.sql is still open."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "7",
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Five ticks are your evidence that one script makes the whole database, that it can be run again, and that the rules in the tables refuse bad rows before any program is written. Keep your screenshots of the two red refusals and of the twelve customers for your testing evidence in chapter 10. Close the New Query window by clicking the small cross on its tab. When it asks whether to save the changes, click No: the script is the only file that matters, and it is saved in your OneDrive folder."
+       "p": "Five ticks show that one script makes the whole database, that it can be run again, and that the rules in the tables refuse bad rows before any program is written. You can also read the script that Generate Scripts writes and tell it apart from BikeShop.sql. Close the New Query window by clicking the small cross on its tab. When it asks whether to save the changes, click No: BikeShop.sql is the only file that matters, and it is saved in your OneDrive folder."
       },
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your scenario has its own ten tables from chapter 2. Build them in this order: every table that points at nothing first, then the tables that point at those, then the rest, and drop them in the opposite order at the top. Give every rule a name in the same shape, PK, FK, UQ, CK or DF, then the table, then what it is about, so that every red refusal tells you which rule spoke. Write at least one CHECK with a list of allowed words, one that compares two columns, and one that says a count can never go below zero. Then make your own sample data, with at least ten rows in your busiest table, and dates counted back from @Today."
+        "text": "When you build your own database, sort out your own tables first, then build them the way this chapter does: the tables that point at nothing first, a named rule for every check, and sample data in every table."
        }
       }
      ]

@@ -1,18 +1,18 @@
 {
  "id": "11",
- "n": 11,
+ "n": 10,
  "title": "Mistakes that cost marks",
  "one": "What last year lost marks for, and how to check your own work for each one.",
  "marks": "This chapter is where you find the mistakes in your own project before the examiner does, using the fourteen that cost marks last year.",
  "prev": {
-  "id": "10",
-  "title": "Testing evidence and user guide",
-  "n": 10
+  "id": "09",
+  "title": "Report across tables",
+  "n": 9
  },
  "next": {
-  "id": "12",
+  "id": "10",
   "title": "Make it yours",
-  "n": 12
+  "n": 11
  },
  "stages": [
   {
@@ -194,7 +194,7 @@
        "p": "Three kinds of mistake cost the most marks last year. The first is a double-booking check that lives only in the form, because no double booking is a rule every case study tests. The second is a crash or a freeze in normal use: the report on empty dates, Console.ReadLine, the get part that reads itself, and the price that does not fit. The third is a grid of ID numbers, which the marking counts as a program that does not suit the person using it."
       },
       {
-       "p": "Do each check below in your own program, not the bike shop. A row marked Must be refused passes only when your program says no with a sentence. Tick the row when your project passes it, and if it fails, fix your project before you hand in. Then take a screenshot of each refusal for your testing evidence in chapter 10."
+       "p": "Do each check below in your own program once it is built, not in the bike shop. A row marked Must be refused passes only when your program says no with a sentence. Tick the row when your project passes it, and if it fails, fix your project before you hand in."
       },
       {
        "check": [

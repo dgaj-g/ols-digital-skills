@@ -24,16 +24,14 @@
      "title": "See what you will plan in this chapter, and learn the words it uses.",
      "blocks": [
       {
-       "p": "This chapter uses no software. You read the story of a bike shop, pick out the things the shop needs to remember, and plan the tables that will hold them. By the end of the chapter you have a drawing of ten tables, with their columns and the lines that join them. In chapter 3 you type that plan into SQL Server Management Studio (SSMS), and the server makes the tables."
+       "p": "This chapter uses no software. You read the story of a bike shop, pick out the things the shop needs to remember, and plan the tables that will hold them. By the end of the chapter you have seen the plan of ten tables, drawn with their columns and the lines that join them. In chapter 3 you type that plan into SQL Server Management Studio (SSMS), and the server makes the tables."
       },
       {
-       "p": "Planning first saves you hours. A table that is wrong on paper takes a minute to fix with a pencil. The same mistake found after the program is written means changing the table, the stored procedures and the screens."
+       "p": "Planning first saves you hours. A table that is wrong in the plan takes a minute to fix. The same mistake found after the program is written means changing the table, the stored procedures and the screens."
       },
       {
        "need": [
         "Chapter 1 is finished: your OneDrive coursework folder exists, and SQL Server Management Studio (SSMS) has run SELECT @@VERSION once.",
-        "You have a pen and two sheets of paper. One sheet is for the Towpath Cycles plan as you read it, and one is for your own case study at the end.",
-        "Your own case study is beside you, printed or open in another window, because you plan it on the last screen.",
         "This guide is open in the Edge browser. Tick each step as you do it, and the chapter remembers where you are."
        ]
       },
@@ -132,7 +130,7 @@
      "title": "Read the story of Towpath Cycles, the shop this guide builds.",
      "blocks": [
       {
-       "p": "Every case study the examiner sets is a short story about a business. The story for this guide is about Towpath Cycles, a bike shop beside the canal towpath in Newry. Read the story below once from start to end. Then read it again with a pen in your hand."
+       "p": "Every case study the examiner sets is a short story about a business. The story for this guide is about Towpath Cycles, a bike shop beside the canal towpath in Newry. Read the story below once from start to end. Then read it again slowly, looking for the nouns: the people, places and things."
       },
       {
        "box": {
@@ -150,7 +148,7 @@
      "title": "Pick out the nouns, and keep the ones the shop has many of.",
      "blocks": [
       {
-       "p": "A table holds one kind of thing, and each row is one of those things. So the tables hide inside the nouns of the story. Write every noun in the Towpath Cycles story on your first sheet of paper, then ask the same question of each one: does the shop keep many of these, each with its own details?"
+       "p": "A table holds one kind of thing, and each row is one of those things. So the tables hide inside the nouns of the story. Pick out every noun in the Towpath Cycles story, then ask the same question of each one: does the shop keep many of these, each with its own details?"
       },
       {
        "p": "A customer passes the test. The shop has many customers, and each has a first name, a last name and a phone number, so Customer is a table. Mechanic passes too, but a mechanic is one kind of member of staff, and so are the counter assistant and the manager. All three go in one Staff table, with a column called Role that says which kind each person is."
@@ -384,7 +382,7 @@
      "title": "Read the plan of one table, written out in full.",
      "blocks": [
       {
-       "p": "Before you draw all ten tables, here is the plan of one of them, the Customer table, written out column by column. Each line gives the name of the column, its type and its rule. Your plan of each table in your case study looks like this one."
+       "p": "Before the plan of all ten tables, here is one of them, the Customer table, written out column by column. Each line gives the name of the column, its type and its rule. A plan of any table in your own case study looks like this one."
       },
       {
        "box": {
@@ -420,7 +418,7 @@
   },
   {
    "id": "5",
-   "title": "Prove it: the plan of the ten tables, and your own",
+   "title": "Prove it: the plan of the ten tables",
    "screens": [
     {
      "id": "1",
@@ -769,69 +767,11 @@
     },
     {
      "id": "2",
-     "title": "Your turn: plan the tables for your own case study.",
+     "title": "See the ten tables sorted by shape.",
      "blocks": [
       {
        "box": {
-        "title": "Your turn",
-        "text": "Take your own case study and turn it into a plan, the way the Towpath Cycles story became ten tables. Use a clean sheet of paper. This plan is yours, so there is no answer to open: the Towpath Cycles list below shows what a finished one looks like."
-       }
-      },
-      {
-       "steps": [
-        {
-         "id": "2.5.1",
-         "do": "Read your case study once from start to end without writing anything.",
-         "see": "You can tell someone what the business does and what it books or sells."
-        },
-        {
-         "id": "2.5.2",
-         "do": "Read the case study again and underline every noun.",
-         "see": "Every person, place and thing in the case study is underlined."
-        },
-        {
-         "id": "2.5.3",
-         "do": "Write each underlined noun once, on its own line, down the left of your sheet.",
-         "see": "Your sheet has a list of nouns, with no noun written twice."
-        },
-        {
-         "id": "2.5.4",
-         "do": "Cross out each noun that the business has only one of, such as its own name or its town.",
-         "see": "The nouns left are the things the business has many of, and their details."
-        },
-        {
-         "id": "2.5.5",
-         "do": "Move each noun that is a detail of another noun, such as a phone number, to sit under that noun.",
-         "see": "The nouns left down the left edge are your tables, and the details under them are their first columns."
-        },
-        {
-         "id": "2.5.6",
-         "do": "Write a shape beside each table: booked by time, booked by day, counted stock, one-off stock, a person, a list, or a record of stock moving.",
-         "see": "Every table has a shape, and you can see which of the four shapes your case study uses."
-        },
-        {
-         "id": "2.5.7",
-         "do": "Draw a box for each table, write the table name at the top of the box, and write its ID column first underneath, marked PK.",
-         "see": "Each table is a box with its name at the top, and the first line under the name is the table name followed by ID, such as LessonID."
-        },
-        {
-         "id": "2.5.8",
-         "do": "Write each foreign key in the box of the child table, marked FK.",
-         "see": "Every booking and every sale has a column ending in ID for each person and list it needs."
-        },
-        {
-         "id": "2.5.8b",
-         "do": "Draw a line from each foreign key to the primary key of its parent table.",
-         "see": "Every booking and every sale points at the people and the lists it needs, by number."
-        }
-       ]
-      },
-      {
-       "p": "Then finish each box, before you go to the next screen. Under the ID, write the other columns you moved under that table in step 5, each with its type: INT for a whole number, VARCHAR(40) for text with the most letters in the brackets, DECIMAL(8,2) for money, DATE for a day, DATETIME for a day and a clock time, or BIT for a yes or a no. Beside each column that counts stock, such as the number on the shelf, write CHECK 0 or more. Beside each status column, write CHECK and its list of allowed words, such as Booked, Done or Cancelled."
-      },
-      {
-       "box": {
-        "title": "What a finished list looks like, for Towpath Cycles",
+        "title": "The ten Towpath Cycles tables, by shape",
         "blocks": [
          {
           "p": "Booked by time: Appointment, which books a mechanic from a start time to an end time."
@@ -859,15 +799,21 @@
       },
       {
        "p": "Your case study may not use all four shapes. A case study with no stock has no counted stock and no one-off stock, and that is fine. Most case studies have at least one booking shape and at least one stock shape, so look twice before you leave one out."
+      },
+      {
+       "box": {
+        "title": "Make it yours",
+        "text": "Sort your own tables into the same groups before you build them: the ten above show what a finished set looks like."
+       }
       }
      ]
     },
     {
      "id": "3",
-     "title": "Tick the table: check your own plan against eight questions.",
+     "title": "Check the Towpath Cycles plan against the eight rows.",
      "blocks": [
       {
-       "p": "Check your own plan against every row below. The first four rows are things your plan must have. The last four are mistakes your plan must not have, and each one costs marks if it reaches your finished program."
+       "p": "Check the Towpath Cycles plan against every row below, using the drawing on screen 1 and the types and rules in stage 4. The first four rows are things a plan must have. The last four are mistakes a plan must not have, and each one costs marks if it reaches a finished program. Your own tables must pass the same eight rows."
       },
       {
        "check": [
@@ -875,54 +821,54 @@
          "id": "2.5.9",
          "what": "Every table has a number column",
          "expect": "allowed",
-         "how": "Look at the first line of each box on your plan. It is the table name followed by ID, such as CustomerID, and it is marked PK."
+         "how": "Look at the first line of each box in the drawing. It is the table name followed by ID, such as CustomerID, and it is marked PK."
         },
         {
          "id": "2.5.10",
          "what": "Every booking has a start and an end",
          "expect": "allowed",
-         "how": "Find each table you marked as booked by time or booked by day. A booking by time has a start time and an end time, both DATETIME. A booking by day has a start date and an end date, both DATE."
+         "how": "Find Appointment and Hire in the drawing. Appointment is booked by time, so it has StartTime and EndTime, both DATETIME. Hire is booked by day, so it has StartDate and EndDate, both DATE."
         },
         {
          "id": "2.5.11",
          "what": "Every link is a number with a line",
          "expect": "allowed",
-         "how": "Find each column marked FK. It ends in ID, it is an INT, and a line on your plan runs from it to the primary key of its parent table."
+         "how": "Find each column marked FK in the drawing. It ends in ID, it is an INT like every ID, and a gold line runs from it to the primary key of its parent table."
         },
         {
          "id": "2.5.12",
          "what": "Every counted stock has a rule against going below zero",
          "expect": "allowed",
-         "how": "Find the count column in each counted stock table, such as QtyInStock in Part. Beside it you have written a CHECK that says the count must be 0 or more."
+         "how": "Find QtyInStock in Part, the one counted stock table. Stage 4 gives it a CHECK that says the count must be 0 or more."
         },
         {
          "id": "2.5.13",
          "what": "A name stored twice",
          "expect": "control",
-         "how": "Look in every table except the people tables for a column such as CustomerName or MechanicName. Your plan must have none. If you find one, replace it with the ID of that person, such as CustomerID."
+         "how": "Look in every box except Customer and Staff for a column such as CustomerName or MechanicName. A plan must have none, because each name is stored once, in its own table, and found by its ID."
         },
         {
          "id": "2.5.14",
          "what": "Money planned as FLOAT",
          "expect": "control",
-         "how": "Look at every price, cost and total on your plan. Each must be DECIMAL with two places after the point, such as DECIMAL(8,2). If you find a FLOAT, change it to DECIMAL."
+         "how": "Find Price in ServiceType. Stage 4 makes it DECIMAL(8,2), with two places after the point. A price planned as FLOAT would add up a fraction of a penny wrong."
         },
         {
          "id": "2.5.15",
          "what": "A date planned as text",
          "expect": "control",
-         "how": "Look at every date and time on your plan. Each must be DATE or DATETIME. If you find a date planned as VARCHAR, change it, because text would let 31/02/2026 in."
+         "how": "Find the start and end of Appointment and of Hire. Stage 4 makes them DATETIME and DATE. A date planned as VARCHAR would let 31/02/2026 in."
         },
         {
          "id": "2.5.16",
          "what": "A status that could be any word",
          "expect": "control",
-         "how": "Look at every status column on your plan. Each has a CHECK with its list of allowed words, such as Booked, Done or Cancelled. If one has no list, write the list beside it, or the table would let the word Maybe in."
+         "how": "Find Status in Appointment. Stage 4 gives it a CHECK with three allowed words: Booked, Done and Cancelled. Without that list, the table would let the word Maybe in."
         }
        ]
       },
       {
-       "p": "Keep your plan beside you for chapter 3. When your plan passes all eight rows, it is ready to be typed, and chapter 3 builds the Towpath Cycles tables the same way, one table at a time."
+       "p": "When all eight rows are ticked, the plan is ready to be typed. Chapter 3 builds these ten tables in SQL Server Management Studio (SSMS), one table at a time, with every type and rule above."
       }
      ]
     }

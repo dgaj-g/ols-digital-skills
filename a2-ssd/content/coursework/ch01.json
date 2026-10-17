@@ -163,7 +163,7 @@
      "title": "Make your coursework folder in OneDrive.",
      "blocks": [
       {
-       "p": "Your coursework folder is called A2 SSD Coursework, and it sits inside OneDrive - C2k, your school OneDrive. OneDrive keeps a copy of everything in this folder on your school account. That means you can reach it from any computer you sign in on, and it is safe if one computer breaks. Every file you make in this guide goes in this folder: the script in chapter 1, the program in chapter 5, and your screenshots."
+       "p": "Your coursework folder is called A2 SSD Coursework, and it sits inside OneDrive - C2k, your school OneDrive. OneDrive keeps a copy of everything in this folder on your school account. That means you can reach it from any computer you sign in on, and it is safe if one computer breaks. Every file you make in this guide goes in this folder: the script in chapter 1 and the program in chapter 5."
       },
       {
        "steps": [
@@ -838,12 +838,12 @@
      "title": "Read the list of what you hand in at the end.",
      "blocks": [
       {
-       "p": "At the end of the coursework you hand in five things. Every one of them is made in your A2 SSD Coursework folder, so nothing has to be found or copied at the last minute."
+       "p": "From this guide you hand in two things, and both are made in your A2 SSD Coursework folder, so nothing has to be found or copied at the last minute. Your write-up is handed in as well, and it is taught separately."
       },
       {
        "box": {
-        "title": "The five things you hand in",
-        "text": "The first is BikeShop.sql, the script that makes your database. The second is the BikeShop solution folder from Visual Studio 2019, zipped into one file, with its bin and obj folders left out. The third is your write-up, which holds your project plan, your list of what the users need and your look back at what you made. The fourth is your user guide. The fifth is your testing evidence: the table of tests with a picture under each, which chapter 10 shows you how to make. Chapter 10 also shows you how to make the user guide."
+        "title": "The two things you hand in from this guide",
+        "text": "The first is BikeShop.sql, the script that makes your database. The second is the BikeShop solution folder from Visual Studio 2019, zipped into one file, with its bin and obj folders left out."
        }
       },
       {
@@ -867,7 +867,7 @@
       {
        "box": {
         "title": "When to run your script",
-        "text": "BikeShop.sql is the master copy of your database. At the start of every session, open it in SQL Server Management Studio: click File, point at Open, click File…, and double-click BikeShop.sql in your OneDrive coursework folder. Then press F5 with nothing highlighted. It takes two seconds. From chapter 7, when your tests leave rows you need next lesson, you save the whole database before you log off and run that saved copy instead. Chapter 7 shows you how."
+        "text": "BikeShop.sql is the master copy of your database. At the start of every session, open it in SQL Server Management Studio: click File, point at Open, click File…, and double-click BikeShop.sql in your OneDrive coursework folder. Then press F5 with nothing highlighted. It takes two seconds. Chapter 3 shows you how to make SQL Server Management Studio write a script of the whole database, called BikeShop-saved.sql. From chapter 7, when your tests leave rows you need next lesson, you save that script before you log off and run it instead. Chapter 7 shows you when."
        }
       }
      ]
@@ -1002,7 +1002,7 @@
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your own scenario uses the same folder and the same server. When you build your own database in place of the bike shop, give the script your scenario's name, such as DogGroomer.sql, and save it in A2 SSD Coursework beside BikeShop.sql."
+        "text": "Your own script goes in A2 SSD Coursework beside BikeShop.sql, named for your case study, such as DogGroomer.sql."
        }
       }
      ]
