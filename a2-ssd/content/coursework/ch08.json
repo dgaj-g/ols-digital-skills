@@ -629,7 +629,7 @@
         "title": "Before you log off: save your database",
         "blocks": [
          {
-          "p": "Your two test sales are rows in your database, and the Programming Environment wipes the database when you log off. Stage 3 refunds them. Whenever you stop before the end of this chapter, save the whole database to a script before you log off, as you did in chapter 7:"
+          "p": "Your two test sales are rows in your database, and the Programming Environment wipes the database when you log off. Stage 3 refunds them. Whenever you stop before the end of this chapter, save the whole database to a script before you log off, as you did in chapters 3 and 7. Chapter 3, stage 7 shows how to read the file:"
          },
          {
           "p": "1. In Object Explorer, right-click BikeShop, point at Tasks and click Generate Scripts…."
@@ -9289,12 +9289,12 @@
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Twenty ticks are your evidence that the counts and the statuses hold. Keep the screenshots for your testing evidence in chapter 10. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected: every count and every status returns to where this chapter started."
+       "p": "Twenty ticks show that the counts and the statuses hold. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected: every count and every status returns to where this chapter started."
       },
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your scenario will have its own counted things and its own one-of-a-kind things. Write down which is which: what gets counted, such as tickets, seats or boxes of stock, and what has a status of its own, such as a room, a van or a loan. For each counted thing, name the three stored procedures that are the only doors to its count. For each thing with a status, draw its life as a line of status words, and write one IF NOT EXISTS check for each step along it."
+        "text": "In your own project, change each count only through stored procedures, and guard each step of each status with an IF NOT EXISTS check, as this chapter does."
        }
       }
      ]

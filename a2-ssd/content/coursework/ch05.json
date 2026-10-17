@@ -2905,7 +2905,7 @@
      "title": "Run each sign-in once.",
      "blocks": [
       {
-       "p": "The table on the next screen is evidence for your write-up: each row is one sign-in you tried and what the program did. Run your program from Visual Studio 2019 with F5, and work down the rows. Three rows are sign-ins that must be refused, and a refusal that happens is a pass, not a fail. In chapter 10 you take the pictures that prove each test, so you do not need to take any now."
+       "p": "The table on the next screen has one sign-in to try on each row, and what the program must do. Run your program from Visual Studio 2019 with F5, and work down the rows. Three rows are sign-ins that must be refused, and a refusal that happens is a pass, not a fail."
       },
       {
        "p": "The sixth member of staff, Liam Doran, left in the summer. His row in the Staff table is still there, with IsActive set to 0, so that the appointments he did still have a mechanic's name on them. Your stored procedure checks IsActive, so his old username and password should no longer get in. That is the database saying no, inside your program."
@@ -3090,7 +3090,7 @@
       {
        "box": {
         "title": "Make it yours",
-        "text": "In your own project, the sign-in table is whatever your scenario calls its staff, and the roles are whatever your scenario needs: a manager and a receptionist, or an owner and a groomer. Keep the shape exactly: one stored procedure that checks the username, the password and an active flag; one Session class that remembers who is signed in; and one button on the main menu that only one role can press. Db.cs and Msg.cs do not change at all, and App.config changes only the database name."
+        "text": "In your own project, build the same sign-in: one stored procedure that checks the username, the password and an active flag, one Session class, and one menu button that only one role can press."
        }
       }
      ]

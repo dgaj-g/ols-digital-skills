@@ -4023,15 +4023,90 @@
     },
     {
      "id": "2",
+     "title": "See your stored procedures in the script that Generate Scripts writes.",
+     "blocks": [
+      {
+       "p": "In chapter 3, stage 7, you made Generate Scripts write a script of your database, and you read it. Make it again now, and your stored procedures are in it too: after all the rules, in alphabetical order, each with the same lines above it as a table. The same two rules still hold: never type in that file, and never paste anything below its last line."
+      },
+      {
+       "steps": [
+        {
+         "id": "4.7.21",
+         "do": "Make BikeShop-saved.sql again with Generate Scripts, following the steps on screen 1 of chapter 3, stage 7. When Windows asks whether to replace the old file, click Yes.",
+         "see": "The Generate Scripts window closes, and BikeShop-saved.sql in your OneDrive coursework folder is the new script, with your stored procedures in it."
+        },
+        {
+         "id": "4.7.22",
+         "do": "Click File, point at Open, click File…, and open BikeShop-saved.sql from your OneDrive coursework folder.",
+         "see": "BikeShop-saved.sql opens in a new tab beside BikeShop.sql."
+        },
+        {
+         "id": "4.7.23",
+         "do": "Press Ctrl and F together, type usp_Customer_Add and press Enter.",
+         "see": "The script jumps to the note above usp_Customer_Add, near the end of the file."
+        }
+       ]
+      },
+      {
+       "code": {
+        "id": "4.7-saved-proc",
+        "kind": "read",
+        "lang": "sql",
+        "title": "usp_Customer_Add, as Generate Scripts writes it",
+        "src": "file:Generated/6-procedure.sql",
+        "parts": [
+         [
+          "/******",
+          "QUOTED_IDENTIFIER >> GO",
+          "The same lines as above every table",
+          "These lines are a note with the date and time the script was made, then SET ANSI_NULLS ON and SET QUOTED_IDENTIFIER ON, each followed by GO. Generate Scripts writes them above every table and every stored procedure."
+         ],
+         [
+          "CREATE   PROCEDURE",
+          "$end",
+          "Your stored procedure",
+          "This is the usp_Customer_Add you pasted in this chapter, with [dbo]. in front of its name. CREATE OR ALTER has become CREATE with three spaces after it, because Generate Scripts takes OR ALTER out. Everything from the first @ down to END is what you pasted, comments and all, and GO ends it."
+         ]
+        ],
+        "text": "/****** Object:  StoredProcedure [dbo].[usp_Customer_Add]\n    Script Date: 10/17/2026 5:14:16 PM ******/\nSET ANSI_NULLS ON\nGO\nSET QUOTED_IDENTIFIER ON\nGO\n\nCREATE   PROCEDURE [dbo].[usp_Customer_Add]\n    @FirstName     VARCHAR(40),\n    @LastName      VARCHAR(40),\n    @Phone         VARCHAR(15),\n    @Email         VARCHAR(100),\n    @NewCustomerID INT OUTPUT,\n    @Message VARCHAR(200) OUTPUT\nAS\nBEGIN\n    SET @Message = '';\n    INSERT INTO Customer (FirstName, LastName, Phone, Email)\n    VALUES (@FirstName, @LastName, @Phone, @Email);\n    SET @NewCustomerID = SCOPE_IDENTITY();\nEND\nGO",
+        "partLines": [
+         [
+          1,
+          6,
+          "The same lines as above every table",
+          "These lines are a note with the date and time the script was made, then SET ANSI_NULLS ON and SET QUOTED_IDENTIFIER ON, each followed by GO. Generate Scripts writes them above every table and every stored procedure."
+         ],
+         [
+          8,
+          22,
+          "Your stored procedure",
+          "This is the usp_Customer_Add you pasted in this chapter, with [dbo]. in front of its name. CREATE OR ALTER has become CREATE with three spaces after it, because Generate Scripts takes OR ALTER out. Everything from the first @ down to END is what you pasted, comments and all, and GO ends it."
+         ]
+        ]
+       }
+      },
+      {
+       "steps": [
+        {
+         "id": "4.7.24",
+         "do": "Close the BikeShop-saved.sql tab by clicking the small cross on its tab. If it asks whether to save the changes, click No.",
+         "see": "The BikeShop-saved.sql tab is gone, and BikeShop.sql is still open."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "3",
      "title": "Finish the chapter.",
      "blocks": [
       {
-       "p": "Twenty ticks are your evidence that every action on customers, staff, services and suppliers goes through a stored procedure, and that the database says no in a sentence when it should. Keep screenshots of the four refusals for your testing evidence in chapter 10. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected. Save your script with Ctrl and S together before you close SQL Server Management Studio (SSMS)."
+       "p": "Twenty ticks show that every action on customers, staff, services and suppliers goes through a stored procedure, and that the database says no in a sentence when it should. When you want the sample data back, click in BikeShop.sql and press F5 with nothing selected. Save your script with Ctrl and S together before you close SQL Server Management Studio (SSMS)."
       },
       {
        "box": {
         "title": "Make it yours",
-        "text": "Your scenario has its own tables, and most tables need four stored procedures: a Get, an Add, an Update and a Delete. A table that other tables point at, such as a customer with bookings, needs a Delete that refuses. For each table, write down which of the four it needs. Then write one plain sentence for the rule each Add or Delete checks before it acts, because that sentence is what goes into @Message. Name each stored procedure with usp, then the table, then the action, for example usp_Customer_Add. In every Add, Update and Delete, set @Message to a blank message first and use RETURN after a refusal. In every Add, hand back SCOPE_IDENTITY()."
+        "text": "In your own project, give most tables a Get, an Add, an Update and a Delete, named usp, then the table, then the action, and give a table that other tables point at a Delete that refuses."
        }
       }
      ]
