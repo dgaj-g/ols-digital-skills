@@ -11,6 +11,9 @@
  * repeats a long chosen answer under its list, and must fail on both.
  * SOFTWARE (v6): the same sit on the Software topic at desktop and phone width; three controls must fail: answer options forced
  * onto one line on a phone, a drop-down held narrower than its chosen words, the answer-first line kept after answering, and a missed answer in smaller type.
+ * DATABASES and SPREADSHEETS (v7): the same sit on each at desktop and phone width (summary g2-summary-<topic>.png, lines
+ * g2-sit-lines-<topic>.txt); every formula item shows the hint and a monospace box, every grid figure its row numbers.
+ * Controls that must fail: formula boxes in serif, the hint hidden, a grid table forced to 1400 px on a phone with its scroll box opened up.
  * Run: node s1-unit1/gates/g2-page.js  (exit 0 = GREEN). Output: gates/out/g2-page.txt, gates/out/g2-summary.png */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), { spawn, execSync } = require('child_process');
@@ -23,6 +26,8 @@ const OUT = path.join(__dirname, 'out'); fs.mkdirSync(OUT, { recursive: true });
 const Judge = require(path.join(DESIGN, 'judge', 'judge.js'));
 const BANK = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_digital_data.js'), 'utf8') + '\n;BANK_DIGITAL_DATA', {});
 const BANK_SW = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_software.js'), 'utf8') + '\n;BANK_SOFTWARE', {});
+const BANK_DB = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_databases.js'), 'utf8') + '\n;BANK_DATABASES', {}); // v7
+const BANK_SS = vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', 'bank_spreadsheets.js'), 'utf8') + '\n;BANK_SPREADSHEETS', {});
 const Policy = require(path.join(ROOT, 'platform', 'sitpolicy.js'));
 const log = [], res = { pass: 0, fail: 0 };
 function check(name, good, detail) { good ? res.pass++ : res.fail++; log.push((good ? 'PASS ' : 'FAIL ') + name + (detail != null && !good ? ' · ' + detail : '')); }
@@ -123,6 +128,35 @@ function sitChecks(R, user, tag, bank) {
     check('CONTROL answer-first line kept on screen after answering: sit reports it', !WH.out.pass && whl.length > 0, 'lines ' + whl.length);
     const wkl = WH.out.lines.filter((l) => /marked answers all one size/.test(l));
     check('CONTROL a missed answer drawn in smaller type (same sit): sit reports it', wkl.length > 0, 'lines ' + wkl.length);
+    // ---- v7: Databases and Spreadsheets, the same sit as Software at desktop and phone width
+    const TITLES = { databases: 'Database applications', spreadsheets: 'Spreadsheet applications' };
+    for (const [id, B] of [['databases', BANK_DB], ['spreadsheets', BANK_SS]]) {
+      const o7 = await api('apiStaff', { op: 'setTopic', cls: '11a-dt', topic: id, open: true }, OWNER);
+      check(id + ' opened for the class', o7.ok && o7.open === true, JSON.stringify(o7));
+      const D = await sit(browser, OWNER, '11a-dt', false, null, id);
+      fs.writeFileSync(path.join(OUT, 'g2-sit-lines-' + id + '.txt'), D.out.lines.join('\n') + '\n');
+      try { await D.page.bringToFront(); await D.page.screenshot({ path: path.join(OUT, 'g2-summary-' + id + '.png'), captureBeyondViewport: false }); } catch (e) { log.push('INFO ' + id + ' screenshot skipped: ' + e.message.slice(0, 80)); }
+      const tag = id.toUpperCase();
+      check(tag + ' the sit played ' + TITLES[id], D.out.lines.some((l) => l.indexOf('SIT PASS topic ' + id + ' is ' + TITLES[id]) === 0), D.out.lines.filter((l) => /topic /.test(l)).join(' | '));
+      sitChecks(D, OWNER, tag + ' · ', B);
+      if (id === 'spreadsheets') {
+        check(tag + ' every formula item shows the hint line and a monospace box', D.out.lines.some((l) => /^SIT PASS every formula item shows the hint line and a monospace box/.test(l)), D.out.lines.filter((l) => /formula/.test(l)).join(' | ') || 'no formula line');
+        check(tag + ' every grid figure shows its row-number column', D.out.lines.some((l) => /^SIT PASS every grid figure shows its row-number column/.test(l)), D.out.lines.filter((l) => /grid/.test(l)).join(' | ') || 'no grid line');
+      }
+      const DP = await sit(browser, OWNER, '11a-dt', false, PH, id);
+      sitChecks(DP, OWNER, tag + ' PHONE 390x844 · ', B);
+      if (id === 'spreadsheets') check(tag + ' PHONE formula and grid checks pass at 390 px', DP.out.lines.some((l) => /^SIT PASS every formula item/.test(l)) && DP.out.lines.some((l) => /^SIT PASS every grid figure/.test(l)));
+      try { await D.page.close(); await DP.page.close(); } catch (e) {}
+    }
+    // ---- v7 controls (must fail): formula boxes in serif; the hint hidden (one run, two independent checks); a 1400 px grid on a phone
+    const FC = await sit(browser, 'control12@c2ken.net', '11a-dt', '.fml{font-family:serif!important}.hint{display:none!important}', null, 'spreadsheets');
+    const fcm = FC.out.lines.filter((l) => /^SIT FAIL formula box is monospace/.test(l)), fch = FC.out.lines.filter((l) => /^SIT FAIL formula hint shows/.test(l));
+    check('CONTROL formula boxes in serif: sit reports the formula-box check failing', !FC.out.pass && fcm.length > 0, 'lines ' + fcm.length);
+    check('CONTROL formula hint hidden: sit reports the hint check failing', !FC.out.pass && fch.length > 0, 'lines ' + fch.length);
+    const GC = await sit(browser, 'control13@c2ken.net', '11a-dt', '.figure .tscroll{overflow:visible!important}.figure.grid table{min-width:1400px!important}', PH, 'spreadsheets');
+    const gcl = GC.out.lines.filter((l) => /^SIT FAIL layout/.test(l) && /figure/.test(l));
+    check('CONTROL a 1400 px grid table on a phone: sit reports layout failures on the figure', !GC.out.pass && gcl.length > 0, 'lines ' + gcl.length);
+    log.push('INFO v7 controls: ' + fcm.length + ' serif-box fails, ' + fch.length + ' hidden-hint fails, ' + gcl.length + ' grid layout fails');
   } catch (e) { check('run', false, e.stack || e.message); }
   finally { if (browser) await browser.close(); srv.kill(); }
   const txt = 'G2 render coverage + sit on the harness · ' + new Date().toISOString() + '\n' + log.join('\n') + '\n' + (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail\n';

@@ -1,5 +1,5 @@
 /* OLS Unit 1 Revision - server (Apps Script, V8). Built by tools/build-server.js: the private banks (BANK_DIGITAL_DATA,
- * BANK_SOFTWARE) and the judge (globalThis.Judge) are prepended; the placeholders below are filled. Runs as the user accessing the web app
+ * BANK_SOFTWARE, BANK_DATABASES and BANK_SPREADSHEETS (v7)) and the judge (globalThis.Judge) are prepended; the placeholders below are filled. Runs as the user accessing the web app
  * (DOMAIN access), so Session.getActiveUser() is the pupil. Records live in Script Properties (ARCH.md "Storage").
  * The pupil path never touches a Sheet: the archive runs only on the owner's staff visit. */
 
@@ -12,12 +12,13 @@ var TITLE = '@@TITLE@@';
 var DOMAIN = 'c2ken.net';
 var DD = 'digital-data'; // v5's only topic: its records keep their v5 keys, so no pupil's work moves (DECISIONS 19.9)
 var ARCHIVE_AT = 350 * 1024;
+var WRITE_MAX = 1000;      // the unmarked writing box (his ruling 15 Oct 2026: 200 was too harsh)
 var FLAG_HIGH = "Thinks it's fine, isn't";
 var FLAG_LOW = "Doing fine, doesn't think so";
 
 // ---------- the banks, indexed (v6: one entry per built topic; a question's from/upto puts it in some rounds only) ----------
 var QBY = {}, TOPICS = {}, TOPIC_IDS = [];
-[BANK_DIGITAL_DATA, BANK_SOFTWARE].forEach(function (B) {
+[BANK_DIGITAL_DATA, BANK_SOFTWARE, BANK_DATABASES, BANK_SPREADSHEETS].forEach(function (B) {
   TOPIC_IDS.push(B.id);
   TOPICS[B.id] = { id: B.id, title: B.title, spec: B.spec, memo: {}, stages: B.stages.map(function (s) {
     s.questions.forEach(function (q) { QBY[q.id] = { q: q, st: s.n, t: B.id }; });
@@ -95,7 +96,7 @@ function pack_(v, a) {
   a = a || {};
   var f = v.form, i;
   if (f === 'pick1' || f === 'pickN') return { p: idxs_(v.options, a.picks) };
-  if (f === 'writepick') return { t: str_(a.text).slice(0, 200), k: a.skipped ? 1 : 0, p: v.parts.map(function (pt, k) { return idxs_(pt.options, ((a.parts || [])[k] || {}).picks); }) };
+  if (f === 'writepick') return { t: str_(a.text).slice(0, WRITE_MAX), k: a.skipped ? 1 : 0, p: v.parts.map(function (pt, k) { return idxs_(pt.options, ((a.parts || [])[k] || {}).picks); }) };
   if (f === 'type') return { x: v.items.map(function (_, k) { return str_((a.texts || [])[k]).slice(0, 80); }) };
   if (f === 'pairs') return { m: v.left.map(function (_, k) { var g = (a.map || [])[k]; return g ? v.right.indexOf(str_(g)) : -1; }) };
   if (f === 'choose') return { c: v.items.map(function (it, k) { var g = (a.choices || [])[k]; return g == null ? -1 : it.opts.indexOf(str_(g)); }) };
@@ -254,7 +255,8 @@ function apiMark_(req) {
     else if (!Judge.complete(v, a)) return err_('incomplete');
     var r = Judge.judge(q, a, v);
     shard[qid] = [r.marks, pack_(v, a)];
-    jset_(sp_(), key, shard);
+    try { jset_(sp_(), key, shard); }
+    catch (e) { if (v.form !== 'writepick' || str_(shard[qid][1].t).length <= 200) throw e; shard[qid][1].t = shard[qid][1].t.slice(0, 200); jset_(sp_(), key, shard); } // a full store costs her writing its length, never her marks
     rh = rnd_(rec, round); g = stg_(rh, hit.st);
     g.a = (g.a || 0) + 1; g.m = (g.m || 0) + r.marks;
     jset_(sp_(), tKey_(x.slug, x.email, T), rec);
@@ -321,7 +323,7 @@ function apiDraft_(req) {
   var x = pupilCtx_(req); if (x.err) return err_(x.err);
   var qid = str_(req.qid), round = roundArg_(req);
   if (!QBY[qid] || !round) return err_('bad-question');
-  var T = TOPICS[QBY[qid].t], t = str_(req.text).slice(0, 400);
+  var T = TOPICS[QBY[qid].t], t = str_(req.text).slice(0, WRITE_MAX);
   if (t) up_().setProperty(dKey_(x.slug, T, round, qid), t); else up_().deleteProperty(dKey_(x.slug, T, round, qid));
   return ok_({});
 }

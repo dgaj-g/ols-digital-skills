@@ -51,7 +51,7 @@ header.bar .who{margin-left:auto;font-size:14px;color:#fff3e8}header.bar .staff{
 .stagebar .line i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:0 99px 99px 0;box-shadow:0 0 10px rgba(232,138,58,.45);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 60%,transparent);transition:width .3s;animation:glide .8s var(--ease) both}
 @keyframes glide{from{width:var(--from,0%)}}
 .work{overflow:auto;padding:22px 26px 60px;flex:1}
-.cols{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+.cols{display:grid;grid-template-columns:minmax(400px,min-content) minmax(360px,1fr);gap:22px;align-items:start} /* v7: a wide table (a database table, a spreadsheet grid) widens its column to its longest words, the card keeps at least 360 px; a figure that fits 400 px stays 400 px */
 h1{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.15;margin:0 0 6px;color:var(--plum);letter-spacing:-.005em}
 h1::after{content:"";display:block;width:72px;height:4px;border-radius:99px;margin:10px 0 4px;background:linear-gradient(90deg,#f2b544,#e88a3a,#e0574c,#9a4fc4);transform-origin:left;animation:rule .9s .15s var(--ease) both}
 @keyframes rule{from{transform:scaleX(0)}}
@@ -108,7 +108,7 @@ h2{font-family:var(--disp);font-weight:600;font-size:21px;margin:0 0 10px;color:
 .locked .opt:not(.hit):not(.miss):not(.key):hover{border-color:var(--line)}
 textarea,input[type=text],select{font:inherit;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;transition:border-color .2s,box-shadow .2s}
 textarea:focus,input[type=text]:focus,input[type=password]:focus,select:focus{outline:0;border-color:var(--berry);box-shadow:0 0 0 3px rgba(242,181,68,.35)}
-textarea{width:100%;min-height:78px;resize:vertical}input[type=text]{width:100%}select{-webkit-appearance:none;appearance:none;padding:6px 32px 6px 9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.2 1.5 6 6.3l4.8-4.8' fill='none' stroke='%238f2d56' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px 8px;cursor:pointer} /* the page draws its own arrow, inside the right padding, so a chosen word never runs under it on any browser (live sit, 14 Oct 2026) */
+textarea{width:100%;min-height:78px;resize:vertical}#wtext{min-height:150px} /* room for a full written answer: 1,000 characters, his ruling 15 Oct 2026 */input[type=text]{width:100%}select{-webkit-appearance:none;appearance:none;padding:6px 32px 6px 9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.2 1.5 6 6.3l4.8-4.8' fill='none' stroke='%238f2d56' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px 8px;cursor:pointer} /* the page draws its own arrow, inside the right padding, so a chosen word never runs under it on any browser (live sit, 14 Oct 2026) */
 select:disabled,input[type=text]:disabled,textarea:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;background-color:#fbf6ef;cursor:default}select:disabled{background-image:none} /* after Check the pupil's own answer stays readable */
 .items .item{margin-bottom:10px}.items label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:700}
 .pairs .pr{display:grid;grid-template-columns:1fr 24px 230px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.pairs .pr:first-child{border-top:0}
@@ -131,6 +131,15 @@ select:disabled,input[type=text]:disabled,textarea:disabled{color:var(--ink);-we
 .figure h4{margin:0;padding:9px 12px;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.01em;background:#fdf1e3;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 22%,#fff7ee),#fff7ee);border-bottom:1px solid var(--line);color:var(--plum)}
 .figure table{border-collapse:collapse;width:100%;font-size:14px}.figure th{text-align:left;padding:6px 10px;background:#fffaf3;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}.figure td{padding:5px 10px;border-bottom:1px solid #f3e7da}
 .figure tr:nth-child(odd) td{background:rgba(253,241,227,.55)}
+/* v7: formula answer boxes and spreadsheet grid figures */
+.figure td,.figure th{overflow-wrap:break-word} /* v7: long cells wrap at their spaces */
+input[type=text].fml{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.01em}
+.hint{font-size:13px;color:var(--mute);margin-top:6px}
+.figure.grid th{text-align:center;background:#eef0f4;color:#555}
+.figure.grid th.rn{width:2.2em;background:#eef0f4;color:#555;text-align:center}
+.figure.grid .f{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.figure.grid td.merged{text-align:center;background:#f7f8fb} /* v7: one merged cell spanning its columns, as on the paper */
+.figure .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.figure .swipe{display:none;padding:6px 12px;font-size:12px;color:var(--mute);border-top:1px solid var(--line)}.figure.wide .swipe{display:block} /* v7 own look: a table wider than its box scrolls inside it and says so */
 .rate .opt{padding:9px 14px}.ticks label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.ticks input{margin-top:4px;accent-color:var(--berry)}
 .sumrows .r{display:flex;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}.sumrows .r:first-child{border-top:0}
 .sumrows .r b{color:var(--accd)}.sumrows .r.fl{gap:2px 16px;align-items:baseline}.sumrows .r.fl .src{white-space:nowrap;margin-left:auto}
@@ -177,6 +186,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:640px){
+  .figure.grid table{font-size:12px}.figure.grid th,.figure.grid td{padding:4px 3px;overflow-wrap:normal;word-break:normal}.figure.grid .f{font-size:12px} /* v7: a wide grid shrinks to its words and, past that, scrolls inside its box (own look 15 Oct 2026) */
   header.bar{height:auto;flex-wrap:wrap;column-gap:10px;row-gap:2px;padding:9px 14px 11px}
   header.bar .title{font-size:17px}
   header.bar .who{font-size:13px}header.bar .staff{margin-left:4px}
@@ -192,7 +202,7 @@ table.list{border-collapse:collapse;width:100%;font-size:14px}.list th{text-alig
   .pairs .pr,.pairs.wide .pr{grid-template-columns:18px minmax(0,1fr);row-gap:4px}.pairs .pr>span:first-child{grid-column:1/-1}
   .pairs .arrow{align-self:start;margin-top:7px}
   .pairs.wide .said:not(:empty){display:block;margin-top:6px;padding:4px 0 4px 10px;border-left:3px solid var(--acc);font-size:14px;color:var(--ink)}
-  .figure table{font-size:13px}.figure td,.figure th{padding:5px 7px;overflow-wrap:anywhere}
+  .figure table{font-size:13px}.figure td,.figure th{padding:5px 7px;overflow-wrap:normal}
   .gapsent select,.gapsent input{max-width:100%}
   .guard{margin:24px auto 0}
   .tabs{flex-wrap:wrap}
@@ -228,8 +238,8 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 
 </style>
 </head>
-<body data-build="s1u1-24d3d4f8ad-7f0b7102">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-24d3d4f8ad-7f0b7102" };</script>
+<body data-build="s1u1-ea4110fe09-c59479cf">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-ea4110fe09-c59479cf" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -244,7 +254,7 @@ var S1S = {
     stagebar: "Stage {s} of {k} \u00b7 {name} \u00b7 Question {i} of {n}",
     pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", pick4: "Pick four.", only2: "You can only pick two.", only3: "You can only pick three.", only4: "You can only pick four.",
     writeFirst: "Write your answer in your own words first.", writeNote: "This writing is not marked. The marked parts come next.", writeDone: "I've written my answer", writeKept: "Your writing is kept. Now answer the marked parts below.", wroteHint: "Compare it with the mark scheme above.", writePh: "Type your answer here.", skipWrite: "I'd rather skip the writing",
-    typeIt: "Type your answer.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose\u2026",
+    typeIt: "Type your answer.", formulaHint: "Type it as you would in the spreadsheet. The = at the start is optional.", refHint: "Type it as you would in the spreadsheet: the column letter first, then the row number.", rangeHint: "Type it as you would in the spreadsheet: the column letter first, then the row number. For a range, put a colon between the two cells, like A1:B4.", swipe: "Swipe the table sideways to see the rest of it.", idk: "I don't know", pairs: "Match each one on the left to one on the right.", choose: "Choose\u2026",
     chooseLine: "Pick the right word in each line.", gapsPool: "Fill each gap with a word from the list.", gapsType: "Fill each gap.",
     check: "Check my answer", help: "Answer every part first.", got: "You got {m} of {x} {w}.", mark: "mark", marks: "marks",
     scheme: "Mark scheme", wrote: "What you wrote", flag: "I still don't get this one", next: "Next question", finish: "Finish the stage", lbEnd: "Back to the topic",
@@ -281,6 +291,7 @@ var S1S = {
 (function (root) {
   'use strict';
   var WORDS = ['binary', '8', '1024', 'lossy', 'pixel', 'bit', 'byte', 'integer', 'ASCII', 'sample rate', '2', 'Unicode', 'resolution', 'hexadecimal'];
+  var LONG = (function () { var t = ''; while (t.length < 1000) t += 'It uses bits to store the data so the computer\u2019s caf\u00e9 can work with it. '; return t.slice(0, 1000); })();
   function h32(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function pickN(options, n, seed) {
     var ranked = options.map(function (o, i) { return { o: o, k: h32(seed + '|' + i + '|' + o) }; }).sort(function (a, b) { return a.k - b.k; });
@@ -291,7 +302,7 @@ var S1S = {
     if (v.form === 'pick1' || v.form === 'pickN') return { picks: pickN(v.options, v.n, s) };
     if (v.form === 'writepick') {
       var skip = h % 3 === 0;
-      return { text: skip ? '' : 'It uses bits to store the data so the computer can work with it', skipped: skip,
+      return { text: skip ? '' : LONG, skipped: skip, // a full-length answer every time: the 1,000-character box must save whole (15 Oct 2026)
         parts: v.parts.map(function (p, k) { return { picks: pickN(p.options, p.n, s + '|' + k) }; }) };
     }
     if (v.form === 'type') {
@@ -390,7 +401,7 @@ var App = (function () {
   // ---- shell ----
   function shell(crumb, body, bar) {
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '<span class="who">' + S.hello + h(ME.name) + '</span><a class="staff" id="staffLink" href="' + h(BOOT.base) + '" target="_top">' + S.staff + '</a></header><div id="sys"></div>' + (bar || '') + '<div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
-    document.getElementById("work").appendChild(body); paintSys(); paintSaving();
+    document.getElementById("work").appendChild(body); paintSys(); paintSaving(); fit();
   }
   function bare(crumb, body) { // guard, name and staff screens: no pupil name; the build token at the foot only when the link carries ?build
     app.innerHTML = '<header class="bar"><span class="title">' + S.app + '</span>' + (crumb ? '<span class="crumb">\u00b7 ' + crumb + '</span>' : '') + '</header><div id="sys"></div><div class="work" id="work"></div><div class="toast" id="toast"></div><div class="saving" id="saving">' + X.saving + '</div>';
@@ -451,7 +462,12 @@ var App = (function () {
   function stagebar(st, i, n) { var t = stage(st); return '<div class="stagebar" data-hue="' + st + '"><div class="t">' + fmt(S.stagebar, { s: st, k: ME.topic.stages.length, name: '<b>' + h(t.title) + '</b>', i: Math.min(i + 1, t.q), n: t.q }) + '</div><div class="line"><i style="width:' + Math.round(100 * i / t.q) + '%;--from:' + Math.round(100 * Math.max(0, i - 1) / t.q) + '%"></i></div></div>'; }
   // a phone cannot show a long choice whole in the closed list, so the chosen words are repeated under it (shown by style.css on narrow screens only)
   function said(body) { body.querySelectorAll(".pairs select[data-k]").forEach(function (x) { var o = x.parentNode.querySelector(".said"); if (o) o.textContent = x.value ? x.options[x.selectedIndex].text : ""; }); }
-  function figureHtml(f) { return '<div class="figure"><h4>' + h(f.title) + '</h4><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div>'; }
+  function figureHtml(f) {
+    // v7: a spreadsheet grid (head[0] is "") shows its column letters centred, each row's first cell as its row number, and a formula ("=...") in monospace
+    if (f.head[0] === "") return '<div class="figure grid"><h4>' + h(f.title) + '</h4><div class="tscroll"><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { var skip = 0; return '<tr>' + r.map(function (c, j) { if (j === 0) return '<th class="rn">' + h(c) + '</th>'; if (skip > 0) { skip--; return ""; } var m = /^(.*?)\s*\(across ([A-Z]+)\d+:([A-Z]+)\d+\)$/.exec(String(c)); if (m) { skip = m[3].charCodeAt(0) - m[2].charCodeAt(0); return '<td colspan="' + (skip + 1) + '" class="merged">' + h(m[1]) + '</td>'; } return '<td>' + (/^=/.test(String(c)) ? '<span class="f">' + h(c) + '</span>' : h(c)) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div><div class="swipe">' + h(S.swipe) + '</div></div>'; // a cell "(across B9:D9)" is one merged cell spanning those columns, as on the paper (v7 cold read: SS1-07 must not print its answer)
+    return '<div class="figure"><h4>' + h(f.title) + '</h4><div class="tscroll"><table><tr>' + f.head.map(function (x) { return '<th>' + h(x) + '</th>'; }).join("") + '</tr>' + f.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + h(c) + '</td>'; }).join("") + '</tr>'; }).join("") + '</table></div><div class="swipe">' + h(S.swipe) + '</div></div>';
+  }
+  var FML = ' class="fml" spellcheck="false" autocapitalize="off" autocorrect="off"'; // v7: a formula answer box
   function tiles(options, n, lead, partIdx) { return (lead ? '<div class="lead">' + lead + '</div>' : "") + '<div class="opts" data-part="' + (partIdx == null ? '' : partIdx) + '" data-n="' + n + '">' + options.map(function (o) { return '<div class="opt" data-t="' + h(o) + '"><i></i><span>' + h(o) + '</span><span class="mk"></span></div>'; }).join("") + '</div>'; }
   function leadFor(n) { return S["pick" + n]; } // "Pick four." for a four-pick question, never "Pick three." (live sit, 14 Oct 2026)
   function complete(view, answer) { // the judge's complete(), key-free: Check waits for every part
@@ -470,11 +486,11 @@ var App = (function () {
     var D = CACHE[ck(n, st)], ids = D.order, qid = ids[i], v = D.views[i], src = D.src[i], stored = D.done[qid], ctl = "", sending = false;
     CUR = { screen: "question", st: st, i: i, n: n, v: v, qid: qid, replay: !!replay, r: null };
     if (v.form === "pick1" || v.form === "pickN") ctl = tiles(v.options, v.n, leadFor(v.n));
-    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="200" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, /\bpick\b/i.test(p.label || "") ? "" : leadFor(p.n), k) /* a label that already says "pick two" gets no second "Pick two." (live look, 14 Oct 2026) */; }).join("") + '</div>';
-    else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text" maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div><div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
+    else if (v.form === "writepick") ctl = '<div class="lead">' + S.writeFirst + '</div><textarea id="wtext" maxlength="1000" placeholder="' + S.writePh + '"></textarea><div class="help" id="wnote">' + S.writeNote + '</div><div class="help"><button class="btn sm" id="wdone" disabled>' + S.writeDone + '</button> <span class="link" id="skipW">' + S.skipWrite + '</span></div><div id="parts" style="display:none">' + v.parts.map(function (p, k) { return (p.label ? '<div class="lead">' + h(p.label) + '</div>' : '') + (p.stem ? '<p class="qtext stem">' + h(p.stem) + '</p>' : '') + tiles(p.options, p.n, /\bpick\b/i.test(p.label || "") ? "" : leadFor(p.n), k) /* a label that already says "pick two" gets no second "Pick two." (live look, 14 Oct 2026) */; }).join("") + '</div>';
+    else if (v.form === "type") ctl = '<div class="lead">' + S.typeIt + '</div><div class="items">' + v.items.map(function (it, k) { return '<div class="item">' + (it.label ? '<label>' + h(it.label) + '</label>' : '') + '<input type="text"' + (it.formula ? FML : '') + ' maxlength="80" data-k="' + k + '"><span class="mk"></span></div>'; }).join("") + '</div>' + (v.items.some(function (it) { return it.formula && !it.ref; }) ? '<div class="hint">' + S.formulaHint + '</div>' : v.items.some(function (it) { return it.ref === "range"; }) ? '<div class="hint">' + S.rangeHint + '</div>' : v.items.some(function (it) { return it.ref === "cell"; }) ? '<div class="hint">' + S.refHint + '</div>' : '') + '<div class="help"><span class="link" id="idk">' + S.idk + '</span></div>';
     else if (v.form === "pairs") ctl = '<div class="lead">' + S.pairs + '</div><div class="pairs' + (v.right.some(function (r) { return r.length > 28; }) ? ' wide' : '') + '">' + v.left.map(function (l, k) { return '<div class="pr"><span>' + h(l) + '</span><span class="arrow">\u2192</span><span><select data-k="' + k + '"><option value="">' + S.choose + '</option>' + v.right.map(function (r) { return '<option>' + h(r) + '</option>'; }).join("") + '</select><span class="said"></span> <span class="mk"></span></span></div>'; }).join("") + '</div>';
     else if (v.form === "choose") ctl = '<div class="lead">' + S.chooseLine + '</div><div class="choose">' + v.items.map(function (it, k) { return '<div class="ch" data-k="' + k + '"><span>' + h(it.stem) + '</span>' + it.opts.map(function (o) { return '<button class="tog" data-t="' + h(o) + '">' + h(o) + '</button>'; }).join("") + '<span class="mk"></span></div>'; }).join("") + '</div>';
-    else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text" maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
+    else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text"' + (v.fml && v.fml[g] ? FML : '') + ' maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
     shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
@@ -617,6 +633,10 @@ var App = (function () {
       if (BOOT.sit && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
     }, function (e) { guard(e.code === "unknown-class" ? X.noClass : X.domain); });
   }
+  // v7 own look (15 Oct 2026): a table wider than its box (a phone) scrolls inside it and says so under it; words never break inside
+  function fit() { document.querySelectorAll(".figure .tscroll").forEach(function (s) { s.parentNode.classList.toggle("wide", s.scrollWidth > s.clientWidth + 1); }); }
+  new MutationObserver(function () { requestAnimationFrame(fit); }).observe(document.body, { childList: true, subtree: true });
+  window.addEventListener("resize", fit);
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
     pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
@@ -856,7 +876,7 @@ var Staff = (function () {
 </script>
 <script>
 /* sit.js \u2014 the scripted sit (G2 on the harness, G4 on the live /dev link). Runs only with ?sit=1 for the owner (or the
- * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=software Software) through the page itself
+ * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=<topic id> that topic: software, databases, spreadsheets) through the page itself
  * (tiles, boxes, lists, toggles, Check, Next) with SitPolicy's answers, flags every 7th question, reloads mid-stage, saves
  * every card, checks the summary, restores every marked question, tries a repeat mark, and opens round 2 for itself.
  * The report is a <pre id="sitReport"> (SIT PASS/FAIL lines, MARKS, a MARKS# hash the gate recomputes in node). */
@@ -884,6 +904,11 @@ var Sit = (function () {
     all("header.bar, .stagebar, .card, .opt, .figure, .items .item, .pairs .pr, .choose .ch, .gapsent, .scheme, .wrote, .actions, .sumrows .r, .row, .figure td, .figure th, .ticks label, .item label, .opt span, .tog, .btn, .qtext, .lead").forEach(function (e) {
       if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) bad.push((e.className || e.tagName) + " " + e.scrollWidth + ">" + e.clientWidth);
     });
+    all(".figure .tscroll").forEach(function (s) { // v7 own look: a table wider than its box must scroll inside it, with the swipe line under it
+      if (s.scrollWidth <= s.clientWidth + 1) return; var cue = s.parentNode.querySelector(".swipe");
+      if (!/auto|scroll/.test(getComputedStyle(s).overflowX)) bad.push("wide table not scrollable " + s.scrollWidth + ">" + s.clientWidth);
+      if (!(cue && cue.offsetHeight)) bad.push("wide table without the swipe line");
+    });
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
@@ -905,10 +930,23 @@ var Sit = (function () {
     if (v.form === "pairs") { var sels = all("select[data-k]"); if (sels.length !== v.left.length) miss.push("pairs"); sels.forEach(function (s) { if (s.options.length !== v.right.length + 1) miss.push("spare"); }); }
     if (v.form === "gaps" && all("[data-k]").length !== v.gapCount) miss.push("gaps");
     if (v.form === "type") v.items.forEach(function (it, k) { if (it.label && !all(".item label")[k]) miss.push("label " + k); });
+    // v7: every formula box is monospace with the hint line under the items; a grid figure shows its row-number column
+    var fx = v.form === "type" ? v.items.map(function (it) { return !!it.formula; }) : v.form === "gaps" && v.fml ? v.fml.map(Boolean) : [];
+    if (fx.some(Boolean)) {
+      FX.n++; var bx = all("[data-k]");
+      fx.forEach(function (f, k) { var x = bx[k]; if (f && !(x && x.classList.contains("fml") && /Menlo|monospace/.test(getComputedStyle(x).fontFamily))) { FX.bad++; ok("formula box is monospace " + v.id, false, x ? getComputedStyle(x).fontFamily : "no box " + k); } });
+      var hn = $("#qcard .hint");
+      if (v.form === "type" && !(hn && hn.offsetHeight && hn.textContent === (v.items.some(function (it) { return it.formula && !it.ref; }) ? S.formulaHint : v.items.some(function (it) { return it.ref === "range"; }) ? S.rangeHint : S.refHint))) { FX.bad++; ok("formula hint shows " + v.id, false, hn ? "hidden or wrong words" : "no hint line"); }
+    }
+    if (v.figure && v.figure.head[0] === "") {
+      GX.n++; var rn = all(".figure.grid th.rn").filter(function (x) { return x.offsetWidth; });
+      if (rn.length !== v.figure.rows.length || rn.some(function (x, k) { return x.textContent !== String(v.figure.rows[k][0]); })) { GX.bad++; ok("grid figure shows its row numbers " + v.id, false, rn.length + " of " + v.figure.rows.length); }
+    }
     if (v.form === "choose" && all(".ch").length !== v.items.length) miss.push("choose");
     if ((v.form === "pick1" || v.form === "pickN") && all('.opts[data-part=""] .opt').length !== v.options.length) miss.push("tiles");
     return miss;
   }
+  var FX = { n: 0, bad: 0 }, GX = { n: 0, bad: 0 }; // v7: formula and grid checks, counted per question shown
   var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
     TID = "digital-data";
   function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
@@ -1046,6 +1084,8 @@ var Sit = (function () {
       });
     }).catch(function (e) { ok("run", false, e && (e.code || e.message)); }).then(function () {
       ok("no page errors", !errors.length, errors.slice(0, 3).join(" | "));
+      if (FX.n) ok("every formula item shows the hint line and a monospace box", !FX.bad, FX.n + " shown, " + FX.bad + " wrong");
+      if (GX.n) ok("every grid figure shows its row-number column", !GX.bad, GX.n + " shown, " + GX.bad + " wrong");
       var ms = Object.keys(MARKS).sort().map(function (k) { return k + ":" + MARKS[k]; }).join(",");
       lines.push("MARKS " + ms);
       lines.push("MARKS# " + SitPolicy.h32(ms).toString(16) + " \u00b7 " + Object.keys(MARKS).length + " questions \u00b7 flags " + FLAGS.length);

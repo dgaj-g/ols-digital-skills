@@ -1,5 +1,5 @@
 /* sit.js — the scripted sit (G2 on the harness, G4 on the live /dev link). Runs only with ?sit=1 for the owner (or the
- * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=software Software) through the page itself
+ * harness's dev user). It clears the owner's own record in the class, then plays every stage of its topic (?sit=1 Digital Data, ?sit=<topic id> that topic: software, databases, spreadsheets) through the page itself
  * (tiles, boxes, lists, toggles, Check, Next) with SitPolicy's answers, flags every 7th question, reloads mid-stage, saves
  * every card, checks the summary, restores every marked question, tries a repeat mark, and opens round 2 for itself.
  * The report is a <pre id="sitReport"> (SIT PASS/FAIL lines, MARKS, a MARKS# hash the gate recomputes in node). */
@@ -27,6 +27,11 @@ var Sit = (function () {
     all("header.bar, .stagebar, .card, .opt, .figure, .items .item, .pairs .pr, .choose .ch, .gapsent, .scheme, .wrote, .actions, .sumrows .r, .row, .figure td, .figure th, .ticks label, .item label, .opt span, .tog, .btn, .qtext, .lead").forEach(function (e) {
       if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) bad.push((e.className || e.tagName) + " " + e.scrollWidth + ">" + e.clientWidth);
     });
+    all(".figure .tscroll").forEach(function (s) { // v7 own look: a table wider than its box must scroll inside it, with the swipe line under it
+      if (s.scrollWidth <= s.clientWidth + 1) return; var cue = s.parentNode.querySelector(".swipe");
+      if (!/auto|scroll/.test(getComputedStyle(s).overflowX)) bad.push("wide table not scrollable " + s.scrollWidth + ">" + s.clientWidth);
+      if (!(cue && cue.offsetHeight)) bad.push("wide table without the swipe line");
+    });
     all("select").forEach(function (x) { // the chosen words must show whole in the closed list
       if (!x.value || !x.clientWidth) return; var cs = getComputedStyle(x), cv = layout.cv || (layout.cv = document.createElement("canvas").getContext("2d"));
       cv.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
@@ -48,10 +53,23 @@ var Sit = (function () {
     if (v.form === "pairs") { var sels = all("select[data-k]"); if (sels.length !== v.left.length) miss.push("pairs"); sels.forEach(function (s) { if (s.options.length !== v.right.length + 1) miss.push("spare"); }); }
     if (v.form === "gaps" && all("[data-k]").length !== v.gapCount) miss.push("gaps");
     if (v.form === "type") v.items.forEach(function (it, k) { if (it.label && !all(".item label")[k]) miss.push("label " + k); });
+    // v7: every formula box is monospace with the hint line under the items; a grid figure shows its row-number column
+    var fx = v.form === "type" ? v.items.map(function (it) { return !!it.formula; }) : v.form === "gaps" && v.fml ? v.fml.map(Boolean) : [];
+    if (fx.some(Boolean)) {
+      FX.n++; var bx = all("[data-k]");
+      fx.forEach(function (f, k) { var x = bx[k]; if (f && !(x && x.classList.contains("fml") && /Menlo|monospace/.test(getComputedStyle(x).fontFamily))) { FX.bad++; ok("formula box is monospace " + v.id, false, x ? getComputedStyle(x).fontFamily : "no box " + k); } });
+      var hn = $("#qcard .hint");
+      if (v.form === "type" && !(hn && hn.offsetHeight && hn.textContent === (v.items.some(function (it) { return it.formula && !it.ref; }) ? S.formulaHint : v.items.some(function (it) { return it.ref === "range"; }) ? S.rangeHint : S.refHint))) { FX.bad++; ok("formula hint shows " + v.id, false, hn ? "hidden or wrong words" : "no hint line"); }
+    }
+    if (v.figure && v.figure.head[0] === "") {
+      GX.n++; var rn = all(".figure.grid th.rn").filter(function (x) { return x.offsetWidth; });
+      if (rn.length !== v.figure.rows.length || rn.some(function (x, k) { return x.textContent !== String(v.figure.rows[k][0]); })) { GX.bad++; ok("grid figure shows its row numbers " + v.id, false, rn.length + " of " + v.figure.rows.length); }
+    }
     if (v.form === "choose" && all(".ch").length !== v.items.length) miss.push("choose");
     if ((v.form === "pick1" || v.form === "pickN") && all('.opts[data-part=""] .opt').length !== v.options.length) miss.push("tiles");
     return miss;
   }
+  var FX = { n: 0, bad: 0 }, GX = { n: 0, bad: 0 }; // v7: formula and grid checks, counted per question shown
   var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
     TID = "digital-data";
   function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
@@ -189,6 +207,8 @@ var Sit = (function () {
       });
     }).catch(function (e) { ok("run", false, e && (e.code || e.message)); }).then(function () {
       ok("no page errors", !errors.length, errors.slice(0, 3).join(" | "));
+      if (FX.n) ok("every formula item shows the hint line and a monospace box", !FX.bad, FX.n + " shown, " + FX.bad + " wrong");
+      if (GX.n) ok("every grid figure shows its row-number column", !GX.bad, GX.n + " shown, " + GX.bad + " wrong");
       var ms = Object.keys(MARKS).sort().map(function (k) { return k + ":" + MARKS[k]; }).join(",");
       lines.push("MARKS " + ms);
       lines.push("MARKS# " + SitPolicy.h32(ms).toString(16) + " · " + Object.keys(MARKS).length + " questions · flags " + FLAGS.length);
