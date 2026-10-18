@@ -57,8 +57,18 @@ Object.entries(C.clusters.clusters).forEach(([k, v]) => { clusterTwins[k] = v.tw
 const META = { papers, order: C.papers.map((p) => p.id), twinOrder: C.clusters.order, clusterTwins };
 // the coursework guide's tickable rows per built chapter (DESIGN §6.7.1: apiCw refuses anything else)
 const CWIX = JSON.parse(need(path.join(A2, 'content', 'coursework', 'index.json')));
+// A pupil's ticks are a bitmap over server/cw-slots.json, which only ever grows: a retired row keeps its slot as null (its old bit
+// is kept but never shown or accepted), so removing or adding rows never moves anyone's ticks onto the wrong row.
+const SLOTS = JSON.parse(need(path.join(A2, 'server', 'cw-slots.json')));
 const CWMETA = {};
-CWIX.chapters.filter((c) => c.built).forEach((c) => { CWMETA[c.id] = c.steps; });
+CWIX.chapters.filter((c) => c.built).forEach((c) => {
+  const miss = c.steps.filter((id) => !(SLOTS[c.id] || []).includes(id));
+  if (miss.length) { console.error('server/cw-slots.json: chapter ' + c.id + ' has no slot for ' + miss.length + ' row(s), first ' + miss[0] + '. Add them at the END of that chapter, never in the middle.'); process.exit(1); }
+});
+Object.keys(SLOTS).filter((ch) => /^\d\d$/.test(ch)).forEach((ch) => {
+  const live = new Set(((CWIX.chapters.find((c) => c.id === ch && c.built) || {}).steps) || []);
+  CWMETA[ch] = SLOTS[ch].map((id) => (live.has(id) ? id : null));
+});
 CWMETA.files = CWIX.files.map((f) => f.name);
 
 // ---- staff passcode (made once)
@@ -112,7 +122,7 @@ const judgeSrc = ['schema.js', 'judge.js', 'markpoints.js', 'twinpoints.js'].map
 }).join('\n');
 const priv = need(path.join(DEPLOY, 'private.js'));
 if (!/^\/\*[^]*?\*\/\s*var A2PRIVATE = /.test(priv)) { console.error('deploy/private.js is not the A2PRIVATE file'); process.exit(1); }
-const serverHash = hashOf(priv + judgeSrc + tpl);
+const serverHash = hashOf(priv + judgeSrc + tpl + JSON.stringify(CWMETA));
 const BUILD = C.BUILD + '-' + hashOf(pageHash + serverHash).slice(0, 8);
 
 const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).replace("'@@STAFF_SALT@@'", JSON.stringify(STAFF.salt))

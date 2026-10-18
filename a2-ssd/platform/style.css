@@ -200,3 +200,19 @@ textarea.comment{width:100%;font:inherit;padding:10px;border:1px solid var(--lin
 
 /* Coursework guide: printing is turned off (his ruling 11 Oct 2026: the guide is read signed in, never as paper or PDF). */
 @media print{#cw>*{display:none !important}#cw::before{content:"The coursework guide can only be read on the A2 SSD platform, signed in with your school account.";display:block;padding:24px;font-size:14pt}}
+/* the one-off "guide has changed" message (app.js notice): nothing behind it can be used until it is read, ticked and continued */
+:root{--scrim:rgba(14,26,46,.74)}
+.ntc-back{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:16px}
+.ntc{background:var(--white);border-radius:14px;border-top:8px solid var(--gold);box-shadow:0 18px 48px var(--shadow-a35);width:min(780px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:22px 32px 0;outline:0}
+.ntc h1{margin:0;font-size:27px;line-height:1.2;color:var(--navy)}
+.ntc h2{margin:16px 0 4px;font-size:17px;color:var(--navy)}
+.ntc ul{margin:0;padding-left:22px}.ntc li{margin:4px 0;font-size:16px;line-height:1.45}
+/* the timer, the tick box and Continue stay pinned to the bottom of the message, so they are on screen while the pupil reads */
+.ntc-foot{position:sticky;bottom:0;background:var(--white);display:flex;gap:22px;align-items:center;margin:18px -32px 0;padding:14px 32px 18px;border-top:1px solid var(--line)}
+.ntc-timer{flex:none;width:96px;height:96px;border-radius:50%;border:6px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--navy)}
+.ntc-timer b{font-size:36px;line-height:1}.ntc-timer span{font-size:13px}
+.ntc-timer.done{border-color:var(--ok);color:var(--ok)}
+.ntc-act{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.ntc-msg{margin:0;font-size:15px;padding:6px 0}.ntc-msg.bad{color:var(--bad-deep);font-weight:700;background:var(--bad-wash-1);border:1px solid var(--bad-edge);border-radius:8px;padding:6px 10px}
+.ntc-tick{display:flex;gap:10px;align-items:center;font-size:17px;font-weight:600;cursor:pointer}.ntc-tick input{width:22px;height:22px;margin:0;accent-color:var(--navy);cursor:pointer}
+@media (max-width:600px){.ntc{padding:18px 18px 0}.ntc h1{font-size:23px}.ntc-foot{margin:16px -18px 0;padding:12px 18px 14px;gap:14px;align-items:flex-start}.ntc-timer{width:62px;height:62px;border-width:5px}.ntc-timer b{font-size:24px}.ntc-timer span{font-size:11px}.ntc-msg{font-size:14px;padding:0}.ntc-tick{font-size:16px}}

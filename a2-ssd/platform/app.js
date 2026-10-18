@@ -282,17 +282,17 @@
     for (let i = 0; i <= 12; i++) { const c = String(i).padStart(2, '0'); if (cwLS.get('cw:done:' + c)) done++; ticks += (cwLS.get('cw:ticks:' + c) || []).length; }
     return done ? (done === 1 ? T('home.cwDoneOne') : T('home.cwDone', { n: done })) : ticks ? (ticks === 1 ? T('home.cwTick') : T('home.cwTicks', { n: ticks })) : T('home.notStarted');
   }
+  function cwApply(W) {
+    Object.keys(W || {}).forEach((ch) => {
+      if (!/^\d\d$/.test(ch)) return;
+      const c = W[ch];
+      cwLS.set('cw:ticks:' + ch, c.k || []);
+      cwLS.set('cw:done:' + ch, !!c.d);
+      if (c.a) cwLS.set('cw:at:' + ch, c.a);
+    });
+  }
   function cwSync() {
-    if (!cwSynced) cwSynced = call('apiCw', { op: 'state' }).then((r) => {
-      const W = (r && r.W) || {};
-      Object.keys(W).forEach((ch) => {
-        if (!/^\d\d$/.test(ch)) return;
-        const c = W[ch];
-        cwLS.set('cw:ticks:' + ch, c.k || []);
-        cwLS.set('cw:done:' + ch, !!c.d);
-        if (c.a) cwLS.set('cw:at:' + ch, c.a);
-      });
-    }, () => { cwSynced = null; });
+    if (!cwSynced) cwSynced = call('apiCw', { op: 'state' }).then((r) => { cwApply((r && r.W) || {}); }, () => { cwSynced = null; });
     return cwSynced.catch(() => {});
   }
   function vCw() {
@@ -760,9 +760,64 @@
     app.querySelectorAll('.tbl').forEach((t) => { if (t.classList.contains('wide') || !t.clientWidth) return; const tb = t.querySelector('table'); if (tb && tb.scrollWidth > t.clientWidth + 1) t.classList.add('wide'); });
   }
 
+  // ---------- the one-off "guide has changed" message (his ruling 18 Oct 2026) ----------
+  // For a pupil who used the guide before the change. It cannot be closed or got past: the pupil reads it for 30 seconds (the timer
+  // stops while the page is hidden), ticks to confirm, then clicks Continue. The timer reaching 0 never closes it. The confirmation
+  // is saved on the server (once per pupil, any computer) and on this computer, so a failed save never shows it twice here.
+  const NOTICE = { id: 'guide-2026-10', at: 417240, secs: 30 }; // at = 17 Oct 2026 19:00 Irish time, in server minutes
+  function notice(cw) {
+    cw = cw || {};
+    if ((cw.N || {})[NOTICE.id]) return;
+    if (LS.get('notice:' + NOTICE.id)) { call('apiCw', { op: 'notice', id: NOTICE.id }).catch(() => {}); return; }
+    if (!cw.f || cw.f >= NOTICE.at) return;
+    const li = (lines) => '<ul>' + lines.map((x) => '<li>' + h(x) + '</li>').join('') + '</ul>';
+    const back = document.createElement('div');
+    back.className = 'ntc-back';
+    back.innerHTML = '<div class="ntc" role="dialog" aria-modal="true" aria-labelledby="ntc-h" tabindex="-1"><h1 id="ntc-h">' + h(T('notice.title')) + '</h1>' +
+      '<h2>' + h(T('notice.whyHead')) + '</h2>' + li([T('notice.why1'), T('notice.why2'), T('notice.why3')]) +
+      '<h2>' + h(T('notice.meansHead')) + '</h2>' + li([T('notice.means1'), T('notice.means2'), T('notice.means3'), T('notice.means4'), T('notice.means5'), T('notice.means6')]) +
+      '<div class="ntc-foot"><div class="ntc-timer" aria-hidden="true"><b></b><span></span></div><div class="ntc-act">' +
+      '<p class="ntc-msg" role="status"></p><label class="ntc-tick"><input type="checkbox"> ' + h(T('notice.tick')) + '</label>' +
+      '<button class="btn" type="button" disabled>' + h(T('notice.continue')) + '</button></div></div></div>';
+    document.body.appendChild(back);
+    app.inert = true;
+    const box = back.querySelector('.ntc'), num = back.querySelector('.ntc-timer b'), unit = back.querySelector('.ntc-timer span'),
+      ring = back.querySelector('.ntc-timer'), msg = back.querySelector('.ntc-msg'), tick = back.querySelector('input'), btn = back.querySelector('.btn');
+    let left = NOTICE.secs;
+    const say = (text, bad) => { msg.textContent = text; msg.classList.toggle('bad', !!bad); };
+    const paint = () => { num.textContent = left; unit.textContent = left === 1 ? T('notice.second') : T('notice.seconds'); ring.classList.toggle('done', !left); };
+    paint(); say(T('notice.wait'));
+    const clock = setInterval(() => {
+      if (document.hidden || !left) return;
+      left--; paint();
+      if (!left) { clearInterval(clock); if (!tick.checked) say(T('notice.ready')); }
+    }, 1000);
+    tick.addEventListener('change', () => {
+      if (left) { tick.checked = false; say(T('notice.early'), true); return; }
+      btn.disabled = !tick.checked;
+      say(tick.checked ? T('notice.go') : T('notice.ready'));
+    });
+    btn.addEventListener('click', () => {
+      if (left || !tick.checked) return;
+      LS.set('notice:' + NOTICE.id, Date.now());
+      call('apiCw', { op: 'notice', id: NOTICE.id }).catch(() => {});
+      back.remove(); app.inert = false;
+    });
+    // nothing closes it but Continue: Escape does nothing and Tab stays inside the message
+    back.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); return; }
+      if (e.key !== 'Tab') return;
+      const f = [tick, btn].filter((x) => !x.disabled), i = f.indexOf(document.activeElement);
+      e.preventDefault();
+      (f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length] || box).focus();
+    });
+    box.focus();
+  }
+
   function start(r) {
     ME = { email: r.email, cls: r.cls, name: r.name || '' };
     REC = r.rec || REC; CFG = r.cfg || CFG;
+    if (r.cw && r.cw.W) { cwApply(r.cw.W); cwSynced = Promise.resolve(); }
     sqlReady().then(repaintData, repaintData);
     // activity (D100): once a minute while the page is on screen; act = typed, clicked or scrolled in the last 3 minutes
     let lastAct = Date.now();
@@ -770,6 +825,7 @@
     setInterval(() => { if (!document.hidden) call('apiPing', { act: Date.now() - lastAct < 180000 ? 1 : 0 }).catch(() => {}); }, 60000);
     flushOutbox();
     route();
+    notice(r.cw);
   }
   function askName(r) {
     app.innerHTML = '<div id="sys"></div><div class="guard"><div class="box"><p>' + h(T('guard.nameAsk')) + '</p><input type="text" maxlength="40" autocomplete="given-name" aria-label="' + h(T('guard.nameAsk')) + '"><button class="btn" disabled>' + h(T('guard.continue')) + '</button></div></div>';
@@ -808,5 +864,5 @@
       if (r.needName) askName(r); else start(r);
     }, () => { SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
   }
-  window.App = { boot, T, h };
+  window.App = { boot, T, h, NOTICE };
 })();
