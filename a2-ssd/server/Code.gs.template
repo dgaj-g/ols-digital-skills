@@ -277,7 +277,11 @@ function apiBoot(req) {
     });
   }
   touch_(cls, email, 1, 0);
-  return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(readClass_(cls)) });
+  // the coursework record comes with the boot (the guide's ticks for the Home tile, so no second call), plus what the one-off
+  // "guide has changed" message needs: when the pupil first opened any guide chapter, and the messages already confirmed
+  var W = jget_(sp_(), wKey_(cls, email), {}), cwf = 0;
+  Object.keys(W).forEach(function (ch) { if (/^\d\d$/.test(ch) && W[ch] && num_(W[ch].f) && (!cwf || num_(W[ch].f) < cwf)) cwf = num_(W[ch].f); });
+  return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(readClass_(cls)), cw: { f: cwf, N: W.N || {}, W: cwView_(W) } });
 }
 
 function apiName(req) {
@@ -478,10 +482,12 @@ function apiKv(req) {
 // One key per pupil, written only here under the script lock: w:<class>:<email> =
 //   { "<ch>": { k: ticked rows as a hex bitmap over CWMETA[ch], o: times opened, f/l: first/last opened tmin,
 //               a: last screen "stage-screen", d: marked-done tmin or 0, c: copies, r: answers opened },
-//     D: { "<file>": downloads }, e: [[tmin, code, arg]] the latest coursework events for the activity timeline }
+//     D: { "<file>": downloads }, N: { "<notice id>": tmin the pupil confirmed reading it },
+//     e: [[tmin, code, arg]] the latest coursework events for the activity timeline }
+// CWMETA[ch] is the chapter's slot list (server/cw-slots.json): a retired row is null, so its old bit is never shown or accepted.
 // Every tick of all 934 rows stays under 4 KB as a bitmap (a list of ids would not fit the 9 KB value limit).
 var CW_EVENTS = 40;   // coursework events kept per pupil, oldest dropped first
-var CW_OPS = ['open', 'screen', 'tick', 'copy', 'reveal', 'done', 'download'];
+var CW_OPS = ['open', 'screen', 'tick', 'copy', 'reveal', 'done', 'download', 'notice'];
 function wKey_(cls, email) { return 'w:' + cls + ':' + email; }
 function cwBits_(hex, n) {
   var out = [], s = str_(hex);
@@ -500,10 +506,11 @@ function cwView_(W) {
   Object.keys(CWMETA).forEach(function (ch) {
     var c = W[ch], steps = CWMETA[ch];
     if (ch === 'files' || !c) return;
-    out[ch] = { k: cwBits_(c.k, steps.length).map(function (i) { return steps[i]; }), o: num_(c.o), f: num_(c.f), l: num_(c.l),
+    out[ch] = { k: cwBits_(c.k, steps.length).map(function (i) { return steps[i]; }).filter(function (id) { return !!id; }), o: num_(c.o), f: num_(c.f), l: num_(c.l),
       a: str_(c.a), d: num_(c.d), c: num_(c.c), r: num_(c.r) };
   });
   if (W.D) out.D = W.D;
+  if (W.N) out.N = W.N;
   return out;
 }
 function apiCw(req) {
@@ -514,13 +521,15 @@ function apiCw(req) {
   if (CW_OPS.indexOf(op) === -1) return err_('bad-op');
   var ch = str_(req.ch), steps = CWMETA[ch], id = str_(req.id), file = str_(req.file), idx = -1;
   if (op === 'download') { if (CWMETA.files.indexOf(file) === -1) return err_('bad-key'); }
+  else if (op === 'notice') { if (!/^[a-z0-9-]{1,20}$/.test(id)) return err_('bad-key'); }
   else if (!/^\d\d$/.test(ch) || !steps) return err_('bad-key');
-  if (op === 'tick' && id !== '*') { idx = steps.indexOf(id); if (idx < 0) return err_('bad-key'); }
+  if (op === 'tick' && id !== '*') { idx = id ? steps.indexOf(id) : -1; if (idx < 0) return err_('bad-key'); }
   if (op === 'screen' && !/^\d{1,2}-\d{1,2}$/.test(str_(req.key))) return err_('bad-key');
   touch_(w.cls, w.email, 1, 0);
   return withLock_(function () {
     var W = jget_(sp_(), key, {}), now = tmin_(), ev = null;
     if (op === 'download') { W.D = W.D || {}; W.D[file] = num_(W.D[file]) + 1; ev = [now, 'w', file]; }
+    else if (op === 'notice') { W.N = W.N || {}; if (!W.N[id]) { W.N[id] = now; ev = [now, 'r', id]; } }
     else {
       var c = W[ch] || (W[ch] = { k: '', o: 0, f: 0, l: 0, a: '', d: 0, c: 0, r: 0 });
       if (op === 'open') { c.o = num_(c.o) + 1; if (!c.f) c.f = now; c.l = now; ev = [now, 'o', ch]; }

@@ -295,11 +295,21 @@
   const one = (n, k1, kn) => T(n === 1 ? k1 : kn, { n });
   const times = (n) => (n === 1 ? T('staff.cw.once') : n === 2 ? T('staff.cw.twice') : T('staff.cw.nTimes', { n }));
   const when = (m, now) => (m ? ago(now, m) : '—');
-  const cwTot = (pu) => cwChs().reduce((t, c) => t + ((pu.W[c.id] || {}).k || []).length, 0);
+  // ticks count only rows still in the chapter (a row taken out of the guide keeps its old tick on the server, but it is not a step any more)
+  const cwOn = (c, w) => { const live = new Set(c.steps); return ((w || {}).k || []).filter((id) => live.has(id)); };
+  const cwTot = (pu) => cwChs().reduce((t, c) => t + cwOn(c, pu.W[c.id]).length, 0);
+  // the one-off "guide has changed" message (app.js NOTICE): who it was for (used the guide before the change) and who has confirmed it
+  const cwFirst = (pu) => Object.keys(pu.W).reduce((m, ch) => { const f = /^\d\d$/.test(ch) && pu.W[ch].f; return f && (!m || f < m) ? f : m; }, 0);
+  function cwNotice(rows) {
+    const N = window.App.NOTICE; if (!N) return '';
+    const due = rows.filter((x) => { const f = cwFirst(x.pu); return f && f < N.at; }); if (!due.length) return '';
+    const not = due.filter((x) => !((x.pu.W.N || {})[N.id]));
+    return '<p class="note cwsum">' + h(T('staff.cw.notice', { r: due.length - not.length, n: due.length }) + (not.length ? ' ' + T('staff.cw.noticeNot', { names: not.map((x) => x.name).join(', ') }) : '')) + '</p>';
+  }
   const cwLatest = (pu) => { let best = null, l = -1; Object.keys(pu.W).forEach((ch) => { if (/^\d\d$/.test(ch) && (pu.W[ch].l || 0) > l) { l = pu.W[ch].l || 0; best = ch; } }); return best; };
   function cwEvText(e) {
     const c = /^\d\d$/.test(e.x) ? +e.x : e.x;
-    return T({ o: 'ev.cwOpen', t: 'ev.cwTick', u: 'ev.cwUntick', d: 'ev.cwDone', n: 'ev.cwUndone', w: 'ev.cwDownload', x: 'ev.cwClear' }[e.c] || 'ev.cwOpen', { c, id: e.x, file: e.x });
+    return T({ o: 'ev.cwOpen', t: 'ev.cwTick', u: 'ev.cwUntick', d: 'ev.cwDone', n: 'ev.cwUndone', w: 'ev.cwDownload', x: 'ev.cwClear', r: 'ev.cwNotice' }[e.c] || 'ev.cwOpen', { c, id: e.x, file: e.x });
   }
   function vCoursework() {
     pane().innerHTML = '<p class="note">' + h(T('staff.cw.loading')) + '</p>';
@@ -314,7 +324,7 @@
       const cell = (x, c) => {
         const w = x.pu.W[c.id], n = c.steps.length, at = h(x.pu.email) + '|' + c.id;
         if (!w) return '<td class="c e" data-cw="' + at + '" title="' + h(T('staff.cw.notOpened')) + '" tabindex="0">—</td>';
-        const t = (w.k || []).length;
+        const t = cwOn(c, w).length;
         const title = T(w.o === 1 ? 'staff.cw.cellTitle1' : 'staff.cw.cellTitle', { c: c.n, t, n, o: w.o, when: when(w.l, r.now) });
         return '<td class="c ' + (w.d ? 'd' : 's') + (x.now === c.id ? ' now' : '') + '" data-cw="' + at + '" title="' + h(title) + '" tabindex="0">' + (w.d ? '✓ ' : '') + h(T('staff.cw.cell', { t, n })) + '</td>';
       };
@@ -333,6 +343,7 @@
       pane().innerHTML = '<div class="row cwctl"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span>' +
         '<span class="sortbox"><label for="cwsort">' + h(T('staff.cw.sort')) + '</label><select id="cwsort">' + sorts.map(([v, k]) => '<option value="' + v + '"' + (v === sort ? ' selected' : '') + '>' + h(T(k)) + '</option>').join('') + '</select></span></div>' +
         (rows.length ? '<p class="note cwsum">' + h(T('staff.cw.summaryLine', { a: one(rows.length, 'staff.cw.pupils1', 'staff.cw.pupils'), b: one(opened, 'staff.cw.opened1x', 'staff.cw.openedN'), c: one(marked, 'staff.cw.done1x', 'staff.cw.doneN') })) + '</p>' : '') +
+        cwNotice(rows) +
         (opened ? '' : '<p class="note">' + h(T('staff.cw.empty')) + '</p>') +
         (rows.length ? '<div class="scroll"><table class="grid cwg">' + head + body + foot + '</table></div><p class="note" style="margin-top:10px">' + h(T('staff.cw.legend')) + '</p>' : '');
       pane().querySelector('[data-refresh]').addEventListener('click', load);
@@ -354,7 +365,7 @@
     let html;
     if (!w) html = p('staff.cw.never', { name, c: c.n });
     else {
-      const on = new Set(w.k || []), now = CWR.now;
+      const on = new Set(cwOn(c, w)), now = CWR.now;
       const shots = {}; c.steps.forEach((id) => { const s = id.split('.')[1]; (shots[s] = shots[s] || []).push(id); });
       const scr = (w.a || '').split('-'), inStage = ((c.stages || []).find((x) => x[0] === scr[0]) || [])[2];
       html = p('staff.cw.ticked', { t: on.size, n: c.steps.length }) +
