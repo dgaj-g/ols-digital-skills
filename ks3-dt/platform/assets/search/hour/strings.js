@@ -27,10 +27,10 @@
       fwdTwice: 'Print {n} is not lit yet. Type look() before you fly on.', fwdN: 'forward({n}) misses the next print. Each print is 10 metres on, so type forward(10).', capL: 'Python needs the word "look" to be in small letters.' },
     h2: 'Fly and light every hoof-print. Type two lines for each one.', gauge: 'Time until the snow buries the trail', count: 'Print {n} of 20 is lit.',
     fail: ['The snow has buried the trail. I am winding time back.', 'You typed the same two lines for every print. The snow was faster.'],
-    fast: ['You typed all 40 lines in time. The trail is lit.', 'If you typed more slowly, the snow would cover the trail.'],
+    fast: ['You typed all 40 lines in time. The trail is lit.', 'If you had typed more slowly, the snow would have buried the trail.'],
     holdDark: 'The snow waits while I show you this.',
     lesson: ['Look at this. You needed forward(10) and then look(), again and again, twenty times.', 'I can do the same thing again and again. Repeating is my job.',
-      'This one line tells me how many times: for i in range(20):', 'The letter i is the name of the count. You will use i in chapter 3, The spiral.', 'Your two lines go under the for line. Push them in by four spaces.',
+      'This one line tells me how many times: for i in range(20):', 'The letter i is the name of the loop\'s count. It counts each time round. You will use i in chapter 3, The spiral.', 'Your two lines go under the for line. Push them in by four spaces.',
       'I repeat the pushed-in lines 20 times.', 'You need only three lines, not forty. Type them and watch me go.'],
     h4: 'Type these 3 lines. Where you see 4 dots, type 4 spaces instead.', lines4: ['for i in range(20):', '    forward(10)', '    look()'],
     j4: { forOk: 'range({w}) means {w} times. The colon says more lines come next.',
@@ -42,12 +42,12 @@
     flyIt: 'Press Fly it. I will do the rest.', screenCount: 'Print {n} of 20', held: 'You typed 3 lines. BEEP did 40 things.',
     close: [
       { h: 'A loop repeats the pushed-in lines for you.', under: ['Typing every line yourself would take 40 lines. The loop took 3 lines.', 'BEEP flew the same two lines 20 times.'] },
-      { h: 'These 3 lines are called a for loop.', labels: [['for i in range(20):', 'range(20) means do it 20 times.'], ['    forward(10)', 'This line is pushed in, so it is inside the loop.'], ['    look()', 'This line is pushed in too, so it repeats.']], box: 'The pushed-in lines run one time on each go round the loop. range(20) means the loop goes round 20 times.' },
+      { h: 'These 3 lines are called a for loop.', labels: [['for i in range(20):', 'range(20) means do it 20 times.'], ['    forward(10)', 'This line is pushed in, so it is inside the loop.'], ['    look()', 'This line is pushed in too, so it repeats.']], box: 'The pushed-in lines run once each time round the loop. range(20) means the loop goes round 20 times.' },
       { seen: 'You saw this: range(20) flew the two lines 20 times.', q: 'A new field has 12 hoof-prints. Which line flies BEEP to all of them?',
         opts: [['for i in range(12):', 'Yes. range(12) runs the pushed-in lines 12 times.', true], ['for i in range(20):', 'That would fly BEEP to 20 prints. The new field has 12.', false], ['forward(12)', 'That flies 12 metres once. A loop needs for and range.', false]] }
     ] };
   /* CHAPTER 2: THE FIELDS */
-  S.ch2 = { kicker: 'THE FIELDS', film: ['The trail ends at a gate into three walled fields.', 'The lost lamb is in one of the fields. Light every wall and we will see her.'],
+  S.ch2 = { kicker: 'THE FIELDS', film: ['The trail ends at a gate into three walled fields.', 'The lost lamb is in one of the fields. Light every wall of a field to see if she is in it.'],
     fields: [
       { name: 'square', h: 'Light every wall. Count the walls, then type that number in the for line.', sign: 'Turn: left(90)', walls: 4, turn: 90, help1: 'The square has 4 walls.', ok: '4 flights lit 4 walls. She is not in this field.', shortMore: 'I flew {k} times. The square has more walls than that.' },
       { name: 'sheep pen', h: 'This sheep pen has more walls. Count the walls, then type the number in the for line.', sign: 'Turn: left(60)', walls: 6, turn: 60, help1: 'Count the dark walls, one by one.', ok: '6 flights lit 6 walls. She is not in this field.', shortMore: 'I flew {k} times. Count the walls again.' },
@@ -59,12 +59,12 @@
     fail: ['It is too dark to see the walls. I am winding time back.'],
     close: [
       { h: 'The number in the brackets is how many times the loop runs.', under: ['You counted 4, 6 and 3 walls. The loop flew 4 times, then 6 times, then 3 times.'] },
-      { h: 'A loop that runs one time too few has a name: off by one.', labels: [['for i in range({k}):', '{k} flights for {w} walls. One wall stayed dark.']], box: 'Off by one means the loop ran once too few, or once too many.' },
+      { h: 'A loop that runs one time too few has a name: off by one.', labels: [['for i in range({k}):', '{k} flights for {w} walls. One wall stayed dark.']], box: 'Off by one means the number was one too small or one too big. Then the loop runs one time too few or one time too many.' },
       { q: 'A field has 5 walls. Which line lights them all?', opts: [['for i in range(5):', 'Yes. 5 walls need 5 flights.', true], ['for i in range(4):', 'That is one too few. One wall stays dark. This bug is called off by one.', false], ['for i in range(6):', 'That is one too many. BEEP flies the first wall twice.', false]] }
     ] };
   /* CHAPTER 3: THE SPIRAL */
   S.ch3 = { kicker: 'THE SPIRAL', film: ['Beyond the top wall the field is open, and her bleat is fading.', 'I cannot search a whole field one wall at a time.', 'Watch me count. Then make my flight grow.'],
-    h1: 'Type these 2 lines. BEEP will say the count each time round.', lines1: ['for i in range(3):', '    say(i)'],
+    h1: 'Type these 2 lines. Each time round, BEEP will say the number in i.', lines1: ['for i in range(3):', '    say(i)'],
     j1: { forOk: 'The loop goes round 3 times. Now type the pushed-in line.', sayOk: 'say(i) says the count. Press Fly it.', say3: 'say(3) says 3 every time round. Type say(i), so it says the count.',
       sayNoBr: 'say needs brackets round the i: say(i)', sayNoIndent: 'Put 4 spaces before say, so it is inside the loop.', forN: 'The card says range({w}). Type that first.', changeOk: 'range(5) means 5 times. Press Fly it.' },
     held1: 'BEEP said 0, 1, 2. The count starts at 0.', change: 'Change the 3 to 5 and press Fly it again.', held2: 'range(5) gave 5 counts: 0, 1, 2, 3 and 4. BEEP never says 5.',
@@ -78,12 +78,12 @@
     close: [
       { h: 'i is the count. It starts at 0 and changes every time round.', under: ['The loop went round ten times. i went from 0 to 9. The flight grew with it.'] },
       { h: 'You used the count inside the loop.', labels: [['for i in range(10):', 'The loop goes round 10 times. i goes 0, 1, 2, up to 9.'], ['    forward(i * 10)', 'i * 10 is 0, then 10, then 20, then 90 at the end.'], ['    left(90)', 'A quarter turn each time round makes the spiral.']], box: 'i is a variable, a box with a name on it. The loop puts a new number in it each time round.' },
-      { q: 'BEEP runs a loop with two lines. Line 1 is for i in range(4): and line 2 is say(i). What does BEEP say?', opts: [['0 1 2 3', 'Yes. There are four counts, and they start at 0.', true], ['1 2 3 4', 'The count starts at 0, not 1.', false], ['0 1 2 3 4', 'range(4) is four counts, so it stops after 3.', false]] }
+      { q: 'BEEP runs a loop with two lines. The first line is for i in range(4): The second line is say(i). What does BEEP say?', opts: [['0 1 2 3', 'Yes. There are four counts, and they start at 0.', true], ['1 2 3 4', 'The count starts at 0, not 1.', false], ['0 1 2 3 4', 'range(4) is four counts, so it stops after 3.', false]] }
     ] };
   /* CHAPTER 4: THE WAY HOME */
   S.ch4 = { kicker: 'THE WAY HOME', film: ['The lamb walks under BEEP\'s light. Nuala and her dog Bran are coming up the lane.', 'BEEP\'s battery is low. BEEP has three flights left.',
       'Nuala: Dad wrote programs for the drone last spring. They are on its screen.', 'Each program has a bug, a mistake. Read it before you run it, then fix one word.'],
-    read: 'Read it. What will this fly?', fix: 'Fix one word, then press Run.', fixFirst: 'Replace the first line with a for line that has a count. Then press Run.', name: 'Name the bug.', runSee: 'Run it and see.',
+    read: 'Read it. What will this fly?', fix: 'Fix one word, then press Run.', fixFirst: 'Replace the first line with a for line that has range and a number. Then press Run.', name: 'Name the bug.', runSee: 'Run it and see.',
     bugs: { off: 'Off by one', turn: 'Wrong turn', never: 'Never stops' },
     p: [
       { above: 'The lane has 6 gates.', lines: ['for i in range(5):', '    forward(100)', '    look()'], predict: ['Lights all 6 gates', 'Lights 5 gates, one stays dark', 'Never stops'],
@@ -107,15 +107,15 @@
     ] };
   /* THE CLOSE */
   S.close = { kicker: 'HOME',
-    barn: ['The lamb is in the barn. Her mother has found her.', 'Nuala: Thank you. Thank you. Thank you.', 'You typed {n} lines. I did {m} things.', 'A loop lets a few lines make BEEP do many things.'],
-    nameH: 'Nuala: Dad says whoever found her gets to name her. That is you. Type her name in the box.', nameUnder: '', nameEmpty: 'Type a name for the lamb first.',
+    barn: ['The lamb is in the barn, and her mother is with her.', 'Nuala: Thank you. Thank you. Thank you.', 'You typed {n} lines. I did {m} things.', 'A loop lets a few lines make BEEP do many things.'],
+    nameH: 'Nuala: Dad says the person who found her gets to name her. That person is you. Type her name in the box.', nameUnder: '', nameEmpty: 'Type a name for the lamb first.',
     badges: [['The Tracks', 'You flew the first loop.'], ['The Spiral', 'You used i in the flight.'], ['The Way Home', 'You named three bugs.']], badgeKicker: 'BADGE EARNED',
     recapH: 'What you did today.', recapH2: 'What you did today, part two.', recap: ['A loop runs its pushed-in lines once each time round. range sets how many.', 'The number in the brackets sets how many times the loop runs. If it is one too small, the bug is called off by one.',
       'i is the count. It starts at 0 and changes every time round. The loop can use it.', 'A loop bug has a name: off by one, wrong turn, never stops.'],
     last5H: 'BEEP\'s last 5 questions',
     feltH: 'How sure are you about each of these?', felt: ['I can write a loop with for and range.', 'I can use i inside the loop.', 'I can name a loop bug when I see one.'],
     feltDone: 'You have finished. Free flight is next if there is time.',
-    freeH: 'Free flight. Click one of the three examples, or type your own loop. BEEP draws it in light.', freeStarters: [['A star', ['for i in range(5):', '    forward(80)', '    right(144)']], ['A growing spiral', ['for i in range(12):', '    forward(i * 8)', '    left(90)']], ['A hexagon', ['for i in range(6):', '    forward(60)', '    left(60)']]],
+    freeH: 'Free flight. Click one of the three examples, or type your own loop. Then press Run. BEEP draws it in light.', freeStarters: [['A star', ['for i in range(5):', '    forward(80)', '    right(144)']], ['A growing spiral', ['for i in range(12):', '    forward(i * 8)', '    left(90)']], ['A hexagon', ['for i in range(6):', '    forward(60)', '    left(60)']]],
     freeNotRun: 'BEEP cannot fly that. Type a for loop, or press one of the three examples.',
     finished: 'The Search is finished. Your place is saved.' };
   window.SearchStrings = S;
