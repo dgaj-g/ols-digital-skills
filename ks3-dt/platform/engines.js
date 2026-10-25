@@ -3813,9 +3813,16 @@
           var score = cfg.scoreLine ? '<p class="exit-score">' + esc(cfg.scoreLine.replace('{n}', r.right).replace('{total}', r.total)) + '</p>' : '';
           var done = el('<div class="card exit-done"><h2>' + esc(title) + '</h2>' + score + fbHtml +
             (cfg.closingNote ? '<p class="exit-closing-note">' + esc(cfg.closingNote) + '</p>' : '') +
-            '<button class="primary-btn" type="button">Finish the lesson</button></div>');
+            /* J2 L5: Free flight (the lesson's last, optional step) or Finish (straight to the end). Config-gated:
+               a lesson that names no flightLabel renders byte-identically. */
+            (cfg.flightLabel ? '<div class="stretch-actions"><button class="primary-btn se-flight" type="button">' + esc(cfg.flightLabel) + '</button>' +
+              '<button class="ghost-btn se-finish" type="button">' + esc(cfg.finishLabel || 'Finish') + '</button></div>'
+              : '<button class="primary-btn" type="button">Finish the lesson</button>') + '</div>');
           host.appendChild(done);
-          done.querySelector('button').onclick = function () { ctx.next(); };
+          if (cfg.flightLabel) {
+            App.armButton(done.querySelector('.se-flight'), function () { ctx.next(); });
+            App.armButton(done.querySelector('.se-finish'), function () { App.finishLesson(); });
+          } else done.querySelector('button').onclick = function () { ctx.next(); };
         });
       };
     }
@@ -11511,6 +11518,53 @@
       }
       if (cfg.extrasMode) { open('solo'); return; }
       pairStage(ctx, host, draft, 'tlOwn', open, lessonPairWords(cfg, ctx));
+    }
+  };
+
+  /* J2 L5 THE SEARCH (J2_L5_SEARCH_SPEC.md): the hour is its own page in a frame, as the Rescue is. Her place
+     (draft.search: chapter, the lamb's name, where she found her, the badges she has, her typed programs) goes to
+     the page on its address with her first name, and the page sends back save, badge and done. The 'flight' chunk
+     opens the same page at the free flight (config stage 'free'). The platform draws no badge card over the hour. */
+  Engines.search = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {}, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var place = draft.search ? JSON.parse(JSON.stringify(draft.search)) : {};
+      var first = String(s.name || '').trim().split(/\s+/)[0]; if (first) place.name = first;
+      if (cfg.stage) place.stage = cfg.stage;
+      var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+        '<iframe class="rescue-frame search-frame" title="' + esc(chunk.title || 'The story') + '" allow="autoplay"></iframe></div>');
+      host.appendChild(wrap);
+      function fit() {
+        if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+        var bar = document.querySelector('#player .player-top');
+        wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+      }
+      fit(); window.addEventListener('resize', fit);
+      var frame = wrap.querySelector('iframe');
+      frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+      /* ?speed=N (staff and the dev server only) runs the hour's story clock faster, for checking */
+      var speed = +(new URLSearchParams(location.search).get('speed') || 0), q = speed > 1 && (s.staff || /^localhost$|^127\./.test(location.hostname)) ? '?speed=' + speed : '';
+      frame.src = App.asset(cfg.page || 'assets/search/hour.html') + q + '#' + encodeURIComponent(JSON.stringify(place));
+      var paid = {};
+      function onMsg(e) {
+        if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+        var m = e.data;
+        if (e.source !== frame.contentWindow || !m || m.search !== 1) return;
+        if (m.type === 'save' && m.save && !ctx.review) {
+          draft.search = m.save;
+          ctx.saveEvent({ draft: draft });
+        } else if (m.type === 'badge') {
+          var b = (cfg.badges || {})[m.id];
+          if (!b || paid[b.id] || ctx.review) return;
+          paid[b.id] = 1;
+          ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+        } else if (m.type === 'done') {
+          window.removeEventListener('message', onMsg);
+          ctx.next();
+        }
+      }
+      window.addEventListener('message', onMsg);
     }
   };
 

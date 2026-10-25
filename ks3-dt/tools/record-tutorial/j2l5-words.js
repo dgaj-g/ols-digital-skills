@@ -27,6 +27,13 @@ const clone = o => JSON.parse(JSON.stringify(o));
 function canon(v) { if (Array.isArray(v)) return v.map(canon); if (v && typeof v === 'object') { const o = {}; Object.keys(v).sort().forEach(k => { o[k] = canon(v[k]); }); return o; } return v; }
 const same = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 
+/* the cold read's listed edits (DFM 193d, DFM 334 / K83): table = shipped-table path -> text, last5 = exit question -> {q, lines} */
+const EDITS = (() => { const f = path.join(__dirname, 'j2l5/coldread-edits.json'); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : { table: {}, last5: {} }; })();
+const keysOf = p => p.split(/\.|\[|\]/).filter(Boolean);
+function setAt(o, p, v) { const k = keysOf(p), last = k.pop(), par = k.reduce((x, y) => x == null ? x : x[y], o); if (par == null || !(last in par)) throw new Error('a listed edit names a path the design does not have: ' + p); par[last] = v; }
+/* the design's five questions and How it felt, with the same listed edits */
+function withEdits(P) { const E = clone(P); Object.keys(EDITS.last5).forEach(i => { const e = EDITS.last5[i], x = E.close.last5[i]; if (e.q) x.q = e.q; (e.lines || []).forEach((l, k) => { if (l) x.opts[k][1] = l; }); }); if (EDITS.table['close.feltDone']) E.close.feltDone = EDITS.table['close.feltDone']; return E; }
+
 /* the prototype table with the build's listed edits, and nothing else */
 function expected(P) {
   const S = clone(P);
@@ -35,6 +42,10 @@ function expected(P) {
   S.ch3.j1.forN = 'The card says range({w}). Type that first.';
   S.ch3.j1.changeOk = 'range(5) means 5 times. Press Fly it.';
   ['forNoColon', 'forCap', 'forIndent', 'spaces'].forEach(k => { S.common[k] = S.ch1.j4[k]; delete S.ch1.j4[k]; });
+  /* the one build change to a design string: "Tap" is the banned register (she has a mouse), so it reads "Click" */
+  S.close.freeH = S.close.freeH.replace(/^Free flight\. Tap /, 'Free flight. Click ');
+  /* and the cold read's: every string two separated readers both failed, rewritten once (j2l5/coldread-edits.json) */
+  Object.keys(EDITS.table).forEach(p => setAt(S, p, EDITS.table[p]));
   return S;
 }
 const tryAgain = s => s.replace(/\s*Try again\.$/, '');
@@ -48,7 +59,8 @@ function lessonStrings(L) {
     else if (v && typeof v === 'object') Object.keys(v).forEach(k => walk(v[k], p + '.' + k));
   }
   Object.keys(L).forEach(k => {
-    if (k === 'teacherBrief' || k === '_provenance' || k === 'keys' || k === 'id' || k === 'year') return;
+    /* the tagline is the tracker's tile text, pinned by spec §19.3 and the manifest (pack-content's tile gate) */
+    if (k === 'teacherBrief' || k === '_provenance' || k === 'keys' || k === 'id' || k === 'year' || k === 'tagline') return;
     walk(L[k], 'L.' + k);
   });
   Object.keys(L.keys || {}).forEach(id => { const k = L.keys[id]; if (k && typeof k.explain === 'string') { let arr; try { arr = JSON.parse(k.explain); } catch (e) { arr = [k.explain]; } walk(arr, 'keys.' + id + '.explain'); } });
@@ -108,20 +120,21 @@ function check(P, S, L, R) {
 
 const P = loadStrings(PROTO), S = loadStrings(path.join(HOUR, 'strings.js')), L = readJSON(LESSON), R = readJSON(RECAP);
 must(!!P, 'the design table L5_PROTOTYPES/hour/strings.js loads');
-const real = check(P, S, L, R);
+const PE = P && withEdits(P);
+const real = check(PE, S, L, R);
 real.forEach(x => console.log('  ' + x));
 must(real.length === 0, 'the shipped lesson passes the words gate (' + (check.sentences || 0) + ' sentences)');
 
 /* CONTROLS: each must fail */
 if (S && L) {
   const S1 = clone(S); S1.ch1.panel = 'BEEP flies one hop and lights one print and then he waits for you here.';
-  must(check(P, S1, Object.assign(clone(L), { chunks: L.chunks.map(c => c.id === 'search' ? Object.assign(clone(c), { config: Object.assign(clone(c.config), { strings: S1 }) }) : c) }), R).some(x => /15 words/.test(x)), 'CONTROL a planted 15-word sentence fails');
+  must(check(PE, S1, Object.assign(clone(L), { chunks: L.chunks.map(c => c.id === 'search' ? Object.assign(clone(c), { config: Object.assign(clone(c.config), { strings: S1 }) }) : c) }), R).some(x => /15 words/.test(x)), 'CONTROL a planted 15-word sentence fails');
   const L2 = clone(L); L2.chunks.find(c => c.id === 'exit').config.intro += ' Read the ask first.';
-  must(check(P, S, L2, R).some(x => /the ask/.test(x)), 'CONTROL a planted "the ask" fails');
+  must(check(PE, S, L2, R).some(x => /the ask/.test(x)), 'CONTROL a planted "the ask" fails');
   const S3 = clone(S); S3.ch2.kicker = S3.ch2.kicker + '!';
-  must(check(P, S3, L, R).some(x => /differs from the design/.test(x)), 'CONTROL a mutated hour string fails');
+  must(check(PE, S3, L, R).some(x => /differs from the design/.test(x)), 'CONTROL a mutated hour string fails');
   const L4 = clone(L); const k0 = Object.keys(L4.keys).find(k => /^j2x5-/.test(k)); if (k0) { const a = JSON.parse(L4.keys[k0].explain); a[1] += ' Try again.'; L4.keys[k0].explain = JSON.stringify(a); }
-  must(check(P, S, L4, R).some(x => /explain lines/.test(x)), 'CONTROL a mutated exit line fails');
+  must(check(PE, S, L4, R).some(x => /explain lines/.test(x)), 'CONTROL a mutated exit line fails');
 }
 console.log('\nj2l5-words: ' + (fails ? 'FAIL · ' + fails + ' of ' + (fails + passes) : 'PASS · ' + passes + ' checks'));
 process.exit(fails ? 1 : 0);

@@ -31,3 +31,6 @@ Window: Opus 5.5 at xhigh, on Damien's word ("2.", 25 Oct 2026). Build prompt: /
 - FIX 6 found by the walker: ch4 program 3 (while True) never runs on the design page. honest() returns early on `if (!p.run)` because J.fix4(2, while lines) = {run:false,key:'whileAgain'}, BEFORE the battery branch. So Stop it, the battery and '4.3 black' never happen (design walk.log: 4.3 read -> 4.3 held). Spec line 356 + A9 want the run. Shipped: `if (!p.run && !isBug) return Promise.resolve();`. Walker now asserts Stop it is offered.
 - walk writes qa-j2l5/walk/proto-<mode>-<size>.screens.txt; J2L5_DEBUG=1 prints button wants.
 - NEXT: j2l5-platform.js (model: ks3-dt/probes/rescue/qa-rescue-platform.js P1–P8), sit-wrongpath/sit-review need j2-5 skip lines + EXPECT/LANDMARKS entries; then commit gates, port frame.
+
+## 18:23 step 3 done
+All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1, words 1/2, python 1/1, clock 3/5, platform CONTROL OK). New design calls for the port: Home resumable (fix 7: a reopen at Home comes back to Home, not the Do-Now); a real Home button (fix 8: after minute 48 each chapter end offers Carry on / Home, existing strings only); badges paid at the chapter where earned; selfeval done card gains Free flight / Finish (config-gated); App.finishLesson exposed. Next: step 4 port.
