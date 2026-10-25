@@ -39,7 +39,12 @@
     unlock: function () { var a = ctx(); if (a && a.state === 'suspended' && !held) a.resume(); },
     play: function (name) {
       var a = ctx(); if (!a || held || !SOUNDS[name]) return false;
-      if (a.state === 'suspended') a.resume();
+      if (a.state !== 'running') {
+        /* not started yet (no click on this page so far): a suspended clock stands still, so sounds queued now would all
+           go off together on her first click. Play it when the sound starts, only if that is straight away */
+        var asked = Date.now(), p = a.resume();
+        if (p && p.then) { p.then(function () { if (!held && Date.now() - asked < 600) try { SOUNDS[name](a.currentTime + 0.02); } catch (e) {} }, function () {}); return true; }
+      }
       try { SOUNDS[name](a.currentTime + 0.02); } catch (e) { return false; }
       return true;
     },

@@ -158,7 +158,9 @@
       });
     });
 
-    var run = Py.run(String(text), { file: c.seat.file });
+    var run;
+    try { run = Py.run(String(text), { file: c.seat.file }); }
+    catch (e) { run = { out: [], effects: [], error: null, red: '', unsupported: { crashed: true } }; }   // never a dead RUN button
     // shouting = Python shows red. A shouting fault can sleep: S2 with Q3 never reaches the + until lamp_on() is called.
     var shout = !!run.error;
 

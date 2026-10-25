@@ -16,15 +16,21 @@
   if (H.stage === 'letter') { letter(); post('ready', { stage: 'letter' }); document.title = 'ready'; return; }
 
   /* ================= the ward round ================= */
-  var room = H.room || null, live = seats.length > 1 && !!room, FALLBACK = false;
+  /* the ward was already finished (draft.ward): a reload shows it finished, never an empty ward in a room that is gone */
+  var room = H.room || null, live = seats.length > 1 && !!room && !H.wardDone, FALLBACK = false;
   var seed = H.seed != null ? +H.seed : 1;
   var hs = [], fb = null;
   var bus = { on: function (h) { hs.push(h); }, send: function (t, d) { if (fb && !FALLBACK) fb.send(t, d); } };
   var WARD = null;
   function start(solo) {
     var st = solo ? ['A'] : seats, me = solo ? 'A' : seat;
-    WARD = WD.makeWard({ seat: me, seats: st, beds: WD.pickBeds(seats, seed), cap: solo ? 6 : (st.length === 1 ? 6 : 2), bus: solo ? null : bus });
+    WARD = WD.makeWard({ seat: me, seats: st, beds: WD.pickBeds(seats, seed), cap: solo || st.length === 1 ? 6 : null, bus: solo ? null : bus });
     if (!solo) bus.on(WARD.receive);
+  }
+  /* a partner whose laptop has gone quiet for GONE_MS: her unfinished computers are let go and the share counted again */
+  function goneTick() {
+    if (!fb || FALLBACK || !fb.quietFor || WARD.doneAll()) return;
+    Object.keys(WARD.S.presence).forEach(function (s) { if (fb.quietFor(s) > OPLIVE.GONE_MS && !WARD.S.presence[s].gone) { WARD.gone(s); render(); } });
   }
   if (live) {
     try {
@@ -34,6 +40,7 @@
     } catch (e) { fb = null; }
   }
   start(!live);
+  if (H.wardDone) WARD.S.order.forEach(function (id) { var b = WARD.S.beds[id]; b.done = true; b.by = null; });
   if (live) {
     if (!fb || H.fallback) setTimeout(goFallback, 0);
     else { var ft = setTimeout(function () { if (!fb.connected()) goFallback(); }, OPLIVE.FALLBACK_MS); fb.whenConnected(function () { clearTimeout(ft); }); }
@@ -74,7 +81,7 @@
     $('beds').querySelectorAll('.bed').forEach(function (el) {
       var b = S.beds[el.dataset.bed], st = el.querySelector('.bstat');
       el.classList.toggle('fixed', b.done); el.classList.toggle('mine', b.by === S.seat && !b.done); el.classList.toggle('theirs', !!b.by && b.by !== S.seat && !b.done); el.classList.toggle('open', S.open === b.id);
-      var txt = b.done ? (b.told ? W.needed.replace('{part}', WD.NEED[WARD.bed(b.id).missing] || WD.NAME[WARD.bed(b.id).missing]) : W.fixedBy.replace('{p}', L.callsigns[b.by] || ME)) : (b.by ? L.callsigns[b.by] : '');
+      var txt = b.done ? (b.told ? W.needed.replace('{part}', WD.NEED[WARD.bed(b.id).missing] || WD.NAME[WARD.bed(b.id).missing]) : (b.by ? W.fixedBy.replace('{p}', L.callsigns[b.by]) : '')) : (b.by ? L.callsigns[b.by] : '');
       if (st.textContent !== txt) st.textContent = txt;
       if (b.done) el.querySelector('.bface').innerHTML.indexOf('m-happy') === -1 && (el.querySelector('.bface').innerHTML = face('happy'));
     });
@@ -103,7 +110,7 @@
     if ($('wstrip').textContent !== strip) $('wstrip').textContent = strip;
   }
   function cls(el, n, on) { if (el.classList.contains(n) !== !!on) el.classList.toggle(n, !!on); }
-  build(); render(); setInterval(render, 150);
+  build(); render(); setInterval(render, 150); if (live) setInterval(goneTick, 1000);
   post('ready', { stage: 'ward' }); document.title = 'ready';
   window.OPWARDUI = { get W() { return WARD; }, render: render, fallback: function () { return FALLBACK; }, goFallback: goFallback };
 

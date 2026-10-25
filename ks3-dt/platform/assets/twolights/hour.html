@@ -107,8 +107,9 @@ button{font:inherit;cursor:pointer}
 #xcon{font:13px/18px ui-monospace,Menlo,monospace;white-space:pre-wrap;background:#050d1c;color:#e7eefb;border-radius:8px;padding:6px 10px;min-height:40px;margin:6px 0}
 #xcon .r{color:var(--red)}
 #xboard{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
-#away{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;padding:24px;text-align:center}
+#away{position:fixed;inset:0;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;font-size:24px;padding:24px;text-align:center}
 #away[hidden]{display:none}
+#away p{margin:0;max-width:640px}
 html.still *{animation:none!important;transition:none!important}
 @media (max-width:760px){#pills span{padding:3px 7px;font-size:11.5px}#again{font-size:12px;padding:4px 9px}#board{grid-template-columns:repeat(auto-fit,minmax(104px,1fr))}.poster{font-size:11px;min-height:0}.poster b{font-size:12px}#ed,#gutter{font-size:13px;line-height:19px}}
 </style></head>
@@ -141,7 +142,7 @@ html.still *{animation:none!important;transition:none!important}
 <div id="tour" hidden><div id="spot"></div><div id="tourbox"><div id="tourstep"></div><div id="toursay"></div><button class="btn" id="tournext" type="button"></button></div></div>
 <div class="over" id="home" hidden><div class="paper"><canvas id="homescene" width="1200" height="420" style="width:100%;border-radius:12px"></canvas><div id="hbody"></div><button class="btn" id="hnext" type="button" hidden></button></div></div>
 <div class="over" id="extras" hidden><div class="paper" style="width:min(820px,calc(100vw - 32px))"><p id="xhead"></p><div id="xbody"></div></div></div>
-<div id="away" hidden></div>
+<div id="away" hidden><p id="awaysay"></p><button class="btn" id="awaynext" type="button"></button></div>
 <script src="../../vendor/firebase-app-compat.js"></script>
 <script src="../../vendor/firebase-database-compat.js"></script>
 <script src="../../live-config.js"></script>

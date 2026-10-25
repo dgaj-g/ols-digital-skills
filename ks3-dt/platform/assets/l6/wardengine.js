@@ -1,7 +1,7 @@
 /* THE OPERATION · the ward round · engine (spec §3.3, §5). Broken computers, one part missing each.
    First tap takes a bed (its badge shows the taker); cap per surgeon; right part → fixed; wrong → still,
    second wrong → the bed says the answer and is sealed as told. Clock-free and DOM-free: node-testable.
-   makeWard({seat, seats, beds, cap, bus, rnd}) → {S, hello, take, fit, receive, tray, mine, prompt, doneAll} */
+   makeWard({seat, seats, beds, cap, bus, rnd}) → {S, hello, take, fit, receive, gone, tray, mine, prompt, doneAll} */
 (function (root) {
   var L = root.LINES || (typeof require !== 'undefined' ? require('./lines.js') : null);
   var PARTS = ['mem', 'drive', 'cpu', 'gpu', 'fan', 'psu', 'board'];
@@ -64,6 +64,7 @@
     function receive(m) {
       if (!m || m.seat === seat || !S.presence[m.seat]) return;
       var pr = S.presence[m.seat], was = pr.here; pr.here = true;
+      if (pr.gone) { pr.gone = false; recap(); }
       if (m.type === 'hello') { send('wstate', { beds: state() }); return; }
       if (!was && m.type !== 'wstate') send('wstate', { beds: state() });
       if (m.type === 'take') { claim(m.bed, m.seat); pr.state = 'fit'; return; }
@@ -85,6 +86,15 @@
       if (b.by === who) return;
       if (who < b.by) { if (b.by === seat) { if (S.open === id) S.open = null; S.notice = { key: 'lost', seat: who }; } b.by = who; }
     }
+    /* a surgeon whose laptop went quiet (live.js quietFor): her unfinished beds are let go and the share is
+       counted again over the surgeons still here, so the ward round can always be finished */
+    function recap() { if (o.cap != null || seats.length === 1) return; var n = seats.filter(function (s) { return s === seat || !S.presence[s].gone; }).length; cap = S.cap = Math.ceil(ids.length / n); }
+    function gone(s) {
+      var pr = S.presence[s]; if (!pr || pr.gone) return [];
+      pr.gone = true; pr.here = false; pr.state = 'look';
+      var freed = ids.filter(function (id) { var b = S.beds[id]; if (b.done || b.by !== s) return false; b.by = null; return true; });
+      recap(); return freed;
+    }
     function tray(id) { return shuffle(PARTS, rnd); }
     function prompt() {
       if (doneAll()) return { kind: 'done', text: W.done };
@@ -94,7 +104,7 @@
       var other = seats.filter(function (s) { return s !== seat; })[0];
       return { kind: 'watch', text: W.watch.replace('{p}', L.callsigns[other] || '') };
     }
-    return { S: S, hello: hello, take: take, fit: fit, receive: receive, tray: tray, mine: mine, prompt: prompt, doneAll: doneAll, bed: bed, state: state };
+    return { S: S, hello: hello, take: take, fit: fit, receive: receive, gone: gone, tray: tray, mine: mine, prompt: prompt, doneAll: doneAll, bed: bed, state: state };
   }
   var api = { makeWard: makeWard, pickBeds: pickBeds, W: W, NAME: NAME, NEED: NEED, PARTS: PARTS };
   root.OPWARD = api;

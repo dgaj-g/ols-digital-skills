@@ -157,7 +157,46 @@ gate('every memory/processor/storage line is twelve words or fewer', pids.every(
 gate('every graphics line (pulled, told, no) says screen/picture/see', pids.every(function (id) { var P = L.patients[id]; return [P.pulled.gpu, P.told.gpu].concat(flat(P.no.gpu)).every(function (s) { return /screen|picture|see/i.test(s); }); }));
 gate('the three per-card no objects each have a general line', pids.every(function (id) { var P = L.patients[id]; return ['mem', 'drive', 'cpu'].every(function (k) { return typeof P.no[k] === 'object' && typeof P.no[k]['*'] === 'string'; }); }));
 
+/* 11 · a partner who goes (her laptop died, or she never came back): the part in her hand goes back in, the patient can be finished */
+var TG = pair({ seed: 5 }); TG.E.A.hello(); TG.E.B.hello(); TG.run(2100); TG.E.A.begin(); TG.E.B.begin();
+TG.E.B.tap('fan'); TG.run(2300);
+gate('before she goes, her part is hers', TG.E.A.tap('fan') === 'theirs');
+var freed = TG.E.A.gone('B');
+gate('gone: her part is let go', freed.length === 1 && freed[0] === 'fan' && TG.E.A.S.parts.fan.status === 'in' && !TG.E.A.S.parts.fan.by, JSON.stringify(freed));
+gate('gone: she is shown as away', TG.E.A.S.presence.B.gone === true && TG.E.A.S.presence.B.here === false);
+gate('gone twice frees nothing more', TG.E.A.gone('B').length === 0);
+OP.PARTS.forEach(function (p) { if (TG.E.A.S.parts[p].status !== 'sealed') { TG.E.A.tap(p); TG.E.A.card(p); } });
+gate('gone: the patient can be finished alone', TG.E.A.S.stage === 'done', TG.E.A.S.stage);
+var TG2 = pair({ seed: 6 }); TG2.E.A.hello(); TG2.E.B.hello(); TG2.run(2100); TG2.E.A.begin(); TG2.E.B.begin(); TG2.E.A.gone('B');
+TG2.E.B.hello(); TG2.run(2300);
+gate('she comes back: no longer gone, here again', TG2.E.A.S.presence.B.gone === false && TG2.E.A.S.presence.B.here === true);
+/* 12 · the ward round with a partner who goes: her unfinished beds are let go and the share counts again */
+var WD = require('../../platform/assets/l6/wardengine.js');
+function ward2(seed) {
+  var clock = vclock(), bus = OP.makeLocalBus(500, clock), out = {};
+  ['A', 'B'].forEach(function (s) { var ep = bus.endpoint(); var w = WD.makeWard({ seat: s, seats: ['A', 'B'], bus: ep, seed: seed, rnd: seeded(seed) }); ep.on(w.receive); out[s] = w; });
+  out.run = function (ms) { clock.run(ms); }; return out;
+}
+function fixBed(w, id) { w.take(id); return w.fit(WD.W && L.ward.filter(function (b) { return b.id === id; })[0].missing); }
+var WG = ward2(9); WG.A.hello(); WG.B.hello(); WG.run(600);
+var beds = WG.A.S.order.slice();
+gate('ward: a pair sees four beds, a share of two each', beds.length === 4 && WG.A.S.cap === 2, beds.length + '/' + WG.A.S.cap);
+WG.B.take(beds[3]); WG.run(600);
+fixBed(WG.A, beds[0]); fixBed(WG.A, beds[1]); WG.run(600);
+gate('ward: at her share she cannot take a third bed', WG.A.take(beds[2]) === 'cap');
+var wf = WG.A.gone('B');
+gate('ward gone: her unfinished bed is let go', wf.length === 1 && wf[0] === beds[3] && !WG.A.S.beds[beds[3]].by, JSON.stringify(wf));
+gate('ward gone: the share is counted again over who is left', WG.A.S.cap === 4, WG.A.S.cap);
+fixBed(WG.A, beds[2]); fixBed(WG.A, beds[3]);
+gate('ward gone: the round can be finished alone', WG.A.doneAll());
+var WG2 = ward2(9); WG2.A.hello(); WG2.B.hello(); WG2.run(600); WG2.A.gone('B'); WG2.B.hello(); WG2.run(600);
+gate('ward: she comes back, the share goes back to two', WG2.A.S.cap === 2 && WG2.A.S.presence.B.gone === false);
+
 /* controls: these must fail */
+control('without gone, a quiet partner’s part frees itself', (function () { var T = pair({ seed: 5 }); T.E.A.hello(); T.E.B.hello(); T.run(2100); T.E.A.begin(); T.E.B.begin(); T.E.B.tap('fan'); T.run(2300); T.run(90000); return T.E.A.tap('fan') === 'out'; })());
+control('gone on a partner holding nothing frees a part', (function () { var T = pair({ seed: 5 }); T.E.A.hello(); T.E.B.hello(); T.run(2100); T.E.A.begin(); T.E.B.begin(); return T.E.A.gone('B').length > 0; })());
+control('ward: without gone, her bed is still free to take', (function () { var W = ward2(9); W.A.hello(); W.B.hello(); W.run(600); var b = W.A.S.order; W.B.take(b[3]); W.run(600); return W.A.take(b[3]) === 'took'; })());
+control('ward gone frees a bed she already fixed', (function () { var W = ward2(9); W.A.hello(); W.B.hello(); W.run(600); var b = W.A.S.order; fixBed(W.B, b[3]); W.run(600); return W.A.gone('B').length > 0 || !W.A.S.beds[b[3]].done; })());
 var OLDMEM = ['Pet, what was I saying? I had a thought. It went.', 'I came in here for something. A spoon? Not a spoon.', 'No, love. The photos were fine. My head went blank.', 'There it is. I was thinking about a bun.'];
 control('the OLD Bernadette memory lines pass the cue gate', OLDMEM.every(cueOk));
 control('even one OLD memory line passes the cue gate', OLDMEM.some(cueOk));

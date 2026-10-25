@@ -77,6 +77,7 @@
     function receive(m) {
       if (!m || m.seat === seat || S.presence[m.seat] === undefined) return;
       var pr = S.presence[m.seat]; var wasHere = pr.here; pr.here = true; pr.at = clock.now(); if (pr.state === 'away') pr.state = 'look';
+      if (pr.gone) { pr.gone = false; log('back', m.seat); hello(); } /* she came back: ask for her chart again */
       if (m.type === 'again') { if (m.round > S.round) { S.round = m.round; reset(PIDS[S.round % PIDS.length]); log('again', S.pid); } return; }
       if (m.round != null && m.round !== S.round) return; /* a different patient: stale */
       var p;
@@ -105,6 +106,15 @@
         pr.state = 'seal'; markSealed(m.part, m.seat, m.told); if (S.stage === 'done') pr.state = 'done'; return;
       }
     }
+    /* her partner's laptop went quiet (live.js quietFor): any part she had out goes back in, so the patient can
+       still be finished. If she comes back her next move marks her here again and the charts are swapped. */
+    function gone(s) {
+      var pr = S.presence[s]; if (!pr || pr.gone) return [];
+      pr.gone = true; pr.here = false; pr.state = 'away';
+      var freed = PARTS.filter(function (k) { var q = S.parts[k]; if (q.status !== 'out' || q.by !== s) return false; q.status = 'in'; q.by = null; q.at = 0; return true; });
+      if (freed.length) S.waitSaid = false;
+      log('gone', { seat: s, freed: freed }); return freed;
+    }
     /* ---------- time ---------- */
     function tick() {
       var now = clock.now(); if (S.stage !== 'op') return;
@@ -128,7 +138,7 @@
       return others.map(function (s) { var pr = S.presence[s], st = pr.here ? (S.stage === 'done' ? 'done' : pr.state) : 'away'; var tpl = U[st] || U.look; return { seat: s, state: st, text: fmt(tpl, { p: L.callsigns[s], n: n }) }; });
     }
     function cards() { return shuffle(PARTS, rnd).map(function (k) { return { key: k, job: fmt(L.jobs[k].card) }; }); }
-    return { S: S, setRound: setRound, hello: hello, begin: begin, tap: tap, card: card, again: again, receive: receive, tick: tick, prompt: prompt, presence: presence, free: free, cards: cards, fmt: fmt, sealedCount: sealedCount, PARTS: PARTS, PULLABLE: PULLABLE, L: L };
+    return { S: S, setRound: setRound, hello: hello, begin: begin, tap: tap, card: card, again: again, receive: receive, gone: gone, tick: tick, prompt: prompt, presence: presence, free: free, cards: cards, fmt: fmt, sealedCount: sealedCount, PARTS: PARTS, PULLABLE: PULLABLE, L: L };
   }
   /* The computer as a surgeon: a human pace, right four times in five. */
   function makeRobot(E, rnd, clock, speed) {

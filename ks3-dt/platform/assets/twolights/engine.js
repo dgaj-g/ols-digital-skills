@@ -20,6 +20,7 @@
   var CALL = { A: 'NORTH LIGHT', B: 'SOUTH LIGHT', C: 'LIGHTSHIP' };
   var SLIPS = ['light', 'horn', 'none', 'clear'];
   var HELP_STEP = 40000, SILENT_FIRST = 60000, TELL_AFTER = 30000, QUIET = 60000, DARK = 180000, BEAT = 5000;
+  var STALE = 3 * 3600000;   // a chapter left this long ago was left in an earlier lesson
   var READ_RED = 6000, SLIP_READ = 8000, NOTICE = 9000;
   var BUDGETS = { ch1: 90000, ch2: 90000, ch3: 90000, ch4: 231000 };   // replaced by the walk's B1–B4 (§1)
 
@@ -140,7 +141,7 @@
     function radio(to, slip) {
       if (SLIPS.indexOf(slip) < 0 || S.mode !== 'pair') return;
       S.sent[ch() + to] = { slip: slip, at: now() };
-      send('tell', { seat: S.seat, to: to, slip: slip });
+      send('tell', { seat: S.seat, to: to, slip: slip, ch: ch() });
       emit('crackle', { to: to, slip: slip, mine: 1 });
     }
     function name(kind) {
@@ -227,6 +228,7 @@
       if (m.type === 'pause') { applyPause(m.ch, m.at, !!m.on); return; }
       if (m.type === 'tell') {
         if (S.local.indexOf(m.to) < 0 || m.seat === S.seat) return;
+        if (m.ch && m.ch !== ch()) return;   // a slip from an earlier chapter, heard again when this page opened
         S.slips.push({ from: m.seat, to: m.to, slip: m.slip, ch: ch(), at: now(), read: null });
         emit('crackle', { from: m.seat, slip: m.slip });
       }
@@ -321,7 +323,10 @@
       var put = r.broken.filter(function (b) { return b.canonLine; })[0];
       if (put) return { kind: 'putback', line: put.line, canon: put.canonLine };
       var ids = Object.keys(r.faults).filter(function (id) { return r.faults[id].present; });
-      if (!ids.length) return null;
+      if (!ids.length) {   // every fault fixed, but a line she added is not in the program (a copied print): name it, or she waits on RUN for ever
+        var extra = r.broken.filter(function (b) { return !b.canonLine; })[0];
+        return extra ? { kind: 'extra', line: extra.line } : null;
+      }
       var rl = r.shout ? redLine(r.red) : null;   // follow the red: the fault on the line Python names comes first
       var quiet = res && res.ran && !res.red;   // her last run showed no red: a sleeping shout (N8) waits behind the silent fault
       ids.sort(function (a, b) { var A = r.faults[a], B = r.faults[b]; return ((B.line === rl) - (A.line === rl)) || (quiet ? A.shout - B.shout : B.shout - A.shout) || (A.line - B.line); });
@@ -353,6 +358,7 @@
         var ln = redLine(res.redText);
         return ln ? { id: 'bar.fixline', vars: { n: ln } } : { id: 'bar.readred' };
       }
+      if (iss && iss.kind === 'extra') return L.typing && t - L.keyAt < 2500 ? { id: 'bar.run' } : { id: 'bar.extra', vars: { n: iss.line } };
       if (iss && !iss.shout) {
         if (S.mode !== 'pair') { var miss = wantFx(c, res); if (miss) return { id: 'solo.' + miss }; }
         return { id: 'bar.hunt' };
@@ -375,6 +381,7 @@
       var t = now(), t0 = boat().t0 != null ? boat().t0 : t, since = Math.max(L.since[c] != null ? L.since[c] : t0, t0);
       var lastFail = boat().fails.length ? boat().fails[boat().fails.length - 1] + CK.BLACK_MS : 0;
       var waited = t - since, step = 0;
+      if (iss.kind === 'extra') return null;   // the bar already names the line
       if (iss.kind === 'putback') { if (waited >= HELP_STEP) return { id: 'help.putback', code: iss.canon.trim(), line: iss.line }; return null; }
       if (!iss.shout) {
         if (!L.res[c]) return null;   // she has not run yet: the bar says RUN
@@ -430,6 +437,13 @@
         (y.fails || []).forEach(function (f) { addFail(c, f); });
         if (!b.pauses.length) b.pauses = (y.pauses || []).slice();
         if (y.doneAt != null) b.doneAt = y.doneAt;
+      });
+      /* a chapter she left unfinished in an earlier lesson: the boat starts again from the mark, or it would be on the
+         rocks the moment the page opens. Her lines and bounties are kept. */
+      Object.keys(S.boat).forEach(function (c) {
+        var b = S.boat[c]; if (b.doneAt != null || b.t0 == null) return;
+        var last = Math.max.apply(null, [b.t0].concat(b.fails, b.pauses.map(function (p) { return p.to == null ? p.from : p.to; })));
+        if (now() - last > STALE) { b.t0 = null; b.fails = []; b.pauses = []; }
       });
       S.said = z.said || {}; S.sent = z.sent || {}; S.late = !!z.late; S.card = z.card || 0;
       S.events = [];

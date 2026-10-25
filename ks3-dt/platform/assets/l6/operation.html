@@ -173,6 +173,8 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 /* lesson route: continue, the live note, the go-and-sit screen */
 #done .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 #beginbtn:disabled{opacity:.45;cursor:default}
+#alonebtn{margin:8px 0 0 10px}#alonebtn[hidden]{display:none}
+#app.fb{grid-template-rows:44px auto auto 1fr 64px}
 #livenote{padding:6px 14px;background:#3a2f0c;color:var(--gold);font-weight:600;font-size:clamp(14px,1.2vw,18px);border-bottom:1px solid var(--line)}
 #away{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:25;padding:20px}
 #away[hidden]{display:none}
@@ -290,7 +292,7 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   <div id="doorright">
     <div id="doorbubble"><span class="who" id="doorwho"></span><span id="doorsay"></span></div>
     <div id="goal"><p></p><p></p><p></p></div>
-    <div id="begin"><small id="together"></small><button class="btn" id="beginbtn" type="button"></button></div>
+    <div id="begin"><small id="together"></small><button class="btn" id="beginbtn" type="button"></button><button class="btn ghost" id="alonebtn" type="button" hidden></button></div>
   </div>
 </div></div>
 

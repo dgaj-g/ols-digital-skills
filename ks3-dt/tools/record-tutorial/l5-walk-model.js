@@ -67,7 +67,7 @@ function chapterTime(room, seats, c, ladder) {
       if (line + id !== b.seen) { b.seen = line + id; b.busy = t + read(line) * 1000; return; }   // a new bar line: read it
       const L = e.S.L[s], res = L.res[c];
       const mineSlips = e.S.slips.filter(x => x.ch === c && x.to === s);
-      const wantsFix = id === 'bar.fixline' || id === 'bar.putback' || /^solo\./.test(id) || ((id === 'bar.slip' || id === 'bar.hunt') && mineSlips.length > b.slipsUsed);
+      const wantsFix = id === 'bar.fixline' || id === 'bar.putback' || id === 'bar.extra' || /^solo\./.test(id) || ((id === 'bar.slip' || id === 'bar.hunt') && mineSlips.length > b.slipsUsed);
       if (ladder && wantsFix && !b.ladderDone) {   // once a chapter: wait out every step of the help ladder, reading each
         if (b.ladderFrom == null) b.ladderFrom = t;
         const h = e.help();
@@ -77,7 +77,7 @@ function chapterTime(room, seats, c, ladder) {
       let ms = 0;
       if (id === 'bar.run') { e.run(); ms = CLICK * 1000 + read(res && res.console ? [].concat(res.console).join(' ') : '') * 1000; }
       else if (id === 'bar.readred') { e.readRed(); ms = read(res && res.redText) * 1000; }
-      else if (id === 'bar.fixline' || id === 'bar.putback' || /^solo\./.test(id)) { fix(); }
+      else if (id === 'bar.fixline' || id === 'bar.putback' || id === 'bar.extra' || /^solo\./.test(id)) { fix(); }
       else if (/^bar\.tell\./.test(id) && !CONTROL) { e.radio(bar.seat, id.split('.')[2]); ms = CLICK * 1000; }
       else if (id === 'bar.name' && L.nameQ.length) { e.name(J.KIND[L.nameQ[0]]); ms = (read(POSTERS) + CLICK) * 1000; }
       else if (id === 'bar.slip' || id === 'bar.hunt') {
