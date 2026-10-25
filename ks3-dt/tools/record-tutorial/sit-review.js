@@ -57,6 +57,8 @@ const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 if (/^6$/.test(NUM)) { console.log('sit-review.js: J1 Lesson 6 is The Operation; walk it with l6-walk.js (it asserts EXPECT[\'6\']).'); process.exit(0); }
 /* J3 Lesson 5 is BUG BOUNTY (TWO LIGHTS, 15 Oct 2026), walked by l5-walk.js against EXPECT['j3-5'] below. */
 if (/^j3-5$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 5 is Bug Bounty; walk it with l5-walk.js (it asserts EXPECT[\'j3-5\']).'); process.exit(0); }
+/* J2 Lesson 5 is LOOP MACHINES (THE SEARCH, 25 Oct 2026), walked by j2l5-walk.js and j2l5-platform.js. */
+if (/^j2-5$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 5 is Loop Machines; walk it with j2l5-walk.js and j2l5-platform.js.'); process.exit(0); }
 if (/^j3-4$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
    keeps its bare-number legacy keys). `j2-1` is J2's Lesson 1; '1' is J1's. */
@@ -244,7 +246,7 @@ const TITLES = { '1': 'Mission Control', '2': 'Make It Move', '3': 'Scoreboard E
   'j2-1': 'Welcome to the Workshop', 'j3-1': 'The Studio Opens',
   'j2-2': 'Translation Bureau', 'j3-2': 'First Words in Python',
   'j2-3': 'Chatbot Workshop', 'j3-3': 'Playlist Engine',
-  'j2-4': 'Adventure Engine', 'j3-4': 'Function Factory' };
+  'j2-4': 'Adventure Engine', 'j3-4': 'Function Factory', 'j2-5': 'Loop Machines' };
 
 let shotN = 0;
 const shotOnce = new Set();   /* the Python screens repeat many turns; shoot each kind once */

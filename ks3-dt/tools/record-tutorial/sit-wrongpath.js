@@ -75,6 +75,9 @@ if (/^6$/.test(LESSON)) { console.log('sit-wrongpath.js: J1 Lesson 6 is The Oper
 /* J3 Lesson 5 is BUG BOUNTY (TWO LIGHTS, 15 Oct 2026): the hour is a page in a frame (assets/twolights/hour.html),
    so this walker cannot press it. It is walked by l5-walk.js, which reads LANDMARKS['j3-5'] below and must stand on each. */
 if (/^j3-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 5 is Bug Bounty; walk it with l5-walk.js (it asserts LANDMARKS[\'j3-5\']).'); process.exit(0); }
+/* J2 Lesson 5 is LOOP MACHINES (THE SEARCH, 25 Oct 2026): the hour is a page in a frame (assets/search/hour.html),
+   so this walker cannot press it. It is walked by j2l5-walk.js (the hour, three ways) and j2l5-platform.js (the lesson around it). */
+if (/^j2-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J2 Lesson 5 is Loop Machines; walk it with j2l5-walk.js and j2l5-platform.js.'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -93,6 +96,7 @@ const TILE = {
   'j2-3': /Lesson\s*3(?!\d)/i,
   'j3-3': /Lesson\s*3(?!\d)/i,
   'j2-4': /Lesson\s*4(?!\d)/i,
+  'j2-5': /Lesson\s*5(?!\d)/i,
   'j3-4': /Lesson\s*4(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
