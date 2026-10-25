@@ -24,3 +24,10 @@ Window: Opus 5.5 at xhigh, on Damien's word ("2.", 25 Oct 2026). Build prompt: /
   3. Plans (ch2, ch3 spiral, ch4): spaces / forNoColon / forCap / forIndent slips gave the generic notRun. FIX: move those four rows from ch1.j4 to common (j4 lookups fall back to common, so ch1 is unchanged).
 - Exact src strings the gate expects in chapters.js are in its SITES table (section c).
 - NEXT: words, frozen, twins gates; then port frame.
+
+## 18:40 checkpoint — gates written, calibrated on the design page
+- j2l5-words.js (gate 1), j2l5-frozen.js (26 PASS on proto), j2l5-twins.js (proto: battery twin missing = fix 4), j2l5-python.js (7 PASS on proto), j2l5-clock-test.js (proto: 12/14, fails = fix 4 battery beat only; the long-way regex now matches 'U.clock(55, function () { failed = true; });'), j2l5-walk.js (--proto right PASS 17, fast PASS 18; honest FAIL = fix 5 + fix 6).
+- FIX 5 confirmed by the walker: after a wrong go and after the rewind, ch2 and ch3 clear her lines (U.box('plan') with no text). Shipped: keep st.mine, refill the box.
+- FIX 6 found by the walker: ch4 program 3 (while True) never runs on the design page. honest() returns early on `if (!p.run)` because J.fix4(2, while lines) = {run:false,key:'whileAgain'}, BEFORE the battery branch. So Stop it, the battery and '4.3 black' never happen (design walk.log: 4.3 read -> 4.3 held). Spec line 356 + A9 want the run. Shipped: `if (!p.run && !isBug) return Promise.resolve();`. Walker now asserts Stop it is offered.
+- walk writes qa-j2l5/walk/proto-<mode>-<size>.screens.txt; J2L5_DEBUG=1 prints button wants.
+- NEXT: j2l5-platform.js (model: ks3-dt/probes/rescue/qa-rescue-platform.js P1–P8), sit-wrongpath/sit-review need j2-5 skip lines + EXPECT/LANDMARKS entries; then commit gates, port frame.
