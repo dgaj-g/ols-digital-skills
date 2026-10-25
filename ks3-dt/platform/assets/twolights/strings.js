@@ -63,6 +63,7 @@
     'bar.name': { t: 'instruction', s: 'Click the poster that names this fault.' },
     'bar.turning': { t: 'line', s: 'Every light is on. Marigold is turning.' },
     'bar.putback': { t: 'instruction', s: 'Line {n} was right before. Put it back.', ex: { n: 4 } },
+    'bar.extra': { t: 'instruction', s: 'Line {n} is not part of this program. Delete it.', ex: { n: 6 } },
     'bar.slow': { t: 'instruction', s: 'The link to your partner is slow. Share one computer and take turns.' },
     'bar.dark': { t: 'instruction', s: 'The {other} has gone dark. Keep both lights yourself.', ex: { other: 'South Light' } },
     // solo symptoms (§6: the bar carries the symptom)

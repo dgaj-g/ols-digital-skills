@@ -632,6 +632,7 @@
     if (x.t === 'NoneType') return false; if (x.t === 'tuple') return x.v.length > 0; return true;
   }
   function Raise(type, msg) { return { pyerr: true, type: type, msg: msg }; }
+  function repeat(s, n) { n = Math.max(0, n); if (s.length * n > 1000000) throw Raise('MemoryError', ''); return new Array(n + 1).join(s); }
 
   /* ---------- interpreter ---------- */
   function run(src, opts) {
@@ -647,6 +648,7 @@
       checkReturns(ast, false, lines);
     } catch (e) {
       if (e.unsupported) { res.unsupported = { line: e.line, word: e.word }; return res; }
+      if (e instanceof RangeError) { res.unsupported = { tooDeep: true }; return res; }
       if (!e.syntax) throw e;
       // pegen tokenizes the rest of the file after a parser error: a tokenizer error anywhere wins; an unclosed
       // bracket wins only when the parser had already read past its line
@@ -711,8 +713,8 @@
       if (op === '-' && (a.t === 'int' || a.t === 'bool') && (b.t === 'int' || b.t === 'bool')) return I(a.v - b.v);
       if (op === '*') {
         if ((a.t === 'int' || a.t === 'bool') && (b.t === 'int' || b.t === 'bool')) return I(a.v * b.v);
-        if (a.t === 'str' && (b.t === 'int' || b.t === 'bool')) return S(new Array(Math.max(0, +b.v) + 1).join(a.v));
-        if (b.t === 'str' && (a.t === 'int' || a.t === 'bool')) return S(new Array(Math.max(0, +a.v) + 1).join(b.v));
+        if (a.t === 'str' && (b.t === 'int' || b.t === 'bool')) return S(repeat(a.v, +b.v));
+        if (b.t === 'str' && (a.t === 'int' || a.t === 'bool')) return S(repeat(b.v, +a.v));
         if (a.t === 'str' || b.t === 'str') throw Raise('TypeError', "can't multiply sequence by non-int of type '" + (a.t === 'str' ? tb : ta) + "'");
       }
       if (op === '//' || op === '%' || op === '/') {
@@ -744,8 +746,13 @@
               s += p.v.replace(/\{\{|\}\}|\{([^{}]*)\}/g, function (m0, inner) {
                 if (m0 === '{{') return '{'; if (m0 === '}}') return '}';
                 var sub = tokenize(inner.trim()), x;
+                /* the {...} is tokenized on its own, so move its tokens to where it sits in her line: an error inside it
+                   names her line and points at the name, as Python does, never line 1 */
+                var raw = lines[n.line - 1] || '', at = n.line === n.eline ? raw.indexOf('{' + inner + '}', n.col) : -1;
+                var shift = at >= 0 ? at + 1 + (inner.length - inner.replace(/^\s+/, '').length) : n.col;
+                sub.toks.forEach(function (t) { t.line = t.eline = n.line; t.col += shift; t.ecol += shift; });
                 try { x = new Parser(sub).expr(); } catch (e) { throw { unsupported: true }; }
-                return pystr(ev(x, scope));
+                try { return pystr(ev(x, scope)); } catch (e) { if (e.pyerr && at < 0) e.at = n; throw e; }
               });
             } else s += p.v;
           });
@@ -860,6 +867,7 @@
     } catch (e) {
       if (e.unsupported) { res.unsupported = { runtime: true }; return res; }
       if (e.tooLong) { res.unsupported = { tooLong: true }; return res; }
+      if (e instanceof RangeError) { res.unsupported = { tooDeep: true }; return res; }
       if (!e.pyerr) throw e;
       // the innermost frame's node is where the error was raised; outer frames point at their calls
       var tb = e.tb, red = 'Traceback (most recent call last):\n';
@@ -867,7 +875,7 @@
         if (i < tb.length - 1) fr.n = callNodeIn(fr.stmt, fr.n);
         red += formatFrame(fr, file, lines);
       });
-      red += e.type + ': ' + e.msg + '\n';
+      red += e.type + (e.msg ? ': ' + e.msg : '') + '\n';
       res.error = { type: e.type, msg: e.msg, line: tb[tb.length - 1].n.line };
       res.red = red;
     }

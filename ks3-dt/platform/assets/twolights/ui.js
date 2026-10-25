@@ -44,10 +44,10 @@
       fb = TLLIVE.makeFireBus(app.database(), room, seat);
       fb.on(function (m) { if (!FALLBACK) hs.forEach(function (h) { h(m); }); });
     } catch (e) { fb = null; }
+    w.fb = fb;
     if (!fb || (H && H.fallback)) { setTimeout(goFallback, 0); return w; }
     timer = setTimeout(function () { if (!fb.connected()) goFallback(); }, TLLIVE.FALLBACK_MS);
     fb.whenConnected(function () { clearTimeout(timer); if (E) E.hello(); });
-    w.fb = fb;
     return w;
   }
   function goFallback() {   // "The live link is slow. Share one laptop and take turns." (§6) — never a dead screen
@@ -55,7 +55,9 @@
     if (bus && bus.fb) bus.fb.close();
     if (seat !== 'A') {
       $('app').hidden = true; $('stage').hidden = true; $('tour').hidden = true;
-      $('away').hidden = false; $('away').textContent = R('bar.slow'); return;
+      $('away').hidden = false; $('awaysay').textContent = R('bar.slow');
+      $('awaynext').textContent = R('btn.next'); $('awaynext').onclick = function () { $('awaynext').disabled = true; post('next'); };
+      return;
     }
     if (E) { E.goSlow(); render(); }
   }
@@ -255,7 +257,22 @@
       var x = E.card(), pk = E.S.cardPick;
       $('cardsrc').textContent = x.src;
       $('cardsay').textContent = pk ? (pk.right ? R('poster.' + pk.kind).split(' · ')[0] + ' ✓' : R('poster.' + pk.kind).split(' · ')[0]) : R('bar.name');
+      fitCard(x.src);
     }
+  }
+  /* the card's program must show whole, last line too (the fault is often there): a short bay (a half-width laptop, a
+     third radio) takes the code down a size or two until it fits, never below 10 px; past that the card scrolls */
+  var cardFit = '';
+  function fitCard(src) {
+    var card = $('card'), pre = $('cardsrc'), bay = $('baywrap');
+    var key = src + '|' + $('cardsay').textContent + '|' + bay.clientWidth + 'x' + bay.clientHeight;   // render runs 4 times a second, so a resize re-fits
+    if (key === cardFit) return;
+    cardFit = key; card.style.maxHeight = ''; card.style.overflowY = '';
+    for (var fs = 13; fs >= 10; fs--) {
+      pre.style.fontSize = fs + 'px'; pre.style.lineHeight = Math.round(fs * 1.38) + 'px';
+      if (card.offsetHeight <= bay.clientHeight && pre.scrollWidth <= pre.clientWidth) return;
+    }
+    card.style.maxHeight = bay.clientHeight + 'px'; card.style.overflowY = 'auto';
   }
   $('pause').onclick = function () { SND.unlock(); var on = !E.paused(); E.pause(on); SND.hold(on); save(); render(); };
   $('late').onclick = function () { E.late(); save(); render(); };
@@ -423,7 +440,7 @@
       if (r.error) return false;
       if (x.want.print) return (r.out || []).join('\n').indexOf(x.want.print) >= 0;
       if (x.want.fx) return (r.effects || []).some(function (e) { return e.fx === x.want.fx; });
-      if (x.want.radio) return (r.effects || []).some(function (e) { return e.fx === 'radio' && String(e.v) === x.want.radio; });
+      if (x.want.radio) return (r.effects || []).some(function (e) { return e.fx === 'radio' && String(e.v && typeof e.v === 'object' ? e.v.v : e.v) === x.want.radio; });
       return false;
     }
     function show() {
@@ -440,7 +457,8 @@
         else shake(b);
       });
       $('xrun').onclick = function () {
-        SND.unlock(); var r = PyRun.run($('xsrc').value, { file: 'poster.py' });
+        SND.unlock(); var r;
+        try { r = PyRun.run($('xsrc').value, { file: 'poster.py' }); } catch (e) { r = { out: [], effects: [], red: '' }; }
         $('xcon').innerHTML = (r.out || []).map(esc).join('\n') + (r.red ? '<span class="r">' + esc(r.red) + '</span>' : '');
         if (r.red) SND.play('red');
         if (want(x, r)) { fixed = true; Array.prototype.forEach.call($('xboard').querySelectorAll('.poster'), function (p) { p.classList.add('ask'); }); }

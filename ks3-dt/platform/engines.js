@@ -11345,11 +11345,26 @@
      The frame is told its seat, the seats at the table and the live room by its hash; the live room
      carries the moves (Firebase, no sign-in, nothing that names a pupil — DFM 325).
      frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone}; here → frame: {op:1, type:'names'}. */
+  /* The lesson's own pairing words sit on its first chunk. Every stage passes them, so a later stage's brief wait never
+     flashes the Vault's words (J1 L6, J3 L5). */
+  function lessonPairWords(cfg, ctx) {
+    if (cfg.pairWords) return cfg.pairWords;
+    var c = ((ctx.lesson && ctx.lesson.chunks) || []).filter(function (k) { return k.config && k.config.pairWords; })[0];
+    return c ? c.config.pairWords : null;
+  }
+  /* Pair for this stage. A pupil who chose to work on her own stays on her own for the rest of the lesson. */
+  function pairStage(ctx, host, draft, key, open, words) {
+    if (draft[key] && !ctx.review) { open('own'); return; }
+    PairKit.ensure(ctx, host, function (mode) {
+      if ((mode === 'own' || mode === 'left') && !ctx.review) { draft[key] = 1; ctx.saveEvent({ draft: draft }); }
+      open(mode);
+    }, words, { quiet: true });
+  }
   Engines.operation = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {}, s = App.state;
       var draft = s.draft = s.draft || {};
-      var stage = cfg.stage || 'door', job = null;
+      var stage = cfg.stage || 'door', job = null, pw = lessonPairWords(cfg, ctx);
       /* THE EXTRA JOBS (DFM 259/265): stage 'extras' is a list of jobs, each one a stage of the same page.
          No points, the way out on every screen (the hub AND each job), leaving a job costs nothing. */
       function hub() {
@@ -11366,20 +11381,23 @@
           '<div class="rung-actions pyrun-exit-row"><button class="btn btn-primary pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
         host.appendChild(c);
         c.querySelectorAll('.pyrun-job').forEach(function (b) {
-          App.armButton(b, function () { job = b.getAttribute('data-job'); stage = job; PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true }); });
+          App.armButton(b, function () { job = b.getAttribute('data-job'); stage = job; pairStage(ctx, host, draft, 'opOwn', open, pw); });
         });
         App.armButton(c.querySelector('.pyrun-finish'), finishExtras);
       }
       function finishExtras() { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
       function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
       function open(mode) {
-        var st = PairKit.st, paired = mode === 'paired' && st;
+        /* she went on alone at the door when nobody came (draft.opAlone): the rest of the hour is solo in that room */
+        var st = PairKit.st, paired = mode === 'paired' && st && !(st.room && draft.opAlone === st.room);
         var seats = paired ? st.members.map(function (_, i) { return 'ABC'[i]; }) : ['A'];
         var H = { stage: stage, seat: paired ? 'ABC'[st.mi] : 'A', seats: seats,
           room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
           names: paired && st.names ? st.names : null,
           round: Number(draft.opRound || 0), fallback: paired && st.room && draft.opFallback === st.room ? 1 : 0 };
         if (stage === 'letter') H.letter = draft.op || null;
+        if (stage === 'door' && paired && pw && pw.waitOwnLabel) H.alone = { say: pw.waitLongSay || '', label: pw.waitOwnLabel };
+        if (stage === 'ward' && !ctx.review && draft.ward) H.wardDone = 1;
         if (job) H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '' };
         host.innerHTML = '';
         var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
@@ -11416,6 +11434,12 @@
             if (ctx.review) { ctx.next(); return; }
             finishChunk(ctx, stage === 'op' && draft.op ? 'chart=' + (draft.op.chart || []).length : stage);
           }
+          else if (m.type === 'alone' && stage === 'door') {
+            gone = true; window.removeEventListener('message', onMsg);
+            if (ctx.review) { ctx.next(); return; }
+            if (paired && st.room) { draft.opAlone = st.room; save(); }
+            finishChunk(ctx, stage);
+          }
           else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } }
           else if (m.type === 'save') { draft.opRound = Number(m.round || 0); save(); }
           else if (m.type === 'done' && m.save) {
@@ -11429,13 +11453,14 @@
         window.addEventListener('message', onMsg);
       }
       if (cfg.extrasMode) { hub(); return; }
-      PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true });
+      pairStage(ctx, host, draft, 'opOwn', open, pw);
     }
   };
 
   /* TWO LIGHTS (J3 L5, spec J3_L5_TWO_LIGHTS_SPEC.md §10): the Operation's mount, one stage of the hour per chunk. The page
      keeps her lines, bounties and the room's boat in draft.tlSave (law 11); draft.tlT0 is the start of the story, for
-     "Running out of time?" from lesson minute 48. Badges ride on the chunk (ch1, ch3, home). */
+     "Running out of time?" from lesson minute 48; a start more than 3 hours old was an earlier lesson, so it starts again.
+     Badges ride on the chunk (ch1, ch3, home). */
   Engines.twolights = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {}, s = App.state;
@@ -11446,7 +11471,7 @@
       function open(mode) {
         var st = PairKit.st, paired = mode === 'paired' && st && !cfg.extrasMode;
         var seats = paired ? st.members.map(function (_, i) { return 'ABC'[i]; }) : ['A'];
-        if (draft.tlT0 == null && !ctx.review) draft.tlT0 = Date.now();
+        if (!ctx.review && (draft.tlT0 == null || Date.now() - draft.tlT0 > 3 * 3600000)) draft.tlT0 = Date.now();
         var H = { stage: stage, seat: paired ? 'ABC'[st.mi] : 'A', seats: seats,
           room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
           names: paired && st.names ? st.names : null, save: draft.tlSave || null, t0: draft.tlT0 || null,
@@ -11485,7 +11510,7 @@
         window.addEventListener('message', onMsg);
       }
       if (cfg.extrasMode) { open('solo'); return; }
-      PairKit.ensure(ctx, host, open, cfg.pairWords || null, { quiet: true });
+      pairStage(ctx, host, draft, 'tlOwn', open, lessonPairWords(cfg, ctx));
     }
   };
 

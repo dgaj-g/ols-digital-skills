@@ -135,15 +135,22 @@
     U.door.forEach(function (line, i) { var txt = E.fmt(line); door.timers.push(setTimeout(function () { ps[i].textContent = txt; ps[i].classList.add('on'); if (i === 2) door.ready = true; doorBegin(); }, t)); t += pace(txt); });
     document.title = 'ready';
   }
-  function allHere() { return solo || turns.on || S.others.every(function (s) { return S.presence[s].here; }); }
+  function allHere() { return solo || turns.on || S.others.every(function (s) { return S.presence[s].here || S.presence[s].gone; }); }
+  /* a partner the room has heard nothing from for LATE_MS: never arrived, or her laptop went (DFM: no one-way doors) */
+  var LATE_MS = 40000;
+  function late(s) { return !!(live && !FALLBACK && window.OPBUS && OPBUS.quietFor && !S.presence[s].here && OPBUS.quietFor(s) > LATE_MS); }
   function doorBegin() {
     if (!door.shown) return; var here = allHere();
+    var away = S.others.filter(function (s) { return !S.presence[s].here; }), lateAll = !here && away.every(late);
+    door.lateOk = lateAll && away.length < S.others.length; /* a trio: go on with the partner who is here */
+    door.canAlone = lateAll && !door.lateOk && !!(H && H.alone && STAGE === 'door'); /* nobody came: the lesson's own way on */
     cls($('begin'), 'on', door.ready);
-    $('beginbtn').disabled = !here;
-    var away = S.others.filter(function (s) { return !S.presence[s].here; });
-    var html = here ? door.togetherHtml : bold(away.map(function (s) { return E.fmt(U.presence.away, { p: L.callsigns[s] }); }).join(' '));
+    $('beginbtn').disabled = door.sent || !(here || door.lateOk);
+    var ab = $('alonebtn'); ab.hidden = !door.canAlone; ab.disabled = !!door.sent; if (door.canAlone && ab.textContent !== H.alone.label) ab.textContent = H.alone.label;
+    var html = !away.length ? door.togetherHtml : bold(away.map(function (s) { return E.fmt(U.presence.away, { p: L.callsigns[s] }); }).join(' ')) + (door.canAlone ? ' ' + esc(H.alone.say) : '');
     if ($('together').innerHTML !== html) $('together').innerHTML = html;
   }
+  function esc(t) { return String(t || '').replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
   function hideDoor() { door.shown = false; door.timers.forEach(clearTimeout); $('door').classList.remove('on'); $('app').hidden = false; $('bubble').classList.add('empty'); }
   function bold(t) { return t.replace(/Dr \w+/g, function (m) { return '<b class="' + (m === S.me ? 'me' : 'them') + '">' + m + '</b>'; }); }
   function teamHTML() { var o = S.others; return bold(E.fmt(U.team, { p: S.me }) + ' ' + E.fmt(o.length === 0 ? U.teamAlone : o.length === 1 ? U.teamWith : U.teamWith3, { p: L.callsigns[o[0]], q: L.callsigns[o[1]] })); }
@@ -181,8 +188,8 @@
     return { enabled: enabled, start: start, end: end, next: next, active: function () { return on; }, step: function () { return i; }, steps: function () { return steps; } };
   })();
   $('beginbtn').onclick = function () {
-    if (!allHere()) return;
-    if (H && STAGE === 'door') { $('beginbtn').disabled = true; post('begin'); return; }
+    if (door.sent || !(allHere() || door.lateOk)) return;
+    if (H && STAGE === 'door') { door.sent = true; $('beginbtn').disabled = true; post('begin'); return; }
     if (turns.on && EB) EB.begin();
     if (E.begin()) { hideDoor(); render(); if (TOUR.enabled()) TOUR.start(); }
   };
@@ -201,6 +208,7 @@
     render();
   }
   $('cardlist').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (!c || c.classList.contains('wrong')) return; var r = E.card(c.dataset.key); if (r === 'wrong') { c.classList.add('wrong'); wrongLocal[c.dataset.key] = 1; } render(); });
+  $('alonebtn').onclick = function () { if (door.sent || !door.canAlone) return; door.sent = true; $('alonebtn').disabled = true; $('beginbtn').disabled = true; post('alone'); };
   $('againbtn').onclick = function () { if (E.again()) { if (turns.on && EB) { EB.setRound(S.round); turns.n = 0; } cardsFor = null; post('save', { round: S.round }); showDoor(); } };
   /* ---------- render: patch, never rebuild ---------- */
   var last = { bar: '', count: -1, chart: '', strip: '', stage: '', face: '', pr: '' };
@@ -261,7 +269,7 @@
     last.stage = S.stage;
     speechTick(now);
     var hint = S.others.length && !solo && !H ? U.lobby.note : ''; if ($('hint').textContent !== hint) $('hint').textContent = hint;
-    var ln = turns.on ? FB.A : ''; if ($('livenote').textContent !== ln) { $('livenote').textContent = ln; $('livenote').hidden = !ln; }
+    var ln = turns.on ? FB.A : ''; if ($('livenote').textContent !== ln) { $('livenote').textContent = ln; $('livenote').hidden = !ln; cls($('app'), 'fb', !!ln); }
   }
   /* the real names, from the platform once the chart is complete (as Lesson 1's reveal) */
   function revealNames() {
@@ -278,12 +286,20 @@
   if (H) { $('nextbtn').textContent = 'Continue'; $('nextbtn').hidden = false; $('nextbtn').onclick = function () { post('next'); }; $('awaybtn').textContent = 'Continue'; $('awaybtn').onclick = function () { post('next'); }; }
   build();
   var cardsOnce = false;
-  function loop() { if (FALLBACK && seat !== 'A') return; E.tick(); if (EB) { EB.tick(); if (robotB && !TOUR.active()) robotB.tick(); } if (robot) robot.tick(); turnTick(); render(); }
+  /* mid-operation, a partner gone quiet for GONE_MS: the part in her hand goes back in, so the patient can still be finished */
+  function goneTick() {
+    if (!live || FALLBACK || !window.OPBUS || !OPBUS.quietFor || S.stage === 'door' || S.stage === 'done') return;
+    S.others.forEach(function (s) { if (!S.presence[s].gone && OPBUS.quietFor(s) > OPLIVE.GONE_MS) E.gone(s); });
+  }
+  function loop() { if (FALLBACK && seat !== 'A') return; goneTick(); E.tick(); if (EB) { EB.tick(); if (robotB && !TOUR.active()) robotB.tick(); } if (robot) robot.tick(); turnTick(); render(); }
   setInterval(loop, 100);
   /* jumps for the look and the harness */
   if (AT === 'table' || AT === 'done') { E.begin(); }
   if (AT === 'done') { OP.PARTS.forEach(function (p) { E.tap(p); E.card(p); }); }
   render(); document.title = 'ready';
+  /* the lesson route: her Begin was on the door page, so the tour Begin starts (spec §3.1, DFM 322) opens here, at the table.
+     After a beat, so a seat sent to her partner's laptop (goFallback, queued above) is not toured over the away card */
+  if (H && AT === 'table') setTimeout(function () { if (!(FALLBACK && seat !== 'A') && S.stage === 'op' && TOUR.enabled()) TOUR.start(); }, 0);
   post('ready', { stage: STAGE });
   window.OPUI = { tour: TOUR, get E() { return E; }, get EB() { return EB; }, get S() { return S; }, fallback: function () { return FALLBACK; }, goFallback: goFallback, act: act, card: function (k) { var r = E.card(k); render(); return r; }, begin: function () { var r = E.begin(); render(); return r; }, render: render, speech: sp, Q: Q };
 })();

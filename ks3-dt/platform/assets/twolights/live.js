@@ -21,7 +21,7 @@
     } else if (m.type === 'boat') h.push(m.ch, b36(m.t0));
     else if (m.type === 'fail') h.push(m.ch, b36(m.at));
     else if (m.type === 'pause') h.push(m.ch, b36(m.at), m.on ? 1 : 0);
-    else if (m.type === 'tell') h.push(m.to, SLIP.indexOf(m.slip));
+    else if (m.type === 'tell') h.push(m.to, SLIP.indexOf(m.slip), STG.indexOf(m.ch) < 0 ? '' : STG.indexOf(m.ch));
     return h.join('|');
   }
   function decode(s) {
@@ -35,24 +35,27 @@
     } else if (t === 'boat') { m.ch = h[2]; m.t0 = n36(h[3]); }
     else if (t === 'fail') { m.ch = h[2]; m.at = n36(h[3]); }
     else if (t === 'pause') { m.ch = h[2]; m.at = n36(h[3]); m.on = h[4] === '1' ? 1 : 0; }
-    else if (t === 'tell') { m.to = h[2]; m.slip = SLIP[+h[3]] || null; if (!m.slip) return null; }
+    else if (t === 'tell') { m.to = h[2]; m.slip = SLIP[+h[3]] || null; if (!m.slip) return null; m.ch = h[4] ? STG[+h[4]] || null : null; }
     return m;
   }
   function makeFireBus(db, room, seat, opts) {
     opts = opts || {};
     var offset = 0, local = opts.now || function () { return Date.now(); };
     var now = function () { return local() + offset; };
-    var hs = [], seen = {}, joined = now(), connected = false, onConn = [], timers = [], closed = false;
+    var hs = [], seen = {}, connected = false, onConn = [], timers = [], closed = false;
     var ref = db.ref('rooms/' + room);
     function deliver(m) { hs.forEach(function (h) { h(m); }); }
     db.ref('.info/serverTimeOffset').on('value', function (snap) { var v = snap.val(); if (typeof v === 'number') offset = v; });
     ['A', 'B', 'C'].forEach(function (s) {
       if (s === seat) return;
+      /* what she said before this stage opened arrives first. An old hello is not a question any more: judged on server
+         time as it arrives, so a laptop clock a few seconds out neither drops a live hello nor keeps a stale one.
+         An old slip is dropped by the engine, which knows the chapter it was sent in. */
       ref.child(s).on('child_added', function (snap) {
         if (closed) return;
         var key = snap.key; if (seen[s + key]) return; seen[s + key] = 1;
         var v = snap.val() || {}, m = decode(v.j); if (!m) return;
-        if (m.type === 'hello' && v.t < joined - 2000) return;   // an old hello is not a question any more
+        if (m.type === 'hello' && typeof v.t === 'number' && v.t < now() - 3000) return;
         deliver(m);
       });
     });

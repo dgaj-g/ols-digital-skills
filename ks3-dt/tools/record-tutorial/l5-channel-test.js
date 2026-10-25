@@ -128,6 +128,7 @@ const NAMES = ['Aoife', 'Bríd', 'Ciara'];
   const FAKE = `window.firebase={apps:[],initializeApp:function(){var a={database:function(){return db;}};this.apps.push(a);return a;},app:function(){return this.apps[0];}};
   var CONN=+(new URLSearchParams(location.search).get('conn')||0);
   function R(p){return{child:function(c){return R(p+'/'+c);},push:function(){},set:function(){},remove:function(){return Promise.resolve();},
+    once:function(ev,f){if(CONN)setTimeout(function(){f({val:function(){return null;}});},CONN);},
     on:function(ev,f){if(p==='.info/connected'){if(CONN)setTimeout(function(){f({val:function(){return true;}});},CONN);}
       else if(p==='.info/serverTimeOffset')f({val:function(){return 0;}});}};}
   var db={ref:R};`;
@@ -141,12 +142,14 @@ const NAMES = ['Aoife', 'Bríd', 'Ciara'];
     const A = await open(ctx, H('A'), q), B = await open(ctx, H('B'), q);
     await sleep(12500);
     const out = { modeA: await E(A, () => TLUI.E.S.mode), barA: await E(A, () => document.getElementById('barline').textContent),
-      away: await E(B, () => !document.getElementById('away').hidden && document.getElementById('away').textContent) };
+      away: await E(B, () => !document.getElementById('away').hidden && document.getElementById('awaysay').textContent),
+      /* deep check 25 Oct: seat B's own laptop keeps a way on (Next), never a dead screen */
+      next: await E(B, () => { const b = document.getElementById('awaynext'); const r = b && b.getBoundingClientRect(); return b && !b.hidden && r.width > 0 ? b.textContent : null; }) };
     await ctx.close(); if (block) await br.close(); return out;
   }
-  const fellBack = o => o.modeA === 'slow' && /slow/i.test(o.barA) && !!o.away && /one (laptop|computer)/i.test(o.away);
+  const fellBack = o => o.modeA === 'slow' && /slow/i.test(o.barA) && !!o.away && /one (laptop|computer)/i.test(o.away) && o.next === 'Next';
   const never = await fallbackCase(0, false);
-  gate('A8 no connect in 10 s → seat A keeps both lights, seat B shows the one-laptop line', fellBack(never), `A ${never.modeA} "${never.barA}" · B "${never.away || ''}"`);
+  gate('A8 no connect in 10 s → seat A keeps both lights, seat B shows the one-laptop line', fellBack(never), `A ${never.modeA} "${never.barA}" · B "${never.away || ''}" + button ${never.next}`);
   const blocked = await fallbackCase(0, true);
   gate('A8 Firebase blocked → the same', fellBack(blocked), `A ${blocked.modeA} · B "${blocked.away || ''}"`);
   const at9 = await fallbackCase(9000, false);

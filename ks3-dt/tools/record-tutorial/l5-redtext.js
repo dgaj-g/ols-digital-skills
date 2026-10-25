@@ -66,7 +66,10 @@ add('control fix plus broken line', fixed1.replace('beam = 24', 'beam = = 24'), 
  ['curly quote', 'print(\u201chello\u201d)'], ['nested call tb', 'def a():\n    b()\ndef b():\n    return 1 + "x"\na()'],
  ['assign call full', 'def g():\n    return "a" + 1\nv = g()'], ['return call full', 'def g():\n    return "a" + 1\ndef h():\n    return g()\nh()'],
  ['print None', 'def g():\n    pass\nprint(g())'], ['radio None', 'def g():\n    pass\nradio(g())'], ['concat paren', 'x = ("a") + 1'],
- ['mismatch bracket', 'print(1]'], ['decimal literal', 'x = 2beam'], ['empty def body pass', 'def f():\n    pass\nf()']
+ ['mismatch bracket', 'print(1]'], ['decimal literal', 'x = 2beam'], ['empty def body pass', 'def f():\n    pass\nf()'],
+ // an f-string's {...} names her line, not line 1 (deep check 25 Oct 2026, finding 10)
+ ['fstring name', '# a comment\nbeam = 1\nprint(f"lamp {lampp} on")'], ['fstring spaced', 'x = 1\nprint(f"a { y } b")'],
+ ['fstring type', 'beam = 24\nprint(f"beam {beam + \'x\'}")'], ['fstring in def', 'def f():\n    print(f"{nme}")\nf()']
 ].forEach(function (c) { add('cal ' + c[0], c[1], 0, true); });
 core = cases.length;
 

@@ -1,5 +1,5 @@
 /* THE OPERATION · the live channel (DFM 325, spec §4). Firebase Realtime Database, no sign-in.
-   rooms/{code}/{seat}/{push} = { j: <move, < 200 bytes>, t: ms }   rooms/{code}/presence/{seat} = ms (every 5 s)
+   rooms/{code}/{seat}/{push} = { j: <move, < 200 bytes>, t: ms }   rooms/{code}/presence/{seat} = ms (every 5 s, read as a beat)
    Nothing here ever names a pupil, a class or a school: only the seat letter and the move.
    OPLIVE.codec is pure (node-testable); OPLIVE.makeFireBus(db, room, seat, opts) takes any object with the
    compat database API (ref/child/push/on/set/remove), so the gates can hand it a fake. */
@@ -55,6 +55,9 @@
     opts = opts || {};
     var now = opts.now || function () { return Date.now(); };
     var hs = [], seen = {}, joined = now(), connected = false, onConn = [], timers = [], closed = false;
+    /* LAST SIGN OF LIFE per other seat, on OUR clock (never hers, so a skewed laptop cannot fake it): a fresh
+       presence beat or a move. A pupil whose laptop shut stops beating; the frames read quietFor() and let go. */
+    var seenAt = {}, lastBeat = {};
     var ref = db.ref('rooms/' + room);
     function deliver(m) { hs.forEach(function (h) { h(m); }); }
     ['A', 'B', 'C'].forEach(function (s) {
@@ -63,9 +66,17 @@
         if (closed) return;
         var key = snap.key; if (seen[s + key]) return; seen[s + key] = 1;
         var v = snap.val() || {}, m = decode(v.j); if (!m) return;
+        if (v.t >= joined - 2000) seenAt[s] = now();
         /* an old hello is not a question any more: replaying it would only make us shout our state again */
         if (m.type === 'hello' && v.t < joined - 2000) return;
         deliver(m);
+      });
+      /* the first value is whatever was left there (maybe an hour old): only a CHANGE is a beat */
+      ref.child('presence').child(s).on('value', function (snap) {
+        if (closed) return;
+        var v = snap.val();
+        if (v != null && s in lastBeat && v !== lastBeat[s]) seenAt[s] = now();
+        lastBeat[s] = v;
       });
     });
     db.ref('.info/connected').on('value', function (snap) {
@@ -82,12 +93,13 @@
         ref.child(seat).push({ j: j, t: now() });
       },
       connected: function () { return connected; },
+      quietFor: function (s) { return now() - Math.max(seenAt[s] || 0, joined); },
       whenConnected: function (f) { if (connected) f(); else onConn.push(f); },
       close: function () { closed = true; timers.forEach(clearInterval); },
       destroy: function () { closed = true; timers.forEach(clearInterval); return ref.remove(); }
     };
   }
-  var api = { codec: { encode: encode, decode: decode }, makeFireBus: makeFireBus, PARTS: PARTS, BEDS: BEDS, FALLBACK_MS: 10000 };
+  var api = { codec: { encode: encode, decode: decode }, makeFireBus: makeFireBus, PARTS: PARTS, BEDS: BEDS, FALLBACK_MS: 10000, GONE_MS: 30000 };
   root.OPLIVE = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

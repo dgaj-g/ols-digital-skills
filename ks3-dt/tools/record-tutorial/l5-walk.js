@@ -122,7 +122,7 @@ const STEP = () => {
   if (id === 'bar.name' && bar.card) { if (!E.S.cardPick) { const p = poster(E.card().kind); if (p) { p.click(); return { act: 'card', bar: barText }; } } return { act: 'wait', bar: barText }; }
   if (id === 'bar.readred') { $('conwrap').click(); return { act: 'readred', bar: barText }; }
   if (id === 'bar.run') { if ($('run').disabled) return { act: 'wait', bar: barText }; $('run').click(); return { act: 'run', bar: barText }; }
-  if (id === 'bar.fixline' || id === 'bar.putback' || id === 'bar.hunt' || /^solo\./.test(id)) {
+  if (id === 'bar.fixline' || id === 'bar.putback' || id === 'bar.extra' || id === 'bar.hunt' || /^solo\./.test(id)) {
     const SEAT = PR.SEATS[s], cur = E.code(s, c); let after;
     if (c === 'ch1') after = cur.indexOf('lampp_on') >= 0 ? PR.ch1(SEAT, 1) : PR.ch1(SEAT, 2);
     else if (c === 'ch2') after = PR.ch2(SEAT, true);
