@@ -34,3 +34,23 @@ Window: Opus 5.5 at xhigh, on Damien's word ("2.", 25 Oct 2026). Build prompt: /
 
 ## 18:23 step 3 done
 All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1, words 1/2, python 1/1, clock 3/5, platform CONTROL OK). New design calls for the port: Home resumable (fix 7: a reopen at Home comes back to Home, not the Do-Now); a real Home button (fix 8: after minute 48 each chapter end offers Carry on / Home, existing strings only); badges paid at the chapter where earned; selfeval done card gains Free flight / Finish (config-gated); App.finishLesson exposed. Next: step 4 port.
+
+## 19:27 checkpoint — surfaces built, cold read round 2 running (commit 0a150c0)
+- Engine port + content done; writer = /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_SEARCH_BUILD/write_j2_05.js (writes j2-05.json, recap pool, manifest, deck json).
+- Gates green on the shipped tree: clock-test 14, frozen 21, judge-test 364, python 7, twins 47, words 6 (design + listed edits); qa-brief-shape, qa-deck-geometry, qa-deck-no-answers, qa-brief-deck-link pass.
+- Cold read round 1 (separated readers, L5_SEARCH_BUILD/cold-reads/r1, r1b): 51 slide/brief lines + 76 lesson strings failed by BOTH readers → rewritten once. Lesson rewrites = listed edits in ks3-dt/tools/record-tutorial/j2l5/coldread-edits.json (applied by L5_SEARCH_BUILD/apply_lesson_rewrites.js; the words gate and the writer read it).
+- Round 2 (cold-reads/r2: L1 76, BD-A 52, BD-B 52) on transcript hash 9bd54a8593bcf349. Rounds are then out: any r2 fail is the build window's own call.
+- NEXT: fold r2 → ledger; fold_cold_reads.js md <transcript>; pack-content until clean; j2l5-platform.js; walker 3 sizes; sit report; deck art/shots/build-deck-gs; deck deploy (Chrome rule); build-pathb + new version; smoke; PR + merge.
+
+## 19:40 STOP: 400-call hard stop (CLAUDE.md §2), handover written
+- Round 2 is folded. 100 PASS rows were recorded. The build window made its own call on the 28 still failed:
+  - 11 lesson lines rewritten as listed edits;
+  - 12 deck/brief lines rewritten in write_j2_05.js;
+  - 5 kept.
+  - Its scripts are L5_SEARCH_BUILD/fold_r2.js and own_call_r2.js. The rows are in cold-reads/r3/OWN.
+- Words gate PASS. The ledger has 0 missing for j2-05 lesson/deck/brief.
+- Verdict file written: 491 rows, hash 9b5f3dbe3054ebf5.
+- Commit c007526 pushed.
+- The pack still FAILS with 38 failures: 36 recap-pool hub texts, the deck heading s2.1:stop changed since review, and the brief prepare[4] verbless line.
+  - The list is in KS3 DT Platform/L5_SEARCH_BUILD/PACK_FAIL_HUB_TEXT_25OCT.txt
+- NEXT: /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_SEARCH_BUILD/NEXT_WINDOW_PROMPT.md
