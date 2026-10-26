@@ -17,7 +17,7 @@
  },
  "common.lighter": {
   "from": null,
-  "to": "This lesson is set to run more simply on this computer."
+  "to": "This computer shows the lesson in a simpler way."
  },
  "common.nextTime": {
   "from": null,
@@ -49,11 +49,11 @@
  },
  "c1.show2": {
   "from": "Press Enter and the box shows 30000. The sum stays hidden behind it.",
-  "to": "Now Enter is pressed and the box shows 30000. The sum is still in the box, but the box only shows the answer."
+  "to": "Watch. Enter is pressed and D3 shows 30000. The sum has not gone. You can still see it in the Sum bar. The box itself only shows the answer."
  },
  "c1.judge.no-follow": {
   "from": "The number is right, but the sum uses the wrong boxes. Use B3 and C3, so it changes when they change.",
-  "to": "The number is right, but the sum does not use B3 and C3. Use B3 and C3. Then D3 changes when those numbers change."
+  "to": "The number is right, but your sum does not use B3 and C3. Type =B3*C3. Then D3 changes whenever B3 or C3 changes."
  },
  "c1.back": {
   "from": "Aoife again: 1,200 was right after all. Sorry! Change B3 back to 1200.",
@@ -97,7 +97,7 @@
  },
  "c2.judge.typed": {
   "from": "One of those was typed by hand. Fill from D3 so they are sums.",
-  "to": "You typed a number into D4 or D5. Click D3, then drag or press Fill down, so both boxes hold sums."
+  "to": "You typed a number into D4 or D5. Click D3, then drag the square down or press Fill down."
  },
  "c2.h2_1": {
   "from": "Click D6 and type =. Then type the three box names with a + between each.",
@@ -109,7 +109,7 @@
  },
  "c2.h4_2": {
   "from": "Start with =, then D6, then -, then D11.",
-  "to": "Type =. Then type D6. Then type -. Then type D11."
+  "to": "Type the = sign, then D6. After that, type the - sign and then D11."
  },
  "c2.predictD6Right": {
   "from": "Yes, 36,300. Now make D6 say it.",
@@ -125,7 +125,7 @@
  },
  "c2.predictD12Wrong": {
   "from": "Out is bigger than in, so profit sits below zero. Write the sum and see.",
-  "to": "The money out is bigger than the money in. So the profit is below zero. Write the sum in D12 and see."
+  "to": "The money out is bigger than the money in. So the profit is below zero. Write the sum in D12 and look for the minus sign."
  },
  "c3.show1": {
   "from": "IF asks a question, then picks words.",
@@ -133,7 +133,7 @@
  },
  "c3.show3": {
   "from": "The brackets hold the question, then the yes words, then the no words.",
-  "to": "Inside the brackets go three things, in this order. First the question. Then the words to show for yes. Then the words to show for no."
+  "to": "Put three things inside the brackets, in this order. Type the question first. Next, type the words to show for yes. The words for no go last."
  },
  "c3.ask": {
   "from": "In D13: if the profit is more than 0, say Book her. Otherwise say Not yet.",
@@ -165,11 +165,11 @@
  },
  "c4.pickUp": {
   "from": null,
-  "to": "Answer"
+  "to": "Answer the call"
  },
  "c4.intro": {
   "from": "Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each one. If time runs out, Aoife asks again with no clock.",
-  "to": "Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each one. If time runs out, Aoife asks the same question again. This time there is no clock."
+  "to": "Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each question. If time runs out, Aoife asks you the same question again. The second time, there is no clock."
  },
  "c4.q.1.ask": {
   "from": "He says at £30 only 1,000 tickets sell. Do we still make money?",
@@ -181,7 +181,7 @@
  },
  "c4.notYet": {
   "from": "The sheet does not say that yet. Change the number and read D13 again.",
-  "to": "D13 does not show that yet. Make the change the question asks for, then read D13 again."
+  "to": "D13 does not show the answer yet. Make the change that the question asks for. Then read D13 again."
  },
  "c4.hintsOpen": {
   "from": "Hints are on now. Press Give me a hint if you need one.",
@@ -297,7 +297,7 @@
  },
  "deck.6.bullets.1": {
   "from": "Five last questions on today, then one about how it felt.",
-  "to": "Five last questions on today. Then a short page about how it went."
+  "to": "You answer five last questions about today. Then you fill in a short page about how it went."
  },
  "brief.purpose.0": {
   "from": "The skill: a spreadsheet that works the answers out for her. She writes a sum with box names. She changes one number and every sum follows. She fills down, uses IF, and pins a box with $B$1.",
@@ -305,7 +305,7 @@
  },
  "brief.purpose.1": {
   "from": "What she makes: the money plan for a one-night festival, then the poster once the headliner is booked. The poster stays on her screen. Nothing prints.",
-  "to": "Pupils make the money plan for a one-night festival and decide whether it can book the headliner, the main act, Ivy Rain. Once the headliner is booked, the pupils see a poster. The poster stays on the pupil's screen. Nothing prints."
+  "to": "Pupils make the money plan for a one-night festival. They decide whether the festival can afford to book the headliner, the main act, Ivy Rain. Once the headliner is booked, each pupil sees a poster. The poster stays on that pupil's screen. Nothing prints."
  },
  "brief.prepare.0.text": {
   "from": "Each girl needs the link, signed in with her school account, and headphones if she has them. The deck is optional.",
@@ -317,7 +317,7 @@
  },
  "brief.prepare.1.text": {
   "from": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for. It uses the same words as slide 1.",
-  "to": "The slides do not tell the story. Please do not describe what happens on the pupils’ screens. After the warm-up, the pupils’ first screen says what the hour is for. That screen uses the same words as slide 1."
+  "to": "The slides do not mention Ivy Rain or the festival plan. Please do not describe what happens on the pupils’ screens. The pupils start with five warm-up questions. After them, the pupils’ first screen says what the hour is for. That screen uses the same words as slide 1."
  },
  "brief.resources.0.what": {
   "from": "The pupil hour, J2 Lesson 6, in the platform. One link, signed in.",
@@ -325,15 +325,23 @@
  },
  "brief.resources.1.what": {
   "from": "Eight slides with no story. Slide 6 says Start now. Leave it up all hour.",
-  "to": "The deck has eight slides and tells no story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour."
+  "to": "The deck has eight slides. It does not tell the festival story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour."
+ },
+ "brief.runningTheHour.0.part": {
+  "from": "Do-Now",
+  "to": "Do-Now · Slide 1"
  },
  "brief.runningTheHour.0.text": {
   "from": "Five questions from earlier lessons. They self-mark and nothing is recorded against her.",
   "to": "The platform asks five questions from earlier lessons. They self-mark and nothing is recorded against the pupil."
  },
+ "brief.runningTheHour.1.part": {
+  "from": "The job",
+  "to": "The job · Slides 2–6"
+ },
  "brief.runningTheHour.1.text": {
   "from": "The first screen says what the hour is for. Then the story starts, with a three-screen tour of the sheet.",
-  "to": "After the warm-up, a screen says what the hour is for. Then the pupil opens the story, and a tour of the spreadsheet follows over three screens."
+  "to": "After the five warm-up questions, a screen says what the hour is for. Then the pupil reads the messages from Aoife at the festival. A tour of the spreadsheet follows over three screens."
  },
  "brief.runningTheHour.1.say": {
   "from": "Read every screen. Nothing happens until you press the button.",
@@ -349,7 +357,11 @@
  },
  "brief.runningTheHour.4.text": {
   "from": "VAT on the shop prices, then the $B$1 pin. The fill-down fail is deliberate. B1 moves to B2 and the prices go wrong. Then she pins it.",
-  "to": "Pupils add VAT, a tax, to the prices on the Shop tab. They fill the sum down, and the prices go wrong on purpose: in the copied sum, B1 moves to B2. Then the pupil pins B1 by writing $B$1, and the prices come out right."
+  "to": "Pupils add VAT, a tax, to the prices on the Shop tab. The VAT rate sits in box B1. They fill the sum down, and the prices go wrong on purpose. In the copied sum, B1 moves down to B2. Then the pupil pins B1 by writing $B$1, and the prices come out right."
+ },
+ "brief.runningTheHour.5.part": {
+  "from": "Finishing",
+  "to": "Finishing · Slides 7–8"
  },
  "brief.runningTheHour.5.text": {
   "from": "She sees the poster, badges, recap, five exit questions and one feeling question. Early finishers get three free tasks on the sheet.",
@@ -357,7 +369,7 @@
  },
  "brief.atAGlance.1.what": {
   "from": "=B3*C3, then two predict-then-change tests",
-  "to": "Write =B3*C3. Then two tests: guess the answer, change a number, check the guess."
+  "to": "Pupils write =B3*C3 in box D3. Then they run two tests. In each test they guess the answer, change a number and check the guess."
  },
  "brief.atAGlance.3.what": {
   "from": "IF in D13: Book her or Not yet",
@@ -369,7 +381,7 @@
  },
  "brief.goesWrong.0.a": {
   "from": "The screen says so and asks for a sum. Point her at the hint button, never the sum itself.",
-  "to": "The screen says so and asks for a sum. Point the pupil to the Give me a hint button. Do not tell the pupil the sum."
+  "to": "The screen tells the pupil what is wrong and asks for a sum. Point the pupil to the Give me a hint button. Do not tell the pupil the sum."
  },
  "brief.goesWrong.1.a": {
   "from": "The same question comes back with no clock. She loses nothing.",
@@ -377,7 +389,7 @@
  },
  "brief.goesWrong.2.a": {
   "from": "That is the lesson. B1 moved to B2. The next screen shows the pin.",
-  "to": "This is meant to happen. In the copied sum, B1 moved to B2. The next screen shows the pupil how to pin it."
+  "to": "The prices going wrong is meant to happen. In the copied sum, B1 (the VAT rate) moved to B2. The next screen shows the pupil how to pin B1."
  },
  "brief.goesWrong.3.q": {
   "from": "She finished early.",
@@ -386,5 +398,13 @@
  "brief.goesWrong.3.a": {
   "from": "Three free tasks on the sheet: lowest price, fewest tickets, her own plan.",
   "to": "The pupil can try three free tasks on the sheet. They find the lowest ticket price that still books the headliner. They find the fewest tickets that still book the headliner. Then they make a plan of their own."
+ },
+ "recapPool.3.stem": {
+  "from": "In a sheet, D12 holds 7,300. In D13 you type =IF(D12>0,\"Book her\",\"Not yet\"). What does D13 show?",
+  "to": "In the festival sheet, D12 holds the profit, 7,300. To decide on Ivy Rain, you type =IF(D12>0,\"Book her\",\"Not yet\") in D13. What does D13 show?"
+ },
+ "recapPool.4.stem": {
+  "from": "A sum in C3 uses the rate in B1. You fill it down to C6. Which box name stays the same in every copy?",
+  "to": "A sum in C3 uses the rate in B1. You fill it down to C6. You want every copy to use B1. How do you write B1 so it does not move?"
  }
 }

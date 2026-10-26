@@ -463,7 +463,7 @@
    "lesson": "j2-06",
    "topic": "Spreadsheets",
    "thread": "kp-formula",
-   "stem": "In a sheet, D12 holds 7,300. In D13 you type =IF(D12>0,\"Book her\",\"Not yet\"). What does D13 show?",
+   "stem": "In the festival sheet, D12 holds the profit, 7,300. To decide on Ivy Rain, you type =IF(D12>0,\"Book her\",\"Not yet\") in D13. What does D13 show?",
    "options": [
     "Book her",
     "Not yet",
@@ -475,7 +475,7 @@
    "lesson": "j2-06",
    "topic": "Spreadsheets",
    "thread": "kp-formula",
-   "stem": "A sum in C3 uses the rate in B1. You fill it down to C6. Which box name stays the same in every copy?",
+   "stem": "A sum in C3 uses the rate in B1. You fill it down to C6. You want every copy to use B1. How do you write B1 so it does not move?",
    "options": [
     "$B$1",
     "B1",

@@ -15,7 +15,7 @@
       { id: 'poster', label: 'The festival poster', min: 3 },
       { id: 'close', label: 'Finish', min: 8 }
     ],
-    common: { next: 'Next', start: 'Start', check: 'Check', fill: 'Fill down', back: 'Back', hint: 'Give me a hint', hint2: 'Another hint', hint3: 'Show me the answer', gotIt: 'Got it', tryAgain: 'Try again', skip: 'I know this. Skip.', watched: 'I have watched. Now I will try.', youAreHere: 'You are here', partOf: 'Part {n} of {total}', minsLeft: '{m} minutes left in this hour', pause: 'Pause', paused: 'Paused. Nothing is lost. Press Pause again to carry on.', welcomeBack: 'Welcome back. You were on {where}. Your sheet is exactly as you left it.', outOfTime: 'Time is nearly up. Finish this part. Then press Finish in the row of parts along the top of the screen. The other parts stay open for next time.', xp: '+{n} points', done: 'Done', lighter: 'This lesson is set to run more simply on this computer.', nextTime: 'Next time', soundOn: 'Sound is on', soundOff: 'Sound is off', doneWhen: 'This part is done when {what}.' },
+    common: { next: 'Next', start: 'Start', check: 'Check', fill: 'Fill down', back: 'Back', hint: 'Give me a hint', hint2: 'Another hint', hint3: 'Show me the answer', gotIt: 'Got it', tryAgain: 'Try again', skip: 'I know this. Skip.', watched: 'I have watched. Now I will try.', youAreHere: 'You are here', partOf: 'Part {n} of {total}', minsLeft: '{m} minutes left in this hour', pause: 'Pause', paused: 'Paused. Nothing is lost. Press Pause again to carry on.', welcomeBack: 'Welcome back. You were on {where}. Your sheet is exactly as you left it.', outOfTime: 'Time is nearly up. Finish this part. Then press Finish in the row of parts along the top of the screen. The other parts stay open for next time.', xp: '+{n} points', done: 'Done', lighter: 'This computer shows the lesson in a simpler way.', nextTime: 'Next time', soundOn: 'Sound is on', soundOff: 'Sound is off', doneWhen: 'This part is done when {what}.' },
     donow: { kicker: 'Do now', intro: 'Here are five questions from earlier lessons. Click the answer you think is right.', progress: 'Question {n} of 5', right: 'Right.', wrong: 'Not that one. The right answer is shown.', finish: 'The warm-up is done. Now for today’s job.', button: 'On to the job' },
     opening: {
       kicker: 'J2 · Lesson 6',
@@ -50,13 +50,13 @@
       goal: 'In this part you make one box do one sum. It is done when D3 shows the ticket money.',
       show1: 'Watch. 1,200 tickets sell at £25 each. The * key means times.',
       showDemo: '=B3*C3',
-      show2: 'Now Enter is pressed and the box shows 30000. The sum is still in the box, but the box only shows the answer.',
+      show2: 'Watch. Enter is pressed and D3 shows 30000. The sum has not gone. You can still see it in the Sum bar. The box itself only shows the answer.',
       ask: 'Your turn. Click D3, type =B3*C3 and press Enter.',
       h1: 'Click D3 first. Then type the = sign.',
       h2: 'After the =, type B3, then *, then C3.',
       h3: 'Type exactly this, then press Enter:',
       h3code: '=B3*C3',
-      judge: { empty: 'D3 is still empty. Click it, type the sum, press Enter.', typed: 'The number is right, but you typed it. Type a sum instead. Start with =, then the box names.', error: 'The computer cannot read that sum. Check the = and the box names.', wrong: 'That sum gives the wrong number. Multiply tickets by price: B3 * C3.', 'no-follow': 'The number is right, but the sum does not use B3 and C3. Use B3 and C3. Then D3 changes when those numbers change.', ok: 'D3 works out 30,000. That is £30,000 of ticket money.' },
+      judge: { empty: 'D3 is still empty. Click it, type the sum, press Enter.', typed: 'The number is right, but you typed it. Type a sum instead. Start with =, then the box names.', error: 'The computer cannot read that sum. Check the = and the box names.', wrong: 'That sum gives the wrong number. Multiply tickets by price: B3 * C3.', 'no-follow': 'The number is right, but your sum does not use B3 and C3. Type =B3*C3. Then D3 changes whenever B3 or C3 changes.', ok: 'D3 works out 30,000. That is £30,000 of ticket money.' },
       trickKicker: '7:09 pm · Aoife',
       trick: 'Sorry! Tickets are 1,300, not 1,200. Can you change it?',
       predict: 'Before you change B3, what will D3 show?',
@@ -79,7 +79,7 @@
       h1: 'Click D3. The small square sits at its bottom right corner.',
       h2: 'Press and hold the left mouse button on the square. Drag down over D4 and D5. Then let go.',
       h3: 'Click D3, then press Fill down. It does the drag for you.',
-      judge: { empty: 'D4 and D5 are still empty. Drag the square down, or press Fill down.', ok: 'D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One drag made both sums.', 'fill-wobble': 'D4 or D5 shows the wrong number. Click D3, then drag the square down again, or press Fill down.', typed: 'You typed a number into D4 or D5. Click D3, then drag or press Fill down, so both boxes hold sums.' },
+      judge: { empty: 'D4 and D5 are still empty. Drag the square down, or press Fill down.', ok: 'D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One drag made both sums.', 'fill-wobble': 'D4 or D5 shows the wrong number. Click D3, then drag the square down again, or press Fill down.', typed: 'You typed a number into D4 or D5. Click D3, then drag the square down or press Fill down.' },
       ask2: 'D6 is the money in. Add the three totals: type =D3+D4+D5.',
       h2_1: 'Click D6. Type the = sign. Then type the three box names, with a + between each one.',
       h2_2: 'The three boxes are D3, D4 and D5.',
@@ -94,7 +94,7 @@
       judge3: { empty: 'D11 is still empty.', typed: 'The number is right, but you typed it. Type a sum instead.', error: 'The computer cannot read that sum. Check the = and the box names.', wrong: 'That gives the wrong total. Add D8, D9 and D10.', 'no-follow': 'The number is right, but the boxes are wrong. Add D8, D9 and D10.', ok: 'The money out is £38,000. Next, work out the profit. Aoife is waiting for it.' },
       ask4: 'D12 is the profit: money in take away money out. Write that sum.',
       h4_1: 'Profit is D6 minus D11. Minus is the - key.',
-      h4_2: 'Type =. Then type D6. Then type -. Then type D11.',
+      h4_2: 'Type the = sign, then D6. After that, type the - sign and then D11.',
       h4_3: 'Type exactly this, then press Enter:',
       h4_3code: '=D6-D11',
       judge4: { empty: 'D12 is still empty.', typed: 'The number is right, but you typed it. Type a sum instead.', error: 'The computer cannot read that sum. Check the = and the box names.', wrong: 'That is not the profit. Take D11 away from D6: D6 - D11.', 'no-follow': 'The number is right, but the boxes are wrong. Use D6 and D11.', ok: 'D12 shows minus £1,700. The festival would lose money if it booked Ivy Rain.' },
@@ -108,7 +108,7 @@
       show1: 'IF is a kind of sum that asks a question. Then it picks which words to show.',
       showDemo: '=IF(B3>1000,"Big night","Quiet night")',
       show2: 'The > sign asks: is B3 more than 1,000? Yes, so it says Big night.',
-      show3: 'Inside the brackets go three things, in this order. First the question. Then the words to show for yes. Then the words to show for no.',
+      show3: 'Put three things inside the brackets, in this order. Type the question first. Next, type the words to show for yes. The words for no go last.',
       ask: 'Click D13 and write an IF sum. If the profit is more than 0, it must show Book her. Otherwise it must show Not yet.',
       h1: 'Type =IF( to start. Then type the question D12>0. Then type a comma.',
       h2: 'Next type "Book her" in quote marks, then a comma. Then type "Not yet" in quote marks. Last, type a closing bracket.',
@@ -121,8 +121,8 @@
       title: 'Part 4 · The call',
       goal: 'In this part Aoife asks three questions on the phone. You get 90 seconds for each. It is done when she has three answers.',
       ring: 'Aoife is calling',
-      pickUp: 'Answer',
-      intro: 'Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each one. If time runs out, Aoife asks the same question again. This time there is no clock.',
+      pickUp: 'Answer the call',
+      intro: 'Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each question. If time runs out, Aoife asks you the same question again. The second time, there is no clock.',
       timer: '{s} seconds left',
       q: [
         { ask: 'If we charge £30 a ticket, do we make money?', predict: 'What do you think, before you try?', change: 'Change C3 to 30, then read D13.', yes: 'Tell her: yes, we make £4,300', no: 'Tell her: no, we lose money', right: 'yes', line: 'At £30 the profit is £4,300, and D13 says Book her.' },
@@ -131,7 +131,7 @@
       ],
       predictYes: 'Yes', predictNo: 'No',
       predictedRight: 'Your guess was right. The sheet agrees.', predictedWrong: 'The sheet shows something different from your guess. Checking was a good idea.',
-      notYet: 'D13 does not show that yet. Make the change the question asks for, then read D13 again.',
+      notYet: 'D13 does not show the answer yet. Make the change that the question asks for. Then read D13 again.',
       wrongAnswer: 'Read D13 again. Your answer does not match it.',
       timeout: 'Time ran out and the call ended. Aoife rings back with the same question. There is no clock this time.',
       hintsOpen: 'You can ask for hints now. Press Give me a hint if you need one.',
@@ -217,7 +217,7 @@
 /* Added 26 Oct 2026 after the first measured walk: a second test in Part 1, two predictions in Part 2, a live test of IF in Part 3, a second what-if in Part 5, and three free-time challenges. */
 (function (S) {
   Object.assign(S.c1, { trick2: 'Here is one more change. The ticket price goes up to £30.', predict2: 'What will D3 show?', predictOptions2: ['36,000', '30,000', '35,000', '1,230'], predictRight2: 'Yes. 1,200 times 30 is 36,000. Now change C3 and see.', predictWrong2: 'It will show 36,000, because 1,200 times 30 is 36,000. Now change C3 and see.', change2: 'Click C3, type 30, press Enter.', changeJudge2: { ok: 'D3 jumped to 36,000. You changed one number and the sum did the rest.', no: 'C3 should hold 30. Click C3, type 30, press Enter.' }, back2: 'Put the price back. Click C3, type 25, press Enter.', backJudge2: { ok: 'D3 is back to 30,000. You changed two numbers and never typed the sum again.', no: 'C3 should say 25 again. Click C3, type 25, press Enter.' } });
-  Object.assign(S.c2, { predictD6: 'Before you write it: 30,000 + 1,500 + 4,800 is…', predictD6Options: ['36,300', '35,300', '36,800', '31,500'], predictD6Right: 'Yes, the answer is 36,300. Now type the sum in D6 so that it shows 36,300.', predictD6Wrong: 'The answer is 36,300. Now type the sum in D6 so that it shows 36,300.', predictD12: 'Money in is 36,300. Money out is 38,000. Profit will be…', predictD12Options: ['below zero', 'above zero', 'exactly zero'], predictD12Right: 'Yes. The money out is bigger than the money in. Write the sum in D12 and look for the minus sign.', predictD12Wrong: 'The money out is bigger than the money in. So the profit is below zero. Write the sum in D12 and see.' });
+  Object.assign(S.c2, { predictD6: 'Before you write it: 30,000 + 1,500 + 4,800 is…', predictD6Options: ['36,300', '35,300', '36,800', '31,500'], predictD6Right: 'Yes, the answer is 36,300. Now type the sum in D6 so that it shows 36,300.', predictD6Wrong: 'The answer is 36,300. Now type the sum in D6 so that it shows 36,300.', predictD12: 'Money in is 36,300. Money out is 38,000. Profit will be…', predictD12Options: ['below zero', 'above zero', 'exactly zero'], predictD12Right: 'Yes. The money out is bigger than the money in. Write the sum in D12 and look for the minus sign.', predictD12Wrong: 'The money out is bigger than the money in. So the profit is below zero. Write the sum in D12 and look for the minus sign.' });
   Object.assign(S.c3, { testKicker: 'Test it', test1: 'Wait. What if Ivy Rain’s fee were £9,000 instead of £18,000?', testPredict: 'What will D13 say? Pick one.', testOptions: ['Book her', 'Not yet'], testRight: 'Yes. A cheaper fee leaves a profit above zero. Now try it.', testWrong: 'A cheaper fee leaves a profit above zero, so D13 says Book her. Now try it.', testChange: 'Click D10, type 9000, press Enter.', testChangeJudge: { ok: 'D12 is now 7,300 and D13 says Book her. You did not retype any sum.', no: 'D10 is not 9000 yet. Click D10, type 9000, press Enter.' }, testBack: 'Sadly her fee is £18,000 after all. Click D10, type 18000, press Enter.', testBackJudge: { ok: 'D13 says Not yet again. Your sheet now answers in words.', no: 'D10 is not 18000 yet. Click D10, type 18000, press Enter.' } });
   Object.assign(S.c5, { predict2: 'Next you will change the hoodie price in B4 to £40. Before you do, which boxes in column C will change?', predict2Options: ['C4 only', 'C3 to C6', 'B1 and C4', 'None'], predict2Right: 'Yes, only C4 changes. Each row uses its own price and the one pinned rate in B1.', predict2Wrong: 'Not that one. Only C4 changes. Each row uses its own price and the one pinned rate in B1.', change2: 'Click B4, type 40, press Enter.', change2Judge: { ok: 'C4 now shows 50.00. You changed one price, so only C4 changed.', no: 'B4 is not 40 yet. Click B4, type 40, press Enter.' } });
   Object.assign(S.close, { freeOf: 'Challenge {n} of 3', wholePounds: 'For this challenge, use whole pounds only. For example, type 27, not 27.50.', free: [
@@ -302,7 +302,7 @@
     "heading": "The last screens",
     "bullets": [
       "When you reach the badges, you are nearly finished.",
-      "Five last questions on today. Then a short page about how it went.",
+      "You answer five last questions about today. Then you fill in a short page about how it went.",
       "Press Finish. Everything you made is saved."
     ],
     "notes": "SAY: when you see your badges, you have about ten minutes left. Finish the last questions."
@@ -322,7 +322,7 @@
   S.brief = {
   "purpose": [
     "Pupils learn to use a spreadsheet that works out the answers for them. They write a sum with box names, such as =B3*C3. They change one number and every sum that uses it changes. They fill down, which copies a sum down a column. They use IF to make a box answer in words. They pin a box by writing $B$1, so a copied sum keeps pointing at that box.",
-    "Pupils make the money plan for a one-night festival and decide whether it can book the headliner, the main act, Ivy Rain. Once the headliner is booked, the pupils see a poster. The poster stays on the pupil\'s screen. Nothing prints."
+    "Pupils make the money plan for a one-night festival. They decide whether the festival can afford to book the headliner, the main act, Ivy Rain. Once the headliner is booked, each pupil sees a poster. The poster stays on that pupil\'s screen. Nothing prints."
   ],
   "prepare": [
     {
@@ -331,7 +331,7 @@
     },
     {
       "title": "Do not give away the story",
-      "text": "The slides do not tell the story. Please do not describe what happens on the pupils’ screens. After the warm-up, the pupils’ first screen says what the hour is for. That screen uses the same words as slide 1."
+      "text": "The slides do not mention Ivy Rain or the festival plan. Please do not describe what happens on the pupils’ screens. The pupils start with five warm-up questions. After them, the pupils’ first screen says what the hour is for. That screen uses the same words as slide 1."
     }
   ],
   "resources": [
@@ -342,21 +342,21 @@
     },
     {
       "label": "The deck",
-      "what": "The deck has eight slides and tells no story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
+      "what": "The deck has eight slides. It does not tell the festival story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
       "href": ""
     }
   ],
   "runningTheHour": [
     {
-      "part": "Do-Now",
+      "part": "Do-Now · Slide 1",
       "mins": 5,
       "text": "The platform asks five questions from earlier lessons. They self-mark and nothing is recorded against the pupil.",
       "say": "Five warm-up questions. Click the answer you think is right."
     },
     {
-      "part": "The job",
+      "part": "The job · Slides 2–6",
       "mins": 5,
-      "text": "After the warm-up, a screen says what the hour is for. Then the pupil opens the story, and a tour of the spreadsheet follows over three screens.",
+      "text": "After the five warm-up questions, a screen says what the hour is for. Then the pupil reads the messages from Aoife at the festival. A tour of the spreadsheet follows over three screens.",
       "say": "Read every screen. A screen moves on only when you press its button."
     },
     {
@@ -374,11 +374,11 @@
     {
       "part": "Part 5",
       "mins": 10,
-      "text": "Pupils add VAT, a tax, to the prices on the Shop tab. They fill the sum down, and the prices go wrong on purpose: in the copied sum, B1 moves to B2. Then the pupil pins B1 by writing $B$1, and the prices come out right.",
+      "text": "Pupils add VAT, a tax, to the prices on the Shop tab. The VAT rate sits in box B1. They fill the sum down, and the prices go wrong on purpose. In the copied sum, B1 moves down to B2. Then the pupil pins B1 by writing $B$1, and the prices come out right.",
       "say": "Watch what the copy does to B1."
     },
     {
-      "part": "Finishing",
+      "part": "Finishing · Slides 7–8",
       "mins": 12,
       "text": "The pupil finishes with a poster, badges, a recap, five last questions and a short page on how the hour went. Pupils who finish early get three free tasks on the sheet.",
       "say": "When you reach the badges, you are nearly done."
@@ -391,7 +391,7 @@
     },
     {
       "part": "Part 1",
-      "what": "Write =B3*C3. Then two tests: guess the answer, change a number, check the guess."
+      "what": "Pupils write =B3*C3 in box D3. Then they run two tests. In each test they guess the answer, change a number and check the guess."
     },
     {
       "part": "Part 2",
@@ -417,7 +417,7 @@
   "goesWrong": [
     {
       "q": "A pupil typed the number instead of a sum.",
-      "a": "The screen says so and asks for a sum. Point the pupil to the Give me a hint button. Do not tell the pupil the sum."
+      "a": "The screen tells the pupil what is wrong and asks for a sum. Point the pupil to the Give me a hint button. Do not tell the pupil the sum."
     },
     {
       "q": "The 90-second clock ran out.",
@@ -425,7 +425,7 @@
     },
     {
       "q": "The sheet looks wrong after fill down in Part 5.",
-      "a": "This is meant to happen. In the copied sum, B1 moved to B2. The next screen shows the pupil how to pin it."
+      "a": "The prices going wrong is meant to happen. In the copied sum, B1 (the VAT rate) moved to B2. The next screen shows the pupil how to pin B1."
     },
     {
       "q": "A pupil finished early.",
@@ -441,8 +441,8 @@
     { id: 'r-j2-601', lesson: 'j2-06', stem: 'In a sheet, B5 holds 300 and C5 holds 5. Which sum in D5 shows 1,500?', options: ['=B5*C5', '=B5+C5', '=B5/C5'] },
     { id: 'r-j2-602', lesson: 'j2-06', stem: 'In a sheet, D3 holds =B3*C3. You change the number in B3. What happens to D3?', options: ['It changes on its own', 'It stays the same', 'It goes blank'] },
     { id: 'r-j2-603', lesson: 'j2-06', stem: 'In D5 you type =B5*C5, then fill it down one row. What does D6 read?', options: ['=B6*C6', '=B5*C5', '=B5*C6'] },
-    { id: 'r-j2-604', lesson: 'j2-06', stem: 'In a sheet, D12 holds 7,300. In D13 you type =IF(D12>0,"Book her","Not yet"). What does D13 show?', options: ['Book her', 'Not yet', '7,300'] },
-    { id: 'r-j2-605', lesson: 'j2-06', stem: 'A sum in C3 uses the rate in B1. You fill it down to C6. Which box name stays the same in every copy?', options: ['$B$1', 'B1', 'B2'] }
+    { id: 'r-j2-604', lesson: 'j2-06', stem: 'In the festival sheet, D12 holds the profit, 7,300. To decide on Ivy Rain, you type =IF(D12>0,"Book her","Not yet") in D13. What does D13 show?', options: ['Book her', 'Not yet', '7,300'] },
+    { id: 'r-j2-605', lesson: 'j2-06', stem: 'A sum in C3 uses the rate in B1. You fill it down to C6. You want every copy to use B1. How do you write B1 so it does not move?', options: ['$B$1', 'B1', 'B2'] }
   ];
 })();
 

@@ -1,0 +1,61 @@
+  PASS A1 Lesson 6 is on her lesson screen as Festival Planner
+  PASS A1 the lesson card says The Headliner under the title (got "The Headliner")
+  PASS A1 the lesson opens on the platform's Do-Now with five questions (got 5)
+  PASS A1 after the Do-Now, the lesson opens on the headliner step
+  PASS A1 the hour is on screen in its frame
+  PASS A1 the frame is the shipped page, not the test mode
+  PASS A1 the frame shows assets/headliner/hour.html
+  PASS A1 inside the platform the hour has no Do-Now, five questions or How did it go? of its own
+  PASS A1 the frame fills the width and most of the height (1366 x 627 x 1366 x 768)
+  PASS G5 CONTROL D3 painted to 30,000 with no sum is not ok, pays no badge and offers no Next
+  PASS G5 CONTROL the painted answer adds no XP
+  PASS G5 the real =B3*C3 typed in D3 is ok and earns sum-writer
+  PASS G5 sum-writer adds 12 XP (0 to 12)
+  PASS G5 CONTROL the same badge twice adds nothing
+  PASS A10 the screen the hour saves is in her lesson draft ({"at":"c4-intro","ch":"c4"})
+  PASS A10 her sheet, with her =B3*C3, is in her lesson draft
+  PASS A8 the poster name and price reach her lesson draft
+  PASS A8 a later save keeps the poster name
+  PASS A10 a reopened lesson gives the hour her place on its address
+  PASS A10 the hour says "Welcome back. You were on 4 · The call. Your sheet is exactly as you left it." (got "Welcome back. You were on 4 · The call. Your sheet is exactly as you left it.")
+  PASS A10 the buttons are Carry on and Start again (Carry on, Start again)
+  PASS A10 Carry on lands on the saved screen with her =B3*C3 still in D3
+  PASS A11 from minute 48 the note says "Time is nearly up. Finish this part. Then press Finish in the row of parts along the top of the screen. The other parts stay open for next time."
+  PASS A11 Finish in the strip goes to the badges
+  PASS A11 from the badges the lesson goes on to the five questions
+  PASS A9 question 1 reads "Which key starts a sum in a box?" (got "Which key starts a sum in a box?")
+  PASS A9 question 2 reads "B3 holds 1,200 and C3 holds 25. What does =B3*C3 show?" (got "B3 holds 1,200 and C3 holds 25. What does =B3*C3 show?")
+  PASS A9 question 3 reads "D3 holds =B3*C3. You fill it down one row. What does D4 read?" (got "D3 holds =B3*C3. You fill it down one row. What does D4 read?")
+  PASS A9 question 4 reads "What do the $ signs in $B$1 do?" (got "What do the $ signs in $B$1 do?")
+  PASS A9 question 5 reads "D12 is -1700. What does =IF(D12>0,"Book her","Not yet") show?" (got "D12 is -1700. What does =IF(D12>0,"Book her","Not yet") show?")
+  PASS A9 the options come in a random order
+  PASS A9 after the five answers she is on How did it go?
+  PASS A9 the three sentences are the design's (I can write a sum with box names. / I can say why filling a sum down moves the box names. / I know what $B$1 does.)
+  PASS A9 the done card says "The hour is over. Everything you made is saved." (got "The hour is over. Everything you made is saved.")
+  PASS A9 the done card gives her score
+  PASS A9 no raw data on the done card
+  PASS A9 the done card offers Free time and Finish (Free time, Finish)
+  PASS A9 Free time opens the free tasks
+  PASS A9 the frame opens on the free tasks
+  PASS A9 the free tasks' end finishes the lesson
+  PASS A9 Lesson 6 is recorded as finished
+  PASS A9 sum-writer is recorded as j2-b16 on Lesson 6
+  PASS LANDMARKS['j2-6'] is declared in sit-wrongpath.js
+  PASS EXPECT['j2-6'] is declared in sit-review.js
+  PASS stood on: the Do-Now
+  PASS stood on: the strip with the five parts
+  PASS stood on: the festival sheet
+  PASS stood on: the Sum bar
+  PASS stood on: Aoife, the coach
+  PASS stood on: the exit check
+  PASS stood on: the closing screen
+  PASS stood on: the free tasks on the sheet
+  SHAPE {"xp":22,"chunks":5,"marks":22,"badges":1}  walked _recap headliner exit close free
+  PASS shape xp = 22 (walked 22)
+  PASS shape chunks = 5 (walked 5)
+  PASS shape marks = 22 (walked 22)
+  PASS shape badges = 1 (walked 1)
+  PASS no page errors
+57 checks, 0 failed.
+
+j2l6-platform: PASS · 57 checks

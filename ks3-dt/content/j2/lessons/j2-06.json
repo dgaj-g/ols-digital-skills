@@ -62,12 +62,12 @@
       },
       {
        "id": "c5",
-       "label": "5 · The pin",
+       "label": "5 · Pin a box",
        "min": 9
       },
       {
        "id": "poster",
-       "label": "The poster",
+       "label": "The festival poster",
        "min": 3
       },
       {
@@ -88,17 +88,17 @@
       "gotIt": "Got it",
       "tryAgain": "Try again",
       "skip": "I know this. Skip.",
-      "watched": "I watched it. Now me.",
+      "watched": "I have watched. Now I will try.",
       "youAreHere": "You are here",
       "partOf": "Part {n} of {total}",
       "minsLeft": "{m} minutes left in this hour",
       "pause": "Pause",
       "paused": "Paused. Nothing is lost. Press Pause again to carry on.",
       "welcomeBack": "Welcome back. You were on {where}. Your sheet is exactly as you left it.",
-      "outOfTime": "Time is nearly up. Finish this part. Then press Finish in the strip at the top. The other parts stay open for next time.",
+      "outOfTime": "Time is nearly up. Finish this part. Then press Finish in the row of parts along the top of the screen. The other parts stay open for next time.",
       "xp": "+{n} points",
       "done": "Done",
-      "lighter": "Running lighter for this computer.",
+      "lighter": "This computer shows the lesson in a simpler way.",
       "nextTime": "Next time",
       "soundOn": "Sound is on",
       "soundOff": "Sound is off",
@@ -108,7 +108,7 @@
      },
      "donow": {
       "kicker": "Do now",
-      "intro": "Five questions from earlier lessons. Click the answer you think is right.",
+      "intro": "Here are five questions from earlier lessons. Click the answer you think is right.",
       "progress": "Question {n} of 5",
       "right": "Right.",
       "wrong": "Not that one. The right answer is shown.",
@@ -119,13 +119,13 @@
       "kicker": "J2 · Lesson 6",
       "line1": "Today you make a computer do your sums for you.",
       "line2": "When one number changes, it redoes every sum on its own.",
-      "line3": "People use this to plan parties, trips and whole festivals.",
+      "line3": "People use spreadsheets to plan parties, trips and whole festivals.",
       "button": "Show me the job"
      },
      "story": {
       "kicker": "7:02 pm · a message",
       "from": "Aoife · Lumen festival",
-      "b1": "Hi! Aoife from the Lumen festival here. Our planner’s laptop just died.",
+      "b1": "Hi! I am Aoife from the Lumen festival. Our planner’s laptop has stopped working.",
       "b2": "The money plan was on it. Tickets go on sale at 8 tonight.",
       "b3": "Ivy Rain is the headliner, the main act. By 8 her manager needs a yes or no. Can we afford her?",
       "readAll": "Read them all",
@@ -186,7 +186,7 @@
       "goal": "In this part you make one box do one sum. It is done when D3 shows the ticket money.",
       "show1": "Watch. 1,200 tickets sell at £25 each. The * key means times.",
       "showDemo": "=B3*C3",
-      "show2": "Press Enter and the box shows 30000. The sum stays hidden behind it.",
+      "show2": "Watch. Enter is pressed and D3 shows 30000. The sum has not gone. You can still see it in the Sum bar. The box itself only shows the answer.",
       "ask": "Your turn. Click D3, type =B3*C3 and press Enter.",
       "h1": "Click D3 first. Then type the = sign.",
       "h2": "After the =, type B3, then *, then C3.",
@@ -197,7 +197,7 @@
        "typed": "The number is right, but you typed it. Type a sum instead. Start with =, then the box names.",
        "error": "The computer cannot read that sum. Check the = and the box names.",
        "wrong": "That sum gives the wrong number. Multiply tickets by price: B3 * C3.",
-       "no-follow": "The number is right, but the sum uses the wrong boxes. Use B3 and C3, so it changes when they change.",
+       "no-follow": "The number is right, but your sum does not use B3 and C3. Type =B3*C3. Then D3 changes whenever B3 or C3 changes.",
        "ok": "D3 works out 30,000. That is £30,000 of ticket money."
       },
       "trickKicker": "7:09 pm · Aoife",
@@ -215,13 +215,13 @@
        "ok": "D3 changed on its own. You never touched it.",
        "no": "B3 still says 1,200. Click it, type 1300, press Enter."
       },
-      "back": "Aoife again: 1,200 was right after all. Sorry! Change B3 back to 1200.",
+      "back": "Aoife again. The 1,200 tickets were right after all. Sorry! Change B3 back to 1200.",
       "backJudge": {
-       "ok": "Back to 30,000. Every box that uses B3 changes when B3 changes.",
+       "ok": "D3 is back to 30,000. Every box that uses B3 changes when B3 changes.",
        "no": "B3 is not 1,200 yet. Click it, type 1200, press Enter."
       },
       "doneLine": "Part 1 is done. Your sum changes when the numbers change.",
-      "trick2": "One more. The ticket price goes up to £30.",
+      "trick2": "Here is one more change. The ticket price goes up to £30.",
       "predict2": "What will D3 show?",
       "predictOptions2": [
        "36,000",
@@ -238,28 +238,28 @@
       },
       "back2": "Put the price back. Click C3, type 25, press Enter.",
       "backJudge2": {
-       "ok": "D3 is back to 30,000. You ran two tests and never retyped a sum.",
-       "no": "C3 should hold 25 again."
+       "ok": "D3 is back to 30,000. You changed two numbers and never typed the sum again.",
+       "no": "C3 should say 25 again. Click C3, type 25, press Enter."
       }
      },
      "c2": {
       "title": "Part 2 · The copy",
       "goal": "In this part you copy a sum down and add things up. It is done when D12 shows the profit. Profit is the money left after everything is paid.",
-      "show1": "D4 and D5 need the same sum, one row lower.",
-      "show2": "Watch. Drag the little square at the bottom right of D3 down.",
+      "show1": "D4 and D5 need the same sum as D3. They use the numbers one row lower.",
+      "show2": "Watch the little square at the bottom right of D3 being dragged down.",
       "show3": "The sum is copied. D4 reads =B4*C4: the box names moved down too.",
       "ask": "Drag the square on D3 down to D5. Or click D3, then Fill down.",
       "h1": "Click D3. The small square sits at its bottom right corner.",
-      "h2": "Press on the square and drag down over D4 and D5. Let go.",
+      "h2": "Press and hold the left mouse button on the square. Drag down over D4 and D5. Then let go.",
       "h3": "Click D3, then press Fill down. It does the drag for you.",
       "judge": {
        "empty": "D4 and D5 are still empty. Drag the square down, or press Fill down.",
        "ok": "D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One drag made both sums.",
-       "fill-wobble": "D4 or D5 shows the wrong number. Fill from D3 again.",
-       "typed": "One of those was typed by hand. Fill from D3 so they are sums."
+       "fill-wobble": "D4 or D5 shows the wrong number. Click D3, then drag the square down again, or press Fill down.",
+       "typed": "You typed a number into D4 or D5. Click D3, then drag the square down or press Fill down."
       },
       "ask2": "D6 is the money in. Add the three totals: type =D3+D4+D5.",
-      "h2_1": "Click D6 and type =. Then type the three box names with a + between each.",
+      "h2_1": "Click D6. Type the = sign. Then type the three box names, with a + between each one.",
       "h2_2": "The three boxes are D3, D4 and D5.",
       "h2_3": "Type exactly this, then press Enter:",
       "h2_3code": "=D3+D4+D5",
@@ -282,11 +282,11 @@
        "error": "The computer cannot read that sum. Check the = and the box names.",
        "wrong": "That gives the wrong total. Add D8, D9 and D10.",
        "no-follow": "The number is right, but the boxes are wrong. Add D8, D9 and D10.",
-       "ok": "£38,000 is going out. Now work out the number Aoife is waiting for."
+       "ok": "The money out is £38,000. Next, work out the profit. Aoife is waiting for it."
       },
       "ask4": "D12 is the profit: money in take away money out. Write that sum.",
       "h4_1": "Profit is D6 minus D11. Minus is the - key.",
-      "h4_2": "Start with =, then D6, then -, then D11.",
+      "h4_2": "Type the = sign, then D6. After that, type the - sign and then D11.",
       "h4_3": "Type exactly this, then press Enter:",
       "h4_3code": "=D6-D11",
       "judge4": {
@@ -307,26 +307,26 @@
        "36,800",
        "31,500"
       ],
-      "predictD6Right": "Yes, 36,300. Now make D6 say it.",
-      "predictD6Wrong": "It is 36,300. Now make D6 say it.",
+      "predictD6Right": "Yes, the answer is 36,300. Now type the sum in D6 so that it shows 36,300.",
+      "predictD6Wrong": "The answer is 36,300. Now type the sum in D6 so that it shows 36,300.",
       "predictD12": "Money in is 36,300. Money out is 38,000. Profit will be…",
       "predictD12Options": [
        "below zero",
        "above zero",
        "exactly zero"
       ],
-      "predictD12Right": "Yes. Out is bigger than in. Write the sum and see the minus sign.",
-      "predictD12Wrong": "Out is bigger than in, so profit sits below zero. Write the sum and see."
+      "predictD12Right": "Yes. The money out is bigger than the money in. Write the sum in D12 and look for the minus sign.",
+      "predictD12Wrong": "The money out is bigger than the money in. So the profit is below zero. Write the sum in D12 and look for the minus sign."
      },
      "c3": {
       "title": "Part 3 · The decision",
       "goal": "In this part the sheet answers a yes-or-no question by itself. It is done when D13 shows words.",
-      "show1": "IF asks a question, then picks words.",
+      "show1": "IF is a kind of sum that asks a question. Then it picks which words to show.",
       "showDemo": "=IF(B3>1000,\"Big night\",\"Quiet night\")",
       "show2": "The > sign asks: is B3 more than 1,000? Yes, so it says Big night.",
-      "show3": "The brackets hold the question, then the yes words, then the no words.",
-      "ask": "In D13: if the profit is more than 0, say Book her. Otherwise say Not yet.",
-      "h1": "Type =IF( first. Then type the question D12>0, then a comma.",
+      "show3": "Put three things inside the brackets, in this order. Type the question first. Next, type the words to show for yes. The words for no go last.",
+      "ask": "Click D13 and write an IF sum. If the profit is more than 0, it must show Book her. Otherwise it must show Not yet.",
+      "h1": "Type =IF( to start. Then type the question D12>0. Then type a comma.",
       "h2": "Next type \"Book her\" in quote marks, then a comma. Then type \"Not yet\" in quote marks. Last, type a closing bracket.",
       "h3": "Type exactly this, then press Enter:",
       "h3code": "=IF(D12>0,\"Book her\",\"Not yet\")",
@@ -335,12 +335,12 @@
        "typed": "You typed the words. Use an IF sum instead, so the words change when the numbers change.",
        "error": "The computer cannot read that. Check the brackets, commas and quote marks.",
        "wrong": "It says Book her, but the profit is below zero. Check the order: yes words first, then no words.",
-       "no-follow": "The words are right for now, but the question must use D12, the profit.",
+       "no-follow": "The words show correctly now, but the question does not use D12, the profit. Use D12>0 as the question, so the words change when the profit changes.",
        "ok": "D13 says Not yet. The sheet made its first decision. It will change when the numbers do."
       },
       "doneLine": "Part 3 is done. The sheet can answer Aoife now. She is ringing you.",
       "testKicker": "Test it",
-      "test1": "Hang on. What if Ivy Rain’s fee was £9,000 instead?",
+      "test1": "Wait. What if Ivy Rain’s fee were £9,000 instead of £18,000?",
       "testPredict": "What will D13 say? Pick one.",
       "testOptions": [
        "Book her",
@@ -351,20 +351,20 @@
       "testChange": "Click D10, type 9000, press Enter.",
       "testChangeJudge": {
        "ok": "D12 is now 7,300 and D13 says Book her. You did not retype any sum.",
-       "no": "D10 should hold 9000."
+       "no": "D10 is not 9000 yet. Click D10, type 9000, press Enter."
       },
-      "testBack": "Sadly her fee is £18,000. Put D10 back.",
+      "testBack": "Sadly her fee is £18,000 after all. Click D10, type 18000, press Enter.",
       "testBackJudge": {
        "ok": "D13 says Not yet again. Your sheet now answers in words.",
-       "no": "D10 should hold 18000 again."
+       "no": "D10 is not 18000 yet. Click D10, type 18000, press Enter."
       }
      },
      "c4": {
       "title": "Part 4 · The call",
       "goal": "In this part Aoife asks three questions on the phone. You get 90 seconds for each. It is done when she has three answers.",
       "ring": "Aoife is calling",
-      "pickUp": "Answer",
-      "intro": "Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each one. If time runs out, Aoife asks again with no clock.",
+      "pickUp": "Answer the call",
+      "intro": "Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each question. If time runs out, Aoife asks you the same question again. The second time, there is no clock.",
       "timer": "{s} seconds left",
       "q": [
        {
@@ -377,7 +377,7 @@
         "line": "At £30 the profit is £4,300, and D13 says Book her."
        },
        {
-        "ask": "He says at £30 only 1,000 tickets sell. Do we still make money?",
+        "ask": "Ivy Rain’s manager says only 1,000 tickets sell at £30. Do we still make money?",
         "predict": "What do you think, before you try?",
         "change": "Change B3 to 1000, then read D13.",
         "yes": "Tell her: yes, we still make money",
@@ -398,11 +398,11 @@
       "predictYes": "Yes",
       "predictNo": "No",
       "predictedRight": "Your guess was right. The sheet agrees.",
-      "predictedWrong": "The sheet shows something different. Good thing you checked.",
-      "notYet": "The sheet does not say that yet. Change the number and read D13 again.",
+      "predictedWrong": "The sheet shows something different from your guess. Checking was a good idea.",
+      "notYet": "D13 does not show the answer yet. Make the change that the question asks for. Then read D13 again.",
       "wrongAnswer": "Read D13 again. Your answer does not match it.",
       "timeout": "Time ran out and the call ended. Aoife rings back with the same question. There is no clock this time.",
-      "hintsOpen": "Hints are on now. Press Give me a hint if you need one.",
+      "hintsOpen": "You can ask for hints now. Press Give me a hint if you need one.",
       "doneLine": "Part 4 is done. Aoife has her three answers."
      },
      "c5": {
@@ -433,17 +433,17 @@
       "pin2": "A pinned box stays put when the sum is copied.",
       "knew": "You already pinned B1. Here is why it matters:",
       "ask3": "Click C3, type =B3*(1+$B$1), press Enter. Then fill down to C6.",
-      "h3_1": "The $ sign is Shift and 4 on the keyboard.",
+      "h3_1": "To type a $ sign, hold down Shift and press 4.",
       "h3_2": "Put $ before the B and $ before the 1: $B$1.",
       "h3_3": "Type exactly this, press Enter, then Fill down:",
       "h3_3code": "=B3*(1+$B$1)",
       "judge3": {
        "empty": "C3 is still empty.",
-       "typed": "One price is typed by hand. Fill from C3 so they are sums.",
+       "typed": "You typed a number into one of the prices. Click C3, then fill down, so all four prices are sums.",
        "error": "The computer cannot read that. Check the brackets and the $ signs.",
        "wrong": "C3 is not £14.40. Check the brackets.",
-       "no-follow": "C3 must use B3 and $B$1.",
-       "fill-wobble": "A lower row is still wrong. Does C3 say $B$1, with both $ signs? Then fill again.",
+       "no-follow": "The number is right, but C3 does not use both B3 and $B$1. Use B3 and $B$1, with both $ signs.",
+       "fill-wobble": "One of the rows below C3 is still wrong. Click C3 and check it says $B$1 with both $ signs. Then press Fill down again.",
        "ok": "The four prices are 14.40, 36.00, 9.60 and 6.00. All four use the one pinned box."
       },
       "whatifKicker": "7:31 pm · Aoife",
@@ -454,27 +454,27 @@
        "36.00",
        "37.00"
       ],
-      "predictRight": "Yes. The hoodie is 30, and 30 times 1.25 is 37.50. Now change B1 and see.",
-      "predictWrong": "Not that one. The hoodie is 30, and 30 times 1.25 is 37.50. Now change B1 and see.",
+      "predictRight": "Yes. The hoodie costs £30. With VAT at 25%, you multiply by 1.25, and 30 times 1.25 is 37.50. Now change B1 and see.",
+      "predictWrong": "Not that one. The hoodie costs £30. With VAT at 25%, you multiply by 1.25, and 30 times 1.25 is 37.50. Now change B1 and see.",
       "change": "Click B1, type 0.25 and press Enter.",
       "changeJudge": {
        "ok": "Every price changed. One pinned box controls all of them.",
        "no": "B1 is not 0.25 yet. Click it, type 0.25, press Enter."
       },
-      "doneLine": "Part 5 is done. You can pin a box, and you know why.",
-      "predict2": "Now you change the hoodie price in B4 to £40. Which boxes in column C change?",
+      "doneLine": "Part 5 is done. You can pin a box with $ signs, and you know why it matters.",
+      "predict2": "Next you will change the hoodie price in B4 to £40. Before you do, which boxes in column C will change?",
       "predict2Options": [
        "C4 only",
        "C3 to C6",
        "B1 and C4",
        "None"
       ],
-      "predict2Right": "C4 only. Each row uses its own price and the one pinned rate.",
-      "predict2Wrong": "Only C4. Each row uses its own price and the one pinned rate.",
+      "predict2Right": "Yes, only C4 changes. Each row uses its own price and the one pinned rate in B1.",
+      "predict2Wrong": "Not that one. Only C4 changes. Each row uses its own price and the one pinned rate in B1.",
       "change2": "Click B4, type 40, press Enter.",
       "change2Judge": {
        "ok": "C4 now shows 50.00. You changed one price, so only C4 changed.",
-       "no": "B4 should hold 40."
+       "no": "B4 is not 40 yet. Click B4, type 40, press Enter."
       }
      },
      "poster": {
@@ -500,7 +500,7 @@
        {
         "id": "the-copy",
         "name": "The Copy",
-        "line": "You copied a sum down. Its names moved."
+        "line": "You copied a sum down. The box names in it moved down too."
        },
        {
         "id": "decider",
@@ -521,8 +521,8 @@
       "recapTitle": "You can now",
       "recap": [
        "Write a sum with = and box names.",
-       "Change a number and every sum changes.",
-       "Fill down a sum. Its names move too.",
+       "Change a number and every sum that uses it changes too.",
+       "Fill a sum down, and the box names in it move down too.",
        "IF makes a box pick words.",
        "$B$1 pins a box. Copies cannot move it."
       ],
@@ -556,7 +556,7 @@
        {
         "stem": "What do the $ signs in $B$1 do?",
         "options": [
-         "Pin the box so copies still use B1",
+         "Pin B1 in every copy",
          "Turn B1 into money",
          "Add VAT to B1"
         ]
@@ -576,7 +576,7 @@
       "feltIntro": "Pick what is true for you.",
       "felt": [
        "I can write a sum with box names.",
-       "I can say why fill down moves names.",
+       "I can say why filling a sum down moves the box names.",
        "I know what $B$1 does."
       ],
       "feltScale": [
@@ -595,17 +595,17 @@
       "free": [
        {
         "text": "Find the lowest whole-pound ticket price that still books Ivy Rain. On the Plan tab, try prices in C3.",
-        "ok": "You found it. At £27 a ticket you book her with £700 to spare.",
-        "over": "Booked at £{v}. Can a lower price still do it?",
-        "under": "Not yet at £{v}. Go up a pound.",
-        "reset": "For this one, keep 1,200 tickets and the £18,000 fee as they are."
+        "ok": "You found it. At £27 a ticket you book her, and £700 is left over.",
+        "over": "At £{v} the sheet says Book her. Can a lower price still book her?",
+        "under": "At £{v} the sheet does not say Book her yet. Try a price one pound higher.",
+        "reset": "For this challenge, leave the tickets at 1,200 and the fee at £18,000."
        },
        {
         "text": "Put the price back to £25. Now find the fewest tickets that still book her. Try numbers in B3.",
         "ok": "You found it. 1,269 tickets at £25 each book her.",
-        "over": "Booked at {v} tickets. Can fewer do it?",
-        "under": "Not yet at {v} tickets. Try more.",
-        "reset": "For this one, keep the price at £25 and the fee at £18,000."
+        "over": "With {v} tickets the sheet says Book her. Can fewer tickets still book her?",
+        "under": "With {v} tickets the sheet does not say Book her yet. Try more tickets.",
+        "reset": "For this challenge, leave the price at £25 and the fee at £18,000."
        },
        {
         "text": "You choose. Change any numbers, but keep D13 saying Book her. Then tell your teacher your plan."
@@ -613,7 +613,7 @@
       ],
       "end": "The hour is over. Everything you made is saved.",
       "freeOf": "Challenge {n} of 3",
-      "wholePounds": "Use whole pounds only for this one."
+      "wholePounds": "For this challenge, use whole pounds only. For example, type 27, not 27.50."
      }
     },
     "badges": {
@@ -693,7 +693,7 @@
       "id": "j2x6-4",
       "stem": "What do the $ signs in $B$1 do?",
       "options": [
-       "Pin the box so copies still use B1",
+       "Pin B1 in every copy",
        "Turn B1 into money",
        "Add VAT to B1"
       ]
@@ -721,7 +721,7 @@
     "offlineSay": "The internet connection has stopped. Your answers are saved on this computer. They are sent when the connection comes back. You have finished the lesson.",
     "statements": [
      "I can write a sum with box names.",
-     "I can say why fill down moves names.",
+     "I can say why filling a sum down moves the box names.",
      "I know what $B$1 does."
     ],
     "difficulty": true,
@@ -732,7 +732,7 @@
     "optionLines": true,
     "flightLabel": "Free time",
     "finishLabel": "Finish",
-    "help": "Pick what is true for you under each sentence, then how hard today was. Your teacher reads this. Then press Send & finish."
+    "help": "Under each sentence, pick the answer that is true for you. Then pick how hard today was. Then press Send & finish. Your teacher reads what you send."
    }
   },
   {
@@ -746,9 +746,9 @@
     "page": "assets/headliner/hour.html",
     "loading": "Getting the festival plan ready.",
     "badges": {},
-    "help": "Three tasks on your own sheet. Nothing is marked. Press Finish when you are done."
+    "help": "You have three challenges to do on your own sheet. Nothing is marked. Press Finish when you are done."
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

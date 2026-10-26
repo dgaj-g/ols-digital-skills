@@ -1,4 +1,4 @@
-1280×800 fails: screens 53 · model minutes 11.83
-1440×900 fails: screens 53 · model minutes 11.83
-1024×768 fails: screens 53 · model minutes 11.83
+1280×800 fails: screens 53 · model minutes 11.88
+1440×900 fails: screens 53 · model minutes 11.88
+1024×768 fails: screens 53 · model minutes 11.88
 PASS j2l6-walk --fails
