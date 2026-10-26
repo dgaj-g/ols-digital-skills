@@ -248,6 +248,16 @@ const THEMES = {
      boat drifting toward the rocks until every fault is fixed. The board wears
      the bay at night: a lighthouse low right with its beam swept across the
      frame, a second, smaller light far left, and a slow swell along the foot. */
+  /* J3 LESSON 6 — THE NIGHT DESK. The design gives this deck the J3 theme the
+     .gs knows (control-room), and a deck carries no story (DFM 302), so the
+     board wears the control room's own colours and its bank of faders: a
+     separate entry only so the art sits under this lesson's own path. */
+  'j3-06': {
+    name: 'The Control Room',
+    ground: '#08090F', panel: '#14161F', accent: '#5AA9FF', accent2: '#FF6EC7',
+    text: '#FFFFFF', dim: '#B9C2D6',
+    motif: 'desk'
+  },
   'j3-05': {
     name: 'Two Lights',
     ground: '#0B1424', panel: '#16223A', accent: '#FFC94A', accent2: '#5FC8E8',

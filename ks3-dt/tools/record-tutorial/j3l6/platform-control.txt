@@ -1,0 +1,7 @@
+  PASS A1 Lesson 6 is on her lesson screen as Data Newsroom
+  PASS A1 the lesson card says The Night Desk under the title (got "The Night Desk")
+  FAIL A1 the lesson opens on the platform's Do-Now with five questions (got -1)
+  FAIL the walk stopped: page.evaluate: TypeError: Cannot read properties of undefined (reading 'findIndex')
+  PASS no page errors
+5 checks, 2 failed.
+CONTROL OK: the gate fails on a build without the lesson.

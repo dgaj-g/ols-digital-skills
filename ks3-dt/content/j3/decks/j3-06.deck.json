@@ -1,0 +1,134 @@
+{
+ "id": "j3-06.deck",
+ "lesson": "j3-06",
+ "driveFileId": "",
+ "year": "j3",
+ "theme": {
+  "id": "control-room",
+  "name": "The Control Room",
+  "ground": "#08090F",
+  "panel": "#14161F",
+  "accent": "#5AA9FF",
+  "accent2": "#FF6EC7",
+  "text": "#FFFFFF",
+  "dim": "#B9C2D6",
+  "display": "IBM Plex Mono",
+  "body": "Inter"
+ },
+ "deckName": "KS3 DT · J3 Lesson 6 — Data Newsroom (Teacher Deck)",
+ "sections": [
+  {
+   "id": "opening",
+   "chunk": "nightdesk",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "The Night Desk",
+     "sub": "Today you find out if a headline is telling the truth. You check it against the facts it came from. Your feed, adverts and the news tell you things every day. Some are not true.",
+     "notes": "WHERE THE CLASS IS: the class is coming in, logging in and opening the class link. The lesson opens on the Do-Now: five questions from earlier lessons that mark themselves. Take the register while the class works on it.\n\nSAY: read the sentences on the slide aloud, once, then stop. Say nothing about what happens on screen. The hour is a surprise."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "What you will do today",
+     "bullets": [
+      "Ask a table a question by typing a rule.",
+      "Join two rules with AND or OR. AND needs both. OR needs one.",
+      "Use BETWEEN to keep every number from one end to the other.",
+      "Use NOT to keep the rows that a rule does not match.",
+      "Say if the numbers back a headline. If they do not, say why."
+     ],
+     "notes": "SAY: these are the five things. Do not explain them now. The screens teach them one at a time, with an example before every ask."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Headphones on",
+     "bullets": [
+      "The hour has sound. Put your headphones on now.",
+      "No headphones? Press the speaker button to turn sound off.",
+      "Every sound has its words on the screen too. Nothing is lost."
+     ],
+     "notes": "SAY: headphones on. If you have none, turn the sound off with the speaker button."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "On your own",
+     "bullets": [
+      "You work through your own screens at your own pace.",
+      "Stuck? Press Hint. The last hint shows the rule.",
+      "Hints never cost you anything."
+     ],
+     "notes": "SAY: this is your own hour. Stuck means press the hint button, not put your hand up."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Read every screen",
+     "bullets": [
+      "Every screen says what to do and when it is done.",
+      "The strip at the top shows which part you are in.",
+      "Lost? Read the screen again from the top."
+     ],
+     "notes": "SAY: nothing on these screens is decoration. Read every line."
+    }
+   ]
+  },
+  {
+   "id": "story",
+   "chunk": "nightdesk",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "Start now",
+     "bullets": [
+      "Open the link and sign in with your school account.",
+      "Start with the five warm-up questions.",
+      "When a screen says Finish, you are done."
+     ],
+     "notes": "SAY: go. Leave the deck on this slide for the rest of the hour."
+    }
+   ]
+  },
+  {
+   "id": "finishing",
+   "chunk": "exit",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The last screens",
+     "bullets": [
+      "When you reach the badges, you are nearly finished.",
+      "Five last questions on today, then one about how it felt.",
+      "Press Finish. Everything you did is saved."
+     ],
+     "notes": "SAY: when you see your badges, you have about ten minutes left. Finish the last questions."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "chunk": "close",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Your work is saved. You have nothing to hand in.",
+      "Finished early? The last screen offers more to try."
+     ],
+     "notes": "SAY: everything is saved. See you in a fortnight."
+    }
+   ]
+  }
+ ]
+}

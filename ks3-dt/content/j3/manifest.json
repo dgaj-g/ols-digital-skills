@@ -101,12 +101,14 @@
    "id": "j3-06",
    "num": 6,
    "title": "Data Newsroom",
-   "tagline": "You question a set of data until it gives you a story worth telling.",
+   "tagline": "You ask questions of a table of data. Then you decide if a headline is true.",
    "block": "b3",
    "icon": "📰",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-06.json",
+   "story": "The Night Desk"
   },
   {
    "id": "j3-07",

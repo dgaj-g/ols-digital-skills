@@ -1,0 +1,650 @@
+{
+ "id": "j3-06",
+ "num": 6,
+ "year": "j3",
+ "title": "Data Newsroom",
+ "tagline": "You ask questions of a table of data. Then you decide if a headline is true.",
+ "mode": "taught",
+ "durationMin": 60,
+ "objectives": [
+  "Write a rule with a column, a sign and a number or a word, and read how many rows it keeps.",
+  "Join two rules with AND, which needs both, or OR, which needs one.",
+  "Use BETWEEN to keep every number from one end to the other, both ends in.",
+  "Use NOT to keep the rows a rule would leave out.",
+  "Say whether the numbers back a headline, and if not, why: too few people, only the best bit, the numbers say no, one did not cause the other."
+ ],
+ "_provenance": "Data Newsroom, story THE NIGHT DESK (J3_L6_SPEC.md, design complete 26 Oct 2026; the hour is L6_J2J3_PROTOTYPES/nightdesk ported to assets/nightdesk/hour). Written by KS3 DT Platform/L6_NIGHTDESK_BUILD/write_j3_06.js.",
+ "chunks": [
+  {
+   "id": "nightdesk",
+   "engine": "nightdesk",
+   "title": "The Night Desk",
+   "minutes": 50,
+   "config": {
+    "page": "assets/nightdesk/hour.html",
+    "loading": "Getting the night desk ready.",
+    "strings": {
+     "lesson": {
+      "code": "J3 · Lesson 6",
+      "title": "The Night Desk",
+      "slot": "Data Newsroom"
+     },
+     "rail": {
+      "donow": "Do now",
+      "open": "The job",
+      "c1": "1 · The question",
+      "c2": "2 · Two at once",
+      "c3": "3 · One week",
+      "c4": "4 · Either one",
+      "c5": "5 · Leave out",
+      "c6": "6 · The rush",
+      "front": "Front page",
+      "close": "Finish"
+     },
+     "common": {
+      "next": "Next",
+      "partOf": "Part {n} of 9",
+      "minsLeft": "{m} minutes left",
+      "pause": "Pause",
+      "paused": "Paused. Nothing is lost.",
+      "resume": "Carry on",
+      "here": "You are here",
+      "xp": "{n} points",
+      "hintN": "Hint {n} of 3",
+      "hint": "Hint",
+      "ask": "Ask the table",
+      "clear": "Clear",
+      "showing": "Showing {n} of {all} {what}",
+      "people": "people",
+      "days": "days",
+      "andMore": "and {n} more rows",
+      "bank": "Word bank. Click a word to put it in the question box.",
+      "boxHint": "Type a rule, then press Enter",
+      "check": "Check it",
+      "done": "Done",
+      "start": "Start",
+      "got": "Got it",
+      "tourStop": "Step {n} of 3",
+      "headlineN": "Headline {n} of 6",
+      "nextOne": "Next one",
+      "errEmpty": "The box is empty. Type a rule first.",
+      "errSyntax": "That rule is not written the right way. Write a column name, then a sign. Then write a number, or a word in quotes.",
+      "errColumn": "There is no column called {word}. Click a column name in the word bank.",
+      "errDangling": "Your rule is not finished. A rule needs a column name, then a sign. Then it needs a number or a word.",
+      "errValue": "After the sign, type a number or a word in quotes.",
+      "welcomeBack": "Welcome back. You were on {where}. The desk is exactly as you left it.",
+      "startAgain": "Start again",
+      "outOfTime": "Time is nearly up. Finish this headline. Then press Finish in the row of parts at the top. The parts you have not done stay open for next time.",
+      "soundOn": "Sound is on",
+      "soundOff": "Sound is off",
+      "lighter": "The lesson is running in a simpler way on this computer.",
+      "carryOn": "Carry on",
+      "nextTime": "Leave it for next time",
+      "back": "Back",
+      "avgCafe": "These people average {v} café visits.",
+      "avgVisitors": "These days average {v} visitors."
+     },
+     "stamp": {
+      "PRINT": "PRINT",
+      "SPIKE": "SPIKE",
+      "why": "Why?",
+      "reasons": {
+       "numbers": "The numbers say no",
+       "few": "Too few people",
+       "cherry": "Only the best bit",
+       "cause": "One did not cause the other",
+       "backed": "The numbers back it"
+      },
+      "confirm": "Stamp it",
+      "missing": "Pick a stamp and a reason first.",
+      "stamped": "You stamped it {stamp}. Your reason: {reason}"
+     },
+     "donow": {
+      "kicker": "Do now",
+      "intro": "Here are five quick questions from earlier lessons. Click an answer to see if it is right.",
+      "progress": "Question {n} of 5",
+      "right": "Right.",
+      "wrong": "Not that one. The green one is right.",
+      "finish": "You have done all five questions. Next is tonight’s job.",
+      "button": "Start tonight"
+     },
+     "opening": {
+      "kicker": "Tonight",
+      "line1": "Today you find out if a headline is telling the truth.",
+      "line2": "You check it against the facts it came from.",
+      "line3": "Social media, adverts and the news tell you things every day. Some of those things are not true.",
+      "button": "Start"
+     },
+     "story": {
+      "kicker": "10:02 pm · Dee Lavery, editor",
+      "from": "D",
+      "b1": "Fionn, our reporter, has gone home sick. He wrote six headlines and nobody has checked them.",
+      "b2": "The paper prints at midnight. Nothing prints without a check.",
+      "b3": "You are on the night desk tonight. The facts are in a table of data. You ask the table questions. Then you stamp each headline PRINT or SPIKE. PRINT sends it to the paper. SPIKE throws it out.",
+      "readAll": "Read all six headlines",
+      "go": "Open the desk"
+     },
+     "facts": {
+      "kicker": "What Fionn collected",
+      "intro": "Fionn put his facts in two tables: grids of rows and columns. Every headline tonight comes from one of them.",
+      "t1": "60 people of Rathmore answered a survey.",
+      "t1cols": "age · area · phone hours · sleep hours · exam score · café visits · pet · bus stars",
+      "t2": "Table two holds 92 summer days at the harbour.",
+      "t2cols": "date · temperature · rain · visitors · ice creams sold · sea rescues",
+      "button": "Show me the desk"
+     },
+     "tour": {
+      "kicker": "The desk",
+      "s1": "This is the table. It has sixty people. Each person is one row.",
+      "s2": "This is the question box. Type a rule here, then press Enter. A rule is a question for the table. The table keeps only the rows that fit your rule.",
+      "s3": "This is the count. It tells you how many rows are left.",
+      "next": "Next",
+      "done": "Got it"
+     },
+     "c1": {
+      "title": "The question",
+      "headline": "Eight hours of sleep lifts exam scores",
+      "byline": "Fionn · page 3",
+      "showKicker": "Dee shows you",
+      "show1": "A rule has a column, a sign and a number.",
+      "showDemo": "age < 20",
+      "show2": "age is the column. < means less than. It keeps people under 20.",
+      "show3": "A rule is also called a query.",
+      "ask": "Keep only the people who slept eight hours or more.",
+      "h1": "The column is sleep_hours. The sign for eight or more is >=.",
+      "h2": "Write the column, then the sign, then the number: sleep_hours, then >=, then 8.",
+      "h3": "Type this, then press Enter.",
+      "h3code": "sleep_hours >= 8",
+      "judge": {
+       "ok": "Showing 17 of 60. Seventeen people slept eight hours or more.",
+       "wrong": "Your rule shows {got} rows, but it should show 17. Check the sign."
+      },
+      "compareKicker": "Now compare",
+      "compare1": "Those 17 scored 61.0 on average.",
+      "compare2": "The other 43 scored 65.3.",
+      "predict": "Is the headline true?",
+      "options": [
+       "No. The people who slept eight hours or more scored lower.",
+       "Yes. Sleep lifted the scores."
+      ],
+      "right": "Right. The numbers say the opposite.",
+      "wrong": "Look again. The people who slept eight hours or more scored lower, not higher.",
+      "stampShowKicker": "How Dee stamps",
+      "stampShow1": "Fionn asked only three people.",
+      "stampShow2": "Dee stamped it SPIKE, meaning do not print.",
+      "stampShow3": "Her reason was too few people. Every stamp needs a reason.",
+      "stampAsk": "Your turn. Stamp it, then pick a reason.",
+      "stampOk": "SPIKE. The numbers say no. People who slept eight hours or more scored 61.0. Everyone else scored 65.3.",
+      "stampNo": "Look at the two averages. Which group scored higher?",
+      "reasonNo": "Seventeen people is enough to check. The averages show the headline is wrong.",
+      "doneLine": "One headline checked. Five are left.",
+      "stampShowCard": "Harbour café is the town favourite",
+      "stampShowBy": "Fionn · last night"
+     },
+     "c2": {
+      "title": "Two at once",
+      "headline": "Most Rathmore teens are on their phones five hours a day",
+      "byline": "Fionn · page 1",
+      "showKicker": "Dee shows you",
+      "show1": "AND joins two rules. It keeps a row only when both are true.",
+      "showDemo": "age < 20 AND pet = \"dog\"",
+      "show2": "This keeps teens with a dog: 3 of 60.",
+      "show3": "Words go in quotes. Numbers do not.",
+      "ask": "Keep teens who use their phone five hours or more.",
+      "h1": "For teens, use age < 20. For five hours or more, use phone_hours >= 5.",
+      "h2": "Put AND between the two rules.",
+      "h3": "Type this, then press Enter.",
+      "h3code": "age < 20 AND phone_hours >= 5",
+      "judge": {
+       "ok": "Showing 6 of 60. Six of the 18 teens use their phone that much.",
+       "wrong": "Your rule shows {got} rows, but it should show 6. Check both rules."
+      },
+      "predict": "Fionn wrote \"most\". Six of 18 is…",
+      "options": [
+       "One in three",
+       "Most of them",
+       "Half of them"
+      ],
+      "right": "Right. Six of eighteen is one in three.",
+      "wrong": "Six of eighteen is one in three. One in three is not most.",
+      "stampAsk": "Now stamp it, with a reason.",
+      "stampOk": "SPIKE. The numbers say no: 6 of 18 is not most.",
+      "stampNo": "Only six of the eighteen teens use their phone that much. Is that most?",
+      "reasonNo": "Eighteen teens are enough people to check. The problem is that Fionn wrote \"most\". Six of 18 is not most.",
+      "doneLine": "Two headlines checked."
+     },
+     "c3": {
+      "title": "One week",
+      "headline": "Rathmore harbour gets 3,000 visitors a day",
+      "byline": "Fionn · page 2",
+      "showKicker": "Dee shows you",
+      "show1": "BETWEEN keeps rows from your first number to your second. Both numbers count.",
+      "showDemo": "temp_c BETWEEN 20 AND 22",
+      "show2": "This rule keeps 16 days at 20, 21 or 22 degrees.",
+      "show3": "Each row here is one summer day.",
+      "ask": "Fionn only looked at days 40 to 46. Keep those days.",
+      "h1": "The column is day_no.",
+      "h2": "Write day_no, then BETWEEN, then the first day, then AND, then the last day.",
+      "h3": "Type this, then press Enter.",
+      "h3code": "day_no BETWEEN 40 AND 46",
+      "judge": {
+       "ok": "Showing 7 of 92 days. These 7 days are regatta week, 10 to 16 July. That is the week of the harbour boat races.",
+       "wrong": "Your rule shows {got} days, but it should show 7. Check both ends."
+      },
+      "compareKicker": "Now compare",
+      "compare1": "Those 7 days had 3,158 visitors a day.",
+      "compare2": "All 92 days had 2,215 visitors a day.",
+      "predict": "What did Fionn do?",
+      "options": [
+       "Took the best week and called it the summer.",
+       "Added the days up wrong.",
+       "He did nothing wrong. 3,000 is the right number."
+      ],
+      "right": "Right. One good week is not the whole summer.",
+      "wrong": "He took the best week and called it the summer.",
+      "stampAsk": "Now stamp it, with a reason.",
+      "stampOk": "SPIKE. Fionn used only the best week. Regatta week is not the whole summer.",
+      "stampNo": "Fionn used seven days out of 92. Can seven days show the whole summer?",
+      "reasonNo": "The numbers for that week are true. The problem is that Fionn picked the best week.",
+      "doneLine": "Three headlines checked."
+     },
+     "c4": {
+      "title": "Either one",
+      "headline": "More than half of Rathmore people have a dog or a cat",
+      "byline": "Fionn · page 5",
+      "showKicker": "Dee shows you",
+      "show1": "OR keeps a row when either rule is true.",
+      "showDemo": "area = \"Marsh\" OR area = \"Hill\"",
+      "show2": "This keeps the 30 people in Marsh or Hill.",
+      "show3": "Each side of OR is a whole rule, with its own column and sign.",
+      "ask": "Keep everyone with a dog or a cat.",
+      "h1": "The column is pet. Words go in quotes: \"dog\".",
+      "h2": "Type pet = \"dog\" OR pet = \"cat\". Each side is a full rule.",
+      "h3": "Type this, then press Enter.",
+      "h3code": "pet = \"dog\" OR pet = \"cat\"",
+      "judge": {
+       "ok": "Showing 31 of 60. That is more than half.",
+       "wrong": "Your rule shows {got} rows, but it should show 31. Write a full rule on each side of OR."
+      },
+      "predict": "Is the headline true?",
+      "options": [
+       "Yes. 31 of 60 is over half.",
+       "No. 31 is too few."
+      ],
+      "right": "Right. This one is true.",
+      "wrong": "Thirty-one of sixty is over half. This one is true.",
+      "stampAsk": "Now stamp it, with a reason.",
+      "stampOk": "PRINT. The numbers back it: 31 of 60.",
+      "stampNo": "Not every headline is wrong. 31 of 60 is over half.",
+      "reasonNo": "This headline is true. The reason to print is that the numbers back it.",
+      "doneLine": "Four headlines checked. One printed."
+     },
+     "c5": {
+      "title": "Leave out",
+      "headline": "Outside Old Town, everyone loves the new bus",
+      "byline": "Fionn · page 4",
+      "showKicker": "Dee shows you",
+      "show1": "NOT reverses a rule. It keeps the rows the rule would throw out.",
+      "showDemo": "NOT area = \"Old Town\"",
+      "show2": "This keeps the 44 people who are not in Old Town.",
+      "show3": "Type NOT before the rule.",
+      "ask": "Keep people outside Old Town who gave the bus any stars.",
+      "h1": "For outside Old Town, use NOT area = \"Old Town\". For any stars, use bus_stars > 0.",
+      "h2": "Join the two with AND.",
+      "h3": "Type this, then press Enter.",
+      "h3code": "NOT area = \"Old Town\" AND bus_stars > 0",
+      "judge": {
+       "ok": "Showing 4 of 60. Four people rated the bus at all.",
+       "wrong": "Your rule shows {got} rows, but it should show 4. Type NOT first. Then type AND between the two rules."
+      },
+      "compareKicker": "Now compare",
+      "compare1": "All four gave five stars.",
+      "compare2": "The other 40 people outside Old Town did not rate the bus.",
+      "predict": "Fionn wrote \"everyone\". He had…",
+      "options": [
+       "Ratings from four people",
+       "Ratings from 44 people",
+       "Ratings from all 60 people"
+      ],
+      "right": "Right. Four people cannot tell us what all 44 think.",
+      "wrong": "Four people rated it. They cannot tell us what all 44 think.",
+      "stampAsk": "Now stamp it, with a reason.",
+      "stampOk": "SPIKE. The reason is too few people. Only 4 of the 44 people outside Old Town rated the bus.",
+      "stampNo": "Only four of the 44 people rated the bus. Is that enough for \"everyone\"?",
+      "reasonNo": "The four did love it. There are just too few of them.",
+      "doneLine": "Five headlines checked."
+     },
+     "c6": {
+      "title": "The rush",
+      "headline": "Ice cream sales cause sea rescues",
+      "byline": "Fionn · page 1",
+      "ring": "This is Dee. One headline is left. The printing press starts in three minutes. If time runs out, the paper prints Fionn’s headline as he wrote it.",
+      "ringButton": "Start the clock",
+      "intro": "Fionn says more ice creams mean more sea rescues. Check the hot days, then the cold days.",
+      "ask1": "Keep the hot days: 24 degrees or more.",
+      "h1a": "The column is temp_c.",
+      "h1b": "Twenty-four or more is >=.",
+      "h1c": "Type this, then press Enter.",
+      "h1code": "temp_c >= 24",
+      "judge1": {
+       "ok": "Showing 27 of 92 days. An average hot day had 290 ice creams sold and 2.8 sea rescues.",
+       "wrong": "Your rule shows {got} days, but it should show 27. Check the sign."
+      },
+      "ask2": "Now keep the days under 18 degrees.",
+      "h2a": "Under 18 is <.",
+      "h2b": "Write temp_c, then <, then 18.",
+      "h2c": "Type this, then press Enter.",
+      "h2code": "temp_c < 18",
+      "judge2": {
+       "ok": "Showing 28 of 92 days. An average cold day had 91 ice creams sold and 0.5 sea rescues.",
+       "wrong": "Your rule shows {got} days, but it should show 28. Check the sign."
+      },
+      "stampAsk": "Stamp PRINT or SPIKE. Then pick a reason.",
+      "stampOk": "SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.",
+      "stampNo": "Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?",
+      "reasonNo": "The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Could something else cause both the sales and the rescues?",
+      "timeLeft": "{s} seconds left",
+      "timeUp": "It is midnight and time is up. The press printed Fionn’s headline on page one.",
+      "printedKicker": "Midnight",
+      "printedLine": "The press printed Fionn’s headline. It is on page one.",
+      "morningKicker": "The next morning",
+      "letter1": "Dear Editor, I sell ice cream at the harbour.",
+      "letter2": "Your paper said my ice cream causes sea rescues.",
+      "letter3": "Hot days bring swimmers and ice cream buyers.",
+      "letter4": "The heat caused the rescues, not my ice cream. Marie Byrne.",
+      "letterButton": "Fix the stamp",
+      "fixAsk": "Stamp it again. Pick the right reason this time.",
+      "fixOk": "You fixed the stamp. The heat caused the ice cream sales and the sea rescues. All your work is still saved.",
+      "doneLine": "Six headlines checked. The press is printing the paper now.",
+      "compare1": "Hot days averaged 290 ice creams and 2.8 rescues a day.",
+      "compare2": "Cold days averaged 91 ice creams and 0.5 rescues a day.",
+      "printedStamp": "PRINTED"
+     },
+     "front": {
+      "kicker": "Midnight",
+      "masthead": "The Harbour Post",
+      "date": "Rathmore · Saturday",
+      "intro": "The page you made.",
+      "printedSub": "Survey of 60 people",
+      "spikedTitle": "Spiked headlines",
+      "byline": "Night desk: {name}",
+      "you": "you",
+      "rename": "Type your name for the page",
+      "button": "Finish the hour",
+      "wrongSub": "Not checked · by Fionn",
+      "corrected": "corrected after printing"
+     },
+     "close": {
+      "badgesTitle": "Tonight",
+      "badges": [
+       {
+        "id": "asker",
+        "name": "First question",
+        "line": "You wrote your first query."
+       },
+       {
+        "id": "both",
+        "name": "Two at once",
+        "line": "You used AND."
+       },
+       {
+        "id": "week",
+        "name": "The week",
+        "line": "You used BETWEEN."
+       },
+       {
+        "id": "either",
+        "name": "Either one",
+        "line": "You used OR."
+       },
+       {
+        "id": "rest",
+        "name": "Leave out",
+        "line": "You used NOT."
+       },
+       {
+        "id": "rush",
+        "name": "The rush",
+        "line": "You finished before the press started."
+       }
+      ],
+      "recapTitle": "Remember these",
+      "recap": [
+       "A query asks a table a question.",
+       "AND needs both rules to match. OR needs just one.",
+       "BETWEEN keeps both ends.",
+       "NOT reverses a rule.",
+       "Before you print a headline, check that the numbers really back it."
+      ],
+      "exitTitle": "Last five questions",
+      "exitOf": "Question {n} of 5",
+      "exitRight": "Right.",
+      "exitWrong": "Not that one. The green one is right.",
+      "exitDone": "You have finished the last five questions.",
+      "exit": [
+       {
+        "stem": "Which rule keeps teens who live in Hill?",
+        "options": [
+         "age < 20 AND area = \"Hill\"",
+         "age < 20 OR area = \"Hill\"",
+         "NOT age < 20"
+        ]
+       },
+       {
+        "stem": "Fionn wrote that most teens use their phone five hours a day. Only six of the 18 teens do. Eighteen teens is enough people to check. Why does Dee spike the headline?",
+        "options": [
+         "The numbers say no",
+         "Too few people",
+         "One did not cause the other"
+        ]
+       },
+       {
+        "stem": "day_no BETWEEN 40 AND 46 keeps how many days?",
+        "options": [
+         "7",
+         "6",
+         "40"
+        ]
+       },
+       {
+        "stem": "Hot days have more ice cream sales and more sea rescues. Which sentence explains this best?",
+        "options": [
+         "The heat causes both",
+         "Ice cream causes rescues",
+         "Rescued swimmers then buy ice cream"
+        ]
+       },
+       {
+        "stem": "Which rule keeps everyone except Old Town?",
+        "options": [
+         "NOT area = \"Old Town\"",
+         "area = \"Old Town\"",
+         "area = \"Old\" AND area = \"Town\""
+        ]
+       }
+      ],
+      "feltTitle": "How did it go?",
+      "feltIntro": "Answer honestly.",
+      "felt": [
+       "I can write a rule with AND, OR or NOT.",
+       "I can say what BETWEEN keeps.",
+       "I can say why a headline gets spiked."
+      ],
+      "feltScale": [
+       "Not yet",
+       "Nearly",
+       "Yes"
+      ],
+      "difficulty": "How hard was today?",
+      "difficultyScale": [
+       "Easy",
+       "About right",
+       "Hard"
+      ],
+      "comment": "A note for your teacher",
+      "send": "Send and finish",
+      "freeTitle": "Free time",
+      "freeIntro": "Here are two more headlines from Fionn. Check them with your own rules.",
+      "reveal": "What Dee thinks",
+      "people": "People",
+      "days": "Days",
+      "free": [
+       {
+        "headline": "Harbour people visit the café most",
+        "table": "people",
+        "hint": "Try area = \"Harbour\" and read the café average.",
+        "reveal": "People who live in Harbour average 7.9 café visits. Everyone else averages 7.4. These are almost the same, so Dee spikes the headline."
+       },
+       {
+        "headline": "Rain keeps the visitors away",
+        "table": "days",
+        "hint": "Try rain_mm > 5, then rain_mm = 0. Read the visitors average.",
+        "reveal": "Wet days had 1,846 visitors a day. Dry days had 2,559. The numbers back the headline, so Dee prints it."
+       }
+      ],
+      "end": "The hour is over. Everything you did is saved.",
+      "freeOf": "Headline {n} of 2"
+     }
+    },
+    "badges": {
+     "asker": {
+      "id": "j3-b16",
+      "name": "First question",
+      "icon": "assets/badges/magnifier.png",
+      "xp": 12
+     },
+     "both": {
+      "id": "j3-b17",
+      "name": "Two at once",
+      "icon": "assets/badges/numbers.png",
+      "xp": 12
+     },
+     "week": {
+      "id": "j3-b18",
+      "name": "The week",
+      "icon": "assets/badges/compass.png",
+      "xp": 12
+     },
+     "either": {
+      "id": "j3-b19",
+      "name": "Either one",
+      "icon": "assets/badges/contract.png",
+      "xp": 12
+     },
+     "rest": {
+      "id": "j3-b20",
+      "name": "Leave out",
+      "icon": "assets/badges/shield.png",
+      "xp": 12
+     },
+     "rush": {
+      "id": "j3-b21",
+      "name": "The rush",
+      "icon": "assets/badges/newspaper.png",
+      "xp": 15
+     }
+    },
+    "help": "Every screen says what to do and when it is done. Read the card, then type a rule in the question box and press Enter. Stuck? Press Hint. The last hint shows the exact rule.\n\nTo stop for a while, press Pause. Press it again to carry on."
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Five questions",
+   "minutes": 5,
+   "config": {
+    "kicker": "Last five questions",
+    "cardTitle": "5 questions about asking a table",
+    "readyLabel": "Start the questions",
+    "intro": "Click one answer for each question. Your teacher sees how the class did, so answer on your own. You find out how you did on the last screen of the lesson.",
+    "items": [
+     {
+      "id": "j3x6-1",
+      "stem": "Which rule keeps teens who live in Hill?",
+      "options": [
+       "age < 20 AND area = \"Hill\"",
+       "age < 20 OR area = \"Hill\"",
+       "NOT age < 20"
+      ]
+     },
+     {
+      "id": "j3x6-2",
+      "stem": "Fionn wrote that most teens use their phone five hours a day. Only six of the 18 teens do. Eighteen teens is enough people to check. Why does Dee spike the headline?",
+      "options": [
+       "The numbers say no",
+       "Too few people",
+       "One did not cause the other"
+      ]
+     },
+     {
+      "id": "j3x6-3",
+      "stem": "day_no BETWEEN 40 AND 46 keeps how many days?",
+      "options": [
+       "7",
+       "6",
+       "40"
+      ]
+     },
+     {
+      "id": "j3x6-4",
+      "stem": "Hot days have more ice cream sales and more sea rescues. Which sentence explains this best?",
+      "options": [
+       "The heat causes both",
+       "Ice cream causes rescues",
+       "Rescued swimmers then buy ice cream"
+      ]
+     },
+     {
+      "id": "j3x6-5",
+      "stem": "Which rule keeps everyone except Old Town?",
+      "options": [
+       "NOT area = \"Old Town\"",
+       "area = \"Old Town\"",
+       "area = \"Old\" AND area = \"Town\""
+      ]
+     }
+    ],
+    "help": "There are 5 questions about the rules you typed today. Click one answer for each. The last screen of the lesson tells you how you did, and why."
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. Nothing you click now changes what you sent.",
+    "offlineSay": "The internet connection has stopped. Your answers are saved on this computer. They are sent when the connection comes back. You have finished the lesson.",
+    "statements": [
+     "I can write a rule with AND, OR or NOT.",
+     "I can say what BETWEEN keeps.",
+     "I can say why a headline gets spiked."
+    ],
+    "difficulty": true,
+    "comment": true,
+    "lockedNote": "Click an answer under each of the 3 sentences above. Then click how hard the hour felt. Then the \"Send & finish\" button will work.",
+    "doneTitle": "The hour is over. Everything you did is saved.",
+    "scoreLine": "You got {n} of the {total} questions right.",
+    "optionLines": true,
+    "flightLabel": "Free time",
+    "finishLabel": "Finish",
+    "help": "Under each sentence, pick the answer that is true for you. Then pick how hard today was. Then press Send & finish. Your teacher reads what you send."
+   }
+  },
+  {
+   "id": "free",
+   "engine": "nightdesk",
+   "title": "Free time",
+   "minutes": 0,
+   "optional": true,
+   "config": {
+    "stage": "free",
+    "page": "assets/nightdesk/hour.html",
+    "loading": "Getting the night desk ready.",
+    "badges": {},
+    "help": "You have two more headlines to check with your own rules. Nothing is marked. Press Finish when you are done."
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

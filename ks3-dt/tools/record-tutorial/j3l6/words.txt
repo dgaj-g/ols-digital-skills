@@ -1,0 +1,2 @@
+
+j3l6-words: PASS · 180 checks · 364 table strings · 57 lesson strings · 167 walked screens

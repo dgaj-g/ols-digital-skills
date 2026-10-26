@@ -1,0 +1,653 @@
+{
+ "width": 1024,
+ "height": 768,
+ "fails": false,
+ "minutes": 11.217666666666664,
+ "records": [
+  {
+   "screen": "donow",
+   "chapter": "donow",
+   "words": 57,
+   "proseWords": 57,
+   "keys": 0,
+   "film": 0,
+   "acts": 11,
+   "prose": [
+    "Do now · Question 1 of 5",
+    "Here are five quick questions from earlier lessons. Click an answer to see if it is right.",
+    "Méabh leaves at the bell without signing out. The next pupil sits down at that machine and deletes a folder by accident. When the school checks who deleted it, which name comes up?"
+   ],
+   "secs": 29.95
+  },
+  {
+   "screen": "opening",
+   "chapter": "open",
+   "words": 39,
+   "proseWords": 39,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "Tonight",
+    "Today you find out if a headline is telling the truth.",
+    "You check it against the facts it came from.",
+    "Social media, adverts and the news tell you things every day. Some of those things are not true."
+   ],
+   "secs": 15.649999999999999
+  },
+  {
+   "screen": "story",
+   "chapter": "open",
+   "words": 6,
+   "proseWords": 6,
+   "keys": 0,
+   "film": 5,
+   "acts": 2,
+   "prose": [
+    "10:02 pm · Dee Lavery, editor"
+   ],
+   "secs": 9.9
+  },
+  {
+   "screen": "facts",
+   "chapter": "open",
+   "words": 39,
+   "proseWords": 23,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "What Fionn collected",
+    "Fionn put his facts in two tables: grids of rows and columns. Every headline tonight comes from one of them."
+   ],
+   "secs": 15.649999999999999
+  },
+  {
+   "screen": "tour",
+   "chapter": "open",
+   "words": 37,
+   "proseWords": 37,
+   "keys": 0,
+   "film": 0,
+   "acts": 3,
+   "prose": [
+    "Word bank. Click a word to put it in the question box.",
+    "Showing 60 of 60 people",
+    "The desk · Step 1 of 3",
+    "This is the table. It has sixty people. Each person is one row."
+   ],
+   "secs": 16.549999999999997
+  },
+  {
+   "screen": "c1-title",
+   "chapter": "c1",
+   "words": 19,
+   "proseWords": 8,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "The Night Desk · Headline 1 of 6"
+   ],
+   "secs": 8.65
+  },
+  {
+   "screen": "c1-show",
+   "chapter": "c1",
+   "words": 38,
+   "proseWords": 38,
+   "keys": 0,
+   "film": 1.56,
+   "acts": 1,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Dee shows you",
+    "A rule has a column, a sign and a number.",
+    "age is the column. < means less than. It keeps people under 20.",
+    "A rule is also called a query."
+   ],
+   "secs": 16.86
+  },
+  {
+   "screen": "c1-ask",
+   "chapter": "c1",
+   "words": 40,
+   "proseWords": 29,
+   "keys": 17,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Word bank. Click a word to put it in the question box.",
+    "Showing 60 of 60 people",
+    "The question",
+    "Keep only the people who slept eight hours or more."
+   ],
+   "secs": 21.05
+  },
+  {
+   "screen": "c1-compare",
+   "chapter": "c1",
+   "words": 33,
+   "proseWords": 22,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 17 of 60 people",
+    "Those 17 scored 61.0 on average.",
+    "The other 43 scored 65.3.",
+    "Now compare",
+    "Is the headline true?"
+   ],
+   "secs": 14.349999999999998
+  },
+  {
+   "screen": "c1-stampshow",
+   "chapter": "c1",
+   "words": 42,
+   "proseWords": 32,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "Showing 17 of 60 people",
+    "How Dee stamps",
+    "Fionn asked only three people.",
+    "Dee stamped it SPIKE, meaning do not print.",
+    "Her reason was too few people. Every stamp needs a reason."
+   ],
+   "secs": 16.7
+  },
+  {
+   "screen": "c1-stamp",
+   "chapter": "c1",
+   "words": 37,
+   "proseWords": 26,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 17 of 60 people",
+    "Those 17 scored 61.0 on average.",
+    "The other 43 scored 65.3.",
+    "The question",
+    "Your turn. Stamp it, then pick a reason."
+   ],
+   "secs": 17.349999999999998
+  },
+  {
+   "screen": "c2-title",
+   "chapter": "c2",
+   "words": 23,
+   "proseWords": 8,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "The Night Desk · Headline 2 of 6"
+   ],
+   "secs": 10.049999999999999
+  },
+  {
+   "screen": "c2-show",
+   "chapter": "c2",
+   "words": 37,
+   "proseWords": 37,
+   "keys": 0,
+   "film": 3.48,
+   "acts": 1,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Dee shows you",
+    "AND joins two rules. It keeps a row only when both are true.",
+    "This keeps teens with a dog: 3 of 60.",
+    "Words go in quotes. Numbers do not."
+   ],
+   "secs": 18.43
+  },
+  {
+   "screen": "c2-ask",
+   "chapter": "c2",
+   "words": 33,
+   "proseWords": 18,
+   "keys": 30,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Two at once",
+    "Keep teens who use their phone five hours or more."
+   ],
+   "secs": 21.85
+  },
+  {
+   "screen": "c2-predict",
+   "chapter": "c2",
+   "words": 30,
+   "proseWords": 15,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 6 of 60 people",
+    "Two at once",
+    "Fionn wrote \"most\". Six of 18 is…"
+   ],
+   "secs": 13.299999999999999
+  },
+  {
+   "screen": "c2-stamp",
+   "chapter": "c2",
+   "words": 29,
+   "proseWords": 14,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 6 of 60 people",
+    "Two at once",
+    "Now stamp it, with a reason."
+   ],
+   "secs": 14.549999999999997
+  },
+  {
+   "screen": "c3-title",
+   "chapter": "c3",
+   "words": 19,
+   "proseWords": 8,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "The Night Desk · Headline 3 of 6"
+   ],
+   "secs": 8.65
+  },
+  {
+   "screen": "c3-show",
+   "chapter": "c3",
+   "words": 39,
+   "proseWords": 39,
+   "keys": 0,
+   "film": 3.48,
+   "acts": 1,
+   "prose": [
+    "Showing 92 of 92 days",
+    "Dee shows you",
+    "BETWEEN keeps rows from your first number to your second. Both numbers count.",
+    "This rule keeps 16 days at 20, 21 or 22 degrees.",
+    "Each row here is one summer day."
+   ],
+   "secs": 19.13
+  },
+  {
+   "screen": "c3-ask",
+   "chapter": "c3",
+   "words": 29,
+   "proseWords": 18,
+   "keys": 25,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 92 of 92 days",
+    "One week",
+    "Fionn only looked at days 40 to 46. Keep those days."
+   ],
+   "secs": 19.2
+  },
+  {
+   "screen": "c3-compare",
+   "chapter": "c3",
+   "words": 38,
+   "proseWords": 27,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 7 of 92 days",
+    "Those 7 days had 3,158 visitors a day.",
+    "All 92 days had 2,215 visitors a day.",
+    "Now compare",
+    "What did Fionn do?"
+   ],
+   "secs": 16.099999999999998
+  },
+  {
+   "screen": "c3-stamp",
+   "chapter": "c3",
+   "words": 40,
+   "proseWords": 29,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 7 of 92 days",
+    "Those 7 days had 3,158 visitors a day.",
+    "All 92 days had 2,215 visitors a day.",
+    "One week",
+    "Now stamp it, with a reason."
+   ],
+   "secs": 18.4
+  },
+  {
+   "screen": "c4-title",
+   "chapter": "c4",
+   "words": 24,
+   "proseWords": 8,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "The Night Desk · Headline 4 of 6"
+   ],
+   "secs": 10.399999999999999
+  },
+  {
+   "screen": "c4-show",
+   "chapter": "c4",
+   "words": 40,
+   "proseWords": 40,
+   "keys": 0,
+   "film": 4.319999999999999,
+   "acts": 1,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Dee shows you",
+    "OR keeps a row when either rule is true.",
+    "This keeps the 30 people in Marsh or Hill.",
+    "Each side of OR is a whole rule, with its own column and sign."
+   ],
+   "secs": 20.32
+  },
+  {
+   "screen": "c4-ask",
+   "chapter": "c4",
+   "words": 31,
+   "proseWords": 15,
+   "keys": 27,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Either one",
+    "Keep everyone with a dog or a cat."
+   ],
+   "secs": 20.4
+  },
+  {
+   "screen": "c4-predict",
+   "chapter": "c4",
+   "words": 27,
+   "proseWords": 11,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 31 of 60 people",
+    "Either one",
+    "Is the headline true?"
+   ],
+   "secs": 12.249999999999998
+  },
+  {
+   "screen": "c4-stamp",
+   "chapter": "c4",
+   "words": 29,
+   "proseWords": 13,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 31 of 60 people",
+    "Either one",
+    "Now stamp it, with a reason."
+   ],
+   "secs": 14.549999999999997
+  },
+  {
+   "screen": "c5-title",
+   "chapter": "c5",
+   "words": 20,
+   "proseWords": 8,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "The Night Desk · Headline 5 of 6"
+   ],
+   "secs": 9
+  },
+  {
+   "screen": "c5-show",
+   "chapter": "c5",
+   "words": 37,
+   "proseWords": 37,
+   "keys": 0,
+   "film": 3.12,
+   "acts": 1,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Dee shows you",
+    "NOT reverses a rule. It keeps the rows the rule would throw out.",
+    "This keeps the 44 people who are not in Old Town.",
+    "Type NOT before the rule."
+   ],
+   "secs": 18.07
+  },
+  {
+   "screen": "c5-ask",
+   "chapter": "c5",
+   "words": 30,
+   "proseWords": 18,
+   "keys": 40,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Leave out",
+    "Keep people outside Old Town who gave the bus any stars."
+   ],
+   "secs": 23.3
+  },
+  {
+   "screen": "c5-compare",
+   "chapter": "c5",
+   "words": 41,
+   "proseWords": 29,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 4 of 60 people",
+    "All four gave five stars.",
+    "The other 40 people outside Old Town did not rate the bus.",
+    "Now compare",
+    "Fionn wrote \"everyone\". He had…"
+   ],
+   "secs": 17.15
+  },
+  {
+   "screen": "c5-stamp",
+   "chapter": "c5",
+   "words": 42,
+   "proseWords": 30,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 4 of 60 people",
+    "All four gave five stars.",
+    "The other 40 people outside Old Town did not rate the bus.",
+    "Leave out",
+    "Now stamp it, with a reason."
+   ],
+   "secs": 19.099999999999998
+  },
+  {
+   "screen": "c6-ring",
+   "chapter": "c6",
+   "words": 27,
+   "proseWords": 27,
+   "keys": 0,
+   "film": 2,
+   "acts": 1,
+   "prose": [
+    "This is Dee. One headline is left. The printing press starts in three minutes. If time runs out, the paper prints Fionn’s headline as he wrote it."
+   ],
+   "secs": 13.45
+  },
+  {
+   "screen": "c6-ask1",
+   "chapter": "c6",
+   "words": 45,
+   "proseWords": 35,
+   "keys": 13,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 92 of 92 days",
+    "The rush",
+    "180 seconds left",
+    "Fionn says more ice creams mean more sea rescues. Check the hot days, then the cold days.",
+    "Keep the hot days: 24 degrees or more."
+   ],
+   "secs": 21.8
+  },
+  {
+   "screen": "c6-ask2",
+   "chapter": "c6",
+   "words": 17,
+   "proseWords": 17,
+   "keys": 12,
+   "film": 0,
+   "acts": 2,
+   "prose": [
+    "Showing 92 of 92 days",
+    "The rush",
+    "180 seconds left",
+    "Now keep the days under 18 degrees."
+   ],
+   "secs": 11.749999999999998
+  },
+  {
+   "screen": "c6-stamp",
+   "chapter": "c6",
+   "words": 50,
+   "proseWords": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "prose": [
+    "Showing 28 of 92 days",
+    "Hot days averaged 290 ice creams and 2.8 rescues a day.",
+    "Cold days averaged 91 ice creams and 0.5 rescues a day.",
+    "The rush",
+    "180 seconds left",
+    "Stamp PRINT or SPIKE. Then pick a reason."
+   ],
+   "secs": 21.9
+  },
+  {
+   "screen": "front",
+   "chapter": "front",
+   "words": 40,
+   "proseWords": 11,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "Midnight",
+    "The page you made.",
+    "Type your name for the page"
+   ],
+   "secs": 16
+  },
+  {
+   "screen": "badges",
+   "chapter": "close",
+   "words": 34,
+   "proseWords": 34,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "Tonight · 155 points",
+    "First questionYou wrote your first query.",
+    "Two at onceYou used AND.",
+    "The weekYou used BETWEEN.",
+    "Either oneYou used OR.",
+    "Leave outYou used NOT.",
+    "The rushYou finished before the press started."
+   ],
+   "secs": 13.899999999999999
+  },
+  {
+   "screen": "recap",
+   "chapter": "close",
+   "words": 39,
+   "proseWords": 39,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "prose": [
+    "Remember these",
+    "A query asks a table a question.",
+    "AND needs both rules to match. OR needs just one.",
+    "BETWEEN keeps both ends.",
+    "NOT reverses a rule.",
+    "Before you print a headline, check that the numbers really back it."
+   ],
+   "secs": 15.649999999999999
+  },
+  {
+   "screen": "exit",
+   "chapter": "close",
+   "words": 21,
+   "proseWords": 21,
+   "keys": 0,
+   "film": 0,
+   "acts": 11,
+   "prose": [
+    "Showing 28 of 92 days",
+    "Last five questions · Question 1 of 5",
+    "Which rule keeps teens who live in Hill?"
+   ],
+   "secs": 17.35
+  },
+  {
+   "screen": "felt",
+   "chapter": "close",
+   "words": 39,
+   "proseWords": 39,
+   "keys": 0,
+   "film": 0,
+   "acts": 5,
+   "prose": [
+    "How did it go?",
+    "Answer honestly.",
+    "I can write a rule with AND, OR or NOT.",
+    "I can say what BETWEEN keeps.",
+    "I can say why a headline gets spiked.",
+    "How hard was today?",
+    "A note for your teacher"
+   ],
+   "secs": 18.849999999999998
+  },
+  {
+   "screen": "free",
+   "chapter": "close",
+   "words": 41,
+   "proseWords": 34,
+   "keys": 0,
+   "film": 0,
+   "acts": 0,
+   "prose": [
+    "Showing 60 of 60 people",
+    "Free time · Headline 1 of 2",
+    "Here are two more headlines from Fionn. Check them with your own rules.",
+    "Try area = \"Harbour\" and read the café average."
+   ],
+   "secs": 15.549999999999999
+  }
+ ]
+}
