@@ -37,7 +37,7 @@
       "Ask a table a question by typing a rule.",
       "Join two rules with AND or OR. AND needs both. OR needs one.",
       "Use BETWEEN to keep every number from one end to the other.",
-      "Use NOT to keep the rows a rule would leave out.",
+      "Use NOT to keep the rows that a rule does not match.",
       "Say if the numbers back a headline. If they do not, say why."
      ],
      "notes": "SAY: these are the five things. Do not explain them now. The screens teach them one at a time, with an example before every ask."

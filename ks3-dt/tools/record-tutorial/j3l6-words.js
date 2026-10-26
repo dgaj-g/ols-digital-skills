@@ -22,7 +22,12 @@ const readJSON = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } c
 const clone = o => JSON.parse(JSON.stringify(o));
 /* the build's listed edits to the design's table (recorded in J3L6_BUILD_PROGRESS.md) */
 /* every edit is listed with its old text in j3l6/string-edits.json; a key renamed by a gate fix is listed in GONE */
-const EDITS = {}; Object.entries(readJSON(path.join(__dirname, 'j3l6/string-edits.json')) || {}).forEach(([k, v]) => { EDITS[k] = v.to; });
+/* a cold-read edit is logged by its ledger path (with ›): it is matched in the table by its old words instead */
+const EDITS = {}, BYTEXT = []; Object.entries(readJSON(path.join(__dirname, 'j3l6/string-edits.json')) || {}).forEach(([k, v]) => {
+  if (!k.includes('›')) { EDITS[k] = v.to; return; }
+  if (/^\[/.test(v.from)) { const f = JSON.parse(v.from), t = JSON.parse(v.to); f.forEach((x, i) => BYTEXT.push([x, t[i]])); } else BYTEXT.push([v.from, v.to]);
+});
+function byText(o) { if (Array.isArray(o) || (o && typeof o === 'object')) Object.keys(o).forEach(k => { if (typeof o[k] === 'string') { const h = BYTEXT.find(e => e[0] === o[k]); if (h) o[k] = h[1]; } else byText(o[k]); }); }
 const GONE = [];
 function setAt(o, p, v) { const k = p.split('.'), last = k.pop(); k.reduce((x, y) => x[y], o)[last] = v; }
 function walk(v, p, out) {
@@ -51,7 +56,7 @@ function checkStrings(list, label) {
 /* 1 · the shipped table is the design's, with only the listed edits */
 const P = load(PROTO), H = load(path.join(HOUR, 'strings.js'));
 if (!must(P && H, 'prototype and shipped strings.js both load')) { console.log('\nj3l6-words: FAIL'); process.exit(1); }
-const want = clone(P); Object.keys(EDITS).forEach(k => setAt(want, k, EDITS[k])); GONE.forEach(k => { const a = k.split('.'), l = a.pop(); delete a.reduce((x, y) => x[y], want)[l]; });
+const want = clone(P); Object.keys(EDITS).forEach(k => setAt(want, k, EDITS[k])); byText(want); GONE.forEach(k => { const a = k.split('.'), l = a.pop(); delete a.reduce((x, y) => x[y], want)[l]; });
 const diff = walk(want, 'S', []).filter(([p, s]) => walk(H, 'S', []).find(x => x[0] === p)?.[1] !== s).concat(walk(H, 'S', []).filter(([p]) => !walk(want, 'S', []).find(x => x[0] === p)));
 must(diff.length === 0, 'shipped strings.js differs from the design + listed edits at: ' + diff.slice(0, 5).map(d => d[0]).join(', '));
 /* 2 · every pupil string: ≤ 14 words a sentence, no banned word */

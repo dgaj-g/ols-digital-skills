@@ -19,3 +19,10 @@ Updated 26 Oct 2026.
 - Sit report ks3-dt/J3L6_SIT_REPORT.md written. New stall fixed: boxHint shortened to "Type a rule, then press Enter" (string-edits.json).
 - Cold reads r1 in Desktop L6_NIGHTDESK_BUILD/cold-reads/r1 (L1–L6, BD-A, BD-B). Fold with fold_cold_reads.js first → r2 --only second-paths → second → apply agreed → md.
 - NEXT: fold, rewrites, qa-language 0, re-run gates; deck deploy; pack + V76; PR; records.
+
+## Checkpoint — cold read r1b folded (26 Oct 2026)
+- Second reader on 105 lesson lines: PASS 15 (recorded), agreed rewrite 90. Applied via L6_NIGHTDESK_BUILD/apply_agreed_r2.js (84 swaps + 6 same-words).
+- Then cut back by the build's own call so every sentence ≤ 14 words, every screen ≤ 40 prose words and the hour inside its time: all logged in j3l6/string-edits.json.
+- j3l6-words.js now matches cold-read edits (ledger-path keys) by their old words (BYTEXT); manifest tagline kept in step by write_j3_06.js.
+- Gates on served :8136: walk PASS 41 screens 11.21 min; --fails PASS 44 / 12.95; words PASS 96 checks over 85 walked screens; platform PASS 66; judge PASS; engine PASS.
+- Next: round 2 cold reads (L1 + L1B lesson; BD-A + BD-B deck/brief) on every changed line, fold third, own call, qa-language.

@@ -2,28 +2,28 @@
  "width": 1280,
  "height": 800,
  "fails": false,
- "minutes": 11.001833333333334,
+ "minutes": 11.206,
  "records": [
   {
    "screen": "donow",
    "chapter": "donow",
-   "words": 55,
-   "proseWords": 55,
+   "words": 57,
+   "proseWords": 57,
    "keys": 0,
    "film": 0,
    "acts": 11,
    "prose": [
     "Do now · Question 1 of 5",
-    "Five quick questions from earlier lessons. Click an answer to see if it is right.",
+    "Here are five quick questions from earlier lessons. Click an answer to see if it is right.",
     "Méabh leaves at the bell without signing out. The next pupil sits down at that machine and deletes a folder by accident. When the school checks who deleted it, which name comes up?"
    ],
-   "secs": 29.25
+   "secs": 29.95
   },
   {
    "screen": "opening",
    "chapter": "open",
-   "words": 36,
-   "proseWords": 36,
+   "words": 39,
+   "proseWords": 39,
    "keys": 0,
    "film": 0,
    "acts": 1,
@@ -31,9 +31,9 @@
     "Tonight",
     "Today you find out if a headline is telling the truth.",
     "You check it against the facts it came from.",
-    "Your feed, adverts and the news tell you things every day. Some are not true."
+    "Social media, adverts and the news tell you things every day. Some of those things are not true."
    ],
-   "secs": 14.6
+   "secs": 15.649999999999999
   },
   {
    "screen": "story",
@@ -73,7 +73,7 @@
    "prose": [
     "Word bank. Click a word to put it in the question box.",
     "Showing 60 of 60 people",
-    "The desk · Stop 1 of 3",
+    "The desk · Step 1 of 3",
     "This is the table. It has sixty people. Each person is one row."
    ],
    "secs": 16.549999999999997
@@ -144,8 +144,8 @@
   {
    "screen": "c1-stampshow",
    "chapter": "c1",
-   "words": 40,
-   "proseWords": 30,
+   "words": 42,
+   "proseWords": 32,
    "keys": 0,
    "film": 0,
    "acts": 1,
@@ -154,9 +154,9 @@
     "How Dee stamps",
     "Fionn asked only three people.",
     "Dee stamped it SPIKE, meaning do not print.",
-    "Her reason: too few people. Every stamp needs one."
+    "Her reason was too few people. Every stamp needs a reason."
    ],
-   "secs": 16
+   "secs": 16.7
   },
   {
    "screen": "c1-stamp",
@@ -238,17 +238,17 @@
   {
    "screen": "c2-stamp",
    "chapter": "c2",
-   "words": 25,
-   "proseWords": 10,
+   "words": 29,
+   "proseWords": 14,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 6 of 60 people",
     "Two at once",
-    "Stamp it."
+    "Now stamp it, with a reason."
    ],
-   "secs": 13.149999999999999
+   "secs": 14.549999999999997
   },
   {
    "screen": "c3-title",
@@ -266,19 +266,19 @@
   {
    "screen": "c3-show",
    "chapter": "c3",
-   "words": 39,
-   "proseWords": 39,
+   "words": 38,
+   "proseWords": 38,
    "keys": 0,
    "film": 3.48,
    "acts": 1,
    "prose": [
     "Showing 92 of 92 days",
     "Dee shows you",
-    "BETWEEN keeps every number from one end to the other, both ends too.",
-    "It keeps days of 20 to 22 degrees: 16 of 92.",
+    "BETWEEN keeps every number from one end to the other, and both ends.",
+    "This rule keeps 16 days, from 20 to 22 degrees.",
     "Each row here is one summer day."
    ],
-   "secs": 19.13
+   "secs": 18.779999999999998
   },
   {
    "screen": "c3-ask",
@@ -298,36 +298,36 @@
   {
    "screen": "c3-compare",
    "chapter": "c3",
-   "words": 35,
-   "proseWords": 24,
+   "words": 38,
+   "proseWords": 27,
    "keys": 0,
    "film": 0,
    "acts": 2,
    "prose": [
     "Showing 7 of 92 days",
-    "Those 7 days: 3,158 visitors a day.",
-    "All 92 days: 2,215 a day.",
+    "Those 7 days had 3,158 visitors a day.",
+    "All 92 days had 2,215 visitors a day.",
     "Now compare",
     "What did Fionn do?"
    ],
-   "secs": 15.049999999999999
+   "secs": 16.099999999999998
   },
   {
    "screen": "c3-stamp",
    "chapter": "c3",
-   "words": 33,
-   "proseWords": 22,
+   "words": 40,
+   "proseWords": 29,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 7 of 92 days",
-    "Those 7 days: 3,158 visitors a day.",
-    "All 92 days: 2,215 a day.",
+    "Those 7 days had 3,158 visitors a day.",
+    "All 92 days had 2,215 visitors a day.",
     "One week",
-    "Stamp it."
+    "Now stamp it, with a reason."
    ],
-   "secs": 15.95
+   "secs": 18.4
   },
   {
    "screen": "c4-title",
@@ -354,8 +354,8 @@
     "Showing 60 of 60 people",
     "Dee shows you",
     "OR keeps a row when either rule is true.",
-    "This keeps people in Marsh or Hill: 30 of 60.",
-    "Each side of OR is a whole rule: column, sign, number or word."
+    "This keeps the 30 people in Marsh or Hill.",
+    "Each side of OR is a whole rule, with its own column and sign."
    ],
    "secs": 20.32
   },
@@ -392,17 +392,17 @@
   {
    "screen": "c4-stamp",
    "chapter": "c4",
-   "words": 25,
-   "proseWords": 9,
+   "words": 29,
+   "proseWords": 13,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 31 of 60 people",
     "Either one",
-    "Stamp it."
+    "Now stamp it, with a reason."
    ],
-   "secs": 13.149999999999999
+   "secs": 14.549999999999997
   },
   {
    "screen": "c5-title",
@@ -428,9 +428,9 @@
    "prose": [
     "Showing 60 of 60 people",
     "Dee shows you",
-    "NOT reverses a rule. It keeps everyone the rule would have left out.",
-    "This keeps everyone except Old Town: 44 of 60.",
-    "NOT sits in front of the rule."
+    "NOT reverses a rule. It keeps the rows the rule would throw out.",
+    "This keeps the 44 people who are not in Old Town.",
+    "Type NOT before the rule."
    ],
    "secs": 18.07
   },
@@ -452,100 +452,100 @@
   {
    "screen": "c5-compare",
    "chapter": "c5",
-   "words": 38,
-   "proseWords": 26,
+   "words": 41,
+   "proseWords": 29,
    "keys": 0,
    "film": 0,
    "acts": 2,
    "prose": [
     "Showing 4 of 60 people",
     "All four gave five stars.",
-    "The other 40 outside Old Town never rated it.",
+    "The other 40 people outside Old Town did not rate the bus.",
     "Now compare",
     "Fionn wrote \"everyone\". He had…"
    ],
-   "secs": 16.099999999999998
+   "secs": 17.15
   },
   {
    "screen": "c5-stamp",
    "chapter": "c5",
-   "words": 35,
-   "proseWords": 23,
+   "words": 42,
+   "proseWords": 30,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 4 of 60 people",
     "All four gave five stars.",
-    "The other 40 outside Old Town never rated it.",
+    "The other 40 people outside Old Town did not rate the bus.",
     "Leave out",
-    "Stamp it."
+    "Now stamp it, with a reason."
    ],
-   "secs": 16.65
+   "secs": 19.099999999999998
   },
   {
    "screen": "c6-ring",
    "chapter": "c6",
-   "words": 25,
-   "proseWords": 25,
+   "words": 27,
+   "proseWords": 27,
    "keys": 0,
    "film": 2,
    "acts": 1,
    "prose": [
-    "This is Dee. One headline is left. The press starts in three minutes. If you run out of time, Fionn’s headline prints as it is."
+    "This is Dee. One headline is left. The printing press starts in three minutes. If time runs out, the paper prints Fionn’s headline as he wrote it."
    ],
-   "secs": 12.75
+   "secs": 13.45
   },
   {
    "screen": "c6-ask1",
    "chapter": "c6",
-   "words": 47,
-   "proseWords": 37,
+   "words": 48,
+   "proseWords": 38,
    "keys": 13,
    "film": 0,
    "acts": 2,
    "prose": [
     "Showing 92 of 92 days",
     "The rush",
-    "180 seconds to the press",
+    "180 seconds until the press starts",
     "Fionn says more ice creams mean more sea rescues. Check the hot days, then the cold days.",
     "Keep the hot days: 24 degrees or more."
    ],
-   "secs": 22.5
+   "secs": 22.849999999999998
   },
   {
    "screen": "c6-ask2",
    "chapter": "c6",
-   "words": 19,
-   "proseWords": 19,
+   "words": 20,
+   "proseWords": 20,
    "keys": 12,
    "film": 0,
    "acts": 2,
    "prose": [
     "Showing 92 of 92 days",
     "The rush",
-    "180 seconds to the press",
-    "Now the cold days: under 18 degrees."
+    "180 seconds until the press starts",
+    "Now keep the days under 18 degrees."
    ],
-   "secs": 12.45
+   "secs": 12.799999999999999
   },
   {
    "screen": "c6-stamp",
    "chapter": "c6",
-   "words": 40,
-   "proseWords": 30,
+   "words": 47,
+   "proseWords": 37,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 28 of 92 days",
-    "Each hot day: 290 ice creams, 2.8 rescues.",
-    "Each cold day: 91 ice creams, 0.5 rescues.",
+    "Hot days averaged 290 ice creams and 2.8 rescues.",
+    "Cold days averaged 91 ice creams and 0.5 rescues.",
     "The rush",
-    "180 seconds to the press",
-    "Stamp it."
+    "180 seconds until the press starts",
+    "Now stamp it, with a reason."
    ],
-   "secs": 18.4
+   "secs": 20.849999999999998
   },
   {
    "screen": "front",
@@ -565,39 +565,39 @@
   {
    "screen": "badges",
    "chapter": "close",
-   "words": 40,
-   "proseWords": 40,
+   "words": 32,
+   "proseWords": 32,
    "keys": 0,
    "film": 0,
    "acts": 1,
    "prose": [
     "Tonight · 155 points",
-    "First questionYour first query.",
-    "Two at onceAND: two rules at once.",
-    "The weekBETWEEN kept days in a row.",
-    "Either oneOR: one rule or the other.",
-    "Leave outNOT reversed a rule.",
-    "The rushSix headlines stamped before midnight."
+    "First questionYou wrote your first query.",
+    "Two at onceYou used AND.",
+    "The weekYou used BETWEEN.",
+    "Either oneYou used OR.",
+    "Leave outYou used NOT.",
+    "The rushYou beat the clock."
    ],
-   "secs": 16
+   "secs": 13.2
   },
   {
    "screen": "recap",
    "chapter": "close",
-   "words": 40,
-   "proseWords": 40,
+   "words": 37,
+   "proseWords": 37,
    "keys": 0,
    "film": 0,
    "acts": 1,
    "prose": [
     "Remember these",
     "A query asks a table a question.",
-    "AND needs both. OR needs one.",
-    "BETWEEN keeps both ends and all between.",
+    "AND needs both rules. OR needs one.",
+    "BETWEEN keeps both ends.",
     "NOT reverses a rule.",
-    "Before you print, ask: enough people? Whole picture? Numbers back it? What caused what?"
+    "Before you print, check: enough people, the whole picture, the numbers, the cause."
    ],
-   "secs": 16
+   "secs": 14.95
   },
   {
    "screen": "exit",
@@ -617,37 +617,37 @@
   {
    "screen": "felt",
    "chapter": "close",
-   "words": 40,
-   "proseWords": 40,
+   "words": 39,
+   "proseWords": 39,
    "keys": 0,
    "film": 0,
    "acts": 5,
    "prose": [
     "How did it go?",
-    "Honest answers help.",
+    "Answer honestly.",
     "I can write a rule with AND, OR or NOT.",
     "I can say what BETWEEN keeps.",
     "I can say why a headline gets spiked.",
     "How hard was today?",
     "A note for your teacher"
    ],
-   "secs": 19.2
+   "secs": 18.849999999999998
   },
   {
    "screen": "free",
    "chapter": "close",
-   "words": 39,
-   "proseWords": 32,
+   "words": 41,
+   "proseWords": 34,
    "keys": 0,
    "film": 0,
    "acts": 0,
    "prose": [
     "Showing 60 of 60 people",
     "Free time · Headline 1 of 2",
-    "Two more of Fionn’s headlines. Check them with your own rules.",
+    "Here are two more headlines from Fionn. Check them with your own rules.",
     "Try area = \"Harbour\" and read the café average."
    ],
-   "secs": 14.849999999999998
+   "secs": 15.549999999999999
   }
  ]
 }
