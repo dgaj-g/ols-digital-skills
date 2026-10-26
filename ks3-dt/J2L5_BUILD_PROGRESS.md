@@ -74,3 +74,10 @@ All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1
 - Deck .gs pasted + saved in "OLS KS3 DT Slide Decks". First createJ2Lesson5Deck run FAILED: deck/j2-05/title-bg.png not on Pages (no j2-05 art existed). Fix: make-deck-art.js gets a 'j2-05' entry (same workshop-slate colours + 'workshop' motif as j2-03, as the design's theme block says); 4 PNGs rendered. Sequence per DFM 239 / J3 L5 precedent (PR #81 then #82): PR 1 = lesson + art → merge → Pages → run deck → PR 2 = DECK_ID + contentVersion → Path B version.
 - Walker fixes (hour code, editable): U.note now hides after 6 STORY seconds (was 6 wall-clock s: at ?speed it sat on 3.3 held = 53 words); ch3 clears note on a wrong go and before held3; idle help not shown over a 'bad' fault line; ch2/ch3 black: done() (stale plan want let the walker read a hidden empty box) + U.under('') (44 words on 3 black). Walker: Stop-it hold no longer needs ch==='4' (screen is 'prediction'); J2L5_DEBUG dumps over-40 screens.
 - Rerunning all four modes (bg b7ac2rmkv).
+
+## Checkpoint 15:30 (26 Oct 2026)
+- Walker clean: right 884 / honest 910 / fast 888, 0 failed at all sizes; control fails as it must. EXPECT['j2-5'] pinned 49/5/49/3. Platform gate 48/48. Pack clean at 2026-10-26b.
+- Sit report ks3-dt/J2L5_SIT_REPORT.md. PR #87 (lesson + gates + walker + j2-05 art) MERGED → main 34a9c59.
+- DFM 334 + audit row + K83 filed (Claude Work/KS3 DT Platform).
+- Next: Pages serves deck/j2-05/*-bg.png → createJ2Lesson5Deck (Chrome rule) → DECK_ID → writer, contentVersion 2026-10-26c, pack → proofs → PR 2 → build-pathb → V74 (project 1Wg30Cxm…, Index.html from raw at merge SHA) → live smoke → RESUME_HERE block, memory.
+- 15:21 deck created: driveFileId 1OofcGuqL-qmigRTxhiKpA1nx_Sx0de-iQwdSwXVtaX4 (read from execution log)
