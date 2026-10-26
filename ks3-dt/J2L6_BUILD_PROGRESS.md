@@ -29,3 +29,13 @@ Branch j2-l6-headliner · worktree ~/Sites/ols-wt-j2l6
 - Two brief lines re-fixed for the language gate: purpose[1] "she" → "the headliner"; runningTheHour[1] verbless "Then the story starts." → "Then the pupil opens the story, …".
 - Served walker at 3 sizes running against http://localhost:8126 (output j2l6/served-walk*.txt).
 - Next: fold second reads, re-read changed strings (r2), pack clean, sit report, deck deploy.
+
+## Update 26 Oct 2026, evening (pack clean)
+- Strings changed, round 2 (own call after two rounds, DFM 193d): 21 swaps by L6_HEADLINER_BUILD/apply_own_call_r2.js (19 strings.js, 2 write_j2_06.js); "The festival poster" and opening line3 kept.
+- Gate-driven rewordings (recorded in the ledger): c3.show3 (no First/Second/Third sequence: "Put three things inside the brackets, in this order. Type the question first. Next, type the words to show for yes. The words for no go last."); c2.h4_2 (no six-word repeat: "Type the = sign, then D6. After that, type the - sign and then D11."); c4.pickUp text "Answer the call".
+- Recap r-j2-604 and r-j2-605 stems rewritten after both cold readers failed them (r3-recap); 604 option "Book her" stands.
+- Brief runningTheHour part labels now name slides: "Do-Now · Slide 1", "The job · Slides 2–6", "Finishing · Slides 7–8" (qa-staff-docs).
+- Coverage: LANDMARKS['j2-6'] (8, all stood on) in sit-wrongpath.js and EXPECT['j2-6'] {xp 22, chunks 5, marks 22, badges 1} in sit-review.js, asserted by j2l6-platform.js (57 PASS).
+- Gates after all edits: judge 46 PASS, engine 36 PASS, assets, words (99 edits listed), walk + walk --fails PASS at 3 sizes (53 screens, 11.88 model min worst), platform 57 PASS. Transcript f3a63bfb9a739f07, verdicts md 564 rows.
+- contentVersion 2026-10-26d (source content-src/index.json). Shipping pack: exit 0, no FAIL.
+- Next: PR 1 → merge → Pages; then deck (Chrome rule).
