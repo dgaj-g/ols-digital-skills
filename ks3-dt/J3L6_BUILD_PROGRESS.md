@@ -26,3 +26,6 @@ Updated 26 Oct 2026.
 - j3l6-words.js now matches cold-read edits (ledger-path keys) by their old words (BYTEXT); manifest tagline kept in step by write_j3_06.js.
 - Gates on served :8136: walk PASS 41 screens 11.21 min; --fails PASS 44 / 12.95; words PASS 96 checks over 85 walked screens; platform PASS 66; judge PASS; engine PASS.
 - Next: round 2 cold reads (L1 + L1B lesson; BD-A + BD-B deck/brief) on every changed line, fold third, own call, qa-language.
+
+## r2 cold reads launched (22:47)
+Six readers on r2/{L1,L1B,L2,L2B,BD-A,BD-B}. fold third now pairs L2/L2B. Sit report numbers updated to 11.21 / 12.95.
