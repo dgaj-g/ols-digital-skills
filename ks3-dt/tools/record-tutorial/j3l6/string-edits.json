@@ -68,5 +68,10 @@
   "from": "A table has a column called pet. Which rule (a question for the table) keeps every person with a dog or a cat?",
   "to": "A table has a column called pet. Which rule keeps every person with a dog or a cat?",
   "why": "G3: the design stem had 16 words in one sentence; the bracket aside removed"
+ },
+ "common.boxHint": {
+  "from": "Type a rule (a question for the table), then press Enter",
+  "to": "Type a rule, then press Enter",
+  "why": "sit: the placeholder was cut off in the question box at 1024 and 1280 (the box shows ~26 characters); the tour line s2 already says a rule is a question for the table; the design sit report names this exact placeholder"
  }
 }

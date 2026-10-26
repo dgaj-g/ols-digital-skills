@@ -25,7 +25,7 @@
   PASS A13 the rush clock is running (176 s left)
   PASS A13 Pause stops the rush clock (176 then 176)
   PASS A13 a tab change pauses the hour
-  PASS A11 the clock's remaining time is in her lesson draft (176839)
+  PASS A11 the clock's remaining time is in her lesson draft (176841)
   PASS A11 Carry on brings the rush clock back with its seconds (176 s, saved 177)
   PASS A12 from minute 48 the note says "Time is nearly up. Finish this headline. Then press Finish in the strip at the top. The rest stays open for next time."
   PASS A12 Finish in the strip goes to the badges

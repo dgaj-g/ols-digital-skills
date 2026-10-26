@@ -1,0 +1,6 @@
+1280×800: screens 41 · model minutes 11.00
+1440×900: screens 41 · model minutes 11.00
+1024×768: screens 41 · model minutes 11.00
+G4: rush done in 8.5 s at 4 keys/s · timedOut false · running false · stamped true
+G6: timeout at 5 fps 3.03 s · 60 fps 3.01 s · with a 1 s pause 4.00 s
+PASS j3l6-walk
