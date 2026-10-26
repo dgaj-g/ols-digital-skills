@@ -54,3 +54,7 @@ All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1
 - The pack still FAILS with 38 failures: 36 recap-pool hub texts, the deck heading s2.1:stop changed since review, and the brief prepare[4] verbless line.
   - The list is in KS3 DT Platform/L5_SEARCH_BUILD/PACK_FAIL_HUB_TEXT_25OCT.txt
 - NEXT: /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_SEARCH_BUILD/NEXT_WINDOW_PROMPT.md
+
+## 26 Oct 2026 · build window 2 (Opus 5.5 medium)
+- 13:55 open. Dev server on 8126. Brief prepare[4] rewritten in write_j2_05.js: the real control is the Lessons tab, click the lesson's cell (staff.js renderLockGrid / guide text). Writer rerun.
+- make_cold_read_packets.js gained a hub mode (round h1): the 36 recap-pool strings (full text from recap-pool.json), the deck heading s2.1:stop, and the changed brief line. Readers H-A and H-B running in cold-reads/h1/.
