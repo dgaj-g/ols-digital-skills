@@ -36,6 +36,14 @@ const must = (ok, what) => { checks++; console.log((ok ? '  PASS ' : '  FAIL ') 
 /* the design's own words (L5_PROTOTYPES/hour/strings.js), not retyped */
 const W = {}; new Function('window', fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_PROTOTYPES/hour/strings.js', 'utf8'))(W);
 const P = W.SearchStrings;
+/* ...as SHIPPED: with the cold read's listed edits (j2l5/coldread-edits.json, DFM 334 / K83), applied exactly as
+   j2l5-words.js applies them, so this gate checks the words a pupil reads and not the design's first draft */
+(() => {
+  const EDITS = JSON.parse(fs.readFileSync(path.join(__dirname, 'j2l5/coldread-edits.json'), 'utf8'));
+  const keysOf = p => p.split(/\.|\[|\]/).filter(Boolean);
+  Object.keys(EDITS.table || {}).forEach(p => { const k = keysOf(p), last = k.pop(), par = k.reduce((x, y) => x == null ? x : x[y], P); if (par == null || !(last in par)) return; /* a path the build moved (ch1.j4 -> common): j2l5-words owns those */ par[last] = EDITS.table[p]; });
+  Object.keys(EDITS.last5 || {}).forEach(i => { const e = EDITS.last5[i], x = P.close.last5[i]; if (e.q) x.q = e.q; (e.lines || []).forEach((l, k) => { if (l) x.opts[k][1] = l; }); });
+})();
 const QUESTIONS = P.close.last5.map(x => x.q);
 const RIGHT = P.close.last5.map(x => x.opts.find(o => o[2])[0]);
 const Q1_WRONG = P.close.last5[0].opts.find(o => !o[2]);
@@ -164,14 +172,19 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
 
     /* P4 running out of time */
     if (fr) {
-      await fr.evaluate(() => { const U = window.SearchUI; U.__now = U.now; U.now = function () { return 48 * 60 + 5; }; });
+      /* she answers the welcome first (Carry on), as she must before any chapter can end */
+      await fr.evaluate((c) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === c); if (x) x.click(); }, P.btn.carryOn);
+      await sleep(1200);
+      /* shift the story clock to minute 48:05 and let it run on (a frozen clock would stall every U.wait) */
+      await fr.evaluate(() => { const U = window.SearchUI; U.__now = U.now; const off = 48 * 60 + 5 - U.__now(); U.now = function () { return U.__now() + off; }; });
       await sleep(900);
       const note = await fr.evaluate(() => { const n = document.getElementById('note'); return n && !n.classList.contains('off') ? n.textContent : ''; });
       must(note === P.common.runningOut, 'P4 from minute 48 the note says "' + P.common.runningOut + '" (got "' + note + '")');
       await fr.evaluate(() => { window.__between = null; SearchHour.between(3).then(id => { window.__between = id; }); });
       await sleep(600);
-      const bp = await panelOf(fr);
-      must(bp.head === P.common.runningOut && bp.btns.join('|') === [P.btn.carryOn, P.btn.home].join('|'), 'P4 the chapter end offers Carry on and Home (' + bp.btns.join(', ') + ')');
+      /* the head is drawn at once and the buttons after the beat (mark), so wait for the buttons, up to 8 s */
+      let bp = await panelOf(fr); for (let t = 0; t < 32 && bp.btns.indexOf(P.btn.home) === -1; t++) { await sleep(250); bp = await panelOf(fr); }
+      must(bp.head === P.common.runningOut && bp.btns.join('|') === [P.btn.carryOn, P.btn.home].join('|'), 'P4 the chapter end offers Carry on and Home (' + bp.head + ' · ' + bp.btns.join(', ') + ')');
       await fr.evaluate((h) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === h); if (x) x.click(); }, P.btn.home);
       await sleep(500);
       must(await fr.evaluate(() => window.__between) === 'home', 'P4 Home is a real way home');

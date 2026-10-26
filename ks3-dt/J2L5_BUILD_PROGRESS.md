@@ -63,3 +63,9 @@ All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1
 - qa-text-damage: held3 parallel ("When i was 0 … When i was 9 …") declared as ALLOWED_REPEATS 'when i was beep flew metres' (deliberate, cold read kept it).
 - qa-harness-coverage cells for j2-05: verdict heading "## J2 LESSON 5" added by fold_cold_reads.js; flight chunk `optional: true` (Free flight = the refusable stretch, DFM 259; Finish skips it); LANDMARKS['j2-5'] (sit-wrongpath.js) + EXPECT['j2-5'] PROVISIONAL (sit-review.js) with skip lines; j2l5-walk.js now stands on LANDMARKS and asserts EXPECT (right mode).
 - NEXT: pack clean → walker right at 1280x900 to measure shape → pin EXPECT → repack → platform gate.
+
+## 26 Oct 14:20 checkpoint — pack CLEAN (commit ce68209), platform gate PASS 48/48 + control OK
+- contentVersion 2026-10-26a (content-src/index.json). Pack exit 0.
+- j2l5-platform.js fixed (gate faults, not lesson faults): expected strings = design + cold-read listed edits (coldread-edits.json, paths the build moved skipped — j2l5-words owns them); P4 presses Carry on at the welcome first, waits for the buttons, and SHIFTS the story clock to 48:05 instead of freezing it (a frozen clock stalls U.wait). PASS 48/48.
+- Control: lesson-less build = main checkout served by `node ks3-dt/tools/dev-static.js 8127 /Users/damiengartland/Sites/ols-digital-skills` (nohup) → CONTROL OK.
+- Walker right mode, 3 sizes, running → S/walk-right.txt (S = scratchpad/S). NEXT: read SHAPE line, pin EXPECT['j2-5'] in sit-review.js (xp/chunks/marks/badges; replace PROVISIONAL), check every "stood on" landmark passes (drop/fix any selector that is not real), then honest, fast, --control --expect-fail, sit report, repack (pin changes no content), commit.
