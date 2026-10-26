@@ -81,6 +81,8 @@ if (/^j3-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 5 is Bug 
 /* J2 Lesson 5 is LOOP MACHINES (THE SEARCH, 25 Oct 2026): the hour is a page in a frame (assets/search/hour.html),
    so this walker cannot press it. It is walked by j2l5-walk.js (the hour, three ways) and j2l5-platform.js (the lesson around it). */
 if (/^j2-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J2 Lesson 5 is Loop Machines; walk it with j2l5-walk.js and j2l5-platform.js.'); process.exit(0); }
+/* J2 Lesson 6 is THE HEADLINER (26 Oct 2026): walked by j2l6-walk.js (the hour, with and without fails) and j2l6-platform.js (the lesson around it). */
+if (/^j2-6$/i.test(LESSON)) { console.log('sit-wrongpath.js: J2 Lesson 6 is The Headliner; walk it with j2l6-walk.js and j2l6-platform.js.'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
 /* match the tile by its LESSON NUMBER, not by a word in its title: the first
@@ -100,6 +102,7 @@ const TILE = {
   'j3-3': /Lesson\s*3(?!\d)/i,
   'j2-4': /Lesson\s*4(?!\d)/i,
   'j2-5': /Lesson\s*5(?!\d)/i,
+  'j2-6': /Lesson\s*6(?!\d)/i,
   'j3-4': /Lesson\s*4(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
@@ -404,6 +407,17 @@ const LANDMARKS = {
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close'],
     ['the free flight program box', '#box', 'flight']
+  ],
+  /* J2 Lesson 6 THE HEADLINER (26 Oct 2026): stood on by j2l6-platform.js */
+  'j2-6': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the strip with the five parts', '.strip .rail', 'headliner'],
+    ['the festival sheet', '.sheet [data-cell="D3"]', 'headliner'],
+    ['the Sum bar', '#fbar', 'headliner'],
+    ['Aoife, the coach', '.coach', 'headliner'],
+    ['the exit check', '.q-opt, .exit-q', 'exit'],
+    ['the closing screen', '.se-row, .se-card, .se-submit', 'close'],
+    ['the free tasks on the sheet', '.sheet #fbar', 'free']
   ],
   'j3-5': [
     ['the Do-Now', '.q-opt', '_recap'],

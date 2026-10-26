@@ -57,7 +57,7 @@ const PREVIEW = path.join(ROOT, 'tools', 'brief-preview.js');
    ("shaving time from some lesson sections while adding some to others"). Where
    each minute moved is written down in PROGRESS_J2J3_L1_TEACHER.md rather than
    left as arithmetic nobody can audit. */
-const REDESIGNED = new Set(['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05', 'j1-06', 'j2-01', 'j3-01']);
+const REDESIGNED = new Set(['j1-01', 'j1-02', 'j1-03', 'j1-04', 'j1-05', 'j1-06', 'j2-01', 'j2-06', 'j3-01']);
 const HOUR = 60;
 
 const ORDER = [

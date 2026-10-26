@@ -1,0 +1,134 @@
+{
+ "id": "j2-06.deck",
+ "lesson": "j2-06",
+ "driveFileId": "",
+ "year": "j2",
+ "theme": {
+  "id": "workshop-slate",
+  "name": "The Workshop",
+  "ground": "#1E2630",
+  "panel": "#2B3644",
+  "accent": "#FFC15E",
+  "accent2": "#5FD6B4",
+  "text": "#FFFFFF",
+  "dim": "#C9D4E2",
+  "display": "Bitter",
+  "body": "Inter"
+ },
+ "deckName": "KS3 DT · J2 Lesson 6 — Festival Planner (Teacher Deck)",
+ "sections": [
+  {
+   "id": "opening",
+   "chunk": "headliner",
+   "slides": [
+    {
+     "kind": "title",
+     "bg": "title",
+     "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+     "heading": "The Headliner",
+     "sub": "Today you make a computer do your sums for you. When one number changes, it redoes every sum on its own. People use spreadsheets to plan parties, trips and whole festivals.",
+     "notes": "WHERE THE CLASS IS: the class is coming in, logging in and opening the class link. The lesson opens on the Do-Now: five questions from earlier lessons that mark themselves. Take the register while the class works on it.\n\nSAY: read the sentences on the slide aloud, once, then stop. Say nothing about what happens on screen. The hour is a surprise."
+    },
+    {
+     "kind": "objectives",
+     "bg": "section",
+     "heading": "What you will do today",
+     "bullets": [
+      "Write a sum that uses box names, like =B3*C3.",
+      "Change one number and watch every sum change.",
+      "Copy a sum down a column.",
+      "Make a box answer in words with IF.",
+      "Pin a box with $ signs so it does not move when you copy a sum."
+     ],
+     "notes": "SAY: these are the five things. Do not explain them now. The screens teach them one at a time, with an example before every task."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Headphones on",
+     "bullets": [
+      "The hour has sound. Put your headphones on now.",
+      "No headphones? Press the speaker button to turn sound off.",
+      "Every sound also has its words on the screen. With the sound off, you can still read every word."
+     ],
+     "notes": "SAY: headphones on. If you have none, turn the sound off with the speaker button."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "On your own",
+     "bullets": [
+      "You work through your own screens at your own pace.",
+      "Stuck? Press Give me a hint. The last hint shows the exact sum.",
+      "Hints never cost you anything."
+     ],
+     "notes": "SAY: this is your own hour. Stuck means press the hint button, not put your hand up."
+    },
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "Read every screen",
+     "bullets": [
+      "Every screen says what to do and when it is done.",
+      "The strip at the top shows which part you are in.",
+      "Lost? Read the screen again from the top."
+     ],
+     "notes": "SAY: nothing on these screens is decoration. Read every line."
+    }
+   ]
+  },
+  {
+   "id": "story",
+   "chunk": "headliner",
+   "stop": true,
+   "slides": [
+    {
+     "kind": "stop",
+     "bg": "stop",
+     "beacon": "1",
+     "heading": "Start now",
+     "bullets": [
+      "Open the link and sign in with your school account.",
+      "Start with the five warm-up questions.",
+      "When a screen says Finish, you are done."
+     ],
+     "notes": "SAY: go. Leave the deck on this slide for the rest of the hour."
+    }
+   ]
+  },
+  {
+   "id": "finishing",
+   "chunk": "exit",
+   "slides": [
+    {
+     "kind": "bullets",
+     "bg": "section",
+     "heading": "The last screens",
+     "bullets": [
+      "When you reach the badges, you are nearly finished.",
+      "You answer five last questions about today. Then you fill in a short page about how it went.",
+      "Press Finish. Everything you made is saved."
+     ],
+     "notes": "SAY: when you see your badges, you have about ten minutes left. Finish the last questions."
+    }
+   ]
+  },
+  {
+   "id": "closer",
+   "chunk": "close",
+   "slides": [
+    {
+     "kind": "closer",
+     "bg": "closer",
+     "heading": "Before you leave",
+     "sub": "See you in a fortnight.",
+     "bullets": [
+      "Your work is saved. You have nothing to print.",
+      "Finished early? The last screen offers more to try."
+     ],
+     "notes": "SAY: everything is saved. See you in a fortnight."
+    }
+   ]
+  }
+ ]
+}

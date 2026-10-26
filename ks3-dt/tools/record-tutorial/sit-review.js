@@ -58,6 +58,8 @@ if (/^6$/.test(NUM)) { console.log('sit-review.js: J1 Lesson 6 is The Operation;
 /* J3 Lesson 5 is BUG BOUNTY (TWO LIGHTS, 15 Oct 2026), walked by l5-walk.js against EXPECT['j3-5'] below. */
 /* J2 Lesson 5 is THE SEARCH (26 Oct 2026), walked by j2l5-walk.js against EXPECT['j2-5'] below. */
 if (/^j2-5$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 5 is The Search; walk it with j2l5-walk.js (it asserts EXPECT[\'j2-5\']).'); process.exit(0); }
+/* J2 Lesson 6 is THE HEADLINER (26 Oct 2026): the hour is walked by j2l6-walk.js, the lesson around it by j2l6-platform.js. */
+if (/^j2-6$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 6 is The Headliner; walk it with j2l6-walk.js and j2l6-platform.js.'); process.exit(0); }
 if (/^j3-5$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 5 is Bug Bounty; walk it with l5-walk.js (it asserts EXPECT[\'j3-5\']).'); process.exit(0); }
 if (/^j3-4$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
 /* YEAR-QUALIFIED KEYS FROM 16 AUG 2026 (see sit-wrongpath.js for the reason J1
@@ -206,6 +208,7 @@ const EXPECT = {
      are seeded (`window.__relaySeed`) and every build is driven from its own
      key, so every number holds, XP included. */
   'j2-5': { xp: 49, chunks: 5, marks: 49, badges: 3 },          // measured by j2l5-walk.js, 26 Oct 2026
+  'j2-6': { xp: 22, chunks: 5, marks: 22, badges: 1 },          // measured by j2l6-platform.js, 26 Oct 2026 (Do-Now, sum-writer, five questions, close, free; the hour itself by j2l6-walk.js)
   'j3-5': { xp: 49, chunks: 12, presses: 82, marks: 49, badges: 3 },   // measured by l5-walk.js, 15 Oct 2026 (presses reported, not asserted)
   'j3-4': { xp: 65, chunks: 12, presses: 45, marks: 14, badges: 3 },
   /* J2 Lesson 4 (14 Sep 2026): IDENTICAL on runs 7 and 8 — the class

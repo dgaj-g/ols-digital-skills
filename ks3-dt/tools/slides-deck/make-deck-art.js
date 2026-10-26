@@ -204,6 +204,15 @@ const THEMES = {
     text: '#FFFFFF', dim: '#C9D4E2',
     motif: 'workshop'
   },
+  /* J2 LESSON 6 — THE HEADLINER. The design gives this deck the J2 theme the
+     .gs knows (workshop-slate), so the J2 board stays one room. Same colours,
+     same motif: a separate entry only so the art sits under this lesson's own path. */
+  'j2-06': {
+    name: 'The Workshop',
+    ground: '#1E2630', panel: '#2B3644', accent: '#FFC15E', accent2: '#5FD6B4',
+    text: '#FFFFFF', dim: '#C9D4E2',
+    motif: 'workshop'
+  },
   'j3-03': {
     name: 'The Control Room',
     ground: '#08090F', panel: '#14161F', accent: '#5AA9FF', accent2: '#FF6EC7',
