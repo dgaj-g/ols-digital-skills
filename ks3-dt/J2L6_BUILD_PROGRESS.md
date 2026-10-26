@@ -39,3 +39,4 @@ Branch j2-l6-headliner · worktree ~/Sites/ols-wt-j2l6
 - Gates after all edits: judge 46 PASS, engine 36 PASS, assets, words (99 edits listed), walk + walk --fails PASS at 3 sizes (53 screens, 11.88 model min worst), platform 57 PASS. Transcript f3a63bfb9a739f07, verdicts md 564 rows.
 - contentVersion 2026-10-26d (source content-src/index.json). Shipping pack: exit 0, no FAIL.
 - Next: PR 1 → merge → Pages; then deck (Chrome rule).
+- 20:50 deck created: driveFileId 1nCs5vC7Tq9caDPHTGKCg2sEAAjWuaCr3M7GN1uQjDNM (execution log); .gs from main 3e0dcb4 pasted + saved first
