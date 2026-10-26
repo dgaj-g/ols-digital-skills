@@ -1279,6 +1279,7 @@
       '<span class="tile-card">' +
         '<span class="tile-num">' + esc(le.side ? 'Side Quest' : 'Lesson ' + le.num) + '</span>' +
         '<span class="tile-title">' + esc(le.title) + '</span>' +
+        (le.story ? '<span class="tile-story">' + esc(le.story) + '</span>' : '') +
         '<span class="tile-tag">' + esc(le.tagline || '') + '</span>' +
         (st.done ? '<span class="tile-state done">&#10003; Complete</span>'
           : st.flagged ? '<span class="tile-state flag">Absent? Catch up</span>'
@@ -1624,9 +1625,12 @@
       if (s.pendingMin >= 1) { payload.minDelta = Math.round(s.pendingMin); s.pendingMin = 0; }
       App.call('saveEvent', payload);
     }
-    if (s.chunkIdx < s.chunks.length - 1) { s.chunkIdx++; mountChunk(); }
-    else finishLesson();
+    if (s.chunkIdx < s.chunks.length - 1 && !s.endNow) { s.chunkIdx++; mountChunk(); }
+    else { s.endNow = false; finishLesson(); }
   };
+  /* J2 L5: the last card's Finish skips the optional free flight. The card's chunk is recorded done as
+     nextChunk records it, then the lesson ends. */
+  App.finishLesson = function () { App.state.endNow = true; App.nextChunk(); };
 
   function finishLesson() {
     var s = App.state;

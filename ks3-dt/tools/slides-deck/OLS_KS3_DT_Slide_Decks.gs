@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-15 from contentVersion 2026-10-15b.
+ * Built 2026-10-26 from contentVersion 2026-10-26a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -2581,6 +2581,138 @@ var DECKS = {
    }
   ]
  },
+ "j2-05": {
+  "id": "j2-05.deck",
+  "lesson": "j2-05",
+  "driveFileId": "",
+  "year": "j2",
+  "theme": {
+   "id": "workshop-slate",
+   "name": "The Workshop",
+   "ground": "#1E2630",
+   "panel": "#2B3644",
+   "accent": "#FFC15E",
+   "accent2": "#5FD6B4",
+   "text": "#FFFFFF",
+   "dim": "#C9D4E2",
+   "display": "Bitter",
+   "body": "Inter"
+  },
+  "deckName": "KS3 DT · J2 Lesson 5 — Loop Machines (Teacher Deck)",
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "search",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Lesson 5 · Loop Machines",
+      "sub": "J2 · Lesson 5 of 17",
+      "notes": "WHERE THE CLASS IS: the class is coming in, logging in and opening the class link. The lesson opens on the Do-Now. This is three questions from earlier lessons, and they mark themselves. Take the register while the class works on it.\n\nSAY: \"Log in, open the class link, and work through the three questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the Do-Now. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "Today you meet loops",
+      "bullets": [
+       "A loop repeats the lines under it that are pushed in to the right. You write those lines only once.",
+       "A loop line has a number in brackets. That number says how many times the lines repeat. You work out the number before you type it.",
+       "You will meet one new word, i. The lesson teaches it when it is needed."
+      ],
+      "notes": "SAY these as they are written. Do not explain loops now: the lesson teaches them step by step."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Headphones on",
+      "bullets": [
+       "Sound is part of this lesson. Put your headphones on now.",
+       "The lesson also works with the sound off. Every sound is also shown as a picture on the screen.",
+       "Sound turns on the first time you press a button. Until then, nothing makes a sound."
+      ],
+      "notes": "SAY: \"Headphones on now, please. Sound is part of today. If you have no headphones, everything still works with the sound off.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "On your own",
+      "bullets": [
+       "You work on your own screen at your own speed. You do not wait for anyone, and no one waits for you.",
+       "Every program you type really runs. If it is wrong, the screen tells you what it did and what to change.",
+       "If you need to leave the room, press Pause at the bottom left of your screen. It stops everything."
+      ],
+      "notes": "SAY: \"Today you work on your own, at your own speed. Every program you type really runs. If it is wrong, the screen tells you what it did and what to change. If you need to leave the room, press Pause first.\""
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Read every screen",
+      "bullets": [
+       "Every screen tells you one thing to do. Read the screen before you type.",
+       "The card shows the exact lines to type. You type them in the box under the card.",
+       "A yellow line under the box is a hint, not a mark."
+      ],
+      "notes": "SAY: \"Read every screen before you type. The card shows the exact lines; the box is where you type them. A yellow line under the box is a hint, not a mark.\""
+     }
+    ]
+   },
+   {
+    "id": "story",
+    "chunk": "search",
+    "stop": true,
+    "slides": [
+     {
+      "kind": "stop",
+      "bg": "stop",
+      "beacon": "1",
+      "heading": "Click the Start the hour button on your screen",
+      "bullets": [
+       "Open the class link and press Start the hour.",
+       "If you need to leave the room, press Pause at the bottom left of your screen.",
+       "If your screen says Running out of time, finish the chapter and press Home."
+      ],
+      "notes": "SAY it once: \"Open the class link and press Start the hour. If you need to leave the room, press Pause. If your screen says Running out of time, finish the chapter and press Home.\"\n\nTHEN: say nothing until the last screens. Walk around the room. A stuck pupil's screen names the fix in one sentence. After two wrong tries it circles the exact lines on the card. A pupil who is quiet and typing is working."
+     }
+    ]
+   },
+   {
+    "id": "finishing",
+    "chunk": "exit",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "The last screens",
+      "bullets": [
+       "First you answer five questions. Then you fill in How did it go?",
+       "If there is time, you can do Free flight. You can keep going until the bell."
+      ],
+      "notes": "SAY: \"At the end there are five questions, then the screen called How did it go? Everybody does both. If there is time after that, you can use Free flight until the bell.\""
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "close",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Before you leave",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Finish the screen called “How did it go?” Nobody leaves until it is done.",
+       "Sign out before you leave the computer.",
+       "Your place is saved. Do not tell other classes what happens in the story. They have not played it yet."
+      ],
+      "notes": "SAY the sign-out line every lesson without exception. On shared C2k machines it is the single habit that matters most. Remind them to keep today a surprise for other classes."
+     }
+    ]
+   }
+  ]
+ },
  "j3-01": {
   "id": "j3-01.deck",
   "lesson": "j3-01",
@@ -4354,6 +4486,7 @@ function createJ2Lesson1Deck() { return createDeck_('j2-01'); }
 function createJ2Lesson2Deck() { return createDeck_('j2-02'); }
 function createJ2Lesson3Deck() { return createDeck_('j2-03'); }
 function createJ2Lesson4Deck() { return createDeck_('j2-04'); }
+function createJ2Lesson5Deck() { return createDeck_('j2-05'); }
 function createJ3Lesson1Deck() { return createDeck_('j3-01'); }
 function createJ3Lesson2Deck() { return createDeck_('j3-02'); }
 function createJ3Lesson3Deck() { return createDeck_('j3-03'); }
@@ -4370,6 +4503,7 @@ function rebuildJ2Lesson1Deck() { return rebuildDeck_('j2-01'); }
 function rebuildJ2Lesson2Deck() { return rebuildDeck_('j2-02'); }
 function rebuildJ2Lesson3Deck() { return rebuildDeck_('j2-03'); }
 function rebuildJ2Lesson4Deck() { return rebuildDeck_('j2-04'); }
+function rebuildJ2Lesson5Deck() { return rebuildDeck_('j2-05'); }
 function rebuildJ3Lesson1Deck() { return rebuildDeck_('j3-01'); }
 function rebuildJ3Lesson2Deck() { return rebuildDeck_('j3-02'); }
 function rebuildJ3Lesson3Deck() { return rebuildDeck_('j3-03'); }
@@ -4466,6 +4600,7 @@ function exportJ2Lesson1Proofs() { return exportDeckProofs_('j2-01'); }
 function exportJ2Lesson2Proofs() { return exportDeckProofs_('j2-02'); }
 function exportJ2Lesson3Proofs() { return exportDeckProofs_('j2-03'); }
 function exportJ2Lesson4Proofs() { return exportDeckProofs_('j2-04'); }
+function exportJ2Lesson5Proofs() { return exportDeckProofs_('j2-05'); }
 function exportJ3Lesson1Proofs() { return exportDeckProofs_('j3-01'); }
 function exportJ3Lesson2Proofs() { return exportDeckProofs_('j3-02'); }
 function exportJ3Lesson3Proofs() { return exportDeckProofs_('j3-03'); }

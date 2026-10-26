@@ -63,6 +63,8 @@ const ALLOWED_SHRINK = [
    'the running order was renumbered into six steps, so every line from index 5 on carries what the line before it used to — the words are still on the card, one index up']
 ];
 const ALLOWED_REPEATS = [
+  ['when i was beep flew metres',
+   'j2-05 ch3 held3, a deliberate parallel: "When i was 0, BEEP flew 0 metres. When i was 9, BEEP flew 90 metres." The two sentences show the first and last value of i side by side; the cold read kept it (26 Oct 2026)'],
   ['This is going well.',
    'Fred\'s joke on the Swap waiting card: "This is going well. This is going really well. I think this is going well." The escalation IS the gag, and the separated reader named it as deliberate so it could never be mistaken for a broken edit'],
   ['FALSE. FALSE',
