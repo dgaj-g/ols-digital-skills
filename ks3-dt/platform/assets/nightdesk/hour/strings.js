@@ -313,3 +313,9 @@ window.S.recapPool = [
 
 /* Added 26 Oct 2026 for the spec: strings the platform shows round the hour; the prototype does not render them. */
 (function (S) { Object.assign(S.common, { welcomeBack: 'Welcome back. You were on {where}. The desk is exactly as you left it.', startAgain: 'Start again', outOfTime: 'Time is nearly up. Finish this headline. Then press Finish in the strip at the top. The rest stays open for next time.' }); })(window.S);
+/* build additions (J3L6_BUILD_PROGRESS.md; listed in tools/record-tutorial/j3l6/string-edits.json): the plumbing's
+   own lines, the dock, Welcome back, the review chips and the free-time average cards */
+(function (S) {
+  Object.assign(S.common, { soundOn: 'Sound is on', soundOff: 'Sound is off', lighter: 'Running lighter for this computer.', carryOn: 'Carry on', nextTime: 'Next time', back: 'Back', avgCafe: 'These people average {v} café visits.', avgVisitors: 'These days average {v} visitors.' });
+  Object.assign(S.c1, { stampShowCard: 'Harbour café is the town favourite', stampShowBy: 'Fionn · last night' });
+})(window.S);

@@ -1,0 +1,404 @@
+{
+ "width": 1280,
+ "height": 800,
+ "fails": true,
+ "minutes": 12.665166666666668,
+ "records": [
+  {
+   "screen": "donow",
+   "chapter": "donow",
+   "words": 55,
+   "keys": 0,
+   "film": 0,
+   "acts": 11,
+   "secs": 29.25
+  },
+  {
+   "screen": "opening",
+   "chapter": "open",
+   "words": 36,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 14.6
+  },
+  {
+   "screen": "story",
+   "chapter": "open",
+   "words": 6,
+   "keys": 0,
+   "film": 5,
+   "acts": 2,
+   "secs": 9.9
+  },
+  {
+   "screen": "facts",
+   "chapter": "open",
+   "words": 39,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 15.649999999999999
+  },
+  {
+   "screen": "tour",
+   "chapter": "open",
+   "words": 37,
+   "keys": 0,
+   "film": 0,
+   "acts": 3,
+   "secs": 16.549999999999997
+  },
+  {
+   "screen": "c1-title",
+   "chapter": "c1",
+   "words": 19,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 8.65
+  },
+  {
+   "screen": "c1-show",
+   "chapter": "c1",
+   "words": 38,
+   "keys": 0,
+   "film": 1.56,
+   "acts": 1,
+   "secs": 16.86
+  },
+  {
+   "screen": "c1-ask",
+   "chapter": "c1",
+   "words": 40,
+   "keys": 33,
+   "film": 0,
+   "acts": 4,
+   "secs": 26.65
+  },
+  {
+   "screen": "c1-compare",
+   "chapter": "c1",
+   "words": 33,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "secs": 14.349999999999998
+  },
+  {
+   "screen": "c1-stampshow",
+   "chapter": "c1",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 16
+  },
+  {
+   "screen": "c1-stamp",
+   "chapter": "c1",
+   "words": 37,
+   "keys": 0,
+   "film": 0,
+   "acts": 7,
+   "secs": 19.75
+  },
+  {
+   "screen": "c2-title",
+   "chapter": "c2",
+   "words": 23,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 10.049999999999999
+  },
+  {
+   "screen": "c2-show",
+   "chapter": "c2",
+   "words": 37,
+   "keys": 0,
+   "film": 3.48,
+   "acts": 1,
+   "secs": 18.43
+  },
+  {
+   "screen": "c2-ask",
+   "chapter": "c2",
+   "words": 33,
+   "keys": 59,
+   "film": 0,
+   "acts": 4,
+   "secs": 30.7
+  },
+  {
+   "screen": "c2-predict",
+   "chapter": "c2",
+   "words": 30,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "secs": 13.299999999999999
+  },
+  {
+   "screen": "c2-stamp",
+   "chapter": "c2",
+   "words": 25,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "secs": 13.149999999999999
+  },
+  {
+   "screen": "c3-title",
+   "chapter": "c3",
+   "words": 19,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 8.65
+  },
+  {
+   "screen": "c3-show",
+   "chapter": "c3",
+   "words": 39,
+   "keys": 0,
+   "film": 3.48,
+   "acts": 1,
+   "secs": 19.13
+  },
+  {
+   "screen": "c3-ask",
+   "chapter": "c3",
+   "words": 29,
+   "keys": 50,
+   "film": 0,
+   "acts": 4,
+   "secs": 27.049999999999997
+  },
+  {
+   "screen": "c3-compare",
+   "chapter": "c3",
+   "words": 35,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "secs": 15.049999999999999
+  },
+  {
+   "screen": "c3-stamp",
+   "chapter": "c3",
+   "words": 33,
+   "keys": 0,
+   "film": 0,
+   "acts": 6,
+   "secs": 17.549999999999997
+  },
+  {
+   "screen": "c4-title",
+   "chapter": "c4",
+   "words": 24,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 10.399999999999999
+  },
+  {
+   "screen": "c4-show",
+   "chapter": "c4",
+   "words": 40,
+   "keys": 0,
+   "film": 4.319999999999999,
+   "acts": 1,
+   "secs": 20.32
+  },
+  {
+   "screen": "c4-ask",
+   "chapter": "c4",
+   "words": 31,
+   "keys": 55,
+   "film": 0,
+   "acts": 4,
+   "secs": 28.999999999999996
+  },
+  {
+   "screen": "c4-predict",
+   "chapter": "c4",
+   "words": 27,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "secs": 12.249999999999998
+  },
+  {
+   "screen": "c4-stamp",
+   "chapter": "c4",
+   "words": 25,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "secs": 13.149999999999999
+  },
+  {
+   "screen": "c5-title",
+   "chapter": "c5",
+   "words": 20,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 9
+  },
+  {
+   "screen": "c5-show",
+   "chapter": "c5",
+   "words": 37,
+   "keys": 0,
+   "film": 3.12,
+   "acts": 1,
+   "secs": 18.07
+  },
+  {
+   "screen": "c5-ask",
+   "chapter": "c5",
+   "words": 30,
+   "keys": 62,
+   "film": 0,
+   "acts": 4,
+   "secs": 30.4
+  },
+  {
+   "screen": "c5-compare",
+   "chapter": "c5",
+   "words": 38,
+   "keys": 0,
+   "film": 0,
+   "acts": 2,
+   "secs": 16.099999999999998
+  },
+  {
+   "screen": "c5-stamp",
+   "chapter": "c5",
+   "words": 35,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "secs": 16.65
+  },
+  {
+   "screen": "c6-ring",
+   "chapter": "c6",
+   "words": 25,
+   "keys": 0,
+   "film": 2,
+   "acts": 1,
+   "secs": 12.75
+  },
+  {
+   "screen": "c6-ask1",
+   "chapter": "c6",
+   "words": 47,
+   "keys": 25,
+   "film": 0,
+   "acts": 4,
+   "secs": 27.099999999999998
+  },
+  {
+   "screen": "c6-ask2",
+   "chapter": "c6",
+   "words": 19,
+   "keys": 25,
+   "film": 0,
+   "acts": 4,
+   "secs": 17.3
+  },
+  {
+   "screen": "c6-stamp",
+   "chapter": "c6",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 16
+  },
+  {
+   "screen": "c6-printed",
+   "chapter": "c6",
+   "words": 32,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 13.2
+  },
+  {
+   "screen": "c6-letter",
+   "chapter": "c6",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 16
+  },
+  {
+   "screen": "c6-fix",
+   "chapter": "c6",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 4,
+   "secs": 18.4
+  },
+  {
+   "screen": "front",
+   "chapter": "front",
+   "words": 52,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 20.2
+  },
+  {
+   "screen": "badges",
+   "chapter": "close",
+   "words": 37,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 14.95
+  },
+  {
+   "screen": "recap",
+   "chapter": "close",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 1,
+   "secs": 16
+  },
+  {
+   "screen": "exit",
+   "chapter": "close",
+   "words": 21,
+   "keys": 0,
+   "film": 0,
+   "acts": 11,
+   "secs": 17.35
+  },
+  {
+   "screen": "felt",
+   "chapter": "close",
+   "words": 40,
+   "keys": 0,
+   "film": 0,
+   "acts": 5,
+   "secs": 19.2
+  },
+  {
+   "screen": "free",
+   "chapter": "close",
+   "words": 39,
+   "keys": 0,
+   "film": 0,
+   "acts": 0,
+   "secs": 14.849999999999998
+  }
+ ]
+}

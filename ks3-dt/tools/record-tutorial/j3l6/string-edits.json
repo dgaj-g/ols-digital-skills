@@ -13,5 +13,55 @@
   "from": "Wet days had 1,847 visitors a day. Dry days had 2,559. The numbers agree, so Dee prints it.",
   "to": "Wet days had 1,846 visitors a day. Dry days had 2,559. The numbers agree, so Dee prints it.",
   "why": "G10: data.js gives 1,846.47 visitors on a wet day, which rounds to 1,846"
+ },
+ "common.soundOn": {
+  "from": null,
+  "to": "Sound is on",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.soundOff": {
+  "from": null,
+  "to": "Sound is off",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.lighter": {
+  "from": null,
+  "to": "Running lighter for this computer.",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.carryOn": {
+  "from": null,
+  "to": "Carry on",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.nextTime": {
+  "from": null,
+  "to": "Next time",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.back": {
+  "from": null,
+  "to": "Back",
+  "why": "build plumbing line (dock, Welcome back, watchdog, review), as J2 L6"
+ },
+ "common.avgCafe": {
+  "from": null,
+  "to": "These people average {v} café visits.",
+  "why": "spec §14.5: the live average card on People in free time"
+ },
+ "common.avgVisitors": {
+  "from": null,
+  "to": "These days average {v} visitors.",
+  "why": "spec §14.5: the live average card on Days in free time"
+ },
+ "c1.stampShowCard": {
+  "from": null,
+  "to": "Harbour café is the town favourite",
+  "why": "the worked stamp card of spec §7.4 was a literal in the prototype hour.js; moved into strings.js word for word"
+ },
+ "c1.stampShowBy": {
+  "from": null,
+  "to": "Fionn · last night",
+  "why": "the worked stamp card of spec §7.4 was a literal in the prototype hour.js; moved into strings.js word for word"
  }
 }
