@@ -1,0 +1,70 @@
+  PASS A1 Lesson 6 is on her lesson screen as Data Newsroom
+  PASS A1 the lesson card says The Night Desk under the title (got "The Night Desk")
+  PASS A1 the lesson opens on the platform's Do-Now with five questions (got 5)
+  PASS A1 after the Do-Now, the lesson opens on the nightdesk step
+  PASS A1 the hour is on screen in its frame
+  PASS A1 the frame is the shipped page, not the test mode
+  PASS A1 the frame shows assets/nightdesk/hour.html
+  PASS A1 inside the platform the hour has no Do-Now, five questions or How did it go? of its own
+  PASS A1 the frame fills the width and most of the height (1366 x 627 x 1366 x 768)
+  PASS G5 CONTROL a count painted to 17 with no rule is not ok, pays no badge and offers no Next
+  PASS G5 CONTROL the painted count adds no XP
+  PASS G5 the real sleep_hours >= 8 typed in the box is ok; the badge waits for the stamp
+  PASS G5 a rule alone adds no badge XP
+  PASS G5 SPIKE + The numbers say no is ok and earns asker
+  PASS G5 asker adds 12 XP (0 to 12)
+  PASS G5 CONTROL the same badge twice adds nothing
+  PASS A11 the screen the hour saves is in her lesson draft ({"at":"c2-ask","ch":"c2"})
+  PASS A11 her rule in the box and her first stamp are in her lesson draft
+  PASS A9 her name and her printed headline reach her lesson draft
+  PASS A9 a later save keeps her front page
+  PASS A11 a reopened lesson gives the hour her place on its address
+  PASS A11 the hour says "Welcome back. You were on 2 · Two at once. The desk is exactly as you left it." (got "Welcome back. You were on 2 · Two at once. The desk is exactly as you left it.")
+  PASS A11 the buttons are Carry on and Start again (Carry on, Start again)
+  PASS A11 Carry on lands on the saved screen with her rule in the box and her stamp kept
+  PASS A13 the rush clock is running (176 s left)
+  PASS A13 Pause stops the rush clock (176 then 176)
+  PASS A13 a tab change pauses the hour
+  PASS A11 the clock's remaining time is in her lesson draft (176839)
+  PASS A11 Carry on brings the rush clock back with its seconds (176 s, saved 177)
+  PASS A12 from minute 48 the note says "Time is nearly up. Finish this headline. Then press Finish in the strip at the top. The rest stays open for next time."
+  PASS A12 Finish in the strip goes to the badges
+  PASS A12 from the badges the lesson goes on to the five questions
+  PASS A10 question 1 reads "Which rule keeps teens who live in Hill?" (got "Which rule keeps teens who live in Hill?")
+  PASS A10 question 2 reads "Six of 18 teens matched. Eighteen teens is enough to ask. Fionn wrote "most". Why spike it?" (got "Six of 18 teens matched. Eighteen teens is enough to ask. Fionn wrote "most". Why spike it?")
+  PASS A10 question 3 reads "day_no BETWEEN 40 AND 46 keeps how many days?" (got "day_no BETWEEN 40 AND 46 keeps how many days?")
+  PASS A10 question 4 reads "Hot days bring more ice creams and more rescues. So…" (got "Hot days bring more ice creams and more rescues. So…")
+  PASS A10 question 5 reads "Which rule keeps everyone except Old Town?" (got "Which rule keeps everyone except Old Town?")
+  PASS A10 the options come in a random order
+  PASS A10 after the five answers she is on How did it go?
+  PASS A10 the three sentences are the design's (I can write a rule with AND, OR or NOT. / I can say what BETWEEN keeps. / I can say why a headline gets spiked.)
+  PASS A10 the done card says "The hour is over. Everything you did is saved." (got "The hour is over. Everything you did is saved.")
+  PASS A10 the done card gives her score
+  PASS A10 no raw data on the done card
+  PASS A10 the done card offers Free time and Finish (Free time, Finish)
+  PASS A10 Free time opens the free headlines
+  PASS A10 the frame opens on the free headlines
+  PASS A10 the free headlines' end finishes the lesson
+  PASS A10 Lesson 6 is recorded as finished
+  PASS A10 asker is recorded as j3-b16 on Lesson 6
+  PASS LANDMARKS['j3-6'] is declared in sit-wrongpath.js
+  PASS EXPECT['j3-6'] is declared in sit-review.js
+  PASS stood on: the Do-Now
+  PASS stood on: the strip with the parts of the hour
+  PASS stood on: the question box
+  PASS stood on: the table with its count
+  PASS stood on: Dee, the editor, with the headline
+  PASS stood on: the PRINT and SPIKE stamps
+  PASS stood on: the front page
+  PASS stood on: the exit check
+  PASS stood on: the closing screen
+  PASS stood on: the free headlines with the question box
+  SHAPE {"xp":22,"chunks":5,"marks":22,"badges":1}  walked _recap nightdesk exit close free
+  PASS shape xp = 22 (walked 22)
+  PASS shape chunks = 5 (walked 5)
+  PASS shape marks = 22 (walked 22)
+  PASS shape badges = 1 (walked 1)
+  PASS no page errors
+66 checks, 0 failed.
+
+j3l6-platform: PASS · 66 checks

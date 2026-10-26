@@ -104,9 +104,11 @@
    "tagline": "You question a set of data until it gives you a story worth telling.",
    "block": "b3",
    "icon": "📰",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-06.json",
+   "story": "The Night Desk"
   },
   {
    "id": "j3-07",

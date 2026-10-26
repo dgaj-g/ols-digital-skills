@@ -63,5 +63,10 @@
   "from": null,
   "to": "Fionn · last night",
   "why": "the worked stamp card of spec §7.4 was a literal in the prototype hour.js; moved into strings.js word for word"
+ },
+ "recapPool.1.stem": {
+  "from": "A table has a column called pet. Which rule (a question for the table) keeps every person with a dog or a cat?",
+  "to": "A table has a column called pet. Which rule keeps every person with a dog or a cat?",
+  "why": "G3: the design stem had 16 words in one sentence; the bracket aside removed"
  }
 }

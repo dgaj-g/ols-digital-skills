@@ -1,0 +1,4 @@
+1280×800 fails: screens 44 · model minutes 12.67
+1440×900 fails: screens 44 · model minutes 12.67
+1024×768 fails: screens 44 · model minutes 12.67
+PASS j3l6-walk --fails

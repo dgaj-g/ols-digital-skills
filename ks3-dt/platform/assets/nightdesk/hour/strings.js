@@ -296,7 +296,7 @@ window.S.brief = {
 };
 window.S.recapPool = [
   { id: 'r-j3-601', lesson: 'j3-06', stem: 'An editor stamps a headline PRINT or SPIKE, meaning do not print. A reporter wrote: most teens are on their phones five hours a day. A table of 18 teens shows only 6 do. Which stamp?', options: ['SPIKE: the numbers say no', 'PRINT: the numbers back it', 'SPIKE: one did not cause the other'] },
-  { id: 'r-j3-602', lesson: 'j3-06', stem: 'A table has a column called pet. Which rule (a question for the table) keeps every person with a dog or a cat?', options: ['pet = "dog" OR pet = "cat"', 'pet = "dog" AND pet = "cat"', 'NOT pet = "dog"'] },
+  { id: 'r-j3-602', lesson: 'j3-06', stem: 'A table has a column called pet. Which rule keeps every person with a dog or a cat?', options: ['pet = "dog" OR pet = "cat"', 'pet = "dog" AND pet = "cat"', 'NOT pet = "dog"'] },
   { id: 'r-j3-603', lesson: 'j3-06', stem: 'A table has a column called day_no. Which rule (a question for the table) keeps days 40 to 46, both included?', options: ['day_no BETWEEN 40 AND 46', 'day_no > 40 AND day_no < 46', 'day_no = 40 OR 46'] },
   { id: 'r-j3-604', lesson: 'j3-06', stem: 'An editor spikes a headline that should not print. A reporter used the busiest week to describe the whole summer. Which reason spikes it?', options: ['Only the best bit', 'Too few people', 'The numbers say no'] },
   { id: 'r-j3-605', lesson: 'j3-06', stem: 'Hot days bring more ice creams and more sea rescues. What caused the rescues?', options: ['The heat brought the swimmers', 'The ice cream', 'Rescued swimmers then buy ice cream'] }

@@ -64,10 +64,12 @@ const R = readJSON(path.join(SRC, 'j3/recap-pool.json'));
 const mine = R ? (R.items || []).filter(i => /^r-j3-60[1-5]$/.test(i.id)) : [];
 must(mine.length === 5, 'recap pool has r-j3-601…605 (' + mine.length + ')');
 checkStrings(walk(mine.map(i => ({ stem: i.stem, options: i.options })), 'recap', []), '');
-/* 3 · walks: ≤ 40 prose words a screen */
+/* 3 · walks: ≤ 40 prose words a screen. The hour's own donow screen is exempt: it runs only outside the platform
+   (FRAMED drops it) and shows a recap stem, already held to 14 words a sentence above. The printed paper (headline
+   cards, the front page) is the thing she makes, not prose to read: the walk counts it for time, not here. */
 let nScreens = 0;
 process.argv.slice(2).forEach(d => { const m = readJSON(path.join(d, 'measure.json')); if (!must(m, 'walk ' + d + ' has measure.json')) return;
-  m.records.forEach(r => { nScreens++; must(r.words <= 40, d + ' screen ' + r.screen + ' has ' + r.words + ' prose words (limit 40)'); r.prose.forEach(t => sentenceFails(t).forEach(b => must(false, d + ' screen ' + r.screen + ' sentence over 14 (' + b + ')'))); }); });
+  m.records.forEach(r => { nScreens++; const pw = r.proseWords != null ? r.proseWords : r.words; must(pw <= 40 || r.screen === 'donow', d + ' screen ' + r.screen + ' has ' + pw + ' prose words (limit 40)'); (r.prose || []).forEach(t => sentenceFails(t).forEach(b => must(false, d + ' screen ' + r.screen + ' sentence over 14 (' + b + ')'))); }); });
 /* 4 · controls: each MUST be caught */
 const c15 = sentenceFails('This planted sentence has exactly fifteen words in it so the gate must catch it now.');
 must(c15.length === 1, 'CONTROL a planted 15-word sentence is caught');

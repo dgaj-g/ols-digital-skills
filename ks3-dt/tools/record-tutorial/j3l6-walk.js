@@ -20,7 +20,7 @@ async function walk(browser, W, H) {
   var records = [], steps = 0, last = null, overflow = [];
   while (steps++ < 600) {
     var m = await page.evaluate(function () { return window.Hour.measure(); }), w = await page.evaluate(function () { return window.Hour.want(); });
-    if (m.screen !== last) { last = m.screen; var words = m.prose.join(' ').split(/\s+/).filter(Boolean).length; records.push({ screen: m.screen, chapter: m.chapter, words: words, keys: 0, film: m.film || 0, acts: 0, secs: 1.2 + 0.35 * words + (m.film || 0) });
+    if (m.screen !== last) { last = m.screen; var proseWords = m.prose.join(' ').split(/\s+/).filter(Boolean).length, words = proseWords + (m.print || []).join(' ').split(/\s+/).filter(Boolean).length; records.push({ screen: m.screen, chapter: m.chapter, words: words, proseWords: proseWords, keys: 0, film: m.film || 0, acts: 0, prose: m.prose, secs: 1.2 + 0.35 * words + (m.film || 0) });
       var o = await page.evaluate(function () { var r = [], vw = innerWidth, vh = innerHeight; document.querySelectorAll('main button, main .ask, main .tbl, main #qbox').forEach(function (n) { var b = n.getBoundingClientRect(); if (b.width && (b.right > vw + 1 || b.bottom > vh + 1)) r.push((n.getAttribute('data-act') || n.className) + ' ' + Math.round(b.right) + ',' + Math.round(b.bottom)); }); return r; });
       if (o.length) overflow.push(m.screen + ': ' + o.join(' | '));
       await page.screenshot({ path: path.join(out, String(records.length).padStart(2, '0') + '-' + m.screen + '.png') }); }
