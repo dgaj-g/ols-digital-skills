@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-26 from contentVersion 2026-10-26a.
+ * Built 2026-10-26 from contentVersion 2026-10-26c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -2584,7 +2584,7 @@ var DECKS = {
  "j2-05": {
   "id": "j2-05.deck",
   "lesson": "j2-05",
-  "driveFileId": "",
+  "driveFileId": "1OofcGuqL-qmigRTxhiKpA1nx_Sx0de-iQwdSwXVtaX4",
   "year": "j2",
   "theme": {
    "id": "workshop-slate",
