@@ -16,3 +16,7 @@ quotes and dashes) and converted to woff2 locally with fontTools. Used for the L
 All three licences permit embedding and redistribution in this form. The OFL requires the
 Reserved Font Name to be respected: the files are not renamed as font families, only as
 filenames, and the family names inside the fonts are untouched.
+
+**bebas-neue.woff2** — Bebas Neue, Dharma Type (Ryoichi Tsunekawa), SIL Open Font License 1.1
+(licence text beside it as OFL-bebas.txt). Converted from the TTF to woff2 locally with
+fontTools, glyphs untouched. Used for the poster lines of J2 Lesson 6 The Headliner.
