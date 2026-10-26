@@ -24,3 +24,6 @@
 ## Not walked by a machine
 - A real C2k pupil account on a school laptop (the live smoke after the Apps Script version covers sign-in and the lesson opening).
 - The teacher deck in Google Slides: built by createJ2Lesson5Deck from the committed .gs; its proofs are read by eye.
+
+## Live smoke (after Version 74)
+- On live Pages at real speed, the honest walk passed 396 checks, 0 failed: she names the lamb, all four black screens come and each rewind keeps her lines, the five questions, and the done card with Back to Year map. (The fast clock is staff/localhost only, so live walks must run at real speed.)
