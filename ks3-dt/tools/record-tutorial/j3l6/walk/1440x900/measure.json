@@ -274,7 +274,7 @@
    "prose": [
     "Showing 92 of 92 days",
     "Dee shows you",
-    "BETWEEN keeps rows from the first number to the last. Both end numbers count too.",
+    "BETWEEN keeps rows from one number to another. Rows at both numbers are kept too.",
     "This rule keeps 16 days, from 20 to 22 degrees.",
     "Each row here is one summer day."
    ],
@@ -595,7 +595,7 @@
     "AND needs both rules to match. OR needs just one.",
     "BETWEEN keeps both ends.",
     "NOT reverses a rule.",
-    "Before printing, check: enough people, fair rows, true numbers, a real cause."
+    "Before you print a headline, check that the numbers really back it."
    ],
    "secs": 15.649999999999999
   },
