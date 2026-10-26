@@ -25,15 +25,15 @@
   PASS A13 the rush clock is running (176 s left)
   PASS A13 Pause stops the rush clock (176 then 176)
   PASS A13 a tab change pauses the hour
-  PASS A11 the clock's remaining time is in her lesson draft (176841)
+  PASS A11 the clock's remaining time is in her lesson draft (176742)
   PASS A11 Carry on brings the rush clock back with its seconds (176 s, saved 177)
-  PASS A12 from minute 48 the note says "Time is nearly up. Finish this headline. Then press Finish in the strip at the top. The rest stays open for next time."
+  PASS A12 from minute 48 the note says "Time is nearly up. Finish this headline. Then press Finish in the row of parts at the top. The parts you have not done stay open for next time."
   PASS A12 Finish in the strip goes to the badges
   PASS A12 from the badges the lesson goes on to the five questions
   PASS A10 question 1 reads "Which rule keeps teens who live in Hill?" (got "Which rule keeps teens who live in Hill?")
-  PASS A10 question 2 reads "Six of 18 teens matched. Eighteen teens is enough to ask. Fionn wrote "most". Why spike it?" (got "Six of 18 teens matched. Eighteen teens is enough to ask. Fionn wrote "most". Why spike it?")
+  PASS A10 question 2 reads "Fionn wrote that most teens use their phone five hours a day. Only six of the 18 teens do. Eighteen teens is enough people to check. Why does Dee spike the headline?" (got "Fionn wrote that most teens use their phone five hours a day. Only six of the 18 teens do. Eighteen teens is enough people to check. Why does Dee spike the headline?")
   PASS A10 question 3 reads "day_no BETWEEN 40 AND 46 keeps how many days?" (got "day_no BETWEEN 40 AND 46 keeps how many days?")
-  PASS A10 question 4 reads "Hot days bring more ice creams and more rescues. So…" (got "Hot days bring more ice creams and more rescues. So…")
+  PASS A10 question 4 reads "Hot days have more ice cream sales and more sea rescues. Which sentence explains this best?" (got "Hot days have more ice cream sales and more sea rescues. Which sentence explains this best?")
   PASS A10 question 5 reads "Which rule keeps everyone except Old Town?" (got "Which rule keeps everyone except Old Town?")
   PASS A10 the options come in a random order
   PASS A10 after the five answers she is on How did it go?

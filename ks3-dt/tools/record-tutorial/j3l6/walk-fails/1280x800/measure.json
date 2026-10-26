@@ -2,7 +2,7 @@
  "width": 1280,
  "height": 800,
  "fails": true,
- "minutes": 12.945166666666667,
+ "minutes": 13.015166666666667,
  "records": [
   {
    "screen": "donow",
@@ -266,19 +266,19 @@
   {
    "screen": "c3-show",
    "chapter": "c3",
-   "words": 38,
-   "proseWords": 38,
+   "words": 40,
+   "proseWords": 40,
    "keys": 0,
    "film": 3.48,
    "acts": 1,
    "prose": [
     "Showing 92 of 92 days",
     "Dee shows you",
-    "BETWEEN keeps every number from one end to the other, and both ends.",
+    "BETWEEN keeps every number from the first to the last. Both of those count too.",
     "This rule keeps 16 days, from 20 to 22 degrees.",
     "Each row here is one summer day."
    ],
-   "secs": 18.779999999999998
+   "secs": 19.48
   },
   {
    "screen": "c3-ask",
@@ -532,20 +532,20 @@
   {
    "screen": "c6-stamp",
    "chapter": "c6",
-   "words": 47,
-   "proseWords": 37,
+   "words": 50,
+   "proseWords": 40,
    "keys": 0,
    "film": 0,
    "acts": 1,
    "prose": [
     "Showing 28 of 92 days",
-    "Hot days averaged 290 ice creams and 2.8 rescues.",
-    "Cold days averaged 91 ice creams and 0.5 rescues.",
+    "Hot days averaged 290 ice creams and 2.8 rescues a day.",
+    "Cold days averaged 91 ice creams and 0.5 rescues a day.",
     "The rush",
     "180 seconds until the press starts",
-    "Now stamp it, with a reason."
+    "Stamp it, with a reason."
    ],
-   "secs": 18.45
+   "secs": 19.5
   },
   {
    "screen": "c6-printed",
@@ -565,36 +565,36 @@
   {
    "screen": "c6-letter",
    "chapter": "c6",
-   "words": 39,
-   "proseWords": 39,
+   "words": 40,
+   "proseWords": 40,
    "keys": 0,
    "film": 0,
    "acts": 1,
    "prose": [
     "The next morning",
     "Dear Editor, I sell ice cream at the harbour.",
-    "Your front page blamed my cones for three rescues.",
-    "Hot days bring swimmers and my customers.",
-    "The hot weather caused it, not the ice cream. Marie Byrne."
+    "Your paper blamed my cones for three rescues.",
+    "On hot days, more people swim and buy ice cream.",
+    "The heat caused the rescues, not my cones. Marie Byrne."
    ],
-   "secs": 15.649999999999999
+   "secs": 16
   },
   {
    "screen": "c6-fix",
    "chapter": "c6",
-   "words": 44,
-   "proseWords": 34,
+   "words": 48,
+   "proseWords": 38,
    "keys": 0,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 28 of 92 days",
-    "Hot days averaged 290 ice creams and 2.8 rescues.",
-    "Cold days averaged 91 ice creams and 0.5 rescues.",
+    "Hot days averaged 290 ice creams and 2.8 rescues a day.",
+    "Cold days averaged 91 ice creams and 0.5 rescues a day.",
     "The rush",
     "Stamp it again. Pick the right reason this time."
    ],
-   "secs": 19.799999999999997
+   "secs": 21.199999999999996
   },
   {
    "screen": "front",
@@ -633,20 +633,20 @@
   {
    "screen": "recap",
    "chapter": "close",
-   "words": 37,
-   "proseWords": 37,
+   "words": 39,
+   "proseWords": 39,
    "keys": 0,
    "film": 0,
    "acts": 1,
    "prose": [
     "Remember these",
     "A query asks a table a question.",
-    "AND needs both rules. OR needs one.",
+    "AND needs both rules to match. OR needs just one.",
     "BETWEEN keeps both ends.",
     "NOT reverses a rule.",
-    "Before you print, check: enough people, the whole picture, the numbers, the cause."
+    "Before printing, check: enough people, fair rows, true numbers, a real cause."
    ],
-   "secs": 14.95
+   "secs": 15.649999999999999
   },
   {
    "screen": "exit",

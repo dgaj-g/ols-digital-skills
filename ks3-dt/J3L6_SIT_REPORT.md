@@ -12,7 +12,7 @@ How it was sat: the served hour walked end to end at 1280×800, 1440×900 and 10
 7. The front page: The Harbour Post with her printed headline, the five spiked ones with reasons, and her name on the page.
 8. Finish: badges, the recap, five last questions, then Free time with two more headlines.
 
-Modelled time: 41 screens, 11.21 model minutes on the straight path; 44 screens and 12.95 minutes taking every wrong path (design sit: 10.6 and 12.1). The rush done right at 4 keys a second takes 8.5 s of its 180 s.
+Modelled time: 41 screens, 11.26 model minutes on the straight path; 44 screens and 13.02 minutes taking every wrong path (design sit: 10.6 and 12.1). The rush done right at 4 keys a second takes 8.5 s of its 180 s.
 
 ## Where a pupil could stall, and what catches her
 | Place | Stall | What catches her |

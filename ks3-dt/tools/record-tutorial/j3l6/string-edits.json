@@ -86,18 +86,18 @@
  },
  "j3-06 › brief › purpose[0]": {
   "from": "The skill: ask a table a question with a rule. Join rules with AND, OR, BETWEEN and NOT. Judge whether the numbers back a headline. She meets three ways a true-looking pattern misleads. Too few people, only the best bit, and one thing did not cause the other.",
-  "to": "The skill: asking a table a question by typing a rule. Pupils join rules with AND, OR, BETWEEN and NOT. They judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
-  "why": "cold read r1: both readers failed it (It uses she, which the brief must not. BETWEEN is listed as a joiner but it does not join rules. The last sentence is a )"
+  "to": "The skill is asking a table a question by typing a rule, such as age < 20. A rule keeps only the rows that fit it. Pupils join rules with AND and OR, and use BETWEEN and NOT. They then judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
+  "why": "cold read r1: both readers failed it (It uses she, which the brief must not. BETWEEN is listed as a joiner but it does not join rules. The last sentence is a ); then cold read r2, own call after two rounds: both readers failed it ('The skill:' is a fragment with a colon. 'Pupils join rules with AND, OR, BETWEEN and NOT' is wrong for BETWEEN. A colle)"
  },
  "j3-06 › brief › purpose[1]": {
   "from": "What she makes: six checked headlines, each stamped PRINT or SPIKE with a reason, and the front page that results. Nothing prints on paper.",
-  "to": "What the pupils make: six checked headlines. Each headline is stamped PRINT or SPIKE with a reason. The front page that results is shown on screen. Nothing prints on paper.",
-  "why": "cold read r1: both readers failed it (It says she, and PRINT and SPIKE are not explained.)"
+  "to": "The pupils check six headlines. They stamp each one PRINT or SPIKE and give a reason. PRINT sends a headline to the paper. SPIKE throws it out. The front page that results is shown on screen. Nothing prints on paper.",
+  "why": "cold read r1: both readers failed it (It says she, and PRINT and SPIKE are not explained.); then cold read r2, own call after two rounds: both readers failed it (Opens with a fragment ('What the pupils make:'), and 'stamped PRINT or SPIKE' is not explained.) · cold read r3: both readers failed the own call again on the same fault ('The pupils make six checked headlines' says make where the pupils check headlines written by someone else. 'I); their wording taken"
  },
  "j3-06 › brief › prepare[0] › text": {
   "from": "Each girl needs the link, signed in with her school account, and headphones if she has them. The deck is optional.",
-  "to": "Each pupil needs the link, signed in with their school account, and headphones if they have them. The deck is optional.",
-  "why": "cold read r1: both readers failed it (It says girl and her, and signed in with her school account hangs loose with no verb.)"
+  "to": "Each pupil needs the lesson link and their school account to sign in. Headphones help, if pupils have them. The slide deck for the board is optional.",
+  "why": "cold read r1: both readers failed it (It says girl and her, and signed in with her school account hangs loose with no verb.); then cold read r2, own call after two rounds: both readers failed it ('the link' has no earlier mention, and 'signed in with their school account, and headphones' is a comma pile in one clau)"
  },
  "j3-06 › brief › prepare[1] › title": {
   "from": "The hour is a surprise",
@@ -106,8 +106,8 @@
  },
  "j3-06 › brief › prepare[1] › text": {
   "from": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for, in the same words as slide 1.",
-  "to": "The deck does not tell the newspaper story. Please do not describe what happens on screen. After the warm-up, the first screen says what the hour is for, in the same words as slide 1.",
-  "why": "cold read r1: both readers failed it (Do not describe has no reason, and the first screen is not named.)"
+  "to": "The slide deck does not tell the newspaper story. Please do not describe what happens on screen. Pupils start with five warm-up questions on their own screens. After them, the next screen says what the hour is for, in the same words as slide 1.",
+  "why": "cold read r1: both readers failed it (Do not describe has no reason, and the first screen is not named.); then cold read r2, own call after two rounds: both readers failed it ('the newspaper story' is never described, and the first screen 'in the same words as slide 1' is a long, tangled sentenc) · cold read r3: both readers failed the own call again on the same fault ('The deck does not tell the newspaper story' leaves the reader asking which story. 'The next screen' after 'Th); their wording taken"
  },
  "j3-06 › brief › resources[0] › what": {
   "from": "The deck has eight slides. It does not tell the newsroom story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
@@ -121,8 +121,8 @@
  },
  "j3-06 › brief › runningTheHour[1] › text": {
   "from": "The first screen says what the hour is for. Then the story starts and the desk is toured in three stops.",
-  "to": "The first screen says what the hour is for. Then a short story begins. The pupils are shown the night desk, the screen where they work, in three stops.",
-  "why": "cold read r1: both readers failed it (The desk is toured in three stops is passive and the desk is not explained.)"
+  "to": "After the warm-up questions, the first screen says what the hour is for. Then a short story appears on screen. A tour in three steps shows the pupils the night desk. The night desk is the screen where they work.",
+  "why": "cold read r1: both readers failed it (The desk is toured in three stops is passive and the desk is not explained.); then cold read r2, own call after two rounds: both readers failed it ('in three stops' is not the word on the screen, which says 'Step 1 of 3'. 'A short story begins' says nothing a covering) · cold read r3: both readers failed the own call again on the same fault ('The first screen says what the hour is for' clashes with the warm-up questions that come first, and 'a short ); their wording taken"
  },
  "j3-06 › brief › runningTheHour[2] › text": {
   "from": "One rule, then AND, then BETWEEN. Every headline shows a worked example before any ask. The hint ladder ends with the rule shown.",
@@ -131,18 +131,18 @@
  },
  "j3-06 › brief › runningTheHour[3] › text": {
   "from": "OR, then NOT. Headline 4 is the one true headline of the night; she must print it with the right reason.",
-  "to": "Pupils type a rule with OR, then a rule with NOT. Headline 4 is the one true headline of the night. The pupil must stamp it PRINT with the right reason.",
-  "why": "cold read r1: both readers failed it (It begins as a fragment and uses she.)"
+  "to": "Pupils type a rule with OR in part 4 and a rule with NOT in part 5. Headline 4 is in part 4 and is the one true headline of the lesson. The pupil must stamp it PRINT, with the reason \"The numbers back it\".",
+  "why": "cold read r1: both readers failed it (It begins as a fragment and uses she.); then cold read r2, own call after two rounds: both readers failed it ('Headline 4 is the one true headline of the night' is a clipped idiom, 'the right reason' is not named, and the parts ar) · cold read r3: both readers failed the own call again on the same fault (The order 'OR, then NOT' then 'Headline 4' makes headline 4 seem to follow NOT, but it goes with OR. 'Of the n); their wording taken"
  },
  "j3-06 › brief › runningTheHour[4] › text": {
   "from": "A three-minute clock. If it runs out, the wrong headline prints, a reader complains and she stamps it again. Nothing is lost.",
-  "to": "Part 6 has a three-minute clock. If the clock runs out, the wrong headline prints and a reader complains. The pupil then stamps it again. Nothing is lost.",
-  "why": "cold read r1: both readers failed it (A fragment start, and she.)"
+  "to": "Part 6 has a clock that counts down three minutes. If the clock runs out, Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved.",
+  "why": "cold read r1: both readers failed it (A fragment start, and she.); then cold read r2, own call after two rounds: both readers failed it ('the wrong headline prints' could be taken to mean the pupil's wrong stamp; it is the reporter's false headline.) · cold read r3: both readers failed the own call again on the same fault ('The reporter's false headline' and 'Nothing is lost' make the reader ask which headline and what is kept.); their wording taken"
  },
  "j3-06 › brief › runningTheHour[5] › text": {
   "from": "The front page, badges, recap, five exit questions and one feeling question. Early finishers get two more headlines to check.",
-  "to": "The pupils see their front page, their badges and a recap. Then come five last questions and one question about how the hour went. Pupils who finish early get two more headlines to check.",
-  "why": "cold read r1: both readers failed it (A verb-less list, she, and one feeling question when the screen shows several.)"
+  "to": "The pupils see their front page, their badges and a recap. Then come five last questions and a short check on how the hour went. Pupils who finish early get two more headlines to check.",
+  "why": "cold read r1: both readers failed it (A verb-less list, she, and one feeling question when the screen shows several.); then cold read r2, own call after two rounds: both readers failed it (The self-check has three statements and a difficulty question, so 'one question' is not true to the screen.)"
  },
  "j3-06 › brief › atAGlance[0] › what": {
   "from": "Five recap questions",
@@ -151,8 +151,8 @@
  },
  "j3-06 › brief › atAGlance[4] › what": {
   "from": "OR: either one. The true headline",
-  "to": "OR: either rule. This part has the one true headline.",
-  "why": "cold read r1: both readers failed it (Two fragments joined; the second has no verb.)"
+  "to": "OR keeps a row when either rule is true. This part has the one true headline.",
+  "why": "cold read r1: both readers failed it (Two fragments joined; the second has no verb.); then cold read r2, own call after two rounds: both readers failed it ('OR: either rule.' has no verb and says nothing a colleague can use.)"
  },
  "j3-06 › brief › atAGlance[5] › what": {
   "from": "NOT: leave out",
@@ -186,18 +186,18 @@
  },
  "j3-06 › brief › goesWrong[1] › a": {
   "from": "The table reads a bare word as text, so the rule still works. Every hint shows the quotes.",
-  "to": "The table reads a word without quotes as text, so the rule still works. Every hint shows the quotes.",
-  "why": "cold read r1: both readers failed it (Bare word and text are jargon for a colleague.)"
+  "to": "The table still accepts a word typed without quotes, so the rule still works. Every hint shows the word in quotes.",
+  "why": "cold read r1: both readers failed it (Bare word and text are jargon for a colleague.); then cold read r2, own call after two rounds: both readers failed it ('reads a word without quotes as text' is jargon, and the pupil screen says to put words in quotes, so the colleague wond) · cold read r3: both readers failed the own call again on the same fault ('The table still understands a word' gives the table a mind; the reader has to translate it to 'accepts'.); their wording taken"
  },
  "j3-06 › brief › goesWrong[2] › a": {
   "from": "The headline prints as it is, a reader complains, and she stamps it again. Nothing is lost.",
-  "to": "The headline prints as it is. A reader complains. The pupil then stamps it again. Nothing is lost.",
-  "why": "cold read r1: both readers failed it (It says she.)"
+  "to": "Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved.",
+  "why": "cold read r1: both readers failed it (It says she.); then cold read r2, own call after two rounds: both readers failed it ('The headline prints as it is' has no clear thing for 'it'; 'as it is' is an idiom.) · cold read r3: both readers failed the own call again on the same fault (Same trip as the clock line: 'The reporter's false headline' and 'Nothing is lost' leave open which headline a); their wording taken"
  },
  "j3-06 › brief › goesWrong[3] › q": {
   "from": "She stamped PRINT when it should be SPIKE.",
-  "to": "A pupil stamps PRINT when it should be SPIKE.",
-  "why": "cold read r1: both readers failed it (It says she.)"
+  "to": "A pupil stamps a headline PRINT when the headline should be SPIKE.",
+  "why": "cold read r1: both readers failed it (It says she.); then cold read r2, own call after two rounds: both readers failed it ('when it should be SPIKE' uses a pronoun with no noun before it.)"
  },
  "j3-06 › brief › goesWrong[4] › q": {
   "from": "She finished early.",
@@ -336,13 +336,13 @@
  },
  "j3-06 › nightdesk › config › strings › c2 › reasonNo": {
   "from": "Eighteen teens is enough to ask. The word \"most\" is the problem.",
-  "to": "Eighteen teens is enough to go on. The problem is the word \"most\".",
-  "why": "cold read r1b: both readers failed it ('Eighteen teens is enough to ask' leaves her wondering who is being asked. 'The word most is the problem' does not say w) · then cut back so the hour fits its time (G1)"
+  "to": "Eighteen teens are enough people to check. The problem is that Fionn wrote \"most\". Six of 18 is not most.",
+  "why": "cold read r1b: both readers failed it ('Eighteen teens is enough to ask' leaves her wondering who is being asked. 'The word most is the problem' does not say w) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it ('enough to go on' is an idiom, and it does not match the plain wording used in the other cards.) · cold read r3: both readers failed the own call again on the same fault (\"The problem is the word \"most\"\" names a word but never says what is wrong with it. She would ask: what is wro); their wording taken"
  },
  "j3-06 › nightdesk › config › strings › c3 › show1": {
   "from": "BETWEEN keeps every number from one end to the other, both ends too.",
-  "to": "BETWEEN keeps every number from one end to the other, and both ends.",
-  "why": "cold read r1b: both readers failed it ('both ends too' is a tacked-on fragment after a comma. It carries the key fact, so it should be a sentence.) · then cut back so the hour fits its time (G1)"
+  "to": "BETWEEN keeps every number from the first to the last. Both of those count too.",
+  "why": "cold read r1b: both readers failed it ('both ends too' is a tacked-on fragment after a comma. It carries the key fact, so it should be a sentence.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it ('from one end to the other, and both ends' ends on a dangling 'and both ends', which is the key point and reads as an af) · cold read r3: both readers failed the own call again on the same fault (\"keeps every number from one end to the other\" says numbers are kept when the table keeps rows. \"one end to th); their wording taken · trimmed for the 14-word sentence and 40-word screen rules"
  },
  "j3-06 › nightdesk › config › strings › c3 › show2": {
   "from": "It keeps days of 20 to 22 degrees: 16 of 92.",
@@ -441,8 +441,8 @@
  },
  "j3-06 › nightdesk › config › strings › c5 › stampOk": {
   "from": "SPIKE. Too few people: 4 of 44.",
-  "to": "SPIKE. Too few people: only 4 of the 44 rated the bus.",
-  "why": "cold read r1b: both readers failed it ('Too few people: 4 of 44' is a fragment and a number with no thing after it.) · then cut back so the hour fits its time (G1)"
+  "to": "SPIKE. The reason is too few people. Only 4 of the 44 people outside Old Town rated the bus.",
+  "why": "cold read r1b: both readers failed it ('Too few people: 4 of 44' is a fragment and a number with no thing after it.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it (\"SPIKE. Too few people: only 4 of the 44 rated the bus.\" is a verbless chunk after a colon, and \"the 44\" is not named as) · cold read r3: both readers failed the own call again on the same fault (\"Too few people.\" is a verbless fragment, and \"the 44 people\" does not say which 44. She would ask: 44 who?); their wording taken"
  },
  "j3-06 › nightdesk › config › strings › c6 › ring": {
   "from": "This is Dee. One headline is left. The press starts in three minutes. If you run out of time, Fionn’s headline prints as it is.",
@@ -451,8 +451,8 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › judge1 › ok": {
   "from": "Showing 27 of 92. Hot days: 290 ice creams, 2.8 rescues a day.",
-  "to": "Showing 27 of 92 days. On an average hot day, 290 ice creams were sold. There were 2.8 sea rescues.",
-  "why": "cold read r1b: both readers failed it ('Hot days: 290 ice creams, 2.8 rescues a day' is a colon fragment, and 'a day' covers only the second number.) · then split to keep each sentence within 14 words (G3)"
+  "to": "Showing 27 of 92 days. An average hot day had 290 ice creams sold and 2.8 sea rescues.",
+  "why": "cold read r1b: both readers failed it ('Hot days: 290 ice creams, 2.8 rescues a day' is a colon fragment, and 'a day' covers only the second number.) · then split to keep each sentence within 14 words (G3); then cold read r2, own call after two rounds: both readers failed it (\"There were 2.8 sea rescues.\" hangs loose: she cannot tell if that is a day's rescues or a total, and 2.8 is odd for a r) · cold read r3: both readers failed the own call again on the same fault (\"Each hot day averaged 290 ice creams\" is wrong in sense. One day cannot average. The average belongs to the g); their wording taken · trimmed for the 14-word sentence and 40-word screen rules"
  },
  "j3-06 › nightdesk › config › strings › c6 › ask2": {
   "from": "Now the cold days: under 18 degrees.",
@@ -461,28 +461,28 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › judge2 › ok": {
   "from": "Showing 28 of 92. Cold days: 91 ice creams, 0.5 rescues a day.",
-  "to": "Showing 28 of 92 days. On an average cold day, 91 ice creams were sold. There were 0.5 sea rescues.",
-  "why": "cold read r1b: both readers failed it ('Cold days: 91 ice creams, 0.5 rescues a day' is a colon fragment with 'a day' covering only the second number.) · then split to keep each sentence within 14 words (G3)"
+  "to": "Showing 28 of 92 days. An average cold day had 91 ice creams sold and 0.5 sea rescues.",
+  "why": "cold read r1b: both readers failed it ('Cold days: 91 ice creams, 0.5 rescues a day' is a colon fragment with 'a day' covering only the second number.) · then split to keep each sentence within 14 words (G3); then cold read r2, own call after two rounds: both readers failed it (\"There were 0.5 sea rescues.\" is a separate sentence with no time attached, and half a rescue makes her ask what that me) · cold read r3: both readers failed the own call again on the same fault (\"Each cold day averaged 91 ice creams\" has the same fault: one day cannot have an average.); their wording taken · trimmed for the 14-word sentence and 40-word screen rules"
  },
  "j3-06 › nightdesk › config › strings › c6 › stampAsk": {
   "from": "Stamp it.",
-  "to": "Now stamp it, with a reason.",
-  "why": "cold read r1b: both readers failed it (The bare order 'Stamp it.' does not say that a reason is also needed, and it is only two words. A pupil who arrives here) · then cut back so the hour fits its time (G1)"
+  "to": "Stamp it, with a reason.",
+  "why": "cold read r1b: both readers failed it (The bare order 'Stamp it.' does not say that a reason is also needed, and it is only two words. A pupil who arrives here) · then cut back so the hour fits its time (G1); then then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › stampOk": {
   "from": "SPIKE. One did not cause the other. The heat brings swimmers and ice-cream buyers.",
-  "to": "SPIKE. Ice cream did not cause the rescues. Hot weather brought both.",
-  "why": "cold read r1b: both readers failed it ('One did not cause the other' has no names for the two things, so 'one' points at nothing.) · then cut back so the hour fits its time (G1)"
+  "to": "SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.",
+  "why": "cold read r1b: both readers failed it ('One did not cause the other' has no names for the two things, so 'one' points at nothing.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it (\"Hot weather brought both.\" does not say both what; she has to work it out.)"
  },
  "j3-06 › nightdesk › config › strings › c6 › stampNo": {
   "from": "Both rise together. Does one cause the other, or does heat cause both?",
-  "to": "Both rise on hot days. Does one cause the other, or does the heat cause both?",
-  "why": "cold read r1b: both readers failed it ('Both rise together' does not say which two things rise.) · then cut back so the hour fits its time (G1)"
+  "to": "Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?",
+  "why": "cold read r1b: both readers failed it ('Both rise together' does not say which two things rise.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it (Opens with \"Both rise on hot days.\" and \"Both\" points at nothing inside the sentence.)"
  },
  "j3-06 › nightdesk › config › strings › c6 › reasonNo": {
   "from": "The numbers are real and there are enough days. What causes what?",
-  "to": "The numbers are real, and there are enough days. Ask yourself what is causing what.",
-  "why": "cold read r1b: both readers failed it ('What causes what?' is a clipped question; she would ask what it is asking her to do.)"
+  "to": "The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Does it, or does something else cause both?",
+  "why": "cold read r1b: both readers failed it ('What causes what?' is a clipped question; she would ask what it is asking her to do.); then cold read r2, own call after two rounds: both readers failed it (\"Ask yourself what is causing what.\" is vague and tangled, so she asks \"what is what?\".) · cold read r3: both readers failed the own call again on the same fault (\"The problem is the cause.\" is a clipped line on a bare noun. She would ask: what about the cause?); their wording taken"
  },
  "j3-06 › nightdesk › config › strings › c6 › timeLeft": {
   "from": "{s} seconds to the press",
@@ -506,13 +506,13 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › letter3": {
   "from": "Hot days fill the beach with swimmers and my customers.",
-  "to": "Hot days bring swimmers and my customers.",
-  "why": "cold read r1b: both readers failed it ('fill the beach with swimmers and my customers' is a joined pair that does not fit one verb.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "On hot days, more people swim and buy ice cream.",
+  "why": "cold read r1b: both readers failed it ('fill the beach with swimmers and my customers' is a joined pair that does not fit one verb.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"Hot days bring swimmers and my customers.\" uses \"bring\" for two odd things at once.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › letter4": {
   "from": "The sun did it, not the ice cream. Marie Byrne.",
-  "to": "The hot weather caused it, not the ice cream. Marie Byrne.",
-  "why": "cold read r1b: both readers failed it ('The sun did it' personifies the sun and leaves 'it' undefined.)"
+  "to": "The heat caused the rescues, not my cones. Marie Byrne.",
+  "why": "cold read r1b: both readers failed it ('The sun did it' personifies the sun and leaves 'it' undefined.); then cold read r2, own call after two rounds: both readers failed it (\"The hot weather caused it\" says \"it\" with nothing in the sentence for it to point at.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › letterButton": {
   "from": "Fix it",
@@ -526,8 +526,8 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › fixOk": {
   "from": "Corrected. The heat caused both. Nothing is lost.",
-  "to": "You fixed it. The heat caused both. Nothing is lost.",
-  "why": "cold read r1b: both readers failed it ('The heat caused both' has no names for the two things, and 'Nothing is lost' is left hanging.) · then cut back so the hour fits its time (G1)"
+  "to": "You fixed the stamp. The heat caused the ice cream sales and the sea rescues. All your work is still saved.",
+  "why": "cold read r1b: both readers failed it ('The heat caused both' has no names for the two things, and 'Nothing is lost' is left hanging.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it (\"The heat caused both.\" has \"both\" with no noun, and \"Nothing is lost.\" makes her ask what could be lost.) · cold read r3: both readers failed the own call again on the same fault (\"Your work is still saved\" raises a worry that was never there. She would ask: was it not saved? \"The sales\" a); their wording taken"
  },
  "j3-06 › nightdesk › config › strings › c6 › doneLine": {
   "from": "Six headlines checked. The press is running.",
@@ -536,13 +536,13 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › compare1": {
   "from": "Each hot day: 290 ice creams, 2.8 rescues.",
-  "to": "Hot days averaged 290 ice creams and 2.8 rescues.",
-  "why": "cold read r1b: both readers failed it ('Each hot day: 290 ice creams, 2.8 rescues.' is a colon fragment and 'each' is false because these are averages.) · then split to keep each sentence within 14 words (G3) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "Hot days averaged 290 ice creams and 2.8 rescues a day.",
+  "why": "cold read r1b: both readers failed it ('Each hot day: 290 ice creams, 2.8 rescues.' is a colon fragment and 'each' is false because these are averages.) · then split to keep each sentence within 14 words (G3) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"290 ice creams and 2.8 rescues\" has no \"a day\", so she asks 2.8 of what.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › compare2": {
   "from": "Each cold day: 91 ice creams, 0.5 rescues.",
-  "to": "Cold days averaged 91 ice creams and 0.5 rescues.",
-  "why": "cold read r1b: both readers failed it ('Each cold day: 91 ice creams, 0.5 rescues.' is a colon fragment and 'each' is false because these are averages.) · then split to keep each sentence within 14 words (G3) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "Cold days averaged 91 ice creams and 0.5 rescues a day.",
+  "why": "cold read r1b: both readers failed it ('Each cold day: 91 ice creams, 0.5 rescues.' is a colon fragment and 'each' is false because these are averages.) · then split to keep each sentence within 14 words (G3) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"91 ice creams and 0.5 rescues\" has no \"a day\".); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › front › wrongSub": {
   "from": "Unchecked · Fionn",
@@ -576,13 +576,13 @@
  },
  "j3-06 › nightdesk › config › strings › close › badges[5] › line": {
   "from": "Six headlines stamped before midnight.",
-  "to": "You beat the clock.",
-  "why": "cold read r1b: both readers failed it ('Six headlines stamped before midnight.' has no verb and no 'you'.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "You finished before the press started.",
+  "why": "cold read r1b: both readers failed it ('Six headlines stamped before midnight.' has no verb and no 'you'.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"You beat the clock.\" is an idiom, and the checklist bans idioms.)"
  },
  "j3-06 › nightdesk › config › strings › close › recap[1]": {
   "from": "AND needs both. OR needs one.",
-  "to": "AND needs both rules. OR needs one.",
-  "why": "cold read r1b: both readers failed it ('needs both' and 'needs one': both what, one what? The nouns (rules) are missing, so she must work them out.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "AND needs both rules to match. OR needs just one.",
+  "why": "cold read r1b: both readers failed it ('needs both' and 'needs one': both what, one what? The nouns (rules) are missing, so she must work them out.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"OR needs one.\" leaves out one what, and is clipped.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  },
  "j3-06 › nightdesk › config › strings › close › recap[2]": {
   "from": "BETWEEN keeps both ends and all between.",
@@ -591,8 +591,8 @@
  },
  "j3-06 › nightdesk › config › strings › close › recap[4]": {
   "from": "Before you print, ask: enough people? Whole picture? Numbers back it? What caused what?",
-  "to": "Before you print, check: enough people, the whole picture, the numbers, the cause.",
-  "why": "cold read r1b: both readers failed it (A chain of one-word questions. 'Whole picture?' and 'What caused what?' are clipped and 'Whole picture' hides the 'only ) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "Before printing, check: enough people, fair rows, true numbers, a real cause.",
+  "why": "cold read r1b: both readers failed it (A chain of one-word questions. 'Whole picture?' and 'What caused what?' are clipped and 'Whole picture' hides the 'only ) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"enough people, the whole picture, the numbers, the cause\" is a colon list of fragments, and \"the whole picture\" is a me); then cut back so each screen keeps to 40 words and each sentence to 14 (G3) · cold read r3: both readers failed the own call again on the same fault (\"check the people, the rows, the numbers and the cause\" is a list of four bare nouns. She cannot say what to c); their wording taken · trimmed for the 14-word sentence and 40-word screen rules"
  },
  "j3-06 › nightdesk › config › strings › close › exitDone": {
   "from": "Last five questions done.",
@@ -641,8 +641,8 @@
  },
  "j3-06 › keys › j3x6-2 › explain": {
   "from": "[\"Six of eighteen is a third. The numbers say no to most.\",\"Eighteen teens is enough to ask; the count is not the problem.\",\"Nothing here is a cause; the word most is just wrong.\"]",
-  "to": "[\"Six of eighteen is one in three. The numbers say no, because one in three is not most.\",\"Eighteen teens is enough people to check. Too few people is not the problem.\",\"Nothing here is about a cause. The problem is the word most, which is wrong.\"]",
-  "why": "cold read r1b: both readers failed it ('the count is not the problem' is unclear, 'Nothing here is a cause' sits oddly against an option that says 'did not cau)"
+  "to": "[\"Six of eighteen is one in three. The numbers say no, because one in three is not most.\",\"Eighteen teens are enough people to check. So the reason is not too few people.\",\"The headline does not say that one thing caused another. The problem is that one in three is not most.\"]",
+  "why": "cold read r1b: both readers failed it ('the count is not the problem' is unclear, 'Nothing here is a cause' sits oddly against an option that says 'did not cau); then cold read r2, own call after two rounds: both readers failed it (\"The problem is the word most, which is wrong.\" says a word is wrong, when the claim is wrong.) · cold read r3: both readers failed the own call again on the same fault (\"Too few people is not the problem\" is plural noun with singular verb, which stumbles aloud. \"Nothing here is ); their wording taken"
  },
  "j3-06 › keys › j3x6-3 › explain": {
   "from": "[\"Both ends count: 40 to 46 is seven days.\",\"Six would leave one end out; BETWEEN keeps both.\",\"40 is the first day, not the count.\"]",
@@ -651,12 +651,17 @@
  },
  "j3-06 › keys › j3x6-4 › explain": {
   "from": "[\"Hot days bring swimmers and ice-cream buyers; the heat causes both.\",\"Ice cream does not put anyone in the sea.\",\"That is the order backwards, and still not a cause.\"]",
-  "to": "[\"Hot days bring both swimmers and ice-cream buyers. The heat causes both.\",\"Ice cream does not make anyone go into the sea.\",\"Rescued swimmers buying ice cream puts the order backwards, and it is still not a cause.\"]",
-  "why": "cold read r1b: both readers failed it ('That is the order backwards, and still not a cause.' starts on a bare 'That' and does not say which order.)"
+  "to": "[\"Hot days bring both swimmers and ice-cream buyers. The heat causes both.\",\"Ice cream does not make anyone go into the sea.\",\"This answer puts the rescues first and the ice cream after. That order does not explain why both go up on hot days.\"]",
+  "why": "cold read r1b: both readers failed it ('That is the order backwards, and still not a cause.' starts on a bare 'That' and does not say which order.); then cold read r2, own call after two rounds: both readers failed it (\"puts the order backwards, and it is still not a cause\": \"it\" points at nothing clear.) · cold read r3: both readers failed the own call again on the same fault (\"This puts the rescues first\" has a bare \"This\", and \"It still does not show a cause\" repeats a word she has n); their wording taken"
  },
  "j3-06 › keys › j3x6-5 › explain": {
   "from": "[\"NOT reverses the rule: everyone whose area is not Old Town.\",\"That keeps Old Town only, the opposite.\",\"No area is called Old or Town; the name is one word in quotes.\"]",
   "to": "[\"NOT reverses the rule. It keeps everyone whose area is not Old Town.\",\"That rule keeps only the people from Old Town, which is the opposite.\",\"No area is called Old or Town. The name Old Town goes in quotes as one name.\"]",
   "why": "cold read r1b: both readers failed it ('the name is one word in quotes' is wrong for 'Old Town'; 'That keeps Old Town only, the opposite.' hangs a verbless phr)"
+ },
+ "j3-06 › byText › Your front page blamed my cone": {
+  "from": "Your front page blamed my cones for three rescues.",
+  "to": "Your paper blamed my cones for three rescues.",
+  "why": "then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
  }
 }

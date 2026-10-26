@@ -25,11 +25,11 @@ window.S = {
     ask: 'Keep teens who use their phone five hours or more.', h1: 'For teens, use age < 20. For five hours or more, use phone_hours >= 5.', h2: 'Put AND between the two rules.', h3: 'Type this, then press Enter.', h3code: 'age < 20 AND phone_hours >= 5',
     judge: { ok: 'Showing 6 of 60. Six of the 18 teens use their phone that much.', wrong: 'Your rule shows {got} rows, but it should show 6. Check both rules.' },
     predict: 'Fionn wrote "most". Six of 18 is…', options: ['One in three', 'Most of them', 'Half of them'], right: 'Right. Six of eighteen is one in three.', wrong: 'Six of eighteen is one in three. One in three is not most.',
-    stampAsk: 'Now stamp it, with a reason.', stampOk: 'SPIKE. The numbers say no: 6 of 18 is not most.', stampNo: 'Only six of the eighteen teens use their phone that much. Is that most?', reasonNo: 'Eighteen teens is enough to go on. The problem is the word "most".', doneLine: 'Two headlines checked.'
+    stampAsk: 'Now stamp it, with a reason.', stampOk: 'SPIKE. The numbers say no: 6 of 18 is not most.', stampNo: 'Only six of the eighteen teens use their phone that much. Is that most?', reasonNo: 'Eighteen teens are enough people to check. The problem is that Fionn wrote "most". Six of 18 is not most.', doneLine: 'Two headlines checked.'
   },
   c3: {
     title: 'One week', headline: 'Rathmore harbour gets 3,000 visitors a day', byline: 'Fionn · page 2',
-    showKicker: 'Dee shows you', show1: 'BETWEEN keeps every number from one end to the other, and both ends.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days, from 20 to 22 degrees.', show3: 'Each row here is one summer day.',
+    showKicker: 'Dee shows you', show1: 'BETWEEN keeps every number from the first to the last. Both of those count too.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days, from 20 to 22 degrees.', show3: 'Each row here is one summer day.',
     ask: 'Fionn only looked at days 40 to 46. Keep those days.', h1: 'The column is day_no.', h2: 'Write day_no, then BETWEEN, then the first day, then AND, then the last day.', h3: 'Type this, then press Enter.', h3code: 'day_no BETWEEN 40 AND 46',
     judge: { ok: 'Showing 7 of 92 days. These 7 days are regatta week, 10 to 16 July. That is the week of the harbour boat races.', wrong: 'Your rule shows {got} days, but it should show 7. Check both ends.' },
     compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week and called it the summer.',
@@ -49,25 +49,25 @@ window.S = {
     ask: 'Keep people outside Old Town who gave the bus any stars.', h1: 'For outside Old Town, use NOT area = "Old Town". For any stars, use bus_stars > 0.', h2: 'Join the two with AND.', h3: 'Type this, then press Enter.', h3code: 'NOT area = "Old Town" AND bus_stars > 0',
     judge: { ok: 'Showing 4 of 60. Four people rated the bus at all.', wrong: 'Your rule shows {got} rows, but it should show 4. Type NOT first. Then type AND between the two rules.' },
     compareKicker: 'Now compare', compare1: 'All four gave five stars.', compare2: 'The other 40 people outside Old Town did not rate the bus.', predict: 'Fionn wrote "everyone". He had…', options: ['Ratings from four people', 'Ratings from 44 people', 'Ratings from all 60 people'], right: 'Right. Four people cannot tell us what all 44 think.', wrong: 'Four people rated it. They cannot tell us what all 44 think.',
-    stampAsk: 'Now stamp it, with a reason.', stampOk: 'SPIKE. Too few people: only 4 of the 44 rated the bus.', stampNo: 'Only four of the 44 people rated the bus. Is that enough for "everyone"?', reasonNo: 'The four did love it. There are just too few of them.', doneLine: 'Five headlines checked.'
+    stampAsk: 'Now stamp it, with a reason.', stampOk: 'SPIKE. The reason is too few people. Only 4 of the 44 people outside Old Town rated the bus.', stampNo: 'Only four of the 44 people rated the bus. Is that enough for "everyone"?', reasonNo: 'The four did love it. There are just too few of them.', doneLine: 'Five headlines checked.'
   },
   c6: {
     title: 'The rush', headline: 'Ice cream sales cause sea rescues', byline: 'Fionn · page 1',
     ring: 'This is Dee. One headline is left. The printing press starts in three minutes. If time runs out, the paper prints Fionn’s headline as he wrote it.', ringButton: 'Start the clock',
     intro: 'Fionn says more ice creams mean more sea rescues. Check the hot days, then the cold days.',
     ask1: 'Keep the hot days: 24 degrees or more.', h1a: 'The column is temp_c.', h1b: 'Twenty-four or more is >=.', h1c: 'Type this, then press Enter.', h1code: 'temp_c >= 24',
-    judge1: { ok: 'Showing 27 of 92 days. On an average hot day, 290 ice creams were sold. There were 2.8 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 27. Check the sign.' },
+    judge1: { ok: 'Showing 27 of 92 days. An average hot day had 290 ice creams sold and 2.8 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 27. Check the sign.' },
     ask2: 'Now keep the days under 18 degrees.', h2a: 'Under 18 is <.', h2b: 'Write temp_c, then <, then 18.', h2c: 'Type this, then press Enter.', h2code: 'temp_c < 18',
-    judge2: { ok: 'Showing 28 of 92 days. On an average cold day, 91 ice creams were sold. There were 0.5 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 28. Check the sign.' },
-    stampAsk: 'Now stamp it, with a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather brought both.', stampNo: 'Both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. Ask yourself what is causing what.',
-    timeLeft: '{s} seconds until the press starts', timeUp: 'It is midnight and time is up. The press printed Fionn’s headline on page one.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline. It is on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream at the harbour.', letter2: 'Your front page blamed my cones for three rescues.', letter3: 'Hot days bring swimmers and my customers.', letter4: 'The hot weather caused it, not the ice cream. Marie Byrne.', letterButton: 'Fix the stamp',
-    fixAsk: 'Stamp it again. Pick the right reason this time.', fixOk: 'You fixed it. The heat caused both. Nothing is lost.', doneLine: 'Six headlines checked. The press is printing the paper now.'
+    judge2: { ok: 'Showing 28 of 92 days. An average cold day had 91 ice creams sold and 0.5 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 28. Check the sign.' },
+    stampAsk: 'Stamp it, with a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.', stampNo: 'Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Does it, or does something else cause both?',
+    timeLeft: '{s} seconds until the press starts', timeUp: 'It is midnight and time is up. The press printed Fionn’s headline on page one.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline. It is on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream at the harbour.', letter2: 'Your paper blamed my cones for three rescues.', letter3: 'On hot days, more people swim and buy ice cream.', letter4: 'The heat caused the rescues, not my cones. Marie Byrne.', letterButton: 'Fix the stamp',
+    fixAsk: 'Stamp it again. Pick the right reason this time.', fixOk: 'You fixed the stamp. The heat caused the ice cream sales and the sea rescues. All your work is still saved.', doneLine: 'Six headlines checked. The press is printing the paper now.'
   },
   front: { kicker: 'Midnight', masthead: 'The Harbour Post', date: 'Rathmore · Saturday', intro: 'The page you made.', printedSub: 'Survey of 60 people', spikedTitle: 'Spiked headlines', byline: 'Night desk: {name}', you: 'you', rename: 'Type your name for the page', button: 'Finish the hour', wrongSub: 'Not checked · by Fionn' },
   close: {
     badgesTitle: 'Tonight',
-    badges: [{ id: 'asker', name: 'First question', line: 'You wrote your first query.' }, { id: 'both', name: 'Two at once', line: 'You used AND.' }, { id: 'week', name: 'The week', line: 'You used BETWEEN.' }, { id: 'either', name: 'Either one', line: 'You used OR.' }, { id: 'rest', name: 'Leave out', line: 'You used NOT.' }, { id: 'rush', name: 'The rush', line: 'You beat the clock.' }],
-    recapTitle: 'Remember these', recap: ['A query asks a table a question.', 'AND needs both rules. OR needs one.', 'BETWEEN keeps both ends.', 'NOT reverses a rule.', 'Before you print, check: enough people, the whole picture, the numbers, the cause.'],
+    badges: [{ id: 'asker', name: 'First question', line: 'You wrote your first query.' }, { id: 'both', name: 'Two at once', line: 'You used AND.' }, { id: 'week', name: 'The week', line: 'You used BETWEEN.' }, { id: 'either', name: 'Either one', line: 'You used OR.' }, { id: 'rest', name: 'Leave out', line: 'You used NOT.' }, { id: 'rush', name: 'The rush', line: 'You finished before the press started.' }],
+    recapTitle: 'Remember these', recap: ['A query asks a table a question.', 'AND needs both rules to match. OR needs just one.', 'BETWEEN keeps both ends.', 'NOT reverses a rule.', 'Before printing, check: enough people, fair rows, true numbers, a real cause.'],
     exitTitle: 'Last five questions', exitOf: 'Question {n} of 5', exitRight: 'Right.', exitWrong: 'Not that one. The green one is right.', exitDone: 'You have finished the last five questions.',
     exit: [
       { stem: 'Which rule keeps teens who live in Hill?', options: ['age < 20 AND area = "Hill"', 'age < 20 OR area = "Hill"', 'NOT age < 20'] },
@@ -174,17 +174,17 @@ window.S.deck = [
 ];
 window.S.brief = {
   "purpose": [
-    "The skill: asking a table a question by typing a rule. Pupils join rules with AND, OR, BETWEEN and NOT. They judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
-    "What the pupils make: six checked headlines. Each headline is stamped PRINT or SPIKE with a reason. The front page that results is shown on screen. Nothing prints on paper."
+    "The skill is asking a table a question by typing a rule, such as age < 20. A rule keeps only the rows that fit it. Pupils join rules with AND and OR, and use BETWEEN and NOT. They then judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
+    "The pupils check six headlines. They stamp each one PRINT or SPIKE and give a reason. PRINT sends a headline to the paper. SPIKE throws it out. The front page that results is shown on screen. Nothing prints on paper."
   ],
   "prepare": [
     {
       "title": "Nothing to print",
-      "text": "Each pupil needs the link, signed in with their school account, and headphones if they have them. The deck is optional."
+      "text": "Each pupil needs the lesson link and their school account to sign in. Headphones help, if pupils have them. The slide deck for the board is optional."
     },
     {
       "title": "Do not give away the story",
-      "text": "The deck does not tell the newspaper story. Please do not describe what happens on screen. After the warm-up, the first screen says what the hour is for, in the same words as slide 1."
+      "text": "The slide deck does not tell the newspaper story. Please do not describe what happens on screen. Pupils start with five warm-up questions on their own screens. After them, the next screen says what the hour is for, in the same words as slide 1."
     }
   ],
   "resources": [
@@ -209,7 +209,7 @@ window.S.brief = {
     {
       "part": "The job",
       "mins": 5,
-      "text": "The first screen says what the hour is for. Then a short story begins. The pupils are shown the night desk, the screen where they work, in three stops.",
+      "text": "After the warm-up questions, the first screen says what the hour is for. Then a short story appears on screen. A tour in three steps shows the pupils the night desk. The night desk is the screen where they work.",
       "say": "Read every screen. Nothing happens until you press the button."
     },
     {
@@ -221,19 +221,19 @@ window.S.brief = {
     {
       "part": "Headlines 4 and 5",
       "mins": 10,
-      "text": "Pupils type a rule with OR, then a rule with NOT. Headline 4 is the one true headline of the night. The pupil must stamp it PRINT with the right reason.",
+      "text": "Pupils type a rule with OR in part 4 and a rule with NOT in part 5. Headline 4 is in part 4 and is the one true headline of the lesson. The pupil must stamp it PRINT, with the reason \"The numbers back it\".",
       "say": "Not every headline is wrong. Read the count before you stamp."
     },
     {
       "part": "Headline 6",
       "mins": 8,
-      "text": "Part 6 has a three-minute clock. If the clock runs out, the wrong headline prints and a reader complains. The pupil then stamps it again. Nothing is lost.",
+      "text": "Part 6 has a clock that counts down three minutes. If the clock runs out, Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved.",
       "say": "If the clock runs out, you fix it on the next screen."
     },
     {
       "part": "Finishing",
       "mins": 12,
-      "text": "The pupils see their front page, their badges and a recap. Then come five last questions and one question about how the hour went. Pupils who finish early get two more headlines to check.",
+      "text": "The pupils see their front page, their badges and a recap. Then come five last questions and a short check on how the hour went. Pupils who finish early get two more headlines to check.",
       "say": "When you reach the badges, you are nearly done."
     }
   ],
@@ -256,7 +256,7 @@ window.S.brief = {
     },
     {
       "part": "Headline 4",
-      "what": "OR: either rule. This part has the one true headline."
+      "what": "OR keeps a row when either rule is true. This part has the one true headline."
     },
     {
       "part": "Headline 5",
@@ -278,14 +278,14 @@ window.S.brief = {
     },
     {
       "q": "A pupil leaves the quote marks off a word.",
-      "a": "The table reads a word without quotes as text, so the rule still works. Every hint shows the quotes."
+      "a": "The table still accepts a word typed without quotes, so the rule still works. Every hint shows the word in quotes."
     },
     {
       "q": "The three-minute clock ran out.",
-      "a": "The headline prints as it is. A reader complains. The pupil then stamps it again. Nothing is lost."
+      "a": "Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved."
     },
     {
-      "q": "A pupil stamps PRINT when it should be SPIKE.",
+      "q": "A pupil stamps a headline PRINT when the headline should be SPIKE.",
       "a": "The screen says why and asks again. There are five reasons to choose from."
     },
     {
@@ -307,7 +307,7 @@ window.S.recapPool = [
   var C = S.common;
   C.check = 'Check it'; C.done = 'Done'; C.start = 'Start'; C.got = 'Got it'; C.tourStop = 'Step {n} of 3'; C.headlineN = 'Headline {n} of 6'; C.nextOne = 'Next one';
   C.errEmpty = 'The box is empty. Type a rule first.'; C.errSyntax = 'That rule is not written the right way. Write a column name, then a sign. Then write a number, or a word in quotes.'; C.errColumn = 'There is no column called {word}. Click a column name in the word bank.'; C.errDangling = 'Your rule is not finished. A rule needs a column name, then a sign. Then it needs a number or a word.'; C.errValue = 'After the sign, type a number or a word in quotes.';
-  S.c6.compare1 = 'Hot days averaged 290 ice creams and 2.8 rescues.'; S.c6.compare2 = 'Cold days averaged 91 ice creams and 0.5 rescues.'; S.c6.printedStamp = 'PRINTED';
+  S.c6.compare1 = 'Hot days averaged 290 ice creams and 2.8 rescues a day.'; S.c6.compare2 = 'Cold days averaged 91 ice creams and 0.5 rescues a day.'; S.c6.printedStamp = 'PRINTED';
   S.front.corrected = 'corrected after printing'; S.close.freeOf = 'Headline {n} of 2';
 })(window.S);
 
