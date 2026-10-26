@@ -37,6 +37,33 @@ let checks = 0; const FAILS = [];
 const must = (ok, what) => { checks++; console.log((ok ? '  PASS ' : '  FAIL ') + what); if (!ok) FAILS.push(what); return ok; };
 const WORDS_MAX = 40, KEYS_A_SEC = 4;
 
+/* the shared tables (coverage cells): LANDMARKS['j2-5'] in sit-wrongpath.js must each be stood on, and the
+   measured shape must equal EXPECT['j2-5'] in sit-review.js — the l5-walk.js pattern (J3 Lesson 5). */
+function table(file, re, key) {
+  const src = fs.readFileSync(path.join(__dirname, file), 'utf8');
+  const at = src.search(re); if (at < 0) return null;
+  const k = src.indexOf("'" + key + "':", at); if (k < 0) return null;
+  let i = src.indexOf(':', k) + 1; while (/\s/.test(src[i])) i++;
+  const open = src[i], close = open === '[' ? ']' : '}';
+  let d = 0, j = i;
+  for (; j < src.length; j++) { if (src[j] === open) d++; else if (src[j] === close && --d === 0) break; }
+  return (new Function('return ' + src.slice(i, j + 1)))();
+}
+const LANDMARKS = (table('sit-wrongpath.js', /const\s+LANDMARKS\s*=/, 'j2-5') || []).slice();
+const EXPECT = table('sit-review.js', /const\s+EXPECT\s*=/, 'j2-5');
+if (CONTROL) LANDMARKS.push(['CONTROL: a landmark nobody can stand on', '.no-such-surface-anywhere', 'search']);
+let stood = {};
+const VISIBLE = sel => { const els = document.querySelectorAll(sel); for (const e of els) { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0) return true; } return false; };
+async function look(page, ck) {
+  const h = await page.$('iframe.search-frame'); const fr = h ? await h.contentFrame() : null;
+  for (const [label, sel, at] of LANDMARKS) {
+    if (at !== ck || stood[label]) continue;
+    let ok = await page.evaluate(VISIBLE, sel).catch(() => false);
+    if (!ok && fr) ok = await fr.evaluate(VISIBLE, sel).catch(() => false);
+    if (ok) stood[label] = true;
+  }
+}
+
 /* ---------- the hour, in its frame: answer what it wants ---------- */
 const WRONG = { '2': ['for i in range(2):', '    forward(100)', '    left(90)'], '3': ['for i in range(3):', '    forward(i * 10)', '    left(90)'] };
 async function hour(page, fr, o) {
@@ -53,6 +80,7 @@ async function hour(page, fr, o) {
     const s = await fr.evaluate(() => { const U = window.SearchUI, H = window.SearchHour; if (!U || !H) return null; const m = U.measure[U.measure.length - 1]; return { want: H.want, screen: m ? m.screen : '', now: U.now(), err: window.__hourError, words: U.screenWords ? U.screenWords() : 0 }; }).catch(() => null);
     if (!s) { await sleep(150); continue; }
     if (s.err) { must(false, 'the hour reports no flow error (' + s.err + ')'); break; }
+    if (o.look) await o.look();
     if (s.screen !== lastScreen) {
       lastScreen = s.screen; screens.push(s.screen); words.push([s.screen, s.words]); log.push((s.now / 60).toFixed(1) + ' min  ' + s.screen);
       if (o.shots) await page.screenshot({ path: path.join(o.shots, String(screens.length).padStart(3, '0') + '-' + s.screen.replace(/[^a-z0-9]+/gi, '_').slice(0, 28) + '.png') }).catch(() => {});
@@ -162,6 +190,7 @@ async function pressBadges(page) {
 async function platformStep(page, ck) {
   for (let i = 0; i < 80; i++) {
     if (await chunkNow(page) !== ck) return true;
+    await look(page, ck);
     if (await page.evaluate(ENDED)) return true;
     if (await pressBadges(page)) { await sleep(500); continue; }
     const st = await page.evaluate(WALK.detectKind);
@@ -189,13 +218,16 @@ async function walkLesson(b, size) {
   const ctx = await b.newContext({ viewport: { width: size[0], height: size[1] } }); const page = await ctx.newPage();
   const errs = []; page.on('pageerror', e => errs.push(String(e)));
   page.on('frameattached', f => f.on && f.on('pageerror', e => errs.push('frame: ' + e)));
-  const walked = [];
+  const walked = []; stood = {}; let xp0 = 0;
   try {
+    must(LANDMARKS.length > 0, 'sit-wrongpath.js declares LANDMARKS[\'j2-5\'] (' + LANDMARKS.length + ')');
+    must(!!EXPECT, 'sit-review.js declares EXPECT[\'j2-5\']');
     await page.goto(URL, { waitUntil: 'domcontentloaded' }); await sleep(2000);
     await WALK.primeDevKeys(page, BASE).catch(() => {});
     await seed(page);
     await page.goto(URL, { waitUntil: 'domcontentloaded' }); await sleep(2200);
     await page.evaluate(() => { const s = document.querySelector('.intro-skip'); if (s) s.click(); }); await sleep(600);
+    xp0 = await page.evaluate(() => (window.App && App.state.xp) || 0);
     const tile = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(e => /Lesson\s*5(?!\d)/i.test(e.textContent)); if (!t) return null; const s = t.querySelector('.tile-story'); const txt = t.textContent.replace(/\s+/g, ' ').trim(); t.click(); return { txt, story: s ? s.textContent.trim() : '' }; });
     must(!!tile && /Loop Machines/i.test(tile.txt), 'the Lesson 5 tile is Loop Machines (' + (tile && tile.txt) + ')');
     must(!!tile && tile.story === 'The Search', 'the Lesson 5 card shows "The Search" as its story title (§16)');
@@ -203,13 +235,14 @@ async function walkLesson(b, size) {
     await sleep(2500);
     for (let guard = 0; guard < 24; guard++) {
       const ck = await chunkNow(page); if (!ck) break;
+      await look(page, ck);
       if (await page.evaluate(ENDED)) break;
       if (walked[walked.length - 1] !== ck) walked.push(ck);
       console.log('  … ' + ck);
       let ok;
       if (ck === 'search' || ck === 'flight') {
         const fr = await frameReady(page); if (!fr) { must(false, 'the ' + ck + ' frame loads the hour'); break; }
-        const r = await hour(page, fr, { shots: OUT, left: async () => (await chunkNow(page)) !== ck || !!(await page.evaluate(ENDED)), free: freeFlight });
+        const r = await hour(page, fr, { shots: OUT, left: async () => (await chunkNow(page)) !== ck || !!(await page.evaluate(ENDED)), free: freeFlight, look: () => look(page, ck) });
         if (ck === 'search') { console.log('  ' + r.screens.length + ' screens, story ' + ((r.data.now || 0) / 60).toFixed(1) + ' min'); judgeWalk(r, size); }
         ok = !r.stuck;
       } else ok = await platformStep(page, ck);
@@ -222,6 +255,14 @@ async function walkLesson(b, size) {
     must(['search', 'exit', 'close'].every(c => walked.includes(c)), 'the walk went through search, exit and close (' + walked.join(' ') + ')');
     must(Object.keys(badgeSeen).length === 3, 'three badge cards on the way (' + Object.keys(badgeSeen).join(', ') + ')');
     await page.screenshot({ path: path.join(OUT, 'done.png') });
+    for (const [label] of LANDMARKS) must(!!stood[label], 'stood on: ' + label);
+    const shape = await page.evaluate(([email, cls, x0]) => {
+      const db = JSON.parse(localStorage.getItem('ks3dt-dev')); const r = db.pupils[cls + ':' + email]; const L = r && r.L && r.L['5'];
+      return { xp: (App.state.xp || 0) - x0, marks: L ? Number(L[1]) || 0 : 0 };
+    }, [EMAIL, CLASS, xp0]);
+    shape.chunks = walked.length; shape.badges = Object.keys(badgeSeen).length;
+    console.log('  SHAPE ' + JSON.stringify(shape) + '  walked ' + walked.join(' '));
+    if (EXPECT && MODE === 'right') for (const k of ['xp', 'chunks', 'marks', 'badges']) if (EXPECT[k] != null) must(shape[k] === EXPECT[k], 'shape ' + k + ' = ' + EXPECT[k] + ' (walked ' + shape[k] + ')');
   } catch (e) { must(false, 'the walk stopped: ' + e.message.split('\n')[0]); }
   must(errs.length === 0, 'no page errors (' + size.join('×') + ')' + (errs.length ? ': ' + errs.join(' | ').slice(0, 300) : ''));
   await ctx.close();

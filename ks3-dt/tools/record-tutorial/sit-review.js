@@ -56,6 +56,8 @@ const NUM = String(process.argv[2] || '2').replace(/^J([23])-/i, 'j$1-');
 /* J1 Lesson 6 is THE OPERATION (14 Oct 2026), walked by l6-walk.js against EXPECT['6'] below. */
 if (/^6$/.test(NUM)) { console.log('sit-review.js: J1 Lesson 6 is The Operation; walk it with l6-walk.js (it asserts EXPECT[\'6\']).'); process.exit(0); }
 /* J3 Lesson 5 is BUG BOUNTY (TWO LIGHTS, 15 Oct 2026), walked by l5-walk.js against EXPECT['j3-5'] below. */
+/* J2 Lesson 5 is THE SEARCH (26 Oct 2026), walked by j2l5-walk.js against EXPECT['j2-5'] below. */
+if (/^j2-5$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 5 is The Search; walk it with j2l5-walk.js (it asserts EXPECT[\'j2-5\']).'); process.exit(0); }
 if (/^j3-5$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 5 is Bug Bounty; walk it with l5-walk.js (it asserts EXPECT[\'j3-5\']).'); process.exit(0); }
 /* J2 Lesson 5 is LOOP MACHINES (THE SEARCH, 25 Oct 2026), walked by j2l5-walk.js and j2l5-platform.js. */
 if (/^j2-5$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 5 is Loop Machines; walk it with j2l5-walk.js and j2l5-platform.js.'); process.exit(0); }
@@ -205,6 +207,7 @@ const EXPECT = {
   /* J3 Lesson 4 (14 Sep 2026): IDENTICAL on runs 2, 3 and 4 — the Rush's doors
      are seeded (`window.__relaySeed`) and every build is driven from its own
      key, so every number holds, XP included. */
+  'j2-5': { xp: null, chunks: null, marks: null, badges: 3 },   // PROVISIONAL, measured next by j2l5-walk.js --mode right
   'j3-5': { xp: 49, chunks: 12, presses: 82, marks: 49, badges: 3 },   // measured by l5-walk.js, 15 Oct 2026 (presses reported, not asserted)
   'j3-4': { xp: 65, chunks: 12, presses: 45, marks: 14, badges: 3 },
   /* J2 Lesson 4 (14 Sep 2026): IDENTICAL on runs 7 and 8 — the class

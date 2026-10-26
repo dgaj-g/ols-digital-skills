@@ -58,3 +58,8 @@ All gates written; all red on the shipped tree (judge 4/4, frozen 6/6, twins 1/1
 ## 26 Oct 2026 · build window 2 (Opus 5.5 medium)
 - 13:55 open. Dev server on 8126. Brief prepare[4] rewritten in write_j2_05.js: the real control is the Lessons tab, click the lesson's cell (staff.js renderLockGrid / guide text). Writer rerun.
 - make_cold_read_packets.js gained a hub mode (round h1): the 36 recap-pool strings (full text from recap-pool.json), the deck heading s2.1:stop, and the changed brief line. Readers H-A and H-B running in cold-reads/h1/.
+
+## 26 Oct 14:20 checkpoint — pack gates
+- qa-text-damage: held3 parallel ("When i was 0 … When i was 9 …") declared as ALLOWED_REPEATS 'when i was beep flew metres' (deliberate, cold read kept it).
+- qa-harness-coverage cells for j2-05: verdict heading "## J2 LESSON 5" added by fold_cold_reads.js; flight chunk `optional: true` (Free flight = the refusable stretch, DFM 259; Finish skips it); LANDMARKS['j2-5'] (sit-wrongpath.js) + EXPECT['j2-5'] PROVISIONAL (sit-review.js) with skip lines; j2l5-walk.js now stands on LANDMARKS and asserts EXPECT (right mode).
+- NEXT: pack clean → walker right at 1280x900 to measure shape → pin EXPECT → repack → platform gate.

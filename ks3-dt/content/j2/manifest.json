@@ -92,9 +92,11 @@
    "tagline": "You get the computer to repeat a job for you, and you draw with it.",
    "block": "b2",
    "icon": "🔁",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j2/lessons/j2-05.json",
+   "story": "The Search"
   },
   {
    "id": "j2-06",
