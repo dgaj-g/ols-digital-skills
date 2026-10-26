@@ -29,7 +29,7 @@ window.S = {
   },
   c3: {
     title: 'One week', headline: 'Rathmore harbour gets 3,000 visitors a day', byline: 'Fionn · page 2',
-    showKicker: 'Dee shows you', show1: 'BETWEEN keeps every number from the first to the last. Both of those count too.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days, from 20 to 22 degrees.', show3: 'Each row here is one summer day.',
+    showKicker: 'Dee shows you', show1: 'BETWEEN keeps rows from the first number to the last. Both end numbers count too.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days, from 20 to 22 degrees.', show3: 'Each row here is one summer day.',
     ask: 'Fionn only looked at days 40 to 46. Keep those days.', h1: 'The column is day_no.', h2: 'Write day_no, then BETWEEN, then the first day, then AND, then the last day.', h3: 'Type this, then press Enter.', h3code: 'day_no BETWEEN 40 AND 46',
     judge: { ok: 'Showing 7 of 92 days. These 7 days are regatta week, 10 to 16 July. That is the week of the harbour boat races.', wrong: 'Your rule shows {got} days, but it should show 7. Check both ends.' },
     compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week and called it the summer.',
@@ -59,7 +59,7 @@ window.S = {
     judge1: { ok: 'Showing 27 of 92 days. An average hot day had 290 ice creams sold and 2.8 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 27. Check the sign.' },
     ask2: 'Now keep the days under 18 degrees.', h2a: 'Under 18 is <.', h2b: 'Write temp_c, then <, then 18.', h2c: 'Type this, then press Enter.', h2code: 'temp_c < 18',
     judge2: { ok: 'Showing 28 of 92 days. An average cold day had 91 ice creams sold and 0.5 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 28. Check the sign.' },
-    stampAsk: 'Stamp it, with a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.', stampNo: 'Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Does it, or does something else cause both?',
+    stampAsk: 'Stamp it, with a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.', stampNo: 'Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. The problem is the cause. The headline says ice cream causes the rescues. Could something else cause both the sales and the rescues?',
     timeLeft: '{s} seconds until the press starts', timeUp: 'It is midnight and time is up. The press printed Fionn’s headline on page one.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline. It is on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream at the harbour.', letter2: 'Your paper blamed my cones for three rescues.', letter3: 'On hot days, more people swim and buy ice cream.', letter4: 'The heat caused the rescues, not my cones. Marie Byrne.', letterButton: 'Fix the stamp',
     fixAsk: 'Stamp it again. Pick the right reason this time.', fixOk: 'You fixed the stamp. The heat caused the ice cream sales and the sea rescues. All your work is still saved.', doneLine: 'Six headlines checked. The press is printing the paper now.'
   },
@@ -184,7 +184,7 @@ window.S.brief = {
     },
     {
       "title": "Do not give away the story",
-      "text": "The slide deck does not tell the newspaper story. Please do not describe what happens on screen. Pupils start with five warm-up questions on their own screens. After them, the next screen says what the hour is for, in the same words as slide 1."
+      "text": "The slides do not tell the newspaper story, so please do not describe it or what happens on screen. Pupils start with five warm-up questions on their own screens. After those, the next screen tells them what the hour is for. Slide 1 uses the same words."
     }
   ],
   "resources": [
@@ -209,7 +209,7 @@ window.S.brief = {
     {
       "part": "The job",
       "mins": 5,
-      "text": "After the warm-up questions, the first screen says what the hour is for. Then a short story appears on screen. A tour in three steps shows the pupils the night desk. The night desk is the screen where they work.",
+      "text": "After the warm-up questions, the first screen says what the hour is for. Then a short story appears on screen. The night desk is the screen where pupils work. A tour in three steps shows them around it.",
       "say": "Read every screen. Nothing happens until you press the button."
     },
     {
@@ -221,13 +221,13 @@ window.S.brief = {
     {
       "part": "Headlines 4 and 5",
       "mins": 10,
-      "text": "Pupils type a rule with OR in part 4 and a rule with NOT in part 5. Headline 4 is in part 4 and is the one true headline of the lesson. The pupil must stamp it PRINT, with the reason \"The numbers back it\".",
+      "text": "A rule is a question typed into the question box. The table keeps only the rows that fit it. In part 4 pupils type a rule with OR. In part 5 they type a rule with NOT. Headline 4 is in part 4. It is the only true headline of the lesson. Pupils must stamp it PRINT with the reason \"The numbers back it\".",
       "say": "Not every headline is wrong. Read the count before you stamp."
     },
     {
       "part": "Headline 6",
       "mins": 8,
-      "text": "Part 6 has a clock that counts down three minutes. If the clock runs out, Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved.",
+      "text": "Part 6 has a clock that counts down three minutes. The headline in part 6 is false. It was written by Fionn, the reporter. If the clock runs out, it prints exactly as he wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then stamps the headline again. All the pupil's earlier work is still saved.",
       "say": "If the clock runs out, you fix it on the next screen."
     },
     {
@@ -278,11 +278,11 @@ window.S.brief = {
     },
     {
       "q": "A pupil leaves the quote marks off a word.",
-      "a": "The table still accepts a word typed without quotes, so the rule still works. Every hint shows the word in quotes."
+      "a": "A pupil may type a word in a rule without quotes, such as Old Town instead of \"Old Town\". The table still accepts it, so the rule still works. Every hint shows the word in quotes."
     },
     {
       "q": "The three-minute clock ran out.",
-      "a": "Fionn the reporter's false headline prints as he wrote it. The next morning a reader writes in to complain. The pupil then stamps the headline again. Their work is still saved."
+      "a": "If the clock in part 6 runs out, the false headline prints exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then stamps the headline again. All the pupil's earlier work is still saved."
     },
     {
       "q": "A pupil stamps a headline PRINT when the headline should be SPIKE.",

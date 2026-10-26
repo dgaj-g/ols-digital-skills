@@ -30,3 +30,4 @@ Updated 26 Oct 2026.
 ## r2 cold reads launched (22:47)
 Six readers on r2/{L1,L1B,L2,L2B,BD-A,BD-B}. fold third now pairs L2/L2B. Sit report numbers updated to 11.21 / 12.95.
 - 26 Oct: cold read r3 (two readers on the 30 r2 own-call lines): 13 PASS recorded (apply-4.jsonl); 17 both-failed on the same fault, readers' wording taken (apply_own_call_r3.js), trimmed for 14/40 rules; r4 two-reader read running on those 17. Gates: walk PASS 41/11.26, fails 44/13.02, words PASS 96, judge/engine PASS, platform PASS 66, control OK (no-lesson build via KS3DT_SRC scratch copy). Transcript hash fa6bde727b86be16.
+- 23:16 r4 folded (apply_own_call_r4.js): 5 PASS filed; 6 lines judged on pre-trim text + 8 both-fail own calls (reader B wording; c6 reasonNo + c3 show1 own words) → r5 two-reader read of 12 lines running. All lesson gates green after show1 trim (walk 41/11.28, fails 44/13.03, words 96, judge, engine). Next: fold r5 → ledger 0 → qa-language → PR1 → deck (Chrome rule).
