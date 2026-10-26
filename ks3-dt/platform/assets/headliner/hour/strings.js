@@ -78,7 +78,7 @@
       ask: 'Drag the square on D3 down to D5. Or click D3, then Fill down.',
       h1: 'Click D3. The small square sits at its bottom right corner.',
       h2: 'Press on the square and drag down over D4 and D5. Let go.',
-      h3: 'Click D3, then press the Fill down button. It does the drag for you.',
+      h3: 'Click D3, then press Fill down. It does the drag for you.',
       judge: { empty: 'D4 and D5 are still empty. Drag the square down, or press Fill down.', ok: 'D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One drag made both sums.', 'fill-wobble': 'D4 or D5 shows the wrong number. Fill from D3 again.', typed: 'One of those was typed by hand. Fill from D3 so they are sums.' },
       ask2: 'D6 is the money in. Add the three totals: type =D3+D4+D5.',
       h2_1: 'Click D6 and type =. Then type the three box names with a + between each.',
@@ -321,13 +321,13 @@
 ];
   S.brief = {
   "purpose": [
-    "The skill: a spreadsheet that works the answers out for her. She writes a sum with box names. She changes one number and every sum follows. She fills down, uses IF, and pins a box with $B$1.",
-    "What she makes: the money plan for a one-night festival, then the poster once the headliner is booked. The poster stays on her screen. Nothing prints."
+    "The skill: a spreadsheet that works the answers out for the pupil. Pupils write a sum with box names. They change one number and every sum follows. They fill down, use IF, and pin a box with $B$1.",
+    "Pupils make the money plan for a one-night festival, then the poster once the headliner is booked. The poster stays on the pupil's screen. Nothing prints."
   ],
   "prepare": [
     {
       "title": "Nothing to print",
-      "text": "Each girl needs the link, signed in with her school account, and headphones if she has them. The deck is optional."
+      "text": "Each pupil needs the link, signed in with the school account, and headphones if they have them. The deck is optional."
     },
     {
       "title": "The hour is a surprise",
@@ -350,7 +350,7 @@
     {
       "part": "Do-Now",
       "mins": 5,
-      "text": "Five questions from earlier lessons. They self-mark and nothing is recorded against her.",
+      "text": "The platform asks five questions from earlier lessons. They self-mark and nothing is recorded against the pupil.",
       "say": "Five warm-up questions. Click the answer you think is right."
     },
     {
@@ -368,19 +368,19 @@
     {
       "part": "Part 4",
       "mins": 8,
-      "text": "Three questions, each on a 90-second clock. If one runs out, the same question comes back with no clock. Hints stay on and nothing is lost.",
+      "text": "Pupils answer three questions, each on a 90-second clock. If one runs out, the same question comes back with no clock. Hints stay on and nothing is lost.",
       "say": "If the clock runs out, you get the same question back with no clock."
     },
     {
       "part": "Part 5",
       "mins": 10,
-      "text": "VAT on the shop prices, then the $B$1 pin. The fill-down fail is deliberate. B1 moves to B2 and the prices go wrong. Then she pins it.",
+      "text": "Pupils add VAT to the shop prices, then pin $B$1. The fill-down fail is deliberate. B1 moves to B2 and the prices go wrong. Then the pupil pins it.",
       "say": "Watch what the copy does to B1."
     },
     {
       "part": "Finishing",
       "mins": 12,
-      "text": "She sees the poster, badges, recap, five exit questions and one feeling question. Early finishers get three free tasks on the sheet.",
+      "text": "The pupil sees the poster, badges, recap, five exit questions and one feeling question. Early finishers get three free tasks on the sheet.",
       "say": "When you reach the badges, you are nearly done."
     }
   ],
@@ -399,7 +399,7 @@
     },
     {
       "part": "Part 3",
-      "what": "IF in D13: Book her or Not yet"
+      "what": "IF in D13 decides whether to book the headliner"
     },
     {
       "part": "Part 4",
@@ -416,20 +416,20 @@
   ],
   "goesWrong": [
     {
-      "q": "She typed the number instead of a sum.",
-      "a": "The screen says so and asks for a sum. Point her at the hint button, never the sum itself."
+      "q": "A pupil typed the number instead of a sum.",
+      "a": "The screen says so and asks for a sum. Point the pupil at the hint button, never the sum itself."
     },
     {
       "q": "The 90-second clock ran out.",
-      "a": "The same question comes back with no clock. She loses nothing."
+      "a": "The same question comes back with no clock. The pupil loses nothing."
     },
     {
       "q": "The sheet looks wrong after fill down in Part 5.",
       "a": "That is the lesson. B1 moved to B2. The next screen shows the pin."
     },
     {
-      "q": "She finished early.",
-      "a": "Three free tasks on the sheet: lowest price, fewest tickets, her own plan."
+      "q": "A pupil finished early.",
+      "a": "The pupil can try three free tasks on the sheet: lowest price, fewest tickets, a plan of their own."
     },
     {
       "q": "No headphones.",
