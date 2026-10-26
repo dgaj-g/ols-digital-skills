@@ -41,3 +41,4 @@ Branch j2-l6-headliner · worktree ~/Sites/ols-wt-j2l6
 - Next: PR 1 → merge → Pages; then deck (Chrome rule).
 - 20:50 deck created: driveFileId 1nCs5vC7Tq9caDPHTGKCg2sEAAjWuaCr3M7GN1uQjDNM (execution log); .gs from main 3e0dcb4 pasted + saved first
 - 21:08 proofs exported (8, folder 1Y4ZDjyNzER5iaYytxazvz6aLDCJk1EDb) and read clean; qa-deck-shots PASS; PR #91 opened
+- 21:25 V75 deployed 21:10 (same deployment id; Index b140d5e…, Code ea4a5ee… unchanged); /exec serves the headliner; LIVE Pages walks PASS straight 11.58 + wrong-path 11.88 at 3 sizes. RESUME_HERE V75 block, DFM 336, K85 written; ols-wt-j2l5 removed. BUILD COMPLETE.
