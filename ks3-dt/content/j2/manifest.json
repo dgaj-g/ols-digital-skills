@@ -105,9 +105,11 @@
    "tagline": "You build a spreadsheet that works the answers out for you.",
    "block": "b3",
    "icon": "📊",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j2/lessons/j2-06.json",
+   "story": "The Headliner"
   },
   {
    "id": "j2-07",

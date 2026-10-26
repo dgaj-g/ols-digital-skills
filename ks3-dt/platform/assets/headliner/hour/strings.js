@@ -121,7 +121,7 @@
       title: 'Part 4 · The call',
       goal: 'In this part Aoife asks three questions on the phone. You get 90 seconds for each. It is done when she has three answers.',
       ring: 'Aoife is calling',
-      answer: 'Answer',
+      pickUp: 'Answer',
       intro: 'Ivy Rain’s manager is on the phone with three questions. You have 90 seconds for each one. If time runs out, Aoife asks again with no clock.',
       timer: '{s} seconds left',
       q: [
@@ -247,7 +247,7 @@
       "Change one number and watch every sum change.",
       "Copy a sum down a column.",
       "Make a box answer in words with IF.",
-      "Pin a box so it stays put when you copy a sum."
+      "Pin a box with $ signs so it does not move when you copy a sum."
     ],
     "notes": "SAY: these are the five things. Do not explain them now. The screens teach them one at a time, with an example before every task."
   },
@@ -258,7 +258,7 @@
     "bullets": [
       "The hour has sound. Put your headphones on now.",
       "No headphones? Press the speaker button to turn sound off.",
-      "Every sound has its words on the screen too. Nothing is lost."
+      "Every sound also has its words on the screen. With the sound off, you can still read every word."
     ],
     "notes": "SAY: headphones on. If you have none, turn the sound off with the speaker button."
   },
@@ -302,7 +302,7 @@
     "heading": "The last screens",
     "bullets": [
       "When you reach the badges, you are nearly finished.",
-      "Five last questions on today, then one about how it felt.",
+      "Five last questions on today. Then a short page about how it went.",
       "Press Finish. Everything you made is saved."
     ],
     "notes": "SAY: when you see your badges, you have about ten minutes left. Finish the last questions."
@@ -321,8 +321,8 @@
 ];
   S.brief = {
   "purpose": [
-    "The skill: a spreadsheet that works the answers out for the pupil. Pupils write a sum with box names. They change one number and every sum follows. They fill down, use IF, and pin a box with $B$1.",
-    "Pupils make the money plan for a one-night festival, then the poster once the headliner is booked. The poster stays on the pupil's screen. Nothing prints."
+    "Pupils learn to use a spreadsheet that works out the answers for them. They write a sum with box names, such as =B3*C3. They change one number and every sum that uses it changes. They fill down, which copies a sum down a column. They use IF to make a box answer in words. They pin a box by writing $B$1, so a copied sum keeps pointing at that box.",
+    "Pupils make the money plan for a one-night festival and decide whether it can book the headliner, the main act, Ivy Rain. Once the headliner is booked, the pupils see a poster. The poster stays on the pupil\'s screen. Nothing prints."
   ],
   "prepare": [
     {
@@ -330,19 +330,19 @@
       "text": "Each pupil needs the link, signed in with the school account, and headphones if they have them. The deck is optional."
     },
     {
-      "title": "The hour is a surprise",
-      "text": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for. It uses the same words as slide 1."
+      "title": "Do not give away the story",
+      "text": "The slides do not tell the story. Please do not describe what happens on the pupils’ screens. After the warm-up, the pupils’ first screen says what the hour is for. That screen uses the same words as slide 1."
     }
   ],
   "resources": [
     {
       "label": "The lesson",
-      "what": "The pupil hour, J2 Lesson 6, in the platform. One link, signed in.",
+      "what": "This is the pupils’ lesson, J2 Lesson 6, on the platform. Each pupil opens one link and signs in with the school account.",
       "href": ""
     },
     {
       "label": "The deck",
-      "what": "Eight slides with no story. Slide 6 says Start now. Leave it up all hour.",
+      "what": "The deck has eight slides and tells no story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
       "href": ""
     }
   ],
@@ -356,31 +356,31 @@
     {
       "part": "The job",
       "mins": 5,
-      "text": "The first screen says what the hour is for. Then the story starts, with a three-screen tour of the sheet.",
-      "say": "Read every screen. Nothing happens until you press the button."
+      "text": "After the warm-up, a screen says what the hour is for. Then the pupil opens the story, and a tour of the spreadsheet follows over three screens.",
+      "say": "Read every screen. A screen moves on only when you press its button."
     },
     {
       "part": "Parts 1 to 3",
       "mins": 20,
-      "text": "A sum with box names, then fill down and totals, then IF. Every part shows a worked example before any task. The last hint gives the exact sum to type.",
+      "text": "Pupils first write a sum with box names. Then they fill down, which copies a sum down a column, and add totals. Then they use IF. Every part shows a worked example before any task. The last hint gives the exact sum to type.",
       "say": "Stuck? Press Give me a hint. The last hint shows you the sum."
     },
     {
       "part": "Part 4",
       "mins": 8,
-      "text": "Pupils answer three questions, each on a 90-second clock. If one runs out, the same question comes back with no clock. Hints stay on and nothing is lost.",
+      "text": "Aoife from the festival rings with three questions. Pupils get 90 seconds for each one. If the clock runs out, the same question comes back with no clock and the hints turn on. The pupil loses nothing.",
       "say": "If the clock runs out, you get the same question back with no clock."
     },
     {
       "part": "Part 5",
       "mins": 10,
-      "text": "Pupils add VAT to the shop prices, then pin $B$1. The fill-down fail is deliberate. B1 moves to B2 and the prices go wrong. Then the pupil pins it.",
+      "text": "Pupils add VAT, a tax, to the prices on the Shop tab. They fill the sum down, and the prices go wrong on purpose: in the copied sum, B1 moves to B2. Then the pupil pins B1 by writing $B$1, and the prices come out right.",
       "say": "Watch what the copy does to B1."
     },
     {
       "part": "Finishing",
       "mins": 12,
-      "text": "The pupil sees the poster, badges, recap, five exit questions and one feeling question. Early finishers get three free tasks on the sheet.",
+      "text": "The pupil finishes with a poster, badges, a recap, five last questions and a short page on how the hour went. Pupils who finish early get three free tasks on the sheet.",
       "say": "When you reach the badges, you are nearly done."
     }
   ],
@@ -391,7 +391,7 @@
     },
     {
       "part": "Part 1",
-      "what": "=B3*C3, then two predict-then-change tests"
+      "what": "Write =B3*C3. Then two tests: guess the answer, change a number, check the guess."
     },
     {
       "part": "Part 2",
@@ -417,7 +417,7 @@
   "goesWrong": [
     {
       "q": "A pupil typed the number instead of a sum.",
-      "a": "The screen says so and asks for a sum. Point the pupil at the hint button, never the sum itself."
+      "a": "The screen says so and asks for a sum. Point the pupil to the Give me a hint button. Do not tell the pupil the sum."
     },
     {
       "q": "The 90-second clock ran out.",
@@ -425,11 +425,11 @@
     },
     {
       "q": "The sheet looks wrong after fill down in Part 5.",
-      "a": "That is the lesson. B1 moved to B2. The next screen shows the pin."
+      "a": "This is meant to happen. In the copied sum, B1 moved to B2. The next screen shows the pupil how to pin it."
     },
     {
       "q": "A pupil finished early.",
-      "a": "The pupil can try three free tasks on the sheet: lowest price, fewest tickets, a plan of their own."
+      "a": "The pupil can try three free tasks on the sheet. They find the lowest ticket price that still books the headliner. They find the fewest tickets that still book the headliner. Then they make a plan of their own."
     },
     {
       "q": "No headphones.",

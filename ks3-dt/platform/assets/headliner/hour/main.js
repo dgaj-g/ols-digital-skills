@@ -112,7 +112,7 @@
     showScreen('c3-show', 'c3', { kicker: S.c3.title, lines: [S.c3.show1, S.c3.show2, S.c3.show3], demo: S.c3.showDemo, demoAt: 1, glow: ['B3'] }),
     askScreen('c3-ask', 'c3', { kicker: S.c3.title, ask: S.c3.ask, hints: [S.c3.h1, S.c3.h2, S.c3.h3], code: S.c3.h3code, task: T.d13, judge: S.c3.judge, badge: 'decider', glow: ['D12', 'D13'], model: { kind: 'cell', ref: 'D13', text: '=IF(D12>0,"Book her","Not yet")' }, fail: { kind: 'cell', ref: 'D13', text: '=IF(D12>0,"Not yet","Book her")' } }),
     titleScreen('c4-title', 'c4', S.c4.title, S.c4.goal),
-    { id: 'c4-ring', ch: 'c4', film: 2, enter: function () { Snd.ring(); }, render: function () { return scene('call', '<div class="ring"><span class="ava big">A</span><p class="ask">' + esc(S.c4.ring) + '</p><button class="btn big" data-act="next">' + esc(S.c4.answer) + '</button></div>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } },
+    { id: 'c4-ring', ch: 'c4', film: 2, enter: function () { Snd.ring(); }, render: function () { return scene('call', '<div class="ring"><span class="ava big">A</span><p class="ask">' + esc(S.c4.ring) + '</p><button class="btn big" data-act="next">' + esc(S.c4.pickUp) + '</button></div>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } },
     { id: 'c4-intro', ch: 'c4', render: function () { return scene('call', msg(S.c4.title, S.story.from, [S.c4.intro]) + '<button class="btn big" data-act="next">' + esc(C.next) + '</button>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } }
   ];
   /* §10 the call: three questions, each with a 90-second clock that counts by the clock (Date.now), never by frames */

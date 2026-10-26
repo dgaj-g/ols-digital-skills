@@ -21,3 +21,11 @@ Branch j2-l6-headliner · worktree ~/Sites/ols-wt-j2l6
 - c2 h3 (DFM 35 gate): "Click D3, then press Fill down. It does the drag for you." (was "press the Fill down button"; the gate wants the button word in engines.js).
 - vocab.json "ticket": J2 ordinaryWord declaration (festival ticket).
 - write_j2_06.js: config.strings now strips brief/deck/recapPool (they are judged in their own places).
+
+## Update 26 Oct 2026 (after compaction)
+- j2l6-platform.js written: 43 checks PASS (A1, G5 with controls, A8, A9, A10, A11) on a --walk-build pack at :8126.
+- Gate fixes (recorded): S.c4.answer key renamed S.c4.pickUp (the pack's key-like-field validation; text unchanged); platform test uses rawOf.
+- Cold reads r1: lesson 455 → PASS 370, 85 to second reader (r1b/L2nd running); deck+brief 88 → 53 both pass, 13 split stand, 22 both fail → agreed rewrites applied (apply_agreed_r1.js: 19 in strings.js, 3 resource lines in write_j2_06.js as L6-own text).
+- Two brief lines re-fixed for the language gate: purpose[1] "she" → "the headliner"; runningTheHour[1] verbless "Then the story starts." → "Then the pupil opens the story, …".
+- Served walker at 3 sizes running against http://localhost:8126 (output j2l6/served-walk*.txt).
+- Next: fold second reads, re-read changed strings (r2), pack clean, sit report, deck deploy.
