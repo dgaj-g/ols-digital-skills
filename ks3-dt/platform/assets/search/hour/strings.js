@@ -59,7 +59,7 @@
     fail: ['It is too dark to see the walls. I am winding time back.'],
     close: [
       { h: 'The number in the brackets is how many times the loop runs.', under: ['You counted 4, 6 and 3 walls. The loop flew 4 times, then 6 times, then 3 times.'] },
-      { h: 'A loop that runs one time too few has a name: off by one.', labels: [['for i in range({k}):', '{k} flights for {w} walls. One wall stayed dark.']], box: 'Off by one means the number was one too small or one too big. Then the loop runs one time too few or one time too many.' },
+      { h: 'A loop that runs one time too few has a name: off by one.', labels: [['for i in range({k}):', '{k} flights for {w} walls. One wall stayed dark.']], box: 'The number in the brackets was wrong by one. The loop ran one time too few, or one time too many.' },
       { q: 'A field has 5 walls. Which line lights them all?', opts: [['for i in range(5):', 'Yes. 5 walls need 5 flights.', true], ['for i in range(4):', 'That is one too few. One wall stays dark. This bug is called off by one.', false], ['for i in range(6):', 'That is one too many. BEEP flies the first wall twice.', false]] }
     ] };
   /* CHAPTER 3: THE SPIRAL */
@@ -110,7 +110,7 @@
     barn: ['The lamb is in the barn, and her mother is with her.', 'Nuala: Thank you. Thank you. Thank you.', 'You typed {n} lines. I did {m} things.', 'A loop lets a few lines make BEEP do many things.'],
     nameH: 'Nuala: Dad says the person who found her gets to name her. That person is you. Type her name in the box.', nameUnder: '', nameEmpty: 'Type a name for the lamb first.',
     badges: [['The Tracks', 'You flew the first loop.'], ['The Spiral', 'You used i in the flight.'], ['The Way Home', 'You named three bugs.']], badgeKicker: 'BADGE EARNED',
-    recapH: 'What you did today.', recapH2: 'What you did today, part two.', recap: ['A loop runs its pushed-in lines once each time round. range sets how many.', 'The number in the brackets sets how many times the loop runs. If it is one too small, the bug is called off by one.',
+    recapH: 'What you did today.', recapH2: 'What you did today, part two.', recap: ['A loop runs its pushed-in lines once each time round. range sets how many.', 'If the number after range is one too big or too small, the bug has a name: off by one.',
       'i is the count. It starts at 0 and changes every time round. The loop can use it.', 'A loop bug has a name: off by one, wrong turn, never stops.'],
     last5H: 'BEEP\'s last 5 questions',
     feltH: 'How sure are you about each of these?', felt: ['I can write a loop with for and range.', 'I can use i inside the loop.', 'I can name a loop bug when I see one.'],

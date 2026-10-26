@@ -81,8 +81,10 @@ async function hour(page, fr, o) {
     if (!s) { await sleep(150); continue; }
     if (s.err) { must(false, 'the hour reports no flow error (' + s.err + ')'); break; }
     if (o.look) await o.look();
+    (await fr.evaluate(() => (window.SearchHour.got || []).slice()).catch(() => [])).forEach(id => { badgeSeen[id] = 1; });   // J2 L5's badge cards are the hour's own (close sheet); the platform pays them silently
     if (s.screen !== lastScreen) {
-      lastScreen = s.screen; screens.push(s.screen); words.push([s.screen, s.words]); log.push((s.now / 60).toFixed(1) + ' min  ' + s.screen);
+      lastScreen = s.screen; screens.push(s.screen); words.push([s.screen, s.words]);
+      if (process.env.J2L5_DEBUG && s.words > WORDS_MAX) console.log('    over ' + s.screen + ': ' + JSON.stringify(await fr.evaluate(() => Array.from(SearchUI.$('hour').querySelectorAll('#head,#under,#above,#sign,.say,#held,#hsheet .p,#hsheet h2,#note,#rot,#tourText')).filter(e => !(e.closest('.off') || e.classList.contains('off')) && e.textContent.trim()).map(e => (e.id || e.className) + ': ' + e.textContent.trim())))); log.push((s.now / 60).toFixed(1) + ' min  ' + s.screen);
       if (o.shots) await page.screenshot({ path: path.join(o.shots, String(screens.length).padStart(3, '0') + '-' + s.screen.replace(/[^a-z0-9]+/gi, '_').slice(0, 28) + '.png') }).catch(() => {});
       if (/ black$/.test(s.screen)) { seenBlack[s.screen] = 1; blackAt = s.screen; }
     }
@@ -115,7 +117,7 @@ async function hour(page, fr, o) {
       else if (w.kind === 'button') {
         const ids = w.ids; ids.forEach(i => { offered[i] = (offered[i] || 0) + 1; });
         if (process.env.J2L5_DEBUG) console.log("    want button " + ids.join(",") + " at " + s.screen + " ch " + ch);
-        if (MODE === 'honest' && ids.includes('stop') && ch === '4' && honest['4'] === 'todo') { honest['4'] = 'held'; hold = { black: '4.3 black', t: Date.now(), secs: 40 }; lastWantAt = w.at; continue; }
+        if (MODE === 'honest' && ids.includes('stop') && honest['4'] === 'todo')   /* only chapter 4 has Stop it; its screen is still 'prediction' when the button comes */ { honest['4'] = 'held'; hold = { black: '4.3 black', t: Date.now(), secs: 40 }; lastWantAt = w.at; continue; }
         const id = ['stop', 'start', 'carry', 'fly', 'run', 'next', 'free'].find(x => ids.includes(x)) || ids[0];
         await sleep((id === 'stop' ? 4500 : 1500) / SP); await fr.click('#b-' + id); lastWantAt = w.at;
       }
@@ -253,7 +255,7 @@ async function walkLesson(b, size) {
     const end = await page.evaluate(() => { const d = document.querySelector('.badge-pop-card.finish') || document.querySelector('.exit-done, .se-done'); return d ? d.textContent.replace(/\s+/g, ' ').trim().slice(0, 80) : null; });
     must(!!end, 'the lesson reaches its done card (' + end + ')');
     must(['search', 'exit', 'close'].every(c => walked.includes(c)), 'the walk went through search, exit and close (' + walked.join(' ') + ')');
-    must(Object.keys(badgeSeen).length === 3, 'three badge cards on the way (' + Object.keys(badgeSeen).join(', ') + ')');
+    must(Object.keys(badgeSeen).length === 3, 'three badges earned in the hour (' + Object.keys(badgeSeen).join(', ') + ')');
     await page.screenshot({ path: path.join(OUT, 'done.png') });
     for (const [label] of LANDMARKS) must(!!stood[label], 'stood on: ' + label);
     const shape = await page.evaluate(([email, cls, x0]) => {

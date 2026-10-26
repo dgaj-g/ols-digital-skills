@@ -51,7 +51,7 @@
     U.text('sign', o.sign); U.show('sign', !!o.sign); U.under(o.under || '', ''); U.text('above', o.above); U.show('above', !!o.above); };
   U.ring = function (i) { var ls = U.$('card').querySelectorAll('.cl'); ls.forEach(function (x, k) { x.classList.toggle('ring', k === i); }); };
   U.under = function (s, kind) { var e = U.$('under'); e.textContent = s || ''; e.className = kind || ''; if (kind === 'bad') { Snd.buzz(); } };
-  U.note = function (s) { U.text('note', s); U.show('note', !!s); if (s) setTimeout(function () { U.show('note', false); }, 6000); };
+  U.note = function (s) { U.text('note', s); U.show('note', !!s); if (s) { var t = U.now(), off = U.onFrame(function () { if (U.$('note').textContent !== s) { off(); return; } if (U.now() - t >= 6) { off(); U.show('note', false); } }); } }; /* six STORY seconds (pauses and ?speed count), not six wall-clock ones: a note left up by a real-time timer sat on the next screen (words gate: 53 on 3.3 held) */
   U.bubble = function (s, x, y, who) { var b = U.$('bub'); if (!s) { b.classList.add('off'); return; } b.querySelector('.say').textContent = s; b.querySelector('.who').textContent = who || 'BEEP'; b.style.left = x + 'px'; b.style.top = y + 'px'; b.classList.remove('off'); if (!who) Snd.chirp('happy'); };
   U.held = function (s) { U.text('held', s); U.show('held', !!s); };
   U.strip = function (cur, done) { var e = U.$('strip'); e.innerHTML = S.strip.map(function (n, i) { return '<span class="' + (i === cur ? 'cur' : done.indexOf(i) >= 0 ? 'done' : '') + '">' + (done.indexOf(i) >= 0 ? '✓ ' : '') + esc(n) + '</span>'; }).join('<i>·</i>'); };

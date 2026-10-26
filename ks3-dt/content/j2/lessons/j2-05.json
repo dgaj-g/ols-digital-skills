@@ -257,7 +257,7 @@
           "{k} flights for {w} walls. One wall stayed dark."
          ]
         ],
-        "box": "Off by one means the number was one too small or one too big. Then the loop runs one time too few or one time too many."
+        "box": "The number in the brackets was wrong by one. The loop ran one time too few, or one time too many."
        },
        {
         "q": "A field has 5 walls. Which line lights them all?",
@@ -556,7 +556,7 @@
       "recapH2": "What you did today, part two.",
       "recap": [
        "A loop runs its pushed-in lines once each time round. range sets how many.",
-       "The number in the brackets sets how many times the loop runs. If it is one too small, the bug is called off by one.",
+       "If the number after range is one too big or too small, the bug has a name: off by one.",
        "i is the count. It starts at 0 and changes every time round. The loop can use it.",
        "A loop bug has a name: off by one, wrong turn, never stops."
       ],

@@ -399,7 +399,7 @@ const LANDMARKS = {
     ['the hour in its frame', '#hour', 'search'],
     ['the tour, pointing at each part of the screen', '#tourCard #tourText', 'search'],
     ['the program box', '#box', 'search'],
-    ['BEEP speaking', '#speech', 'search'],
+    ['BEEP speaking', '#bub .say', 'search'],
     ['the battery gauge', '#gauge', 'search'],
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close'],

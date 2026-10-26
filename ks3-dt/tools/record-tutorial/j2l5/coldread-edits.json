@@ -32,7 +32,7 @@
     "ch2.j.over": "That is {k} flights for {w} walls. That is too many. Type the number of walls in the brackets.",
     "ch2.j.noTurn": "Your loop has no turn. The sign says left({a}). Add it as a pushed-in line.",
     "ch2.close[0].under[0]": "You counted 4, 6 and 3 walls. The loop flew 4 times, then 6 times, then 3 times.",
-    "ch2.close[1].box": "Off by one means the number was one too small or one too big. Then the loop runs one time too few or one time too many.",
+    "ch2.close[1].box": "The number in the brackets was wrong by one. The loop ran one time too few, or one time too many.",
     "ch2.close[2].opts[1][1]": "That is one too few. One wall stays dark. This bug is called off by one.",
     "ch3.h1": "Type these 2 lines. Each time round, BEEP will say the number in i.",
     "ch3.held2": "range(5) gave 5 counts: 0, 1, 2, 3 and 4. BEEP never says 5.",
@@ -65,7 +65,7 @@
     "close.barn[3]": "A loop lets a few lines make BEEP do many things.",
     "close.nameH": "Nuala: Dad says the person who found her gets to name her. That person is you. Type her name in the box.",
     "close.nameEmpty": "Type a name for the lamb first.",
-    "close.recap[1]": "The number in the brackets sets how many times the loop runs. If it is one too small, the bug is called off by one.",
+    "close.recap[1]": "If the number after range is one too big or too small, the bug has a name: off by one.",
     "close.feltDone": "You have finished. Free flight is next if there is time.",
     "close.freeH": "Free flight. Click one of the three examples, or type your own loop. Then press Run. BEEP draws it in light."
   },
