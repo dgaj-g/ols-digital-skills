@@ -73,5 +73,140 @@
   "from": "Type a rule (a question for the table), then press Enter",
   "to": "Type a rule, then press Enter",
   "why": "sit: the placeholder was cut off in the question box at 1024 and 1280 (the box shows ~26 characters); the tour line s2 already says a rule is a question for the table; the design sit report names this exact placeholder"
+ },
+ "j3-06 › recap:r-j3-604 › stem": {
+  "from": "An editor spikes a headline that should not print. A reporter used the busiest week to describe the whole summer. Which reason spikes it?",
+  "to": "An editor spikes a headline, which means the headline is not printed. A reporter used the busiest week to describe the whole summer. Which reason should the editor give?",
+  "why": "cold read r1: both readers failed it (Spikes is used twice without being explained in this question, and a Do-Now can reach her on its own. Which reason spike)"
+ },
+ "j3-06.deck › s1.2:objectives › bullets[3]": {
+  "from": "Use NOT to keep the rows a rule would leave out.",
+  "to": "Use NOT to keep the rows that a rule does not match.",
+  "why": "cold read r1: both readers failed it (Keep the rows a rule would leave out stacks three verbs and a doubled idea; it is hard aloud.)"
+ },
+ "j3-06 › brief › purpose[0]": {
+  "from": "The skill: ask a table a question with a rule. Join rules with AND, OR, BETWEEN and NOT. Judge whether the numbers back a headline. She meets three ways a true-looking pattern misleads. Too few people, only the best bit, and one thing did not cause the other.",
+  "to": "The skill: asking a table a question by typing a rule. Pupils join rules with AND, OR, BETWEEN and NOT. They judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
+  "why": "cold read r1: both readers failed it (It uses she, which the brief must not. BETWEEN is listed as a joiner but it does not join rules. The last sentence is a )"
+ },
+ "j3-06 › brief › purpose[1]": {
+  "from": "What she makes: six checked headlines, each stamped PRINT or SPIKE with a reason, and the front page that results. Nothing prints on paper.",
+  "to": "What the pupils make: six checked headlines. Each headline is stamped PRINT or SPIKE with a reason. The front page that results is shown on screen. Nothing prints on paper.",
+  "why": "cold read r1: both readers failed it (It says she, and PRINT and SPIKE are not explained.)"
+ },
+ "j3-06 › brief › prepare[0] › text": {
+  "from": "Each girl needs the link, signed in with her school account, and headphones if she has them. The deck is optional.",
+  "to": "Each pupil needs the link, signed in with their school account, and headphones if they have them. The deck is optional.",
+  "why": "cold read r1: both readers failed it (It says girl and her, and signed in with her school account hangs loose with no verb.)"
+ },
+ "j3-06 › brief › prepare[1] › title": {
+  "from": "\"title\": \"The hour is a surprise\"",
+  "to": "\"title\": \"Do not give away the story\"",
+  "why": "cold read r1: both readers failed it (A clever heading; it says what it is not for. The body gives an order with no reason.)"
+ },
+ "j3-06 › brief › prepare[1] › text": {
+  "from": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for, in the same words as slide 1.",
+  "to": "The deck does not tell the newspaper story. Please do not describe what happens on screen. After the warm-up, the first screen says what the hour is for, in the same words as slide 1.",
+  "why": "cold read r1: both readers failed it (Do not describe has no reason, and the first screen is not named.)"
+ },
+ "j3-06 › brief › resources[0] › what": {
+  "from": "The deck has eight slides. It does not tell the newsroom story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
+  "to": "The deck has eight slides. It does not tell the newspaper story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
+  "why": "cold read r1: both readers failed it (Newsroom story is not explained here and the colleague has not met it.)"
+ },
+ "j3-06 › brief › runningTheHour[0] › text": {
+  "from": "Five questions from earlier lessons. They self-mark and nothing is recorded against her.",
+  "to": "Pupils answer five questions from earlier lessons. The questions mark themselves. Nothing is recorded against the pupil.",
+  "why": "cold read r1: both readers failed it (It starts with a fragment and uses her.)"
+ },
+ "j3-06 › brief › runningTheHour[1] › text": {
+  "from": "The first screen says what the hour is for. Then the story starts and the desk is toured in three stops.",
+  "to": "The first screen says what the hour is for. Then a short story begins. The pupils are shown the night desk, the screen where they work, in three stops.",
+  "why": "cold read r1: both readers failed it (The desk is toured in three stops is passive and the desk is not explained.)"
+ },
+ "j3-06 › brief › runningTheHour[2] › text": {
+  "from": "One rule, then AND, then BETWEEN. Every headline shows a worked example before any ask. The hint ladder ends with the rule shown.",
+  "to": "Pupils type one rule, then a rule with AND, then a rule with BETWEEN. Every headline shows a worked example first. The hints get more help each time. The last hint shows the rule.",
+  "why": "cold read r1: both readers failed it (It is a fragment list, and hint ladder and ask are jargon.)"
+ },
+ "j3-06 › brief › runningTheHour[3] › text": {
+  "from": "OR, then NOT. Headline 4 is the one true headline of the night; she must print it with the right reason.",
+  "to": "Pupils type a rule with OR, then a rule with NOT. Headline 4 is the one true headline of the night. The pupil must stamp it PRINT with the right reason.",
+  "why": "cold read r1: both readers failed it (It begins as a fragment and uses she.)"
+ },
+ "j3-06 › brief › runningTheHour[4] › text": {
+  "from": "A three-minute clock. If it runs out, the wrong headline prints, a reader complains and she stamps it again. Nothing is lost.",
+  "to": "Part 6 has a three-minute clock. If the clock runs out, the wrong headline prints and a reader complains. The pupil then stamps it again. Nothing is lost.",
+  "why": "cold read r1: both readers failed it (A fragment start, and she.)"
+ },
+ "j3-06 › brief › runningTheHour[5] › text": {
+  "from": "The front page, badges, recap, five exit questions and one feeling question. Early finishers get two more headlines to check.",
+  "to": "The pupils see their front page, their badges and a recap. Then come five last questions and one question about how the hour went. Pupils who finish early get two more headlines to check.",
+  "why": "cold read r1: both readers failed it (A verb-less list, she, and one feeling question when the screen shows several.)"
+ },
+ "j3-06 › brief › atAGlance[0] › what": {
+  "from": "Five recap questions",
+  "to": "Five warm-up questions",
+  "why": "cold read r1: both readers failed it (The first part is called warm-up everywhere else; recap is the closing part.)"
+ },
+ "j3-06 › brief › atAGlance[4] › what": {
+  "from": "OR: either one. The true headline",
+  "to": "OR: either rule. This part has the one true headline.",
+  "why": "cold read r1: both readers failed it (Two fragments joined; the second has no verb.)"
+ },
+ "j3-06 › brief › atAGlance[5] › what": {
+  "from": "NOT: leave out",
+  "to": "NOT: keep the rows that a rule would not match",
+  "why": "cold read r1: both readers failed it (Leave out is the opposite of what NOT does: it keeps what the rule left out.)"
+ },
+ "j3-06 › brief › atAGlance[6] › what": {
+  "from": "Hot days, cold days, the three-minute clock",
+  "to": "Hot days and cold days, with a three-minute clock",
+  "why": "cold read r1: both readers failed it (A bare list; the colleague cannot tell what a hot day is for.)"
+ },
+ "j3-06 › brief › atAGlance[7] › what": {
+  "from": "Front page, badges, recap, exit ticket",
+  "to": "The front page, badges, a recap and five last questions",
+  "why": "cold read r1: both readers failed it (Exit ticket is a different name from five exit questions used above.)"
+ },
+ "j3-06 › brief › goesWrong[0] › q": {
+  "from": "The table cannot read her rule.",
+  "to": "The table cannot read a pupil's rule.",
+  "why": "cold read r1: both readers failed it (It says her; the brief says the pupil.)"
+ },
+ "j3-06 › brief › goesWrong[0] › a": {
+  "from": "The screen says what a rule needs: a column, a sign, a value. The hint ladder ends with the rule.",
+  "to": "The screen says what a rule needs: a column, a sign and a value. The last hint shows the full rule.",
+  "why": "cold read r1: both readers failed it (Hint ladder is not defined.)"
+ },
+ "j3-06 › brief › goesWrong[1] › q": {
+  "from": "She left the quotes off a word.",
+  "to": "A pupil leaves the quote marks off a word.",
+  "why": "cold read r1: both readers failed it (It says she.)"
+ },
+ "j3-06 › brief › goesWrong[1] › a": {
+  "from": "The table reads a bare word as text, so the rule still works. Every hint shows the quotes.",
+  "to": "The table reads a word without quotes as text, so the rule still works. Every hint shows the quotes.",
+  "why": "cold read r1: both readers failed it (Bare word and text are jargon for a colleague.)"
+ },
+ "j3-06 › brief › goesWrong[2] › a": {
+  "from": "The headline prints as it is, a reader complains, and she stamps it again. Nothing is lost.",
+  "to": "The headline prints as it is. A reader complains. The pupil then stamps it again. Nothing is lost.",
+  "why": "cold read r1: both readers failed it (It says she.)"
+ },
+ "j3-06 › brief › goesWrong[3] › q": {
+  "from": "She stamped PRINT when it should be SPIKE.",
+  "to": "A pupil stamps PRINT when it should be SPIKE.",
+  "why": "cold read r1: both readers failed it (It says she.)"
+ },
+ "j3-06 › brief › goesWrong[4] › q": {
+  "from": "She finished early.",
+  "to": "A pupil finishes early.",
+  "why": "cold read r1: both readers failed it (It says she.)"
+ },
+ "j3-06 › brief › goesWrong[4] › a": {
+  "from": "Two more headlines on the last screen, checked with her own rules.",
+  "to": "The last screen has two more headlines. The pupil checks them with their own rules.",
+  "why": "cold read r1: both readers failed it (A fragment, and her.)"
  }
 }

@@ -18,7 +18,7 @@ Modelled time: 41 screens, 11.0 model minutes on the straight path; 44 screens a
 | Place | Stall | What catches her |
 |---|---|---|
 | Question box, first time | Does not know what to type | The word bank puts any column, sign or word in the box by click; hint 3 shows the rule |
-| Question box hint at 1024 and 1280 | **New in this sit:** the grey hint in the box was cut off mid-word ("Type a rule (a question fo") | **Fixed:** the hint is now "Type a rule, then press Enter", the line the design named; the tour already says a rule is a question for the table (recorded in `j3l6/string-edits.json`) |
+| Question box hint at 1024 and 1280 | **New in this sit:** the grey hint in the box was cut off mid-word ("Type a rule (a question fo") | **Fixed:** the hint is now "Type a rule, then press Enter", the line the design named, set in the plain sans font at 16 px so it fits whole at 1024 (221 of 285 px); the tour already says a rule is a question for the table (recorded in `j3l6/string-edits.json`) |
 | The table at 1024 | Nine columns | All nine fit at 1024, 1280 and 1440; 12 rows show with "and 48 more rows" |
 | Headline 1 | Writes the number first | The line says the column comes first |
 | Any word rule | Leaves the quotes off | The table reads a bare word as text; no stall |

@@ -99,7 +99,7 @@ window.S.deck = [
       "Ask a table a question by typing a rule.",
       "Join two rules with AND or OR. AND needs both. OR needs one.",
       "Use BETWEEN to keep every number from one end to the other.",
-      "Use NOT to keep the rows a rule would leave out.",
+      "Use NOT to keep the rows that a rule does not match.",
       "Say if the numbers back a headline. If they do not, say why."
     ],
     "notes": "SAY: these are the five things. Do not explain them now. The screens teach them one at a time, with an example before every ask."
@@ -174,17 +174,17 @@ window.S.deck = [
 ];
 window.S.brief = {
   "purpose": [
-    "The skill: ask a table a question with a rule. Join rules with AND, OR, BETWEEN and NOT. Judge whether the numbers back a headline. She meets three ways a true-looking pattern misleads. Too few people, only the best bit, and one thing did not cause the other.",
-    "What she makes: six checked headlines, each stamped PRINT or SPIKE with a reason, and the front page that results. Nothing prints on paper."
+    "The skill: asking a table a question by typing a rule. Pupils join rules with AND, OR, BETWEEN and NOT. They judge whether the numbers back a headline. They meet three ways that a true-looking pattern can mislead. The three ways are too few people, only the best bit, and one thing that did not cause the other.",
+    "What the pupils make: six checked headlines. Each headline is stamped PRINT or SPIKE with a reason. The front page that results is shown on screen. Nothing prints on paper."
   ],
   "prepare": [
     {
       "title": "Nothing to print",
-      "text": "Each girl needs the link, signed in with her school account, and headphones if she has them. The deck is optional."
+      "text": "Each pupil needs the link, signed in with their school account, and headphones if they have them. The deck is optional."
     },
     {
-      "title": "The hour is a surprise",
-      "text": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for, in the same words as slide 1."
+      "title": "Do not give away the story",
+      "text": "The deck does not tell the newspaper story. Please do not describe what happens on screen. After the warm-up, the first screen says what the hour is for, in the same words as slide 1."
     }
   ],
   "resources": [
@@ -203,44 +203,44 @@ window.S.brief = {
     {
       "part": "Do-Now",
       "mins": 5,
-      "text": "Five questions from earlier lessons. They self-mark and nothing is recorded against her.",
+      "text": "Pupils answer five questions from earlier lessons. The questions mark themselves. Nothing is recorded against the pupil.",
       "say": "Five warm-up questions. Click the answer you think is right."
     },
     {
       "part": "The job",
       "mins": 5,
-      "text": "The first screen says what the hour is for. Then the story starts and the desk is toured in three stops.",
+      "text": "The first screen says what the hour is for. Then a short story begins. The pupils are shown the night desk, the screen where they work, in three stops.",
       "say": "Read every screen. Nothing happens until you press the button."
     },
     {
       "part": "Headlines 1 to 3",
       "mins": 20,
-      "text": "One rule, then AND, then BETWEEN. Every headline shows a worked example before any ask. The hint ladder ends with the rule shown.",
+      "text": "Pupils type one rule, then a rule with AND, then a rule with BETWEEN. Every headline shows a worked example first. The hints get more help each time. The last hint shows the rule.",
       "say": "Stuck? Press Hint. The last hint shows you the rule."
     },
     {
       "part": "Headlines 4 and 5",
       "mins": 10,
-      "text": "OR, then NOT. Headline 4 is the one true headline of the night; she must print it with the right reason.",
+      "text": "Pupils type a rule with OR, then a rule with NOT. Headline 4 is the one true headline of the night. The pupil must stamp it PRINT with the right reason.",
       "say": "Not every headline is wrong. Read the count before you stamp."
     },
     {
       "part": "Headline 6",
       "mins": 8,
-      "text": "A three-minute clock. If it runs out, the wrong headline prints, a reader complains and she stamps it again. Nothing is lost.",
+      "text": "Part 6 has a three-minute clock. If the clock runs out, the wrong headline prints and a reader complains. The pupil then stamps it again. Nothing is lost.",
       "say": "If the clock runs out, you fix it on the next screen."
     },
     {
       "part": "Finishing",
       "mins": 12,
-      "text": "The front page, badges, recap, five exit questions and one feeling question. Early finishers get two more headlines to check.",
+      "text": "The pupils see their front page, their badges and a recap. Then come five last questions and one question about how the hour went. Pupils who finish early get two more headlines to check.",
       "say": "When you reach the badges, you are nearly done."
     }
   ],
   "atAGlance": [
     {
       "part": "Do-Now",
-      "what": "Five recap questions"
+      "what": "Five warm-up questions"
     },
     {
       "part": "Headline 1",
@@ -256,41 +256,41 @@ window.S.brief = {
     },
     {
       "part": "Headline 4",
-      "what": "OR: either one. The true headline"
+      "what": "OR: either rule. This part has the one true headline."
     },
     {
       "part": "Headline 5",
-      "what": "NOT: leave out"
+      "what": "NOT: keep the rows that a rule would not match"
     },
     {
       "part": "Headline 6",
-      "what": "Hot days, cold days, the three-minute clock"
+      "what": "Hot days and cold days, with a three-minute clock"
     },
     {
       "part": "Close",
-      "what": "Front page, badges, recap, exit ticket"
+      "what": "The front page, badges, a recap and five last questions"
     }
   ],
   "goesWrong": [
     {
-      "q": "The table cannot read her rule.",
-      "a": "The screen says what a rule needs: a column, a sign, a value. The hint ladder ends with the rule."
+      "q": "The table cannot read a pupil's rule.",
+      "a": "The screen says what a rule needs: a column, a sign and a value. The last hint shows the full rule."
     },
     {
-      "q": "She left the quotes off a word.",
-      "a": "The table reads a bare word as text, so the rule still works. Every hint shows the quotes."
+      "q": "A pupil leaves the quote marks off a word.",
+      "a": "The table reads a word without quotes as text, so the rule still works. Every hint shows the quotes."
     },
     {
       "q": "The three-minute clock ran out.",
-      "a": "The headline prints as it is, a reader complains, and she stamps it again. Nothing is lost."
+      "a": "The headline prints as it is. A reader complains. The pupil then stamps it again. Nothing is lost."
     },
     {
-      "q": "She stamped PRINT when it should be SPIKE.",
+      "q": "A pupil stamps PRINT when it should be SPIKE.",
       "a": "The screen says why and asks again. There are five reasons to choose from."
     },
     {
-      "q": "She finished early.",
-      "a": "Two more headlines on the last screen, checked with her own rules."
+      "q": "A pupil finishes early.",
+      "a": "The last screen has two more headlines. The pupil checks them with their own rules."
     }
   ]
 };
@@ -298,7 +298,7 @@ window.S.recapPool = [
   { id: 'r-j3-601', lesson: 'j3-06', stem: 'An editor stamps a headline PRINT or SPIKE, meaning do not print. A reporter wrote: most teens are on their phones five hours a day. A table of 18 teens shows only 6 do. Which stamp?', options: ['SPIKE: the numbers say no', 'PRINT: the numbers back it', 'SPIKE: one did not cause the other'] },
   { id: 'r-j3-602', lesson: 'j3-06', stem: 'A table has a column called pet. Which rule keeps every person with a dog or a cat?', options: ['pet = "dog" OR pet = "cat"', 'pet = "dog" AND pet = "cat"', 'NOT pet = "dog"'] },
   { id: 'r-j3-603', lesson: 'j3-06', stem: 'A table has a column called day_no. Which rule (a question for the table) keeps days 40 to 46, both included?', options: ['day_no BETWEEN 40 AND 46', 'day_no > 40 AND day_no < 46', 'day_no = 40 OR 46'] },
-  { id: 'r-j3-604', lesson: 'j3-06', stem: 'An editor spikes a headline that should not print. A reporter used the busiest week to describe the whole summer. Which reason spikes it?', options: ['Only the best bit', 'Too few people', 'The numbers say no'] },
+  { id: 'r-j3-604', lesson: 'j3-06', stem: 'An editor spikes a headline, which means the headline is not printed. A reporter used the busiest week to describe the whole summer. Which reason should the editor give?', options: ['Only the best bit', 'Too few people', 'The numbers say no'] },
   { id: 'r-j3-605', lesson: 'j3-06', stem: 'Hot days bring more ice creams and more sea rescues. What caused the rescues?', options: ['The heat brought the swimmers', 'The ice cream', 'Rescued swimmers then buy ice cream'] }
 ];
 
