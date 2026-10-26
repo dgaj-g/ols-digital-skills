@@ -20,3 +20,7 @@ filenames, and the family names inside the fonts are untouched.
 **bebas-neue.woff2** — Bebas Neue, Dharma Type (Ryoichi Tsunekawa), SIL Open Font License 1.1
 (licence text beside it as OFL-bebas.txt). Converted from the TTF to woff2 locally with
 fontTools, glyphs untouched. Used for the poster lines of J2 Lesson 6 The Headliner.
+
+**playfair-display.woff2** — Playfair Display, Claus Eggers Sørensen, SIL Open Font License 1.1
+(licence text beside it as OFL-playfair.txt). Converted from the TTF to woff2 locally with
+fontTools, glyphs untouched. Used for the masthead and headlines of J3 Lesson 6 The Night Desk.

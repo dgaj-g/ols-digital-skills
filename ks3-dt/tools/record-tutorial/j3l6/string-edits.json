@@ -1,0 +1,17 @@
+{
+ "c6.judge2.ok": {
+  "from": "Showing 28 of 92. Cold days: 92 ice creams, 0.5 rescues a day.",
+  "to": "Showing 28 of 92. Cold days: 91 ice creams, 0.5 rescues a day.",
+  "why": "G10: data.js gives 91.46 ice creams on a cold day, which rounds to 91"
+ },
+ "c6.compare2": {
+  "from": "Each cold day: 92 ice creams, 0.5 rescues.",
+  "to": "Each cold day: 91 ice creams, 0.5 rescues.",
+  "why": "G10: as c6.judge2.ok"
+ },
+ "close.free.1.reveal": {
+  "from": "Wet days had 1,847 visitors a day. Dry days had 2,559. The numbers agree, so Dee prints it.",
+  "to": "Wet days had 1,846 visitors a day. Dry days had 2,559. The numbers agree, so Dee prints it.",
+  "why": "G10: data.js gives 1,846.47 visitors on a wet day, which rounds to 1,846"
+ }
+}
