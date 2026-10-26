@@ -12,7 +12,7 @@ How it was sat: the served hour walked end to end at 1280×800, 1440×900 and 10
 7. The front page: The Harbour Post with her printed headline, the five spiked ones with reasons, and her name on the page.
 8. Finish: badges, the recap, five last questions, then Free time with two more headlines.
 
-Modelled time: 41 screens, 11.26 model minutes on the straight path; 44 screens and 13.02 minutes taking every wrong path (design sit: 10.6 and 12.1). The rush done right at 4 keys a second takes 8.5 s of its 180 s.
+Modelled time: 41 screens, 11.22 model minutes on the straight path; 44 screens and 12.97 minutes taking every wrong path (design sit: 10.6 and 12.1). The rush done right at 4 keys a second takes 8.5 s of its 180 s.
 
 ## Where a pupil could stall, and what catches her
 | Place | Stall | What catches her |
@@ -28,3 +28,6 @@ Modelled time: 41 screens, 11.26 model minutes on the straight path; 44 screens 
 | Coming back | Leaves mid-hour | Welcome back with Carry on or Start again restores the rule, the stamps and the clock's seconds |
 
 No dead end was found. Every wrong rule, every engine error and a missing stamp or reason has a line and a way on. At 1024×768 the row of parts wraps onto two lines but stays readable. The one new stall (the cut-off hint) is fixed.
+
+## After the cold reads (rounds 6–12)
+Three lines changed what a pupil reads. Headline 3's help now says the rule keeps 16 days at 20, 21 or 22 degrees (the table holds whole degrees). The rush's stamp line is shorter: "Stamp PRINT or SPIKE. Then pick a reason." The reader's letter after a run-out now says the ice cream does not cause the rescues; the heat does. Both screens stay under 40 words. No new stall. Every edit is logged in `j3l6/string-edits.json`.

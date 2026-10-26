@@ -29,7 +29,7 @@ window.S = {
   },
   c3: {
     title: 'One week', headline: 'Rathmore harbour gets 3,000 visitors a day', byline: 'Fionn · page 2',
-    showKicker: 'Dee shows you', show1: 'BETWEEN keeps rows from one number to another. Rows at both numbers are kept too.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days, from 20 to 22 degrees.', show3: 'Each row here is one summer day.',
+    showKicker: 'Dee shows you', show1: 'BETWEEN keeps rows from your first number to your second. Both numbers count.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'This rule keeps 16 days at 20, 21 or 22 degrees.', show3: 'Each row here is one summer day.',
     ask: 'Fionn only looked at days 40 to 46. Keep those days.', h1: 'The column is day_no.', h2: 'Write day_no, then BETWEEN, then the first day, then AND, then the last day.', h3: 'Type this, then press Enter.', h3code: 'day_no BETWEEN 40 AND 46',
     judge: { ok: 'Showing 7 of 92 days. These 7 days are regatta week, 10 to 16 July. That is the week of the harbour boat races.', wrong: 'Your rule shows {got} days, but it should show 7. Check both ends.' },
     compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week and called it the summer.',
@@ -59,8 +59,8 @@ window.S = {
     judge1: { ok: 'Showing 27 of 92 days. An average hot day had 290 ice creams sold and 2.8 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 27. Check the sign.' },
     ask2: 'Now keep the days under 18 degrees.', h2a: 'Under 18 is <.', h2b: 'Write temp_c, then <, then 18.', h2c: 'Type this, then press Enter.', h2code: 'temp_c < 18',
     judge2: { ok: 'Showing 28 of 92 days. An average cold day had 91 ice creams sold and 0.5 sea rescues.', wrong: 'Your rule shows {got} days, but it should show 28. Check the sign.' },
-    stampAsk: 'Stamp it, with a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.', stampNo: 'Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Could something else cause both the sales and the rescues?',
-    timeLeft: '{s} seconds until the press starts', timeUp: 'It is midnight and time is up. The press printed Fionn’s headline on page one.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline. It is on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream at the harbour.', letter2: 'Your paper blamed my cones for three rescues.', letter3: 'On hot days, more people swim and buy ice cream.', letter4: 'The heat caused the rescues, not my cones. Marie Byrne.', letterButton: 'Fix the stamp',
+    stampAsk: 'Stamp PRINT or SPIKE. Then pick a reason.', stampOk: 'SPIKE. Ice cream did not cause the rescues. Hot weather caused the sales and the rescues.', stampNo: 'Ice cream sales and sea rescues both rise on hot days. Does one cause the other, or does the heat cause both?', reasonNo: 'The numbers are real, and there are enough days. The problem is that the headline says ice cream causes the rescues. Could something else cause both the sales and the rescues?',
+    timeLeft: '{s} seconds left', timeUp: 'It is midnight and time is up. The press printed Fionn’s headline on page one.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline. It is on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream at the harbour.', letter2: 'Your paper said my ice cream causes sea rescues.', letter3: 'Hot days bring swimmers and ice cream buyers.', letter4: 'The heat caused the rescues, not my ice cream. Marie Byrne.', letterButton: 'Fix the stamp',
     fixAsk: 'Stamp it again. Pick the right reason this time.', fixOk: 'You fixed the stamp. The heat caused the ice cream sales and the sea rescues. All your work is still saved.', doneLine: 'Six headlines checked. The press is printing the paper now.'
   },
   front: { kicker: 'Midnight', masthead: 'The Harbour Post', date: 'Rathmore · Saturday', intro: 'The page you made.', printedSub: 'Survey of 60 people', spikedTitle: 'Spiked headlines', byline: 'Night desk: {name}', you: 'you', rename: 'Type your name for the page', button: 'Finish the hour', wrongSub: 'Not checked · by Fionn' },
@@ -184,7 +184,7 @@ window.S.brief = {
     },
     {
       "title": "Do not give away the story",
-      "text": "The slides do not tell the story of the lesson. Please do not tell it yourself. Please do not describe what happens on screen. First, each pupil answers five warm-up questions on their own screen. Next, their screen tells them what the lesson is for. Slide 1 says the same thing as that screen, in the same words."
+      "text": "Let the pupils work from their own screens. Each screen tells them what to do. You do not need to explain the lesson to the class. First, each pupil answers five warm-up questions on their own screen. Next, each pupil's screen says what the lesson is for. Slide 1 on the board has the same words as that screen."
     }
   ],
   "resources": [
@@ -282,7 +282,7 @@ window.S.brief = {
     },
     {
       "q": "The three-minute clock ran out.",
-      "a": "If the clock in part 6 runs out, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved."
+      "a": "If time runs out in part 6, the paper prints Fionn's false headline: ice cream sales cause sea rescues. The screen then jumps to the next morning in the story, where a letter from a reader complains. The pupil then picks a stamp (PRINT or SPIKE) and a reason for that headline again. All the pupil's earlier work is still saved."
     },
     {
       "q": "A pupil stamps a headline PRINT when the headline should be SPIKE.",

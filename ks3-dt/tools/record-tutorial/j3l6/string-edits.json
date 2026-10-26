@@ -106,8 +106,8 @@
  },
  "j3-06 › brief › prepare[1] › text": {
   "from": "The deck carries no story. Do not describe what happens on screen. The first screen says what the hour is for, in the same words as slide 1.",
-  "to": "The slides do not tell the story of the lesson. Please do not tell it yourself. Please do not describe what happens on screen. First, each pupil answers five warm-up questions on their own screen. Next, their screen tells them what the lesson is for. Slide 1 says the same thing as that screen, in the same words.",
-  "why": "cold read r1: both readers failed it (Do not describe has no reason, and the first screen is not named.); then cold read r2, own call after two rounds: both readers failed it ('the newspaper story' is never described, and the first screen 'in the same words as slide 1' is a long, tangled sentenc) · cold read r3: both readers failed the own call again on the same fault ('The deck does not tell the newspaper story' leaves the reader asking which story. 'The next screen' after 'Th); their wording taken · cold read r4: both readers failed it on the same fault ('The slide deck does not tell the newspaper story' uses 'the newspaper story' with no meaning given.); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('the newspaper story' is named before it is explained, so the colleague must ask what story. 'Slide ); own call, rounds spent: their wording taken · cold read r6: both readers failed it on the same fault ('so please do not describe it or say what happens on screen': 'it' is the story, and the second half); own call, rounds spent: their wording taken"
+  "to": "Let the pupils work from their own screens. Each screen tells them what to do. You do not need to explain the lesson to the class. First, each pupil answers five warm-up questions on their own screen. Next, each pupil's screen says what the lesson is for. Slide 1 on the board has the same words as that screen.",
+  "why": "cold read r1: both readers failed it (Do not describe has no reason, and the first screen is not named.); then cold read r2, own call after two rounds: both readers failed it ('the newspaper story' is never described, and the first screen 'in the same words as slide 1' is a long, tangled sentenc) · cold read r3: both readers failed the own call again on the same fault ('The deck does not tell the newspaper story' leaves the reader asking which story. 'The next screen' after 'Th); their wording taken · cold read r4: both readers failed it on the same fault ('The slide deck does not tell the newspaper story' uses 'the newspaper story' with no meaning given.); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('the newspaper story' is named before it is explained, so the colleague must ask what story. 'Slide ); own call, rounds spent: their wording taken · cold read r6: both readers failed it on the same fault ('so please do not describe it or say what happens on screen': 'it' is the story, and the second half); own call, rounds spent: their wording taken · cold read r7: both readers failed it on the same fault ('Please do not tell it yourself' leaves 'it' pointing at an undefined 'story'. 'Please do not descri); own call, rounds spent: their wording taken · cold read r8: both readers failed it on the same fault (It opens with two bans ('Please do not explain the lesson to the class. Please do not describe what ); own call, rounds spent: their wording taken · cold read r9: both readers failed it on the same fault ('what the lesson is for, and slide 1 on the board shows those same words' stacks two ideas in one se); own call, rounds spent: their wording taken"
  },
  "j3-06 › brief › resources[0] › what": {
   "from": "The deck has eight slides. It does not tell the newsroom story. Slide 6 says Start now. Leave slide 6 on the board for the whole hour.",
@@ -190,9 +190,9 @@
   "why": "cold read r1: both readers failed it (Bare word and text are jargon for a colleague.); then cold read r2, own call after two rounds: both readers failed it ('reads a word without quotes as text' is jargon, and the pupil screen says to put words in quotes, so the colleague wond) · cold read r3: both readers failed the own call again on the same fault ('The table still understands a word' gives the table a mind; the reader has to translate it to 'accepts'.); their wording taken · cold read r4: both readers failed it on the same fault (It starts with the answer and never says what went wrong. 'The table' and 'a word' are not pinned to); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('Old Town instead of \"Old Town\"' is hard to read aloud because the quote marks are the whole point a); own call, rounds spent: their wording taken"
  },
  "j3-06 › brief › goesWrong[2] › a": {
-  "from": "The headline prints as it is, a reader complains, and she stamps it again. Nothing is lost.",
-  "to": "If the clock in part 6 runs out, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved.",
-  "why": "cold read r1: both readers failed it (It says she.); then cold read r2, own call after two rounds: both readers failed it ('The headline prints as it is' has no clear thing for 'it'; 'as it is' is an idiom.) · cold read r3: both readers failed the own call again on the same fault (Same trip as the clock line: 'The reporter's false headline' and 'Nothing is lost' leave open which headline a); their wording taken · cold read r4: both readers failed it on the same fault (No sentence says what went wrong; it begins mid-event. 'Fionn the reporter's false headline' stumble); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('Fionn, the reporter, wrote it' sits inside a clause and is easy to lose. 'stamps the headline again); own call, rounds spent: their wording taken"
+  "from": "If the clock in part 6 runs out, …",
+  "to": "If time runs out in part 6, …",
+  "why": "qa-language banned register \"clock in\" (a false match on \"the clock in part 6\"); reworded to clear the gate, meaning unchanged"
  },
  "j3-06 › brief › goesWrong[3] › q": {
   "from": "She stamped PRINT when it should be SPIKE.",
@@ -341,13 +341,13 @@
  },
  "j3-06 › nightdesk › config › strings › c3 › show1": {
   "from": "BETWEEN keeps every number from one end to the other, both ends too.",
-  "to": "BETWEEN keeps rows from one number to another. Rows at both numbers are kept too.",
-  "why": "cold read r1b: both readers failed it ('both ends too' is a tacked-on fragment after a comma. It carries the key fact, so it should be a sentence.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it ('from one end to the other, and both ends' ends on a dangling 'and both ends', which is the key point and reads as an af) · cold read r3: both readers failed the own call again on the same fault (\"keeps every number from one end to the other\" says numbers are kept when the table keeps rows. \"one end to th); their wording taken · trimmed for the 14-word sentence and 40-word screen rules · cold read r4: both readers named the same fault; own call (rounds spent) · trimmed 3 words for the 40-word screen rule · cold read r5: both readers failed it on the same fault ('Both end numbers count too' uses 'count' for 'are included', but on this screen 'count' is also the); own call, rounds spent: their wording taken · cold read r6: both readers failed it on the same fault ('from the first number to the last number, including both' is read twice. 'The first number' and 'th); own call, rounds spent: their wording taken"
+  "to": "BETWEEN keeps rows from your first number to your second. Both numbers count.",
+  "why": "cold read r1b: both readers failed it ('both ends too' is a tacked-on fragment after a comma. It carries the key fact, so it should be a sentence.) · then cut back so the hour fits its time (G1); then cold read r2, own call after two rounds: both readers failed it ('from one end to the other, and both ends' ends on a dangling 'and both ends', which is the key point and reads as an af) · cold read r3: both readers failed the own call again on the same fault (\"keeps every number from one end to the other\" says numbers are kept when the table keeps rows. \"one end to th); their wording taken · trimmed for the 14-word sentence and 40-word screen rules · cold read r4: both readers named the same fault; own call (rounds spent) · trimmed 3 words for the 40-word screen rule · cold read r5: both readers failed it on the same fault ('Both end numbers count too' uses 'count' for 'are included', but on this screen 'count' is also the); own call, rounds spent: their wording taken · cold read r6: both readers failed it on the same fault ('from the first number to the last number, including both' is read twice. 'The first number' and 'th); own call, rounds spent: their wording taken · cold read r7: both readers failed it on the same fault ('Rows at both numbers are kept too.' is a vague second sentence. 'both numbers' has no names, so she); own call, rounds spent: their wording taken · cold read r8: both readers failed it on the same fault ('from the first number to the last number' points at nothing she has been shown yet, and it does not); own call, rounds spent: their wording taken · cold read r9: both readers failed it on the same fault (\"keeps rows from the first number you write to the second number\" does not say that the numbers are ); own call, rounds spent: their wording taken"
  },
  "j3-06 › nightdesk › config › strings › c3 › show2": {
   "from": "It keeps days of 20 to 22 degrees: 16 of 92.",
-  "to": "This rule keeps 16 days, from 20 to 22 degrees.",
-  "why": "cold read r1b: both readers failed it ('days of 20 to 22 degrees: 16 of 92' is a noun phrase and a colon with no verb. 'days of 20 degrees' is awkward aloud.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3)"
+  "to": "This rule keeps 16 days at 20, 21 or 22 degrees.",
+  "why": "cold read r1b: both readers failed it ('days of 20 to 22 degrees: 16 of 92' is a noun phrase and a colon with no verb. 'days of 20 degrees' is awkward aloud.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3) · own call after cold read r7: show1 lost its second sentence (both readers failed it three rounds running), so the kept end numbers are SHOWN here instead (DFM 296); temp_c is whole degrees"
  },
  "j3-06 › nightdesk › config › strings › c3 › h2": {
   "from": "day_no BETWEEN the first day AND the last day.",
@@ -466,8 +466,8 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › stampAsk": {
   "from": "Stamp it.",
-  "to": "Stamp it, with a reason.",
-  "why": "cold read r1b: both readers failed it (The bare order 'Stamp it.' does not say that a reason is also needed, and it is only two words. A pupil who arrives here) · then cut back so the hour fits its time (G1); then then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
+  "to": "Stamp PRINT or SPIKE. Then pick a reason.",
+  "why": "cold read r1b: both readers failed it (The bare order 'Stamp it.' does not say that a reason is also needed, and it is only two words. A pupil who arrives here) · then cut back so the hour fits its time (G1); then then cut back so each screen keeps to 40 words and each sentence to 14 (G3) · cold read r7: both readers failed it on the same fault ('Stamp it, with a reason.' has a bare 'it' with no headline before it, and the comma clause is clipp); own call, rounds spent: their wording taken · cold read r7: both readers agreed the rewrite · trimmed so each screen keeps to 40 words (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › stampOk": {
   "from": "SPIKE. One did not cause the other. The heat brings swimmers and ice-cream buyers.",
@@ -486,8 +486,8 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › timeLeft": {
   "from": "{s} seconds to the press",
-  "to": "{s} seconds until the press starts",
-  "why": "cold read r1b: both readers failed it ('seconds to the press' leaves out the word 'until' and uses 'press' undefined, so it is read twice.) · then cut back so the hour fits its time (G1)"
+  "to": "{s} seconds left",
+  "why": "cold read r1b: both readers failed it ('seconds to the press' leaves out the word 'until' and uses 'press' undefined, so it is read twice.) · then cut back so the hour fits its time (G1) · the stamp screen in the rush ran to 45 words after the agreed stampAsk; Dee’s ring already says the press starts in three minutes · trimmed so each screen keeps to 40 words (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › timeUp": {
   "from": "Midnight. Time is up, so the press printed Fionn’s headline on page one.",
@@ -506,13 +506,13 @@
  },
  "j3-06 › nightdesk › config › strings › c6 › letter3": {
   "from": "Hot days fill the beach with swimmers and my customers.",
-  "to": "On hot days, more people swim and buy ice cream.",
-  "why": "cold read r1b: both readers failed it ('fill the beach with swimmers and my customers' is a joined pair that does not fit one verb.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"Hot days bring swimmers and my customers.\" uses \"bring\" for two odd things at once.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
+  "to": "Hot days bring swimmers and ice cream buyers.",
+  "why": "cold read r1b: both readers failed it ('fill the beach with swimmers and my customers' is a joined pair that does not fit one verb.) · then cut back so each screen keeps to 40 words and the hour fits its time (G1/G3); then cold read r2, own call after two rounds: both readers failed it (\"Hot days bring swimmers and my customers.\" uses \"bring\" for two odd things at once.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3) · the letter screen ran to 43 words after letter2 and letter4 dropped cones · trimmed so each screen keeps to 40 words (G3)"
  },
  "j3-06 › nightdesk › config › strings › c6 › letter4": {
   "from": "The sun did it, not the ice cream. Marie Byrne.",
-  "to": "The heat caused the rescues, not my cones. Marie Byrne.",
-  "why": "cold read r1b: both readers failed it ('The sun did it' personifies the sun and leaves 'it' undefined.); then cold read r2, own call after two rounds: both readers failed it (\"The hot weather caused it\" says \"it\" with nothing in the sentence for it to point at.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
+  "to": "The heat caused the rescues, not my ice cream. Marie Byrne.",
+  "why": "cold read r1b: both readers failed it ('The sun did it' personifies the sun and leaves 'it' undefined.); then cold read r2, own call after two rounds: both readers failed it (\"The hot weather caused it\" says \"it\" with nothing in the sentence for it to point at.); then cut back so each screen keeps to 40 words and each sentence to 14 (G3) · cold read r7: both readers failed cones in letter2 (a switch from the lesson word ice cream); letter4 matched so the letter uses one word"
  },
  "j3-06 › nightdesk › config › strings › c6 › letterButton": {
   "from": "Fix it",
@@ -663,5 +663,15 @@
   "from": "Your front page blamed my cones for three rescues.",
   "to": "Your paper blamed my cones for three rescues.",
   "why": "then cut back so each screen keeps to 40 words and each sentence to 14 (G3)"
+ },
+ "j3-06 › nightdesk › config › strings › c6 › letter2": {
+  "from": "Your paper blamed my cones for three rescues.",
+  "to": "Your paper said my ice cream causes sea rescues.",
+  "why": "cold read r7: both readers failed it on the same fault ('blamed my cones for three rescues' uses 'cones' where the lesson said 'ice cream', and the figure '); own call, rounds spent: their wording taken · cold read r7: both readers agreed the rewrite · trimmed so each screen keeps to 40 words (G3) · cold read r8: both readers failed it on the same fault (The headline she met said 'Ice cream sales cause sea rescues'. This line jumps to 'my ice cream caus); own call, rounds spent: their wording taken"
+ },
+ "j3-06 › brief › goesWrong[2] › a (r11)": {
+  "from": "If time runs out in part 6, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved.",
+  "to": "If time runs out in part 6, the paper prints Fionn's false headline: ice cream sales cause sea rescues. The screen then jumps to the next morning in the story, where a letter from a reader complains. The pupil then picks a stamp (PRINT or SPIKE) and a reason for that headline again. All the pupil's earlier work is still saved.",
+  "why": "r11 cold read: both readers REWRITE (next morning read as a real day; which headline; which stamp). Own blend of both."
  }
 }

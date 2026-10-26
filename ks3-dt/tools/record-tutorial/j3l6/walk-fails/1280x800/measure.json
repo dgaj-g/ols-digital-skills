@@ -2,7 +2,7 @@
  "width": 1280,
  "height": 800,
  "fails": true,
- "minutes": 13.015166666666667,
+ "minutes": 12.974333333333334,
  "records": [
   {
    "screen": "donow",
@@ -266,19 +266,19 @@
   {
    "screen": "c3-show",
    "chapter": "c3",
-   "words": 40,
-   "proseWords": 40,
+   "words": 39,
+   "proseWords": 39,
    "keys": 0,
    "film": 3.48,
    "acts": 1,
    "prose": [
     "Showing 92 of 92 days",
     "Dee shows you",
-    "BETWEEN keeps rows from one number to another. Rows at both numbers are kept too.",
-    "This rule keeps 16 days, from 20 to 22 degrees.",
+    "BETWEEN keeps rows from your first number to your second. Both numbers count.",
+    "This rule keeps 16 days at 20, 21 or 22 degrees.",
     "Each row here is one summer day."
    ],
-   "secs": 19.48
+   "secs": 19.13
   },
   {
    "screen": "c3-ask",
@@ -499,35 +499,35 @@
   {
    "screen": "c6-ask1",
    "chapter": "c6",
-   "words": 48,
-   "proseWords": 38,
+   "words": 45,
+   "proseWords": 35,
    "keys": 25,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 92 of 92 days",
     "The rush",
-    "180 seconds until the press starts",
+    "180 seconds left",
     "Fionn says more ice creams mean more sea rescues. Check the hot days, then the cold days.",
     "Keep the hot days: 24 degrees or more."
    ],
-   "secs": 27.449999999999996
+   "secs": 26.4
   },
   {
    "screen": "c6-ask2",
    "chapter": "c6",
-   "words": 20,
-   "proseWords": 20,
+   "words": 17,
+   "proseWords": 17,
    "keys": 25,
    "film": 0,
    "acts": 4,
    "prose": [
     "Showing 92 of 92 days",
     "The rush",
-    "180 seconds until the press starts",
+    "180 seconds left",
     "Now keep the days under 18 degrees."
    ],
-   "secs": 17.65
+   "secs": 16.599999999999998
   },
   {
    "screen": "c6-stamp",
@@ -542,8 +542,8 @@
     "Hot days averaged 290 ice creams and 2.8 rescues a day.",
     "Cold days averaged 91 ice creams and 0.5 rescues a day.",
     "The rush",
-    "180 seconds until the press starts",
-    "Stamp it, with a reason."
+    "180 seconds left",
+    "Stamp PRINT or SPIKE. Then pick a reason."
    ],
    "secs": 19.5
   },
@@ -573,9 +573,9 @@
    "prose": [
     "The next morning",
     "Dear Editor, I sell ice cream at the harbour.",
-    "Your paper blamed my cones for three rescues.",
-    "On hot days, more people swim and buy ice cream.",
-    "The heat caused the rescues, not my cones. Marie Byrne."
+    "Your paper said my ice cream causes sea rescues.",
+    "Hot days bring swimmers and ice cream buyers.",
+    "The heat caused the rescues, not my ice cream. Marie Byrne."
    ],
    "secs": 16
   },
