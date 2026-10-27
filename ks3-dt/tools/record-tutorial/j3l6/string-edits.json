@@ -190,9 +190,14 @@
   "why": "cold read r1: both readers failed it (Bare word and text are jargon for a colleague.); then cold read r2, own call after two rounds: both readers failed it ('reads a word without quotes as text' is jargon, and the pupil screen says to put words in quotes, so the colleague wond) · cold read r3: both readers failed the own call again on the same fault ('The table still understands a word' gives the table a mind; the reader has to translate it to 'accepts'.); their wording taken · cold read r4: both readers failed it on the same fault (It starts with the answer and never says what went wrong. 'The table' and 'a word' are not pinned to); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('Old Town instead of \"Old Town\"' is hard to read aloud because the quote marks are the whole point a); own call, rounds spent: their wording taken"
  },
  "j3-06 › brief › goesWrong[2] › a": {
-  "from": "If the clock in part 6 runs out, …",
-  "to": "If time runs out in part 6, …",
-  "why": "qa-language banned register \"clock in\" (a false match on \"the clock in part 6\"); reworded to clear the gate, meaning unchanged"
+  "from": "The headline prints as it is, a reader complains, and she stamps it again. Nothing is lost.",
+  "to": "If time runs out in part 6, the paper prints Fionn's false headline: ice cream sales cause sea rescues. The screen then jumps to the next morning in the story, where a letter from a reader complains. The pupil then picks a stamp (PRINT or SPIKE) and a reason for that headline again. All the pupil's earlier work is still saved.",
+  "why": "Design line to shipped line in three listed steps (this entry is the whole change, so the words gate can match it in one pass): cold read r1: both readers failed it (It says she.); then cold read r2, own call after two rounds: both readers failed it ('The headline prints as it is' has no clear thing for 'it'; 'as it is' is an idiom.) · cold read r3: both readers failed the own call again on the same fault (Same trip as the clock line: 'The reporter's false headline' and 'Nothing is lost' leave open which headline a); their wording taken · cold read r4: both readers failed it on the same fault (No sentence says what went wrong; it begins mid-event. 'Fionn the reporter's false headline' stumble); own call, rounds spent: their wording taken · cold read r5: both readers failed it on the same fault ('Fionn, the reporter, wrote it' sits inside a clause and is easy to lose. 'stamps the headline again); own call, rounds spent: their wording taken Then the two below."
+ },
+ "j3-06 › brief › goesWrong[2] › a (qa-language)": {
+  "from": "If the clock in part 6 runs out, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved.",
+  "to": "If time runs out in part 6, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved.",
+  "why": "qa-language banned register \"clock in\" (a false match on \"the clock in part 6\"); reworded to clear the gate, meaning unchanged (full texts restored 27 Oct 2026: a same-key write had overwritten the first entry)"
  },
  "j3-06 › brief › goesWrong[3] › q": {
   "from": "She stamped PRINT when it should be SPIKE.",
@@ -673,5 +678,20 @@
   "from": "If time runs out in part 6, the paper prints the false headline exactly as Fionn, the reporter, wrote it. The next morning, a letter from a reader appears on screen and complains. The pupil then picks a stamp and a reason for the headline again. All the pupil's earlier work is still saved.",
   "to": "If time runs out in part 6, the paper prints Fionn's false headline: ice cream sales cause sea rescues. The screen then jumps to the next morning in the story, where a letter from a reader complains. The pupil then picks a stamp (PRINT or SPIKE) and a reason for that headline again. All the pupil's earlier work is still saved.",
   "why": "r11 cold read: both readers REWRITE (next morning read as a real day; which headline; which stamp). Own blend of both."
+ },
+ "brief.runningTheHour.0.part": {
+  "from": "Do-Now",
+  "to": "Do-Now · Slide 1",
+  "why": "pack gate qa-staff-docs §4 (DFM 279): the run sheet must name the deck slides for each part; labels as J2 L6 shipped them (DFM 336d). Slide 1 notes place it at the Do-Now; slide 6 stays up for the hour; 7–8 are the finish."
+ },
+ "brief.runningTheHour.1.part": {
+  "from": "The job",
+  "to": "The job · Slides 2–6",
+  "why": "pack gate qa-staff-docs §4 (DFM 279): the run sheet must name the deck slides for each part; labels as J2 L6 shipped them (DFM 336d). Slide 1 notes place it at the Do-Now; slide 6 stays up for the hour; 7–8 are the finish."
+ },
+ "brief.runningTheHour.5.part": {
+  "from": "Finishing",
+  "to": "Finishing · Slides 7–8",
+  "why": "pack gate qa-staff-docs §4 (DFM 279): the run sheet must name the deck slides for each part; labels as J2 L6 shipped them (DFM 336d). Slide 1 notes place it at the Do-Now; slide 6 stays up for the hour; 7–8 are the finish."
  }
 }

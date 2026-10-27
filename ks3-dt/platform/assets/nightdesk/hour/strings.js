@@ -201,13 +201,13 @@ window.S.brief = {
   ],
   "runningTheHour": [
     {
-      "part": "Do-Now",
+      "part": "Do-Now · Slide 1",
       "mins": 5,
       "text": "Pupils answer five questions from earlier lessons. The questions mark themselves. Nothing is recorded against the pupil.",
       "say": "Five warm-up questions. Click the answer you think is right."
     },
     {
-      "part": "The job",
+      "part": "The job · Slides 2–6",
       "mins": 5,
       "text": "The night desk is the screen where pupils do their work. After the warm-up questions, the first screen tells the pupils what the hour is for. Next, a short message from the night editor, Dee, explains the job. Last, a tour in three steps shows the pupils around the night desk.",
       "say": "Read every screen. Nothing happens until you press the button."
@@ -231,7 +231,7 @@ window.S.brief = {
       "say": "If the clock runs out, you fix it on the next screen."
     },
     {
-      "part": "Finishing",
+      "part": "Finishing · Slides 7–8",
       "mins": 12,
       "text": "The pupils see their front page, their badges and a recap. Then come five last questions and a short check on how the hour went. Pupils who finish early get two more headlines to check.",
       "say": "When you reach the badges, you are nearly done."

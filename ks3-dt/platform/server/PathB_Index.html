@@ -18197,6 +18197,61 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* J3 L6 THE NIGHT DESK (J3_L6_SPEC.md): the Headliner's frame pattern. Her place (draft.nightdesk: the screen she
+     reached, the question box, her stamps, the rush clock's seconds, points, badges, her name for the page) goes to
+     the page as {stage, name, saved}, and the page sends back save, badge, frontpage and done. Badges pay only from
+     the page's badge event, which the page sends only on the stamp judge's ok (gate G5). The 'free' chunk opens the
+     same page at the free headlines (config stage 'free'). */
+  Engines.nightdesk = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {}, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var place = { stage: cfg.stage || 'hour' };
+      if (draft.nightdesk) place.saved = JSON.parse(JSON.stringify(draft.nightdesk));
+      var first = String(s.name || '').trim().split(/\s+/)[0]; if (first) place.name = first;
+      var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+        '<iframe class="rescue-frame nightdesk-frame" title="' + esc(chunk.title || 'The story') + '" allow="autoplay"></iframe></div>');
+      host.appendChild(wrap);
+      function fit() {
+        if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+        var bar = document.querySelector('#player .player-top');
+        wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+      }
+      fit(); window.addEventListener('resize', fit);
+      var frame = wrap.querySelector('iframe');
+      frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+      /* ?speed=N (staff and the dev server only) runs the hour's clocks faster, for checking */
+      var speed = +(new URLSearchParams(location.search).get('speed') || 0), q = speed > 1 && (s.staff || /^localhost$|^127\./.test(location.hostname)) ? '?speed=' + speed : '';
+      frame.src = App.asset(cfg.page || 'assets/nightdesk/hour.html') + q + '#' + encodeURIComponent(JSON.stringify(place));
+      var paid = {};
+      function onMsg(e) {
+        if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+        var m = e.data;
+        if (e.source !== frame.contentWindow || !m || m.nightdesk !== 1) return;
+        if (m.type === 'save' && m.save && !ctx.review) {
+          var front = draft.nightdesk && draft.nightdesk.frontpage;
+          draft.nightdesk = m.save;
+          if (front && !m.save.frontpage) draft.nightdesk.frontpage = front;
+          ctx.saveEvent({ draft: draft });
+        } else if (m.type === 'badge') {
+          var b = (cfg.badges || {})[m.id];
+          if (!b || paid[b.id] || ctx.review) return;
+          paid[b.id] = 1;
+          ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+        } else if (m.type === 'frontpage' && !ctx.review) {
+          var p = m.page || {};
+          draft.nightdesk = draft.nightdesk || {};
+          draft.nightdesk.frontpage = { name: String(p.name || '').slice(0, 40), printed: [].concat(p.printed || []).slice(0, 6), spiked: [].concat(p.spiked || []).slice(0, 6), corrected: !!p.corrected };
+          ctx.saveEvent({ draft: draft });
+        } else if (m.type === 'done') {
+          window.removeEventListener('message', onMsg);
+          ctx.next();
+        }
+      }
+      window.addEventListener('message', onMsg);
+    }
+  };
+
 })(window);
 
 </script>
