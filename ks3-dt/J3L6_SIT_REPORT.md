@@ -31,3 +31,6 @@ No dead end was found. Every wrong rule, every engine error and a missing stamp 
 
 ## After the cold reads (rounds 6–12)
 Three lines changed what a pupil reads. Headline 3's help now says the rule keeps 16 days at 20, 21 or 22 degrees (the table holds whole degrees). The rush's stamp line is shorter: "Stamp PRINT or SPIKE. Then pick a reason." The reader's letter after a run-out now says the ice cream does not cause the rescues; the heat does. Both screens stay under 40 words. No new stall. Every edit is logged in `j3l6/string-edits.json`.
+
+## Live (27 Oct 2026, Version 76)
+The same walk run against the live Pages copy after the deploy: 41 screens, 11.22 model minutes at all three sizes, and 44 screens, 12.97 minutes taking every wrong path. The rush done right at 4 keys a second takes 8.5 s. No new stall. The pupil click-through inside /exec is his test-pupil check.
