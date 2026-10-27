@@ -18,7 +18,7 @@ tail.slice(0, 3).forEach((l) => log.push('INFO ' + l.slice(0, 200)));
 const judgeSrc = fs.readFileSync(path.join(DESIGN, 'judge', 'judge.js'), 'utf8');
 const gs = fs.existsSync(path.join(DESIGN, 'deploy', 'Code.gs')) ? fs.readFileSync(path.join(DESIGN, 'deploy', 'Code.gs'), 'utf8') : '';
 const asciiJs = (s) => s.replace(/[\u0080-\uffff]/g, (c) => '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4)); // as tools/build-server.js
-check('the built Code.gs carries judge.js and the bank unchanged', gs.indexOf(asciiJs(judgeSrc.trim())) !== -1 && gs.indexOf(asciiJs(fs.readFileSync(path.join(DESIGN, 'content', 'bank_digital_data.js'), 'utf8').trim())) !== -1, 'rebuild: node s1-unit1/tools/build-server.js');
+check('the built Code.gs carries judge.js and the four banks unchanged', gs.indexOf(asciiJs(judgeSrc.trim())) !== -1 && ['bank_digital_data.js', 'bank_software.js', 'bank_databases.js', 'bank_spreadsheets.js'].every((f) => gs.indexOf(asciiJs(fs.readFileSync(path.join(DESIGN, 'content', f), 'utf8').trim())) !== -1), 'rebuild: node s1-unit1/tools/build-server.js');
 if (judgeSrc.indexOf('function judge(q, answer, drawn) {') === -1) check('mutation point found', false, 'judge() signature changed');
 [['every answer full marks', 'r.marks = r.max;'], ['every answer no marks', 'r.marks = 0;']].forEach(([name, body]) => {
   const dir = path.join(DESIGN, 'gates', 'g1-mutant');
@@ -35,7 +35,7 @@ if (judgeSrc.indexOf('function judge(q, answer, drawn) {') === -1) check('mutati
 // ---- every "Any N of these" scheme line names the question's own n (live sit, 14 Oct 2026: a four-pick part read "Any three")
 const vm = require('vm'), NW = ['zero', 'one', 'two', 'three', 'four', 'five', 'six'];
 const loadJudge = (src) => { const ctx = { module: { exports: {} } }; vm.runInNewContext(src, ctx); return ctx.module.exports; };
-const BANKS = [['bank_digital_data.js', 'BANK_DIGITAL_DATA'], ['bank_software.js', 'BANK_SOFTWARE']].map(([f, v]) => vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', f), 'utf8') + '\n;' + v, {}));
+const BANKS = [['bank_digital_data.js', 'BANK_DIGITAL_DATA'], ['bank_software.js', 'BANK_SOFTWARE'], ['bank_databases.js', 'BANK_DATABASES'], ['bank_spreadsheets.js', 'BANK_SPREADSHEETS']].map(([f, v]) => vm.runInNewContext(fs.readFileSync(path.join(DESIGN, 'content', f), 'utf8') + '\n;' + v, {}));
 function anyAudit(J) {
   const f = []; let seen = 0;
   BANKS.forEach((B) => B.stages.forEach((st) => st.questions.forEach((q) => (J.scheme(q).lines || []).forEach((l) => {
