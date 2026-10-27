@@ -39,3 +39,8 @@ Six readers on r2/{L1,L1B,L2,L2B,BD-A,BD-B}. fold third now pairs L2/L2B. Sit re
 - j3l6-words fix: string-edits.json had lost the first goesWrong[2].a entry (a same-key write in f2a8c44 overwrote it); restored from de44773 with full texts; the pack's three part labels keyed by dotted path so their old words (Do-Now, The job) no longer swap other strings.
 - Gates: words PASS 135 checks / 123 walked screens; ledger --missing-brief j3-06: 0; no j3-06 line in --missing. Pair after build-pathb: Code ea4a5ee2…(unchanged), Index ce5b71ea….
 - Next: commit, PR2, merge; V76 on the platform project; live smoke; records.
+
+## BUILD COMPLETE — Version 76 live (27 Oct 2026, 07:51)
+- PR #94 merged (main f8ec64f). V76 on the same deployment id; Code.gs unchanged (ea4a5ee2…), Index ce5b71ea… (= raw at f8ec64f). /exec serves Engines.nightdesk.
+- LIVE Pages walks PASS: straight 41 / 11.22 at 3 sizes (G4 8.5 s, G6 3.00 / 3.00 / 4.03 s); every wrong path 44 / 12.97.
+- Records: RESUME_HERE V76 block; DFM 337 + its audit row; K86. Next DFM 338, next K K87.
