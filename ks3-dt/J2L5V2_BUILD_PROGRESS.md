@@ -54,3 +54,15 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - LOOK fix: chapter 4 gate labels moved ABOVE the posts (pics.js LANE_Y - 62); below, the bottom strip covered them at every viewport.
 - Pack STOPPED by read-aloud ledger: 46 entries to judge after cold reads (ledger-tool --set).
 - NEXT: verdicts → rewrites where both agree → ledger → pack → platform gate → A16/mins=50/12/14/18 gates → sit report → deck (Chrome) → build-pathb → deploy ≥78 → PR → records.
+
+## State 8 (1 Nov 2026 20:10, HARD STOP: 5-hour 72%, week 43%, ~205 calls)
+- Cold reads r1 done; agreed rewrites applied in content-src (press→click for on-screen buttons; "A pupil who leaves the room clicks Pause."; "After two wrong tries it circles the exact lines on the pupil's screen."; **with headphones** stays bold). VERDICTS.md "Round r1" appended.
+- Ledger: 85 records written (scratchpad records.json + records2.json via ledger-bulk.js).
+- NEW gate j2l5-engine.js (gates 12 + 18, controls fail) PASS.
+- Commit 3d0d214 pushed (gold code, carried lines, walker gate 14); origin/main bedcb45 (J3 L5 V2, V77, #98) merged.
+- Walks after merge: PASS 13 checks at 1512×860, 1366×768, 1280×720, 1024×768; A18 Home in 14.0 min. 1024 shots LOOKED: fit OK; only nit = close caption bar runs under the right panel's empty lower edge (cosmetic, no text covered).
+- .gs rebuilt with KS3DT_DECK_ROOT=content-src (default root gave STALE); bundle PathB_Index.html rebuilt by pack. Committed in this state (see git log).
+- PACK BLOCKED: DFM_ENFORCEMENT_AUDIT.md lacks rows for DFM 370–374 (J3 L5 window's rules, session "J3 Lesson 5 Bug Bounty rebuild"). Do not edit its DFM block. If that window has ended without the rows, add audit rows yourself and record the decision.
+- content-src index.json contentVersion must go above main's "2026-11-01j3l5b" (use "2026-11-01k"); after pack, check git diff --stat ks3-dt/content reverts no J3 content.
+- NOT DONE: sit report (ks3-dt/J2L5V2_SIT_REPORT.md), pack, platform gate (--base http://localhost:8125), deck via Chrome, build-pathb, deploy ≥78, PR, RESUME_HERE, DFM 340–359, K88–K99, memory, done message.
+- DFM decisions to record: real-time clock; chars.js threshold; endless-loop sound fix; stale string copies dropped; prepare[4] title plain; deck headings no full stop; exit q5 keeps code; slide-1 SAY line; designer-verbatim sentences exempt from 14-word rule; explain kept as stringified arrays; gate labels above posts; BEEP moved in barn; arm labels from 20 m; "job"/"kept" kept; "variable" word; clock words; "fly back to where I was" carried to line 550; words-gate quote fix; gate 14 goldCode observer; AT 'between'/'home'; press→click; "· BADGE" labels kept; windBack pupil string kept; .gs rebuilt via env root; A16 covered by platform + clock gates; ledger records written.
