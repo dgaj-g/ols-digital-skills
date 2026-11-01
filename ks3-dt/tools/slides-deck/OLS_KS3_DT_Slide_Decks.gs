@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-01 from contentVersion 2026-11-01j3l5b.
+ * Built 2026-11-01 from contentVersion 2026-11-01j3l5c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3887,9 +3887,10 @@ var DECKS = {
       "bullets": [
        "Every step shows you what to do.",
        "Read every screen before you type.",
-       "More help appears by itself if a line is not right."
+       "Stuck? Press Help. Either of you can, and it opens on both screens.",
+       "The Fixer can press I’m stuck. The Reader can press Show where."
       ],
-      "notes": "SAY: \"Everything you need is on your own screen. Every step shows you what to do. Read every screen before you type. If a line is not right, more help appears by itself.\""
+      "notes": "SAY: \"Everything you need is on your own screen. Every step shows you what to do. Read every screen before you type. If you are stuck, press the orange Help button. Either of you can press it, and it opens on both screens. The Fixer can press I’m stuck, so your partner knows. The Reader can press Show where, to point at the problem.\""
      },
      {
       "kind": "bullets",

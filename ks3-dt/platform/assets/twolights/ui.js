@@ -227,7 +227,8 @@
     if (ss.btn) { el.sigbtn.textContent = ss.live ? str('sig.sent') : str('sig.' + ss.btn + '.btn'); el.sigbtn.disabled = !!ss.live; }
     el.helpbtn.classList.toggle('urgent', !!(canHelp && inc && inc.s === 'stuck'));
     if (inc) {
-      setHtml(el.sig, '<span>' + esc(inc.s === 'stuck' ? str('sig.stuck.msg') : str('sig.where.' + f.kind, { n: f.right })) + '</span><button data-act="sigok">' + str('sig.ok.btn') + '</button>');
+      var hb = inc.s === 'stuck' && canHelp ? '<button data-act="sighelp" class="sighelp"><img src="img/lifebuoy.svg" alt="">' + str('help.btn') + '</button>' : '';   // Help right in the message: at one column the Help row is below the fold
+      setHtml(el.sig, '<span>' + esc(inc.s === 'stuck' ? str('sig.stuck.msg') : str('sig.where.' + f.kind, { n: f.right })) + '</span>' + hb + '<button data-act="sigok">' + str('sig.ok.btn') + '</button>');
       el.sig.classList.remove('hide');
       var key = f.no + ':' + inc.id; if (L.sigHeard !== key) { L.sigHeard = key; Snd.play('nudge'); }
     } else if (ss.saw) { setHtml(el.sig, '<span>' + esc(str('sig.saw')) + '</span>'); el.sig.classList.remove('hide'); }
@@ -276,7 +277,11 @@
   el.helpbtn.addEventListener('click', function () { L.help.closedAt = 0; send('help', {}); });
   el.sigbtn.addEventListener('click', function () { var ss = E.sigState(st, SEAT); if (ss.btn && !ss.live) send('signal', { s: ss.btn }); });
   el.sig.addEventListener('mousedown', function (e) { e.preventDefault(); });   // never take focus from the code box
-  el.sig.addEventListener('click', function (e) { if (e.target.closest('button')) send('sigok', {}); });
+  el.sig.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.getAttribute('data-act') === 'sighelp') { L.help.closedAt = 0; send('help', {}); if (innerWidth < 980) setTimeout(function () { el.help.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80); }
+    send('sigok', {});
+  });
   el.latebtn.addEventListener('click', function () { L.late = !L.late; render(); });
   el.pausebtn.addEventListener('click', function () { send('pause', {}); });
   el.cards.addEventListener('click', function (e) { var c = e.target.closest('.fcard.pick'); if (c) send('name', { card: c.getAttribute('data-card') }); });

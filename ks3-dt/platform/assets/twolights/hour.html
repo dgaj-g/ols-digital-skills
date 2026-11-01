@@ -73,7 +73,7 @@ button{font:inherit;cursor:pointer}
 .fcard.lit{border-color:var(--good);background:rgba(127,224,168,.15)}
 .fcard.no{border-color:var(--red)}
 #crew{font-size:15px}#partner{font-size:14px;color:var(--mute);min-height:18px}
-@media (max-width:979px){#main{grid-template-columns:1fr;grid-auto-rows:max-content;overflow:auto}#left,#right{min-height:auto}#code{min-height:230px;flex:none;height:230px}#baywrap{height:clamp(190px,24vh,240px)}#job{font-size:20px}#pills{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}}
+@media (max-width:979px){#main{grid-template-columns:1fr;grid-auto-rows:max-content;overflow:auto}#left,#right{min-height:auto}#code{min-height:230px;flex:none;height:230px}#baywrap{height:clamp(190px,24vh,240px)}#job{font-size:20px}#sig{font-size:16px;padding:6px 10px}#pills{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}}
 /* full pages */
 #page{position:fixed;inset:0;background:var(--sea);display:none;overflow:auto;z-index:5}
 #page.show{display:block}
@@ -134,15 +134,20 @@ body.linkon{padding-top:34px}
 #sigbtn.ghost{font-size:15px;font-weight:700;color:#fff;background:#3a86ff;border-color:#9cc3ff;cursor:pointer}
 #sigbtn.ghost:disabled{background:none;color:var(--mute);border-color:var(--line);cursor:default}
 #helpbtn.hide,#sigbtn.hide,#sig.hide{display:none}
-#sig{margin-top:8px;display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;color:#2b1600;background:#ffd166;border-radius:12px;padding:7px 14px;animation:sigin .35s ease-out}
+#jobwrap{position:relative}
+/* the partner message lies over the job line, so the code never moves */
+#sig{position:absolute;top:0;left:0;right:0;min-height:100%;z-index:6;display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:#2b1600;background:#ffd166;border-radius:12px;padding:7px 14px;box-shadow:0 6px 18px rgba(0,0,0,.45);animation:sigin .35s ease-out}
+#sig span{flex:1}
+#sig button.sighelp{background:linear-gradient(135deg,#ff8c42,#ff3d6e);color:#fff;border:2px solid #fff3d6;animation:helpglow .8s ease-in-out infinite}
+#sig button.sighelp img{height:18px;vertical-align:-4px;margin-right:4px}
 #sig button{font-size:15px;font-weight:800;background:#2b1600;color:#ffd166;border:0;border-radius:999px;padding:5px 16px;cursor:pointer}
 @keyframes sigin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){#helpbtn.ghost,#helpbtn.ghost img,#sig{animation:none}}
+@media (prefers-reduced-motion:reduce){#helpbtn.ghost,#helpbtn.ghost img,#sig,#sig button.sighelp{animation:none}}
 </style></head><body>
 <div id="app" class="hide">
   <div id="strip"><div id="pills"></div><span id="coins"></span><button id="latebtn" class="ghost"></button><button id="pausebtn" class="ghost"></button></div>
   <div id="banner"></div>
-  <div id="steps"><div id="stepstrip"></div><div id="job"></div><div id="sig" class="hide" role="status" aria-live="polite"></div></div>
+  <div id="steps"><div id="stepstrip"></div><div id="jobwrap"><div id="job"></div><div id="sig" class="hide" role="status" aria-live="polite"></div></div></div>
   <div id="main">
     <div id="left">
       <div class="head" id="headcode"></div>

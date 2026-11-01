@@ -49,7 +49,7 @@ async function drive(pages, o) {
     if (!o.soundDone) { await click(s, 'button[data-act="horn"]'); await click(s, 'button[data-act="yes"]'); } // the platform gate pairs before the hour, so it has done the sound already
     await click(s, 'button[data-act="pair"]', 10000);
     await click(s, 'button[data-act="cold"]', 10000);
-    for (let i = 0; i < 4; i++) { await click(s, '#tcard button'); await sleep(60); }
+    for (let i = 0; i < 5; i++) { await click(s, '#tcard button'); await sleep(60); }   // V78: five cards (card 5 is Help)
     await click(s, '.prog.ask .ln[data-n="' + (PATH === 'wrong' ? 1 : 4) + '"]');
     if (PATH === 'wrong') { log('r1 verdict', s, await text(s, '.verdict')); }
     await click(s, 'button[data-act="r1"]');
@@ -81,6 +81,7 @@ async function drive(pages, o) {
       const key = f.no + f.step + (f.picks ? JSON.stringify(f.picks) : '') + f.helpShown + (f.lookout && f.lookout.answered) + !!f.name;
       if (key !== lastKey) { await a12(); if (RELOAD && f.step !== lastStep) { lastStep = f.step; await a13(f.step === 'run' || f.step === 'point' ? (f.readers[0] || f.fixer) : f.fixer, id + ' f' + f.no + ' ' + f.step); continue; } log(id, 'fault', f.no, f.id, f.kind, 'step', f.step, 'fixer', f.fixer, 'right', f.right, JSON.stringify(await jobs())); lastKey = key; }
       const reader = f.readers[0] || f.fixer, fixer = f.fixer;
+      if (o.look && await o.look(f.step, f, x)) continue;   // l5v2-look.js: screenshots of Help and the partner signals
       if (f.step === 'run') {
         if (lastKey.indexOf('run-shot') < 0) { await shot(id + '-f' + f.no + '-run'); lastKey += 'run-shot'; }
         const who = SEATS.length > 1 ? reader : fixer;
