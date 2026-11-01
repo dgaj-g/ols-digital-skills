@@ -17,3 +17,10 @@ Worktree ~/Sites/ols-wt-l5v2 · branch j3-l5-samelight · base origin/main 70afb
 ## FAIL lines
 - 16:18 A1: exit 2 options / exit 4 stem / exit 5 stem+options differ from spec §9 (content still V1) — expected, fixed in step 4.
 - Earlier gate-own bugs fixed (not product): steps probes by time not event; help red = last File line N; clock kept prefix.
+## 16:43 checkpoint
+- Step 4 content: j3-05 V2 in staging content-src-l5v2 (NOT in git: private source; excluded via .git/info/exclude). A WIP commit at 16:33 pushed it by mistake; amended + force-pushed the branch within a minute (branch ref no longer holds it).
+- Cold read V77 j3-05: two readers, two rounds (J3_L5_REDESIGN/cold-reads/build/{A,B,R2-A,R2-B}); 9 agreed r1 rewrites, 8 applied, exit q4 kept (spec §9 byte for byte; t3 teaches "hands back"); r2 help → numbered list. Verdicts: KS3 DT Platform/COLD_READ_VERDICTS_V77_j3-05.md, hash 688c8e970ecd51ab.
+- Deck: slide 7 "extra posters" → "more faults to fix" (DFM 338: V2 has no posters); notes same; chunk refs radio/ch4 → twolights. .gs rebuilt (KS3DT_DECK_ROOT=content-src-l5v2). The Google Slides deck itself must get the one-line change at deploy (run the .gs).
+- contentVersion 2026-11-01j3l5. PACK rc=0. A1 words PASS (control RED).
+- A2 tour gate written (l5v2-serve.js + l5v2-tour.js): FAIL 1366/1600 px card 4 covered the step bar → ui.js renderTour fixed (measures card, side placement only when room) → PASS 40 cards; control RED 16.
+- NEXT: A13 reload gate, qa-l5-paired (real Firebase), A11 pace, A5 python3, walkers ×3 sizes, SIT report, then deploy (step 6).

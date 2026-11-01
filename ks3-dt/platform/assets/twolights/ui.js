@@ -298,12 +298,12 @@
     if (!on) { el.tour.classList.remove('show'); return; }
     var i = Math.min(L.tour.i, 3), step = TOUR[i], tg = $(step.t).getBoundingClientRect(), W = innerWidth, H = innerHeight;
     el.ring.style.left = (tg.left - 4) + 'px'; el.ring.style.top = (tg.top - 4) + 'px'; el.ring.style.width = (tg.width + 8) + 'px'; el.ring.style.height = (tg.height + 8) + 'px';
-    var cw = 300, ch = 150, cx, cy, tcx = tg.left + tg.width / 2, tcy = tg.top + tg.height / 2;
-    if (W >= 980) { cx = tcx < W / 2 ? Math.min(W - cw - 16, tg.right + 24) : Math.max(16, tg.left - cw - 24); cy = Math.max(60, Math.min(H - ch - 16, tcy - ch / 2)); }
-    else { cx = Math.max(16, Math.min(W - cw - 16, tcx - cw / 2)); cy = tcy < H / 2 ? Math.min(H - ch - 16, tg.bottom + 16) : Math.max(60, tg.top - ch - 16); }
-    el.tcard.style.left = cx + 'px'; el.tcard.style.top = cy + 'px';
     setHtml(el.tcard, str(step.k) + (step.k2 ? '<br>' + str(step.k2) : '') + '<div class="row"><button class="btn" data-act="' + (i < 3 ? 'next' : 'start') + '">' + str(i < 3 ? 'tour.next' : 'tour.start') + '</button></div>');
     el.tour.classList.add('show');
+    var cw = el.tcard.offsetWidth || 300, ch = el.tcard.offsetHeight || 150, cx, cy, tcx = tg.left + tg.width / 2, tcy = tg.top + tg.height / 2;
+    if (W >= 980 && tg.width < W - cw - 64) { cx = tcx < W / 2 ? Math.min(W - cw - 16, tg.right + 24) : Math.max(16, tg.left - cw - 24); cy = Math.max(60, Math.min(H - ch - 16, tcy - ch / 2)); }
+    else { cx = Math.max(16, Math.min(W - cw - 16, tcx - cw / 2)); cy = tcy < H / 2 ? Math.min(H - ch - 16, tg.bottom + 16) : Math.max(60, tg.top - ch - 16); }
+    el.tcard.style.left = cx + 'px'; el.tcard.style.top = cy + 'px';
   }
   el.tcard.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
