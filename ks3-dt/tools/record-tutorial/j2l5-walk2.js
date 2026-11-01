@@ -14,7 +14,7 @@ const path = require('path');
 let chromium; try { ({ chromium } = require('playwright')); } catch (e) { ({ chromium } = require('/Users/damiengartland/Sites/ols-digital-skills/ks3-dt/tools/record-tutorial/node_modules/playwright')); }
 const argOf = (k, d) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : d; };
 const BASE = argOf('--base', 'http://localhost:8790'), SPEED = +argOf('--speed', 8), W = +argOf('--w', 1366), H = +argOf('--h', 768), SHOTS = argOf('--shots', '');
-const KEYS_PER_SEC = 4, LIMIT_MIN = 26;
+const KEYS_PER_SEC = 4, LIMIT_MIN = 26, MINS = +argOf('--mins', 0), EARLY = process.argv.includes('--home-early');
 let fails = 0, passes = 0;
 const must = (ok, msg) => { if (ok) passes++; else fails++; console.log((ok ? '  PASS ' : '  FAIL ') + msg); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -42,7 +42,7 @@ function checkNext(screens) { return screens.filter(s => s.nextAtOnce).map(s => 
    (the wind-back, spec §5.6, §5.7). A level that drifts with time on a screen is still off-level at the next step. */
 function checkCold(colds) {
   const f = [], level = {};
-  colds.forEach(c => { if (c.entry) { if (level[c.ch] == null) level[c.ch] = c.cold; else if (Math.abs(c.cold - level[c.ch]) > 0.011) f.push(c.at + ' opens with the lamb at ' + c.cold.toFixed(2) + ', not her chapter level ' + level[c.ch].toFixed(2)); } });
+  colds.forEach(c => { if (!/^[twgh]\d$/.test(c.at)) return; if (c.entry) { if (level[c.ch] == null) level[c.ch] = c.cold; else if (Math.abs(c.cold - level[c.ch]) > 0.011) f.push(c.at + ' opens with the lamb at ' + c.cold.toFixed(2) + ', not her chapter level ' + level[c.ch].toFixed(2)); } });
   return f;
 }
 
@@ -50,11 +50,12 @@ function checkCold(colds) {
   const b = await chromium.launch();
   const page = await b.newPage({ viewport: { width: W, height: H } });
   const errs = []; page.on('pageerror', e => errs.push(String(e).split('\n')[0]));
-  const url = BASE + '/search/hour.html?speed=' + SPEED + '#' + encodeURIComponent('{"test":1}');
+  const url = BASE + '/search/hour.html?speed=' + SPEED + (MINS ? '&mins=' + MINS : '') + '#' + encodeURIComponent('{"test":1}');
   await page.goto(url, { waitUntil: 'load' });
   await page.waitForFunction(() => window.U && window.__hour, null, { timeout: 15000 });
   /* the watchers, in the page */
-  await page.evaluate(() => {
+  await page.evaluate(EARLYX => {
+    window.__early = EARLYX;
     const W = window.__walk = { screens: [], colds: [], fails: 0, moved: [], tx: [] };
     /* --transcript: every visible line, as she meets it (panel, talk, film captions, notes), deduped in order */
     let prevTx = '';
@@ -80,7 +81,7 @@ function checkCold(colds) {
       const at = window.__hour.at, entry = at !== W.lastAt; W.lastAt = at;
       if (entry || last === null || Math.abs(c - last) > 0.005) { W.colds.push({ at, cold: c, ch, entry }); last = c; }
     });
-  });
+  }, EARLY);
   let atN = 0, lastDid = '', didN = 0, lastAt = '', typed = 0, stuck = 0, lastSig = '', used = {};
   const t0 = Date.now();
   for (let loop = 0; loop < 20000; loop++) {
@@ -90,6 +91,8 @@ function checkCold(colds) {
       const rb = document.getElementById('readit'); if (rb && !rb.classList.contains('hide')) { rb.click(); return { did: 'readit' }; }
       const nb = document.querySelector('.namebox'); if (vis(nb) && !nb.value) return { want: 'name' };
       const fn = F.querySelector('.next.on'); if (vis(fn)) { fn.click(); return { did: 'film' }; }
+      if (window.__early && P.textContent.includes(window.SearchStrings.common.runningOut)) { const hb = P.querySelector('.btns .back'); if (vis(hb)) { window.__walk.sawEarly = (window.__walk.sawEarly || 0) + 1; hb.click(); return { did: 'home' }; } }
+      if (P.textContent.includes(window.SearchStrings.common.runningOut)) window.__walk.sawCarry = (window.__walk.sawCarry || 0) + 1;
       const pn = P.querySelector('.btns .next.on'); if (vis(pn)) { pn.click(); return { did: 'next' }; }
       const tip = document.querySelector('.tip .next.on'); if (vis(tip)) { tip.click(); return { did: 'tour' }; }
       const ta = P.querySelector('textarea'), run = P.querySelector('.run');
@@ -141,7 +144,10 @@ function checkCold(colds) {
   const mins = (W2.t + typed / KEYS_PER_SEC) / 60;
   console.log('    walked to ' + W2.at + ' · game time ' + (W2.t / 60).toFixed(1) + ' min + typing ' + (typed / KEYS_PER_SEC / 60).toFixed(1) + ' min = ' + mins.toFixed(1) + ' min · ' + W2.screens.length + ' screens · real ' + ((Date.now() - t0) / 1000).toFixed(0) + ' s');
   if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'walk2-end-' + W + 'x' + H + '.png') });
-  must(W2.at === 'close' && W2.ended === 'end' && !W2.err, 'the walk reaches the end of the close (at ' + W2.at + (W2.err ? ', error ' + W2.err.slice(0, 120) : '') + ')');
+  if (EARLY) { const e = await page.evaluate(() => ({ s: window.__walk.sawEarly || 0, b: window.__walk.screens.some(x => x.h === window.SearchStrings.close.badgeKicker || x.step === window.SearchStrings.close.badgeKicker) || document.body.innerText.includes(window.SearchStrings.close.badgeKicker) }));
+    must(W2.ended === 'early' && e.s === 1 && e.b && !W2.err, 'past minute 48, Home between chapters ends early with badges (ended ' + W2.ended + ', screens ' + e.s + ', badges ' + e.b + ')'); }
+  else if (MINS >= 48) { const c = await page.evaluate(() => window.__walk.sawCarry || 0); must(c > 0, 'past minute 48, the running-out screen shows between chapters and Carry on goes on (seen ' + c + ')'); }
+  if (!EARLY) must(W2.at === 'close' && W2.ended === 'end' && !W2.err, 'the walk reaches the end of the close (at ' + W2.at + (W2.err ? ', error ' + W2.err.slice(0, 120) : '') + ')');
   must(mins <= LIMIT_MIN, 'A18 the walked hour reaches Home in ' + mins.toFixed(1) + ' min (at most ' + LIMIT_MIN + ')');
   const st = checkSteps(W2.screens); st.slice(0, 8).forEach(x => console.log('    ' + x));
   must(st.length === 0, 'gate 19 every panel screen in chapters 1 to 4 has its step line');

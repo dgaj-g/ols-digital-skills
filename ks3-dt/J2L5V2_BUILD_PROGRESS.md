@@ -46,3 +46,11 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - staff.js: purpose lines go through briefText (bold). Gate j2l5-brief-bold.js PASS (15 briefs identical, control fails on old staff.js).
 - Backups of content before edits in the session scratchpad (j2-05.before.json, recap-pool.before.json, j2-05.deck.before.json).
 - NEXT: viewport walks (1512/1280/1024) running; LOOK at shots; A16 resume gate + ?mins=50 between path; port j2l5-words.js + j2l5-platform.js; cold reads; sit report; deck (Chrome); pack; deploy ≥78; PR; records.
+
+## State 7 (1 Nov 2026 19:45, week 41%, commit e8906f4)
+- Four viewports PASS (1512×860 13.9 min, 1366×768 13.5, 1280×720, 1024×768). Words gate 13 PASS (j2l5-words2.js, 496 strings). Platform gate ported, not yet run (needs pack; --base http://localhost:8125).
+- DECISION: a sentence over 14 words passes only when it is the designer's own sentence verbatim in the spec or prototype (DFM candidate).
+- Cold reads r1 RUNNING: growing-r1-a/b (48), wayhome-r1-a/b (89). Packets in J2_L5_REDESIGN/cold-reads/. Builder: scratchpad mkpackets.js.
+- LOOK fix: chapter 4 gate labels moved ABOVE the posts (pics.js LANE_Y - 62); below, the bottom strip covered them at every viewport.
+- Pack STOPPED by read-aloud ledger: 46 entries to judge after cold reads (ledger-tool --set).
+- NEXT: verdicts → rewrites where both agree → ledger → pack → platform gate → A16/mins=50/12/14/18 gates → sit report → deck (Chrome) → build-pathb → deploy ≥78 → PR → records.

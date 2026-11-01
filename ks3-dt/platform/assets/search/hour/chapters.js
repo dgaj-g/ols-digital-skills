@@ -683,7 +683,7 @@
     H3.ribbons = []; var x = 0, y = 0, h = 0, rbs = [];
     for (var r = 0; r < n; r++) {
       var m = r * 10, x1 = x + Math.cos(h) * m, y1 = y + Math.sin(h) * m;
-      if (m) rbs.push({ x0: HX + PXM * x, y0: HY - PXM * y, x1: HX + PXM * x1, y1: HY - PXM * y1, u: dur ? 0 : 1, label: labels ? m + ' m' : null, lx: -Math.sin(h) * 26, ly: -Math.cos(h) * 26 });
+      if (m) rbs.push({ x0: HX + PXM * x, y0: HY - PXM * y, x1: HX + PXM * x1, y1: HY - PXM * y1, u: dur ? 0 : 1, label: labels && m >= 20 ? m + ' m' : null, lx: -Math.sin(h) * 26, ly: -Math.cos(h) * 26 });
       x = x1; y = y1; h += Math.PI / 2;
     }
     H3.ribbons = rbs;
@@ -699,7 +699,7 @@
     var top = p.filter(function (s) { return s.type === 'cmd' && (s.op === 'left' || s.op === 'right'); })[0];
     if (st.found) {
       if (tn && tn.op === 'right') return { pass: true, msg: 'right(' + tn.v + ') grew the square the other way. Found her.' };
-      if (lp && lp.n > st.found) return { pass: true, msg: 'Round ' + st.found + ' found her. The other ' + plural(lp.n - st.found, 'round') + ' flew on past.' };
+      if (lp && lp.n > st.found) return { pass: true, msg: 'Round ' + st.found + ' found her. The other ' + plural(lp.n - st.found, 'round') + ' flew on past her.' };
       if (fw && fw.v && fw.v.src === '10 * i') return { pass: true, msg: '10 * i is the same as i * 10. Found her.' };
       return { pass: true };
     }
@@ -707,7 +707,7 @@
     if (!tn && top) return { msg: top.op + '(' + top.v + ') had no spaces in front of it, so it was not part of the job. It ran once, at the end.' };
     if (!tn) return { msg: 'With no turn, BEEP flew in a line. Add left(90).' };
     if (!fw) return { msg: H3FALL };
-    if (typeof fw.v !== 'object') return { msg: 'forward(' + fw.v + ') is ' + fw.v + ' metres every round. The square never grows. Use i.' };
+    if (typeof fw.v !== 'object') return { msg: 'forward(' + fw.v + ') is ' + fw.v + ' metres every round, so the square never grows. Put i inside forward.' };
     if (fw.v.k === 1) return { msg: 'forward(i) grows only 1 metre a round. Use i * 10.' };
     if (fw.v.k !== 10) return { msg: 'forward(' + fw.v.src + ') grows ' + fw.v.k + ' metres a round. Use i * 10.' };
     if (tn.v !== 90) return { msg: tn.op + '(' + tn.v + ') is not a square corner. Use left(90).' };
@@ -727,12 +727,12 @@
     await U.screen({ step: STEP3(1), h: 'How rescue teams search.', html: "<p>When they don't know where someone is, rescue teams fly a square.</p><p>Then a bigger square round it, then bigger again.</p><p>It is called an expanding square search.</p>" }).done;
     await U.talk('BEEP', "To make my square bigger each round, I need to know which round I'm on.");
     H3.ribbons = [];
-    await U.screen({ step: STEP3(1), h: 'Fly a square that grows, until the light finds her.', html: "<p>First, meet BEEP's counter.</p>" }).done;
+    await U.screen({ step: STEP3(1), h: 'Fly a square that grows, until the light finds her.', html: '<p>First, meet i. BEEP uses it to count the rounds.</p>' }).done;
   }
   /* ---------- 9.2 BEEP counts aloud ---------- */
   async function g2() {
     ch3(); if (!V.plan) { H3 = freshHill(); planMode(H3); } H3.ring0 = 1; H3.ribbons = [];
-    await U.screen({ step: STEP3(2), h: 'Every loop counts its rounds in i.', html: '<p>i is a name for a number. The loop changes the number every round.</p><p>Python starts counting at 0. Round 1: i is 0. Round 2: i is 1.</p>' +
+    await U.screen({ step: STEP3(2), h: 'Every loop counts its rounds in i.', html: '<p>i is a variable: a name for a number. The loop changes the number every round.</p><p>Python starts counting at 0. In round 1, i is 0. In round 2, i is 1.</p>' +
       meaning([['say(i)', 'Makes BEEP say the number in i, out loud.']]) }).done;
     var card = ['for i in range(3):', '    say(i)'], said = false;
     var tk = task({ step: STEP3(2), h: 'Type these 2 lines, then click Run. Listen to BEEP count.', card: card, rows: 3 });
@@ -749,12 +749,12 @@
       var lp = r.prog[0], sy = lp && lp.type === 'for' && lp.body.length === 1 ? lp.body[0] : null;
       if (sy && sy.op === 'say' && sy.v && sy.v.k === 1 && r.prog.length === 1) {
         var n = lp.n, list = []; for (var j = 0; j < Math.min(n, 8); j++) list.push(j); if (n > 8) list.push('…', n - 1);
-        if (!said && n === 3) tk.box.under('BEEP said 0, 1, 2. Three rounds, counted from 0.\nChange the 3 to 5. Click Run again.', 'good');
+        if (!said && n === 3) tk.box.under('BEEP said 0, 1, 2. That is three rounds, counted from 0.\nChange the 3 in range(3) to 5. Click Run again.', 'good');
         else tk.box.under('range(' + n + ') gave ' + plural(n, 'round') + ': ' + list.join(', ') + '. It stops before ' + n + '.', 'good');
         if (!said) { said = true; S2.flare(); tk.scr.showNext(U.nextDelay(10)); }
         tk.box.focus(); continue;
       }
-      if (sy && sy.op === 'say' && typeof sy.v === 'number') { missed(tk, lines, 'say(' + sy.v + ') says ' + sy.v + ' every round. Type say(i), to hear the counter.'); continue; }
+      if (sy && sy.op === 'say' && typeof sy.v === 'number') { missed(tk, lines, 'say(' + sy.v + ') says ' + sy.v + ' every round. Type say(i) to hear BEEP count.'); continue; }
       missed(tk, lines, 'Your lines ran, but BEEP did not count. Check them against the card.');
     }
   }
@@ -769,7 +769,7 @@
     await U.tween(0.8, function (k) { H3.black = k; });
     U.clock.hide(); await U.wait(2);
     U.tween(0.8, function (k) { H3.ring = k; });
-    await U.talk('BEEP', "I can't hear her any more. Wait. I can go back to before she went quiet.", { mood: 0.2, chirp: 'sad' });
+    await U.talk('BEEP', "I can't hear her any more. Wait. I can fly back to where I was before she went quiet.", { mood: 0.2, chirp: 'sad' });
     U.panelOff(); Snd.rewind(2.5); Snd.setWind(0.55); Snd.bleat(false, 0.7);
     U.tween(0.7, function (k) { H3.black = 1 - k; H3.ring = 1 - k; });
     var rbs = H3.ribbons.slice(), x0 = b.x, y0 = b.y, h0 = normH(b.h);
@@ -786,7 +786,7 @@
       [[1, 0], [2, 1], [3, 2], ['…', '…'], [10, 9]].map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + (r[1] === '…' ? '…' : r[1] * 10) + '</td></tr>'; }).join('') + '</table>' +
       '<p>So forward(i * 10) flies a little further every round.</p>' }).done;
     drawSquare(6, true, 0.9);
-    await U.screen({ step: STEP3(3), h: 'One more turn each round makes a square that grows.', html: '<p>Fly, turn left, fly further, turn left. The square spreads out.</p>' }).done;
+    await U.screen({ step: STEP3(3), h: 'A turn in each round makes a square that grows.', html: '<p>BEEP flies, then turns left. Next round, it flies further, then turns left.</p><p>The square spreads out.</p>' }).done;
     H3.ribbons = [];
     await U.talk('BEEP', 'Her bleat is getting weaker. Quick.', { mood: 0.4 });
     var card = ['for i in range(10):', '    forward(i * 10)', '    left(90)'], keep = '', tries = 0, res;
@@ -800,10 +800,10 @@
   }
   async function squareTask(card, keep, tries) {
     var failed, failP = new Promise(function (r) { failed = r; }), drive = { on: true }, last = 0, lines, r;
-    var tk = task({ step: STEP3(3), h: 'Type these 3 lines, then click Run.', card: card, help: 'Round 1: 0 metres. Round 2: 10. Round 3: 20.', tries: tries, rows: 3, onFirstKey: function () { U.clock.start(); } });
+    var tk = task({ step: STEP3(3), h: 'Type these 3 lines, then click Run.', card: card, help: 'Round 1: 0 metres. Round 2: 10 metres. Round 3: 20 metres.', tries: tries, rows: 3, onFirstKey: function () { U.clock.start(); } });
     if (keep) tk.box.set(keep);
     H3.fade = 0; H3.baa = 0;
-    U.clock.show('Her bleat fades in', 45); U.clock.onEnd = function () { failed('fail'); };
+    U.clock.show('Her bleat will be gone in', 45); U.clock.onEnd = function () { failed('fail'); };
     U.every(function () {
       if (!drive.on) return false;
       if (!U.clock.on) return;
@@ -822,7 +822,7 @@
       Snd.rotor(0.3, 1);
       var j = judge3(r.prog, st);
       if (j.pass) { drive.on = false; U.clock.hide(); tk.box.under(j.msg || 'Found her.', 'good'); tk.box.hideRun(); tk.box.lock(true); return { pass: true, tk: tk, lines: Py.clean(lines), found: st.found }; }
-      missed(tk, lines, j.msg + '\nBEEP flew back to the middle. Your lines are kept.');
+      missed(tk, lines, j.msg + '\nBEEP flew back to where it started. Your lines are kept.');
       tk.box.lock(true); await U.wait(1.2); await hillReset(st); tk.box.lock(false); tk.box.focus();
       U.clock.start();
     }
@@ -842,9 +842,9 @@
     ch3(); U.lamb(null); if (!V.plan) { H3 = freshHill(); planMode(H3); } H3.ring0 = 0; H3.lamb.found = 1; H3.baa = null; H3.count = null; H3.beep = null;
     drawSquare(11, true, 0);
     await pages([
-      function () { return U.screen({ step: STEP3(5), h: 'Here is what you just did.', html: '<p>i counted the rounds: 0, 1, 2, up to 9.</p><p>forward(i * 10) used i, so every arm was longer.</p><p>That is how the square grew until it found her.</p>' }).done; },
-      function (b) { return quiz({ step: STEP3(5), h: 'BEEP runs for i in range(4): with say(i). What does BEEP say?', back: b,
-        opts: shuffle([['0 1 2 3', 'Yes. 4 rounds, counted from 0.', true], ['1 2 3 4', 'The counter starts at 0, not 1.'], ['0 1 2 3 4', 'range(4) gives 4 rounds, so it stops after 3.']]) }); }
+      function () { return U.screen({ step: STEP3(5), h: 'Here is what you just did.', html: '<p>i counted the rounds: 0, 1, 2, up to 9.</p><p>forward(i * 10) used i, so each side was longer than the last.</p><p>The square grew like this until it found her.</p>' }).done; },
+      function (b) { return quiz({ step: STEP3(5), h: 'BEEP runs this loop. What does BEEP say?', back: b, pre: U.card(['for i in range(4):', '    say(i)']),
+        opts: shuffle([['0 1 2 3', 'Yes. 4 rounds, counted from 0, so BEEP says 0 1 2 3.', true], ['1 2 3 4', 'i starts at 0, not 1.'], ['0 1 2 3 4', 'range(4) gives 4 rounds, so i goes 0, 1, 2, 3. It stops there.']]) }); }
     ]);
     H3.beep = { x: HX, y: HY, h: 0, torch: 1 };
   }
@@ -948,7 +948,7 @@
     await U.talk('NUALA', "Dad wrote flights for BEEP last spring. They're still on its screen.");
     await U.talk('BEEP', 'They light the way home. But each one has a mistake in it.');
     await U.screen({ step: STEP4(1), h: 'A mistake in a program is called a bug.', html: '<p>A bug makes the program do the wrong thing.</p><p>Read a program before you run it. Then you can find the bug.</p>' }).done;
-    await U.screen({ step: STEP4(1), h: "Fix Dad's 3 flights to get her to the barn.", html: '<p>For each one: guess what it does, run it, fix it, then name the bug.</p>' }).done;
+    await U.screen({ step: STEP4(1), h: "Fix Dad's 3 flights to get her to the barn.", html: '<p>For each flight:</p><p>1. Guess what it does.</p><p>2. Click Run.</p><p>3. Fix it.</p><p>4. Name the bug.</p>' }).done;
   }
   /* ---------- 10.2 the lane, six gates ---------- */
   async function h2() {
@@ -962,7 +962,7 @@
     await fixTask({ step: STEP4(2), h: 'Change one number to light all 6 gates, then click Run.', lines: dad, read: READ_HOME, where: 'lane',
       judge: function (p, st) {
         var lp = loopOf(p), fw = bodyOp(lp, 'forward'), lk = bodyOp(lp, 'look');
-        if (!lp || !fw) return { msg: 'Your lines ran, but the gates are not all lit. Check them against the card.' };
+        if (!lp || !fw) return { msg: 'Your lines ran, but not all 6 gates are lit. Check your number.' };
         if (!lk) return { msg: 'Keep look() in the job, so BEEP lights each gate.' };
         if (fw.v !== 100) return { msg: 'The gates are 100 metres apart. Keep forward(100).' };
         if (lp.n === 6) return { pass: true, msg: 'range(6) lit all 6 gates.' };
@@ -986,7 +986,7 @@
     await fixTask({ step: STEP4(3), h: 'Change one number to fix the turn, then click Run.', lines: dad, read: READ_HOME, where: 'yard',
       judge: function (p) {
         var lp = loopOf(p), fw = bodyOp(lp, 'forward'), lt = bodyOp(lp, 'left'), rt = bodyOp(lp, 'right');
-        if (!lp || !fw) return { msg: 'Your lines ran, but the walls are not all lit. Check them against the card.' };
+        if (!lp || !fw) return { msg: 'Your lines ran, but not all 4 walls are lit. Check your number.' };
         if (rt) return { msg: 'right(' + rt.v + ') turned BEEP away from the yard. Use left, as Dad wrote.' };
         if (fw.v !== 100) return { msg: 'Each wall is 100 metres. Keep forward(100).' };
         if (!lt) return { msg: 'Keep a left turn in the job, so BEEP turns at each corner.' };
@@ -1010,7 +1010,7 @@
     await U.tween(0.8, function (k) { H4.black = k; });
     U.clock.hide(); await U.wait(2);
     H4.ringDim = true; U.tween(0.8, function (k) { H4.ring = k; });
-    await U.talk('BEEP', 'My battery died. Wait. I can go back to before my battery died.', { mood: 0.2, chirp: 'sad' });
+    await U.talk('BEEP', 'My battery died. Wait. I can fly back to where I was before it died.', { mood: 0.2, chirp: 'sad' });
     U.panelOff(); Snd.rewind(2.5); Snd.setWind(0.55);
     U.tween(0.7, function (k) { H4.black = 1 - k; H4.ring = 1 - k; });
     var x0 = b.x, y0 = b.y;
@@ -1021,13 +1021,13 @@
   async function h4() {
     ch4(); if (!V.plan || V.plan.kind !== 'home') { H4 = freshHome(); planMode(H4); H4.gates = [1, 1, 1, 1, 1, 1]; H4.walls = [1, 1, 1, 1]; }
     H4.ribbons = []; H4.door = 0; homeSet('barn'); H4.nuala = { x: LN.gate[0], y: LN.gate[1] + 20 };
-    await U.talk('BEEP', 'My battery is nearly empty. One flight left.', { mood: 0.4 });
+    await U.talk('BEEP', 'My battery is nearly empty. I have one flight left.', { mood: 0.4 });
     var dad = ['while True:', '    forward(10)', '    look()'], failed, failP, clockOn = false, live = null;
     function arm() { failP = new Promise(function (r) { failed = r; }); clockOn = false; U.clock.show("BEEP's battery runs out in", 40); U.clock.onEnd = function () { if (live) live.stop = live.dead = true; failed('fail'); }; }
     function startClock() { if (!clockOn) { clockOn = true; U.clock.start(); } }
     arm();
     var runOpts = { stopper: function (st) { live = st; }, run: { pillText: function (s) { return s.endless ? 'round ' + s.round + ', no end' : 'round ' + s.round + ' of ' + s.of; } } };
-    await guessScreen({ step: STEP4(4), above: 'The barn door is 60 metres away.', note: 'New: while True: is another loop. It has no count.', lines: dad,
+    await guessScreen({ step: STEP4(4), above: 'The barn door is 60 metres away.', note: 'This is a new loop: while True. It has no count.', lines: dad,
       read: { known: ['forward', 'look'], loops: true, whileOk: true }, where: 'barn',
       guesses: shuffle(['Stops at the barn', 'Never stops', 'Stops short of the barn']),
       runOpts: { stopper: function (st) { live = st; startClock(); var sb = document.createElement('button'); sb.className = 'btn stopit'; sb.textContent = S.btn.stop; sb.onclick = function () { st.stop = true; sb.remove(); }; $('.btns', panel).appendChild(sb); st.btn = sb; $('.btns', panel).classList.remove('hide'); }, run: runOpts.run },
@@ -1051,7 +1051,7 @@
       keep = res.text; tries = res.tries; await barnFail(); arm();
     }
     BUGS[2] = 1;
-    await bugQuiz(STEP4(4), [['Never stops', 'Yes. while True has no count, so no end.', true], ['Off by one', 'There was no count to be off by.'], ['Wrong turn', 'There is no turn in this flight.']]);
+    await bugQuiz(STEP4(4), [['Never stops', 'Yes. while True has no count, so no end.', true], ['Off by one', 'This loop has no count, so it cannot be off by one.'], ['Wrong turn', 'There is no turn in this flight.']]);
   }
   /* ---------- 10.5 what you did ---------- */
   async function h5() {
@@ -1059,9 +1059,9 @@
     function fl(lines, ring) { return '<div class="mine">' + lines.map(function (l, i) { var h = U.code(l); return i === ring[0] ? h.replace(ring[1], '<span class="ringn">' + ring[1] + '</span>') : h; }).join('\n') + '</div>'; }
     await pages([
       function () { return U.screen({ step: STEP4(5), h: 'Here is what you just did.', html: '<div class="cmp three">' + fl(['for i in range(5):', '    forward(100)', '    look()'], [0, '5']) + fl(['for i in range(4):', '    forward(100)', '    left(80)'], [2, '80']) + fl(['while True:', '    forward(10)', '    look()'], [0, 'while True']) + '</div>' +
-        '<p>You found 3 bugs and fixed each one.</p><p>Off by one: range(5) for 6 gates.</p><p>Wrong turn: left(80) for a square.</p><p>Never stops: while True, with no count.</p>' }).done; },
-      function (b) { return quiz({ step: STEP4(5), h: 'This flight should light 10 gates: for i in range(9): What is the bug?', back: b,
-        opts: shuffle([['Off by one', 'Yes. 9 rounds for 10 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'range(9) stops after 9 rounds.']]) }); }
+        '<p>You found 3 bugs and fixed each one.</p><p>Off by one: range(5) for 6 gates.</p><p>Wrong turn: left(80) is not a square corner.</p><p>Never stops: while True has no count.</p>' }).done; },
+      function (b) { return quiz({ step: STEP4(5), h: 'This flight should light 10 gates. It starts with for i in range(9). What is the bug?', back: b,
+        opts: shuffle([['Off by one', 'Yes. 9 rounds for 10 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'range(9) stops after 9 rounds, but 10 gates need 10 rounds.']]) }); }
     ]);
   }
 
@@ -1109,7 +1109,7 @@
   }
   /* she clicked Home between chapters (past minute 48): the lamb is not home yet, so badges and recap only. Her place stays at the next chapter */
   async function homeEarly(next) {
-    U.strip(5, [0, 1, 2, 3, 4].slice(0, CH_OF[next])); U.clock.hide(); EARLY = true;
+    AT = 'home'; U.strip(5, [0, 1, 2, 3, 4].slice(0, CH_OF[next])); U.clock.hide(); EARLY = true;
     await badgesAndRecap();
     SearchBridge.done('early');
     hideBtns();
@@ -1154,7 +1154,7 @@
         var c = LAST_OF[id];
         if (c) {
           var b = BADGE[c]; if (b && GOT.indexOf(b) === -1) { GOT.push(b); save(STEPS[i + 1][0]); SearchBridge.badge(b); }
-          if (c <= 3 && (await between(c)) === 'home') { save(STEPS[i + 1][0]); return homeEarly(STEPS[i + 1][0]); }
+          if (c <= 3 && (AT = 'between') && (await between(c)) === 'home') { save(STEPS[i + 1][0]); return homeEarly(STEPS[i + 1][0]); }
         }
       }
     } catch (e) { console.error('hour flow error', e); window.__hourError = String(e && e.stack || e); }

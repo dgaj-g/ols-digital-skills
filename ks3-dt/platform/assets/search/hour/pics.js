@@ -423,7 +423,7 @@
         for (var r = -30; r <= 30; r += 15) { c.beginPath(); c.moveTo(-3, r); c.lineTo(3, r); c.stroke(); }
         c.beginPath(); c.moveTo(0, -34); c.lineTo(0, 34); c.lineWidth = 10; c.stroke();
         c.restore(); if (lit) glow(c, gx, LANE_Y, 60, 'rgba(255,226,150,A)', 0.55 * lit);
-        P.label(c, 'gate ' + (k + 1), gx, LANE_Y + 70, { size: 24, align: 'center', a: 0.85 });
+        P.label(c, 'gate ' + (k + 1), gx, LANE_Y - 62, { size: 24, align: 'center', a: 0.85 });
       });
     }
     (st.ribbons || []).forEach(function (r) {
@@ -456,7 +456,7 @@
     c.fillStyle = '#c9a35a'; rr(c, 980, 560, 220, 90, 10); c.fill(); /* the bale */
     c.save(); c.translate(300, 590); c.scale(52, 52); light(1, 0, 0.3); C.lamb(c, { t: t, fear: 0, cold: 0, look: [0.3, 0], tilt: 0, wet: 0, huddle: 0, bleat: 0, blink: blinkAt(t, 0.2), breath: 1 }); c.restore(); /* the ewe */
     var lx = lerp(760, 420, u); c.save(); c.translate(lx, 640); c.scale(30, 30); C.lamb(c, { t: t, fear: 0, cold: lerp(0.3, 0, u), look: [-0.5, 0], tilt: 0, wet: lerp(0.4, 0.1, u), huddle: 0, bleat: 0, blink: blinkAt(t, 0.5), breath: 1 }); c.restore();
-    c.save(); c.translate(1090, lerp(420, 520, u)); c.scale(70, 70); C.beep(c, { t: t, open: 1, blink: blinkAt(t), look: [-0.3, 0.2], mood: 0.95, glow: 1, rotor: lerp(1, 0.1, u), antenna: 1, cheeks: 1, hover: 1 - u, tilt: 0, torch: 0 }); c.restore();
+    c.save(); c.translate(620, lerp(420, 520, u)); c.scale(70, 70); C.beep(c, { t: t, open: 1, blink: blinkAt(t), look: [-0.3, 0.2], mood: 0.95, glow: 1, rotor: lerp(1, 0.1, u), antenna: 1, cheeks: 1, hover: 1 - u, tilt: 0, torch: 0 }); c.restore();
     c.save(); c.translate(820, 560); c.scale(22, 22); C.nuala(c, { t: t, torch: 0, phone: 0, walk: 0, look: [-0.3, 0.1], blink: blinkAt(t, 0.3), worry: 0, face: 1 }); c.restore();
     light(1, 0, 0);
   };

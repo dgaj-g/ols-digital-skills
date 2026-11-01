@@ -16,7 +16,7 @@ const DESIGN = ['J2_L5_SPEC_V2.md', 'prototype/proto/hour.js'].map(f => fs.readF
 const R = JSON.parse(fs.readFileSync(path.join(SRC, 'j2/recap-pool.json'), 'utf8'));
 function leaves(o, out, at) { if (typeof o === 'string' && /^\["/.test(o)) { try { o = JSON.parse(o); } catch (e) {} }
   if (typeof o === 'string') out.push([at, o]); else if (o && typeof o === 'object') for (const k of Object.keys(o)) leaves(o[k], out, at + '.' + k); return out; }
-function lits(file) { const s = fs.readFileSync(path.join(HOUR, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''); const out = []; s.replace(/'((?:[^'\\\n]|\\.)*)'/g, (m, t) => { t = t.replace(/\\'/g, "'").replace(/<[^>]+>/g, ' '); if (/[A-Za-z]+ [A-Za-z]+ [A-Za-z]+/.test(t)) out.push([file, t]); return m; }); return out; }
+function lits(file) { const s = fs.readFileSync(path.join(HOUR, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''); const out = []; s.replace(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"/g, (m, t1, t2) => { let t = (t1 != null ? t1 : t2).replace(/\\(['"])/g, '$1').replace(/<[^>]+>/g, ' '); if (/[A-Za-z]+ [A-Za-z]+ [A-Za-z]+/.test(t)) out.push([file, t]); return m; }); return out; }
 function texts(S, L, R) {
   const recap = (Array.isArray(R) ? R : R.items).filter(x => /^r-j2-50[1-6]$/.test(x.id));
   return [].concat(leaves(S, [], 'strings'), lits('chapters.js'), lits('free.js'), leaves(L.chunks, [], 'chunks'), leaves(L.keys, [], 'keys'), leaves(recap, [], 'recap'));
