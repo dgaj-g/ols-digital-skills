@@ -18,3 +18,9 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - D10 Escape and tab-hidden pause; U.menu removed; ?at= jump kept for the walker.
 ## State 2
 - Engine written (chapters.js ch3/ch4/close/flow, free.js, hour.html, ui/box/pics patches). Not yet loaded in a browser. Next: smoke load each ?at=, then gates.
+
+## State 3 (1 Nov 2026 18:44, week 38%)
+- Engine verified headless: close (barn, name, badges plural "BADGES EARNED", recap with 4 drawn moments as small inline SVG icons), resume (V74 chapter record -> welcome -> first step of chapter; v2 t4 -> t3; v2 close with badges), free flight (stage 'free' now starts on window load; Run moved beside Finish so the panel fits 768 high).
+- ui.js: a string `back` names the Back button (Welcome back shows "Start again").
+- Not yet verified: the 48-minute between()/homeEarly path (cover in gate).
+- Next: retire old tools; gates 1-10 update + 11-19 + A1-A19 (spec lines 659-702); chars.js hash + pixel diff; V74-record gate.

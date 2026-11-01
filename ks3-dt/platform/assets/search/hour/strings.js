@@ -13,7 +13,7 @@
   S.close = { kicker: 'HOME',
     barn: ['She is in, out of the snow. Her mother has found her.', 'NUALA: Thank you. Thank you. Thank you.', 'BEEP: Your short loops made me carry out over 100 instructions tonight.', 'BEEP: That is what loops are for.'],
     nameTalk: 'Dad says the one who found her names her.', nameH: 'Type a name for the lamb, then click Name her.', nameEmpty: 'Type a name for the lamb first.',
-    badges: [['The Tracks', 'You flew your first loop.'], ['The Growing Square', 'You used i to grow the search.'], ['The Way Home', 'You named three loop bugs.']], badgeKicker: 'BADGE EARNED',
+    badges: [['The Tracks', 'You flew your first loop.'], ['The Growing Square', 'You used i to grow the search.'], ['The Way Home', 'You named three loop bugs.']], badgeKicker: 'BADGE EARNED', badgesKicker: 'BADGES EARNED',
     recapH: 'What you did tonight.', recap: ['A loop does the same job many times. range says how many.', 'You count the number from the job: 4 walls, range(4).',
       'i counts the rounds, from 0. The loop can use it, like forward(i * 10).', 'A loop bug has a name: off by one, wrong turn, never stops.'],
     freeH: 'Free flight. Click one of the three examples, or type your own loop. Then click Run. BEEP draws it in light.',

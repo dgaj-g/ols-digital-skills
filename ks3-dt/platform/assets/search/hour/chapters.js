@@ -796,6 +796,7 @@
       keep = res.text; tries = res.tries; await hillFail();
     }
     H3MINE = res.lines;
+    res.tk.scr.showNext(U.nextDelay(6)); await res.tk.scr.done;
   }
   async function squareTask(card, keep, tries) {
     var failed, failP = new Promise(function (r) { failed = r; }), drive = { on: true }, last = 0, lines, r;
@@ -903,18 +904,18 @@
   async function guessScreen(o) {
     var scr = U.screen({ step: o.step, h: "Read Dad's flight. What will it do?", hold: true,
       html: '<p>' + o.above + '</p><div class="slot"></div>' + (o.note ? '<p class="newword">' + o.note + '</p>' : '') + '<div class="opts">' + o.guesses.map(function (g, i) { return '<button class="opt" data-i="' + i + '">' + U.esc(g) + '</button>'; }).join('') + '</div><p class="fb"></p>' });
-    var ran = false, box = Box.make($('.slot', panel), { rows: 3, readyAt: 0, onRun: function () { if (!ran) { ran = true; go(); } } });
+    var ran = false, seen = null, box = Box.make($('.slot', panel), { rows: 3, readyAt: 0, onRun: function () { if (!ran) { ran = true; go(); } } });
     box.set(o.lines.join('\n')); box.ta.readOnly = true; box.runB.disabled = true; box.runB.style.opacity = 0.4;
     var fb = $('.fb', panel);
     [].forEach.call(panel.querySelectorAll('.opt'), function (b) { b.onclick = function () { [].forEach.call(panel.querySelectorAll('.opt'), function (x) { x.classList.remove('picked'); }); b.classList.add('picked'); fb.textContent = 'Click Run to see.'; if (!ran) { box.runB.disabled = false; box.runB.style.opacity = 1; } }; });
     async function go() {
       [].forEach.call(panel.querySelectorAll('.opt'), function (x) { x.disabled = true; });
       var r = Py.read(o.lines, o.read), st = await homeRun(box, r.prog, o.where, o.runOpts);
-      box.ta.readOnly = true; box.hideRun(); box.under(o.after(st), 'warn');
-      if (o.then) await o.then(st);
+      box.ta.readOnly = true; box.hideRun(); box.under(o.after(st), 'warn'); seen = st;
       scr.showNext(U.nextDelay(8));
     }
-    return scr.done;
+    await scr.done;
+    if (o.then) await o.then(seen);
   }
   /* the fix: the flight in the box, her edit, Run until it is right. o.judge(prog, st) gives {pass, msg} */
   async function fixTask(o) {
@@ -1088,9 +1089,14 @@
   }
   async function badgesAndRecap() {
     var got = S.close.badges.filter(function (b, i) { return GOT.indexOf(BADGE_IDS[i]) !== -1; });
-    if (got.length) await U.screen({ step: S.close.kicker, h: S.close.badgeKicker, html: '<div class="badges">' + got.map(function (b) { return '<div class="badge"><b>' + U.esc(b[0]) + '</b><span>' + U.esc(b[1]) + '</span></div>'; }).join('') + '</div>' }).done;
-    var pics = ['trail', 'fields', 'square', 'door'];
-    await U.screen({ step: S.close.kicker, h: S.close.recapH, html: '<div class="recap">' + S.close.recap.map(function (l, i) { return '<div class="rc"><span class="rcpic ' + pics[i] + '"></span><p>' + U.code(l).replace(/<\/?span[^>]*>/g, '') + '</p></div>'; }).join('') + '</div>' }).done;
+    if (got.length) await U.screen({ step: S.close.kicker, h: got.length > 1 ? S.close.badgesKicker : S.close.badgeKicker, html: '<div class="badges">' + got.map(function (b) { return '<div class="badge"><b>' + U.esc(b[0]) + '</b><span>' + U.esc(b[1]) + '</span></div>'; }).join('') + '</div>' }).done;
+    /* the four small drawn moments (§11.3): the lit trail, the three walled fields, the growing square, the barn door */
+    var pics = [
+      '<svg viewBox="0 0 34 34"><path d="M3 27 H31" stroke="#8fa0c8" stroke-width="5" stroke-linecap="round"/><g fill="#ffd27a"><circle cx="8" cy="27" r="2.6"/><circle cx="17" cy="27" r="2.6"/><circle cx="26" cy="27" r="2.6"/></g><path d="M8 10 v8 M17 10 v8 M26 10 v8" stroke="#a77a45" stroke-width="2.4"/></svg>',
+      '<svg viewBox="0 0 34 34" fill="none" stroke="#e8ecf4" stroke-width="2.4"><rect x="2.5" y="12" width="8.5" height="8.5"/><rect x="12.75" y="12" width="8.5" height="8.5"/><rect x="23" y="12" width="8.5" height="8.5"/></svg>',
+      '<svg viewBox="0 0 34 34" fill="none" stroke="#ffd27a" stroke-width="2.2"><path d="M17 17 h3 v-3 h-6 v6 h9 v-9 h-12 v12 h15 v-15 h-18 v18"/></svg>',
+      '<svg viewBox="0 0 34 34"><rect x="5" y="6" width="24" height="24" fill="#6b3a2a"/><path d="M3 8 L17 2 L31 8" stroke="#e8ecf4" stroke-width="2.4" fill="none"/><rect x="13" y="18" width="8" height="12" fill="#ffd27a"/></svg>'];
+    await U.screen({ step: S.close.kicker, h: S.close.recapH, html: '<div class="recap">' + S.close.recap.map(function (l, i) { return '<div class="rc"><span class="rcpic">' + pics[i] + '</span><p>' + U.code(l).replace(/<\/?span[^>]*>/g, '') + '</p></div>'; }).join('') + '</div>' }).done;
   }
   async function close() {
     await barnFilm();
@@ -1167,6 +1173,6 @@
   }
   U.start();
   var place = SearchBridge.place || {};
-  if (place.stage === 'free') setTimeout(function () { window.FreeFlight(); }, 0);
+  if (place.stage === 'free') { if (document.readyState === 'complete') window.FreeFlight(); else window.addEventListener('load', function () { window.FreeFlight(); }); }
   else { var at0 = startAt(); welcome(at0).then(go); }
 })();

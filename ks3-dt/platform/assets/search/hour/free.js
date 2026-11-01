@@ -16,6 +16,8 @@
     [].forEach.call(panel.querySelectorAll('.opt'), function (b) { b.onclick = function () { box.set(S.close.freeStarters[+b.dataset.i][1].join('\n')); box.under(''); box.focus(); }; });
     U.clock.show('Free flight ends in', 360); U.clock.onEnd = function () { over = true; }; U.clock.start();
     scr.showNext(0);
+    /* Run sits beside Finish on one row, so the panel fits a 768-high screen */
+    var runB = $('.slot .run', panel), left = $('.btns > span', panel); if (runB && left) { left.appendChild(runB); runB.classList.remove('hide'); }
     async function fly(lines) {
       if (over) return;
       var r = Py.read(lines, { known: ['forward', 'left', 'right', 'look'], loops: true, i: true });
