@@ -21,6 +21,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 /* the right answers where the card alone is not the answer: per step, in the order they are asked */
 const ANSWERS = require('./j2l5-walk2-answers.js');
 /* every quiz's right option, read from the shipped chapters: ['text', 'feedback', true] */
+const fs = require('fs');
 const RIGHT = []; require('fs').readFileSync(path.join(__dirname, '../../platform/assets/search/hour/chapters.js'), 'utf8').replace(/\['((?:[^'\\]|\\.)*)', '(?:[^'\\]|\\.)*', true\]/g, (m, t) => { RIGHT.push(t.replace(/\\'/g, "'")); return m; });
 
 /* pure checks on what the walk saw: the controls run through these too */
@@ -54,7 +55,16 @@ function checkCold(colds) {
   await page.waitForFunction(() => window.U && window.__hour, null, { timeout: 15000 });
   /* the watchers, in the page */
   await page.evaluate(() => {
-    const W = window.__walk = { screens: [], colds: [], fails: 0, moved: [] };
+    const W = window.__walk = { screens: [], colds: [], fails: 0, moved: [], tx: [] };
+    /* --transcript: every visible line, as she meets it (panel, talk, film captions, notes), deduped in order */
+    let prevTx = '';
+    setInterval(() => {
+      const vis = e => e && e.offsetParent !== null && !e.closest('.hide');
+      const parts = [];
+      document.querySelectorAll('#film, #msg, #panel, #tour, #tourtip, #clock').forEach(e => { if (vis(e)) parts.push(e.innerText.trim()); });
+      const t = parts.filter(Boolean).join('\n');
+      if (t && t !== prevTx) { W.tx.push({ at: String(window.__hour.at), t }); prevTx = t; }
+    }, 120);
     const panel = document.getElementById('panel');
     const snap = () => {
       const st = panel.querySelector('.stepl'), h = panel.querySelector('h2, .talkline'), nx = panel.querySelector('.next');
@@ -126,6 +136,8 @@ function checkCold(colds) {
     await sleep(20);
   }
   const W2 = await page.evaluate(() => ({ ended: window.__walk.ended, at: window.__hour.at, err: window.__hourError || '', t: window.U.t, screens: window.__walk.screens, colds: window.__walk.colds }));
+  const TX = argOf('--transcript', '');
+  if (TX) { const tx = await page.evaluate(() => window.__walk.tx); fs.writeFileSync(TX, tx.map(x => '@' + x.at + '\n' + x.t.split('\n').map(l => '  ' + l).join('\n')).join('\n\n')); }
   const mins = (W2.t + typed / KEYS_PER_SEC) / 60;
   console.log('    walked to ' + W2.at + ' · game time ' + (W2.t / 60).toFixed(1) + ' min + typing ' + (typed / KEYS_PER_SEC / 60).toFixed(1) + ' min = ' + mins.toFixed(1) + ' min · ' + W2.screens.length + ' screens · real ' + ((Date.now() - t0) / 1000).toFixed(0) + ' s');
   if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'walk2-end-' + W + 'x' + H + '.png') });
