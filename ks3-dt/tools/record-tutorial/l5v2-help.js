@@ -1,5 +1,5 @@
 /* J3 L5 V2 · A8 help. node tools/record-tutorial/l5v2-help.js
-   The ladder opens by the Reader's button (the Fixer's does nothing in a pair) and by itself every 45 s, the same on both
+   The ladder opens by either pupil's Help button (V78: the Fixer's too) and by itself every 45 s, the same on both
    screens (it lives in the fold); each step's words fill every slot; a red step names the line Python's red names; the
    third step is the exact fix; the lookout at 30 s, Reader only, once, one coin; the Reader's editor wakes at 90 s.
    Control: the ladder given a stored line number instead of the red's must turn this red. */
@@ -26,7 +26,8 @@ function check(E, LD) {
       const at2 = (dt, extra) => E.fold(pre.concat(extra || []), at + dt, r.opt).ch.fault;
       [[44000, 0], [45000, 1], [90000, 2], [135000, 3], [400000, 3]].forEach(([dt, n]) => { if (at2(dt).helpShown !== n) fails.push(tag + 'at ' + dt / 1000 + ' s the ladder shows ' + at2(dt).helpShown + ' steps, not ' + n); });
       if (at2(1000, [ev(rd, at + 500, 'help')]).helpShown !== 1) fails.push(tag + 'the Reader\'s Help button does not open the ladder');
-      if (at2(1000, [ev(fx, at + 500, 'help')]).helpShown !== 0) fails.push(tag + 'the Fixer\'s Help button opens the ladder');
+      if (at2(1000, [ev(fx, at + 500, 'help')]).helpShown !== 1) fails.push(tag + 'the Fixer\'s Help button does not open the ladder');
+      if (at2(1500, [ev(fx, at + 500, 'help'), ev(rd, at + 900, 'help')]).helpShown !== 2) fails.push(tag + 'More help from the other pupil does not open the next step at once');
       // the words of every step
       const v = LD.ladderVars(f), kind = LD.ladderKind(f);
       for (let i = 1; i <= 3; i++) { const w = L.render('help.' + kind + '.' + i, v); if (/\{\w+\}/.test(w)) fails.push(tag + 'help.' + kind + '.' + i + ' leaves a slot empty: ' + w); }

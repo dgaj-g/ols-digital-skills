@@ -36,7 +36,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var el = { app: $('app'), pills: $('pills'), coins: $('coins'), latebtn: $('latebtn'), pausebtn: $('pausebtn'), banner: $('banner'), stepstrip: $('stepstrip'), job: $('job'),
     headcode: $('headcode'), gutter: $('gutter'), view: $('view'), ed: $('ed'), run: $('run'), means: $('means'), headcon: $('headcon'), con: $('con'),
-    bay: $('bay'), help: $('help'), look: $('look'), late: $('late'), rocks: $('rocks'), crew: $('crew'), helpbtn: $('helpbtn'), cards: $('cards'), partner: $('partner'),
+    bay: $('bay'), help: $('help'), look: $('look'), late: $('late'), rocks: $('rocks'), crew: $('crew'), helpbtn: $('helpbtn'), sigbtn: $('sigbtn'), sig: $('sig'), helpsign: $('helpsign'), cards: $('cards'), partner: $('partner'),
     page: $('page'), card: $('card'), tour: $('tour'), ring: $('ring'), tcard: $('tcard'), curtain: $('curtain'), linkbar: $('linkbar'), toast: $('toast') };
   var st = null, prev = null, dirty = true, L = { sound: { stage: 0 }, pair: { at: null }, cold: { at: null }, tour: { i: 0, again: false }, r1: { pick: null }, r2: { pick: null },
     t3: { page: 1, pick: null }, help: { closedAt: 0, no: 0 }, look: { closed: false, no: 0 }, late: false, home: 'home', extra: { id: null, src: '', last: null },
@@ -129,6 +129,8 @@
       if (t < f.stepAt + 1500) return str(solo ? 'job.point.agreed.solo' : 'job.point.agreed', { n: n });
       var k2 = kind === 'red' ? 'red' : kind === 'silent' ? 'silent' : 'none';
       if (fx || solo || f.awake) {
+        var er = f.lastRun && (f.lastRun.error || (f.lastRun.run && f.lastRun.run.error));
+        if (f.lastRunAt != null && f.lastRunAt > f.stepAt && er && /outside function/.test(er.msg || '')) return str('job.fix.outside');
         if (f.lastRunAt != null && f.lastRunAt > f.stepAt && t < f.lastRunAt + 4000) return str(k2 === 'red' ? 'job.fix.stillred' : k2 === 'silent' ? 'job.fix.stillsilent' : 'job.fix.stillnone', { n: n, name: nm });
         if (!fx && !solo && f.awake) return str('job.fix.wake');
         return str(solo ? 'job.fix.' + k2 + '.solo' : 'job.fix.' + k2, { n: n, name: nm });
@@ -189,7 +191,12 @@
   el.ed.addEventListener('input', function () {
     pendingText = el.ed.value; clearTimeout(textTimer); textTimer = setTimeout(flushText, 150);
   });
+  function enterIndent(line) {
+    var lead = (line.match(/^ */) || [''])[0];
+    return lead + (/:\s*$/.test(line) ? '    ' : '');
+  }
   el.ed.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); var a = el.ed.selectionStart, z = el.ed.selectionEnd, v = el.ed.value, ins = '\n' + enterIndent(v.slice(v.lastIndexOf('\n', a - 1) + 1, a)); el.ed.value = v.slice(0, a) + ins + v.slice(z); el.ed.selectionStart = el.ed.selectionEnd = a + ins.length; el.ed.dispatchEvent(new Event('input')); return; }
     if (e.key === 'Tab') { e.preventDefault(); var s = el.ed.selectionStart, t = el.ed.selectionEnd; el.ed.value = el.ed.value.slice(0, s) + '    ' + el.ed.value.slice(t); el.ed.selectionStart = el.ed.selectionEnd = s + 4; el.ed.dispatchEvent(new Event('input')); }
   });
   el.run.addEventListener('click', function () { if (!el.run.disabled) send('run', {}); });
@@ -211,15 +218,28 @@
     var solo = isSolo(), rd = isRd(f);
     el.crew.textContent = str(solo ? 'crew.solo' : 'crew', { n: st.fixedCount });
     setHtml(el.helpbtn, '<img src="img/lifebuoy.svg" alt="">' + str('help.btn'));
-    var canHelp = f && (f.step === 'point' || f.step === 'fix') && (rd || solo) && !st.paused;
-    el.helpbtn.classList.toggle('hide', !canHelp);
+    var canHelp = f && (f.step === 'point' || f.step === 'fix') && !st.paused;
+    el.helpbtn.classList.toggle('hide', !canHelp); el.helpbtn.classList.remove('demo');
+    el.helpsign.textContent = canHelp ? str(solo ? 'help.sign.solo' : 'help.sign') : '';
+    // partner signals: one message, always under the job line; never a name
+    var ss = f ? E.sigState(st, SEAT) : { btn: null }, inc = ss.inc;
+    el.sigbtn.classList.toggle('hide', !ss.btn);
+    if (ss.btn) { el.sigbtn.textContent = ss.live ? str('sig.sent') : str('sig.' + ss.btn + '.btn'); el.sigbtn.disabled = !!ss.live; }
+    el.helpbtn.classList.toggle('urgent', !!(canHelp && inc && inc.s === 'stuck'));
+    if (inc) {
+      var hb = inc.s === 'stuck' && canHelp ? '<button data-act="sighelp" class="sighelp"><img src="img/lifebuoy.svg" alt="">' + str('help.btn') + '</button>' : '';   // Help right in the message: at one column the Help row is below the fold
+      setHtml(el.sig, '<span>' + esc(inc.s === 'stuck' ? str('sig.stuck.msg') : str('sig.where.' + f.kind, { n: f.right })) + '</span>' + hb + '<button data-act="sigok">' + str('sig.ok.btn') + '</button>');
+      el.sig.classList.remove('hide');
+      var key = f.no + ':' + inc.id; if (L.sigHeard !== key) { L.sigHeard = key; Snd.play('nudge'); }
+    } else if (ss.saw) { setHtml(el.sig, '<span>' + esc(str('sig.saw')) + '</span>'); el.sig.classList.remove('hide'); }
+    else { el.sig.classList.add('hide'); setHtml(el.sig, ''); }
     // help ladder (shared steps from the fold; closing is local)
     if (f && f.no !== L.help.no) { L.help = { closedAt: 0, no: f.no }; L.look = { closed: false, no: f.no }; }
     var shown = f && (f.step === 'point' || f.step === 'fix') ? f.helpShown : 0;
     if (shown > 0 && shown > L.help.closedAt) {
       var k = ladderKind(f), v = ladderVars(f), h = '';
       for (var i = 1; i <= shown; i++) h += (i === shown ? '<b class="top">' : '<span class="dim">') + str('help.' + k + '.' + i, v) + (i === shown ? '</b>' : '</span><br>');
-      h += '<div class="row">' + (shown < 3 && (rd || solo) ? '<button class="ghost" data-act="more">' + str('help.more') + '</button>' : '') + '<button class="ghost" data-act="close">' + str('help.close') + '</button></div>';
+      h += '<div class="row">' + (shown < 3 ? '<button class="ghost" data-act="more">' + str('help.more') + '</button>' : '') + '<button class="ghost" data-act="close">' + str('help.close') + '</button></div>';
       setHtml(el.help, h); el.help.classList.add('show');
     } else el.help.classList.remove('show');
     // lookout question (reader only)
@@ -255,6 +275,13 @@
   el.help.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; if (b.getAttribute('data-act') === 'more') send('help', {}); else { L.help.closedAt = fault() ? fault().helpShown : 0; render(); } });
   el.late.addEventListener('click', function (e) { if (e.target.closest('button')) { L.late = false; render(); } });
   el.helpbtn.addEventListener('click', function () { L.help.closedAt = 0; send('help', {}); });
+  el.sigbtn.addEventListener('click', function () { var ss = E.sigState(st, SEAT); if (ss.btn && !ss.live) send('signal', { s: ss.btn }); });
+  el.sig.addEventListener('mousedown', function (e) { e.preventDefault(); });   // never take focus from the code box
+  el.sig.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.getAttribute('data-act') === 'sighelp') { L.help.closedAt = 0; send('help', {}); if (innerWidth < 980) setTimeout(function () { el.help.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80); }
+    send('sigok', {});
+  });
   el.latebtn.addEventListener('click', function () { L.late = !L.late; render(); });
   el.pausebtn.addEventListener('click', function () { send('pause', {}); });
   el.cards.addEventListener('click', function (e) { var c = e.target.closest('.fcard.pick'); if (c) send('name', { card: c.getAttribute('data-card') }); });
@@ -295,12 +322,14 @@
   }
 
   /* ---------- the tour ---------- */
-  var TOUR = [{ t: 'code', k: MODE === 'solo' ? 'tour.1.solo' : 'tour.1' }, { t: 'conwrap', k: 'tour.2' }, { t: 'baywrap', k: 'tour.3' }, { t: 'steps', k: 'tour.4a', k2: 'tour.4b' }];
+  var TOUR = [{ t: 'code', k: MODE === 'solo' ? 'tour.1.solo' : 'tour.1' }, { t: 'conwrap', k: 'tour.2' }, { t: 'baywrap', k: 'tour.3' }, { t: 'steps', k: 'tour.4a', k2: 'tour.4b' }, { t: 'helpgo', k: MODE === 'solo' ? 'tour.5.solo' : 'tour.5', k2: MODE === 'solo' ? null : 'tour.5b' }];
   function renderTour(on) {
     if (!on) { el.tour.classList.remove('show'); return; }
-    var i = Math.min(L.tour.i, 3), step = TOUR[i], tg = $(step.t).getBoundingClientRect(), W = innerWidth, H = innerHeight;
+    var i = Math.min(L.tour.i, TOUR.length - 1), step = TOUR[i];
+    if (innerWidth < 980 && L.tour.seen !== i) { L.tour.seen = i; $(step.t).scrollIntoView({ block: 'center' }); }   // one column: bring the target into view
+    var tg = $(step.t).getBoundingClientRect(), W = innerWidth, H = innerHeight;
     el.ring.style.left = (tg.left - 4) + 'px'; el.ring.style.top = (tg.top - 4) + 'px'; el.ring.style.width = (tg.width + 8) + 'px'; el.ring.style.height = (tg.height + 8) + 'px';
-    setHtml(el.tcard, str(step.k) + (step.k2 ? '<br>' + str(step.k2) : '') + '<div class="row"><button class="btn" data-act="' + (i < 3 ? 'next' : 'start') + '">' + str(i < 3 ? 'tour.next' : 'tour.start') + '</button></div>');
+    setHtml(el.tcard, str(step.k) + (step.k2 ? '<br>' + str(step.k2) : '') + '<div class="row"><button class="btn" data-act="' + (i < TOUR.length - 1 ? 'next' : 'start') + '">' + str(i < TOUR.length - 1 ? 'tour.next' : 'tour.start') + '</button></div>');
     el.tour.classList.add('show');
     var cw = el.tcard.offsetWidth || 300, ch = el.tcard.offsetHeight || 150, cx, cy, tcx = tg.left + tg.width / 2, tcy = tg.top + tg.height / 2;
     if (W >= 980 && tg.width < W - cw - 64) { cx = tcx < W / 2 ? Math.min(W - cw - 16, tg.right + 24) : Math.max(16, tg.left - cw - 24); cy = Math.max(60, Math.min(H - ch - 16, tcy - ch / 2)); }
@@ -507,7 +536,7 @@
     renderStrip(); renderSteps(stage === 'tour' ? null : f); el.job.textContent = stage === 'tour' ? '' : jobLine(f);
     renderCard(f); renderCode(stage === 'tour' ? null : f); renderBaySide(stage === 'tour' ? null : f);
     renderTour(stage === 'tour' || L.tour.again);
-    if (stage === 'tour') { el.run.disabled = true; el.run.textContent = str('run'); el.helpbtn.classList.add('hide'); setHtml(el.cards, cardsHtml(false, null)); el.crew.textContent = ''; }
+    if (stage === 'tour') { el.run.disabled = true; el.run.textContent = str('run'); el.helpbtn.classList.remove('hide', 'urgent'); el.helpbtn.classList.add('demo'); el.helpsign.textContent = str(isSolo() ? 'help.sign.solo' : 'help.sign'); setHtml(el.cards, cardsHtml(false, null)); el.crew.textContent = ''; }
     watchRocks();
   }
   /* the sound check is done before the room exists, so it rides in with the first move once the room is open */

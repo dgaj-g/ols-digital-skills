@@ -8,7 +8,7 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 const arg = (k, d) => { const m = process.argv.find(a => a.startsWith('--' + k + '=')); return m ? m.slice(k.length + 3) : d; };
-const PATH = arg('path', 'right'), MODE = arg('mode', 'pair'), K = +arg('t', 20), SHOTS = arg('shots', ''), W = +arg('w', 760), H = +arg('h', 900), URL = arg('url', 'http://localhost:8783/assets/twolights'), RELOAD = arg('reload', '0') === '1', CONTROL = process.env.CONTROL === '1';
+const PATH = arg('path', 'right'), MODE = arg('mode', 'pair'), K = +arg('t', 20), SHOTS = arg('shots', ''), W = +arg('w', 760), H = +arg('h', 900), PORT = +arg('port', 8783), URL = arg('url', 'http://localhost:' + PORT + '/assets/twolights'), RELOAD = arg('reload', '0') === '1', CONTROL = process.env.CONTROL === '1';
 const { serve } = require('./l5v2-serve');
 const fails = [];
 const SEATS = MODE === 'solo' ? ['A'] : MODE === 'trio' ? ['A', 'B', 'C'] : ['A', 'B'];
@@ -18,7 +18,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const { drive } = require('./l5v2-drive');
 const errors = [];
 async function main() {
-  SRV = await serve(8783);
+  SRV = await serve(PORT);
   const browser = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox', `--window-size=${W},${H}`] });
   const pages = {};
   for (const s of SEATS) {

@@ -20,3 +20,12 @@ build adds or changes.
 
 Where a pupil would still stall (unchanged from the design look): the first Point (reading the line number in the red)
 and the first Fix for the Reader of a slow Fixer. The help ladder, the 30 s lookout and the 90 s editor carry both.
+
+## V78 addendum — help you can see (1 Nov 2026)
+What a pupil sees now, from the screenshots at 683×768 and 1366×768 (tools/record-tutorial/out/l5v2-look/):
+- In Point and Fix, an orange Help button glows beside "Stuck? Press Help. It opens on both screens." Tour card 5 points at it before the hour starts.
+- The Fixer has "I’m stuck" (Point, Fix). Pressed: the button greys to "Sent. Your partner can see it." The Reader's screen chimes and a yellow message lies over the job line: "Your partner is stuck. Press Help: it opens on both screens." with its own pulsing Help button and OK. The code does not move (0 px measured).
+- Help pressed inside that message opens Help on both screens; on a small screen the page scrolls Help into view.
+- The Reader has "Show where" in Fix. The Fixer sees "Your partner says: look at line 9." (or the end of the program, or inside bearing under the print line).
+- Enter keeps the indent and adds 4 spaces after a colon, so return channel lands in the right place after Enter on the print line.
+Where a pupil could still stall: the yellow message covers the job line until OK or 30 s, and at 683 it half-covers the "YOUR CODE" label. Both are brief and the job line comes back on OK.

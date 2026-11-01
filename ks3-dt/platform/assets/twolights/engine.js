@@ -10,7 +10,7 @@
   var SEAT = 'A';   // one light for the pair: every program is the North Light's (K100)
   var PHASES = ['pre1', 'w1', 'ch1', 'pre2', 'w2', 'ch2', 'pre3', 'w3', 'ch3', 'ch4', 'home'];
   var LOCAL = { pre1: ['sound', 'pair', 'cold', 'tour', 'r1'], pre2: ['r2'], pre3: ['t3'], home: ['home'] };
-  var T = { W_LEN: 34000, W_SKIP: 8000, NAME_SHOW: 2500, SWAP: 2000, CARD: 2200, HELP_EVERY: 45000, LOOKOUT_AT: 30000, WAKE_AT: 90000, GONE: 180000, LINK: 10000 };
+  var T = { W_LEN: 34000, W_SKIP: 8000, NAME_SHOW: 2500, SWAP: 2000, CARD: 2200, HELP_EVERY: 45000, LOOKOUT_AT: 30000, WAKE_AT: 90000, GONE: 180000, LINK: 10000, SIG_LIVE: 30000, SIG_MAX: 3, STUCK_WAKE: 30000, SAW_SHOW: 3000 };
   var BUDGET = { ch1: 120000, ch2: 120000, ch3: 120000, ch4: 120000 };   // B1–B4 set by tools/pace.js 31 Oct 2026 (A11): longest walked stand 65 s × 1.25 = 81 s → the 120 s floor
   var KIND = { S1: 'red', S2: 'red', S3: 'red', Q1: 'silent', Q2: 'none', Q3: 'silent' };
   var PYTYPE = { NameError: 'S1', TypeError: 'S2', IndentationError: 'S3' };
@@ -88,6 +88,28 @@
   function isReader(st, seat) { return readersOf(st).indexOf(seat) >= 0; }
   function isFixer(st, seat) { return fixerOf(st) === seat; }
   function solo(st) { return active(st).length <= 1; }
+  /* partner signals (V78): the Fixer's "I'm stuck" in Point and Fix, a Reader's "Show where" in Fix only */
+  function isPaused(st) { return st.pauses.some(function (p) { return p.to == null; }); }
+  function sigLive(f, g, t) { return g.ok == null && g.step === f.step && t < g.at + T.SIG_LIVE; }
+  function sigKind(st, seat) {
+    var f = st.ch && st.ch.fault; if (!f || solo(st) || isPaused(st) || st.gone[seat]) return null;
+    if (isFixer(st, seat) && (f.step === 'point' || f.step === 'fix')) return 'stuck';
+    if (isReader(st, seat) && f.step === 'fix') return 'where';
+    return null;
+  }
+  function sigFor(st, g, seat) { return g.from !== seat && (g.s === 'stuck' ? isReader(st, seat) : isFixer(st, seat)); }
+  function wakeAt(f) { var w = f.stepAt + T.WAKE_AT; return f.stuckAt == null ? w : Math.min(w, Math.max(f.stepAt, f.stuckAt + T.STUCK_WAKE)); }
+  function sigState(st, seat) {
+    var f = st.ch && st.ch.fault, t = st.now, out = { btn: null, live: false, saw: false, inc: null, left: 0 };
+    if (!f || !f.sigs) return out;
+    var sk = sigKind(st, seat), mine = f.sigs.filter(function (g) { return g.from === seat; });
+    out.left = Math.max(0, T.SIG_MAX - mine.length);
+    out.live = mine.some(function (g) { return sigLive(f, g, t); });
+    out.btn = sk && (out.left > 0 || out.live) ? sk : null;
+    out.saw = mine.some(function (g) { return g.ok != null && g.step === f.step && t < g.ok + T.SAW_SHOW; });
+    if (!solo(st) && !isPaused(st)) out.inc = f.sigs.filter(function (g) { return sigFor(st, g, seat) && sigLive(f, g, t); }).pop() || null;
+    return out;
+  }
 
   function nextPhase(st, t) {
     var i = PHASES.indexOf(st.phase);
@@ -108,7 +130,7 @@
     st.faultNo++;
     var fx = st.seats[(st.faultNo - 1) % st.seats.length];
     c.fault = { no: st.faultNo, fixer: fx, step: 'run', stepAt: t, id: null, kind: null, src: c.src, runAt: null, picks: {}, right: null, agreed: false, wrongAgreed: false,
-      help: { steps: 0, progressAt: t }, lookout: { answered: false, by: null, line: null, right: null }, name: null, fails: [], fixedAt: null, lastRun: null, skipped: false };
+      help: { steps: 0, progressAt: t }, sigs: [], stuckAt: null, lookout: { answered: false, by: null, line: null, right: null }, name: null, fails: [], fixedAt: null, lastRun: null, skipped: false };
   }
   function runJudge(st, src) { return judgeSrc(st.ch.id, st.room, src); }
   function applyEffects(st, r) {
@@ -155,7 +177,7 @@
       X.last = { id: d.id, red: jr.red, console: jr.console, fixed: jr.fixed }; return;
     }
     if (!st.ch || !st.ch.fault) return;
-    var f = st.ch.fault, isFx = isFixer(st, seat), isRd = isReader(st, seat), awake = f.step === 'fix' && t >= f.stepAt + T.WAKE_AT;
+    var f = st.ch.fault, isFx = isFixer(st, seat), isRd = isReader(st, seat), awake = f.step === 'fix' && t >= wakeAt(f);
     if (k === 'run') {
       if (f.step === 'run' && (isRd || solo(st))) {
         var r = runJudge(st, f.src); f.lastRun = r; st.ch.last = r; f.runAt = t;
@@ -189,7 +211,17 @@
       else { f.wrongAgreed = true; f.picks = {}; }
       return;
     }
-    if (k === 'help') { if ((f.step === 'point' || f.step === 'fix') && (isRd || solo(st))) { f.help.steps = Math.min(3, f.help.steps + 1); f.help.openedAt = t; } return; }
+    if (k === 'signal') {
+      var sk = sigKind(st, seat); if (!sk || d.s !== sk) return;
+      var mine = f.sigs.filter(function (g) { return g.from === seat; });
+      if (mine.length >= T.SIG_MAX) return;
+      if (mine.some(function (g) { return sigLive(f, g, t); })) return;
+      f.sigs.push({ id: f.sigs.length + 1, from: seat, s: sk, at: t, step: f.step, ok: null });
+      if (sk === 'stuck' && f.stuckAt == null) f.stuckAt = t;
+      return;
+    }
+    if (k === 'sigok') { f.sigs.forEach(function (g) { if (sigFor(st, g, seat) && sigLive(f, g, t)) g.ok = t; }); return; }
+    if (k === 'help') { if ((f.step === 'point' || f.step === 'fix') && !st.gone[seat]) { f.help.steps = Math.min(3, f.help.steps + 1); f.help.openedAt = t; } return; }
     if (k === 'lookout') {
       if (f.step === 'fix' && isRd && !solo(st) && t >= f.stepAt + T.LOOKOUT_AT && !f.lookout.answered) {
         var want = lineOf(f.src, LOOK[st.ch.id]); f.lookout = { answered: true, by: seat, line: d.line, right: d.line === want, want: want, at: t };
@@ -226,7 +258,7 @@
       var f = st.ch.fault;
       f.helpShown = f.step === 'point' || f.step === 'fix' ? Math.max(f.help.steps, Math.min(3, Math.floor((now - f.help.progressAt) / T.HELP_EVERY))) : 0;
       f.lookoutShown = f.step === 'fix' && now >= f.stepAt + T.LOOKOUT_AT && !solo(st);
-      f.awake = f.step === 'fix' && now >= f.stepAt + T.WAKE_AT;
+      f.awake = f.step === 'fix' && now >= wakeAt(f);
       var room = { t0: f.runAt, fails: f.fails, pauses: st.pauses, doneAt: f.fixedAt };
       f.boat = f.runAt == null ? { x: 0, drifting: false, black: false } : CK.position(room, now, BUDGET[st.ch.id]);
       f.rocksAt = f.runAt == null ? null : CK.rocksAt(room, now, BUDGET[st.ch.id]);
@@ -236,5 +268,5 @@
     return st;
   }
   return { fold: fold, T: T, BUDGET: BUDGET, KIND: KIND, FN: FN, DEF: DEF, LOOK: LOOK, TOTAL: TOTAL, W: W, PHASES: PHASES, LOCAL: LOCAL,
-    given: given, idsOf: idsOf, judgeSrc: judgeSrc, lineOf: lineOf, lineText: lineText, judgeExtra: judgeExtra, variant: variant, SEAT: SEAT, sortLog: sortLog };
+    sigState: sigState, given: given, idsOf: idsOf, judgeSrc: judgeSrc, lineOf: lineOf, lineText: lineText, judgeExtra: judgeExtra, variant: variant, SEAT: SEAT, sortLog: sortLog };
 }));
