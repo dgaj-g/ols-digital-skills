@@ -3,15 +3,36 @@
 (function () {
   'use strict';
   var Q = new URLSearchParams(location.search);
-  var ROOM = (Q.get('room') || 'DEMO').toUpperCase(), MODE = Q.get('mode') || 'pair', K = Math.max(1, +Q.get('t') || 1);
-  var SEATS = MODE === 'solo' ? ['A'] : MODE === 'trio' ? ['A', 'B', 'C'] : ['A', 'B'];
-  var SEAT = (Q.get('seat') || 'A').toUpperCase(); if (SEATS.indexOf(SEAT) < 0) SEAT = SEATS[0];
-  var NAMES = { A: 'Aoife', B: 'Niamh', C: 'Cara' };
+  /* In the platform (spec §10) the frame's hash is {stage 'story'|'extras', pair, save}: the room is not known until the
+     sound check is done and the page has sent 'begin', and the platform's pairing answers with 'pair'. A reload carries
+     the pair on the hash, so the page opens the room at once and the room's own log puts her back where she was.
+     With no hash (the dev pages and the gates) ?room=&seat=&mode= open a room on this laptop at once. */
+  var H = null; try { H = location.hash.length > 1 ? JSON.parse(decodeURIComponent(location.hash.slice(1))) : null; } catch (x) { H = null; }
+  var EMB = !!H;
+  var ROOM, MODE, SEATS, SEAT, K = Math.max(1, +Q.get('t') || +Q.get('speed') || 1);
+  function seatUp(p) {
+    ROOM = String(p.room || 'DEMO').toUpperCase(); MODE = p.mode || 'pair';
+    SEATS = MODE === 'solo' ? ['A'] : MODE === 'trio' ? ['A', 'B', 'C'] : ['A', 'B'];
+    SEAT = String(p.seat || 'A').toUpperCase(); if (SEATS.indexOf(SEAT) < 0) SEAT = SEATS[0];
+  }
+  seatUp(EMB ? (H.pair || { room: 'WAIT', mode: 'solo' }) : { room: Q.get('room'), mode: Q.get('mode'), seat: Q.get('seat') });
+  var NAMES = EMB ? {} : { A: 'Aoife', B: 'Niamh', C: 'Cara' };
+  function post(m) { if (!EMB) return; m.tl = 1; try { parent.postMessage(m, '*'); } catch (x) {} }
   var E = SameLight, T = E.T, str = SameLightStrings.render, J = TwoLightsJudge, PR = TwoLightsPrograms, A = TwoArt, Snd = TwoSound;
   var GONE_MS = (+Q.get('gone') || 0) * 1000 || T.GONE;
-  var T0K = 'samelight:t0:' + ROOM, T0 = +localStorage.getItem(T0K) || 0; if (!T0) { T0 = Date.now(); localStorage.setItem(T0K, T0); }
-  function now() { return T0 + (Date.now() - T0) * K; }
-  var live = SameLive.open(ROOM, SEAT, onChange, now, { blocked: Q.get('link') === 'blocked', beat: 5000 / K });
+  var T0 = 0, live = null;
+  function now() { var t = Date.now() + (live ? live.offset() : 0); return T0 + (t - T0) * K; }
+  function fireDb() {
+    if (Q.get('link') === 'blocked' || !window.firebase || !window.LIVE_CONFIG) return null;
+    try { return (firebase.apps.length ? firebase.app() : firebase.initializeApp(window.LIVE_CONFIG)).database(); } catch (x) { return null; }
+  }
+  function start(p) {
+    var T0K = 'samelight:t0:' + ROOM; T0 = +localStorage.getItem(T0K) || 0; if (!T0) { T0 = Date.now(); try { localStorage.setItem(T0K, T0); } catch (x) {} }
+    var db = EMB && p && p.fire && MODE !== 'solo' ? fireDb() : null;
+    if (db) live = SameLive.openFire(db, p.fire, SEAT, onChange, now, { beat: 5000 / K });
+    else live = SameLive.open(ROOM, SEAT, onChange, now, { blocked: Q.get('link') === 'blocked', beat: 5000 / K });
+  }
+  if (!EMB || H.pair) start(EMB ? H.pair : null);
   var $ = function (id) { return document.getElementById(id); };
   var el = { app: $('app'), pills: $('pills'), coins: $('coins'), latebtn: $('latebtn'), pausebtn: $('pausebtn'), banner: $('banner'), stepstrip: $('stepstrip'), job: $('job'),
     headcode: $('headcode'), gutter: $('gutter'), view: $('view'), ed: $('ed'), run: $('run'), means: $('means'), headcon: $('headcon'), con: $('con'),
@@ -370,8 +391,9 @@
   function pageHome() {
     if (L.home === 'end') { setPage('end', '<h1>' + str('home.1') + '</h1><p class="line">' + str('home.proto') + '</p><div class="row"><button class="ghost" data-act="extras">' + str('home.extras') + '</button></div>'); return; }
     if (L.home === 'extras') { pageExtras(); return; }
-    var names = others().map(function (s) { return NAMES[s]; }), reveal = MODE === 'solo' ? str('home.reveal.solo') : names.length >= 2 ? str('home.reveal.trio', { name: names[0], name2: names[1] }) : str('home.reveal', { name: names[0] });
-    var h = '<h1>' + str('home.1') + '</h1><p class="line">' + reveal + '</p><p class="line">' + str(MODE === 'solo' ? 'home.score.solo' : 'home.score', { n: st.fixedCount, c: st.coins }) + '</p><p class="line">' + str('home.badges') + '</p><div>';
+    if (EMB && MODE !== 'solo' && !L.askedNames) { L.askedNames = true; post({ type: 'names' }); }
+    var names = others().map(function (s) { return NAMES[s]; }), known = names.every(Boolean), reveal = MODE === 'solo' ? str('home.reveal.solo') : names.length >= 2 ? str('home.reveal.trio', { name: names[0], name2: names[1] }) : str('home.reveal', { name: names[0] });
+    var h = '<h1>' + str('home.1') + '</h1>' + (known || MODE === 'solo' ? '<p class="line">' + reveal + '</p>' : '') + '<p class="line">' + str(MODE === 'solo' ? 'home.score.solo' : 'home.score', { n: st.fixedCount, c: st.coins }) + '</p><p class="line">' + str('home.badges') + '</p><div>';
     st.badges.forEach(function (b) { h += '<span class="badge">' + str('badge.' + b).replace('Bounty earned: ', '').replace('.', '') + '</span>'; });
     h += '</div><div class="row"><button class="btn" data-act="five">' + str('home.btn') + '</button><button class="ghost" data-act="extras">' + str('home.extras') + '</button></div>';
     setPage('home', h);
@@ -397,9 +419,9 @@
     if (opt) { if (opt.indexOf('r2') === 0 && L.r2.pick == null) L.r2.pick = opt; if (opt.indexOf('t3') === 0 && L.t3.pick == null) L.t3.pick = opt; render(); return; }
     if (x) { L.extra = { id: x, src: PR.EXTRAS.filter(function (q) { return q.id === x; })[0].src, last: null }; render(); return; }
     if (act === 'horn') { Snd.play('horn'); L.sound.stage = 1; render(); }
-    else if (act === 'yes') send('ready', { stage: 'sound' });
+    else if (act === 'yes') soundDone(false);
     else if (act === 'no') { L.sound.stage = 2; render(); }
-    else if (act === 'without') send('ready', { stage: 'sound', nosound: true });
+    else if (act === 'without') soundDone(true);
     else if (act === 'pair') send('ready', { stage: 'pair' });
     else if (act === 'cold') send('ready', { stage: 'cold' });
     else if (act === 'r1') send('ready', { stage: 'r1' });
@@ -407,9 +429,9 @@
     else if (act === 't3next') { L.t3.page = 2; render(); }
     else if (act === 't3') send('ready', { stage: 't3' });
     else if (act === 'skip') send('skip', {});
-    else if (act === 'five') { L.home = 'end'; send('ready', { stage: 'home' }); }
+    else if (act === 'five') { L.home = 'end'; send('ready', { stage: 'home' }); post({ type: 'done' }); }
     else if (act === 'extras') { L.home = 'extras'; L.extra.id = null; if (!mine().ready.home) send('ready', { stage: 'home' }); else render(); }
-    else if (act === 'home') { L.home = 'home'; render(); }
+    else if (act === 'home') { if (EXTRAS) { post({ type: 'done' }); return; } L.home = 'home'; render(); }
     else if (act === 'xback') { L.extra.id = null; render(); }
     else if (act === 'xrun') { L.extra.src = $('xed').value; send('extra', { id: L.extra.id, src: L.extra.src }); }
   });
@@ -460,7 +482,9 @@
 
   /* ---------- render ---------- */
   function render() {
-    refold(); transitions(); prev = st;
+    if (!live) { if (L.begun) setPage('pair0', '<div class="radar"></div><h1>' + str('pair.finding') + '</h1>'); else pageSound(); return; }
+    if (EXTRAS) { refold(); prev = st; L.home = 'extras'; pageExtras(); tellParent(); return; }
+    refold(); transitions(); prev = st; tellParent();
     var stage = mine().stage, f = fault();
     if (Date.now() > L.toastUntil) el.toast.classList.remove('show');
     renderLink(); renderCurtain();
@@ -484,6 +508,34 @@
     if (stage === 'tour') { el.run.disabled = true; el.run.textContent = str('run'); el.helpbtn.classList.add('hide'); setHtml(el.cards, cardsHtml(false, null)); el.crew.textContent = ''; }
     watchRocks();
   }
+  /* the sound check is done before the room exists, so it rides in with the first move once the room is open */
+  function soundDone(nosound) {
+    if (live) { send('ready', { stage: 'sound', nosound: nosound }); return; }
+    L.nosound = nosound; L.begun = true; post({ type: 'begin' }); render();
+  }
+  var EXTRAS = EMB && H.stage === 'extras';
+  /* the platform keeps her place and pays each badge once (spec §10) */
+  function tellParent() {
+    if (!EMB || !st) return;
+    var f = fault(), key = mine().stage + '|' + (f ? f.no + f.step : '') + '|' + live.log().length;
+    if (key !== L.saveKey) { L.saveKey = key; post({ type: 'save', save: { stage: mine().stage, fault: st.faultNo || 0, pos: live.log().length } }); }
+    var paidN = L.paidN || 0;
+    for (; paidN < st.badges.length; paidN++) post({ type: 'badge', id: st.badges[paidN] });
+    L.paidN = paidN;
+    // the room goes once every seat is home and has gone on to the questions (spec §7)
+    if (live.remove && !L.removed && st.phase === 'home' && SEATS.every(function (s) { return st.local[s] && st.local[s].ready && st.local[s].ready.home; })) { L.removed = true; setTimeout(function () { live.remove(); }, 4000); }
+  }
+  window.addEventListener('message', function (e) {
+    var m = e.data; if (!EMB || e.source !== parent || !m || m.tl !== 1) return;
+    if (m.type === 'pair' && m.pair && !live) {
+      seatUp(m.pair); start(m.pair);
+      if (!EXTRAS) send('ready', { stage: 'sound', nosound: !!L.nosound }); else render();
+    } else if (m.type === 'names' && m.names) {
+      var nm = {}; SEATS.forEach(function (s, i) { nm[s] = Array.isArray(m.names) ? m.names[i] : m.names[s]; }); NAMES = nm; render();
+    }
+  });
+  if (EXTRAS && !live) { seatUp({ room: 'EXTRAS', mode: 'solo', seat: 'A' }); start(null); }
+  if (EMB && !EXTRAS) post({ type: 'loaded' });
   setInterval(function () { render(); }, 250);
   render(); loop();
   window.SameLightDebug = { seat: SEAT, state: function () { return st; }, send: send, log: function () { return live.log(); }, L: L, now: now, render: render };

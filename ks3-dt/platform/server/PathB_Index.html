@@ -18039,60 +18039,73 @@ window.OLS_TRANSPORT = {
     }
   };
 
-  /* TWO LIGHTS (J3 L5, spec J3_L5_TWO_LIGHTS_SPEC.md \u00a710): the Operation's mount, one stage of the hour per chunk. The page
-     keeps her lines, bounties and the room's boat in draft.tlSave (law 11); draft.tlT0 is the start of the story, for
-     "Running out of time?" from lesson minute 48; a start more than 3 hours old was an earlier lesson, so it starts again.
-     Badges ride on the chunk (ch1, ch3, home). */
+  /* SAME LIGHT (J3 L5 V2, J3_L5_SPEC_V2.md \u00a77, \u00a710): the whole hour is ONE page in ONE frame (chunk 'twolights', stage
+     'story'); the extras chunk opens the same page at stage 'extras' on its own. The page does the sound check, then
+     sends 'begin'; only then does this side pair, once (PairKit.ensure, quiet), and answer with 'pair' = {room, fire,
+     seat, mode}. The pair rides on draft.tlPair, so a reload opens the same room at once and the room's own log puts her
+     back on the same screen. A pupil who chose to work on her own (draft.tlOwn) stays on her own. Frame \u2192 here:
+     {tl:1, type: loaded|begin|save|badge|names|done}; here \u2192 frame: {tl:1, type: pair|names}. Badges are paid once each. */
   Engines.twolights = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config || {}, s = App.state;
       var draft = s.draft = s.draft || {};
-      var stage = cfg.stage || 'ch1';
-      function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
-      function finish(detail) { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, detail || stage); }
-      function open(mode) {
-        var st = PairKit.st, paired = mode === 'paired' && st && !cfg.extrasMode;
-        var seats = paired ? st.members.map(function (_, i) { return 'ABC'[i]; }) : ['A'];
-        if (!ctx.review && (draft.tlT0 == null || Date.now() - draft.tlT0 > 3 * 3600000)) draft.tlT0 = Date.now();
-        var H = { stage: stage, seat: paired ? 'ABC'[st.mi] : 'A', seats: seats,
-          room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
-          names: paired && st.names ? st.names : null, save: draft.tlSave || null, t0: draft.tlT0 || null,
-          budgets: cfg.budgets || null, finishLabel: cfg.finishLabel || null,
-          fallback: paired && st.room && draft.tlFallback === st.room ? 1 : 0 };
-        host.innerHTML = '';
-        var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
-          '<iframe class="rescue-frame" title="' + esc(chunk.title || 'Bug Bounty') + '"></iframe></div>');
-        host.appendChild(wrap);
-        function fit() {
-          if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
-          var bar = document.querySelector('#player .player-top');
-          wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
-        }
-        fit(); window.addEventListener('resize', fit);
-        var frame = wrap.querySelector('iframe');
-        frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
-        frame.src = App.asset(cfg.page || 'assets/twolights/hour.html') + '#' + encodeURIComponent(JSON.stringify(H));
-        function tell(m) { m.op = 1; try { frame.contentWindow.postMessage(m, '*'); } catch (e) {} }
-        function save() { if (ctx.review) return null; return ctx.saveEvent({ draft: draft }); }
-        function sendNames() {
-          if (!paired) return;
+      var stage = cfg.stage || 'story', pw = lessonPairWords(cfg, ctx);
+      var H = { stage: stage };
+      if (stage === 'story' && draft.tlPair && !ctx.review) H.pair = draft.tlPair;
+      var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+        '<iframe class="rescue-frame twolights-frame" title="' + esc(chunk.title || 'The story') + '" allow="autoplay"></iframe></div>');
+      host.appendChild(wrap);
+      function fit() {
+        if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+        var bar = document.querySelector('#player .player-top');
+        wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+      }
+      fit(); window.addEventListener('resize', fit);
+      var frame = wrap.querySelector('iframe');
+      frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+      /* ?speed=N (staff and the dev server only) runs the hour's clocks faster, for checking */
+      var speed = +(new URLSearchParams(location.search).get('speed') || 0), q = speed > 1 && (s.staff || /^localhost$|^127\./.test(location.hostname)) ? '?speed=' + speed : '';
+      frame.src = App.asset(cfg.page || 'assets/twolights/hour.html') + q + '#' + encodeURIComponent(JSON.stringify(H));
+      function tell(m) { m.tl = 1; try { frame.contentWindow.postMessage(m, '*'); } catch (e) {} }
+      function save(extra) { if (ctx.review) return null; var ev = extra || {}; ev.draft = draft; return ctx.saveEvent(ev); }
+      function pairUp() {
+        if (ctx.review) { tell({ type: 'pair', pair: { room: 'review', seat: 'A', mode: 'solo' } }); return; }
+        wrap.style.display = 'none';
+        pairStage(ctx, host, draft, 'tlOwn', function (mode) {
+          var st = PairKit.st, paired = mode === 'paired' && st && st.room && st.members && st.members.length > 1, pair;
+          if (paired) pair = { room: st.room, fire: st.room, seat: 'ABC'[st.mi] || 'A', mode: st.members.length >= 3 ? 'trio' : 'pair' };
+          else pair = { room: 'solo' + Math.random().toString(36).slice(2, 9), seat: 'A', mode: 'solo' };
+          draft.tlPair = pair; save();
+          /* PairKit's card sat in the host while she waited; the frame comes back in its place */
+          Array.prototype.slice.call(host.children).forEach(function (c) { if (c !== wrap) c.remove(); });
+          wrap.style.display = ''; fit();
+          tell({ type: 'pair', pair: pair });
+        }, pw);
+      }
+      var paid = {}, begun = false, gone = false;
+      function onMsg(e) {
+        if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+        var m = e.data;
+        if (e.source !== frame.contentWindow || !m || m.tl !== 1 || gone) return;
+        if (m.type === 'begin' && !begun) { begun = true; pairUp(); }
+        else if (m.type === 'save' && m.save && !ctx.review) { draft.tlSave = m.save; save(); }
+        else if (m.type === 'badge') {
+          var b = (cfg.badges || {})[m.id];
+          if (!b || paid[b.id] || ctx.review) return;
+          paid[b.id] = 1;
+          ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+        } else if (m.type === 'names') {
+          var st = PairKit.st;
+          if (!st || !st.room) return;
           if (st.names) { tell({ type: 'names', names: st.names }); return; }
           PairKit.complete(ctx).then(function (r) { if (r && r.names) tell({ type: 'names', names: r.names }); });
+        } else if (m.type === 'done') {
+          gone = true; window.removeEventListener('message', onMsg);
+          if (ctx.review) { ctx.next(); return; }
+          finishChunk(ctx, stage === 'extras' ? (chunk.id || 'extras') + '=extras' : 'story=' + ((draft.tlSave && draft.tlSave.fault) || 0), 0);
         }
-        var gone = false;
-        function onMsg(e) {
-          if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
-          var m = e.data;
-          if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
-          if (m.type === 'begin' || m.type === 'next') { gone = true; window.removeEventListener('message', onMsg); finish(stage); }
-          else if (m.type === 'fallback') { if (paired && st.room) { draft.tlFallback = st.room; save(); } }
-          else if (m.type === 'save') { if (m.save) draft.tlSave = m.save; save(); }
-          else if (m.type === 'done') { if (m.save) draft.tlSave = m.save; save(); sendNames(); }
-        }
-        window.addEventListener('message', onMsg);
       }
-      if (cfg.extrasMode) { open('solo'); return; }
-      pairStage(ctx, host, draft, 'tlOwn', open, lessonPairWords(cfg, ctx));
+      window.addEventListener('message', onMsg);
     }
   };
 
