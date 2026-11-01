@@ -1,4 +1,4 @@
-/* J2 L5 V2 §20: staff.js shows **bold** in brief purpose lines; a brief with no bold renders exactly as before (DOM diff).
+/* J2 L5 V2 §20: staff.js shows **bold** in brief purpose lines; a brief with no bold renders exactly as before (DOM diff). Control pinned to 96fe4bb (main before PR 101).
    Runs briefBody from origin/main's staff.js and from this branch's on every lesson brief in content-src, and compares. */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), cp = require('child_process');
@@ -11,7 +11,7 @@ function loadBrief(code) {
   vm.runInNewContext((sh > -1 ? code.slice(sh, shEnd) : '') + (hr > -1 ? code.slice(hr, hrEnd) : '') + code.slice(a, b) + '\nthis.briefBody = briefBody;', ctx);
   return ctx.briefBody;
 }
-const oldB = loadBrief(cp.execSync('git show origin/main:ks3-dt/platform/staff.js', { cwd: ROOT, encoding: 'utf8', maxBuffer: 1e8 }));
+const oldB = loadBrief(cp.execSync('git show 96fe4bb:ks3-dt/platform/staff.js', { cwd: ROOT, encoding: 'utf8', maxBuffer: 1e8 }));
 const newB = loadBrief(fs.readFileSync(path.join(ROOT, 'ks3-dt/platform/staff.js'), 'utf8'));
 let fails = 0, n = 0; const must = (ok, msg) => { console.log('  ' + (ok ? 'PASS' : 'FAIL') + ' ' + msg); if (!ok) fails++; };
 const strip = r => JSON.parse(JSON.stringify(r).replace(/\*\*/g, ''));

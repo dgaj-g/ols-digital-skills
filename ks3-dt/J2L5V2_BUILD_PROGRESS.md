@@ -82,3 +82,9 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - Platform gate was still V1 (SearchHour/SearchUI): ported (bridge saves, #panel h2/.stepl/.btns, U.minutes shift); the between-chapters screen past 48 is left to walk2 --mins 48/50 (closure). PASS 46/46, committed.
 - Running walk2 1366x768.
 - 22:20 State 11: words2 trim (search help "says what to change", 14 words); ledger re-recorded; verdict hash 8c8c1ef369a4dce1 (trim noted, line 12); contentVersion 2026-11-01l (main 2026-11-01j3l5c, l > j); pack exit 0 all gates; words2/frozen/twins/worry/platform 46 PASS; walk2 1366×768 PASS 13, --mins 48 PASS 14, --mins 50 PASS 14. strings.js mirror committed. NEXT: sit report → deck (Chrome) → build-pathb → deploy ≥79 → PR → records.
+
+## DEPLOYED V79 — 1 Nov 2026, 22:08
+- Deck: 8 slides read eyes-on in the editor, all clean. PR #101 merged (main 82f44d3); Pages served 2026-11-01l.
+- Apps Script VERSION 79, deployment id unchanged, description "V79 1 Nov 2026: J2 L5 The Search V2 (PR 101)". Code.gs ea4a5ee2… unchanged; Index.html 3c4ee3cf… = raw main (editor checked equal before deploy).
+- Live smoke: walk2 on Pages 1366×768 and 1024×768 PASS 13; hour files, staff.js, j2-05.json md5 = main; /exec serves (title checked). brief-bold PASS after pinning its control to 96fe4bb (origin/main now holds the fix, so the old control went RED). Live Staff view not opened (needs the staff passcode typed on the live site).
+- Records: DFM 340–344, audit row 340–344, K88–K92, RESUME_HERE top block. Final pack rc=0.
