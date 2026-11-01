@@ -91,6 +91,7 @@ function checkCold(colds) {
     didN = 0;
     atN = s.at === lastAt ? atN + 1 : 0;
     if (atN > 1500) { console.log('    STUCK (loops) at ' + s.at + ': ' + s.h.slice(0, 80) + ' · opts ' + s.opts.join(' / ') + ' · box ' + JSON.stringify(s.taVal).slice(0, 120) + ' · run ' + s.run + ' ta ' + s.ta + ' · used ' + used[s.at]); break; }
+    if (s.at !== lastAt && SHOTS) { require('fs').mkdirSync(SHOTS, { recursive: true }); await sleep(400); await page.screenshot({ path: path.join(SHOTS, String(Object.keys(used).length).padStart(2, '0') + '-' + s.at + '.png') }); }
     if (s.at !== lastAt) { console.log('    · ' + s.at + ' at ' + ((Date.now() - t0) / 1000).toFixed(0) + ' s'); lastAt = s.at; }
     if (Date.now() - t0 > 600000) { console.log('    TIMEOUT at ' + s.at); break; }
     if (s.want === 'name') { await page.fill('.namebox', 'Snowy'); typed += 5; await page.evaluate(() => { const b = document.querySelector('.namebox').parentElement.querySelector('button'); if (b) b.click(); }); continue; }

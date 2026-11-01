@@ -36,3 +36,13 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - j2l5-clock-test.js ported to V2: PASS 13 (clocks 55,45,45,40,360 from first key / first Run; Pause, tab change, Escape hold; Enter goes on; orange 20 s, red + heartbeat last 10 s only).
 - DECISION (DFM 342 candidate): the big clock runs on real elapsed time (ui.js realDt, capped 1 s a frame), not on the 0.1 s-clamped animation step: at 5 frames a second the clamp made a 2 s clock last 4 s (gate 16).
 - j2l5-walk2.js NEW (walker: gates 11, 17, 19, A18) + j2l5-walk2-answers.js (right answers per step). Iterating answers. Run: node ks3-dt/tools/record-tutorial/j2l5-walk2.js (needs 8790 server).
+
+## State 6 (1 Nov 2026, ~19:45)
+- Walker j2l5-walk2.js: walks film → close end (SearchBridge.done('end')) at 1366×768 · PASS 10 checks: A18 13.5 min, gate 19 step lines (U.stepNow + STEPLINE), gate 11 Next delay (76 screens), gate 17 cold by entry level, no page errors. Shots per step with --shots dir.
+- ENGINE FIX: sound2.js S.round with n null (while True) gave NaN → AudioParam crash at h4. Now wraps the ladder. (DFM candidate 343.)
+- Walker fixes: exact option text first (g5 "0 1 2 3" vs "0 1 2 3 4"); bug quiz answers per step; name box before Next.
+- CONTENT (content-src, not git): j2-05.json config.strings regenerated from strings.js (strip/btn/common/close; the stale V1 ch1–ch4/stripNamed copies dropped: nothing reads them, hour reads strings.js); b14 → "The Growing Square"; help Press→Click (two help strings); teacherBrief §17 (+2.4% words); exit items §11.4 with keys; recap r-j2-501/503/505 rewritten (no layout words); deck §18 slides 1,2,5.
+- DECISIONS: prepare[4] title left plain (staff.js already shows titles bold; ** would show doubled); deck headings keep no full stop like every other deck; exit q5 keeps the forward( ? ) code with left(90) as a distractor; slide-1 notes gain "Today is Lesson 5, Loop Machines." at the start of its SAY.
+- staff.js: purpose lines go through briefText (bold). Gate j2l5-brief-bold.js PASS (15 briefs identical, control fails on old staff.js).
+- Backups of content before edits in the session scratchpad (j2-05.before.json, recap-pool.before.json, j2-05.deck.before.json).
+- NEXT: viewport walks (1512/1280/1024) running; LOOK at shots; A16 resume gate + ?mins=50 between path; port j2l5-words.js + j2l5-platform.js; cold reads; sit report; deck (Chrome); pack; deploy ≥78; PR; records.
