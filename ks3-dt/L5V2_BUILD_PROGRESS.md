@@ -94,3 +94,11 @@ Then: cold reads (two cold-reader agents) of new strings, sit report addendum, p
 - Deck s1.4 "On your own screen": Help bullet + signals bullet + notes; ledger rows set; contentVersion 2026-11-01j3l5c; DFM audit row for 370–374 added (the pack's qa-dfm-audit needs one per rule).
 - GREEN: A1, A2 (5 cards), A8, A16/A17, look; walks 18 + reload PASS; check walks pair/wrong 683 + trio/right 1366 PASS; qa-l5-paired local all 73 PASS; pack rc=0; build-pathb: bundle byte-identical to 1f77380 (the hour loads from Pages, no server change).
 - NEXT: commit ks3-dt/ only → PR → merge → Apps Script Version 78 (same bundle, new version so the record reads V78) → deck rebuild + read-back → live smoke → records (DFM 375+, audit row, K122+, RESUME_HERE, memory).
+
+## DEPLOYED V78 — 1 Nov 2026, 20:23
+- PR #99 merged, main 1f319d0. contentVersion 2026-11-01j3l5c.
+- Apps Script VERSION 78, deployment id unchanged, description "V78 1 Nov 2026: J3 L5 help you can see (PR 99)". Editor checked equal to raw main first. Code.gs ea4a5ee2… and Index.html 0772d98d3e8cbaef9ad3782ed0488993 UNCHANGED from V77 (the change is all on Pages).
+- Deck rebuilt in place (8 slides, "On your own screen" names Help and both signals), read back clean via htmlpresent.
+- Live smoke on Pages: A12 walk pair 683x768 PASS, 1366x768 PASS; live paired gate pair, reload and trio PASS (gone and blocked RED by design, DFM 374: live waits the classroom 180 s).
+- Records: DFM 375–377 + audit row, K122–K123, RESUME_HERE V78 block (QUEUED line closed), memory. Next DFM 378, next K124.
+- HIS CHECK: two screens — I'm stuck → yellow message with pulsing Help on the Reader's screen; Show where in Fix; Enter after the print line or def bearing(): pushes the new line in.
