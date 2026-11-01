@@ -35,3 +35,10 @@ Worktree ~/Sites/ols-wt-l5v2 · branch j3-l5-samelight · base origin/main 70afb
 - Gate-own fixes (driver): soundDone option; watch tolerates passed phases; looser named wait; point click short timeout + re-loop (screen had moved to fix).
 - V1 gates retired to tools/record-tutorial/retired/ (*-v1.js). sit-review EXPECT j3-5 → 49 XP, 5 chunks, 3 badges.
 - NEXT: final all-scenario run, bare walks ×3 sizes + control, SIT REPORT, commit/push, deploy.
+## 18:10 checkpoint — step 5 DONE
+- qa-l5-paired --scenario all: 73 checks PASS (pair, reload, trio, gone, blocked); control RED.
+- l5v2-walk: 18 walks (pair/solo/trio × right/wrong × 683/760/1366) PASS; reload walk 34 reloads PASS; reload control RED.
+- A1/A6/A7/A8/A11 PASS with built-in controls RED; A2 tour PASS, control RED 16; A5 redtext 833 vs python3 PASS; judge 1017, clock 188, effects 207, sound 5 PASS.
+- Further product fixes: swap card "Fault 8 of 7" after the last fault (ui.js, f.no < E.TOTAL); link bar pushes the page down (body.linkon).
+- SIT REPORT written: ks3-dt/L5V2_SIT_REPORT.md.
+- NEXT: step 6 deploy (re-read RESUME_HERE 1–40, Chrome rule, pack, build-pathb, Apps Script version, PR, smoke as two pupils).

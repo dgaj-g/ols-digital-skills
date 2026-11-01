@@ -268,7 +268,7 @@
       else if (first && t < c.startAt + T.CARD + T.SWAP) html = f.no === 1 ? str(isSolo() ? 'swap.first.solo' : isFx(f) ? 'swap.first.fixer' : 'swap.first.reader') : str(isSolo() ? 'swap.solo' : isFx(f) ? 'swap.fixer' : 'swap.reader', { n: f.no });
       else if (f.step === 'swap') {
         if (f.name && f.name.skipped) html = str('swap.done', { n: f.no });
-        else if (c.fixedIds.length < c.ids.length) { var nextNo = f.no + 1, nextFx = SEATS[(nextNo - 1) % SEATS.length]; if (st.gone[nextFx]) nextFx = SEATS.filter(function (s) { return !st.gone[s]; })[0]; html = str(isSolo() ? 'swap.solo' : nextFx === SEAT ? 'swap.fixer' : 'swap.reader', { n: nextNo }); }
+        else if (c.fixedIds.length < c.ids.length && f.no < E.TOTAL) { var nextNo = f.no + 1, nextFx = SEATS[(nextNo - 1) % SEATS.length]; if (st.gone[nextFx]) nextFx = SEATS.filter(function (s) { return !st.gone[s]; })[0]; html = str(isSolo() ? 'swap.solo' : nextFx === SEAT ? 'swap.fixer' : 'swap.reader', { n: nextNo }); }
       }
     }
     if (html) { setHtml(el.card.querySelector('.big'), html); el.card.classList.add('show'); } else el.card.classList.remove('show');
@@ -290,6 +290,8 @@
     if (L.linkLost && st.phase !== 'pre1' || (L.linkLost && mine().stage !== 'sound' && mine().stage !== 'pair')) { el.linkbar.textContent = str('link.slow'); el.linkbar.className = 'show'; }
     else if (goneAny) { el.linkbar.textContent = str('link.gone'); el.linkbar.className = 'show'; }
     else el.linkbar.className = '';
+    // the bar pushes the page down rather than covering the chapter strip and Pause
+    document.body.classList.toggle('linkon', el.linkbar.className === 'show');
   }
 
   /* ---------- the tour ---------- */
