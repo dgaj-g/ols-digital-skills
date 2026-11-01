@@ -31,3 +31,8 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - Old V1 hour tools moved to tools/record-tutorial/retired/ (j2l5-walk, j2l5-python, j2l5-judge-test, j2l5/ judge cases).
 - Still to port: j2l5-words.js (needs content step + V2 sources: ch1-2 = prototype J2_L5_REDESIGN/prototype, ch3-4 = spec §9-§11), j2l5-clock-test.js (needs dev server on 8125 serving repo root; V2 clocks), j2l5-platform.js (P1-P7 against platform, badge names now The Tracks / The Growing Square / The Way Home).
 - To write: j2l5-walk2.js = runtime walker collecting every panel screen (gates 11, 12, 14, 16-19, A17, A18 26-min model), plus V74-record resume gate (A16).
+
+## State 5 (1 Nov 2026 19:05, week 38%)
+- j2l5-clock-test.js ported to V2: PASS 13 (clocks 55,45,45,40,360 from first key / first Run; Pause, tab change, Escape hold; Enter goes on; orange 20 s, red + heartbeat last 10 s only).
+- DECISION (DFM 342 candidate): the big clock runs on real elapsed time (ui.js realDt, capped 1 s a frame), not on the 0.1 s-clamped animation step: at 5 frames a second the clamp made a 2 s clock last 4 s (gate 16).
+- j2l5-walk2.js NEW (walker: gates 11, 17, 19, A18) + j2l5-walk2-answers.js (right answers per step). Iterating answers. Run: node ks3-dt/tools/record-tutorial/j2l5-walk2.js (needs 8790 server).
