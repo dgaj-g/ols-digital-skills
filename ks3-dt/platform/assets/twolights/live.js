@@ -1,100 +1,92 @@
-/* TWO LIGHTS · the live channel (spec §6, §10): L6's Firebase room, unchanged. No sign-in.
-   rooms/{code}/{seat}/{push} = { j: <message, < 200 bytes>, t: ms }   rooms/{code}/presence/{seat} = ms (every 5 s)
-   Nothing here ever names a pupil, a class or a school: only the seat letter and the message.
-   The clock is Firebase's server time (.info/serverTimeOffset), so two laptops agree when the boat set off.
-   TLLIVE.codec is pure (node-testable); TLLIVE.makeFireBus(db, room, seat, opts) takes any object with the compat
-   database API (ref/child/push/on/set/remove), so the gates can hand it a fake. */
-(function (root) {
-  var T2C = { hello: 'h', state: 's', boat: 'b', fail: 'f', pause: 'p', tell: 't' };
-  var C2T = {}; Object.keys(T2C).forEach(function (k) { C2T[T2C[k]] = k; });
-  var STG = ['radio', 'coldopen', 'tour', 'ch1', 'ch2', 'ch3', 'ch4', 'home', 'extras'];
-  var SLIP = ['light', 'horn', 'none', 'clear'];
-  function b36(n) { return n == null ? '' : Math.round(n).toString(36); }
-  function n36(s) { return s ? parseInt(s, 36) : null; }
-  function clip(s) { return String(s == null ? '' : s).replace(/[|]/g, '').slice(0, 12); }
-  function encode(m) {
-    var c = T2C[m.type]; if (!c) return null;
-    var h = [c, m.seat || ''];
-    if (m.type === 'state') {
-      h.push(STG.indexOf(m.st), (m.lamp ? 1 : 0) + '' + (m.horn ? 1 : 0) + (m.done ? 1 : 0) + (m.red ? 1 : 0) + (m.typing ? 1 : 0),
-        clip(m.radio), b36(m.line), b36(m.ran), b36(m.found), b36(m.at));
-    } else if (m.type === 'boat') h.push(m.ch, b36(m.t0));
-    else if (m.type === 'fail') h.push(m.ch, b36(m.at));
-    else if (m.type === 'pause') h.push(m.ch, b36(m.at), m.on ? 1 : 0);
-    else if (m.type === 'tell') h.push(m.to, SLIP.indexOf(m.slip), STG.indexOf(m.ch) < 0 ? '' : STG.indexOf(m.ch));
-    return h.join('|');
+/* SAME LIGHT · the live channel (spec V2 §7).
+   open: BroadcastChannel + localStorage, for one laptop, the dev pages and the gates.
+   openFire: the room on Firebase, rooms/{code}/{seat}/{push} = {j, t} and rooms/{code}/presence/{seat} = t (rules unchanged,
+   DFM 313–332). j = k|t|n|JSON(d) with t in base 36; a j longer than 150 goes as parts P|pid|i|m|slice and is put back
+   together on arrival. Every seat listens to every seat (its own too, so a reload replays its own moves); events are
+   kept once by id. The clock is Firebase's server time, so two laptops agree when the boat set off.
+   Both give { send(k, d), log(), presence(), connected, quiet(seat, ms), offset() }. */
+(function () {
+  'use strict';
+  function open(room, seat, onChange, nowFn, o) {
+    var key = 'samelight:' + room, bc = null, n = 0, seen = {}, log = [], now = nowFn || Date.now;
+    try { log = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { log = []; }
+    log.forEach(function (e) { seen[e.id] = true; if (e.seat === seat && e.n > n) n = e.n; });
+    var pres = {}, last = {};
+    try { if (!(o && o.blocked)) bc = new BroadcastChannel('samelight-' + room); } catch (e) { bc = null; }
+    function save() { try { localStorage.setItem(key, JSON.stringify(log)); } catch (e) {} }
+    function take(e) { if (seen[e.id]) return false; seen[e.id] = true; log.push(e); last[e.seat] = Math.max(last[e.seat] || 0, e.t); return true; }
+    log.forEach(function (e) { last[e.seat] = Math.max(last[e.seat] || 0, e.t); });
+    if (bc) bc.onmessage = function (m) {
+      var e = m.data;
+      if (e.type === 'presence') { pres[e.seat] = now(); onChange('presence'); return; }
+      if (e.type === 'hello') { pres[e.seat] = now(); log.forEach(function (x) { bc.postMessage({ type: 'event', e: x }); }); presence(); onChange('presence'); return; }
+      if (e.type === 'event' && take(e.e)) { save(); onChange('event'); }
+    };
+    function send(k, d) {
+      var t = Math.round(now()), e = { id: seat + ':' + t + ':' + (n++), seat: seat, t: t, n: n, k: k, d: d || {} };
+      take(e); save(); if (bc) bc.postMessage({ type: 'event', e: e }); onChange('event'); return e;
+    }
+    function presence() { if (bc) bc.postMessage({ type: 'presence', seat: seat }); }
+    if (bc) { bc.postMessage({ type: 'hello', seat: seat }); presence(); }
+    setInterval(presence, (o && o.beat) || 5000);
+    return { send: send, log: function () { return log; }, presence: function () { return pres; }, connected: !!bc, offset: function () { return 0; },
+      // null = never seen at all; else true when neither a presence beat nor an event has come from that seat for ms (an event is proof of presence)
+      quiet: function (s, ms) { var at = Math.max(pres[s] || 0, last[s] || 0); return at ? now() - at > ms : null; } };
   }
-  function decode(s) {
-    if (typeof s !== 'string') return null;
-    var h = s.split('|'), t = C2T[h[0]]; if (!t) return null;
-    var m = { type: t, seat: h[1] || null };
-    if (t === 'state') {
-      var f = h[3] || '00000';
-      m.st = STG[+h[2]] || null; m.lamp = +f[0]; m.horn = +f[1]; m.done = +f[2]; m.red = +f[3]; m.typing = +f[4];
-      m.radio = h[4] || ''; m.line = n36(h[5]) || 0; m.ran = n36(h[6]) || 0; m.found = n36(h[7]) || 0; m.at = n36(h[8]);
-    } else if (t === 'boat') { m.ch = h[2]; m.t0 = n36(h[3]); }
-    else if (t === 'fail') { m.ch = h[2]; m.at = n36(h[3]); }
-    else if (t === 'pause') { m.ch = h[2]; m.at = n36(h[3]); m.on = h[4] === '1' ? 1 : 0; }
-    else if (t === 'tell') { m.to = h[2]; m.slip = SLIP[+h[3]] || null; if (!m.slip) return null; m.ch = h[4] ? STG[+h[4]] || null : null; }
-    return m;
-  }
-  function makeFireBus(db, room, seat, opts) {
-    opts = opts || {};
-    var offset = 0, local = opts.now || function () { return Date.now(); };
-    var now = function () { return local() + offset; };
-    var hs = [], seen = {}, connected = false, onConn = [], timers = [], closed = false;
+
+  var MAXJ = 150;
+  function openFire(db, room, seat, onChange, nowFn, o) {
+    o = o || {};
+    var n = 0, seen = {}, log = [], pres = {}, last = {}, parts = {}, offset = 0, api;
     var ref = db.ref('rooms/' + room);
-    function deliver(m) { hs.forEach(function (h) { h(m); }); }
-    db.ref('.info/serverTimeOffset').on('value', function (snap) { var v = snap.val(); if (typeof v === 'number') offset = v; });
-    ['A', 'B', 'C'].forEach(function (s) {
-      if (s === seat) return;
-      /* what she said before this stage opened arrives first. An old hello is not a question any more: judged on server
-         time as it arrives, so a laptop clock a few seconds out neither drops a live hello nor keeps a stale one.
-         An old slip is dropped by the engine, which knows the chapter it was sent in. */
-      ref.child(s).on('child_added', function (snap) {
-        if (closed) return;
-        var key = snap.key; if (seen[s + key]) return; seen[s + key] = 1;
-        var v = snap.val() || {}, m = decode(v.j); if (!m) return;
-        if (m.type === 'hello' && typeof v.t === 'number' && v.t < now() - 3000) return;
-        deliver(m);
-      });
+    function now() { return nowFn ? nowFn() : Date.now() + offset; }
+    db.ref('.info/serverTimeOffset').on('value', function (s) { var v = s.val(); if (typeof v === 'number') offset = v; });
+    /* .info/connected answers at once from the client's cache, before api exists: keep it and hand it over below */
+    var conn = false;
+    db.ref('.info/connected').on('value', function (s) { conn = s.val() === true; if (api) { api.connected = conn; onChange('presence'); } });
+    function take(e) { if (seen[e.id]) return false; seen[e.id] = true; log.push(e); last[e.seat] = Math.max(last[e.seat] || 0, e.t); return true; }
+    function decode(s, j) {
+      var a = j.split('|'), t = parseInt(a[1], 36), k = a[0], nn = +a[2], d = {};
+      try { d = JSON.parse(a.slice(3).join('|')); } catch (x) { return null; }
+      return { id: s + ':' + t + ':' + nn, seat: s, t: t, n: nn, k: k, d: d };
+    }
+    function arrive(s, v) {
+      if (!v || typeof v.j !== 'string') return;
+      var j = v.j;
+      if (j.slice(0, 2) === 'P|') {
+        var a = j.split('|'), pid = s + a[1], i = +a[2], m = +a[3], body = a.slice(4).join('|');
+        var p = parts[pid] = parts[pid] || { got: 0, bits: [] };
+        if (p.bits[i] == null) { p.bits[i] = body; p.got++; }
+        if (p.got < m) return;
+        delete parts[pid]; j = p.bits.join('');
+      }
+      var e = decode(s, j);
+      if (e && take(e)) onChange('event');
+    }
+    ['A', 'B', 'C'].forEach(function (s) { ref.child(s).on('child_added', function (snap) { arrive(s, snap.val()); }); });
+    ref.child('presence').on('value', function (snap) {
+      var v = snap.val() || {}; Object.keys(v).forEach(function (s) { if (typeof v[s] === 'number') pres[s] = v[s]; }); onChange('presence');
     });
-    db.ref('.info/connected').on('value', function (snap) {
-      if (snap.val() === true && !connected) { connected = true; onConn.forEach(function (f) { f(); }); }
-    });
-    function beat() { if (!closed) ref.child('presence').child(seat).set(now()); }
-    beat(); timers.push(setInterval(beat, opts.beatMs || 5000));
-    return {
-      on: function (h) { hs.push(h); },
-      send: function (type, data) {
-        if (closed) return;
-        var m = {}; for (var k in data) m[k] = data[k]; m.type = type;
-        var j = encode(m); if (!j || j.length >= 200) return;
-        ref.child(seat).push({ j: j, t: now() });
-      },
-      now: now,
-      connected: function () { return connected; },
-      whenConnected: function (f) { if (connected) f(); else onConn.push(f); },
-      close: function () { closed = true; timers.forEach(clearInterval); },
-      destroy: function () { closed = true; timers.forEach(clearInterval); return ref.remove(); }
-    };
+    function beat() { ref.child('presence').child(seat).set(Math.round(now())); }
+    beat(); setInterval(beat, o.beat || 5000);
+    function send(k, d) {
+      var t = Math.round(now()); n++;
+      var e = { id: seat + ':' + t + ':' + n, seat: seat, t: t, n: n, k: k, d: d || {} };
+      take(e); onChange('event');
+      var j = k + '|' + t.toString(36) + '|' + n + '|' + JSON.stringify(e.d), mine = ref.child(seat);
+      if (j.length <= MAXJ) mine.push({ j: j, t: t });
+      else {
+        var pid = t.toString(36) + 'x' + n, m = Math.ceil(j.length / MAXJ);
+        for (var i = 0; i < m; i++) mine.push({ j: 'P|' + pid + '|' + i + '|' + m + '|' + j.slice(i * MAXJ, (i + 1) * MAXJ), t: t });
+      }
+      return e;
+    }
+    api = { send: send, log: function () { return log; }, presence: function () { return pres; }, connected: conn,
+      offset: function () { return offset; },
+      quiet: function (s, ms) { var at = Math.max(pres[s] || 0, last[s] || 0); return at ? now() - at > ms : null; },
+      // the room goes when the last seat is home (spec §7); the partner's fold already holds every event
+      remove: function () { return ref.remove(); } };
+    return api;
   }
-  /* the tester's pair on one machine (localhost only): BroadcastChannel, with the same codec and an optional lag */
-  function makeChannelBus(room, seat, lag) {
-    var hs = [], bc = new BroadcastChannel('twolights-' + room);
-    bc.onmessage = function (ev) {
-      var d = ev.data || {}; if (d.from === seat) return;
-      var m = decode(d.j); if (!m) return;
-      setTimeout(function () { hs.forEach(function (h) { h(m); }); }, lag || 0);
-    };
-    return {
-      on: function (h) { hs.push(h); },
-      send: function (type, data) { var m = {}; for (var k in data) m[k] = data[k]; m.type = type; var j = encode(m); if (j && j.length < 200) bc.postMessage({ from: seat, j: j }); },
-      now: function () { return Date.now(); }, connected: function () { return true; }, whenConnected: function (f) { f(); },
-      close: function () { bc.close(); }, destroy: function () { bc.close(); }
-    };
-  }
-  var api = { codec: { encode: encode, decode: decode }, makeFireBus: makeFireBus, makeChannelBus: makeChannelBus, FALLBACK_MS: 10000 };
-  root.TLLIVE = api;
-  if (typeof module !== 'undefined') module.exports = api;
-})(typeof window !== 'undefined' ? window : globalThis);
+  window.SameLive = { open: open, openFire: openFire };
+})();

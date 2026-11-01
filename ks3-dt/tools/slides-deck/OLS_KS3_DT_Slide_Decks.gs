@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-10-27 from contentVersion 2026-10-26e.
+ * Built 2026-11-01 from contentVersion 2026-10-27a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3847,7 +3847,7 @@ var DECKS = {
   "sections": [
    {
     "id": "opening",
-    "chunk": "radio",
+    "chunk": "twolights",
     "slides": [
      {
       "kind": "title",
@@ -3855,7 +3855,8 @@ var DECKS = {
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
       "heading": "Lesson 5 · Bug Bounty",
       "sub": "J3 · Lesson 5 of 17",
-      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now, a short set of questions from earlier lessons that mark themselves. Take the register while it runs.\n\nSAY: \"Log in, open the class link and do the warm-up questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the warm-up. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
+      "notes": "WHERE THE CLASS IS: coming in, logging in, opening the class link. The lesson opens on the Do-Now, a short set of questions from earlier lessons that mark themselves. Take the register while it runs.\n\nSAY: \"Log in, open the class link and do the warm-up questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the warm-up. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides.",
+      "bullets": []
      },
      {
       "kind": "objectives",
@@ -3905,7 +3906,7 @@ var DECKS = {
    },
    {
     "id": "story",
-    "chunk": "ch4",
+    "chunk": "twolights",
     "stop": true,
     "slides": [
      {
@@ -3931,9 +3932,9 @@ var DECKS = {
       "heading": "The last screens",
       "bullets": [
        "Five questions, then How did it go.",
-       "Then extra posters if you want them."
+       "Then more faults to fix, if you want them."
       ],
-      "notes": "SAY: \"At the end there are five questions. They are marked, so answer on your own. Then everybody does How did it go?. After that, there are extra posters if you have time.\""
+      "notes": "SAY: \"At the end there are five questions. They are marked, so answer on your own. Then everybody does How did it go?. After that, there are more faults to fix if you have time.\""
      }
     ]
    },

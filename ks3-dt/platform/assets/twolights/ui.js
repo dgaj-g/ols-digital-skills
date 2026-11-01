@@ -1,480 +1,544 @@
-/* TWO LIGHTS · the page. One iframe per stage of the hour; the platform hands the stage, seat, room, names and the save in
-   the hash (Engines.twolights). Every word on screen comes from TwoLightsStrings. The page ticks the engine and draws.
-   Tester only (localhost / file:): ?stage=ch1&solo=1  ·  ?stage=ch1&seat=A&room=abcd[&seats=ABC]  (two tabs, one room)
-   ·  &fast=1 (short budgets)  ·  &still=1 (no motion, for screenshots)  ·  &fire=1 (the real Firebase room) */
+/* SAME LIGHT · the screen (spec V2 §3, §6, §8). Renders the folded state; every action is one event on the channel.
+   Local only: which page of a reminder she is on, whether she closed the help card, the extras editor. */
 (function () {
   'use strict';
+  var Q = new URLSearchParams(location.search);
+  /* In the platform (spec §10) the frame's hash is {stage 'story'|'extras', pair, save}: the room is not known until the
+     sound check is done and the page has sent 'begin', and the platform's pairing answers with 'pair'. A reload carries
+     the pair on the hash, so the page opens the room at once and the room's own log puts her back where she was.
+     With no hash (the dev pages and the gates) ?room=&seat=&mode= open a room on this laptop at once. */
+  var H = null; try { H = location.hash.length > 1 ? JSON.parse(decodeURIComponent(location.hash.slice(1))) : null; } catch (x) { H = null; }
+  var EMB = !!H;
+  var ROOM, MODE, SEATS, SEAT, K = Math.max(1, +Q.get('t') || +Q.get('speed') || 1);
+  function seatUp(p) {
+    ROOM = String(p.room || 'DEMO').toUpperCase(); MODE = p.mode || 'pair';
+    SEATS = MODE === 'solo' ? ['A'] : MODE === 'trio' ? ['A', 'B', 'C'] : ['A', 'B'];
+    SEAT = String(p.seat || 'A').toUpperCase(); if (SEATS.indexOf(SEAT) < 0) SEAT = SEATS[0];
+  }
+  seatUp(EMB ? (H.pair || { room: 'WAIT', mode: 'solo' }) : { room: Q.get('room'), mode: Q.get('mode'), seat: Q.get('seat') });
+  var NAMES = EMB ? {} : { A: 'Aoife', B: 'Niamh', C: 'Cara' };
+  function post(m) { if (!EMB) return; m.tl = 1; try { parent.postMessage(m, '*'); } catch (x) {} }
+  var E = SameLight, T = E.T, str = SameLightStrings.render, J = TwoLightsJudge, PR = TwoLightsPrograms, A = TwoArt, Snd = TwoSound;
+  var GONE_MS = (+Q.get('gone') || 0) * 1000 || T.GONE;
+  var T0 = 0, live = null;
+  function now() { var t = Date.now() + (live ? live.offset() : 0); return T0 + (t - T0) * K; }
+  function fireDb() {
+    if (Q.get('link') === 'blocked' || !window.firebase || !window.LIVE_CONFIG) return null;
+    try { return (firebase.apps.length ? firebase.app() : firebase.initializeApp(window.LIVE_CONFIG)).database(); } catch (x) { return null; }
+  }
+  function start(p) {
+    var T0K = 'samelight:t0:' + ROOM; T0 = +localStorage.getItem(T0K) || 0; if (!T0) { T0 = Date.now(); try { localStorage.setItem(T0K, T0); } catch (x) {} }
+    var db = EMB && p && p.fire && MODE !== 'solo' ? fireDb() : null;
+    if (db) live = SameLive.openFire(db, p.fire, SEAT, onChange, now, { beat: 5000 / K });
+    else live = SameLive.open(ROOM, SEAT, onChange, now, { blocked: Q.get('link') === 'blocked', beat: 5000 / K });
+  }
+  if (!EMB || H.pair) start(EMB ? H.pair : null);
   var $ = function (id) { return document.getElementById(id); };
-  var TS = TwoLightsStrings, R = TS.render, PR = TwoLightsPrograms, EN = TwoLightsEngine, A = TwoArt, SND = window.TwoSound;
-  var Q = {}; location.search.slice(1).split('&').forEach(function (kv) { if (!kv) return; var p = kv.split('='); Q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || '1'); });
-  var H = null; try { if (location.hash.length > 1) H = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch (e) { H = null; }
-  var LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === 'file:';
-  if (!LOCAL) Q = {};
-  if (Q.still) document.documentElement.classList.add('still');
-  function post(type, data) { if (window.parent === window) return; var m = { op: 1, type: type }; for (var k in data || {}) m[k] = data[k]; window.parent.postMessage(m, '*'); }
-  function words(t) { return String(t || '').split(/\s+/).filter(Boolean).length; }
-  function pace(t) { return Q.fast ? 400 : 1200 + 350 * words(t); }   // films ≥ 1.2 s + 0.35 s a word
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var el = { app: $('app'), pills: $('pills'), coins: $('coins'), latebtn: $('latebtn'), pausebtn: $('pausebtn'), banner: $('banner'), stepstrip: $('stepstrip'), job: $('job'),
+    headcode: $('headcode'), gutter: $('gutter'), view: $('view'), ed: $('ed'), run: $('run'), means: $('means'), headcon: $('headcon'), con: $('con'),
+    bay: $('bay'), help: $('help'), look: $('look'), late: $('late'), rocks: $('rocks'), crew: $('crew'), helpbtn: $('helpbtn'), cards: $('cards'), partner: $('partner'),
+    page: $('page'), card: $('card'), tour: $('tour'), ring: $('ring'), tcard: $('tcard'), curtain: $('curtain'), linkbar: $('linkbar'), toast: $('toast') };
+  var st = null, prev = null, dirty = true, L = { sound: { stage: 0 }, pair: { at: null }, cold: { at: null }, tour: { i: 0, again: false }, r1: { pick: null }, r2: { pick: null },
+    t3: { page: 1, pick: null }, help: { closedAt: 0, no: 0 }, look: { closed: false, no: 0 }, late: false, home: 'home', extra: { id: null, src: '', last: null },
+    linkLost: false, pairOpenedAt: null, hornUntil: 0, toastUntil: 0, pageKey: '', lastPresence: {} };
 
-  /* ---------- who, where ---------- */
-  var STAGE, seat, seats, room, live = false;
-  if (H) { STAGE = H.stage || 'ch1'; seat = H.seat || 'A'; seats = (H.seats && H.seats.length) ? H.seats : ['A']; room = H.room || null; live = seats.length > 1 && !!room; }
-  else {
-    STAGE = Q.stage || 'ch1'; seat = Q.seat || 'A'; room = Q.room || null;
-    seats = Q.solo || !room ? ['A'] : (Q.seats || 'AB').split('');
-    live = !!Q.fire && seats.length > 1;
+  var queued = false;
+  function onChange(kind) { if (queued) return; queued = true; setTimeout(function () { queued = false; render(); }, 0); }
+  function gone() {
+    var g = {};
+    SEATS.forEach(function (s) { if (s === SEAT) return; var q = live.quiet(s, GONE_MS); if (q === true) g[s] = true; if (q === null && L.linkLost) g[s] = true; });
+    return g;
   }
-  var pair = seats.length > 1 && !!room;
-  var NAMES = (H && H.names) || null;
-  var BUDGETS = (H && H.budgets) || (Q.fast ? { ch1: 90000, ch2: 90000, ch3: 90000, ch4: 120000 } : null);
-  var T0 = (H && H.t0) || null;
-  var CALL = EN.CALL, NAME = function (s) { return PR.SEATS[s].name; };
-  function othersOf(s) { return (seats.length > 1 ? seats : ['A', 'B']).filter(function (x) { return x !== s; }); }
-  var clock = { now: function () { return Date.now(); }, setTimeout: function (f, ms) { return setTimeout(f, ms); } };
+  function refold() { st = E.fold(live.log(), now(), { seats: SEATS, room: ROOM, mode: MODE, gone: gone() }); }
+  var pendingText = null, textTimer = null;
+  function flushText() { if (pendingText != null) { live.send('text', { src: pendingText }); pendingText = null; } clearTimeout(textTimer); textTimer = null; }
+  function send(k, d) { flushText(); live.send(k, d); render(); }
+  document.addEventListener('pointerdown', function () { Snd.unlock(); }, { passive: true });
 
-  /* ---------- the bus ---------- */
-  var FALLBACK = false, bus = null, E = null;
-  function openBus() {
-    if (!pair) return null;
-    if (!live) return TLLIVE.makeChannelBus(room, seat, +(Q.lag || 300));
-    var hs = [], fb = null, timer, w = { on: function (h) { hs.push(h); }, send: function (t, d) { if (fb && !FALLBACK) fb.send(t, d); }, now: function () { return fb ? fb.now() : Date.now(); } };
-    try {
-      if (!window.firebase || !window.LIVE_CONFIG) throw new Error('files');
-      var app = firebase.apps.length ? firebase.app() : firebase.initializeApp(window.LIVE_CONFIG);
-      fb = TLLIVE.makeFireBus(app.database(), room, seat);
-      fb.on(function (m) { if (!FALLBACK) hs.forEach(function (h) { h(m); }); });
-    } catch (e) { fb = null; }
-    w.fb = fb;
-    if (!fb || (H && H.fallback)) { setTimeout(goFallback, 0); return w; }
-    timer = setTimeout(function () { if (!fb.connected()) goFallback(); }, TLLIVE.FALLBACK_MS);
-    fb.whenConnected(function () { clearTimeout(timer); if (E) E.hello(); });
-    return w;
+  /* ---------- helpers ---------- */
+  function setHtml(node, html) { if (node.__h !== html) { node.__h = html; node.innerHTML = html; } }
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function mine() { return st.local[SEAT]; }
+  function activeN() { return SEATS.filter(function (s) { return !st.gone[s]; }).length; }
+  function isSolo() { return activeN() <= 1; }
+  function fault() { return st.ch && st.ch.fault; }
+  function isFx(f) { return f && f.fixerNow === SEAT; }
+  function isRd(f) { return f && !isSolo() && f.readersNow.indexOf(SEAT) >= 0; }
+  function others() { return SEATS.filter(function (s) { return s !== SEAT; }); }
+  function suffix(key) { return isSolo() && SameLightStrings.S[key + '.solo'] ? key + '.solo' : key; }
+  function modeKey(base) { return isSolo() ? base + '.solo' : (activeN() >= 3 && SameLightStrings.S[base + '.trio']) ? base + '.trio' : base; }
+  function seededShuffle(arr, seed) { var a = arr.slice(), x = 0; for (var i = 0; i < seed.length; i++) x = (x * 31 + seed.charCodeAt(i)) >>> 0; for (var j = a.length - 1; j > 0; j--) { x = (x * 1103515245 + 12345) >>> 0; var k = x % (j + 1); var t = a[j]; a[j] = a[k]; a[k] = t; } return a; }
+  function progHtml(src, opts) {
+    opts = opts || {}; var ls = String(src).split('\n'), h = '';
+    ls.forEach(function (l, i) { var n = i + 1, cls = 'ln' + (opts.mark && opts.mark[n] ? ' ' + opts.mark[n] : ''); h += '<div class="n">' + n + '</div><div class="' + cls + '" data-n="' + n + '">' + (esc(l) || ' ') + '</div>'; });
+    return h;
   }
-  function goFallback() {   // "The live link is slow. Share one laptop and take turns." (§6) — never a dead screen
-    if (FALLBACK) return; FALLBACK = true; post('fallback');
-    if (bus && bus.fb) bus.fb.close();
-    if (seat !== 'A') {
-      $('app').hidden = true; $('stage').hidden = true; $('tour').hidden = true;
-      $('away').hidden = false; $('awaysay').textContent = R('bar.slow');
-      $('awaynext').textContent = R('btn.next'); $('awaynext').onclick = function () { $('awaynext').disabled = true; post('next'); };
-      return;
+  function conHtml(out, red) { var h = (out || []).map(function (l) { return esc(l); }).join('\n'); if (red) h += (h ? '\n' : '') + '<span class="r">' + esc(red) + '</span>'; return h; }
+  function fixedProgram(ch) { var s = PR.SEATS.A; return ch === 'ch1' ? PR.ch1(s, 2) : ch === 'ch2' ? PR.ch2(s, true) : ch === 'ch3' ? PR.ch3(s, 'after') : PR.ch4(s, []); }
+  function toast(text, ms) { el.toast.textContent = text; el.toast.classList.add('show'); L.toastUntil = Date.now() + (ms || 2500); }
+  function cardsHtml(pick, f) {
+    var ids = ['red', 'silent', 'none'], h = '';
+    ids.forEach(function (id) {
+      var cls = 'fcard';
+      if (pick) cls += ' pick';
+      if (f && f.name && !f.name.skipped) { if (id === f.kind) cls += ' lit'; else if (id === f.name.card) cls += ' no'; }
+      h += '<div class="' + cls + '" data-card="' + id + '"><b>' + str('fault.' + id) + '</b><span>' + str('fault.' + id + '.line') + '</span></div>';
+    });
+    return h;
+  }
+
+  /* ---------- the strip, banner, steps ---------- */
+  var PILLS = ['sound', 'pair', 'cold', 'tour', 'ch1', 'ch2', 'ch3', 'ch4', 'home'];
+  function currentPill() {
+    var L0 = mine();
+    if (st.phase === 'pre1') return L0.stage === 'wait' || L0.stage === 'r1' ? 'ch1' : L0.stage;
+    if (st.phase === 'w1' || st.phase === 'ch1' || st.phase === 'pre2' || st.phase === 'w2') return st.phase === 'pre2' || st.phase === 'w2' ? 'ch2' : 'ch1';
+    if (st.phase === 'ch2' || st.phase === 'pre3' || st.phase === 'w3') return st.phase === 'ch2' ? 'ch2' : 'ch3';
+    return st.phase;
+  }
+  function renderStrip() {
+    var cur = currentPill(), i0 = PILLS.indexOf(cur), h = '';
+    PILLS.forEach(function (p, i) { h += '<span class="pill' + (i < i0 ? ' done' : i === i0 ? ' on' : '') + '">' + str('pill.' + p) + '</span>'; });
+    setHtml(el.pills, h);
+    // a narrow window cannot show every pill: keep the current one in view
+    var on = el.pills.querySelector('.on'); if (on && L.pillOn !== cur) { L.pillOn = cur; el.pills.scrollLeft = Math.max(0, on.offsetLeft - 8); }
+    setHtml(el.coins, '<img src="img/coin.svg" alt="">' + str('coins', { n: st.coins + (st.extras[SEAT] ? st.extras[SEAT].coins : 0) }));
+    var inCh = st.phase[0] === 'c';
+    el.latebtn.textContent = str('late.btn'); el.pausebtn.textContent = str('pause.btn');
+    el.latebtn.classList.toggle('hide', !inCh); el.pausebtn.classList.toggle('hide', !inCh);
+    el.banner.textContent = str(MODE === 'solo' ? 'banner.solo' : isSolo() ? 'banner.solo' : activeN() >= 3 ? 'banner.trio' : 'banner.pair');
+  }
+  function renderSteps(f) {
+    var order = ['run', 'point', 'fix', 'name'], cur = f ? (f.step === 'swap' || f.step === 'over' ? 'name' : f.step) : null, ci = order.indexOf(cur), h = '';
+    order.forEach(function (s, i) { h += '<div class="step' + (i < ci ? ' done' : i === ci ? ' on' : '') + '">' + str('step.' + (i + 1)) + '</div>'; });
+    setHtml(el.stepstrip, h);
+  }
+  function jobLine(f) {
+    if (!f) return '';
+    var n = f.right, nm = E.FN[f.id] || '', kind = f.kind, solo = isSolo(), rd = isRd(f), fx = isFx(f), t = st.now;
+    if (f.step === 'run') return str(solo ? 'job.run.solo' : rd ? 'job.run.reader' : 'job.run.fixer');
+    if (f.step === 'point') {
+      var k = kind === 'red' ? 'red' : kind === 'silent' ? 'silent' : 'none';
+      var mineP = f.picks[SEAT], theirs = others().map(function (s) { return f.picks[s]; }).filter(function (v) { return v != null; })[0];
+      if (f.wrongAgreed && mineP == null) return str(k === 'red' ? 'job.point.wrong' : 'job.point.wrong.' + k);
+      if (!solo && mineP != null) return str('job.point.mine', { n: mineP });
+      if (!solo && theirs != null) return str('job.point.theirs', { n: theirs });
+      return str(solo ? 'job.point.' + k + '.solo' : 'job.point.' + k);
     }
-    if (E) { E.goSlow(); render(); }
-  }
-
-  /* ---------- the stage pills ---------- */
-  var PILLS = ['radio', 'coldopen', 'tour', 'ch1', 'ch2', 'ch3', 'ch4', 'home'];
-  function pills() {
-    var at = PILLS.indexOf(STAGE);
-    $('pills').innerHTML = PILLS.map(function (p, i) { return '<span class="' + (i === at ? 'lit' : i < at ? 'past' : '') + '">' + esc(R('pill.' + p)) + '</span>'; }).join('');
-    var lit = $('pills').querySelector('.lit'); if (lit) $('pills').scrollLeft = Math.max(0, lit.offsetLeft - $('pills').clientWidth / 2 + lit.offsetWidth / 2);   // a narrow screen keeps her stage in view
-  }
-  function topLine(s) {
-    var o = othersOf(s);
-    if (!pair || (E && E.S.mode !== 'pair')) return R('top.solo');
-    if (o.length > 1) return R('top.trio', { mine: NAME(s), other: NAME(o[0]), third: NAME(o[1]) });
-    return R('top.pair', { mine: NAME(s), other: NAME(o[0]) });
-  }
-
-  /* ---------- the engine (chapters; also holds the save for every stage) ---------- */
-  var CHS = ['ch1', 'ch2', 'ch3', 'ch4'];
-  var isCh = CHS.indexOf(STAGE) >= 0;
-  bus = openBus();
-  E = EN.makeEngine({ seat: seat, seats: seats.length > 1 ? seats : ['A', 'B'], room: room || 'solo', stage: STAGE, mode: pair ? 'pair' : 'solo', bus: pair ? bus : null, clock: clock, budgets: BUDGETS || undefined });
-  if (H && H.save) { try { E.restore(H.save); E.setStage(STAGE); } catch (e) { } }
-  if (bus) { bus.on(function (m) { E.receive(m); }); E.hello(); }
-  function save() { post('save', { save: E.snapshot() }); }
-
-  /* ---------- the window: the bay ---------- */
-  var bay = $('bay'), bc = bay.getContext('2d'), hornUntil = {}, rewindUntil = 0, cheerAt = 0;
-  function fitBay() { var r = bay.getBoundingClientRect(), d = window.devicePixelRatio || 1; bay.width = Math.max(1, Math.round(r.width * d)); bay.height = Math.max(1, Math.round(r.height * d)); }
-  function drawLight(c, v, x, y, s, T) {
-    var lamp = v.lamp ? 1 : 0;
-    if (lamp) A.beam(c, x, y, s * 11, T + x, 1, x > 180 ? -1 : 1);
-    if (v.seat === 'C') A.lightship(c, x, y, s, { awake: lamp, smile: v.done ? 1 : 0, t: T });
-    else A.lighthouse(c, x, y, s, { awake: lamp, smile: v.done ? 1 : 0, t: T });
-    var hn = hornUntil[v.seat] && hornUntil[v.seat] > Date.now();
-    if (hn || v.horn) {   // the horn's drawn twin: rings off the tower
-      c.save(); c.strokeStyle = 'rgba(242,193,78,' + (hn ? 0.9 : 0.45) + ')'; c.lineWidth = 2;
-      var k = hn ? ((Date.now() / 350) % 1) : 0.4;
-      for (var i = 0; i < 3; i++) { c.beginPath(); c.arc(x + s * 1.8, y + s * 2.4, s * (0.8 + i * 0.7 + k * 0.7), -0.7, 0.7); c.stroke(); }
-      c.restore();
+    if (f.step === 'fix') {
+      if (t < f.stepAt + 1500) return str(solo ? 'job.point.agreed.solo' : 'job.point.agreed', { n: n });
+      var k2 = kind === 'red' ? 'red' : kind === 'silent' ? 'silent' : 'none';
+      if (fx || solo || f.awake) {
+        if (f.lastRunAt != null && f.lastRunAt > f.stepAt && t < f.lastRunAt + 4000) return str(k2 === 'red' ? 'job.fix.stillred' : k2 === 'silent' ? 'job.fix.stillsilent' : 'job.fix.stillnone', { n: n, name: nm });
+        if (!fx && !solo && f.awake) return str('job.fix.wake');
+        return str(solo ? 'job.fix.' + k2 + '.solo' : 'job.fix.' + k2, { n: n, name: nm });
+      }
+      return str('job.fix.reader');
     }
-  }
-  function drawBay(T) {
-    var W = bay.width, Hh = bay.height; if (W < 4) return;
-    var c = bc, sc = W / 369; c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, Hh);
-    var h = Hh / sc; c.setTransform(sc, 0, 0, sc, 0, 0);
-    A.sea(c, 369, h, Math.min(90, h * 0.3), T);
-    var ws = isCh || STAGE === 'tour' ? E.windowSeats() : othersOf(seat).map(function (s) { return { seat: s, lamp: 0, horn: 0 }; });
-    var lit = 0, sz = Math.min(23, h / 9.5);
-    ws.forEach(function (v, i) {
-      var x = ws.length > 1 ? 70 + i * 140 : 150, y = Math.max(8, h * 0.08) + sz * 0.7;   // the lantern roof stands above y: keep it in the window
-      drawLight(c, v, x, y, ws.length > 1 ? sz * 0.82 : sz, T); if (v.lamp) lit++;
-    });
-    A.rocks(c, 325, h * 0.72, 22, T);
-    var p = isCh ? E.boat() : { x: 0, drifting: false };
-    var turning = isCh && (E.allDone(STAGE));
-    var bx = 52 + (p.x || 0) * 233, by = h * 0.76;   // the whole hull stays in the window at the start
-    A.fog(c, 369, h, T, Math.max(0.25, 0.85 - lit * 0.28 - (turning ? 0.3 : 0)));
-    A.boat(c, bx, by, Math.min(21, h / 12), turning ? 'cheer' : 'worried', T, turning ? 0 : 0.05);
-    if (p.drifting && p.x > 0.35) A.inset(c, 6, 6, 150, 82, 'worried', T);   // the puffins' faces, close up (art round 3)
-    if (isCh && E.paused()) { c.fillStyle = 'rgba(5,12,24,.45)'; c.fillRect(0, 0, 369, h); }
-  }
-
-  /* ---------- the radios ---------- */
-  var radioBuilt = '';
-  function buildRadios() {
-    var ws = E.windowSeats(), key = ws.map(function (v) { return v.seat; }).join('') + E.S.mode;
-    if (key === radioBuilt) return; radioBuilt = key;
-    var show = E.S.mode === 'pair';
-    $('radios').hidden = !show; if (!show) { $('radios').innerHTML = ''; return; }
-    $('radios').innerHTML = ws.map(function (v) {
-      return '<div class="radio" id="radio' + v.seat + '"><div class="rh"><span>' + esc(CALL[v.seat]) + '</span><span class="rv" id="rv' + v.seat + '"></span></div>' +
-        '<div class="rb">' + EN.SLIPS.map(function (k) { return '<button type="button" data-to="' + v.seat + '" data-slip="' + k + '">' + esc(R('radio.' + k)) + '</button>'; }).join('') + '</div>' +
-        '<div class="slip" id="slip' + v.seat + '"></div></div>';
-    }).join('');
-    Array.prototype.forEach.call($('radios').querySelectorAll('button'), function (b) {
-      b.onclick = function () {
-        SND.unlock(); E.radio(b.dataset.to, b.dataset.slip); SND.play('crackle');
-        b.classList.add('sent'); setTimeout(function () { b.classList.remove('sent'); }, 1200); render();
-      };
-    });
-  }
-  function paintRadios() {
-    if (E.S.mode !== 'pair') return;
-    E.windowSeats().forEach(function (v) {
-      var rv = $('rv' + v.seat); if (rv) rv.textContent = v.radio ? v.radio : '';
-      var sl = $('slip' + v.seat); if (!sl) return;
-      var last = null; E.S.slips.forEach(function (x) { if (x.from === v.seat && x.ch === STAGE) last = x; });
-      var t = last ? R('slip.' + last.slip, { SIGN: CALL[v.seat] }) : '';
-      if (sl.textContent !== t) sl.textContent = t;
-    });
-  }
-
-  /* ---------- the bounty board ---------- */
-  var KINDS = ['name', 'type', 'indent', 'called', 'return'];
-  function buildBoard(el, onPick) {
-    el.innerHTML = KINDS.map(function (k) {
-      var p = R('poster.' + k).split(' · ');
-      return '<button class="poster" type="button" data-k="' + k + '"><span class="pins"></span><b>' + esc(p[0]) + '</b>' + esc(p[1] || '') + '</button>';
-    }).join('');
-    Array.prototype.forEach.call(el.querySelectorAll('.poster'), function (b) { b.onclick = function () { onPick(b.dataset.k, b); }; });
-  }
-  function shake(b) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
-  function boardPick(k, b) {
-    SND.unlock();
-    var L = E.S.L[E.S.active];
-    if (L && L.nameQ.length) { var r = E.name(k); if (r && !r.right) shake(b); save(); render(); return; }
-    var bl = E.bar();
-    if (bl && bl.card && !E.S.cardPick) { var x = E.cardAnswer(k); if (!x.right) shake(b); render(); setTimeout(function () { E.nextCard(); render(); }, 1800); }
-  }
-  function paintBoard() {
-    var paid = {}; KINDS.forEach(function (k) { paid[k] = 0; });
-    E.S.local.forEach(function (s) { var bt = E.S.L[s].bounty; Object.keys(bt).forEach(function (id) { if (bt[id] === 'paid') paid[TwoLightsJudge.KIND[id]]++; }); });
-    var L = E.S.L[E.S.active], bl = E.bar(), ask = !!(L && L.nameQ.length) || !!(bl && bl.card && !E.S.cardPick);
-    Array.prototype.forEach.call($('board').querySelectorAll('.poster'), function (b) {
-      b.classList.toggle('ask', ask);
-      var n = paid[b.dataset.k], pins = b.querySelector('.pins');
-      if (pins.childNodes.length !== n) pins.innerHTML = new Array(n + 1).join('<i></i>');
-    });
-    var cr = E.crew();
-    $('crew').textContent = STAGE === 'ch4' ? R('crew.total', { n: cr.n, m: cr.m }) : '';
-  }
-
-  /* ---------- the code ---------- */
-  var ed = $('ed'), shownSeat = null, redLn = null;
-  function caretLine() { return ed.value.slice(0, ed.selectionStart).split('\n').length; }
-  function gutter() {
-    var n = ed.value.split('\n').length, out = [];
-    for (var i = 1; i <= Math.max(n, 1); i++) out.push(i === redLn ? '<b>' + i + '</b>' : String(i));
-    $('gutter').innerHTML = out.join('\n');
-    ed.style.height = 'auto'; ed.style.height = Math.max(ed.scrollHeight, $('code').clientHeight - 2) + 'px';
-  }
-  ed.addEventListener('input', function () { E.edit(ed.value, caretLine()); render(); });
-  ed.addEventListener('keydown', function (e) {
-    if (e.key === 'Tab') { e.preventDefault(); var s = ed.selectionStart; ed.value = ed.value.slice(0, s) + '    ' + ed.value.slice(ed.selectionEnd); ed.selectionStart = ed.selectionEnd = s + 4; E.edit(ed.value, caretLine()); render(); }
-    if (e.key === 'Enter') {   // keep the indent, as an editor would
-      var st = ed.selectionStart, ls = ed.value.lastIndexOf('\n', st - 1) + 1, ind = (ed.value.slice(ls, st).match(/^ */) || [''])[0];
-      if (/:\s*$/.test(ed.value.slice(ls, st))) ind += '    ';
-      if (ind) { e.preventDefault(); ed.value = ed.value.slice(0, st) + '\n' + ind + ed.value.slice(ed.selectionEnd); ed.selectionStart = ed.selectionEnd = st + 1 + ind.length; E.edit(ed.value, caretLine()); render(); }
+    if (f.step === 'name' || f.step === 'swap') {
+      if (f.name && !f.name.skipped) return str(f.name.right ? 'job.name.right' : 'job.name.wrong');
+      if (f.name && f.name.skipped) return str('swap.done', { n: f.no });
+      if (f.fixedAt != null && t < f.fixedAt + 2200) {
+        var e = st.ch.last && st.ch.last.effects || {}, key = 'job.fix.clean.next';
+        if (e.lamp && (f.id === 'S2' || f.id === 'S3' || f.id === 'Q3' || (f.id === 'S1' && st.ch.id === 'ch4'))) key = 'job.fix.clean.lamp';
+        if (e.horn && f.id === 'Q1') key = 'job.fix.clean.horn';
+        if (e.radio != null && f.id === 'Q2') key = 'job.fix.clean.radio';
+        return str(suffix(key), { n: e.radio });
+      }
+      return str(solo ? 'job.name.solo' : rd ? 'job.name.reader' : 'job.name.fixer');
     }
+    return '';
+  }
+
+  /* ---------- the code, run, console ---------- */
+  function editable(f) { return !!f && f.step === 'fix' && (isFx(f) || f.awake || isSolo()) && !st.paused; }
+  function renderCode(f) {
+    el.headcode.textContent = str('head.code'); el.headcon.textContent = str('head.con');
+    var src = f ? f.src : (st.ch ? st.ch.src : E.given('ch1', ROOM)), ed = editable(f);
+    var ls = src.split('\n'), gh = '';
+    var redLine = f && f.step !== 'run' && f.kind === 'red' ? f.right : null;
+    for (var i = 1; i <= ls.length; i++) gh += '<div class="' + (i === redLine && (f.step === 'point' || f.step === 'fix') ? 'b' : '') + '">' + i + '</div>';
+    setHtml(el.gutter, gh);
+    el.ed.classList.toggle('hide', !ed); el.view.classList.toggle('hide', ed);
+    if (ed) {
+      if (document.activeElement !== el.ed && el.ed.value !== src) el.ed.value = src;
+      el.ed.readOnly = false;
+    } else {
+      var mark = {};
+      if (f && f.step === 'point') { if (f.picks[SEAT] != null) mark[f.picks[SEAT]] = 'mine'; others().forEach(function (s) { if (f.picks[s] != null && !mark[f.picks[s]]) mark[f.picks[s]] = 'theirs'; }); }
+      if (f && f.step === 'fix' && f.right) mark[f.right] = 'right';
+      if (f && f.lookout && f.lookout.answered && st.now < f.lookout.at + 3000) { mark[f.lookout.want] = 'ok'; if (!f.lookout.right) mark[f.lookout.line] = 'right'; }
+      var quiet = !(f && (f.step === 'point' || (f.lookoutShown && !f.lookout.answered && isRd(f))));
+      el.view.className = quiet ? 'quiet' : '';
+      var h = ''; ls.forEach(function (l, i) { var n = i + 1; h += '<div class="ln' + (mark[n] ? ' ' + mark[n] : '') + '" data-n="' + n + '">' + (esc(l) || ' ') + '</div>'; });
+      setHtml(el.view, h);
+    }
+    var canRun = f && !st.paused && !el.card.classList.contains('show') && ((f.step === 'run' && (isRd(f) || isSolo())) || (f.step === 'fix' && (isFx(f) || f.awake || isSolo())));
+    el.run.disabled = !canRun;
+    el.run.textContent = str(f && (f.step === 'run' || f.step === 'fix') && !canRun && !st.paused ? 'run.wait' : 'run');
+    var r = f ? f.lastRun : null;
+    setHtml(el.con, r ? conHtml(r.console, r.red) : '');
+    var means = '';
+    if (f && f.runAt != null && (f.step === 'point' || f.step === 'fix') && r) {
+      if (r.run && r.run.error && SameLightStrings.S['means.' + r.run.error.type]) means = str('means.' + r.run.error.type);
+      else if (f.kind === 'silent') means = str('means.silent');
+      else if (f.kind === 'none') means = str('means.none');
+    }
+    el.means.textContent = means;
+  }
+  el.ed.addEventListener('input', function () {
+    pendingText = el.ed.value; clearTimeout(textTimer); textTimer = setTimeout(flushText, 150);
   });
-  ed.addEventListener('click', function () { E.S.L[E.S.active] && (E.S.L[E.S.active].line = caretLine()); });
-  $('run').onclick = function () {
-    SND.unlock(); var r = E.run(); if (!r) return; save();
-    if (r.red) SND.play('red');
-    if (E.S.mode !== 'pair' && E.S.L[E.S.active].done[STAGE] && E.S.local.some(function (s) { return !E.S.L[s].done[STAGE]; })) {
-      setTimeout(function () { var was = E.S.active; E.nextProgram(); if (E.S.active !== was) showOther(was); render(); }, Q.fast ? 600 : 2600);
-    }
-    render();
-  };
-  function showOther(s) {   // solo: she moves to the other light, and now sees the one she just lit
-    var v = E.windowSeats().filter(function (x) { return x.seat === s; })[0];
-    if (v && v.lamp) SND.play('lamp');
-    if (v && v.horn) { hornUntil[s] = Date.now() + 1400 * v.horn; setTimeout(function () { SND.play('horn'); }, 700); }
-  }
-  $('conwrap').onclick = function () { E.readRed(); render(); };
-  function paintCode() {
-    var s = E.S.active;
-    if (s !== shownSeat) { shownSeat = s; ed.value = E.code(s); $('filehead').textContent = PR.SEATS[s].file; }
-    var L = E.S.L[s], res = L && L.res[STAGE];
-    var done = L && L.done[STAGE];
-    ed.readOnly = !!done; $('run').disabled = !!done && E.S.mode === 'pair';
-    var red = res && res.red ? res.redText : '';
-    var m = red.match(/line (\d+)/g); redLn = m ? +m[m.length - 1].slice(5) : null;
-    var con = (res ? (res.console || []).map(esc).join('\n') : '') + (red ? (res.console && res.console.length ? '\n' : '') + '<span class="r">' + esc(red) + '</span>' : '');
-    if ($('con').innerHTML !== con) $('con').innerHTML = con;
-    gutter();
-  }
-
-  /* ---------- the bar, the help, presence ---------- */
-  var lastBar = '';
-  function paintBar() {
-    var b = E.bar(), t = b ? R(b.id, b.vars || {}) : '';
-    if (t !== lastBar) { lastBar = t; $('barline').textContent = t; $('barline').classList.remove('flash'); void $('barline').offsetWidth; $('barline').classList.add('flash'); }
-    var hp = E.help(), h = '';
-    if (E.S.late && isCh) {
-      var ls = E.lateLines();
-      if (ls.length) h = esc(R('late.line')) + '<div class="late">' + ls.map(function (x) { return x.n + '  ' + esc(x.text); }).join('\n') + '</div>';
-    } else if (hp) {
-      h = hp.id === 'help.putback' ? esc(R('help.name.3', { fix: hp.code, n: hp.line })) : esc(R(hp.id, hp.vars || {}));
-    }
-    if ($('help').innerHTML !== h) $('help').innerHTML = h;
-    var pr = E.presence().map(function (p) { return R(p.id, p.vars); }).join('   ');
-    if ($('pres').textContent !== pr) $('pres').textContent = pr;
-    var mine = topLine(E.S.active);
-    if ($('mine').textContent !== mine) $('mine').textContent = mine;
-    $('pause').textContent = R(E.paused() ? 'btn.carry' : 'btn.pause');
-    var lateOk = isCh && !E.S.late && T0 && Date.now() - T0 >= 45 * 60000;
-    $('late').hidden = !lateOk; $('late').textContent = R('btn.late');
-    var stageDone = isCh && (E.allDone(STAGE));
-    $('go').hidden = !stageDone || !turnShown; $('go').textContent = R('btn.next');
-    var bl = E.bar();
-    var cardOn = bl && bl.card && isCh;
-    $('card').hidden = !cardOn;
-    if (cardOn) {
-      var x = E.card(), pk = E.S.cardPick;
-      $('cardsrc').textContent = x.src;
-      $('cardsay').textContent = pk ? (pk.right ? R('poster.' + pk.kind).split(' · ')[0] + ' ✓' : R('poster.' + pk.kind).split(' · ')[0]) : R('bar.name');
-      fitCard(x.src);
-    }
-  }
-  /* the card's program must show whole, last line too (the fault is often there): a short bay (a half-width laptop, a
-     third radio) takes the code down a size or two until it fits, never below 10 px; past that the card scrolls */
-  var cardFit = '';
-  function fitCard(src) {
-    var card = $('card'), pre = $('cardsrc'), bay = $('baywrap');
-    var key = src + '|' + $('cardsay').textContent + '|' + bay.clientWidth + 'x' + bay.clientHeight;   // render runs 4 times a second, so a resize re-fits
-    if (key === cardFit) return;
-    cardFit = key; card.style.maxHeight = ''; card.style.overflowY = '';
-    for (var fs = 13; fs >= 10; fs--) {
-      pre.style.fontSize = fs + 'px'; pre.style.lineHeight = Math.round(fs * 1.38) + 'px';
-      if (card.offsetHeight <= bay.clientHeight && pre.scrollWidth <= pre.clientWidth) return;
-    }
-    card.style.maxHeight = bay.clientHeight + 'px'; card.style.overflowY = 'auto';
-  }
-  $('pause').onclick = function () { SND.unlock(); var on = !E.paused(); E.pause(on); SND.hold(on); save(); render(); };
-  $('late').onclick = function () { E.late(); save(); render(); };
-  $('go').onclick = function () { $('go').disabled = true; save(); post('next'); };
-  $('again').onclick = function () { startTour(false); };
-
-  /* ---------- events: sound and its drawn twin ---------- */
-  var turnShown = false, sayTimer = null;
-  E.on(function (e) {
-    if (e.type === 'peerrun') {
-      if (e.lamp) SND.play('lamp');
-      if (e.horn) { hornUntil[e.seat] = Date.now() + 1400 * e.horn; setTimeout(function () { SND.play('horn'); }, e.lamp ? 800 : 0); }
-    }
-    if (e.type === 'crackle' && !e.mine) { SND.play('crackle'); var r = $('radio' + e.from); if (r) { r.classList.remove('crackle'); void r.offsetWidth; r.classList.add('crackle'); } }
-    if (e.type === 'bounty' || e.type === 'cardright') SND.play('coin');
-    if (e.type === 'rewind') { SND.play('rewind'); rewindUntil = Date.now() + 2000; }
-    if (e.type === 'turning') { SND.play('cheer'); cheerAt = Date.now(); setTimeout(function () { turnShown = true; save(); render(); }, Q.fast ? 500 : 3000); }
-    if (e.type === 'pause') SND.hold(!!e.on);
-    if (e.type === 'say') say(R(e.id));
+  el.ed.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab') { e.preventDefault(); var s = el.ed.selectionStart, t = el.ed.selectionEnd; el.ed.value = el.ed.value.slice(0, s) + '    ' + el.ed.value.slice(t); el.ed.selectionStart = el.ed.selectionEnd = s + 4; el.ed.dispatchEvent(new Event('input')); }
   });
-  function say(t) {
-    $('saytext').textContent = t; $('say').hidden = false;
-    var g = $('saygrille').getContext('2d'); g.clearRect(0, 0, 80, 60); A.grille(g, 40, 30, 26, 1);
-    SND.play('crackle'); clearTimeout(sayTimer);
-    sayTimer = setTimeout(function () { $('say').hidden = true; }, pace(t) + 4000);
-  }
+  el.run.addEventListener('click', function () { if (!el.run.disabled) send('run', {}); });
+  el.view.addEventListener('click', function (e) {
+    var row = e.target.closest('.ln'); if (!row) return; var n = +row.getAttribute('data-n'), f = fault(); if (!f || st.paused) return;
+    if (f.step === 'point') send('point', { line: n });
+    else if (f.step === 'fix' && f.lookoutShown && !f.lookout.answered && isRd(f)) send('lookout', { line: n });
+  });
 
-  /* ---------- render + tick ---------- */
-  function render() {
-    if (!isCh && STAGE !== 'tour') return;
-    buildRadios(); paintRadios(); paintCode(); paintBar(); paintBoard();
-    $('black').hidden = Date.now() >= rewindUntil; $('black').textContent = R('rewind');
+  /* ---------- the bay side ---------- */
+  function ladderVars(f) {
+    var src = f.src, id = f.id, v = { n: f.right, name: E.FN[id] || '', d: '', text: '' };
+    if (id === 'S1') { v.d = E.lineOf(src, 'def lamp_on():'); v.text = 'lamp_on()'; }
+    if (id === 'Q1' || id === 'Q3') v.d = E.lineOf(src, E.DEF[id]);
+    return v;
   }
-  var lastSave = 0;
-  function frame(ms) { drawBay(ms / 1000); requestAnimationFrame(frame); }
-  function startMain() {
-    $('app').hidden = false; pills(); buildBoard($('board'), boardPick);
-    $('run').textContent = R('btn.run'); $('conhead').textContent = R('console.head');
-    $('again').textContent = R('btn.again'); $('again').hidden = !isCh;
-    fitBay(); window.addEventListener('resize', function () { fitBay(); render(); });
-    if (E.allDone(STAGE)) turnShown = true;
-    render(); requestAnimationFrame(frame);
-    setInterval(function () {
-      E.tick(); render();
-      if (Date.now() - lastSave > 15000) { lastSave = Date.now(); save(); }
-    }, 250);
-    document.title = 'ready';
-  }
-
-  /* ---------- the tour (six spotlights) ---------- */
-  var tourSteps = [];
-  function startTour(stageEnd) {
-    tourSteps = [['code', 'tour.1'], ['conwrap', 'tour.2'], ['baywrap', 'tour.3'], ['radios', 'tour.4'], ['boardwrap', 'tour.5'], ['baywrap', 'tour.6']]
-      .filter(function (s) { return s[0] !== 'radios' || !$('radios').hidden; });
-    var i = 0; $('tour').hidden = false;
-    function show() {
-      var last = i >= tourSteps.length;
-      var el = last ? $('right') : $(tourSteps[i][0]), r = el.getBoundingClientRect(), sp = $('spot');
-      sp.style.left = (r.left - 6) + 'px'; sp.style.top = (r.top - 6) + 'px'; sp.style.width = (r.width + 12) + 'px'; sp.style.height = (r.height + 12) + 'px';
-      $('tourstep').textContent = last ? '' : (i + 1) + ' / ' + tourSteps.length;
-      $('toursay').textContent = last ? R('tour.last') : R(tourSteps[i][1]).replace(/\. /g, '.\n');
-      $('tournext').textContent = R('btn.next');
-      var bx = $('tourbox'), bw = Math.min(420, innerWidth - 32), left = r.left < innerWidth / 2 ? Math.min(r.right + 16, innerWidth - bw - 16) : Math.max(16, r.left - bw - 16);
-      if (r.width > innerWidth * 0.6) left = (innerWidth - bw) / 2;
-      bx.style.left = left + 'px'; bx.style.top = Math.max(16, Math.min(r.top, innerHeight - 220)) + 'px';
-    }
-    $('tournext').onclick = function () {
-      SND.unlock(); i++;
-      if (i > tourSteps.length) { $('tour').hidden = true; if (stageEnd) { $('tournext').disabled = true; save(); post('next'); } return; }
-      show();
-    };
-    show();
-  }
-
-  /* ---------- the paced stages: ceremony and cold open ---------- */
-  var scene = $('scene'), sx = scene.getContext('2d');
-  function sceneLoop(draw) { (function f(ms) { if ($('stage').hidden) return; draw(sx, ms / 1000); requestAnimationFrame(f); })(0); }
-  function playLines(lines, then) {
-    var el = $('slines'); el.innerHTML = lines.map(function (l, i) { return '<p' + (i === 0 && l.big ? ' class="big"' : '') + '>' + esc(l.t) + '</p>'; }).join('');
-    var ps = el.querySelectorAll('p'), i = 0;
-    (function next() {
-      if (i >= ps.length) { then(); return; }
-      ps[i].classList.add('on'); var t = lines[i].t; i++;
-      setTimeout(next, pace(t));
-    })();
-  }
-  function ceremony() {
-    $('stage').hidden = false;
-    var o = othersOf(seat), lines = [{ t: R('cer.1'), big: 1 }];
-    if (!pair) { lines.push({ t: R('cer.solo') }); }
+  function ladderKind(f) { return f.kind === 'red' ? (f.lastRun && f.lastRun.run.error ? f.lastRun.run.error.type : 'NameError') : f.kind; }
+  function renderBaySide(f) {
+    var solo = isSolo(), rd = isRd(f);
+    el.crew.textContent = str(solo ? 'crew.solo' : 'crew', { n: st.fixedCount });
+    setHtml(el.helpbtn, '<img src="img/lifebuoy.svg" alt="">' + str('help.btn'));
+    var canHelp = f && (f.step === 'point' || f.step === 'fix') && (rd || solo) && !st.paused;
+    el.helpbtn.classList.toggle('hide', !canHelp);
+    // help ladder (shared steps from the fold; closing is local)
+    if (f && f.no !== L.help.no) { L.help = { closedAt: 0, no: f.no }; L.look = { closed: false, no: f.no }; }
+    var shown = f && (f.step === 'point' || f.step === 'fix') ? f.helpShown : 0;
+    if (shown > 0 && shown > L.help.closedAt) {
+      var k = ladderKind(f), v = ladderVars(f), h = '';
+      for (var i = 1; i <= shown; i++) h += (i === shown ? '<b class="top">' : '<span class="dim">') + str('help.' + k + '.' + i, v) + (i === shown ? '</b>' : '</span><br>');
+      h += '<div class="row">' + (shown < 3 && (rd || solo) ? '<button class="ghost" data-act="more">' + str('help.more') + '</button>' : '') + '<button class="ghost" data-act="close">' + str('help.close') + '</button></div>';
+      setHtml(el.help, h); el.help.classList.add('show');
+    } else el.help.classList.remove('show');
+    // lookout question (reader only)
+    var lk = f && f.step === 'fix' && rd && f.lookoutShown;
+    if (lk && !f.lookout.answered && !L.look.closed) { setHtml(el.look, '<span class="hand">' + str('look.' + st.ch.id) + '</span>'); el.look.classList.add('show'); }
+    else if (lk && f.lookout.answered && st.now < f.lookout.at + 3000) {
+      setHtml(el.look, '<span class="hand">' + str(f.lookout.right ? 'look.right' : 'look.wrong', { text: E.lineText(f.src, f.lookout.want), n: f.lookout.want }) + '</span>'); el.look.classList.add('show');
+    } else el.look.classList.remove('show');
+    // running out of time
+    if (L.late && st.ch) {
+      var want = fixedProgram(st.ch.id).split('\n'), have = st.ch.src.split('\n').map(J.norm), left = want.filter(function (l) { return l.trim() && l.trim()[0] !== '#' && have.indexOf(J.norm(l)) < 0; });
+      setHtml(el.late, '<b class="top">' + str('late.line') + '</b><pre style="margin:8px 0 0;font:14px/20px Menlo,monospace;white-space:pre">' + esc(left.join('\n')) + '</pre><div class="row"><button class="ghost" data-act="closelate">' + str('help.close') + '</button></div>');
+      el.late.classList.add('show');
+    } else el.late.classList.remove('show');
+    // the rocks
+    if (f && f.boat && f.boat.black) { setHtml(el.rocks, '<span class="hand">' + str('boat.rocks') + '</span>'); el.rocks.classList.add('show'); el.help.classList.remove('show'); el.look.classList.remove('show'); el.late.classList.remove('show'); } else el.rocks.classList.remove('show');
+    // fault cards
+    var pick = f && f.step === 'name' && !f.name && (rd || solo) && !st.paused;
+    setHtml(el.cards, cardsHtml(pick, f));
+    // partner line
+    if (solo || MODE === 'solo') el.partner.textContent = '';
     else {
-      lines.push({ t: R('cer.2', { mine: NAME(seat) }) });
-      if (seat === 'C') lines.push({ t: R('cer.3', { other: NAME(o[0]) + ' and the ' + NAME(o[1]) }) });
-      else { lines.push({ t: R('cer.3', { other: NAME(o[0]) }) }); if (o.length > 1) lines.push({ t: R('cer.trio') }); }
-      lines.push({ t: R('cer.4') }, { t: R('cer.5') });
+      var p = others().filter(function (s) { return !st.gone[s]; })[0], line = '';
+      if (p) {
+        var q = live.quiet(p, 20000);
+        if (f && f.typingBy === p && st.now - f.typingAt < 3000) line = str('partner.typing');
+        else if (q === true) line = str('partner.quiet');
+        else if (q === false) line = str('partner.here');
+      }
+      el.partner.textContent = line;
     }
-    var glowAt = Date.now();
-    sceneLoop(function (c, T) {
-      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, 1200, 520); var s = 1200 / 369; c.setTransform(s, 0, 0, s, 0, 0);
-      A.sea(c, 369, 160, 70, T); A.fog(c, 369, 160, T, 0.9);
-      var k = Math.max(0, 1 - ((Date.now() - glowAt) % 2600) / 2600);
-      A.grille(c, 184, 70, 34, k);
-    });
-    setTimeout(function () { SND.play('ceremony'); }, 300);
-    playLines(lines, function () {
-      $('snext').hidden = false; $('snext').textContent = R('btn.begin');
-      $('snext').onclick = function () { SND.unlock(); $('snext').disabled = true; post('begin'); post('next'); };
-    });
   }
-  function coldOpen() {
-    $('stage').hidden = false;
-    sceneLoop(function (c, T) {
-      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, 1200, 520); var s = 1200 / 369; c.setTransform(s, 0, 0, s, 0, 0);
-      A.sea(c, 369, 160, 40, T); A.rocks(c, 320, 120, 22, T);
-      A.lighthouse(c, 60, 14, 12, { awake: 0, t: T });
-      A.fog(c, 369, 160, T, 1); A.boat(c, 150 + Math.sin(T * 0.3) * 12, 118, 22, 'worried', T, 0.06);
-      A.inset(c, 6, 6, 120, 64, 'worried', T);
-    });
-    setTimeout(function () { SND.play('horn'); }, 600);
-    playLines([{ t: R('open.1') }, { t: R('open.2') }, { t: R('open.3') }, { t: R('open.4') }], function () {
-      $('snext').hidden = false; $('snext').textContent = R('btn.tour');
-      $('snext').onclick = function () { SND.unlock(); $('snext').disabled = true; save(); post('next'); };
-    });
+  el.help.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; if (b.getAttribute('data-act') === 'more') send('help', {}); else { L.help.closedAt = fault() ? fault().helpShown : 0; render(); } });
+  el.late.addEventListener('click', function (e) { if (e.target.closest('button')) { L.late = false; render(); } });
+  el.helpbtn.addEventListener('click', function () { L.help.closedAt = 0; send('help', {}); });
+  el.latebtn.addEventListener('click', function () { L.late = !L.late; render(); });
+  el.pausebtn.addEventListener('click', function () { send('pause', {}); });
+  el.cards.addEventListener('click', function (e) { var c = e.target.closest('.fcard.pick'); if (c) send('name', { card: c.getAttribute('data-card') }); });
+
+  /* ---------- the overlays: chapter, swap, pause, link ---------- */
+  function renderCard(f) {
+    var t = st.now, html = null;
+    if (st.ch && f && f.no && st.phase[0] === 'c') {
+      var c = st.ch, first = f.no === 1 || (c.ids.length && c.fixedIds.length === 0 && f.stepAt === c.startAt);
+      if (first && t < c.startAt + T.CARD) html = str('card.' + c.id) + (c.id === 'ch4' ? '<small>' + str('card.ch4.b') + '</small>' : '');
+      else if (first && t < c.startAt + T.CARD + T.SWAP) html = f.no === 1 ? str(isSolo() ? 'swap.first.solo' : isFx(f) ? 'swap.first.fixer' : 'swap.first.reader') : str(isSolo() ? 'swap.solo' : isFx(f) ? 'swap.fixer' : 'swap.reader', { n: f.no });
+      else if (f.step === 'swap') {
+        if (f.name && f.name.skipped) html = str('swap.done', { n: f.no });
+        else if (c.fixedIds.length < c.ids.length && f.no < E.TOTAL) { var nextNo = f.no + 1, nextFx = SEATS[(nextNo - 1) % SEATS.length]; if (st.gone[nextFx]) nextFx = SEATS.filter(function (s) { return !st.gone[s]; })[0]; html = str(isSolo() ? 'swap.solo' : nextFx === SEAT ? 'swap.fixer' : 'swap.reader', { n: nextNo }); }
+      }
+    }
+    if (html) { setHtml(el.card.querySelector('.big'), html); el.card.classList.add('show'); } else el.card.classList.remove('show');
+  }
+  function renderCurtain() {
+    if (st.paused) {
+      setHtml(el.curtain, '<div class="line">' + str('pause.curtain') + '</div><button class="btn" data-act="carry">' + str('pause.carry') + '</button><button class="ghost" data-act="again">' + str('tour.again') + '</button>');
+      el.curtain.classList.add('show');
+    } else el.curtain.classList.remove('show');
+    Snd.hold(!!st.paused);
+  }
+  el.curtain.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; if (b.getAttribute('data-act') === 'carry') send('carry', {}); else { L.tour = { i: 0, again: true }; send('carry', {}); } });
+  function renderLink() {
+    if (MODE === 'solo') { el.linkbar.classList.remove('show'); return; }
+    var seen = others().some(function (s) { return live.quiet(s, 1e12) !== null; });
+    if (!seen && L.pairOpenedAt != null && Date.now() - L.pairOpenedAt > T.LINK / K) L.linkLost = true;
+    if (seen && L.linkLost) { L.linkLost = false; toast(str('link.back')); }
+    var goneAny = others().some(function (s) { return st.gone[s]; }); // a partner the fold counts as gone (spec §7, link.gone)
+    if (L.linkLost && st.phase !== 'pre1' || (L.linkLost && mine().stage !== 'sound' && mine().stage !== 'pair')) { el.linkbar.textContent = str('link.slow'); el.linkbar.className = 'show'; }
+    else if (goneAny) { el.linkbar.textContent = str('link.gone'); el.linkbar.className = 'show'; }
+    else el.linkbar.className = '';
+    // the bar pushes the page down rather than covering the chapter strip and Pause
+    document.body.classList.toggle('linkon', el.linkbar.className === 'show');
   }
 
-  /* ---------- home ---------- */
-  function home() {
-    $('home').hidden = false; post('done', { save: E.snapshot() });
-    var hs = $('homescene'), c = hs.getContext('2d');
-    (function f(ms) {
-      var T = ms / 1000; c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, 1200, 420); var s = 1200 / 369; c.setTransform(s, 0, 0, s, 0, 0);
-      A.sea(c, 369, 130, 40, T); A.beam(c, 60, 12, 300, T, 1, 1); A.lighthouse(c, 60, 12, 11, { awake: 1, smile: 1, t: T });
-      A.beam(c, 310, 12, 300, T + 2, 1, -1); A.lighthouse(c, 310, 12, 11, { awake: 1, smile: 1, t: T });
-      A.boat(c, 185, 100, 22, 'cheer', T, 0);
-      if (!$('home').hidden) requestAnimationFrame(f);
-    })(0);
-    SND.play('cheer');
-    var paid = 0, m = 0; E.S.local.forEach(function (s) { var b = E.S.L[s].bounty; for (var k in b) if (b[k] === 'paid') paid++; m += 3; });
-    if (!m) m = 3;
-    function body(names) {
-      var h = '<p>' + esc(R('home.1')) + '</p>';
-      if (!pair || E.S.mode !== 'pair') h += '<p class="reveal">' + esc(R('home.solo')) + '</p>';
-      else othersOf(seat).forEach(function (o) {
-        var first = names && names['ABC'.indexOf(o)];
-        if (first) h += '<p class="reveal">' + esc(R('home.reveal', { other: NAME(o), first: first })) + '</p>';
-      });
-      h += '<p>' + esc(R('home.bounties', { n: paid, m: m, badges: 'Red Reader, Radio Keeper, Bounty Hunter' })) + '</p>';
-      $('hbody').innerHTML = h;
-    }
-    body(NAMES);
-    window.addEventListener('message', function (ev) { var d = ev.data || {}; if (d.type === 'names' && d.names) { NAMES = d.names; body(NAMES); } });
-    if (bus && bus.fb) setTimeout(function () { bus.fb.destroy(); }, Q.fast ? 1500 : 6000);   // Home deletes the room (§10)
-    setTimeout(function () {
-      $('hnext').hidden = false; $('hnext').textContent = R('btn.exit');
-      $('hnext').onclick = function () { $('hnext').disabled = true; post('next'); };
-    }, Q.fast ? 300 : 4000);
-    document.title = 'ready';
+  /* ---------- the tour ---------- */
+  var TOUR = [{ t: 'code', k: MODE === 'solo' ? 'tour.1.solo' : 'tour.1' }, { t: 'conwrap', k: 'tour.2' }, { t: 'baywrap', k: 'tour.3' }, { t: 'steps', k: 'tour.4a', k2: 'tour.4b' }];
+  function renderTour(on) {
+    if (!on) { el.tour.classList.remove('show'); return; }
+    var i = Math.min(L.tour.i, 3), step = TOUR[i], tg = $(step.t).getBoundingClientRect(), W = innerWidth, H = innerHeight;
+    el.ring.style.left = (tg.left - 4) + 'px'; el.ring.style.top = (tg.top - 4) + 'px'; el.ring.style.width = (tg.width + 8) + 'px'; el.ring.style.height = (tg.height + 8) + 'px';
+    setHtml(el.tcard, str(step.k) + (step.k2 ? '<br>' + str(step.k2) : '') + '<div class="row"><button class="btn" data-act="' + (i < 3 ? 'next' : 'start') + '">' + str(i < 3 ? 'tour.next' : 'tour.start') + '</button></div>');
+    el.tour.classList.add('show');
+    var cw = el.tcard.offsetWidth || 300, ch = el.tcard.offsetHeight || 150, cx, cy, tcx = tg.left + tg.width / 2, tcy = tg.top + tg.height / 2;
+    if (W >= 980 && tg.width < W - cw - 64) { cx = tcx < W / 2 ? Math.min(W - cw - 16, tg.right + 24) : Math.max(16, tg.left - cw - 24); cy = Math.max(60, Math.min(H - ch - 16, tcy - ch / 2)); }
+    else { cx = Math.max(16, Math.min(W - cw - 16, tcx - cw / 2)); cy = tcy < H / 2 ? Math.min(H - ch - 16, tg.bottom + 16) : Math.max(60, tg.top - ch - 16); }
+    el.tcard.style.left = cx + 'px'; el.tcard.style.top = cy + 'px';
   }
+  el.tcard.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.getAttribute('data-act') === 'next') { L.tour.i++; render(); }
+    else if (L.tour.again) { L.tour.again = false; L.tour.i = 0; render(); }
+    else send('ready', { stage: 'tour' });
+  });
 
-  /* ---------- extras: more posters ---------- */
-  function extras() {
-    $('extras').hidden = false; $('xhead').textContent = R('extras.1');
-    var i = 0, done = {};
-    function want(x, r) {
-      if (r.error) return false;
-      if (x.want.print) return (r.out || []).join('\n').indexOf(x.want.print) >= 0;
-      if (x.want.fx) return (r.effects || []).some(function (e) { return e.fx === x.want.fx; });
-      if (x.want.radio) return (r.effects || []).some(function (e) { return e.fx === 'radio' && String(e.v && typeof e.v === 'object' ? e.v.v : e.v) === x.want.radio; });
-      return false;
-    }
-    function show() {
-      var x = PR.EXTRAS[i], fixed = false;
-      $('xbody').innerHTML = '<div style="font-size:13px;color:#6b5a3a">' + (i + 1) + ' / ' + PR.EXTRAS.length + '</div><textarea class="xsrc" id="xsrc" spellcheck="false" wrap="off"></textarea>' +
-        '<button class="btn" id="xrun" type="button"></button><pre id="xcon"></pre><div id="xboard"></div>' +
-        '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px"><button class="btn" id="xnext" type="button" hidden></button><button class="ghost" id="xfin" type="button" style="color:#1b1405;border-color:#b9a77d"></button></div>';
-      $('xsrc').value = x.src; $('xrun').textContent = R('btn.run'); $('xnext').textContent = R('btn.next');
-      $('xfin').textContent = (H && H.finishLabel) || 'Finish';
-      $('xfin').onclick = function () { save(); post('next'); };
-      buildBoard($('xboard'), function (k, b) {
-        if (!fixed || done[x.id]) return;
-        if (k === x.kind) { done[x.id] = 1; SND.play('coin'); b.querySelector('.pins').innerHTML = '<i></i>'; if (i < PR.EXTRAS.length - 1) $('xnext').hidden = false; }
-        else shake(b);
-      });
-      $('xrun').onclick = function () {
-        SND.unlock(); var r;
-        try { r = PyRun.run($('xsrc').value, { file: 'poster.py' }); } catch (e) { r = { out: [], effects: [], red: '' }; }
-        $('xcon').innerHTML = (r.out || []).map(esc).join('\n') + (r.red ? '<span class="r">' + esc(r.red) + '</span>' : '');
-        if (r.red) SND.play('red');
-        if (want(x, r)) { fixed = true; Array.prototype.forEach.call($('xboard').querySelectorAll('.poster'), function (p) { p.classList.add('ask'); }); }
-      };
-      $('xnext').onclick = function () { i++; show(); };
-    }
-    show(); document.title = 'ready';
+  /* ---------- the full pages ---------- */
+  function setPage(key, html) { if (L.pageKey !== key) { el.page.innerHTML = '<div class="pg">' + html + '</div>'; L.pageKey = key; } el.page.classList.add('show'); el.app.classList.add('hide'); el.card.classList.remove('show'); el.tour.classList.remove('show'); }
+  function pageSound() {
+    var s = L.sound.stage, h = '<img class="big" src="img/headphones.svg" alt=""><h1>' + str('sound.put') + '</h1>';
+    if (s === 0) h += '<p class="line">' + str('sound.press') + '</p><div class="row"><button class="btn" data-act="horn">' + str('sound.btn') + '</button></div>';
+    if (s === 1) h += '<p class="line">' + str('sound.ask') + '</p><div class="row"><button class="btn" data-act="yes">' + str('sound.yes') + '</button><button class="ghost" data-act="no">' + str('sound.no') + '</button></div>';
+    if (s === 2) h += '<p class="line">' + str('sound.check') + '</p><div class="row"><button class="btn" data-act="horn">' + str('sound.btn') + '</button><button class="ghost" data-act="without">' + str('sound.without') + '</button></div>';
+    setPage('sound' + s, h);
   }
+  function pagePair() {
+    if (L.pair.at == null) { L.pair.at = Date.now(); L.pairOpenedAt = Date.now(); }
+    if (Date.now() < L.pair.at + 2200 / K) { setPage('pair0', '<div class="radar"></div><h1>' + str('pair.finding') + '</h1>'); return; }
+    var solo = MODE === 'solo' || L.linkLost, trio = MODE === 'trio', h;
+    if (solo) h = '<h1>' + str('pair.solo.1') + '</h1><p class="line">' + str('pair.solo.2') + '</p><p class="line">' + str('pair.solo.3') + '</p>';
+    else h = '<h1>' + str('pair.1') + '</h1><p class="line">' + str('pair.2') + '</p><p class="line">' + str(trio ? 'pair.3.trio' : 'pair.3') + '</p><p class="line">' + str(trio ? 'pair.4.trio' : 'pair.4') + '</p><p class="line">' + str('pair.5') + '</p>';
+    h += '<div class="row"><button class="btn" data-act="pair">' + str('pair.begin') + '</button></div>';
+    // the one-laptop card (link never came) is its own page, so it replaces the pair card when the 10 s run out
+    var pk = solo ? 'pair1s' : 'pair1'; if (L.pageKey !== 'pair1' && L.pageKey !== 'pair1s') Snd.play('ceremony');
+    setPage(pk, h);
+  }
+  function pageCold() {
+    if (L.cold.at == null) L.cold.at = Date.now();
+    var n = Math.min(5, 1 + Math.floor((Date.now() - L.cold.at) / (700 / K))), h = '';
+    for (var i = 1; i <= n; i++) h += '<p class="line">' + str('cold.' + i) + '</p>';
+    if (n >= 5) h += '<div class="row"><button class="btn" data-act="cold">' + str('cold.btn') + '</button></div>';
+    setPage('cold' + n, h);
+  }
+  var R1 = 'def lamp_on():\n    light(beam)\n\nlamp_on()', R2 = 'blasts = 2\n\ndef fog_horn():\n    horn(blasts)';
+  var T3A = 'def bearing():\n    print(214)\n\nb = bearing()\nradio(b)', T3B = 'def bearing():\n    return 214\n\nb = bearing()\nradio(b)';
+  function pageR1() {
+    var p = L.r1.pick, mark = {}; if (p != null) { mark[4] = 'ok'; if (p !== 4) mark[p] = 'right'; }
+    var h = '<h1>' + str('r1.title') + '</h1><div class="prog' + (p == null ? ' ask' : '') + '" data-ask="r1">' + progHtml(R1, { mark: mark }) + '</div><p class="line">' + str('r1.a') + '</p><p class="line">' + str('r1.b') + '</p><p class="line"><b>' + str('r1.ask') + '</b></p>';
+    h += '<div class="verdict">' + (p == null ? '' : str(p === 4 ? 'r1.right' : 'r1.wrong')) + '</div>';
+    if (p != null) h += '<div class="row"><button class="btn" data-act="r1">' + str('r.watch') + '</button></div>';
+    setPage('r1' + p, h);
+  }
+  function pageR2() {
+    var p = L.r2.pick, opts = seededShuffle(['r2.opt.1', 'r2.opt.2', 'r2.opt.3'], ROOM + 'r2'), h = '<h1>' + str('r2.title') + '</h1><div class="prog">' + progHtml(R2) + '</div><div class="con"></div><p class="line">' + str('r2.a') + '</p><p class="line">' + str('r2.b') + '</p><p class="line"><b>' + str('r2.ask') + '</b></p><div class="opts">';
+    opts.forEach(function (k) { h += '<button class="opt' + (p != null ? (k === 'r2.opt.1' ? ' ok' : k === p ? ' no' : '') : '') + '" data-opt="' + k + '">' + str(k) + '</button>'; });
+    h += '</div><div class="verdict">' + (p == null ? '' : str(p === 'r2.opt.1' ? 'r2.right' : 'r2.wrong')) + '</div>';
+    if (p != null) h += '<div class="row"><button class="btn" data-act="r2">' + str('r.watch') + '</button></div>';
+    setPage('r2' + p, h);
+  }
+  function pageT3() {
+    var h = '<h1>' + str('t3.title') + '</h1>';
+    if (L.t3.page === 1) { h += '<div class="prog">' + progHtml(T3A, { mark: { 2: 'hot' } }) + '</div><div class="con">214\n<span class="r">The radio got None.</span></div><p class="line">' + str('t3.a') + '</p><p class="line">' + str('t3.b') + '</p><div class="row"><button class="btn" data-act="t3next">' + str('t3.next') + '</button></div>'; setPage('t3a', h); return; }
+    var p = L.t3.pick, opts = seededShuffle(['t3.opt.1', 't3.opt.2', 't3.opt.3'], ROOM + 't3');
+    h += '<div class="prog">' + progHtml(T3B, { mark: { 2: 'ok' } }) + '</div><div class="con">The radio got 214.</div><p class="line">' + str('t3.c') + '</p><p class="line">' + str('t3.d') + '</p><p class="line"><b>' + str('t3.ask') + '</b></p><div class="opts">';
+    opts.forEach(function (k) { h += '<button class="opt' + (p != null ? (k === 't3.opt.1' ? ' ok' : k === p ? ' no' : '') : '') + '" data-opt="' + k + '">' + str(k) + '</button>'; });
+    h += '</div><div class="verdict">' + (p == null ? '' : str(p === 't3.opt.1' ? 't3.right' : 't3.wrong')) + '</div>';
+    if (p != null) h += '<div class="row"><button class="btn" data-act="t3">' + str('r.watch') + '</button></div>';
+    setPage('t3b' + p, h);
+  }
+  function pageWait() { setPage('wait', '<h1>' + str('partner.reading') + '</h1><div class="cardsrow">' + cardsHtml(false, null) + '</div>'); }
+  function pageWorked() {
+    var w = E.W[st.w.id], t = st.now - st.w.startAt, src = w.src, mark = {}, con = '', cap = str(w.kind === 'red' ? 'w.run.red' : 'w.run'), cards = null, stepNo = 1, fixT = 14000;
+    var fixLen = w.fix.length, typed = Math.max(0, Math.min(fixLen, Math.floor((t - fixT) / (7000 / fixLen))));
+    if (t >= 2000) con = conHtml(w.kind === 'none' ? ['Bearing 214'] : [], w.red || (w.kind === 'silent' ? '' : '')) + (w.kind === 'none' ? '\n<span class="r">The radio got None.</span>' : '');
+    if (t >= 7000) { mark[w.line] = 'right'; cap = str('w.point', { n: w.line }); stepNo = 2; }
+    if (t >= fixT) {
+      stepNo = 3; cap = str('w.fix', { text: w.fix }); var part = w.fix.slice(0, typed), ls = src.split('\n');
+      if (w.append) { ls.push(part); src = ls.join('\n'); mark[ls.length] = 'hot'; delete mark[w.line]; }
+      else if (w.insertAfter) { ls.splice(w.insertAfter, 0, part); src = ls.join('\n'); mark[w.insertAfter + 1] = 'hot'; delete mark[w.line]; }
+      else { ls[w.line - 1] = part; src = ls.join('\n'); mark[w.line] = 'hot'; }
+    }
+    if (t >= 22000) { stepNo = 4; con = conHtml(w.out, ''); if (w.kind === 'none') con += (con ? '\n' : '') + 'The radio got 214.'; mark = {}; cap = str('w.name', { text: str('fault.' + w.card) }); cards = w.card; }
+    if (t >= 28000) cap = str(isSolo() ? 'w.turn.solo' : 'w.turn');
+    // a stable shell per example: the parts update in place, so a click on Skip never lands on a torn-down button
+    var skipped = st.w.skipped[SEAT], key = 'w' + st.w.id;
+    if (L.pageKey !== key) setPage(key, '<div class="w"><h1>' + str('w.title') + '</h1><span class="step" id="wstep"></span><div class="prog" id="wprog"></div><div class="con" id="wcon"></div><p class="cap" id="wcap"></p><div class="cardsrow" id="wcards"></div><p class="sub" id="wsub"></p><div class="row" id="wrow"></div></div>');
+    var q = function (id) { return el.page.querySelector('#' + id); };
+    setHtml(q('wstep'), str('step.' + stepNo)); setHtml(q('wprog'), progHtml(src, { mark: mark })); setHtml(q('wcon'), con); setHtml(q('wcap'), esc(cap));
+    setHtml(q('wcards'), cards ? ['red', 'silent', 'none'].map(function (id) { return '<div class="fcard' + (id === cards ? ' lit' : '') + '"><b>' + str('fault.' + id) + '</b><span>' + str('fault.' + id + '.line') + '</span></div>'; }).join('') : '');
+    setHtml(q('wsub'), skipped ? str('partner.watching') : '');
+    setHtml(q('wrow'), (!skipped && t >= T.W_SKIP) ? '<button class="ghost" data-act="skip">' + str('w.skip') + '</button>' : '');
+  }
+  function pageHome() {
+    if (L.home === 'end') { setPage('end', '<h1>' + str('home.1') + '</h1><p class="line">' + str('home.proto') + '</p><div class="row"><button class="ghost" data-act="extras">' + str('home.extras') + '</button></div>'); return; }
+    if (L.home === 'extras') { pageExtras(); return; }
+    if (EMB && MODE !== 'solo' && !L.askedNames) { L.askedNames = true; post({ type: 'names' }); }
+    var names = others().map(function (s) { return NAMES[s]; }), known = names.every(Boolean), reveal = MODE === 'solo' ? str('home.reveal.solo') : names.length >= 2 ? str('home.reveal.trio', { name: names[0], name2: names[1] }) : str('home.reveal', { name: names[0] });
+    var h = '<h1>' + str('home.1') + '</h1>' + (known || MODE === 'solo' ? '<p class="line">' + reveal + '</p>' : '') + '<p class="line">' + str(MODE === 'solo' ? 'home.score.solo' : 'home.score', { n: st.fixedCount, c: st.coins }) + '</p><p class="line">' + str('home.badges') + '</p><div>';
+    st.badges.forEach(function (b) { h += '<span class="badge">' + str('badge.' + b).replace('Badge earned: ', '').replace('.', '') + '</span>'; });
+    h += '</div><div class="row"><button class="btn" data-act="five">' + str('home.btn') + '</button><button class="ghost" data-act="extras">' + str('home.extras') + '</button></div>';
+    setPage('home', h);
+  }
+  function pageExtras() {
+    var X = st.extras[SEAT], h = '<h1>' + str('extras.line') + '</h1>';
+    if (!L.extra.id) {
+      h += '<p class="sub">' + str('extras.pick') + '</p><div class="xlist">';
+      PR.EXTRAS.forEach(function (x) { h += '<button data-x="' + x.id + '" class="' + (X.done[x.id] ? 'done' : '') + '">' + str('extras.' + x.id) + (X.done[x.id] ? ' ✓' : '') + '</button>'; });
+      h += '</div><div class="row"><button class="ghost" data-act="home">' + str('pill.home') + '</button></div>';
+      setPage('xlist' + Object.keys(X.done).length, h); return;
+    }
+    var x = PR.EXTRAS.filter(function (q) { return q.id === L.extra.id; })[0], last = X.last && X.last.id === x.id ? X.last : null;
+    h += '<p class="line"><b>' + str('extras.' + x.id) + '</b></p><textarea class="xed" id="xed" spellcheck="false">' + esc(L.extra.src) + '</textarea><div class="row"><button class="btn" data-act="xrun">' + str('run') + '</button><button class="ghost" data-act="xback">' + str('extras.back') + '</button></div>';
+    h += '<div class="con">' + (last ? conHtml(last.console, last.red) : '') + '</div><div class="verdict">' + (last && last.fixed ? str('extras.fixed') : '') + '</div>';
+    if (L.pageKey !== 'x' + x.id) { setPage('x' + x.id, h); } else { var c = el.page.querySelector('.con'), v = el.page.querySelector('.verdict'); c.innerHTML = last ? conHtml(last.console, last.red) : ''; v.textContent = last && last.fixed ? str('extras.fixed') : ''; }
+  }
+  el.page.addEventListener('click', function (e) {
+    var b = e.target.closest('button'), ln = e.target.closest('.prog.ask .ln');
+    if (ln) { L.r1.pick = +ln.getAttribute('data-n'); render(); return; }
+    if (!b) return;
+    var act = b.getAttribute('data-act'), opt = b.getAttribute('data-opt'), x = b.getAttribute('data-x');
+    if (opt) { if (opt.indexOf('r2') === 0 && L.r2.pick == null) L.r2.pick = opt; if (opt.indexOf('t3') === 0 && L.t3.pick == null) L.t3.pick = opt; render(); return; }
+    if (x) { L.extra = { id: x, src: PR.EXTRAS.filter(function (q) { return q.id === x; })[0].src, last: null }; render(); return; }
+    if (act === 'horn') { Snd.play('horn'); L.sound.stage = 1; render(); }
+    else if (act === 'yes') soundDone(false);
+    else if (act === 'no') { L.sound.stage = 2; render(); }
+    else if (act === 'without') soundDone(true);
+    else if (act === 'pair') send('ready', { stage: 'pair' });
+    else if (act === 'cold') send('ready', { stage: 'cold' });
+    else if (act === 'r1') send('ready', { stage: 'r1' });
+    else if (act === 'r2') send('ready', { stage: 'r2' });
+    else if (act === 't3next') { L.t3.page = 2; render(); }
+    else if (act === 't3') send('ready', { stage: 't3' });
+    else if (act === 'skip') send('skip', {});
+    else if (act === 'five') { L.home = 'end'; send('ready', { stage: 'home' }); post({ type: 'done' }); }
+    else if (act === 'extras') { L.home = 'extras'; L.extra.id = null; if (!mine().ready.home) send('ready', { stage: 'home' }); else render(); }
+    else if (act === 'home') { if (EXTRAS) { post({ type: 'done' }); return; } L.home = 'home'; render(); }
+    else if (act === 'xback') { L.extra.id = null; render(); }
+    else if (act === 'xrun') { L.extra.src = $('xed').value; send('extra', { id: L.extra.id, src: L.extra.src }); }
+  });
 
-  /* ---------- go ---------- */
-  window.TLUI = { E: E, R: R, bus: bus, render: render, goFallback: goFallback, stage: STAGE, tour: startTour };
-  if (STAGE === 'radio') ceremony();
-  else if (STAGE === 'coldopen') coldOpen();
-  else if (STAGE === 'tour') { startMain(); setTimeout(function () { startTour(true); }, 300); }
-  else if (isCh) startMain();
-  else if (STAGE === 'home') home();
-  else if (STAGE === 'extras') extras();
-  post('ready');
+  /* ---------- the bay canvas ---------- */
+  var wall0 = Date.now();
+  function drawBay() {
+    var c = el.bay.getContext('2d'), W = el.bay.clientWidth, H = el.bay.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+    if (!W || !H || !st) return;
+    if (el.bay.width !== Math.round(W * dpr)) { el.bay.width = Math.round(W * dpr); el.bay.height = Math.round(H * dpr); }
+    c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+    var sc = W / 369, h = H / sc, Tm = (Date.now() - wall0) / 1000, f = fault(), bay = st.bay, lamp = bay.lamp ? 1 : 0;
+    var done = (st.ch && st.ch.done) || st.phase === 'home', p = f && f.boat ? f.boat : { x: 0, drifting: false, black: false };
+    c.save(); c.scale(sc, sc);
+    A.sea(c, 369, h, Math.min(90, h * 0.3), Tm);
+    var sz = Math.min(23, h / 9.5), x = 150, y = Math.max(8, h * 0.08) + sz * 0.7;
+    if (lamp) A.beam(c, x, y, sz * 11, Tm + x, 1, 1);
+    A.lighthouse(c, x, y, sz, { awake: lamp, smile: done ? 1 : 0, t: Tm, blink: 0 });
+    if (Date.now() < L.hornUntil) { c.save(); c.strokeStyle = 'rgba(242,193,78,.9)'; c.lineWidth = 1.2; var k = ((Date.now() % 900) / 900); for (var i = 0; i < 3; i++) { c.beginPath(); c.arc(x + sz * 1.8, y + sz * 2.4, sz * (0.8 + i * 0.7 + k * 0.7), -0.7, 0.7); c.stroke(); } c.restore(); }
+    A.rocks(c, 325, h * 0.72, 22, Tm);
+    var bx = 52 + (p.x || 0) * 233, by = h * 0.76;
+    A.boat(c, bx, by, Math.min(21, h / 12), done ? 'cheer' : 'worried', Tm, 0.05);
+    var lit = lamp + (bay.horn ? 1 : 0) + (bay.radio != null ? 1 : 0);
+    A.fog(c, 369, h, Tm, Math.max(0.25, 0.85 - lit * 0.28));
+    if (p.drifting && p.x > 0.35) A.inset(c, 6, 6, 150, 82, 'worried', Tm);
+    if (bay.radio != null) { c.save(); c.fillStyle = 'rgba(8,20,42,.8)'; A.rrect(c, 369 - 96, 8, 88, 22, 6); c.fill(); c.fillStyle = '#7fe0a8'; c.font = '600 11px Space Grotesk, sans-serif'; c.fillText('RADIO ' + bay.radio, 369 - 88, 23); c.restore(); }
+    if (p.black) { c.fillStyle = 'rgba(2,6,14,.92)'; c.fillRect(0, 0, 369, h); }
+    if (st.paused) { c.fillStyle = 'rgba(5,12,24,.45)'; c.fillRect(0, 0, 369, h); }
+    c.restore();
+  }
+  function loop() { try { if (st && !el.app.classList.contains('hide')) drawBay(); } catch (e) { console.error(e); } requestAnimationFrame(loop); }
+
+  /* ---------- transitions: sounds, toasts, the rocks ---------- */
+  function transitions() {
+    if (!prev) return;
+    var f = fault(), pf = prev.ch && prev.ch.fault;
+    if (f && f.lastRun && (!pf || pf.lastRun !== f.lastRun) && f.lastRunAt != null && f.lastRunAt > (pf && pf.lastRunAt || 0) && f.lastRun.shout) Snd.play('red');
+    if (f && f.runAt != null && (!pf || pf.runAt !== f.runAt) && f.lastRun && f.lastRun.shout) Snd.play('red');
+    if (st.bay.lamp && !prev.bay.lamp) Snd.play('lamp');
+    if (st.bay.horn && !prev.bay.horn) { Snd.play('horn'); L.hornUntil = Date.now() + 3000; }
+    if (st.bay.radio != null && prev.bay.radio == null) Snd.play('crackle');
+    if (st.coins > prev.coins) Snd.play('coin');
+    if (f && f.boat && f.boat.black && !(pf && pf.boat && pf.boat.black)) Snd.play('rewind');
+    if (st.badges.length > prev.badges.length) { Snd.play('cheer'); toast(str('badge.' + st.badges[st.badges.length - 1]), 2800); }
+    if (prev.phase[0] === 'c' && st.phase[0] !== 'c') Snd.play('cheer');
+  }
+  function watchRocks() { var f = fault(); if (f && f.rocksAt != null && st.now >= f.rocksAt && !st.paused) send('boat', { fail: true }); }
+
+  /* ---------- render ---------- */
+  function render() {
+    if (!live) { if (L.begun) setPage('pair0', '<div class="radar"></div><h1>' + str('pair.finding') + '</h1>'); else pageSound(); return; }
+    if (EXTRAS) { refold(); prev = st; L.home = 'extras'; pageExtras(); tellParent(); return; }
+    refold(); transitions(); prev = st; tellParent();
+    var stage = mine().stage, f = fault();
+    if (Date.now() > L.toastUntil) el.toast.classList.remove('show');
+    renderLink(); renderCurtain();
+    // one column (a narrow window): the cards sit below the bay, so the Name step scrolls down to them and the next Run scrolls back up
+    var sk = f ? f.no + ':' + f.step : ''; if (sk !== L.scrollStep) { L.scrollStep = sk; if (f && window.innerWidth < 980) { var m = $('main'); m.scrollTo({ top: f.step === 'name' ? m.scrollHeight : 0, behavior: 'smooth' }); } }
+    if (st.phase === 'home' && stage === 'home') { pageHome(); renderTour(false); el.card.classList.remove('show'); return; }
+    if (st.phase === 'home') { pageHome(); renderTour(false); el.card.classList.remove('show'); return; }
+    if (stage === 'sound') { pageSound(); return; }
+    if (stage === 'pair') { pagePair(); return; }
+    if (stage === 'cold') { pageCold(); return; }
+    if (stage === 'r1') { pageR1(); return; }
+    if (stage === 'r2') { pageR2(); return; }
+    if (stage === 't3') { pageT3(); return; }
+    if (stage === 'wait') { pageWait(); return; }
+    if (stage === 'watch') { pageWorked(); return; }
+    // the hour layout (tour or chapter)
+    el.page.classList.remove('show'); el.app.classList.remove('hide'); L.pageKey = '';
+    renderStrip(); renderSteps(stage === 'tour' ? null : f); el.job.textContent = stage === 'tour' ? '' : jobLine(f);
+    renderCard(f); renderCode(stage === 'tour' ? null : f); renderBaySide(stage === 'tour' ? null : f);
+    renderTour(stage === 'tour' || L.tour.again);
+    if (stage === 'tour') { el.run.disabled = true; el.run.textContent = str('run'); el.helpbtn.classList.add('hide'); setHtml(el.cards, cardsHtml(false, null)); el.crew.textContent = ''; }
+    watchRocks();
+  }
+  /* the sound check is done before the room exists, so it rides in with the first move once the room is open */
+  function soundDone(nosound) {
+    if (live) { send('ready', { stage: 'sound', nosound: nosound }); return; }
+    L.nosound = nosound; L.begun = true; post({ type: 'begin' }); render();
+  }
+  var EXTRAS = EMB && H.stage === 'extras';
+  /* the platform keeps her place and pays each badge once (spec §10) */
+  function tellParent() {
+    if (!EMB || !st) return;
+    var f = fault(), key = mine().stage + '|' + (f ? f.no + f.step : '') + '|' + live.log().length;
+    if (key !== L.saveKey) { L.saveKey = key; post({ type: 'save', save: { stage: mine().stage, fault: st.faultNo || 0, pos: live.log().length } }); }
+    var paidN = L.paidN || 0;
+    for (; paidN < st.badges.length; paidN++) post({ type: 'badge', id: st.badges[paidN] });
+    L.paidN = paidN;
+    // the room goes once every seat is home and has gone on to the questions (spec §7)
+    if (live.remove && !L.removed && st.phase === 'home' && SEATS.every(function (s) { return st.local[s] && st.local[s].ready && st.local[s].ready.home; })) { L.removed = true; setTimeout(function () { live.remove(); }, 4000); }
+  }
+  window.addEventListener('message', function (e) {
+    var m = e.data; if (!EMB || e.source !== parent || !m || m.tl !== 1) return;
+    if (m.type === 'pair' && m.pair && !live) {
+      seatUp(m.pair); start(m.pair);
+      if (!EXTRAS) send('ready', { stage: 'sound', nosound: !!L.nosound }); else render();
+    } else if (m.type === 'names' && m.names) {
+      var nm = {}; SEATS.forEach(function (s, i) { nm[s] = Array.isArray(m.names) ? m.names[i] : m.names[s]; }); NAMES = nm; render();
+    }
+  });
+  if (EXTRAS && !live) { seatUp({ room: 'EXTRAS', mode: 'solo', seat: 'A' }); start(null); }
+  if (EMB && !EXTRAS) post({ type: 'loaded' });
+  setInterval(function () { render(); }, 250);
+  render(); loop();
+  window.SameLightDebug = { seat: SEAT, state: function () { return st; }, send: send, log: function () { return live.log(); }, L: L, now: now, render: render };
 })();

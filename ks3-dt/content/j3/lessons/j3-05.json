@@ -10,166 +10,54 @@
   "You can read Python's red lines to find the line and the fault.",
   "You can spot a function that is defined but never called.",
   "You can hand a value back with return, and you know that nothing handed back is None.",
-  "You can find, name and fix a fault in a program you did not write."
+  "You can find, name and fix a fault with a partner in a program you did not write."
  ],
  "_provenance": "Bug Bounty, story TWO LIGHTS (J3_L5_TWO_LIGHTS_SPEC.md, design passed 14 Oct 2026). Written by KS3 DT Platform/L5_TWOLIGHTS_BUILD/write_j3_05.py.",
  "chunks": [
   {
-   "id": "radio",
+   "id": "twolights",
    "engine": "twolights",
-   "title": "Another light",
-   "minutes": 2,
+   "title": "Keep the lighthouse running",
+   "minutes": 47,
    "config": {
-    "stage": "radio",
+    "stage": "story",
     "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
+    "loading": "Loading. Wait a moment.",
     "pairWords": {
-     "openingHead": "Finding another light.",
+     "openingHead": "Looking for your partner. Wait a moment.",
      "openingSay": "Checking who else in your class is here.",
-     "waitHead": "Waiting for another light.",
-     "waitSay": "Stay on this screen. It changes by itself when another light answers.",
-     "waitLongSay": "Waiting a while? You can keep both lights on your own instead.",
+     "waitHead": "Looking for your partner. Wait a moment.",
+     "waitSay": "Stay on this screen. It changes by itself.",
+     "waitLongSay": "Waiting a while? You can do the lesson on your own instead.",
      "waitOwnLabel": "Work on my own",
      "trioHoldHead": "You are one of the last three.",
-     "trioHoldSay": "Three lights will work together. Please wait for the third one.",
+     "trioHoldSay": "Three of you will work together. Please wait for the third person.",
      "soloKicker": "NO PARTNER",
      "soloTitle": "There is nobody left to pair you with.",
-     "soloLine": "You keep both lights on your own today.",
+     "soloLine": "You will do the lesson on your own.",
      "soloButton": "Continue"
     },
-    "help": "Wait on this screen. Another light is being found for you. Read each line as it appears, then click \"Begin\"."
-   }
-  },
-  {
-   "id": "coldopen",
-   "engine": "twolights",
-   "title": "Fog",
-   "minutes": 1,
-   "config": {
-    "stage": "coldopen",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "help": "Read each line as it appears. Then click \"Show me around\"."
-   }
-  },
-  {
-   "id": "tour",
-   "engine": "twolights",
-   "title": "The tour",
-   "minutes": 2,
-   "config": {
-    "stage": "tour",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "help": "Each part of the screen lights up in turn. Read what it says, then click \"Next\". You can see the tour again later: click \"Show me around again\"."
-   }
-  },
-  {
-   "id": "ch1",
-   "engine": "twolights",
-   "title": "Read the red",
-   "minutes": 8,
-   "config": {
-    "stage": "ch1",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "budgets": {
-     "ch1": 90000,
-     "ch2": 90000,
-     "ch3": 90000,
-     "ch4": 231000
-    },
-    "help": "Read the line at the top of the screen. It always says what to do next. Your code is on the left; press RUN to try it. The window shows the other light, and the radio is the only way to tell them what you see. If a line is not right, more help appears by itself.\n\nTo stop for a while, click \"Pause the story\" at the bottom left. The story waits until you click \"Carry on\"."
-   },
-   "badge": {
-    "id": "j3-b13",
-    "name": "Red Reader",
-    "icon": "assets/badges/bolt.png",
-    "xp": 12
-   }
-  },
-  {
-   "id": "ch2",
-   "engine": "twolights",
-   "title": "Silent",
-   "minutes": 8,
-   "config": {
-    "stage": "ch2",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "budgets": {
-     "ch1": 90000,
-     "ch2": 90000,
-     "ch3": 90000,
-     "ch4": 231000
-    },
-    "help": "Read the line at the top of the screen. It always says what to do next. Your code is on the left; press RUN to try it. The window shows the other light, and the radio is the only way to tell them what you see. If a line is not right, more help appears by itself.\n\nTo stop for a while, click \"Pause the story\" at the bottom left. The story waits until you click \"Carry on\"."
-   }
-  },
-  {
-   "id": "ch3",
-   "engine": "twolights",
-   "title": "Hand it back",
-   "minutes": 9,
-   "config": {
-    "stage": "ch3",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "budgets": {
-     "ch1": 90000,
-     "ch2": 90000,
-     "ch3": 90000,
-     "ch4": 231000
-    },
-    "help": "Read the line at the top of the screen. It always says what to do next. Your code is on the left; press RUN to try it. The window shows the other light, and the radio is the only way to tell them what you see. If a line is not right, more help appears by itself.\n\nTo stop for a while, click \"Pause the story\" at the bottom left. The story waits until you click \"Carry on\"."
-   },
-   "badge": {
-    "id": "j3-b14",
-    "name": "Radio Keeper",
-    "icon": "assets/badges/bolt.png",
-    "xp": 12
-   }
-  },
-  {
-   "id": "ch4",
-   "engine": "twolights",
-   "title": "Bug Bounty",
-   "minutes": 14,
-   "config": {
-    "stage": "ch4",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "budgets": {
-     "ch1": 90000,
-     "ch2": 90000,
-     "ch3": 90000,
-     "ch4": 231000
-    },
-    "help": "A bug is a fault in a program that stops it working the way it should. In this chapter the program has several bugs. Find each one, fix it and name it on the bounty board.\n\nRead the line at the top of the screen. It always says what to do next. Your code is on the left; press RUN to try it. The window shows the other light, and the radio is the only way to tell them what you see. If a line is not right, more help appears by itself.\n\nTo stop for a while, click \"Pause the story\" at the bottom left. The story waits until you click \"Carry on\"."
-   }
-  },
-  {
-   "id": "home",
-   "engine": "twolights",
-   "title": "Home",
-   "minutes": 3,
-   "config": {
-    "stage": "home",
-    "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "budgets": {
-     "ch1": 90000,
-     "ch2": 90000,
-     "ch3": 90000,
-     "ch4": 231000
-    },
-    "help": "Marigold is home. Read who kept the other light, then click \"Five questions\"."
-   },
-   "badge": {
-    "id": "j3-b15",
-    "name": "Bounty Hunter",
-    "icon": "assets/badges/bolt.png",
-    "xp": 15
+    "help": "Every fault has four steps.\n\n1. Run the program.\n2. Point at the line with the fault.\n3. Fix the line.\n4. Name the fault.\n\nThe Reader reads the red message Python prints. The Fixer types the fix. The big line on the screen says which job is yours.",
+    "badges": {
+     "j3-b13": {
+      "id": "j3-b13",
+      "name": "Red Reader",
+      "icon": "assets/badges/bolt.png",
+      "xp": 12
+     },
+     "j3-b14": {
+      "id": "j3-b14",
+      "name": "Radio Keeper",
+      "icon": "assets/badges/bolt.png",
+      "xp": 12
+     },
+     "j3-b15": {
+      "id": "j3-b15",
+      "name": "Bounty Hunter",
+      "icon": "assets/badges/bolt.png",
+      "xp": 15
+     }
+    }
    }
   },
   {
@@ -185,20 +73,20 @@
     "items": [
      {
       "id": "j3x5-1",
-      "stem": "The console shows red lines. What do you read first?",
+      "stem": "Python printed red lines. What do you read first?",
       "options": [
        "The first line of the program.",
        "The line number and the fault's name.",
-       "Nothing. Run it again."
+       "The last line of the program."
       ],
       "code": "Traceback (most recent call last):\n  File \"north.py\", line 9, in <module>\n    lampp_on()\nNameError: name 'lampp_on' is not defined"
      },
      {
       "id": "j3x5-2",
-      "stem": "A keeper runs this horn program. No red text shows, and the horn never sounds. What is the most likely reason?",
+      "stem": "The horn program runs. Nothing is red. Nothing happens. What is the fault?",
       "options": [
-       "The horn is broken.",
-       "The print line is spelled wrong.",
+       "The function has a spelling mistake.",
+       "The function returns None.",
        "The function is never called."
       ],
       "code": "def fog_horn():\n    print(\"HORN\")"
@@ -215,7 +103,7 @@
      },
      {
       "id": "j3x5-4",
-      "stem": "Which line hands a value back to the line that asked?",
+      "stem": "Which line hands a number back to the line that asked?",
       "options": [
        "print(channel)",
        "channel = 214",
@@ -224,15 +112,15 @@
      },
      {
       "id": "j3x5-5",
-      "stem": "Your console shows no red text. Your partner's radio shows None. Who can see the fault?",
+      "stem": "The red says NameError on line 9. What does that mean?",
       "options": [
-       "Only you.",
-       "Only your partner.",
-       "Nobody."
+       "Line 9 has too many brackets.",
+       "A name on line 9 is spelt wrong or does not exist.",
+       "Line 9 adds words to a number."
       ]
      }
     ],
-    "storyChunk": "ch4",
+    "storyChunk": "twolights",
     "storyBack": {
      "title": "Your 5 answers are saved.",
      "text": "You can go back to the story and carry on from where you left it, or go on to the last screen of the lesson.",
@@ -261,7 +149,7 @@
     "doneTitle": "Your answers are sent. Bug Bounty is finished.",
     "scoreLine": "You got {n} of the {total} questions right.",
     "optionLines": true,
-    "storyChunk": "ch4",
+    "storyChunk": "twolights",
     "storyBackLabel": "Go back to the story",
     "help": "Under each sentence, click the button that says how today really went. Then, at the bottom, click the button that says how hard the hour felt. If you want to write something, type it in the box. What you write goes to your teacher and nobody else. Then click \"Send & finish\". Everyone finishes this screen before they leave."
    }
@@ -269,49 +157,16 @@
   {
    "id": "extras",
    "engine": "twolights",
-   "title": "More posters",
+   "title": "More faults",
    "minutes": 0,
    "config": {
     "stage": "extras",
     "page": "assets/twolights/hour.html",
-    "loading": "Lighting the lamp room.",
-    "extrasMode": true,
+    "loading": "Loading. Wait a moment.",
     "finishLabel": "Is the hour nearly up? Click here to finish the lesson.",
-    "builds": [
-     {
-      "id": "x1",
-      "title": "The harbour bell",
-      "whiff": "The bell program stops on its last line. Find out why."
-     },
-     {
-      "id": "x2",
-      "title": "The tide board",
-      "whiff": "The tide board cannot join a number to its words."
-     },
-     {
-      "id": "x3",
-      "title": "The pier lamp",
-      "whiff": "The pier lamp never lights. Look at the space at the start of each line."
-     },
-     {
-      "id": "x4",
-      "title": "The night horn",
-      "whiff": "The night horn program runs, but the horn stays quiet."
-     },
-     {
-      "id": "x5",
-      "title": "The depth call",
-      "whiff": "The depth call sends nothing back. Find the missing word."
-     },
-     {
-      "id": "x6",
-      "title": "The cliff light",
-      "whiff": "The cliff light program stops with a red line."
-     }
-    ],
-    "help": "These posters are extra. They add no points. Each program has one fault: fix it, press RUN, then click the poster that names the fault. Click \"Is the hour nearly up? Click here to finish the lesson.\" whenever your teacher calls time."
+    "help": "Each program has one fault. Pick a program and fix its fault. You can stop whenever you like."
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

@@ -40,6 +40,8 @@ Object.keys(PR.SEATS).forEach(function (k) {
     var all = PR.variantFaults(v), tag = all.join('');
     add(k + ' ch4 ' + tag, PR.ch4(s, all), f, true);
     all.forEach(function (fx) { add(k + ' ch4 ' + tag + ' minus ' + fx, PR.ch4(s, all.filter(function (y) { return y !== fx; })), f, true); });
+    // V2 SAME LIGHT (A5): every fix order, so every state with one fault left
+    all.forEach(function (fx) { add(k + ' ch4 ' + tag + ' only ' + fx, PR.ch4(s, [fx]), f, true); });
   });
 });
 // the six extra posters (A3), given and fixed
