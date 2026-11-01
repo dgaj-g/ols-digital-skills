@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-10-15T09:19:31.172Z
+G6 deploy log + token · 2026-11-01T12:15:28.060Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 15 Oct 2026 09:05 | 7 | d082cb2a5b-fa15c989 | v7 S1 Unit 1 d082cb2a5b-fa15c989 | Database applications (62 questions, 123 marks, 5 stages) and Spreadsheet app
+INFO newest row: | 1 Nov 2026 12:14 | 9 | daaade7cac-c59479cf | v9 S1 Unit 1 daaade7cac-c59479cf | one revision note fixed: the Databases question DB4-N1 (more than / AND / OR c
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
