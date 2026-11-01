@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-01 from contentVersion 2026-10-27a.
+ * Built 2026-11-01 from contentVersion 2026-11-01j3l5b.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -3913,12 +3913,12 @@ var DECKS = {
       "kind": "stop",
       "bg": "stop",
       "beacon": "1",
-      "heading": "STOP — eyes front · Running out of time?",
+      "heading": "STOP — eyes front · Short of time?",
       "bullets": [
-       "At minute 48 a button appears. Press it only if you are still in the story.",
+       "At minute 48, point to the Short of time? button at the top. Press it only if you are still in the story.",
        "It shows the lines that are left."
       ],
-      "notes": "SAY at minute 48 only: \"Eyes front for a moment. If you are still in the story, a button called Running out of time? has appeared. Press it, and it shows you the lines that are left. Type them and you reach the end.\"\n\nTHEN: back to circulating."
+      "notes": "SAY at minute 48 only: \"Eyes front for a moment. If you are still in the story, press the button at the top called Short of time? It shows you the lines that are left. Type them and you reach the end.\"\n\nTHEN: back to circulating."
      }
     ]
    },
