@@ -59,6 +59,14 @@ function checkCold(colds) {
     const W = window.__walk = { screens: [], colds: [], fails: 0, moved: [], tx: [] };
     /* --transcript: every visible line, as she meets it (panel, talk, film captions, notes), deduped in order */
     let prevTx = '';
+    /* gate 14: a Python keyword in code that is not drawn bold and gold */
+    window.__plainKw = root => { const out = [], tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let n; (n = tw.nextNode());) { const p = n.parentElement; if (!p || p.closest('.kw, textarea, .hide, script, style')) continue;
+        const m = /\bfor i in\b|\bin range\(|\brange\(\d|\bwhile True\b/.exec(n.textContent); if (!m) continue;
+        const cs = getComputedStyle(p); out.push(m[0] + ' in "' + n.textContent.trim().slice(0, 50) + '" (' + cs.fontWeight + ')'); }
+      return out; };
+    W.plain = {};
+    setInterval(() => { document.querySelectorAll('#panel, #msg, #tour, #tourtip').forEach(e => { if (e.offsetParent !== null) window.__plainKw(e).forEach(x => { W.plain[window.__hour.at + ' ' + x] = 1; }); }); }, 300);
     setInterval(() => {
       const vis = e => e && e.offsetParent !== null && !e.closest('.hide');
       const parts = [];
@@ -151,6 +159,11 @@ function checkCold(colds) {
   must(mins <= LIMIT_MIN, 'A18 the walked hour reaches Home in ' + mins.toFixed(1) + ' min (at most ' + LIMIT_MIN + ')');
   const st = checkSteps(W2.screens); st.slice(0, 8).forEach(x => console.log('    ' + x));
   must(st.length === 0, 'gate 19 every panel screen in chapters 1 to 4 has its step line');
+  const pk = await page.evaluate(() => Object.keys(window.__walk.plain)); pk.slice(0, 8).forEach(x => console.log('    ' + x));
+  must(pk.length === 0, 'gate 14 every for, in, range, while, True in code on a card, in the box and in panel text is bold and gold');
+  const ctl = await page.evaluate(() => { const d = document.createElement('div'); d.innerHTML = '<div class="card"><div class="ln">for i in range(4):</div></div>'; document.body.appendChild(d); const r = window.__plainKw(d).length; d.innerHTML = window.U.card(['for i in range(4):']); const r2 = window.__plainKw(d).length; const k = d.querySelector('.kw'), cs = getComputedStyle(k), w = +cs.fontWeight, c = cs.color; d.remove(); return { plain: r, styled: r2, w, c }; });
+  must(ctl.plain > 0, 'CONTROL a card drawn with a plain for fails');
+  must(ctl.styled === 0 && ctl.w >= 700 && /rgb\((1[5-9]\d|2\d\d), (9\d|1\d\d|2[0-2]\d), (\d|[1-9]\d)\)/.test(ctl.c), 'gate 14 U.card draws for and range gold and bold (' + ctl.c + ', ' + ctl.w + ')');
   must(checkSteps([{ at: 't1', step: '', h: 'x' }]).length > 0, 'CONTROL a screen with no step line fails');
   must(checkSteps([{ at: 't1', step: 'THE TRACKS · STEP 7 OF 6', h: 'x' }]).length > 0, 'CONTROL STEP 7 OF 6 fails');
   const nx = checkNext(W2.screens); nx.slice(0, 8).forEach(x => console.log('    ' + x));

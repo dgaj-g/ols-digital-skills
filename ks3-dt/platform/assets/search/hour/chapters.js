@@ -547,7 +547,7 @@
     U.clock.hide();
     await U.wait(2);
     U.tween(0.8, function (k) { M.ring = k; });
-    await U.talk('BEEP', 'The drifts covered the walls. Wait. I can go back to before the drifts came.', { mood: 0.2, chirp: 'sad' });
+    await U.talk('BEEP', 'The drifts covered the walls. Wait. I can fly back to where I was before the drifts came.', { mood: 0.2, chirp: 'sad' });
     U.panelOff(); Snd.rewind(2.5); Snd.setWind(0.55);
     var x0 = b.x, y0 = b.y, h0 = normH(b.h);
     U.tween(0.7, function (k) { M.black = 1 - k; M.ring = 1 - k; });
@@ -769,7 +769,7 @@
     await U.tween(0.8, function (k) { H3.black = k; });
     U.clock.hide(); await U.wait(2);
     U.tween(0.8, function (k) { H3.ring = k; });
-    await U.talk('BEEP', "I can't hear her any more. Wait. I can fly back to where I was before she went quiet.", { mood: 0.2, chirp: 'sad' });
+    await U.talk('BEEP', "I can't hear the lamb any more. Wait. I can fly back to where I was before the lamb went quiet.", { mood: 0.2, chirp: 'sad' });
     U.panelOff(); Snd.rewind(2.5); Snd.setWind(0.55); Snd.bleat(false, 0.7);
     U.tween(0.7, function (k) { H3.black = 1 - k; H3.ring = 1 - k; });
     var rbs = H3.ribbons.slice(), x0 = b.x, y0 = b.y, h0 = normH(b.h);

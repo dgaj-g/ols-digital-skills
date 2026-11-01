@@ -204,6 +204,19 @@
   U.minutes = function () { return (Date.now() - T0) / 60000 + MINS; };
   U.note = function (text) { var n = $('#note'); if (!n) { n = document.createElement('div'); n.id = 'note'; document.body.appendChild(n); } n.textContent = text; n.classList.remove('hide'); };
 
-  U.start = function () { U.fit(); window.addEventListener('resize', U.fit); requestAnimationFrame(frame); };
+  /* gate 14: Python written inside a sentence (range(20), for i in range(9), while True) is drawn bold and gold like the card */
+  var CODE_IN_TEXT = /for i in range\(\s*\d*\s*\):?|range\(\s*[\d?]*\s*\)|while True:?/g;
+  U.goldCode = function (root) {
+    var tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hits = [], n;
+    while ((n = tw.nextNode())) { var p = n.parentElement; if (p && !p.closest('.kw, .card, textarea, .hl, .runv, script, style') && (CODE_IN_TEXT.lastIndex = 0, CODE_IN_TEXT.test(n.textContent))) hits.push(n); }
+    hits.forEach(function (t) {
+      var sp = document.createElement('span');
+      sp.innerHTML = U.esc(t.textContent).replace(CODE_IN_TEXT, function (m) { return m.replace(/\b(for|in|range|while|True)\b/g, '<span class="kw">$1</span>'); });
+      t.parentNode.replaceChild(sp, t);
+    });
+  };
+  U.start = function () { U.fit(); window.addEventListener('resize', U.fit); requestAnimationFrame(frame);
+    ['#panel', '#msg', '#tour', '#tourtip'].forEach(function (q) { var e = $(q); if (e) new MutationObserver(function () { U.goldCode(e); }).observe(e, { childList: true, subtree: true, characterData: true }); });
+  };
   window.U = U;
 })();
