@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* J2 L5 THE SEARCH · the lesson around the hour, on the PLATFORM SHELL (spec §10, §11, §16, §19.3; A8, A12, A15).
+/* J2 L5 THE SEARCH · the lesson around the hour, on the PLATFORM SHELL (V1 spec §10, §11, §16, §19.3; ported to V2 spec §11, §16).
  * The hour's own gates (j2l5-judge-test, -frozen, -twins, -words, -python, -clock-test, -walk) prove the hour.
  * This one proves the lesson around it, against the served platform with its dev server:
  *   P1  Lesson 5's card says Loop Machines with The Search under it; after the Do-Now the lesson opens on the
@@ -7,7 +7,7 @@
  *   P2  her place: what the hour saves (chapter, the lamb's name, where she found her) reaches her lesson draft;
  *       a reopened lesson says "Welcome back, <first name>. You were at <chapter>." with Carry on and Start again;
  *       a reopen at Home comes back to Home, not to the Do-Now, and the lamb keeps her name
- *   P3  badges: The Tracks, The Spiral, The Way Home become j2-b13/b14/b15 with their XP, once only
+ *   P3  badges: The Tracks, The Growing Square, The Way Home become j2-b13/b14/b15 with their XP, once only
  *       CONTROL: the same badge sent twice must not add XP twice
  *   P4  running out of time: from minute 48 the note shows, and the next chapter end offers Carry on and Home
  *   P5  BEEP's last 5 questions: the design's questions, the evidence code on the card, options shuffled
@@ -33,21 +33,17 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let checks = 0; const FAILS = [];
 const must = (ok, what) => { checks++; console.log((ok ? '  PASS ' : '  FAIL ') + what); if (!ok) FAILS.push(what); return ok; };
 
-/* the design's own words (L5_PROTOTYPES/hour/strings.js), not retyped */
-const W = {}; new Function('window', fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_PROTOTYPES/hour/strings.js', 'utf8'))(W);
+/* the words a pupil reads, as SHIPPED (V2, DFM 340+): the hour's strings.js, and the lesson's own exit and close
+   from content-src j2-05.json, not retyped */
+const W = {}; new Function('window', fs.readFileSync(path.join(ROOT, 'ks3-dt/platform/assets/search/hour/strings.js'), 'utf8'))(W);
 const P = W.SearchStrings;
-/* ...as SHIPPED: with the cold read's listed edits (j2l5/coldread-edits.json, DFM 334 / K83), applied exactly as
-   j2l5-words.js applies them, so this gate checks the words a pupil reads and not the design's first draft */
-(() => {
-  const EDITS = JSON.parse(fs.readFileSync(path.join(__dirname, 'j2l5/coldread-edits.json'), 'utf8'));
-  const keysOf = p => p.split(/\.|\[|\]/).filter(Boolean);
-  Object.keys(EDITS.table || {}).forEach(p => { const k = keysOf(p), last = k.pop(), par = k.reduce((x, y) => x == null ? x : x[y], P); if (par == null || !(last in par)) return; /* a path the build moved (ch1.j4 -> common): j2l5-words owns those */ par[last] = EDITS.table[p]; });
-  Object.keys(EDITS.last5 || {}).forEach(i => { const e = EDITS.last5[i], x = P.close.last5[i]; if (e.q) x.q = e.q; (e.lines || []).forEach((l, k) => { if (l) x.opts[k][1] = l; }); });
-})();
-const QUESTIONS = P.close.last5.map(x => x.q);
-const RIGHT = P.close.last5.map(x => x.opts.find(o => o[2])[0]);
-const Q1_WRONG = P.close.last5[0].opts.find(o => !o[2]);
-const Q1_WRONG_LINE = Q1_WRONG[1].replace(/\s*Try again\.$/, '');
+const LJ = JSON.parse(fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-05.json', 'utf8'));
+const EX = LJ.chunks.find(c => c.id === 'exit').config, CL = LJ.chunks.find(c => c.id === 'close').config;
+const QUESTIONS = EX.items.map(x => x.stem), CODES = EX.items.map(x => x.code || '');
+const RIGHT = EX.items.map(x => x.options[LJ.keys[x.id].a]);
+const Q1_WRONG = [EX.items[0].options[1]];
+const Q1_WRONG_LINE = JSON.parse(LJ.keys[EX.items[0].id].explain)[1];
+P.close.felt = CL.statements; P.close.feltDone = CL.doneTitle; P.btn.freeFlight = CL.flightLabel; P.btn.finish = CL.finishLabel;
 const fill = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => o[k] != null ? o[k] : m);
 const WELCOME3 = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[3] });
 const WELCOME_HOME = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[5] });
@@ -140,7 +136,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     must(await xpNow(page) === xp1, 'P3 CONTROL the same badge twice adds nothing');
     await fr.evaluate(() => { SearchBridge.badge('b14'); SearchBridge.badge('b15'); });
     await sleep(1500);
-    must(await xpNow(page) === xp1 + 12 + 15, 'P3 The Spiral and The Way Home add 12 and 15 XP');
+    must(await xpNow(page) === xp1 + 12 + 15, 'P3 The Growing Square and The Way Home add 12 and 15 XP');
     const det = await page.evaluate((email) => { const db = JSON.parse(localStorage.getItem('ks3dt-dev')); const r = db.pupils['Demo-9A:' + email]; return JSON.stringify(r && r.L && r.L['5'] || ''); }, EMAIL);
     must(BADGES.every(x => det.indexOf('b' + x[1] + '=1') !== -1), 'P3 the platform records j2-b13, j2-b14 and j2-b15 on Lesson 5');
     must(await page.evaluate(() => !document.querySelector('.badge-pop.show')), 'P3 the platform draws no second badge card over the hour');
@@ -204,7 +200,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       const card = await page.evaluate(() => ({ stem: document.querySelector('.q-stem').textContent.trim(),
         pre: (document.querySelector('.q-card .q-pre') || {}).textContent || '', opts: Array.from(document.querySelectorAll('.q-opt span:last-child')).map(s => s.textContent) }));
       must(card.stem === QUESTIONS[i], 'P5 question ' + (i + 1) + ' reads "' + QUESTIONS[i] + '" (got "' + card.stem + '")');
-      must(card.pre.trim() === P.close.last5[i].ev.join('\n').trim(), 'P5 question ' + (i + 1) + ' shows its code');
+      must(card.pre.trim() === CODES[i].trim(), 'P5 question ' + (i + 1) + ' shows its code');
       if (i === 0) await page.screenshot({ path: path.join(OUT, 'p5-q1.png') });
       const want = i === 0 ? Q1_WRONG[0] : RIGHT[i];
       await page.evaluate((w) => { const o = Array.from(document.querySelectorAll('.q-opt')).find(x => x.querySelector('span:last-child').textContent === w); if (o) o.click(); }, want);

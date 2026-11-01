@@ -100,7 +100,7 @@ function checkCold(colds) {
     const queue = ANSWERS[s.at] || [];
     used[s.at] = used[s.at] || 0;
     if (s.opts.length && !s.picked) {
-      const a = queue[used[s.at]]; let want = s.opts.find(t => RIGHT.includes(t)); if (/^Name the bug/.test(s.h.trim())) want = { h2: 'Off by one', h3: 'Wrong turn', h4: 'Never stops', h5: 'Off by one' }[s.at]; if (a && a.opt != null) { want = a.opt; used[s.at]++; } if (want == null) want = 0;
+      const a = queue[used[s.at]]; let want = s.opts.find(t => RIGHT.includes(t)); if (s.opts.every(t => ['Off by one', 'Wrong turn', 'Never stops'].includes(t.trim()))) want = { h2: 'Off by one', h3: 'Wrong turn', h4: 'Never stops', h5: 'Off by one' }[s.at]; if (a && a.opt != null) { want = a.opt; used[s.at]++; } if (want == null) want = 0;
       await page.evaluate(w => { const o = [...document.querySelectorAll('#panel .opt')].filter(x => !x.disabled); const hit = typeof w === 'number' ? o[w] : (o.find(x => x.textContent.trim() === w) || o.find(x => x.textContent.includes(w))); (hit || o[0]).click(); }, want);
       await sleep(30);
       continue;
