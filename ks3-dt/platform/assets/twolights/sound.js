@@ -30,6 +30,7 @@
     crackle: function (t) { noise(t, 0.3, 0.3, 2200); },
     lamp: function (t) { tone(180, 520, t, 0.8, 'triangle', 0.18); },
     red: function (t) { tone(90, 55, t, 0.35, 'sine', 0.4); noise(t, 0.12, 0.15, 300); },
+    nudge: function (t) { tone(660, 660, t, 0.12, 'sine', 0.12); tone(880, 880, t + 0.14, 0.2, 'sine', 0.1); },
     coin: function (t) { tone(988, 988, t, 0.1, 'square', 0.12); tone(1319, 1319, t + 0.1, 0.35, 'square', 0.12); },
     rewind: function (t) { tone(900, 200, t, 1.2, 'sawtooth', 0.1); noise(t, 1.2, 0.08, 3000); },
     cheer: function (t) { [0, 0.18, 0.36].forEach(function (d, i) { tone(1200 + i * 180, 1700 + i * 180, t + d, 0.14, 'sine', 0.2); }); },

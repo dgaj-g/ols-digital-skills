@@ -1,5 +1,5 @@
 /* J3 L5 V2 SAME LIGHT · gate A2, the tour. At 683, 760, 960, 1366 and 1600 px no tour card's box may
-   intersect its target's box, all four cards. Control (CONTROL=1): at 760 px the card is forced onto its
+   intersect its target's box, all five cards (V78: card 5 is the Help row). Control (CONTROL=1): at 760 px the card is forced onto its
    target's right edge, and the gate must go RED.
    NODE_PATH=$(npm root -g) node tools/record-tutorial/l5v2-tour.js */
 const puppeteer = require('puppeteer');
@@ -29,7 +29,7 @@ async function click(p, sel, t) { await p.waitForSelector(sel, { visible: true, 
       catch (e) { throw new Error(W + 'px ' + mode + ': no "Show me around" button; the screen says: ' + (await p.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ').slice(0, 200)); }
     }
     const p = pages[0];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       await p.waitForSelector('#tcard button', { visible: true, timeout: 8000 }); await sleep(150);
       const r = await p.evaluate((force) => {
         const ring = document.getElementById('ring').getBoundingClientRect(), c = document.getElementById('tcard');
@@ -43,7 +43,7 @@ async function click(p, sel, t) { await p.waitForSelector(sel, { visible: true, 
       checked++;
       if (r.hit) fails.push(`FAIL ${W}px ${mode} card ${i + 1}: card ${r.b} covers its target ${r.tg}`);
       if (r.off) fails.push(`FAIL ${W}px ${mode} card ${i + 1}: card ${r.b} runs off the screen`);
-      for (const q of pages) await click(q, '#tcard button');
+      for (const q of pages) { await q.waitForSelector('#tcard button', { visible: true, timeout: 8000 }); await q.evaluate(() => document.querySelector('#tcard button').click()); await sleep(120); }   // a DOM click: the control may push the card off the screen
     }
     for (const q of pages) await q.close();
   }
