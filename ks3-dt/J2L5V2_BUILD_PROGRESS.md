@@ -66,3 +66,15 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - content-src index.json contentVersion must go above main's "2026-11-01j3l5b" (use "2026-11-01k"); after pack, check git diff --stat ks3-dt/content reverts no J3 content.
 - NOT DONE: sit report (ks3-dt/J2L5V2_SIT_REPORT.md), pack, platform gate (--base http://localhost:8125), deck via Chrome, build-pathb, deploy ≥78, PR, RESUME_HERE, DFM 340–359, K88–K99, memory, done message.
 - DFM decisions to record: real-time clock; chars.js threshold; endless-loop sound fix; stale string copies dropped; prepare[4] title plain; deck headings no full stop; exit q5 keeps code; slide-1 SAY line; designer-verbatim sentences exempt from 14-word rule; explain kept as stringified arrays; gate labels above posts; BEEP moved in barn; arm labels from 20 m; "job"/"kept" kept; "variable" word; clock words; "fly back to where I was" carried to line 550; words-gate quote fix; gate 14 goldCode observer; AT 'between'/'home'; press→click; "· BADGE" labels kept; windBack pupil string kept; .gs rebuilt via env root; A16 covered by platform + clock gates; ledger records written.
+
+## State 9 (1 Nov 2026 21:25, HARD STOP on open: week 45%, 5-hour 5%, 4 calls)
+- Window opened Opus 5.5 medium; week all-models read 45% at the first get_usage (resets 4 Nov 2026 21:00) → stopped before any work.
+- Step 2 SETTLED: DFM_ENFORCEMENT_AUDIT.md line 146 already holds the 370–374 row (filed by the J3 L5 V78 window). The pack block is gone; no audit rows to add.
+- "J3 Lesson 5 Bug Bounty rebuild" session has ended (PR #96 merged).
+- Nothing else changed. Worktree at 7a33612; untracked J2L5V2_NEXT_WINDOW_PROMPT.md (old prompt, superseded by NEXT_WINDOW_PROMPT.md).
+
+## State 10 — 1 Nov 2026 21:37 (usage stops overridden by Damien: "Carry on now")
+- Done since State 9: merged origin/main; contentVersion 2026-11-01k; synced J3 L5 V2 content (j3-05 lesson+deck, recap-pool) from ~/Sites/ols-wt-l5v2/content-src-l5v2 into shared content-src (backup scratchpad/bak/content-src-before-j3sync); ledger merged (J3 copy for j3 keys, shared copy for j2-05); J2 L5 brief cut to J3-V2 length (4,603 chars, **with headphones** kept; backup j2-05.before-briefcut.json); 36 brief ledger records; .gs rebuilt (not committed); COVERAGE_DEBT row j3-05 stretch filed.
+- Pack now stops only at qa-cold-read: verdict hash b070e4734c56bb9b stale, current 7d291f0f4d5485c4.
+- Running: two cold readers → J2_L5_REDESIGN/cold-reads/build/READER_A.md and READER_B.md. Next: apply only agreed REWRITEs, write verdict block (V77 j3-05 model) into COLD_READ_VERDICTS_J2L5_j2-05.md, re-pack, then platform gate + walk2 1366x768.
+- DFM to record: J3 private-copy sync, ledger merge rule, brief cut, coverage-debt row.

@@ -20,555 +20,71 @@
    "minutes": 50,
    "config": {
     "page": "assets/search/hour.html",
-    "loading": "Getting BEEP ready to fly.",
+    "loading": "Getting the lesson ready.",
     "strings": {
      "strip": [
       "Do now",
       "1 The tracks",
-      "2 The fields",
-      "3 The spiral",
+      "2 The walls",
+      "3 The growing square",
       "4 The way home",
       "Home"
      ],
-     "stripNamed": "The strip at the bottom shows where you are in the hour.",
      "btn": {
       "next": "Next",
       "back": "Back",
-      "fly": "Fly it",
       "run": "Run",
       "stop": "Stop it",
       "pause": "Pause",
-      "soundOn": "Sound is on",
-      "soundOff": "Sound is off",
       "home": "Home",
       "carryOn": "Carry on",
       "startAgain": "Start again",
       "nameHer": "Name her",
-      "freeFlight": "Free flight",
       "finish": "Finish",
-      "tryOne": "Try this one",
-      "watchOther": "Watch the ending you missed",
-      "readIt": "Read it",
-      "start": "Start the hour",
-      "check": "Check",
-      "yes": "Yes",
-      "nearly": "Nearly",
-      "notYet": "Not yet"
+      "tryAgain": "Try again"
      },
      "common": {
-      "clockStarts": "The snow starts filling the prints when you type. If it buries the trail, you start again.",
-      "clockStartsRun": "The clock starts when you press Run. If the time runs out, BEEP winds time back and you try again.",
-      "notRun": "That line did not work. The line to type is on the card.",
-      "indent": "Put 4 spaces before that line, so it is inside the loop.",
-      "ringed": "Type the line with the circle round it. Keep its 4 spaces.",
-      "wind": "",
-      "lighter": "This computer is slow, so the pictures are simpler. Your flight is the same.",
-      "paused": "Paused. Press Pause again to carry on.",
-      "runningOut": "Running out of time? Finish this chapter and press Home. Your place is saved.",
-      "welcome": "Welcome back, {name}. You were at {chapter}. {lamb} is still out there.",
+      "paused": "Paused. Click Pause again to carry on.",
+      "runningOut": "Running out of time? Finish this chapter and click Home. Your place is saved.",
+      "welcome": "Welcome back, {name}. You were at {chapter}. {lamb} is safe in the barn.",
       "welcomeNoLamb": "Welcome back, {name}. You were at {chapter}.",
-      "tab": "Press the Tab key to make 4 spaces.",
-      "forNoColon": "The for line needs a colon at the end.",
-      "forCap": "Python needs the word \"for\" to be in small letters.",
-      "forIndent": "The for line should not be pushed in. Start it at the left, with no spaces before it.",
-      "spaces": "Push that line in by exactly 4 spaces. Press the Tab key to make them."
-     },
-     "ch1": {
-      "kicker": "THE TRACKS",
-      "h1": "Type forward(10) to fly BEEP to the first hoof-print.",
-      "h1b": "Type look() to light it.",
-      "tour": [
-       "This is the box you type in.",
-       "This card shows the line to type.",
-       "BEEP will fly along these hoof-prints."
-      ],
-      "keepGoing": "The snow is filling the prints from the top. Keep going.",
-      "j": {
-       "fwdOk": "BEEP flew 10 metres to print {n} of 20.",
-       "lookOk": "The torch is on. Print {n} of 20 is lit.",
-       "capF": "Python needs the word \"forward\" to be in small letters.",
-       "noBr": "forward needs brackets round its number: forward(10)",
-       "noClose": "The line needs a closing bracket at the end.",
-       "noNum": "forward needs a number in its brackets: forward(10)",
-       "lookNoBr": "look needs its brackets, with nothing inside: look()",
-       "lookArg": "look takes nothing in its brackets: look()",
-       "lookTwice": "The torch is on at a print that is already lit. Fly forward first.",
-       "fwdTwice": "Print {n} is not lit yet. Type look() before you fly on.",
-       "fwdN": "forward({n}) misses the next print. Each print is 10 metres on, so type forward(10).",
-       "capL": "Python needs the word \"look\" to be in small letters."
-      },
-      "h2": "Fly and light every hoof-print. Type two lines for each one.",
-      "gauge": "Time until the snow buries the trail",
-      "count": "Print {n} of 20 is lit.",
-      "fail": [
-       "The snow has buried the trail. I am winding time back.",
-       "You typed the same two lines for every print. The snow was faster."
-      ],
-      "fast": [
-       "You typed all 40 lines in time. The trail is lit.",
-       "If you had typed more slowly, the snow would have buried the trail."
-      ],
-      "holdDark": "The snow waits while I show you this.",
-      "lesson": [
-       "Look at this. You needed forward(10) and then look(), again and again, twenty times.",
-       "I can do the same thing again and again. Repeating is my job.",
-       "This one line tells me how many times: for i in range(20):",
-       "The letter i is the name of the loop's count. It counts each time round. You will use i in chapter 3, The spiral.",
-       "Your two lines go under the for line. Push them in by four spaces.",
-       "I repeat the pushed-in lines 20 times.",
-       "You need only three lines, not forty. Type them and watch me go."
-      ],
-      "h4": "Type these 3 lines. Where you see 4 dots, type 4 spaces instead.",
-      "lines4": [
-       "for i in range(20):",
-       "    forward(10)",
-       "    look()"
-      ],
-      "j4": {
-       "forOk": "range({w}) means {w} times. The colon says more lines come next.",
-       "forNoBr": "range needs brackets round its number: range({w})",
-       "forN": "range({n}) would fly {n} prints. There are 20 prints, so type range(20).",
-       "forNoI": "The letter i is missing. Type i after the word for. The whole line is: for i in range({w}):",
-       "fwdIn": "This line is pushed in, so it is inside the loop.",
-       "fwdNoIndent": "Put 4 spaces before forward, so it is inside the loop. Press the Tab key to make them.",
-       "lookIn": "look is inside the loop too. Both lines will fly 20 times.",
-       "lookNoIndent": "Put 4 spaces before look, so it is inside the loop too.",
-       "forNoNum": "range needs a number in its brackets: range({w})"
-      },
-      "flyIt": "Press Fly it. I will do the rest.",
-      "screenCount": "Print {n} of 20",
-      "held": "You typed 3 lines. BEEP did 40 things.",
-      "close": [
-       {
-        "h": "A loop repeats the pushed-in lines for you.",
-        "under": [
-         "Typing every line yourself would take 40 lines. The loop took 3 lines.",
-         "BEEP flew the same two lines 20 times."
-        ]
-       },
-       {
-        "h": "These 3 lines are called a for loop.",
-        "labels": [
-         [
-          "for i in range(20):",
-          "range(20) means do it 20 times."
-         ],
-         [
-          "    forward(10)",
-          "This line is pushed in, so it is inside the loop."
-         ],
-         [
-          "    look()",
-          "This line is pushed in too, so it repeats."
-         ]
-        ],
-        "box": "The pushed-in lines run once each time round the loop. range(20) means the loop goes round 20 times."
-       },
-       {
-        "seen": "You saw this: range(20) flew the two lines 20 times.",
-        "q": "A new field has 12 hoof-prints. Which line flies BEEP to all of them?",
-        "opts": [
-         [
-          "for i in range(12):",
-          "Yes. range(12) runs the pushed-in lines 12 times.",
-          true
-         ],
-         [
-          "for i in range(20):",
-          "That would fly BEEP to 20 prints. The new field has 12.",
-          false
-         ],
-         [
-          "forward(12)",
-          "That flies 12 metres once. A loop needs for and range.",
-          false
-         ]
-        ]
-       }
-      ]
-     },
-     "ch2": {
-      "kicker": "THE FIELDS",
-      "film": [
-       "The trail ends at a gate into three walled fields.",
-       "The lost lamb is in one of the fields. Light every wall of a field to see if she is in it."
-      ],
-      "fields": [
-       {
-        "name": "square",
-        "h": "Light every wall. Count the walls, then type that number in the for line.",
-        "sign": "Turn: left(90)",
-        "walls": 4,
-        "turn": 90,
-        "help1": "The square has 4 walls.",
-        "ok": "4 flights lit 4 walls. She is not in this field.",
-        "shortMore": "I flew {k} times. The square has more walls than that."
-       },
-       {
-        "name": "sheep pen",
-        "h": "This sheep pen has more walls. Count the walls, then type the number in the for line.",
-        "sign": "Turn: left(60)",
-        "walls": 6,
-        "turn": 60,
-        "help1": "Count the dark walls, one by one.",
-        "ok": "6 flights lit 6 walls. She is not in this field.",
-        "shortMore": "I flew {k} times. Count the walls again."
-       },
-       {
-        "name": "three-cornered field",
-        "h": "This is the last field. Count the walls, then type that number in the for line.",
-        "sign": "Turn: left(120)",
-        "walls": 3,
-        "turn": 120,
-        "help1": "Count the dark walls, one by one.",
-        "ok": "She is not in this field either. She is further up.",
-        "shortMore": "I flew {k} times. Count the walls again."
-       }
-      ],
-      "card": [
-       "for i in range(?):",
-       "    forward(100)",
-       "    left({a})"
-      ],
-      "gauge": "Daylight left before the sky goes dark",
-      "j": {
-       "short1": "I flew {k} times. Count the walls.",
-       "over": "That is {k} flights for {w} walls. That is too many. Type the number of walls in the brackets.",
-       "noNum": "range needs a number in its brackets. Count the walls.",
-       "wrongTurn": "The sign says left({a}). Use the turn on the sign.",
-       "wrongLen": "Each wall is 100 metres. Use forward(100).",
-       "noTurn": "Your loop has no turn. The sign says left({a}). Add it as a pushed-in line."
-      },
-      "fail": [
-       "It is too dark to see the walls. I am winding time back."
-      ],
-      "close": [
-       {
-        "h": "The number in the brackets is how many times the loop runs.",
-        "under": [
-         "You counted 4, 6 and 3 walls. The loop flew 4 times, then 6 times, then 3 times."
-        ]
-       },
-       {
-        "h": "A loop that runs one time too few has a name: off by one.",
-        "labels": [
-         [
-          "for i in range({k}):",
-          "{k} flights for {w} walls. One wall stayed dark."
-         ]
-        ],
-        "box": "The number in the brackets was wrong by one. The loop ran one time too few, or one time too many."
-       },
-       {
-        "q": "A field has 5 walls. Which line lights them all?",
-        "opts": [
-         [
-          "for i in range(5):",
-          "Yes. 5 walls need 5 flights.",
-          true
-         ],
-         [
-          "for i in range(4):",
-          "That is one too few. One wall stays dark. This bug is called off by one.",
-          false
-         ],
-         [
-          "for i in range(6):",
-          "That is one too many. BEEP flies the first wall twice.",
-          false
-         ]
-        ]
-       }
-      ]
-     },
-     "ch3": {
-      "kicker": "THE SPIRAL",
-      "film": [
-       "Beyond the top wall the field is open, and her bleat is fading.",
-       "I cannot search a whole field one wall at a time.",
-       "Watch me count. Then make my flight grow."
-      ],
-      "h1": "Type these 2 lines. Each time round, BEEP will say the number in i.",
-      "lines1": [
-       "for i in range(3):",
-       "    say(i)"
-      ],
-      "j1": {
-       "forOk": "The loop goes round 3 times. Now type the pushed-in line.",
-       "sayOk": "say(i) says the count. Press Fly it.",
-       "say3": "say(3) says 3 every time round. Type say(i), so it says the count.",
-       "sayNoBr": "say needs brackets round the i: say(i)",
-       "sayNoIndent": "Put 4 spaces before say, so it is inside the loop.",
-       "forN": "The card says range({w}). Type that first.",
-       "changeOk": "range(5) means 5 times. Press Fly it."
-      },
-      "held1": "BEEP said 0, 1, 2. The count starts at 0.",
-      "change": "Change the 3 to 5 and press Fly it again.",
-      "held2": "range(5) gave 5 counts: 0, 1, 2, 3 and 4. BEEP never says 5.",
-      "h2": "Fly a spiral that grows bigger. Use i in the forward line, so each flight is longer than the last.",
-      "card2": [
-       "for i in range(10):",
-       "    forward(i * 10)",
-       "    left(90)"
-      ],
-      "gauge": "Time left before her bleat fades",
-      "j2": {
-       "found": "You found her!",
-       "found10i": "10 * i is the same as i * 10. You found her!",
-       "fwd10": "forward(10) flies 10 metres every time round, so the spiral never grows. Put i in the brackets.",
-       "fwdI": "forward(i) grows by only 1 metre each time round. This is too slow. Try forward(i * 10).",
-       "shortRange": "Going round {k} times only reached {m} metres. She is further out. Use range(10).",
-       "longRange": "You found her when i was 9. After that, the loop went round {k} more times. Use range(10) to stop there.",
-       "noTurn": "Your loop has no turn, so it is not a spiral. Add left(90).",
-       "right90": "right(90) spirals the other way round. You found her!"
-      },
-      "help1": "i is 0, then 1, then 2. i * 10 is 0, 10, 20.",
-      "fail": [
-       "Her bleat has faded away. I am winding time back.",
-       "Try again from the middle of the field."
-      ],
-      "foundHer": "You found her.",
-      "held3": "When i was 0, BEEP flew 0 metres. When i was 9, BEEP flew 90 metres.",
-      "close": [
-       {
-        "h": "i is the count. It starts at 0 and changes every time round.",
-        "under": [
-         "The loop went round ten times. i went from 0 to 9. The flight grew with it."
-        ]
-       },
-       {
-        "h": "You used the count inside the loop.",
-        "labels": [
-         [
-          "for i in range(10):",
-          "The loop goes round 10 times. i goes 0, 1, 2, up to 9."
-         ],
-         [
-          "    forward(i * 10)",
-          "i * 10 is 0, then 10, then 20, then 90 at the end."
-         ],
-         [
-          "    left(90)",
-          "A quarter turn each time round makes the spiral."
-         ]
-        ],
-        "box": "i is a variable, a box with a name on it. The loop puts a new number in it each time round."
-       },
-       {
-        "q": "BEEP runs a loop with two lines. The first line is for i in range(4): The second line is say(i). What does BEEP say?",
-        "opts": [
-         [
-          "0 1 2 3",
-          "Yes. There are four counts, and they start at 0.",
-          true
-         ],
-         [
-          "1 2 3 4",
-          "The count starts at 0, not 1.",
-          false
-         ],
-         [
-          "0 1 2 3 4",
-          "range(4) is four counts, so it stops after 3.",
-          false
-         ]
-        ]
-       }
-      ]
-     },
-     "ch4": {
-      "kicker": "THE WAY HOME",
-      "film": [
-       "The lamb walks under BEEP's light. Nuala and her dog Bran are coming up the lane.",
-       "BEEP's battery is low. BEEP has three flights left.",
-       "Nuala: Dad wrote programs for the drone last spring. They are on its screen.",
-       "Each program has a bug, a mistake. Read it before you run it, then fix one word."
-      ],
-      "read": "Read it. What will this fly?",
-      "fix": "Fix one word, then press Run.",
-      "fixFirst": "Replace the first line with a for line that has range and a number. Then press Run.",
-      "name": "Name the bug.",
-      "runSee": "Run it and see.",
-      "bugs": {
-       "off": "Off by one",
-       "turn": "Wrong turn",
-       "never": "Never stops"
-      },
-      "p": [
-       {
-        "above": "The lane has 6 gates.",
-        "lines": [
-         "for i in range(5):",
-         "    forward(100)",
-         "    look()"
-        ],
-        "predict": [
-         "Lights all 6 gates",
-         "Lights 5 gates, one stays dark",
-         "Never stops"
-        ],
-        "held": "BEEP flew 5 times for 6 gates. The last gate is dark.",
-        "fixedHeld": "BEEP flew 6 times for 6 gates. Nuala is through the last gate.",
-        "wrong": {
-         "over": "That is {k} flights for 6 gates. That is one flight too many.",
-         "len": "Each gate is 100 metres on. Keep forward(100).",
-         "still": "BEEP flew {k} times for 6 gates. The last gate is still dark."
-        },
-        "bug": "off",
-        "nameFb": {
-         "off": "Yes. This is off by one. There are 5 flights for 6 gates.",
-         "turn": "There is no turn in this loop.",
-         "never": "The loop did stop, after 5 flights. The bug is the count."
-        }
-       },
-       {
-        "above": "The yard has 4 walls, with a left turn at each corner.",
-        "lines": [
-         "for i in range(4):",
-         "    forward(100)",
-         "    left(80)"
-        ],
-        "predict": [
-         "Lights the 4 walls and closes the square",
-         "Drifts off the walls",
-         "Never stops"
-        ],
-        "held": "BEEP turned left(80) four times. The square did not close.",
-        "fixedHeld": "BEEP turned left(90) four times. The yard is lit.",
-        "wrong": {
-         "turn": "BEEP turned left({a}) four times. The square did not close.",
-         "count": "BEEP flew {k} times with left(80). The square still did not close."
-        },
-        "bug": "turn",
-        "nameFb": {
-         "turn": "Yes. A turn of 80 does not make a square corner. A turn of 90 does.",
-         "off": "The yard has 4 walls and BEEP flew 4 times. The count was right.",
-         "never": "The loop did stop, after 4 flights. The bug is the turn."
-        }
-       },
-       {
-        "above": "The barn is 60 metres further on. BEEP's battery has one flight left.",
-        "lines": [
-         "while True:",
-         "    forward(10)",
-         "    look()"
-        ],
-        "predict": [
-         "Lights the way to the barn and stops",
-         "Never stops",
-         "Stops short of the barn"
-        ],
-        "held": "There is no count, so the loop has no end. It never stops.",
-        "fixedHeld": "BEEP flew 6 steps and stopped. The barn door is open.",
-        "gauge": "Battery power left",
-        "wrong": {
-         "big": "range({k}) flies {k} steps of 10 metres. The barn is 6 steps on.",
-         "whileAgain": "while True has no count. Use for and range.",
-         "noColon": "The for line needs a colon at the end.",
-         "short": "range({k}) is {k} steps. The barn is 6 steps on."
-        },
-        "fail": [
-         "The program never stopped, so the battery ran out. I am winding time back.",
-         "Try again from the start of the lane."
-        ],
-        "bug": "never",
-        "nameFb": {
-         "never": "Yes. while True has no count, so the loop has no end.",
-         "off": "No. This loop has no count, so it cannot be off by one.",
-         "turn": "There is no turn in this loop."
-        }
-       }
-      ],
-      "close": [
-       {
-        "h": "A loop bug has a name.",
-        "under": [
-         "Off by one means the count is 5 but there are 6 gates. Wrong turn means you turned 80 instead of 90. Never stops means while True has no end."
-        ]
-       },
-       {
-        "h": "Read the loop before you run it.",
-        "labels": [
-         [
-          "range(5) for 6 gates",
-          "Off by one. The count is one short, or one over."
-         ],
-         [
-          "left(80) for a square",
-          "Wrong turn. The turn does not match the shape."
-         ],
-         [
-          "while True:",
-          "Never stops. The loop has no count, so it has no end."
-         ]
-        ],
-        "box": "Before you press Run, check three things. Check the count. Check the turn. Check that the loop has an end."
-       },
-       {
-        "q": "This loop should light 10 gates: for i in range(9). What is the bug?",
-        "opts": [
-         [
-          "Off by one",
-          "Yes. The loop goes round 9 times, but there are 10 gates.",
-          true
-         ],
-         [
-          "Wrong turn",
-          "There is no turn in this loop.",
-          false
-         ],
-         [
-          "Never stops",
-          "range(9) stops after 9 times round.",
-          false
-         ]
-        ]
-       }
-      ]
+      "windBack": "The story goes back to the start of this chapter. The code you typed is still there."
      },
      "close": {
       "kicker": "HOME",
       "barn": [
-       "The lamb is in the barn, and her mother is with her.",
-       "Nuala: Thank you. Thank you. Thank you.",
-       "You typed {n} lines. I did {m} things.",
-       "A loop lets a few lines make BEEP do many things."
+       "The lamb is in the barn, out of the snow. Her mother has found her.",
+       "NUALA: Thank you. Thank you. Thank you.",
+       "BEEP: Your short loops made me carry out over 100 instructions tonight.",
+       "BEEP: A loop lets a few short lines do a lot of work."
       ],
-      "nameH": "Nuala: Dad says the person who found her gets to name her. That person is you. Type her name in the box.",
-      "nameUnder": "",
+      "nameTalk": "Dad says whoever found the lamb gets to name her.",
+      "nameH": "Type a name for the lamb, then click Name her.",
       "nameEmpty": "Type a name for the lamb first.",
       "badges": [
        [
         "The Tracks",
-        "You flew the first loop."
+        "You flew your first loop."
        ],
        [
-        "The Spiral",
-        "You used i in the flight."
+        "The Growing Square",
+        "You used i to make the square grow."
        ],
        [
         "The Way Home",
-        "You named three bugs."
+        "You named three loop bugs."
        ]
       ],
       "badgeKicker": "BADGE EARNED",
-      "recapH": "What you did today.",
-      "recapH2": "What you did today, part two.",
+      "badgesKicker": "BADGES EARNED",
+      "recapH": "What you did in this lesson.",
       "recap": [
-       "A loop runs its pushed-in lines once each time round. range sets how many.",
-       "If the number after range is one too big or too small, the bug has a name: off by one.",
-       "i is the count. It starts at 0 and changes every time round. The loop can use it.",
+       "A loop does the same job many times. range says how many.",
+       "First count the things BEEP must light. If there are 4 walls, you write range(4).",
+       "The counter i counts the rounds, and it starts at 0. The loop can use it, for example forward(i * 10).",
        "A loop bug has a name: off by one, wrong turn, never stops."
       ],
-      "last5H": "BEEP's last 5 questions",
-      "feltH": "How sure are you about each of these?",
-      "felt": [
-       "I can write a loop with for and range.",
-       "I can use i inside the loop.",
-       "I can name a loop bug when I see one."
-      ],
-      "feltDone": "You have finished. Free flight is next if there is time.",
-      "freeH": "Free flight. Click one of the three examples, or type your own loop. Then press Run. BEEP draws it in light.",
+      "freeH": "This is free flight. Click one of the three examples, or type your own loop. Then click Run. BEEP draws it in light.",
       "freeStarters": [
        [
         "A star",
@@ -579,7 +95,7 @@
         ]
        ],
        [
-        "A growing spiral",
+        "A growing square",
         [
          "for i in range(12):",
          "    forward(i * 8)",
@@ -595,7 +111,7 @@
         ]
        ]
       ],
-      "freeNotRun": "BEEP cannot fly that. Type a for loop, or press one of the three examples.",
+      "freeNotRun": "BEEP cannot fly that. Type a for loop, or click one of the three examples.",
       "finished": "The Search is finished. Your place is saved."
      }
     },
@@ -608,7 +124,7 @@
      },
      "b14": {
       "id": "j2-b14",
-      "name": "The Spiral",
+      "name": "The Growing Square",
       "icon": "assets/badges/rocket.png",
       "xp": 12
      },
@@ -619,7 +135,7 @@
       "xp": 15
      }
     },
-    "help": "The story tells you what to do on every screen. Read the card above the box, then type in the box. If a program is wrong, the line under the box says what to change.\n\nTo stop for a while, press Pause at the bottom left. Press it again to carry on."
+    "help": "On every screen, a card tells you what to do. Read the card, then type your code in the box below it. If your code is wrong, the line under the box tells you what to change.\n\nTo stop for a while, click Pause at the bottom left. Click it again to carry on."
    }
   },
   {
@@ -635,7 +151,7 @@
     "items": [
      {
       "id": "j2x5-1",
-      "stem": "How many times does this loop run the lines under it?",
+      "stem": "How many times does this loop run forward(100)?",
       "options": [
        "6",
        "5",
@@ -645,7 +161,7 @@
      },
      {
       "id": "j2x5-2",
-      "stem": "What is the first value of i?",
+      "stem": "Look at the loop. In the first round, what number is i?",
       "options": [
        "0",
        "1",
@@ -655,7 +171,7 @@
      },
      {
       "id": "j2x5-3",
-      "stem": "The square did not close. Each turn was left(80). Which bug is it?",
+      "stem": "BEEP flew this loop, but the square did not close. Each turn was left(80). Which loop bug is this?",
       "options": [
        "Wrong turn",
        "Off by one",
@@ -665,7 +181,7 @@
      },
      {
       "id": "j2x5-4",
-      "stem": "The lane has 10 gates, but the loop says range(9). Which bug is it?",
+      "stem": "BEEP must light 10 gates, but the loop uses range(9). Which loop bug is this?",
       "options": [
        "Off by one",
        "Wrong turn",
@@ -675,11 +191,11 @@
      },
      {
       "id": "j2x5-5",
-      "stem": "Which forward line makes BEEP fly a spiral that grows?",
+      "stem": "Which line makes the square grow every round?",
       "options": [
        "forward(i * 10)",
        "forward(10)",
-       "forward(i)"
+       "left(90)"
       ],
       "code": "for i in range(10):\n    forward( ? )\n    left(90)"
      }
@@ -702,13 +218,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "lockedNote": "Click an answer under each of the 3 sentences above. Then click how hard the hour felt. Then the \"Send & finish\" button will work.",
-    "doneTitle": "You have finished. Free flight is next if there is time.",
+    "lockedNote": "Click an answer under each of the 3 sentences above. Then click how hard the lesson felt. Then the \"Send & finish\" button will work.",
+    "doneTitle": "You have finished the lesson. If there is time, click Free flight to draw your own loops with BEEP.",
     "scoreLine": "You got {n} of the {total} questions right.",
     "optionLines": true,
     "flightLabel": "Free flight",
     "finishLabel": "Finish",
-    "help": "Under each sentence, click \"I can\", \"Getting there\" or \"Not yet\". Pick the one that is true for you today. Then click how hard the hour felt. If you want to, type a note for your teacher in the box. Then click \"Send & finish\". Everyone finishes this screen before they leave."
+    "help": "Under each sentence, click \"I can\", \"Getting there\" or \"Not yet\". Pick the one that is true for you today.\n\nThen click how hard the lesson felt.\n\nIf you want to, type a note for your teacher in the note box.\n\nLast, click \"Send & finish\". Everyone finishes this screen before they leave."
    }
   },
   {
@@ -722,9 +238,9 @@
     "page": "assets/search/hour.html",
     "loading": "Getting BEEP ready to fly.",
     "badges": {},
-    "help": "Press one of the three examples, or type your own loop. Then press Run and BEEP draws it in light. Nothing is marked. Press Finish when you are done."
+    "help": "Click one of the three examples, or type your own loop. Then click Run and BEEP draws it in light. Nothing is marked. Click Finish when you are done."
    }
   }
  ],
- "keysEnc": "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"
+ "keysEnc": "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"
 }

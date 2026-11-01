@@ -349,7 +349,7 @@
    "lesson": "j2-05",
    "topic": "How many times a loop runs",
    "thread": "kp-py-iteration",
-   "stem": "BEEP's loop is for i in range(6), with two lines pushed in under it. How many times do those two lines run?",
+   "stem": "BEEP's loop is for i in range(6). Its job is two lines, each with 4 spaces before it. How many times does the job run?",
    "options": [
     "6",
     "5",
@@ -373,13 +373,13 @@
   {
    "id": "r-j2-503",
    "lesson": "j2-05",
-   "topic": "Which lines a loop repeats",
+   "topic": "Which lines are a loop's job",
    "thread": "kp-py-iteration",
-   "stem": "BEEP's program has a for line. Under it, two lines are pushed in by four spaces. A third line comes after them and is not pushed in. Which lines repeat?",
+   "stem": "A loop repeats its job. Which lines are the job?",
    "options": [
-    "Only the two pushed-in lines",
-    "All three lines",
-    "Only the line that is not pushed in",
+    "The lines with 4 spaces before them, after the for line",
+    "Every line in the program",
+    "Only the for line",
     "None of them"
    ]
   },
@@ -399,9 +399,9 @@
   {
    "id": "r-j2-505",
    "lesson": "j2-05",
-   "topic": "Using i to make a spiral grow",
+   "topic": "Using i to make the square grow",
    "thread": "kp-py-iteration",
-   "stem": "BEEP must fly a spiral that grows wider each time round the loop. Which pushed-in line makes the spiral grow?",
+   "stem": "BEEP must fly a square that grows bigger every round of the loop. Which job line makes the square grow?",
    "options": [
     "forward(i * 10)",
     "forward(10)",
