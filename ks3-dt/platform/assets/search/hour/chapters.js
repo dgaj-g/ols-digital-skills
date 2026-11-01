@@ -1128,6 +1128,10 @@
   var STEPS = [['film', film], ['t1', t1], ['t2', t2], ['t3', function () { return t3().then(t4); }], ['t4', function () { return t4(null); }], ['t5', t5],
     ['t6', function () { return t6(false); }], ['t7', function () { return t6(true); }], ['t8', t8], ['w1', w1], ['w2', w2], ['w3', w3], ['w4', w4], ['w5', w5],
     ['g1', g1], ['g2', g2], ['g3', g3], ['g4', g4], ['g5', g5], ['h1', h1], ['h2', h2], ['h3', h3], ['h4', h4], ['h5', h5], ['close', close]];
+  /* the step line each step opens on (the step line on talk screens before its first card) */
+  var TR = function (k) { return 'THE TRACKS · STEP ' + k + ' OF 6'; }, WA = function (k) { return 'THE WALLS · STEP ' + k + ' OF 5'; };
+  var STEPLINE = { t1: TR(1), t2: TR(1), t3: TR(3), t4: TR(3), t5: TR(4), t6: TR(5), t7: TR(5), t8: TR(6), w1: WA(1), w2: WA(1), w3: WA(3), w4: WA(4), w5: WA(5),
+    g1: STEP3(1), g2: STEP3(2), g3: STEP3(3), g4: STEP3(4), g5: STEP3(5), h1: STEP4(1), h2: STEP4(2), h3: STEP4(3), h4: STEP4(4), h5: STEP4(5) };
   var ONLY_JUMP = { t4: 1, t7: 1 }, PARENT = { t4: 't3', t7: 't6' };
   var CH_OF = { film: 0, close: 5 }; STEPS.forEach(function (s) { var c = { t: 1, w: 2, g: 3, h: 4 }[s[0][0]]; if (c) CH_OF[s[0]] = c; });
   var FIRST_OF = { 0: 'film', 1: 't1', 2: 'w1', 3: 'g1', 4: 'h1', 5: 'close' }, LAST_OF = { t8: 1, w5: 2, g5: 3, h5: 4 };
@@ -1143,6 +1147,7 @@
         var id = STEPS[i][0];
         if (i > i0 && ONLY_JUMP[id]) continue;
         JUMP = i === i0 && i0 > 0; AT = id;
+        U.stepNow = STEPLINE[id] || null;
         worry(id === 'close' ? 0 : 1);
         if (!ONLY_JUMP[id] && id !== 'film') save(id);
         await STEPS[i][1]();

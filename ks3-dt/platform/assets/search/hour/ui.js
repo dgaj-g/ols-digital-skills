@@ -92,7 +92,10 @@
      Returns {el, done (a promise of 'next' or 'back'), showNext(delay)} */
   U.screen = function (o) {
     o = o || {};
-    var html = (o.step ? '<div class="stepl">' + o.step + '</div>' : '') + (o.h ? '<h2>' + o.h + '</h2>' : '') + (o.sub ? '<p class="sub">' + o.sub + '</p>' : '') + (o.html || '') +
+    /* the step line is on every panel screen (spec §3.32): a screen with none (a talk line) keeps the step she is on */
+    if (o.step && o.step !== U.stepNow && /· STEP /.test(o.step)) U.stepNow = o.step;
+    var stepl = o.step || U.stepNow;
+    var html = (stepl ? '<div class="stepl">' + stepl + '</div>' : '') + (o.h ? '<h2>' + o.h + '</h2>' : '') + (o.sub ? '<p class="sub">' + o.sub + '</p>' : '') + (o.html || '') +
       '<div class="grow"></div><div class="btns"><span>' + (o.back ? '<button class="btn back">' + (typeof o.back === 'string' ? o.back : 'Back') + '</button>' : '') + '</span><button class="btn pri next">' + (o.next || 'Next') + '</button></div>';
     panel.innerHTML = html; panel.classList.remove('hide');
     var nx = $('.next', panel), bk = $('.back', panel), res, scr = { el: panel };

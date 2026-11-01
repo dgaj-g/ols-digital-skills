@@ -17,10 +17,10 @@
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
     o.start(t); o.stop(t + dur + 0.05);
   }
-  /* a pentatonic ladder from D4: round k of n climbs to the top by the last round */
+  /* a pentatonic ladder from D4: round k of n climbs to the top by the last round. A loop with no count (n null) climbs and starts again at the bottom */
   var LADDER = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, 36];
   S.round = function (k, n) {
-    var step = Math.round((k - 1) / Math.max(1, n - 1) * (LADDER.length - 1)), f = 293.66 * Math.pow(2, LADDER[step] / 12);
+    var step = n ? Math.min(LADDER.length - 1, Math.round((k - 1) / Math.max(1, n - 1) * (LADDER.length - 1))) : (k - 1) % LADDER.length, f = 293.66 * Math.pow(2, LADDER[step] / 12);
     tone(f, 0, 0.5, 0.22, 'triangle'); tone(f * 2, 0, 0.3, 0.05, 'sine');
   };
   S.flare = function () { tone(1760, 0, 0.18, 0.06, 'sine'); tone(2637, 0.03, 0.14, 0.03, 'sine'); };
