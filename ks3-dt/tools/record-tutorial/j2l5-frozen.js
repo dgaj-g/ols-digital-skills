@@ -9,7 +9,7 @@ const ROOT = path.resolve(__dirname, '../../..');
 const SEARCH = process.env.J2L5_SEARCH || path.join(ROOT, 'ks3-dt/platform/assets/search/search');
 const FROZEN = process.env.J2L5_FROZEN || path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/L5_PROTOTYPES/chapter0-frozen');
 const HASH = {
-  'chars.js': 'ba5ff232d24af076a8aafeee2313b3a2a13a6d47e93aa084adf7e652f8c92762',
+  'chars.js': 'c956cd6042083b07d017950be6308d87a3e8cef2b391fbd232172a4e451f7ceb', /* Version 2: Nuala's worried face (spec V2 §5.7, §20; DFM 341). V74 hash ba5ff232…; the V74 file is j2l5-chars-v74.js and j2l5-worry.js proves zero changed pixels at worry 0 */
   'scene.js': '3b5579a98ed264b0d6debc2945bde4f4b341135cbad677a7fe939f94dd59c223',
   'film.js': 'fc761d3fa6437f3a08abea85269fc599c60e6ce56eeebf229c5799de1d3a1b59',
   'sound.js': '260fef82ba696bc33a065d9c269c6a248b09b279c7d13b0f50cdf0335bb5b7f9',
@@ -25,7 +25,7 @@ for (const [f, h] of Object.entries(HASH)) {
   const b = fs.readFileSync(p);
   must(sha(b) === h, f + ' is byte for byte the frozen file (sha256 ' + h.slice(0, 12) + '…)');
   const copy = path.join(FROZEN, path.basename(f));
-  if (!f.startsWith('fonts/') && fs.existsSync(copy)) must(Buffer.compare(b, fs.readFileSync(copy)) === 0, f + ' equals the design\'s frozen copy in chapter0-frozen/');
+  if (!f.startsWith('fonts/') && f !== 'chars.js' && fs.existsSync(copy)) must(Buffer.compare(b, fs.readFileSync(copy)) === 0, f + ' equals the design\'s frozen copy in chapter0-frozen/');
 }
 /* CONTROL: the same check on a copy with one byte changed must fail */
 const cp = path.join(SEARCH, 'chars.js');
@@ -34,7 +34,8 @@ if (fs.existsSync(cp)) { const b = Buffer.from(fs.readFileSync(cp)); b[100] ^= 1
 const HOUR = path.join(SEARCH, '..', 'hour');
 if (fs.existsSync(HOUR)) for (const f of fs.readdirSync(HOUR).filter(x => x.endsWith('.js'))) {
   const t = fs.readFileSync(path.join(HOUR, f), 'utf8');
-  must(!/\b(SearchChars|SearchScene|SearchFilm)\s*=[^=]|\b(SearchChars|SearchScene|SearchFilm)\.\w+\s*=[^=]/.test(t), 'hour/' + f + ' never reassigns the frozen cast, scene or film');
+  must(!/\b(SearchChars|SearchScene|SearchFilm)\s*=[^=]|\b(SearchChars|SearchScene|SearchFilm)\.(?!worry\b)\w+\s*=[^=]/.test(t.replace(/window\.SearchChars = window\.SearchChars \|\| \{\};/g, '')), 'hour/' + f + ' never reassigns the frozen cast, scene or film (only SearchChars.worry, the V2 face switch, is set)');
+  if (f === 'chapters.js') { const ctl = 'window.SearchChars.nuala = 1;'; must(/\b(SearchChars)\.(?!worry\b)\w+\s*=[^=]/.test(ctl), 'CONTROL a planted SearchChars.nuala = … is caught'); }
 }
 console.log('\nj2l5-frozen: ' + (fails ? 'FAIL · ' + fails + ' of ' + n : 'PASS · ' + n + ' checks'));
 process.exit(fails ? 1 : 0);

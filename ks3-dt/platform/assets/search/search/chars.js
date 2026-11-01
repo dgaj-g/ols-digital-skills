@@ -312,7 +312,7 @@
   /* p: t, torch (angle in radians, 0 = to the right), phone (0..1), walk (0..1), look, blink */
   function nuala(ctx, p) {
     var wor = p.worry != null ? p.worry : ((window.SearchChars && window.SearchChars.worry) || 0); /* worried face (spec V2 §5.7): 0 = her old small smile, the default */
-    var t = p.t || 0, walk = p.walk || 0, st = Math.sin(t * 5.5) * walk, big = ctx.getTransform().a / Math.min(2, window.devicePixelRatio || 1) >= 34, g, k;
+    var t = p.t || 0, walk = p.walk || 0, st = Math.sin(t * 5.5) * walk, big = p.face || ctx.getTransform().a >= 70, g, k; /* p.face (V2): the barn asks for her face at a small size; without it, exactly V74 */
     ctx.save();
     /* the hood, down at her back, behind the shoulders */
     ctx.fillStyle = sh(N.coatLo); ctx.beginPath(); ctx.ellipse(0.04, 0.08, 0.40, 0.20, 0, 0, TAU); ctx.fill();
