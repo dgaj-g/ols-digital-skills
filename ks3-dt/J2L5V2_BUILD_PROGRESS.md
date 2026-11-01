@@ -24,3 +24,10 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - ui.js: a string `back` names the Back button (Welcome back shows "Start again").
 - Not yet verified: the 48-minute between()/homeEarly path (cover in gate).
 - Next: retire old tools; gates 1-10 update + 11-19 + A1-A19 (spec lines 659-702); chars.js hash + pixel diff; V74-record gate.
+
+## State 4 (1 Nov 2026 18:58, week 38%, commit 9e7e599)
+- Gates green: j2l5-frozen.js (chars.js hash c956cd60…, V74 hash ba5ff232…; only SearchChars.worry may be set by the hour), j2l5-worry.js NEW (W1 zero changed pixels at worry 0 and no flag vs tools/record-tutorial/j2l5-chars-v74.js, 6 poses x sizes 24/90; CONTROL worry 1 changes 6760 px; W2 gate 15), j2l5-twins.js ported to V2 §13 sound table (60 checks).
+- DECISION (DFM 341 candidate): chars.js face threshold kept at V74's `transform.a >= 70`; a new opt-in `p.face` draws her face small. Only the barn passes face:1. My earlier dpr-based threshold changed film pixels at 1x screens and was reverted.
+- Old V1 hour tools moved to tools/record-tutorial/retired/ (j2l5-walk, j2l5-python, j2l5-judge-test, j2l5/ judge cases).
+- Still to port: j2l5-words.js (needs content step + V2 sources: ch1-2 = prototype J2_L5_REDESIGN/prototype, ch3-4 = spec §9-§11), j2l5-clock-test.js (needs dev server on 8125 serving repo root; V2 clocks), j2l5-platform.js (P1-P7 against platform, badge names now The Tracks / The Growing Square / The Way Home).
+- To write: j2l5-walk2.js = runtime walker collecting every panel screen (gates 11, 12, 14, 16-19, A17, A18 26-min model), plus V74-record resume gate (A16).
