@@ -11507,7 +11507,7 @@
           tell({ type: 'pair', pair: pair });
         }, pw);
       }
-      var paid = {}, begun = false, gone = false;
+      var paid = {}, begun = false, gone = false, inFlight = [];
       function onMsg(e) {
         if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
         var m = e.data;
@@ -11518,7 +11518,7 @@
           var b = (cfg.badges || {})[m.id];
           if (!b || paid[b.id] || ctx.review) return;
           paid[b.id] = 1;
-          ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+          inFlight.push(Promise.resolve(ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' })).catch(function () {}));
         } else if (m.type === 'names') {
           var st = PairKit.st;
           if (!st || !st.room) return;
@@ -11527,7 +11527,8 @@
         } else if (m.type === 'done') {
           gone = true; window.removeEventListener('message', onMsg);
           if (ctx.review) { ctx.next(); return; }
-          finishChunk(ctx, stage === 'extras' ? (chunk.id || 'extras') + '=extras' : 'story=' + ((draft.tlSave && draft.tlSave.fault) || 0), 0);
+          // a badge sent a moment before 'done' finishes saving first, so the finish cannot race it
+          Promise.all(inFlight).then(function () { finishChunk(ctx, stage === 'extras' ? (chunk.id || 'extras') + '=extras' : 'story=' + ((draft.tlSave && draft.tlSave.fault) || 0), 0); });
         }
       }
       window.addEventListener('message', onMsg);

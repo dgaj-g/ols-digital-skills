@@ -286,7 +286,7 @@
     var seen = others().some(function (s) { return live.quiet(s, 1e12) !== null; });
     if (!seen && L.pairOpenedAt != null && Date.now() - L.pairOpenedAt > T.LINK / K) L.linkLost = true;
     if (seen && L.linkLost) { L.linkLost = false; toast(str('link.back')); }
-    var goneAny = others().some(function (s) { return st.gone[s] && live.quiet(s, 1e12) === true; });
+    var goneAny = others().some(function (s) { return st.gone[s]; }); // a partner the fold counts as gone (spec §7, link.gone)
     if (L.linkLost && st.phase !== 'pre1' || (L.linkLost && mine().stage !== 'sound' && mine().stage !== 'pair')) { el.linkbar.textContent = str('link.slow'); el.linkbar.className = 'show'; }
     else if (goneAny) { el.linkbar.textContent = str('link.gone'); el.linkbar.className = 'show'; }
     else el.linkbar.className = '';
@@ -394,7 +394,7 @@
     if (EMB && MODE !== 'solo' && !L.askedNames) { L.askedNames = true; post({ type: 'names' }); }
     var names = others().map(function (s) { return NAMES[s]; }), known = names.every(Boolean), reveal = MODE === 'solo' ? str('home.reveal.solo') : names.length >= 2 ? str('home.reveal.trio', { name: names[0], name2: names[1] }) : str('home.reveal', { name: names[0] });
     var h = '<h1>' + str('home.1') + '</h1>' + (known || MODE === 'solo' ? '<p class="line">' + reveal + '</p>' : '') + '<p class="line">' + str(MODE === 'solo' ? 'home.score.solo' : 'home.score', { n: st.fixedCount, c: st.coins }) + '</p><p class="line">' + str('home.badges') + '</p><div>';
-    st.badges.forEach(function (b) { h += '<span class="badge">' + str('badge.' + b).replace('Bounty earned: ', '').replace('.', '') + '</span>'; });
+    st.badges.forEach(function (b) { h += '<span class="badge">' + str('badge.' + b).replace('Badge earned: ', '').replace('.', '') + '</span>'; });
     h += '</div><div class="row"><button class="btn" data-act="five">' + str('home.btn') + '</button><button class="ghost" data-act="extras">' + str('home.extras') + '</button></div>';
     setPage('home', h);
   }

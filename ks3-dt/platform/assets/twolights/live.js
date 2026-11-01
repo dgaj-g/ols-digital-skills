@@ -41,7 +41,9 @@
     var ref = db.ref('rooms/' + room);
     function now() { return nowFn ? nowFn() : Date.now() + offset; }
     db.ref('.info/serverTimeOffset').on('value', function (s) { var v = s.val(); if (typeof v === 'number') offset = v; });
-    db.ref('.info/connected').on('value', function (s) { api.connected = s.val() === true; onChange('presence'); });
+    /* .info/connected answers at once from the client's cache, before api exists: keep it and hand it over below */
+    var conn = false;
+    db.ref('.info/connected').on('value', function (s) { conn = s.val() === true; if (api) { api.connected = conn; onChange('presence'); } });
     function take(e) { if (seen[e.id]) return false; seen[e.id] = true; log.push(e); last[e.seat] = Math.max(last[e.seat] || 0, e.t); return true; }
     function decode(s, j) {
       var a = j.split('|'), t = parseInt(a[1], 36), k = a[0], nn = +a[2], d = {};
@@ -79,7 +81,7 @@
       }
       return e;
     }
-    api = { send: send, log: function () { return log; }, presence: function () { return pres; }, connected: false,
+    api = { send: send, log: function () { return log; }, presence: function () { return pres; }, connected: conn,
       offset: function () { return offset; },
       quiet: function (s, ms) { var at = Math.max(pres[s] || 0, last[s] || 0); return at ? now() - at > ms : null; },
       // the room goes when the last seat is home (spec §7); the partner's fold already holds every event

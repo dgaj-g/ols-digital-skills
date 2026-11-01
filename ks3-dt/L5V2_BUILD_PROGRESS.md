@@ -24,3 +24,14 @@ Worktree ~/Sites/ols-wt-l5v2 · branch j3-l5-samelight · base origin/main 70afb
 - contentVersion 2026-11-01j3l5. PACK rc=0. A1 words PASS (control RED).
 - A2 tour gate written (l5v2-serve.js + l5v2-tour.js): FAIL 1366/1600 px card 4 covered the step bar → ui.js renderTour fixed (measures card, side placement only when room) → PASS 40 cards; control RED 16.
 - NEXT: A13 reload gate, qa-l5-paired (real Firebase), A11 pace, A5 python3, walkers ×3 sizes, SIT report, then deploy (step 6).
+## 17:40 checkpoint — step 5 gates
+- A13 reload, A11 pace, A5 python3, A12 walker: green (see earlier runs in this window; re-run before pack).
+- qa-l5-paired V2 (real Firebase channel, platform pages): pair PASS 14 · reload (A4) PASS 18 · gone (A15) PASS 12 · blocked PASS 12 · trio (A14) PASS 17 · CONTROL (second PairKit.ensure) RED 1.
+- Product bugs found by the gates and fixed:
+  1. live.js: '.info/connected' could fire before `api` existed → page error "Cannot set properties of undefined (setting 'connected')". Guarded.
+  2. ui.js renderLink: the "partner has gone quiet" bar never showed (test `live.quiet(s,1e12)===true` never true). Now uses the fold's st.gone. Prototype has the same bug (prototype not edited).
+  3. engines.js twolights: a badge saved a moment before 'done' could race the finish save (trio run lost j3-b15 for one seat once). The finish now waits for badge saves in flight.
+  4. ui.js home badges: replace('Bounty earned: ') → replace('Badge earned: ') so the chips read "Red Reader" not "Badge earned: Red Reader".
+- Gate-own fixes (driver): soundDone option; watch tolerates passed phases; looser named wait; point click short timeout + re-loop (screen had moved to fix).
+- V1 gates retired to tools/record-tutorial/retired/ (*-v1.js). sit-review EXPECT j3-5 → 49 XP, 5 chunks, 3 badges.
+- NEXT: final all-scenario run, bare walks ×3 sizes + control, SIT REPORT, commit/push, deploy.
