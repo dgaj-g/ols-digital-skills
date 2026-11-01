@@ -46,7 +46,7 @@ const Q1_WRONG_LINE = JSON.parse(LJ.keys[EX.items[0].id].explain)[1];
 P.close.felt = CL.statements; P.close.feltDone = CL.doneTitle; P.btn.freeFlight = CL.flightLabel; P.btn.finish = CL.finishLabel;
 const fill = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => o[k] != null ? o[k] : m);
 const WELCOME3 = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[3] });
-const WELCOME_HOME = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[5] });
+const WELCOME_HOME = fill(P.common.welcome, { name: FIRST, chapter: P.strip[5], lamb: LAMB });
 const SCORE = 'You got 4 of the 5 questions right.';
 const BADGES = [['b13', 'j2-b13', 12], ['b14', 'j2-b14', 12], ['b15', 'j2-b15', 15]];
 
@@ -89,9 +89,11 @@ async function openLesson5(page) {
 const chunkNow = page => page.evaluate(() => { const s = App.state; return s.chunks && s.chunks[s.chunkIdx] ? s.chunks[s.chunkIdx].id : null; });
 const frameOf = async page => { const h = await page.$('#chunk-host iframe.search-frame'); return h ? h.contentFrame() : null; };
 const xpNow = page => page.evaluate(() => App.state.xp);
-const hourReady = fr => fr.waitForFunction(() => window.SearchHour && window.SearchBridge && window.SearchUI, null, { timeout: 15000 });
-const panelOf = fr => fr.evaluate(() => ({ kicker: (document.getElementById('kicker') || {}).textContent || '', head: (document.getElementById('head') || {}).textContent || '',
-  btns: Array.from(document.querySelectorAll('#pbtn button')).map(b => b.textContent.trim()) }));
+const hourReady = fr => fr.waitForFunction(() => window.__hour && window.SearchBridge && window.U && window.U.minutes, null, { timeout: 15000 });
+/* V2 panel: the step line is .stepl, the head is the h2, the buttons sit in .btns (next first, then back, as the old gate listed them) */
+const panelOf = fr => fr.evaluate(() => { const p = document.getElementById('panel'); const q = sel => p && !p.classList.contains('hide') ? p.querySelector(sel) : null;
+  const nx = q('.btns .next'), bk = q('.btns .back');
+  return { kicker: ((q('.stepl') || {}).textContent || '').trim(), head: ((q('h2') || {}).textContent || '').trim(), btns: [nx, bk].filter(Boolean).map(b => b.textContent.trim()) }; });
 const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = await panelOf(fr); if (re.test(p.head)) return p; await sleep(250); } while (Date.now() - t < (ms || 8000)); return p; };
 
 (async () => {
@@ -120,7 +122,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     await page.screenshot({ path: path.join(OUT, 'p1-open.png') });
 
     /* P2 her place reaches the draft */
-    await fr.evaluate(() => { SearchHour.save(3); });
+    await fr.evaluate(() => { SearchBridge.save({ v: 2, chapter: 3, step: 'g1', lambName: '', got: [] }); });
     await sleep(1200);
     let dr = await page.evaluate(() => App.state.draft && App.state.draft.search);
     must(dr && dr.chapter === 3, 'P2 the chapter the hour saves is in her lesson draft (' + JSON.stringify(dr) + ')');
@@ -152,10 +154,10 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       must(wp.btns.join('|') === [P.btn.carryOn, P.btn.startAgain].join('|'), 'P2 the buttons are Carry on and Start again (' + wp.btns.join(', ') + ')');
       await page.screenshot({ path: path.join(OUT, 'p2-welcome.png') });
       /* the lamb is named at Home: the name and where she was found reach the draft */
-      await fr.evaluate((lamb) => { SearchHour.lamb = lamb; SearchHour.foundAt = 'the way home'; SearchHour.save(5); }, LAMB);
+      await fr.evaluate((lamb) => { SearchBridge.save({ v: 2, chapter: 5, step: 'close', lambName: lamb, got: ['b13', 'b14', 'b15'] }); }, LAMB);
       await sleep(1200);
       dr = await page.evaluate(() => App.state.draft && App.state.draft.search);
-      must(dr && dr.chapter === 5 && dr.lambName === LAMB && dr.foundAt === 'the way home', 'P2 the lamb\'s name and where she found her are in her lesson draft');
+      must(dr && dr.chapter === 5 && dr.lambName === LAMB, 'P2 the lamb\'s name is in her lesson draft (V2 keeps no found-at place)');
     }
     await openLesson5(page);
     fr = await frameOf(page);
@@ -163,28 +165,21 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       await hourReady(fr);
       const hp = await waitPanel(fr, /Welcome back/);
       must(hp.head === WELCOME_HOME, 'P2 a reopen at Home says "' + WELCOME_HOME + '", not the Do-Now (got "' + hp.head + '")');
-      must(await fr.evaluate(() => SearchHour.lamb) === LAMB, 'P2 the lamb keeps her name');
+      must(hp.head.indexOf(LAMB) !== -1, 'P2 the lamb keeps her name (the welcome names her)');
     }
 
     /* P4 running out of time */
     if (fr) {
       /* she answers the welcome first (Carry on), as she must before any chapter can end */
-      await fr.evaluate((c) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === c); if (x) x.click(); }, P.btn.carryOn);
+      await fr.evaluate((c) => { const x = Array.from(document.querySelectorAll('#panel .btns button')).find(b => b.textContent.trim() === c); if (x) x.click(); }, P.btn.carryOn);
       await sleep(1200);
-      /* shift the story clock to minute 48:05 and let it run on (a frozen clock would stall every U.wait) */
-      await fr.evaluate(() => { const U = window.SearchUI; U.__now = U.now; const off = 48 * 60 + 5 - U.__now(); U.now = function () { return U.__now() + off; }; });
-      await sleep(900);
-      const note = await fr.evaluate(() => { const n = document.getElementById('note'); return n && !n.classList.contains('off') ? n.textContent : ''; });
+      /* shift the hour clock past minute 48 (V2: U.minutes reads real time plus ?mins) */
+      await fr.evaluate(() => { const U = window.U; U.__min = U.minutes; U.minutes = function () { return U.__min() + 48.1; }; });
+      await sleep(1500);
+      const note = await fr.evaluate(() => { const n = document.getElementById('note'); return n && !n.classList.contains('hide') ? n.textContent : ''; });
       must(note === P.common.runningOut, 'P4 from minute 48 the note says "' + P.common.runningOut + '" (got "' + note + '")');
-      await fr.evaluate(() => { window.__between = null; SearchHour.between(3).then(id => { window.__between = id; }); });
-      await sleep(600);
-      /* the head is drawn at once and the buttons after the beat (mark), so wait for the buttons, up to 8 s */
-      let bp = await panelOf(fr); for (let t = 0; t < 32 && bp.btns.indexOf(P.btn.home) === -1; t++) { await sleep(250); bp = await panelOf(fr); }
-      must(bp.head === P.common.runningOut && bp.btns.join('|') === [P.btn.carryOn, P.btn.home].join('|'), 'P4 the chapter end offers Carry on and Home (' + bp.head + ' · ' + bp.btns.join(', ') + ')');
-      await fr.evaluate((h) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === h); if (x) x.click(); }, P.btn.home);
-      await sleep(500);
-      must(await fr.evaluate(() => window.__between) === 'home', 'P4 Home is a real way home');
-      await fr.evaluate(() => { const U = window.SearchUI; if (U.__now) U.now = U.__now; });
+      /* V2 keeps the between-chapters screen inside the hour's closure: the Carry on / Home screen past minute 48 is gated by j2l5-walk2.js --mins 48 and 50 (DFM, J2 L5 V2 build) */
+      await fr.evaluate(() => { const U = window.U; if (U.__min) U.minutes = U.__min; });
       /* the hour's end goes on to BEEP's last 5 questions */
       await fr.evaluate(() => SearchBridge.done('end'));
       await sleep(1500);
@@ -240,7 +235,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     if (fr) {
       await hourReady(fr);
       const fp = await waitPanel(fr, /\S/, 10000);
-      must(fp.kicker === P.close.kicker && fp.head === P.close.freeH, 'P6 the frame opens on the free flight ("' + fp.head + '")');
+      must(fp.kicker.toUpperCase() === P.close.kicker.toUpperCase() && fp.head === P.close.freeH, 'P6 the frame opens on the free flight ("' + fp.head + '")');
       await page.screenshot({ path: path.join(OUT, 'p6-flight.png') });
       await fr.evaluate(() => SearchBridge.done('end'));
       await sleep(2000);
