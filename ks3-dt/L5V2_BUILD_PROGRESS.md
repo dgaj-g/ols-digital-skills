@@ -42,3 +42,10 @@ Worktree ~/Sites/ols-wt-l5v2 · branch j3-l5-samelight · base origin/main 70afb
 - Further product fixes: swap card "Fault 8 of 7" after the last fault (ui.js, f.no < E.TOTAL); link bar pushes the page down (body.linkon).
 - SIT REPORT written: ks3-dt/L5V2_SIT_REPORT.md.
 - NEXT: step 6 deploy (re-read RESUME_HERE 1–40, Chrome rule, pack, build-pathb, Apps Script version, PR, smoke as two pupils).
+
+## DEPLOYED — 1 Nov 2026, 18:00
+- VERSION 77 live, deployment id unchanged, description "V77 1 Nov 2026: J3 L5 Same Light (PR 96 + PR 97)". Code.gs ea4a5ee2… unchanged; Index.html 0772d98d3e8cbaef9ad3782ed0488993 = raw at 1f77380.
+- main 1f77380 = PR #96 (lesson) + PR #97 (deck stop slide names "Short of time?"; contentVersion 2026-11-01j3l5b).
+- Deck 1SD1-XW5KmBXLnvde1SrwPca10f7HLxslikDyL97pgdE rebuilt in place, 8 slides, read back clean.
+- Live smoke on Pages: l5v2-walk pair 683 + 1366 PASS; reload walk 37 reloads PASS; qa-l5-paired live: pair, reload, trio PASS; gone + blocked RED only because live gives test speed to staff and localhost only (engines.js 11492); blocked pair still finished, records done (DFM 374).
+- Records: DFM 370–373, K116–K119, RESUME_HERE block below the top block, memory note updated.
