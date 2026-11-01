@@ -78,3 +78,7 @@ Content source: ~/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-
 - Pack now stops only at qa-cold-read: verdict hash b070e4734c56bb9b stale, current 7d291f0f4d5485c4.
 - Running: two cold readers → J2_L5_REDESIGN/cold-reads/build/READER_A.md and READER_B.md. Next: apply only agreed REWRITEs, write verdict block (V77 j3-05 model) into COLD_READ_VERDICTS_J2L5_j2-05.md, re-pack, then platform gate + walk2 1366x768.
 - DFM to record: J3 private-copy sync, ledger merge rule, brief cut, coverage-debt row.
+- 22:10 Cold read: r1 A/B 23 REWRITE each, 16 paths agreed (17 strings incl. lockedNote), r2 both 17/17 PASS; verdict file rewritten (hash 631970d5b7f21c7a), V1 verdicts archived in J2_L5_REDESIGN/cold-reads/. PACK GREEN, committed ffd9eee. J3 content: zero diff vs origin/main.
+- Platform gate was still V1 (SearchHour/SearchUI): ported (bridge saves, #panel h2/.stepl/.btns, U.minutes shift); the between-chapters screen past 48 is left to walk2 --mins 48/50 (closure). PASS 46/46, committed.
+- Running walk2 1366x768.
+- 22:20 State 11: words2 trim (search help "says what to change", 14 words); ledger re-recorded; verdict hash 8c8c1ef369a4dce1 (trim noted, line 12); contentVersion 2026-11-01l (main 2026-11-01j3l5c, l > j); pack exit 0 all gates; words2/frozen/twins/worry/platform 46 PASS; walk2 1366×768 PASS 13, --mins 48 PASS 14, --mins 50 PASS 14. strings.js mirror committed. NEXT: sit report → deck (Chrome) → build-pathb → deploy ≥79 → PR → records.

@@ -21,422 +21,436 @@ counted and printed for ever and is never a to-do (the ruling and its date are b
 
 | | count |
 |---|---|
-| literals of 4+ words on pupil paths | 297 |
-| MIGRATED (content owns the words) | 187 |
-| CODE (engine plumbing, not a sentence) | 3 |
+| literals of 4+ words on pupil paths | 311 |
+| MIGRATED (content owns the words) | 197 |
+| CODE (engine plumbing, not a sentence) | 7 |
 | WAIVED BY HIS RULING (settled, never a to-do) | 3 |
 | **OUTSTANDING** | **104** |
 
 > **WAIVED BY HIS RULING 23 August 2026 — DFM 255:** Lesson 1's vault engine — HIS RULING, "no just leave lesson 1 alone".
 > 3 of 3 literal(s) matched in the source. All of them are still where the ruling left them.
-> · `engines.js:2256` &#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.
-> · `engines.js:2536` &#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.
-> · `engines.js:2537` HQ closed the channel &mdash; carry on solo, nothing is lost.
+> · `engines.js:2902` &#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first.
+> · `engines.js:3192` &#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe.
+> · `engines.js:3193` HQ closed the channel &mdash; carry on solo, nothing is lost.
 
-## (shared / app shell) — 46 outstanding of 79
+## (shared / app shell) — 46 outstanding of 83
 
 | state | line | sentence |
 |---|---|---|
 | OUTSTANDING | `app.js:71` | [App.call] no transport available |
 | OUTSTANDING | `app.js:132` | Saving is full — tell your teacher to check the platform storage. |
 | OUTSTANDING | `app.js:133` | One piece of work could not be saved — tell your teacher. |
-| MIGRATED | `engines.js:253` | Checking who else is at the Vault right now… |
-| MIGRATED | `engines.js:255` | You are one of the last three. |
-| MIGRATED | `engines.js:256` | The last three pupils share one Vault as a three — waiting for your third partner to arrive… |
-| MIGRATED | `engines.js:258` | Waiting to be paired. |
-| MIGRATED | `engines.js:259` | You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this sc |
-| MIGRATED | `engines.js:271` | Waiting a while? Wave your teacher over — they can clear you for a solo run. |
-| MIGRATED | `engines.js:310` | Nobody left to pair with. |
-| MIGRATED | `engines.js:312` | Everyone else in your class has already been through the Vault, so you are |
-| MIGRATED | `engines.js:313` | doing this one solo &mdash; you make the calls yourself, and everything else |
-| OUTSTANDING | `engines.js:379` | they really are stays |
-| OUTSTANDING | `engines.js:379` | she really is stays |
-| MIGRATED | `engines.js:380` | secret until the Vault is sealed &mdash; so keep real names out of the message box, |
-| MIGRATED | `engines.js:381` | including your own. Remember: your teacher can read every message. |
-| OUTSTANDING | `engines.js:384` | Your partners for this Vault are |
-| OUTSTANDING | `engines.js:384` | . Your class has an odd |
-| OUTSTANDING | `engines.js:385` | number at the Vault, so the last three share one Vault together. |
-| OUTSTANDING | `engines.js:388` | Your partner for this Vault is |
-| MIGRATED | `engines.js:389` | . She is at another computer, looking at the same Vault as you. |
-| OUTSTANDING | `engines.js:392` | Talk it through, agree, and take turns at the controls. |
-| OUTSTANDING | `engines.js:393` | Talk it through, agree, then whoever holds the controls drops the file. |
-| MIGRATED | `engines.js:401` | Open the Vault together |
-| OUTSTANDING | `app.js:422` | Your Agent Kit is kind of like this website’s own wardrobe or costumes! |
-| OUTSTANDING | `app.js:457` | It holds the looks and badge designs your console can wear, unlocked as your XP grows. |
-| OUTSTANDING | `app.js:458` | This clearance has just unlocked new ones. Open it to try them on — you can change your look |
-| OUTSTANDING | `app.js:459` | any time from your name chip, top right. |
-| OUTSTANDING | `app.js:460` | Equipped — saved to your Agent File. |
-| OUTSTANDING | `app.js:462` | shows beside your codename |
-| OUTSTANDING | `app.js:463` | That insignia is above your clearance. |
-| OUTSTANDING | `app.js:465` | Locked — Clearance {level} kit. {short} XP to go, Agent. |
-| OUTSTANDING | `app.js:471` | Top {rank} reached. Legend. |
-| OUTSTANDING | `app.js:475` | Open your Agent Kit |
-| OUTSTANDING | `app.js:480` | Click to equip — every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks mor |
-| OUTSTANDING | `app.js:509` | Sign-in details did not load. Refresh to try again. |
-| OUTSTANDING | `app.js:527` | Type your name first. |
-| OUTSTANDING | `app.js:541` | That class link is not active. Check with your teacher. |
-| OUTSTANDING | `app.js:542` | Could not join just now. Refresh to try again. |
-| OUTSTANDING | `app.js:548` | The mission board did not load. Refresh to try again. |
-| MIGRATED | `engines.js:562` | MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message. |
-| MIGRATED | `engines.js:572` | Message your partner agentu2026 |
-| OUTSTANDING | `engines.js:606` | Easy, Agent — one message a second. |
-| OUTSTANDING | `engines.js:607` | Message did not send — try again. |
-| MIGRATED | `engines.js:611` | Channel open. Say hello — and remember Mission Command can see this. |
-| OUTSTANDING | `app.js:816` | it is already selected. Press |
-| OUTSTANDING | `app.js:950` | could not load — check your connection and refresh. |
-| MIGRATED | `engines.js:1077` | That program was still going after a few seconds, so it was stopped. Look for a loop that never ends. |
-| MIGRATED | `engines.js:1078` | One of the lines is not lined up with the others. Lines inside a loop start four spaces in. |
-| MIGRATED | `engines.js:1079` | Python does not know that name. Check how it is spelled, and check you made it before you used it. |
-| MIGRATED | `engines.js:1080` | Python could not read that line. Look for a missing bracket or a missing speech mark. |
-| MIGRATED | `engines.js:1081` | You have joined a word to a number. Put str( ) around the number first. |
-| MIGRATED | `engines.js:1082` | Python understood the line, but not the value it was given. |
-| MIGRATED | `engines.js:1083` | Python stopped at the line named above. Read that line again, slowly. |
-| OUTSTANDING | `app.js:1104` | That kit is above your clearance. |
-| OUTSTANDING | `app.js:1104` | Could not save your kit — try again. |
-| OUTSTANDING | `app.js:1127` | Could not save your kit — try again. |
-| OUTSTANDING | `app.js:1160` | Click to go back to your codename |
-| OUTSTANDING | `app.js:1161` | Click to show your own first name |
-| MIGRATED | `engines.js:1197` | Nothing has run yet. Build your program, then press RUN. |
-| MIGRATED | `engines.js:1211` | Python did not load just now. Ask your teacher, and try RUN again in a moment. |
-| MIGRATED | `engines.js:1216` | Your program printed this: |
-| MIGRATED | `engines.js:1219` | Your program ran, and it printed nothing at all. |
-| MIGRATED | `engines.js:1224` | Python stopped, and this is exactly what it said: |
-| MIGRATED | `engines.js:1260` | Nothing has been said yet. Press RUN to start the conversation. |
-| OUTSTANDING | `app.js:1270` | This lesson is being prepared — it will be ready before your class needs it. |
-| OUTSTANDING | `app.js:1272` | Locked — your teacher opens each lesson when it’s time. |
-| OUTSTANDING | `app.js:1282` | This lesson is being prepared. |
-| CODE | `engines.js:1329` | for _olsk in globals(): |
-| CODE | `engines.js:1330` | if _olsk[0:1] != "_": |
-| CODE | `engines.js:1333` | print("L\|" + _olsk + "\|" + "~".join([str(_olsx) for _olsx in _olsv])) |
-| OUTSTANDING | `app.js:1342` | Could not load the lesson — check your connection and try again. |
-| OUTSTANDING | `app.js:1349` | You missed this one |
-| OUTSTANDING | `app.js:1358` | Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public — it |
-| OUTSTANDING | `app.js:1375` | Could not load your saved work — nothing will be overwritten. Refresh when your connection is back. |
-| OUTSTANDING | `app.js:1396` | Finished — click any dot to look at that part again. You are on: |
-| MIGRATED | `engines.js:1508` | Type your program here |
-| OUTSTANDING | `app.js:1635` | This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time. |
-| OUTSTANDING | `app.js:1636` | Your progress so far is saved — you can come back to where you left off. |
+| MIGRATED | `engines.js:388` | Checking who else is at the Vault right now… |
+| MIGRATED | `engines.js:390` | You are one of the last three. |
+| MIGRATED | `engines.js:391` | The last three pupils share one Vault as a three — waiting for your third partner to arrive… |
+| MIGRATED | `engines.js:393` | Waiting to be paired. |
+| MIGRATED | `engines.js:394` | You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this sc |
+| MIGRATED | `engines.js:406` | Waiting a while? Wave your teacher over — they can clear you for a solo run. |
+| OUTSTANDING | `app.js:443` | Your Agent Kit is kind of like this website’s own wardrobe or costumes! |
+| MIGRATED | `engines.js:445` | Nobody left to pair with. |
+| MIGRATED | `engines.js:447` | Everyone else in your class has already been through the Vault, so you are |
+| MIGRATED | `engines.js:448` | doing this one solo &mdash; you make the calls yourself, and everything else |
+| OUTSTANDING | `app.js:478` | It holds the looks and badge designs your console can wear, unlocked as your XP grows. |
+| OUTSTANDING | `app.js:479` | This clearance has just unlocked new ones. Open it to try them on — you can change your look |
+| OUTSTANDING | `app.js:480` | any time from your name chip, top right. |
+| OUTSTANDING | `app.js:481` | Equipped — saved to your Agent File. |
+| OUTSTANDING | `app.js:483` | shows beside your codename |
+| OUTSTANDING | `app.js:484` | That insignia is above your clearance. |
+| OUTSTANDING | `app.js:486` | Locked — Clearance {level} kit. {short} XP to go, Agent. |
+| OUTSTANDING | `app.js:492` | Top {rank} reached. Legend. |
+| OUTSTANDING | `app.js:496` | Open your Agent Kit |
+| OUTSTANDING | `app.js:501` | Click to equip — every choice saves to your Agent File by itself. Earn XP by completing missions and nailing your checks; higher clearance unlocks mor |
+| OUTSTANDING | `engines.js:518` | they really are stays |
+| OUTSTANDING | `engines.js:518` | she really is stays |
+| MIGRATED | `engines.js:519` | secret until the Vault is sealed &mdash; so keep real names out of the message box, |
+| MIGRATED | `engines.js:520` | including your own. Remember: your teacher can read every message. |
+| OUTSTANDING | `engines.js:523` | Your partners for this Vault are |
+| OUTSTANDING | `engines.js:523` | . Your class has an odd |
+| OUTSTANDING | `engines.js:524` | number at the Vault, so the last three share one Vault together. |
+| OUTSTANDING | `engines.js:527` | Your partner for this Vault is |
+| MIGRATED | `engines.js:528` | . She is at another computer, looking at the same Vault as you. |
+| OUTSTANDING | `app.js:530` | Sign-in details did not load. Refresh to try again. |
+| OUTSTANDING | `engines.js:531` | Talk it through, agree, and take turns at the controls. |
+| OUTSTANDING | `engines.js:532` | Talk it through, agree, then whoever holds the controls drops the file. |
+| MIGRATED | `engines.js:540` | Open the Vault together |
+| OUTSTANDING | `app.js:548` | Type your name first. |
+| OUTSTANDING | `app.js:562` | That class link is not active. Check with your teacher. |
+| OUTSTANDING | `app.js:563` | Could not join just now. Refresh to try again. |
+| OUTSTANDING | `app.js:569` | The mission board did not load. Refresh to try again. |
+| MIGRATED | `engines.js:701` | MONITORED CHANNEL &mdash; Mission Command (your teacher) can read every message. |
+| MIGRATED | `engines.js:711` | Message your partner agentu2026 |
+| OUTSTANDING | `engines.js:745` | Easy, Agent — one message a second. |
+| OUTSTANDING | `engines.js:746` | Message did not send — try again. |
+| MIGRATED | `engines.js:750` | Channel open. Say hello — and remember Mission Command can see this. |
+| OUTSTANDING | `app.js:837` | it is already selected. Press |
+| OUTSTANDING | `app.js:971` | could not load — check your connection and refresh. |
+| OUTSTANDING | `app.js:1125` | That kit is above your clearance. |
+| OUTSTANDING | `app.js:1125` | Could not save your kit — try again. |
+| OUTSTANDING | `app.js:1148` | Could not save your kit — try again. |
+| OUTSTANDING | `app.js:1181` | Click to go back to your codename |
+| OUTSTANDING | `app.js:1182` | Click to show your own first name |
+| MIGRATED | `engines.js:1222` | That program was still going after a few seconds, so it was stopped. Look for a loop that never ends. |
+| MIGRATED | `engines.js:1223` | One of the lines is not lined up with the others. Lines inside a loop start four spaces in. |
+| MIGRATED | `engines.js:1224` | Python does not know that name. Check how it is spelled, and check you made it before you used it. |
+| MIGRATED | `engines.js:1225` | Python could not read that line. Look for a missing bracket or a missing speech mark. |
+| MIGRATED | `engines.js:1226` | You have joined a word to a number. Put str( ) around the number first. |
+| MIGRATED | `engines.js:1227` | Python understood the line, but not the value it was given. |
+| MIGRATED | `engines.js:1228` | Python stopped at the line named above. Read that line again, slowly. |
+| OUTSTANDING | `app.js:1292` | This lesson is being prepared — it will be ready before your class needs it. |
+| OUTSTANDING | `app.js:1294` | Locked — your teacher opens each lesson when it’s time. |
+| OUTSTANDING | `app.js:1304` | This lesson is being prepared. |
+| MIGRATED | `engines.js:1342` | Nothing has run yet. Build your program, then press RUN. |
+| MIGRATED | `engines.js:1356` | Python did not load just now. Ask your teacher, and try RUN again in a moment. |
+| MIGRATED | `engines.js:1361` | Your program printed this: |
+| MIGRATED | `engines.js:1364` | Your program ran, and it printed nothing at all. |
+| OUTSTANDING | `app.js:1364` | Could not load the lesson — check your connection and try again. |
+| MIGRATED | `engines.js:1369` | Python stopped, and this is exactly what it said: |
+| OUTSTANDING | `app.js:1371` | You missed this one |
+| OUTSTANDING | `app.js:1380` | Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public — it |
+| OUTSTANDING | `app.js:1397` | Could not load your saved work — nothing will be overwritten. Refresh when your connection is back. |
+| MIGRATED | `engines.js:1405` | Nothing has been said yet. Press RUN to start the conversation. |
+| OUTSTANDING | `app.js:1418` | Finished — click any dot to look at that part again. You are on: |
+| CODE | `engines.js:1474` | for _olsk in globals(): |
+| CODE | `engines.js:1475` | if _olsk[0:1] != "_": |
+| CODE | `engines.js:1478` | print("L\|" + _olsk + "\|" + "~".join([str(_olsx) for _olsx in _olsv])) |
+| OUTSTANDING | `app.js:1664` | This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time. |
+| OUTSTANDING | `app.js:1665` | Your progress so far is saved — you can come back to where you left off. |
+| CODE | `engines.js:1689` | except NameError as _olse: |
+| CODE | `engines.js:1693` | , "ERROR", "NameError: " + str(_olse)) |
+| CODE | `engines.js:1694` | except Exception as _olse: |
+| CODE | `engines.js:1695` | , "ERROR", type(_olse).__name__ + ": " + str(_olse)) |
+| MIGRATED | `engines.js:2065` | Type your program here |
 
-## Engines.casework — 15 outstanding of 45
+## Engines.casework — 15 outstanding of 49
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:7381` | The fixed game is saved in your Drive. |
-| OUTSTANDING | `engines.js:7381` | The fixed build lives on in Scratch. |
-| OUTSTANDING | `engines.js:7396` | Back to the board |
-| OUTSTANDING | `engines.js:7396` | Open the case board |
-| MIGRATED | `engines.js:7419` | SEALED UNTIL YOU HAVE THE GAME |
-| MIGRATED | `engines.js:7420` | SEALED UNTIL CASE 01 CLOSES |
-| MIGRATED | `engines.js:7433` | SEALED UNTIL CASE 01 CLOSES |
-| OUTSTANDING | `engines.js:7445` | broken game secured &#10003; |
-| OUTSTANDING | `engines.js:7445` | START HERE &middot; get the broken game |
-| OUTSTANDING | `engines.js:7450` | ALL CASES CLOSED &mdash; GO |
-| MIGRATED | `engines.js:7472` | Pin it back on the board |
-| MIGRATED | `engines.js:7492` | The broken game is open in Scratch and I can see its code |
-| OUTSTANDING | `engines.js:7500` | Evidence secured &mdash; Case 01 is unsealed. |
-| MIGRATED | `engines.js:7511` | The handbook film is being made. Your teacher’s demo covers everything it will show. |
-| MIGRATED | `engines.js:7521` | How to read someone else’s code |
-| MIGRATED | `engines.js:7524` | Come back to this film any time. Chapter 3 helps most while you are working on a case. |
-| MIGRATED | `engines.js:7584` | Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**. |
-| MIGRATED | `engines.js:7589` | The bug was... so I... |
-| MIGRATED | `engines.js:7593` | This tick is a promise. It says: I played the game again, and I watched the bug NOT happen. |
-| MIGRATED | `engines.js:7611` | You took HQ’s clue, so this case stamps SILVER when it closes. A silver case still counts — solve the next one without the clue for GOLD. |
-| MIGRATED | `engines.js:7614` | Stuck? Open the help steps |
-| MIGRATED | `engines.js:7622` | Help step 1 — re-read the ticket |
-| MIGRATED | `engines.js:7622` | Re-read the ticket. What EXACTLY does the player say happens? |
-| MIGRATED | `engines.js:7623` | Help step 2 — ask another agency (another detective pair) |
-| MIGRATED | `engines.js:7623` | No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below. |
-| MIGRATED | `engines.js:7623` | Ask another agency — another detective pair — that has CLOSED this case. One question, detective to detective. |
-| MIGRATED | `engines.js:7624` | Help step 3 — show HQ’s clue (this case will then stamp SILVER instead of GOLD) |
-| MIGRATED | `engines.js:7652` | Your log needs both halves in one sentence: what was wrong, and what you changed. |
-| MIGRATED | `engines.js:7654` | Say it in your OWN words — the grey line in the box is only a starter. |
-| MIGRATED | `engines.js:7660` | This stamp is locked until your case log in step 3 is written — both halves. |
-| OUTSTANDING | `engines.js:7710` | Training case closed &mdash; Cases 02&ndash;04 are UNSEALED. Take them in any order. |
-| OUTSTANDING | `engines.js:7710` | All four cases closed &mdash; the RELEASE DESK is open. |
-| MIGRATED | `engines.js:7728` | One line for the release notes: what did you add, and what does it do to the player? |
-| MIGRATED | `engines.js:7729` | I added... and now... |
-| MIGRATED | `engines.js:7746` | This tick unlocks when your release note above is written — a full sentence. |
-| OUTSTANDING | `engines.js:7765` | Feature shipped. The players are thrilled (and in danger). |
-| MIGRATED | `engines.js:7786` | What score did you finish the full run on? |
-| MIGRATED | `engines.js:7789` | Full run clean — every fix held |
-| OUTSTANDING | `engines.js:7799` | Build shipped &mdash; the fixed game is in your Drive. |
-| OUTSTANDING | `engines.js:7799` | Signed off without the Drive copy. |
-| MIGRATED | `engines.js:7812` | Run the HQ Inspection |
-| OUTSTANDING | `engines.js:7838` | HQ could not find your School &gt; DT Work folder in Drive &mdash; build it (+ New &rarr; Folder), then inspect again. |
-| OUTSTANDING | `engines.js:7839` | No freshly-saved .sb3 found in DT Work yet &mdash; check the save and the drag, then inspect again. |
-| MIGRATED | `engines.js:7858` | This button unlocks when you type the number of fish you caught into the box above. |
-| MIGRATED | `engines.js:7892` | The build has shipped — but a five-star feature request is still on the board. Take the job, or clock off? |
+| OUTSTANDING | `engines.js:9422` | The fixed game is saved in your Drive. |
+| OUTSTANDING | `engines.js:9422` | The fixed build lives on in Scratch. |
+| OUTSTANDING | `engines.js:9437` | Back to the board |
+| OUTSTANDING | `engines.js:9437` | Open the case board |
+| MIGRATED | `engines.js:9460` | SEALED UNTIL YOU HAVE THE GAME |
+| MIGRATED | `engines.js:9461` | SEALED UNTIL CASE 01 CLOSES |
+| MIGRATED | `engines.js:9474` | SEALED UNTIL CASE 01 CLOSES |
+| OUTSTANDING | `engines.js:9486` | broken game secured &#10003; |
+| OUTSTANDING | `engines.js:9486` | START HERE &middot; get the broken game |
+| OUTSTANDING | `engines.js:9491` | ALL CASES CLOSED &mdash; GO |
+| MIGRATED | `engines.js:9513` | Pin it back on the board |
+| MIGRATED | `engines.js:9533` | The broken game is open in Scratch and I can see its code |
+| OUTSTANDING | `engines.js:9541` | Evidence secured &mdash; Case 01 is unsealed. |
+| MIGRATED | `engines.js:9552` | The handbook film is being made. Your teacher’s demo covers everything it will show. |
+| MIGRATED | `engines.js:9562` | How to read someone else’s code |
+| MIGRATED | `engines.js:9565` | Come back to this film any time. Chapter 3 helps most while you are working on a case. |
+| MIGRATED | `engines.js:9625` | Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**. |
+| MIGRATED | `engines.js:9630` | The bug was... so I... |
+| MIGRATED | `engines.js:9634` | This tick is a promise. It says: I played the game again, and I watched the bug NOT happen. |
+| MIGRATED | `engines.js:9652` | You took HQ’s clue, so this case stamps SILVER when it closes. A silver case still counts — solve the next one without the clue for GOLD. |
+| MIGRATED | `engines.js:9655` | Stuck? Open the help steps |
+| MIGRATED | `engines.js:9663` | Help step 1 — re-read the ticket |
+| MIGRATED | `engines.js:9663` | Re-read the ticket. What EXACTLY does the player say happens? |
+| MIGRATED | `engines.js:9664` | Help step 2 — ask another agency (another detective pair) |
+| MIGRATED | `engines.js:9664` | No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below. |
+| MIGRATED | `engines.js:9664` | Ask another agency — another detective pair — that has CLOSED this case. One question, detective to detective. |
+| MIGRATED | `engines.js:9665` | Help step 3 — show HQ’s clue (this case will then stamp SILVER instead of GOLD) |
+| MIGRATED | `engines.js:9693` | Your log needs both halves in one sentence: what was wrong, and what you changed. |
+| MIGRATED | `engines.js:9695` | Say it in your OWN words — the grey line in the box is only a starter. |
+| MIGRATED | `engines.js:9701` | This stamp is locked until your case log in step 3 is written — both halves. |
+| OUTSTANDING | `engines.js:9751` | Training case closed &mdash; Cases 02&ndash;04 are UNSEALED. Take them in any order. |
+| OUTSTANDING | `engines.js:9751` | All four cases closed &mdash; the RELEASE DESK is open. |
+| MIGRATED | `engines.js:9769` | One line for the release notes: what did you add, and what does it do to the player? |
+| MIGRATED | `engines.js:9770` | I added... and now... |
+| MIGRATED | `engines.js:9787` | This tick unlocks when your release note above is written — a full sentence. |
+| OUTSTANDING | `engines.js:9806` | Feature shipped. The players are thrilled (and in danger). |
+| MIGRATED | `engines.js:9827` | What score did you finish the full run on? |
+| MIGRATED | `engines.js:9830` | Full run clean — every fix held |
+| OUTSTANDING | `engines.js:9840` | Build shipped &mdash; the fixed game is in your Drive. |
+| OUTSTANDING | `engines.js:9840` | Signed off without the Drive copy. |
+| MIGRATED | `engines.js:9853` | Run the HQ Inspection |
+| MIGRATED | `engines.js:9854` | Sign off without the Drive copy |
+| MIGRATED | `engines.js:9866` | If HQ still cannot see your Drive, you can sign off without the copy and tell your teacher in class. |
+| MIGRATED | `engines.js:9881` | Your teacher has not opened this lesson yet u2014 ask them. |
+| MIGRATED | `engines.js:9882` | The line to HQ dropped u2014 try again in a moment. |
+| OUTSTANDING | `engines.js:9894` | HQ could not find your School &gt; DT Work folder in Drive &mdash; build it (+ New &rarr; Folder), then inspect again. |
+| OUTSTANDING | `engines.js:9895` | No freshly-saved .sb3 found in DT Work yet &mdash; check the save and the drag, then inspect again. |
+| MIGRATED | `engines.js:9914` | This button unlocks when you type the number of fish you caught into the box above. |
+| MIGRATED | `engines.js:9948` | The build has shipped — but a five-star feature request is still on the board. Take the job, or clock off? |
 
 ## Engines.vault — 13 outstanding of 16
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:2255` | &#127919; Solo run &mdash; reason each drop out in your head first. |
-| WAIVED | `engines.js:2256` | &#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first. |
-| OUTSTANDING | `engines.js:2257` | &#128225; Agree in the channel first &mdash; then whoever is at the controls releases the file. |
-| OUTSTANDING | `engines.js:2258` | &#129309; Agree together before you release each file. |
-| OUTSTANDING | `engines.js:2306` | Not your drop — Agent |
-| OUTSTANDING | `engines.js:2306` | is at the controls. |
-| OUTSTANDING | `engines.js:2373` | &#127918; YOU are at the controls &mdash; agree in the channel, then drag. |
-| OUTSTANDING | `engines.js:2374` | is at the controls &mdash; advise in the channel. |
-| OUTSTANDING | `engines.js:2380` | ’s signal is weak &mdash; the controls pass on. |
-| OUTSTANDING | `engines.js:2381` | is back on the channel. |
-| OUTSTANDING | `engines.js:2427` | Returned — the Vault disagrees. Talk it through and try again. |
-| OUTSTANDING | `engines.js:2428` | &#8617;&#65039; The Vault returned “ |
-| OUTSTANDING | `engines.js:2428` | ” &mdash; talk it through, the controls change hands. |
-| OUTSTANDING | `engines.js:2447` | &#128274; Vault sealed &mdash; stand by for the debrief. |
-| WAIVED | `engines.js:2536` | &#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe. |
-| WAIVED | `engines.js:2537` | HQ closed the channel &mdash; carry on solo, nothing is lost. |
+| OUTSTANDING | `engines.js:2901` | &#127919; Solo run &mdash; reason each drop out in your head first. |
+| WAIVED | `engines.js:2902` | &#127919; Solo run cleared by HQ &mdash; reason each drop out in your head first. |
+| OUTSTANDING | `engines.js:2903` | &#128225; Agree in the channel first &mdash; then whoever is at the controls releases the file. |
+| OUTSTANDING | `engines.js:2904` | &#129309; Agree together before you release each file. |
+| OUTSTANDING | `engines.js:2955` | Not your drop — Agent |
+| OUTSTANDING | `engines.js:2955` | is at the controls. |
+| OUTSTANDING | `engines.js:3029` | &#127918; YOU are at the controls &mdash; agree in the channel, then drag. |
+| OUTSTANDING | `engines.js:3030` | is at the controls &mdash; advise in the channel. |
+| OUTSTANDING | `engines.js:3036` | ’s signal is weak &mdash; the controls pass on. |
+| OUTSTANDING | `engines.js:3037` | is back on the channel. |
+| OUTSTANDING | `engines.js:3083` | Returned — the Vault disagrees. Talk it through and try again. |
+| OUTSTANDING | `engines.js:3084` | &#8617;&#65039; The Vault returned “ |
+| OUTSTANDING | `engines.js:3084` | ” &mdash; talk it through, the controls change hands. |
+| OUTSTANDING | `engines.js:3103` | &#128274; Vault sealed &mdash; stand by for the debrief. |
+| WAIVED | `engines.js:3192` | &#127919; HQ closed the channel &mdash; finish the Vault on your own. Everything you have filed is safe. |
+| WAIVED | `engines.js:3193` | HQ closed the channel &mdash; carry on solo, nothing is lost. |
 
 ## Engines.ladder — 8 outstanding of 14
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:3135` | The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all |
-| OUTSTANDING | `engines.js:3145` | , extra challenge complete |
-| OUTSTANDING | `engines.js:3145` | , extra challenge now available |
-| OUTSTANDING | `engines.js:3226` | get MakeCode set up |
-| OUTSTANDING | `engines.js:3249` | This part runs about |
-| MIGRATED | `engines.js:3294` | Before your first rung, set MakeCode up like this: |
-| OUTSTANDING | `engines.js:3311` | Back to the ladder |
-| MIGRATED | `engines.js:3320` | We both took a turn |
-| OUTSTANDING | `engines.js:3323` | No screens yet &mdash; today YOU are the whole circuit |
-| OUTSTANDING | `engines.js:3323` | No screens yet &mdash; you two ARE the circuit |
-| MIGRATED | `engines.js:3383` | The blocks for this rung |
-| MIGRATED | `engines.js:3393` | &#9314; Prove it &mdash; the real test: |
-| MIGRATED | `engines.js:3393` | Flash it to the device and make it happen for real. |
-| MIGRATED | `engines.js:3433` | Rung cleared &mdash; signal locked in. |
+| OUTSTANDING | `engines.js:3952` | The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all |
+| OUTSTANDING | `engines.js:3962` | , extra challenge complete |
+| OUTSTANDING | `engines.js:3962` | , extra challenge now available |
+| OUTSTANDING | `engines.js:4043` | get MakeCode set up |
+| OUTSTANDING | `engines.js:4066` | This part runs about |
+| MIGRATED | `engines.js:4111` | Before your first rung, set MakeCode up like this: |
+| OUTSTANDING | `engines.js:4128` | Back to the ladder |
+| MIGRATED | `engines.js:4137` | We both took a turn |
+| OUTSTANDING | `engines.js:4140` | No screens yet &mdash; today YOU are the whole circuit |
+| OUTSTANDING | `engines.js:4140` | No screens yet &mdash; you two ARE the circuit |
+| MIGRATED | `engines.js:4200` | The blocks for this rung |
+| MIGRATED | `engines.js:4210` | &#9314; Prove it &mdash; the real test: |
+| MIGRATED | `engines.js:4210` | Flash it to the device and make it happen for real. |
+| MIGRATED | `engines.js:4250` | Rung cleared &mdash; signal locked in. |
 
 ## Engines.steps — 4 outstanding of 4
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:2113` | Nothing typed yet — give it a go. |
-| OUTSTANDING | `engines.js:2114` | Sneaky SPACE spotted — usernames never have spaces. Try again. |
-| OUTSTANDING | `engines.js:2115` | ALL CAPITALS? Check Caps Lock isn’t on — usernames are lowercase. Try again. |
-| OUTSTANDING | `engines.js:2137` | Check you have it |
+| OUTSTANDING | `engines.js:2759` | Nothing typed yet — give it a go. |
+| OUTSTANDING | `engines.js:2760` | Sneaky SPACE spotted — usernames never have spaces. Try again. |
+| OUTSTANDING | `engines.js:2761` | ALL CAPITALS? Check Caps Lock isn’t on — usernames are lowercase. Try again. |
+| OUTSTANDING | `engines.js:2783` | Check you have it |
 
 ## Engines.tournament — 4 outstanding of 9
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:7029` | The Rally runs live, in class — nothing to replay here. |
-| MIGRATED | `engines.js:7065` | You are refereeing yourself today. When you are ready, click the button below to start your |
-| MIGRATED | `engines.js:7066` | Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her |
-| MIGRATED | `engines.js:7077` | We played it fair |
-| MIGRATED | `engines.js:7091` | This wakes up when both goes have been played, both scores are in, and you have ticked the box above. |
-| OUTSTANDING | `engines.js:7131` | Run a go again |
-| OUTSTANDING | `engines.js:7148` | PRESS BUTTON A as fast as you can! |
-| OUTSTANDING | `engines.js:7162` | TIME! Hands off — read the number off the micro:bit. |
-| MIGRATED | `engines.js:7239` | Eyes on the big screen. |
+| OUTSTANDING | `engines.js:9070` | The Rally runs live, in class — nothing to replay here. |
+| MIGRATED | `engines.js:9106` | You are refereeing yourself today. When you are ready, click the button below to start your |
+| MIGRATED | `engines.js:9107` | Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her |
+| MIGRATED | `engines.js:9118` | We played it fair |
+| MIGRATED | `engines.js:9132` | This wakes up when both goes have been played, both scores are in, and you have ticked the box above. |
+| OUTSTANDING | `engines.js:9172` | Run a go again |
+| OUTSTANDING | `engines.js:9189` | PRESS BUTTON A as fast as you can! |
+| OUTSTANDING | `engines.js:9203` | TIME! Hands off — read the number off the micro:bit. |
+| MIGRATED | `engines.js:9280` | Eyes on the big screen. |
 
-## Engines.drivecheck — 3 outstanding of 5
+## Engines.drivecheck — 3 outstanding of 7
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:2757` | Looking inside your Drive… |
-| OUTSTANDING | `engines.js:2762` | This side quest is not unlocked for your class yet — check with your teacher. |
-| MIGRATED | `engines.js:2763` | The website could not be reached just then. Nothing is lost — try again in a moment. |
-| OUTSTANDING | `engines.js:2777` | Not quite there yet |
-| OUTSTANDING | `engines.js:2789` | Run the inspection again |
+| MIGRATED | `engines.js:3426` | Looking inside your Drive… |
+| OUTSTANDING | `engines.js:3433` | This side quest is not unlocked for your class yet — check with your teacher. |
+| MIGRATED | `engines.js:3434` | The website could not be reached just then. Nothing is lost — try again in a moment. |
+| MIGRATED | `engines.js:3436` | If the inspection still will not run, you can carry on without it and tell your teacher in class. |
+| MIGRATED | `engines.js:3442` | Carry on without the inspection |
+| OUTSTANDING | `engines.js:3458` | Not quite there yet |
+| OUTSTANDING | `engines.js:3470` | Run the inspection again |
 
 ## Engines.recap — 3 outstanding of 3
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:2820` | While everyone logs in… |
-| OUTSTANDING | `engines.js:2821` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public. |
-| OUTSTANDING | `engines.js:2842` | The ones you missed will come back around — that’s how remembering works. |
+| OUTSTANDING | `engines.js:3501` | While everyone logs in… |
+| OUTSTANDING | `engines.js:3502` | A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public. |
+| OUTSTANDING | `engines.js:3523` | The ones you missed will come back around — that’s how remembering works. |
 
-## Engines.artifact — 3 outstanding of 8
+## Engines.artifact — 3 outstanding of 11
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:6805` | The film lasts about |
-| OUTSTANDING | `engines.js:6806` | seconds. You can pause it at any point and catch up. |
-| MIGRATED | `engines.js:6859` | Looking inside your Drive for your fileu2026 |
-| MIGRATED | `engines.js:6865` | The check could not reach your Drive u2014 try again in a moment. |
-| MIGRATED | `engines.js:6870` | The website found **{name}** in your DT Work folder |
-| MIGRATED | `engines.js:6873` | Your build now follows your login anywhere. That is the whole point of the Vault. |
-| OUTSTANDING | `engines.js:6880` | No freshly-saved build found in DT Work yet. |
-| MIGRATED | `engines.js:6881` | Check each step above, then press |
+| OUTSTANDING | `engines.js:8825` | The film lasts about |
+| OUTSTANDING | `engines.js:8826` | seconds. You can pause it at any point and catch up. |
+| MIGRATED | `engines.js:8854` | Carry on without the check |
+| MIGRATED | `engines.js:8887` | If the check still will not run, you can carry on without it and tell your teacher in class. |
+| MIGRATED | `engines.js:8894` | Looking inside your Drive for your fileu2026 |
+| MIGRATED | `engines.js:8903` | Your teacher has not opened this lesson yet u2014 ask them. |
+| MIGRATED | `engines.js:8904` | The check could not reach your Drive u2014 try again in a moment. |
+| MIGRATED | `engines.js:8910` | The website found **{name}** in your DT Work folder |
+| MIGRATED | `engines.js:8913` | Your build now follows your login anywhere. That is the whole point of the Vault. |
+| OUTSTANDING | `engines.js:8921` | No freshly-saved build found in DT Work yet. |
+| MIGRATED | `engines.js:8922` | Check each step above, then press |
 
 ## Engines.pyrun — 2 outstanding of 8
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:4512` | Show me the shape |
-| MIGRATED | `engines.js:4532` | What this looks like |
-| MIGRATED | `engines.js:4538` | Back to my program |
-| MIGRATED | `engines.js:4822` | Lines you can use |
-| MIGRATED | `engines.js:4835` | What it has to do |
-| MIGRATED | `engines.js:4839` | Put the shape in for me |
-| OUTSTANDING | `engines.js:5838` | — press Enter to move this line |
-| OUTSTANDING | `engines.js:5841` | " type="button" draggable="false" data-si=" |
+| MIGRATED | `engines.js:5357` | Show me the shape |
+| MIGRATED | `engines.js:5377` | What this looks like |
+| MIGRATED | `engines.js:5383` | Back to my program |
+| MIGRATED | `engines.js:5697` | Lines you can use |
+| MIGRATED | `engines.js:5722` | What it has to do |
+| MIGRATED | `engines.js:5726` | Put the shape in for me |
+| OUTSTANDING | `engines.js:7108` | — press Enter to move this line |
+| OUTSTANDING | `engines.js:7111` | " type="button" draggable="false" data-si=" |
 
 ## Engines.tour — 1 outstanding of 1
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:2152` | Learn your way around |
+| OUTSTANDING | `engines.js:2798` | Learn your way around |
 
 ## Engines.diagnostic — 1 outstanding of 4
 
 | state | line | sentence |
 |---|---|---|
-| OUTSTANDING | `engines.js:2570` | Solo mission — your own answers only. |
-| MIGRATED | `engines.js:2573` | Open my Agent File |
-| MIGRATED | `engines.js:2578` | Sealing your Agent File… |
-| MIGRATED | `engines.js:2587` | Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come. |
+| OUTSTANDING | `engines.js:3226` | Solo mission — your own answers only. |
+| MIGRATED | `engines.js:3229` | Open my Agent File |
+| MIGRATED | `engines.js:3234` | Sealing your Agent File… |
+| MIGRATED | `engines.js:3243` | Sixteen answers, logged for the record. At the end of the year you’ll open this file again — and see how far you’ve come. |
 
 ## Engines.selfeval — 1 outstanding of 4
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:2915` | Answer every sentence above — and how it felt — and this button wakes up. |
-| OUTSTANDING | `engines.js:2932` | The box is full — 0 characters left. |
-| MIGRATED | `engines.js:2967` | This mission report went to your teacher the first time — a review visit never overwrites it. |
-| MIGRATED | `engines.js:2983` | Your connection is playing up, so your answers are safe here and will send automatically. Mission complete. |
+| MIGRATED | `engines.js:3713` | Answer every sentence above — and how it felt — and this button wakes up. |
+| OUTSTANDING | `engines.js:3734` | The box is full — 0 characters left. |
+| MIGRATED | `engines.js:3769` | This mission report went to your teacher the first time — a review visit never overwrites it. |
+| MIGRATED | `engines.js:3785` | Your connection is playing up, so your answers are safe here and will send automatically. Mission complete. |
 
 ## Engines.briefing — 0 outstanding of 1
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:1790` | The film will not play just now. Carry on reading below - everything the film shows is said again on the cards that follow. |
+| MIGRATED | `engines.js:2436` | The film will not play just now. Carry on reading below - everything the film shows is said again on the cards that follow. |
 
 ## Engines.items — 0 outstanding of 2
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:1975` | Give them a go |
-| MIGRATED | `engines.js:2009` | Back to the step |
+| MIGRATED | `engines.js:2621` | Give them a go |
+| MIGRATED | `engines.js:2655` | Back to the step |
 
 ## Engines.exitcheck — 0 outstanding of 1
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:2866` | Before you clock off… |
+| MIGRATED | `engines.js:3663` | Before you clock off… |
 
-## Engines.parsons — 0 outstanding of 17
+## Engines.parsons — 0 outstanding of 18
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:3616` | Your challenge: build the program yourself. Move all {n} |
-| MIGRATED | `engines.js:3618` | Your challenge: build the program yourself. Move all {n} |
-| MIGRATED | `engines.js:3625` | to take it out again. |
-| MIGRATED | `engines.js:3653` | Click every block from the tray into your program, then this button wakes up. |
-| MIGRATED | `engines.js:4017` | Correct u2014 that program does exactly what the mission asked. |
-| MIGRATED | `engines.js:4062` | Click a block on the left to start. |
-| MIGRATED | `engines.js:4063` | Now click the Python line you think does the same job. |
-| MIGRATED | `engines.js:4064` | Not a pair. Both go back — look at them again and try another one. |
-| MIGRATED | `engines.js:4065` | That is a pair. Both are locked in. |
-| MIGRATED | `engines.js:4066` | Move at least one line into your program, then RUN wakes up. |
-| MIGRATED | `engines.js:4076` | Your program stopped before it could be checked — read the console. |
-| MIGRATED | `engines.js:4078` | One of the boxes is still empty. Type something into it, then press RUN. |
-| MIGRATED | `engines.js:4079` | Every line is in your program. |
-| MIGRATED | `engines.js:4080` | Nothing here yet — drag or click a line across. |
-| MIGRATED | `engines.js:4081` | The console said exactly what the target asked for. |
-| MIGRATED | `engines.js:4082` | The console did not say what the target asked for. Read what it really printed, change your program, and run it again. |
-| MIGRATED | `engines.js:4083` | Put this line back |
+| MIGRATED | `engines.js:4433` | Your challenge: build the program yourself. Move all {n} |
+| MIGRATED | `engines.js:4435` | Your challenge: build the program yourself. Move all {n} |
+| MIGRATED | `engines.js:4442` | to take it out again. |
+| MIGRATED | `engines.js:4470` | Click every block from the tray into your program, then this button wakes up. |
+| MIGRATED | `engines.js:4857` | Correct u2014 that program does exactly what the mission asked. |
+| MIGRATED | `engines.js:4902` | Click a block on the left to start. |
+| MIGRATED | `engines.js:4903` | Now click the Python line you think does the same job. |
+| MIGRATED | `engines.js:4904` | Not a pair. Both go back — look at them again and try another one. |
+| MIGRATED | `engines.js:4905` | That is a pair. Both are locked in. |
+| MIGRATED | `engines.js:4906` | Move at least one line into your program, then RUN wakes up. |
+| MIGRATED | `engines.js:4916` | Your program stopped before it could be checked — read the console. |
+| MIGRATED | `engines.js:4918` | One of the boxes is still empty. Type something into it, then press RUN. |
+| MIGRATED | `engines.js:4919` | Every line is in your program. |
+| MIGRATED | `engines.js:4920` | Nothing here yet — drag or click a line across. |
+| MIGRATED | `engines.js:4921` | The console said exactly what the target asked for. |
+| MIGRATED | `engines.js:4922` | The console did not say what the target asked for. Read what it really printed, change your program, and run it again. |
+| MIGRATED | `engines.js:4927` | Your program ran to the end, but it did not print an answer you typed. Find the line that is meant to print your answer: the box name on that line mus |
+| MIGRATED | `engines.js:4928` | Put this line back |
 
 ## Engines.video — 0 outstanding of 2
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:6895` | This tutorial video is being filmed. For now, your teacher will talk you through this bit. |
-| MIGRATED | `engines.js:6929` | The film will not play just now. Carry on — everything it shows is written again on the cards that come next. Tell whoever is in the room that the fil |
+| MIGRATED | `engines.js:8936` | This tutorial video is being filmed. For now, your teacher will talk you through this bit. |
+| MIGRATED | `engines.js:8970` | The film will not play just now. Carry on — everything it shows is written again on the cards that come next. Tell whoever is in the room that the fil |
 
 ## Engines.studio — 0 outstanding of 38
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:8021` | Three contracts on the desk |
-| MIGRATED | `engines.js:8023` | Back to the contracts |
-| MIGRATED | `engines.js:8041` | Every contract carries the same brief |
-| MIGRATED | `engines.js:8076` | e.g. Golden Otter Games |
-| MIGRATED | `engines.js:8104` | Type your studio name above — at least 3 letters — and the signing line unlocks. |
-| MIGRATED | `engines.js:8128` | Click again to shred this contract |
-| MIGRATED | `engines.js:8129` | Tear it up &amp; choose again |
-| MIGRATED | `engines.js:8244` | Back to the desk |
-| MIGRATED | `engines.js:8270` | Make your fix in Scratch, then run the test again. |
-| MIGRATED | `engines.js:8274` | I made the fix &mdash; run the test again |
-| MIGRATED | `engines.js:8274` | I ran the test &mdash; record what happened |
-| MIGRATED | `engines.js:8295` | Download your starter kit and load it at scratch.mit.edu. |
-| MIGRATED | `engines.js:8306` | The kit is open in Scratch and I can see its code |
-| MIGRATED | `engines.js:8310` | Exactly what your studio adds - in order. |
-| MIGRATED | `engines.js:8325` | Watch the first half again |
-| MIGRATED | `engines.js:8330` | Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job. |
-| MIGRATED | `engines.js:8338` | These four checks wake up the moment you tick step 1 above — the kit open in Scratch, with its STUDIO NOTE found. Until then there is nothing to test. |
-| MIGRATED | `engines.js:8344` | DOORS OPEN &mdash; IN BETA |
-| MIGRATED | `engines.js:8344` | DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT |
-| MIGRATED | `engines.js:8345` | All four checks passed &mdash; open your doors. |
-| MIGRATED | `engines.js:8345` | Lights up when all four QA checks pass. |
-| MIGRATED | `engines.js:8353` | Out of time? An 'open in beta' door appears here once you have tried at least two QA checks. |
-| MIGRATED | `engines.js:8361` | What did you add, and what does it change? |
-| MIGRATED | `engines.js:8376` | Kit secured &mdash; the QA Desk is open. |
-| MIGRATED | `engines.js:8399` | What did you actually see? |
-| MIGRATED | `engines.js:8438` | Click again &mdash; players will see IN BETA on your listing |
-| MIGRATED | `engines.js:8439` | Out of time? Open in beta &mdash; ask your teacher first |
-| MIGRATED | `engines.js:8451` | Say what you added AND what it changes - a real release note (5+ words). |
-| MIGRATED | `engines.js:8478` | What your studio adds |
-| MIGRATED | `engines.js:8481` | The finished blocks - yours should read like this. |
-| MIGRATED | `engines.js:8495` | Making your game react |
-| MIGRATED | `engines.js:8515` | In beta is a real studio state. Your listing goes up with an IN BETA tag - reviewers play what is there. |
-| MIGRATED | `engines.js:8515` | Your listing goes up on the class marquee. Make it worth a visit. |
-| MIGRATED | `engines.js:8521` | e.g. Arrow keys to move. Catch sushi, dodge wasabi! |
-| MIGRATED | `engines.js:8540` | The doors open when your game title and the how-to-play line are both filled in. |
-| MIGRATED | `engines.js:8558` | The marquee did not answer |
-| MIGRATED | `engines.js:8565` | Doors open - your game is on the marquee. |
-| MIGRATED | `engines.js:8569` | No connection - try again. |
+| MIGRATED | `engines.js:10077` | Three contracts on the desk |
+| MIGRATED | `engines.js:10079` | Back to the contracts |
+| MIGRATED | `engines.js:10097` | Every contract carries the same brief |
+| MIGRATED | `engines.js:10132` | e.g. Golden Otter Games |
+| MIGRATED | `engines.js:10160` | Type your studio name above — at least 3 letters — and the signing line unlocks. |
+| MIGRATED | `engines.js:10184` | Click again to shred this contract |
+| MIGRATED | `engines.js:10185` | Tear it up &amp; choose again |
+| MIGRATED | `engines.js:10300` | Back to the desk |
+| MIGRATED | `engines.js:10326` | Make your fix in Scratch, then run the test again. |
+| MIGRATED | `engines.js:10330` | I made the fix &mdash; run the test again |
+| MIGRATED | `engines.js:10330` | I ran the test &mdash; record what happened |
+| MIGRATED | `engines.js:10351` | Download your starter kit and load it at scratch.mit.edu. |
+| MIGRATED | `engines.js:10362` | The kit is open in Scratch and I can see its code |
+| MIGRATED | `engines.js:10366` | Exactly what your studio adds - in order. |
+| MIGRATED | `engines.js:10381` | Watch the first half again |
+| MIGRATED | `engines.js:10386` | Four checks stand between your build and the gallery. Run each test in Scratch, then record what actually happened - crosses are QA doing its job. |
+| MIGRATED | `engines.js:10394` | These four checks wake up the moment you tick step 1 above — the kit open in Scratch, with its STUDIO NOTE found. Until then there is nothing to test. |
+| MIGRATED | `engines.js:10400` | DOORS OPEN &mdash; IN BETA |
+| MIGRATED | `engines.js:10400` | DOORS OPEN &mdash; SEE YOU AT PRESS NIGHT |
+| MIGRATED | `engines.js:10401` | All four checks passed &mdash; open your doors. |
+| MIGRATED | `engines.js:10401` | Lights up when all four QA checks pass. |
+| MIGRATED | `engines.js:10409` | Out of time? An 'open in beta' door appears here once you have tried at least two QA checks. |
+| MIGRATED | `engines.js:10417` | What did you add, and what does it change? |
+| MIGRATED | `engines.js:10443` | Kit secured &mdash; the QA Desk is open. |
+| MIGRATED | `engines.js:10466` | What did you actually see? |
+| MIGRATED | `engines.js:10505` | Click again &mdash; players will see IN BETA on your listing |
+| MIGRATED | `engines.js:10506` | Out of time? Open in beta &mdash; ask your teacher first |
+| MIGRATED | `engines.js:10518` | Say what you added AND what it changes - a real release note (5+ words). |
+| MIGRATED | `engines.js:10545` | What your studio adds |
+| MIGRATED | `engines.js:10548` | The finished blocks - yours should read like this. |
+| MIGRATED | `engines.js:10562` | Making your game react |
+| MIGRATED | `engines.js:10582` | In beta is a real studio state. Your listing goes up with an IN BETA tag - reviewers play what is there. |
+| MIGRATED | `engines.js:10582` | Your listing goes up on the class marquee. Make it worth a visit. |
+| MIGRATED | `engines.js:10588` | e.g. Arrow keys to move. Catch sushi, dodge wasabi! |
+| MIGRATED | `engines.js:10607` | The doors open when your game title and the how-to-play line are both filled in. |
+| MIGRATED | `engines.js:10625` | The marquee did not answer |
+| MIGRATED | `engines.js:10632` | Doors open - your game is on the marquee. |
+| MIGRATED | `engines.js:10636` | No connection - try again. |
 
 ## Engines.gallery — 0 outstanding of 26
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:8647` | The gallery has been archived &mdash; your reviews live in the class record now. |
-| MIGRATED | `engines.js:8650` | The reviews your game received: |
-| MIGRATED | `engines.js:8664` | Press Night has closed |
-| MIGRATED | `engines.js:8665` | The gallery ran live in class. You can still browse the marquee - and every studio still files a V2 note. |
-| MIGRATED | `engines.js:8673` | Every studio plans a version 2. What is the ONE thing yours would change, and why? |
-| MIGRATED | `engines.js:8674` | In version 2 I would... because... |
-| MIGRATED | `engines.js:8680` | reviews were filed on the night |
-| MIGRATED | `engines.js:8690` | A real design note names the change AND the reason (6+ words). |
-| MIGRATED | `engines.js:8828` | your press pass is |
-| MIGRATED | `engines.js:8828` | both press passes are |
-| MIGRATED | `engines.js:8833` | Read your reviews. Pick ONE that sparked something - what will version 2 change, and why? |
-| MIGRATED | `engines.js:8834` | While reviews come in: what is the ONE thing version 2 of your game would change, and why? |
-| MIGRATED | `engines.js:8837` | In version 2 I would... because a review said... |
-| MIGRATED | `engines.js:8845` | A real design note names the change AND the reason (6+ words). |
-| MIGRATED | `engines.js:8862` | Play it at their desk first. Then write like a reviewer: kind, specific, helpful. |
-| MIGRATED | `engines.js:8864` | name the exact bit you liked, and why it works |
-| MIGRATED | `engines.js:8866` | a question or idea that could make version 2 even better |
-| MIGRATED | `engines.js:8880` | Specific means at least 5 real words in each line - name the exact thing. |
-| MIGRATED | `engines.js:8891` | All three press passes are spent. |
-| MIGRATED | `engines.js:8892` | You already reviewed this studio - spread the passes around. |
-| MIGRATED | `engines.js:8893` | Too thin for print - name the exact thing. |
-| MIGRATED | `engines.js:8894` | Nice try - you cannot review your own studio. |
-| MIGRATED | `engines.js:8895` | The review did not file - try again. |
-| MIGRATED | `engines.js:8899` | Review filed - signed and delivered. |
-| MIGRATED | `engines.js:8904` | No connection - try again. |
-| MIGRATED | `engines.js:8919` | No scores. No rankings. Real games, real reviewers, real notes for version 2 - that is how studios grow. |
+| MIGRATED | `engines.js:10714` | The gallery has been archived &mdash; your reviews live in the class record now. |
+| MIGRATED | `engines.js:10717` | The reviews your game received: |
+| MIGRATED | `engines.js:10731` | Press Night has closed |
+| MIGRATED | `engines.js:10732` | The gallery ran live in class. You can still browse the marquee - and every studio still files a V2 note. |
+| MIGRATED | `engines.js:10740` | Every studio plans a version 2. What is the ONE thing yours would change, and why? |
+| MIGRATED | `engines.js:10741` | In version 2 I would... because... |
+| MIGRATED | `engines.js:10747` | reviews were filed on the night |
+| MIGRATED | `engines.js:10757` | A real design note names the change AND the reason (6+ words). |
+| MIGRATED | `engines.js:10895` | your press pass is |
+| MIGRATED | `engines.js:10895` | both press passes are |
+| MIGRATED | `engines.js:10900` | Read your reviews. Pick ONE that sparked something - what will version 2 change, and why? |
+| MIGRATED | `engines.js:10901` | While reviews come in: what is the ONE thing version 2 of your game would change, and why? |
+| MIGRATED | `engines.js:10904` | In version 2 I would... because a review said... |
+| MIGRATED | `engines.js:10912` | A real design note names the change AND the reason (6+ words). |
+| MIGRATED | `engines.js:10929` | Play it at their desk first. Then write like a reviewer: kind, specific, helpful. |
+| MIGRATED | `engines.js:10931` | name the exact bit you liked, and why it works |
+| MIGRATED | `engines.js:10933` | a question or idea that could make version 2 even better |
+| MIGRATED | `engines.js:10947` | Specific means at least 5 real words in each line - name the exact thing. |
+| MIGRATED | `engines.js:10958` | All three press passes are spent. |
+| MIGRATED | `engines.js:10959` | You already reviewed this studio - spread the passes around. |
+| MIGRATED | `engines.js:10960` | Too thin for print - name the exact thing. |
+| MIGRATED | `engines.js:10961` | Nice try - you cannot review your own studio. |
+| MIGRATED | `engines.js:10962` | The review did not file - try again. |
+| MIGRATED | `engines.js:10966` | Review filed - signed and delivered. |
+| MIGRATED | `engines.js:10971` | No connection - try again. |
+| MIGRATED | `engines.js:10986` | No scores. No rankings. Real games, real reviewers, real notes for version 2 - that is how studios grow. |
 
 ## Engines.compass — 0 outstanding of 2
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:8985` | Which one sounds more like you? |
-| MIGRATED | `engines.js:8989` | Answer all three and the button below wakes up. |
+| MIGRATED | `engines.js:11052` | Which one sounds more like you? |
+| MIGRATED | `engines.js:11056` | Answer all three and the button below wakes up. |
 
 ## Engines.inspect — 0 outstanding of 8
 
 | state | line | sentence |
 |---|---|---|
-| MIGRATED | `engines.js:9116` | How the inspection works: |
-| MIGRATED | `engines.js:9158` | File my inspection report |
-| MIGRATED | `engines.js:9178` | You have flagged 1 place. |
-| MIGRATED | `engines.js:9179` | You have flagged {n} places. |
-| MIGRATED | `engines.js:9217` | You missed this one |
-| MIGRATED | `engines.js:9260` | You found the one thing that breaks a rule. |
-| MIGRATED | `engines.js:9261` | You found all {total} of them. |
-| MIGRATED | `engines.js:9262` | You found {found} of the {total} things that break a rule. The rest are named below. |
+| MIGRATED | `engines.js:11183` | How the inspection works: |
+| MIGRATED | `engines.js:11225` | File my inspection report |
+| MIGRATED | `engines.js:11245` | You have flagged 1 place. |
+| MIGRATED | `engines.js:11246` | You have flagged {n} places. |
+| MIGRATED | `engines.js:11284` | You missed this one |
+| MIGRATED | `engines.js:11327` | You found the one thing that breaks a rule. |
+| MIGRATED | `engines.js:11328` | You found all {total} of them. |
+| MIGRATED | `engines.js:11329` | You found {found} of the {total} things that break a rule. The rest are named below. |
 
