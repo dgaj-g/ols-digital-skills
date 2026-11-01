@@ -311,7 +311,8 @@
   }
   /* p: t, torch (angle in radians, 0 = to the right), phone (0..1), walk (0..1), look, blink */
   function nuala(ctx, p) {
-    var t = p.t || 0, walk = p.walk || 0, st = Math.sin(t * 5.5) * walk, big = ctx.getTransform().a >= 70, g, k;
+    var wor = p.worry != null ? p.worry : ((window.SearchChars && window.SearchChars.worry) || 0); /* worried face (spec V2 §5.7): 0 = her old small smile, the default */
+    var t = p.t || 0, walk = p.walk || 0, st = Math.sin(t * 5.5) * walk, big = p.face || ctx.getTransform().a >= 70, g, k; /* p.face (V2): the barn asks for her face at a small size; without it, exactly V74 */
     ctx.save();
     /* the hood, down at her back, behind the shoulders */
     ctx.fillStyle = sh(N.coatLo); ctx.beginPath(); ctx.ellipse(0.04, 0.08, 0.40, 0.20, 0, 0, TAU); ctx.fill();
@@ -363,11 +364,11 @@
     if (big) {
       /* brows, eyes, a nose, cheeks, a small smile, and the phone's light on her cheek */
       ctx.strokeStyle = sh(N.hair); ctx.lineWidth = 0.028; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(-0.19, -0.355); ctx.quadraticCurveTo(-0.12, -0.39, -0.05, -0.365); ctx.moveTo(0.05, -0.365); ctx.quadraticCurveTo(0.12, -0.39, 0.19, -0.355); ctx.stroke();
-      for (var e = -1; e <= 1; e += 2) cuteEye(ctx, { x: e * 0.12, y: -0.26, rx: 0.062, ry: 0.070, side: e, look: p.look || [0.1, 0], blink: p.blink || 0, worry: 0.25, soft: 0.3, smile: 0.25, wet: 0.25, t: t, rim: [40, 26, 22], lid: N.skin, white: [244, 240, 238], iris: [[46, 28, 20], [98, 62, 38], [158, 112, 64]], irisR: 0.80, pupil: 0.52 });
+      ctx.beginPath(); ctx.moveTo(-0.19, -0.355 + 0.012 * wor); ctx.quadraticCurveTo(-0.12, -0.39 + 0.004 * wor, -0.05, -0.365 - 0.04 * wor); ctx.moveTo(0.05, -0.365 - 0.04 * wor); ctx.quadraticCurveTo(0.12, -0.39 + 0.004 * wor, 0.19, -0.355 + 0.012 * wor); ctx.stroke();
+      for (var e = -1; e <= 1; e += 2) cuteEye(ctx, { x: e * 0.12, y: -0.26, rx: 0.062, ry: 0.070, side: e, look: p.look || [0.1, 0], blink: p.blink || 0, worry: lerp(0.25, 0.9, wor), soft: 0.3, smile: lerp(0.25, 0, wor), wet: lerp(0.25, 0.65, wor), t: t, rim: [40, 26, 22], lid: N.skin, white: [244, 240, 238], iris: [[46, 28, 20], [98, 62, 38], [158, 112, 64]], irisR: 0.80, pupil: 0.52 });
       ctx.strokeStyle = sh(N.skinLo); ctx.lineWidth = 0.022; ctx.beginPath(); ctx.moveTo(0.01, -0.20); ctx.quadraticCurveTo(0.05, -0.14, 0.00, -0.12); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,110,110,0.22)'; ctx.beginPath(); ctx.ellipse(-0.19, -0.12, 0.08, 0.05, 0, 0, TAU); ctx.ellipse(0.19, -0.12, 0.08, 0.05, 0, 0, TAU); ctx.fill();
-      ctx.strokeStyle = sh([120, 50, 48]); ctx.lineWidth = 0.028; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-0.08, -0.04); ctx.quadraticCurveTo(0, 0.02, 0.08, -0.04); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,110,110,' + lerp(0.22, 0.14, wor).toFixed(3) + ')'; ctx.beginPath(); ctx.ellipse(-0.19, -0.12, 0.08, 0.05, 0, 0, TAU); ctx.ellipse(0.19, -0.12, 0.08, 0.05, 0, 0, TAU); ctx.fill();
+      ctx.strokeStyle = sh([120, 50, 48]); ctx.lineWidth = 0.028; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-0.08 + 0.025 * wor, -0.04 + 0.01 * wor); ctx.quadraticCurveTo(0, 0.02 - 0.075 * wor, 0.08 - 0.025 * wor, -0.04 + 0.01 * wor); ctx.stroke();
       glow(ctx, -0.22, -0.18, 0.30, 'rgba(180,215,255,A)', 0.14 * (p.phone || 0));
     }
     /* the hat: a lit crown, a ribbed band, the bobble sitting on top */

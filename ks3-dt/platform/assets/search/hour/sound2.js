@@ -1,20 +1,34 @@
-/* the hour's extra sounds (heartbeat, rewind, battery, bark, barn door, chord, click). Own AudioContext; starts on a press. */
+/* PROTOTYPE. The new sounds Version 2 adds (spec 7.7, 5.5): a note each time round, one step higher each time;
+   the warm chord at the wool; a soft flare tick; the "baaa" uses SearchSound.bleat. Own AudioContext, started from a button press. */
 (function () {
-  'use strict'; var ac = null, master, muted = false, api = {};
-  function now() { return ac.currentTime; }
-  function start() { if (ac) return; try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = muted ? 0 : 0.8; master.connect(ac.destination); } catch (e) { ac = null; } }
-  function tone(f, t0, d, type, vol, slide) { if (!ac) return; var o = ac.createOscillator(), g = ac.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(slide, t0 + d);
-    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.3, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + d + 0.05); }
-  api.start = function () { start(); if (ac && ac.state === 'suspended') ac.resume(); };
-  api.setMuted = function (m) { muted = m; if (ac) master.gain.setTargetAtTime(m ? 0 : 0.8, now(), 0.05); };
-  api.pause = function () { if (ac && ac.state === 'running') ac.suspend(); }; api.unpause = function () { if (ac && ac.state === 'suspended') ac.resume(); };
-  api.heartbeat = function () { if (!ac) return; var t = now(); tone(55, t, 0.12, 'sine', 0.5, 40); tone(50, t + 0.18, 0.14, 'sine', 0.35, 36); };
-  api.click = function () { if (!ac) return; tone(1400, now(), 0.04, 'square', 0.08, 900); };
-  api.rewind = function (d) { if (!ac) return; var t = now(); tone(900, t, d || 1.2, 'triangle', 0.12, 180); };
-  api.battery = function (level) { if (!ac) return; tone(420 - 200 * (1 - level), now(), 0.1, 'square', 0.1); };
-  api.bark = function () { if (!ac) return; var t = now(); tone(320, t, 0.09, 'sawtooth', 0.25, 180); tone(260, t + 0.05, 0.08, 'sawtooth', 0.18, 140); };
-  api.door = function () { if (!ac) return; var t = now(); tone(90, t, 0.9, 'sawtooth', 0.12, 60); tone(180, t + 0.7, 0.2, 'triangle', 0.1); };
-  api.chord = function () { if (!ac) return; var t = now(); [262, 330, 392, 523].forEach(function (f, i) { tone(f, t + i * 0.06, 2.2, 'sine', 0.16); }); };
-  api.count = function (i) { if (!ac) return; tone(520 + 60 * i, now(), 0.16, 'triangle', 0.22); };
-  window.SearchSound2 = api;
+  'use strict';
+  var ac = null, out = null, muted = false;
+  var S = {};
+  S.start = function () {
+    if (ac) { if (ac.state === 'suspended') ac.resume(); return; }
+    try { ac = new (window.AudioContext || window.webkitAudioContext)(); out = ac.createGain(); out.gain.value = 0.5; out.connect(ac.destination); } catch (e) { ac = null; }
+  };
+  S.pause = function () { if (ac && ac.state === 'running') ac.suspend(); };
+  S.unpause = function () { if (ac && ac.state === 'suspended') ac.resume(); };
+  function tone(f, at, dur, vol, type) {
+    if (!ac || muted) return;
+    var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (at || 0);
+    o.type = type || 'sine'; o.frequency.value = f; o.connect(g); g.connect(out);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  /* a pentatonic ladder from D4: round k of n climbs to the top by the last round. A loop with no count (n null) climbs and starts again at the bottom */
+  var LADDER = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, 36];
+  S.round = function (k, n) {
+    var step = n ? Math.min(LADDER.length - 1, Math.round((k - 1) / Math.max(1, n - 1) * (LADDER.length - 1))) : (k - 1) % LADDER.length, f = 293.66 * Math.pow(2, LADDER[step] / 12);
+    tone(f, 0, 0.5, 0.22, 'triangle'); tone(f * 2, 0, 0.3, 0.05, 'sine');
+  };
+  S.flare = function () { tone(1760, 0, 0.18, 0.06, 'sine'); tone(2637, 0.03, 0.14, 0.03, 'sine'); };
+  S.chord = function () { [293.66, 369.99, 440, 587.33].forEach(function (f, i) { tone(f, i * 0.06, 2.6, 0.12, 'triangle'); }); };
+  S.wrong = function () { tone(196, 0, 0.35, 0.12, 'triangle'); tone(185, 0.12, 0.4, 0.1, 'triangle'); };
+  /* the soft tick when Next appears (spec 13) */
+  S.tick = function () { tone(1400, 0, 0.06, 0.035, 'sine'); };
+  S.thud = function () { tone(90, 0, 0.25, 0.3, 'sine'); };
+  S.setMuted = function (m) { muted = m; };
+  window.Snd2 = S;
 })();

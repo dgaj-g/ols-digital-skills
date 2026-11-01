@@ -673,7 +673,7 @@
     }
     if ((r.purpose || []).length) {
       out += '<h4>The purpose of this lesson</h4>' +
-        r.purpose.map(function (p) { return '<p>' + App.esc(p) + '</p>'; }).join('');
+        r.purpose.map(function (p) { return '<p>' + briefText(p) + '</p>'; }).join('');
     }
     if ((r.prepare || []).length) {
       out += '<h4>Preparing for this lesson</h4><ul class="brief-prep">' +

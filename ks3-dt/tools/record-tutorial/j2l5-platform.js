@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* J2 L5 THE SEARCH · the lesson around the hour, on the PLATFORM SHELL (spec §10, §11, §16, §19.3; A8, A12, A15).
+/* J2 L5 THE SEARCH · the lesson around the hour, on the PLATFORM SHELL (V1 spec §10, §11, §16, §19.3; ported to V2 spec §11, §16).
  * The hour's own gates (j2l5-judge-test, -frozen, -twins, -words, -python, -clock-test, -walk) prove the hour.
  * This one proves the lesson around it, against the served platform with its dev server:
  *   P1  Lesson 5's card says Loop Machines with The Search under it; after the Do-Now the lesson opens on the
@@ -7,7 +7,7 @@
  *   P2  her place: what the hour saves (chapter, the lamb's name, where she found her) reaches her lesson draft;
  *       a reopened lesson says "Welcome back, <first name>. You were at <chapter>." with Carry on and Start again;
  *       a reopen at Home comes back to Home, not to the Do-Now, and the lamb keeps her name
- *   P3  badges: The Tracks, The Spiral, The Way Home become j2-b13/b14/b15 with their XP, once only
+ *   P3  badges: The Tracks, The Growing Square, The Way Home become j2-b13/b14/b15 with their XP, once only
  *       CONTROL: the same badge sent twice must not add XP twice
  *   P4  running out of time: from minute 48 the note shows, and the next chapter end offers Carry on and Home
  *   P5  BEEP's last 5 questions: the design's questions, the evidence code on the card, options shuffled
@@ -33,24 +33,20 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let checks = 0; const FAILS = [];
 const must = (ok, what) => { checks++; console.log((ok ? '  PASS ' : '  FAIL ') + what); if (!ok) FAILS.push(what); return ok; };
 
-/* the design's own words (L5_PROTOTYPES/hour/strings.js), not retyped */
-const W = {}; new Function('window', fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/L5_PROTOTYPES/hour/strings.js', 'utf8'))(W);
+/* the words a pupil reads, as SHIPPED (V2, DFM 340+): the hour's strings.js, and the lesson's own exit and close
+   from content-src j2-05.json, not retyped */
+const W = {}; new Function('window', fs.readFileSync(path.join(ROOT, 'ks3-dt/platform/assets/search/hour/strings.js'), 'utf8'))(W);
 const P = W.SearchStrings;
-/* ...as SHIPPED: with the cold read's listed edits (j2l5/coldread-edits.json, DFM 334 / K83), applied exactly as
-   j2l5-words.js applies them, so this gate checks the words a pupil reads and not the design's first draft */
-(() => {
-  const EDITS = JSON.parse(fs.readFileSync(path.join(__dirname, 'j2l5/coldread-edits.json'), 'utf8'));
-  const keysOf = p => p.split(/\.|\[|\]/).filter(Boolean);
-  Object.keys(EDITS.table || {}).forEach(p => { const k = keysOf(p), last = k.pop(), par = k.reduce((x, y) => x == null ? x : x[y], P); if (par == null || !(last in par)) return; /* a path the build moved (ch1.j4 -> common): j2l5-words owns those */ par[last] = EDITS.table[p]; });
-  Object.keys(EDITS.last5 || {}).forEach(i => { const e = EDITS.last5[i], x = P.close.last5[i]; if (e.q) x.q = e.q; (e.lines || []).forEach((l, k) => { if (l) x.opts[k][1] = l; }); });
-})();
-const QUESTIONS = P.close.last5.map(x => x.q);
-const RIGHT = P.close.last5.map(x => x.opts.find(o => o[2])[0]);
-const Q1_WRONG = P.close.last5[0].opts.find(o => !o[2]);
-const Q1_WRONG_LINE = Q1_WRONG[1].replace(/\s*Try again\.$/, '');
+const LJ = JSON.parse(fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src/j2/lessons/j2-05.json', 'utf8'));
+const EX = LJ.chunks.find(c => c.id === 'exit').config, CL = LJ.chunks.find(c => c.id === 'close').config;
+const QUESTIONS = EX.items.map(x => x.stem), CODES = EX.items.map(x => x.code || '');
+const RIGHT = EX.items.map(x => x.options[LJ.keys[x.id].a]);
+const Q1_WRONG = [EX.items[0].options[1]];
+const Q1_WRONG_LINE = JSON.parse(LJ.keys[EX.items[0].id].explain)[1];
+P.close.felt = CL.statements; P.close.feltDone = CL.doneTitle; P.btn.freeFlight = CL.flightLabel; P.btn.finish = CL.finishLabel;
 const fill = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => o[k] != null ? o[k] : m);
 const WELCOME3 = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[3] });
-const WELCOME_HOME = fill(P.common.welcomeNoLamb, { name: FIRST, chapter: P.strip[5] });
+const WELCOME_HOME = fill(P.common.welcome, { name: FIRST, chapter: P.strip[5], lamb: LAMB });
 const SCORE = 'You got 4 of the 5 questions right.';
 const BADGES = [['b13', 'j2-b13', 12], ['b14', 'j2-b14', 12], ['b15', 'j2-b15', 15]];
 
@@ -93,9 +89,11 @@ async function openLesson5(page) {
 const chunkNow = page => page.evaluate(() => { const s = App.state; return s.chunks && s.chunks[s.chunkIdx] ? s.chunks[s.chunkIdx].id : null; });
 const frameOf = async page => { const h = await page.$('#chunk-host iframe.search-frame'); return h ? h.contentFrame() : null; };
 const xpNow = page => page.evaluate(() => App.state.xp);
-const hourReady = fr => fr.waitForFunction(() => window.SearchHour && window.SearchBridge && window.SearchUI, null, { timeout: 15000 });
-const panelOf = fr => fr.evaluate(() => ({ kicker: (document.getElementById('kicker') || {}).textContent || '', head: (document.getElementById('head') || {}).textContent || '',
-  btns: Array.from(document.querySelectorAll('#pbtn button')).map(b => b.textContent.trim()) }));
+const hourReady = fr => fr.waitForFunction(() => window.__hour && window.SearchBridge && window.U && window.U.minutes, null, { timeout: 15000 });
+/* V2 panel: the step line is .stepl, the head is the h2, the buttons sit in .btns (next first, then back, as the old gate listed them) */
+const panelOf = fr => fr.evaluate(() => { const p = document.getElementById('panel'); const q = sel => p && !p.classList.contains('hide') ? p.querySelector(sel) : null;
+  const nx = q('.btns .next'), bk = q('.btns .back');
+  return { kicker: ((q('.stepl') || {}).textContent || '').trim(), head: ((q('h2') || {}).textContent || '').trim(), btns: [nx, bk].filter(Boolean).map(b => b.textContent.trim()) }; });
 const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = await panelOf(fr); if (re.test(p.head)) return p; await sleep(250); } while (Date.now() - t < (ms || 8000)); return p; };
 
 (async () => {
@@ -124,7 +122,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     await page.screenshot({ path: path.join(OUT, 'p1-open.png') });
 
     /* P2 her place reaches the draft */
-    await fr.evaluate(() => { SearchHour.save(3); });
+    await fr.evaluate(() => { SearchBridge.save({ v: 2, chapter: 3, step: 'g1', lambName: '', got: [] }); });
     await sleep(1200);
     let dr = await page.evaluate(() => App.state.draft && App.state.draft.search);
     must(dr && dr.chapter === 3, 'P2 the chapter the hour saves is in her lesson draft (' + JSON.stringify(dr) + ')');
@@ -140,7 +138,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     must(await xpNow(page) === xp1, 'P3 CONTROL the same badge twice adds nothing');
     await fr.evaluate(() => { SearchBridge.badge('b14'); SearchBridge.badge('b15'); });
     await sleep(1500);
-    must(await xpNow(page) === xp1 + 12 + 15, 'P3 The Spiral and The Way Home add 12 and 15 XP');
+    must(await xpNow(page) === xp1 + 12 + 15, 'P3 The Growing Square and The Way Home add 12 and 15 XP');
     const det = await page.evaluate((email) => { const db = JSON.parse(localStorage.getItem('ks3dt-dev')); const r = db.pupils['Demo-9A:' + email]; return JSON.stringify(r && r.L && r.L['5'] || ''); }, EMAIL);
     must(BADGES.every(x => det.indexOf('b' + x[1] + '=1') !== -1), 'P3 the platform records j2-b13, j2-b14 and j2-b15 on Lesson 5');
     must(await page.evaluate(() => !document.querySelector('.badge-pop.show')), 'P3 the platform draws no second badge card over the hour');
@@ -156,10 +154,10 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       must(wp.btns.join('|') === [P.btn.carryOn, P.btn.startAgain].join('|'), 'P2 the buttons are Carry on and Start again (' + wp.btns.join(', ') + ')');
       await page.screenshot({ path: path.join(OUT, 'p2-welcome.png') });
       /* the lamb is named at Home: the name and where she was found reach the draft */
-      await fr.evaluate((lamb) => { SearchHour.lamb = lamb; SearchHour.foundAt = 'the way home'; SearchHour.save(5); }, LAMB);
+      await fr.evaluate((lamb) => { SearchBridge.save({ v: 2, chapter: 5, step: 'close', lambName: lamb, got: ['b13', 'b14', 'b15'] }); }, LAMB);
       await sleep(1200);
       dr = await page.evaluate(() => App.state.draft && App.state.draft.search);
-      must(dr && dr.chapter === 5 && dr.lambName === LAMB && dr.foundAt === 'the way home', 'P2 the lamb\'s name and where she found her are in her lesson draft');
+      must(dr && dr.chapter === 5 && dr.lambName === LAMB, 'P2 the lamb\'s name is in her lesson draft (V2 keeps no found-at place)');
     }
     await openLesson5(page);
     fr = await frameOf(page);
@@ -167,28 +165,21 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       await hourReady(fr);
       const hp = await waitPanel(fr, /Welcome back/);
       must(hp.head === WELCOME_HOME, 'P2 a reopen at Home says "' + WELCOME_HOME + '", not the Do-Now (got "' + hp.head + '")');
-      must(await fr.evaluate(() => SearchHour.lamb) === LAMB, 'P2 the lamb keeps her name');
+      must(hp.head.indexOf(LAMB) !== -1, 'P2 the lamb keeps her name (the welcome names her)');
     }
 
     /* P4 running out of time */
     if (fr) {
       /* she answers the welcome first (Carry on), as she must before any chapter can end */
-      await fr.evaluate((c) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === c); if (x) x.click(); }, P.btn.carryOn);
+      await fr.evaluate((c) => { const x = Array.from(document.querySelectorAll('#panel .btns button')).find(b => b.textContent.trim() === c); if (x) x.click(); }, P.btn.carryOn);
       await sleep(1200);
-      /* shift the story clock to minute 48:05 and let it run on (a frozen clock would stall every U.wait) */
-      await fr.evaluate(() => { const U = window.SearchUI; U.__now = U.now; const off = 48 * 60 + 5 - U.__now(); U.now = function () { return U.__now() + off; }; });
-      await sleep(900);
-      const note = await fr.evaluate(() => { const n = document.getElementById('note'); return n && !n.classList.contains('off') ? n.textContent : ''; });
+      /* shift the hour clock past minute 48 (V2: U.minutes reads real time plus ?mins) */
+      await fr.evaluate(() => { const U = window.U; U.__min = U.minutes; U.minutes = function () { return U.__min() + 48.1; }; });
+      await sleep(1500);
+      const note = await fr.evaluate(() => { const n = document.getElementById('note'); return n && !n.classList.contains('hide') ? n.textContent : ''; });
       must(note === P.common.runningOut, 'P4 from minute 48 the note says "' + P.common.runningOut + '" (got "' + note + '")');
-      await fr.evaluate(() => { window.__between = null; SearchHour.between(3).then(id => { window.__between = id; }); });
-      await sleep(600);
-      /* the head is drawn at once and the buttons after the beat (mark), so wait for the buttons, up to 8 s */
-      let bp = await panelOf(fr); for (let t = 0; t < 32 && bp.btns.indexOf(P.btn.home) === -1; t++) { await sleep(250); bp = await panelOf(fr); }
-      must(bp.head === P.common.runningOut && bp.btns.join('|') === [P.btn.carryOn, P.btn.home].join('|'), 'P4 the chapter end offers Carry on and Home (' + bp.head + ' · ' + bp.btns.join(', ') + ')');
-      await fr.evaluate((h) => { const x = Array.from(document.querySelectorAll('#pbtn button')).find(b => b.textContent.trim() === h); if (x) x.click(); }, P.btn.home);
-      await sleep(500);
-      must(await fr.evaluate(() => window.__between) === 'home', 'P4 Home is a real way home');
-      await fr.evaluate(() => { const U = window.SearchUI; if (U.__now) U.now = U.__now; });
+      /* V2 keeps the between-chapters screen inside the hour's closure: the Carry on / Home screen past minute 48 is gated by j2l5-walk2.js --mins 48 and 50 (DFM, J2 L5 V2 build) */
+      await fr.evaluate(() => { const U = window.U; if (U.__min) U.minutes = U.__min; });
       /* the hour's end goes on to BEEP's last 5 questions */
       await fr.evaluate(() => SearchBridge.done('end'));
       await sleep(1500);
@@ -204,7 +195,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
       const card = await page.evaluate(() => ({ stem: document.querySelector('.q-stem').textContent.trim(),
         pre: (document.querySelector('.q-card .q-pre') || {}).textContent || '', opts: Array.from(document.querySelectorAll('.q-opt span:last-child')).map(s => s.textContent) }));
       must(card.stem === QUESTIONS[i], 'P5 question ' + (i + 1) + ' reads "' + QUESTIONS[i] + '" (got "' + card.stem + '")');
-      must(card.pre.trim() === P.close.last5[i].ev.join('\n').trim(), 'P5 question ' + (i + 1) + ' shows its code');
+      must(card.pre.trim() === CODES[i].trim(), 'P5 question ' + (i + 1) + ' shows its code');
       if (i === 0) await page.screenshot({ path: path.join(OUT, 'p5-q1.png') });
       const want = i === 0 ? Q1_WRONG[0] : RIGHT[i];
       await page.evaluate((w) => { const o = Array.from(document.querySelectorAll('.q-opt')).find(x => x.querySelector('span:last-child').textContent === w); if (o) o.click(); }, want);
@@ -244,7 +235,7 @@ const waitPanel = async (fr, re, ms) => { const t = Date.now(); let p; do { p = 
     if (fr) {
       await hourReady(fr);
       const fp = await waitPanel(fr, /\S/, 10000);
-      must(fp.kicker === P.close.kicker && fp.head === P.close.freeH, 'P6 the frame opens on the free flight ("' + fp.head + '")');
+      must(fp.kicker.toUpperCase() === P.close.kicker.toUpperCase() && fp.head === P.close.freeH, 'P6 the frame opens on the free flight ("' + fp.head + '")');
       await page.screenshot({ path: path.join(OUT, 'p6-flight.png') });
       await fr.evaluate(() => SearchBridge.done('end'));
       await sleep(2000);

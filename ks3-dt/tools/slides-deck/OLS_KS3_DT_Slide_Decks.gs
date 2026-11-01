@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-01 from contentVersion 2026-11-01j3l5c.
+ * Built 2026-11-01 from contentVersion 2026-11-01l.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -2610,18 +2610,18 @@ var DECKS = {
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
       "heading": "Lesson 5 · Loop Machines",
       "sub": "J2 · Lesson 5 of 17",
-      "notes": "WHERE THE CLASS IS: the class is coming in, logging in and opening the class link. The lesson opens on the Do-Now. This is three questions from earlier lessons, and they mark themselves. Take the register while the class works on it.\n\nSAY: \"Log in, open the class link, and work through the three questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the Do-Now. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
+      "notes": "WHERE THE CLASS IS: the class is coming in, logging in and opening the class link. The lesson opens on the Do-Now. This is three questions from earlier lessons, and they mark themselves. Take the register while the class works on it.\n\nSAY: \"Today is Lesson 5, Loop Machines. Log in, open the class link, and work through the three questions. When they are done, stop and look up.\"\n\nDO NOT describe what comes after the Do-Now. What pupils meet on screen is meant to be a surprise, so say nothing about it beyond these slides."
      },
      {
       "kind": "objectives",
       "bg": "section",
       "heading": "Today you meet loops",
       "bullets": [
-       "A loop repeats the lines under it that are pushed in to the right. You write those lines only once.",
-       "A loop line has a number in brackets. That number says how many times the lines repeat. You work out the number before you type it.",
-       "You will meet one new word, i. The lesson teaches it when it is needed."
+       "A loop makes the computer do the same job many times.",
+       "You write the job once, then say how many times.",
+       "You will also meet a counter called i. You will also meet three bugs, which are mistakes in a program."
       ],
-      "notes": "SAY these as they are written. Do not explain loops now: the lesson teaches them step by step."
+      "notes": "SAY these as they are written. Do not explain loops now: the lesson explains each idea just before you use it."
      },
      {
       "kind": "bullets",
@@ -2629,8 +2629,8 @@ var DECKS = {
       "heading": "Headphones on",
       "bullets": [
        "Sound is part of this lesson. Put your headphones on now.",
-       "The lesson also works with the sound off. Every sound is also shown as a picture on the screen.",
-       "Sound turns on the first time you press a button. Until then, nothing makes a sound."
+       "The lesson works with the sound off too. Every sound is shown as a picture on the screen.",
+       "Sound turns on the first time you click a button. Until then, nothing makes a sound."
       ],
       "notes": "SAY: \"Headphones on now, please. Sound is part of today. If you have no headphones, everything still works with the sound off.\""
      },
@@ -2641,20 +2641,20 @@ var DECKS = {
       "bullets": [
        "You work on your own screen at your own speed. You do not wait for anyone, and no one waits for you.",
        "Every program you type really runs. If it is wrong, the screen tells you what it did and what to change.",
-       "If you need to leave the room, press Pause at the bottom left of your screen. It stops everything."
+       "If you need to leave the room, click Pause at the bottom left of your screen. It stops everything."
       ],
-      "notes": "SAY: \"Today you work on your own, at your own speed. Every program you type really runs. If it is wrong, the screen tells you what it did and what to change. If you need to leave the room, press Pause first.\""
+      "notes": "SAY: \"Today you work on your own, at your own speed. Every program you type really runs. If your program is wrong, the screen tells you what it did and what to change. If you need to leave the room, click Pause before you go.\""
      },
      {
       "kind": "bullets",
       "bg": "section",
       "heading": "Read every screen",
       "bullets": [
-       "Every screen tells you one thing to do. Read the screen before you type.",
-       "The card shows the exact lines to type. You type them in the box under the card.",
-       "A yellow line under the box is a hint, not a mark."
+       "Every screen tells you one thing. Read it, then click Next.",
+       "When it says type, type all the lines. Then click Run.",
+       "If something goes wrong, read the yellow sentence. It tells you the fix."
       ],
-      "notes": "SAY: \"Read every screen before you type. The card shows the exact lines; the box is where you type them. A yellow line under the box is a hint, not a mark.\""
+      "notes": "SAY: \"Read before you type. Nothing moves on until you click Next.\""
      }
     ]
    },
@@ -2667,13 +2667,13 @@ var DECKS = {
       "kind": "stop",
       "bg": "stop",
       "beacon": "1",
-      "heading": "Click the Start the hour button on your screen",
+      "heading": "Click Start the hour on your screen",
       "bullets": [
-       "Open the class link and press Start the hour.",
-       "If you need to leave the room, press Pause at the bottom left of your screen.",
-       "If your screen says Running out of time, finish the chapter and press Home."
+       "Open the class link and click Start the hour.",
+       "If you need to leave the room, click Pause at the bottom left of your screen.",
+       "If your screen says “Running out of time”, finish the chapter you are on and click Home."
       ],
-      "notes": "SAY it once: \"Open the class link and press Start the hour. If you need to leave the room, press Pause. If your screen says Running out of time, finish the chapter and press Home.\"\n\nTHEN: say nothing until the last screens. Walk around the room. A stuck pupil's screen names the fix in one sentence. After two wrong tries it circles the exact lines on the card. A pupil who is quiet and typing is working."
+      "notes": "SAY it once: \"Open the class link and click Start the hour. If you need to leave the room, click Pause. If your screen says “Running out of time”, finish the chapter you are on and click Home.\"\n\nTHEN: say nothing until the last screens. Walk around the room. A stuck pupil's screen names the fix in one sentence. After two wrong tries it circles the exact lines on the pupil's screen. A pupil who is quiet and typing is working."
      }
     ]
    },
@@ -2686,8 +2686,8 @@ var DECKS = {
       "bg": "section",
       "heading": "The last screens",
       "bullets": [
-       "First you answer five questions. Then you fill in How did it go?",
-       "If there is time, you can do Free flight. You can keep going until the bell."
+       "First you answer five questions. Then you fill in the screen called “How did it go?”",
+       "If there is time, you can do the part called Free flight. You can keep going until the bell."
       ],
       "notes": "SAY: \"At the end there are five questions, then the screen called How did it go? Everybody does both. If there is time after that, you can use Free flight until the bell.\""
      }

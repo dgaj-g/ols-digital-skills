@@ -1,23 +1,24 @@
-BUILD: J1 Lesson 6 "Inside the Machine" (THE OPERATION). Continue. Opus 5.5 medium.
+BUILD: J2 Lesson 5 "Loop Machines" · THE SEARCH Version 2 · RESUME from State 9. Opus 5.5 at MEDIUM.
 
-Handover: /Users/damiengartland/Sites/ols-wt-l6/ks3-dt/L6_BUILD_PROGRESS.md (read the 16:05 checkpoint first)
-Spec: /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/J1_L6_OPERATION_SPEC.md
-Worktree /Users/damiengartland/Sites/ols-wt-l6, branch j1-l6-operation (last push 2c36774). Dev server: node ks3-dt/tools/dev-static.js 8126 /Users/damiengartland/Sites/ols-wt-l6 (port 8121 belongs to another window: leave it alone).
+Handover (read its last two blocks first): /Users/damiengartland/Sites/ols-wt-j2l5v2/ks3-dt/J2L5V2_BUILD_PROGRESS.md
+Original build prompt (all rules still stand): /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/J2_L5_REDESIGN/J2_L5_V2_BUILD_PROMPT.md
+Worktree: /Users/damiengartland/Sites/ols-wt-j2l5v2 (branch j2-l5-v2, last commit 7a33612, pushed). Content source: /Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src/
 
-DONE AND GREEN: l6-engine-test 89/89; l6-look; l6-harness 100 ok; l6-walk at 1366 and 683 (31/0), control red; EXPECT['6'] pinned; qa-deck-shots PASSED (82); cold read and ledger; badge icons fixed in content-src.
+Measured state at stop (1 Nov 2026 21:25): engine + content + cold-read rewrites done; gates 11–19, A18 PASS at 4 viewports (Home 14.0 min); engine gate PASS. DFM 370–374 audit row EXISTS (DFM_ENFORCEMENT_AUDIT.md line 146), so the pack block is cleared. Week 45% at stop (resets 4 Nov 2026 21:00). Do not open before then unless Damien overrides the week stop.
 
-FIRST ACTIONS
-1. Start the dev server. Run node ks3-dt/tools/pack-content.js (the real pack, no flag) until it passes, then commit ks3-dt/content.
-2. Write ks3-dt/tools/record-tutorial/l6-channel-test.js per spec §6.4: two clients swap a move through live Firebase in under 1 s; aborting *.firebaseio.com triggers the fallback line; room deleted on completion; a wrong-length code write is refused (control); room JSON has no @, no names, no class code. Controls go red first, and the FAIL lines go in the progress file. If it fails twice, stop and say so.
-3. Run qa-harness-coverage, qa-xp-ceiling, l6-engine-test and the existing suites.
-4. Write ks3-dt/L6_SIT_REPORT.md (one page). Note: the extras before the exit check, the frame stages, c8b, tap→click after the cold read, the broken badge pictures found and fixed, and that a paired pupil whose partner never connects waits at the door (Begin disabled) when Firebase is up.
-5. Server: room and seat in apiPairJoin (check), plus sweepRooms_ (nightly) and pingLive_ (weekly, emails only on failure).
-6. build-pathb, then the Apps Script deploy (hidden-window Chrome route), the two-pupil smoke test, then the PR to dgaj-g/ols-digital-skills with the gate counts and the sit report, then merge. Then the RESUME_HERE V72 top block and ONE plain done message.
+No Damien step. Never two windows in Chrome. Dev servers by Bash nohup (8790 = /search/hour.html, 8125 = worktree root). Never /tmp. Every judgement is yours, recorded in DFM. No AskUserQuestion popup. No chat progress reports. Never edit another window's block.
 
-OWED BY DAMIEN: open https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/live-test.html on a pupil laptop AT SCHOOL and report its one sentence. The build is not done without it. (14 Oct 2026: it passed off the school network, 26 ms; that proves the page, not the C2k network.)
+First actions:
+1. get_session + get_usage "self"; print the WINDOW line. list_sessions: no other window on the KS3 DT repo or in Chrome.
+2. Set content-src index.json contentVersion above main's latest (at stop: "2026-11-01j3l5b" → use "2026-11-01k", or higher if main moved); git fetch && git merge origin/main first if main moved.
+3. Teacher brief: STANDING rule (1 Nov 2026), briefs short and to the point, the J3 L5 V2 brief is the model. Cut the J2 L5 teacherBrief in content-src to match before packing.
+4. node ks3-dt/tools/pack-content.js until green; git diff --stat ks3-dt/content must revert no J3 content. Then platform gate: node ks3-dt/tools/record-tutorial/j2l5-platform.js --base http://localhost:8125; rerun j2l5-walk2.js at 1366×768 (walks one at a time, never parallel).
+5. Write /Users/damiengartland/Sites/ols-wt-j2l5v2/ks3-dt/J2L5V2_SIT_REPORT.md (one page: what a pupil sees, where they would stall; note the close-caption nit at 1024).
+6. Deck via Chrome (list_sessions first; say "macOS may show a permission popup"): paste OLS_KS3_DT_Slide_Decks.gs by the hidden-window route, rebuildJ2Lesson5Deck on the SAME Drive id, exportAllDeckProofs, read every proof slide; qa-deck-* and qa-brief-* green.
+7. build-pathb.js; re-read RESUME_HERE; deploy Apps Script version ≥ (live + 1, at stop ≥79); smoke LIVE lesson as pupil; check **with headphones** bold in the brief.
+8. PR open + merge; RESUME_HERE new top block; DFM 340–359 (decision list in progress State 8); K88–K99; update memory project_j2_l5_the_search.md + its MEMORY.md line.
+9. One plain-English done message: version, lesson link, deck link, his test-pupil check.
 
-METER: get_usage every 20 calls or 15 minutes; print METER hh:mm · context · 5h · week · calls. His "carry on" overrides the stops.
-macOS may show a permission popup (Chrome, Screen Recording, Automation) during deploy. If a step hangs over 60 s, say "POPUP: look at the Mac" and wait.
-Never enter credentials; never approve pupil share requests; no pupil identity in Firebase; LC_CTYPE=en_US.UTF-8 pbcopy for anything he pastes.
+METER: every 20 calls or 15 min, get_usage "self" and print `METER hh:mm · context NNNk · 5h NN% · week NN% · calls N`. Hard stops: 5-hour ≥70 %, week ≥45 % (measured against the new week), 400 calls → append PROGRESS, write a new NEXT_WINDOW_PROMPT, pbcopy it (LC_CTYPE=en_US.UTF-8), say so first, stop.
 
-FIREBASE OWNERS (DFM 330 / K79): one owner: the school account; Gmail removed. Write it that way in RESUME_HERE V72. Nothing in the build depends on the owner list.
+macOS popup warning: before each deck and deploy step say "macOS may show a permission popup"; if a step hangs over 60 s say "POPUP: look at the Mac".
