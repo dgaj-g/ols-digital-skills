@@ -33,10 +33,12 @@
       w = tweens[i]; if (w.dur === Infinity) { if (w.fn(U.t, dt) === false) tweens.splice(i, 1); continue; }
       k = U.clamp((U.t - w.t0) / w.dur, 0, 1); w.fn(k); if (k >= 1) { tweens.splice(i, 1); w.res(); }
     }
-    clockTick(dt);
+    clockTick(realDt);
   }
+  /* the clock runs on real time, not frames (gate 16): a slow laptop's long frames still count in full */
+  var realDt = 0;
   function frame(now) {
-    var dt = Math.min(0.1, (now - last) / 1000) * U.speed; last = now;
+    var dt = Math.min(0.1, (now - last) / 1000) * U.speed; realDt = Math.min(1, (now - last) / 1000) * U.speed; last = now;
     if (!U.paused) { U.t += dt; tick(dt); }
     Sc.begin(); if (U.scene) U.scene(U.t, U.paused ? 0 : dt);
     drawLamb(); drawFaces();
