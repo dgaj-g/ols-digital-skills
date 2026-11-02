@@ -81,7 +81,7 @@
   /* ---------- header ---------- */
   var bar = document.getElementById('stagebar'), whereEl = document.getElementById('where'), makingEl = document.getElementById('making');
   var topEl = document.querySelector('.top');
-  function isOpen(v) { return v === 0 || (v >= 1 && v <= 7 && v <= S.unlocked) || (v === 8 && !!S.done[7]); }
+  function isOpen(v) { return v === 0 || (v >= 1 && v <= 7) || (v === 8 && !!S.done[7]); }
   function buildBar() {
     bar.textContent = '';
     bar.appendChild(el('button', { type: 'button', 'data-part': '0', style: { '--seg': '#1A3A6B', '--seg-on': '#fff' }, on: { click: function () { show(0); } } }, [U.start]));

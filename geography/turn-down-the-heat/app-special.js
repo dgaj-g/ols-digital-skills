@@ -34,7 +34,10 @@
     var title = el('h2', { cls: 'title' }, [C.title.slice(0, cut + 1), el('b', { text: C.title.slice(cut + 1) })]);
     var started = Object.keys(S.tasks).length > 0 || Object.keys(S.quick).length > 0;
     var target = 1;
-    if (started) { target = 8; for (var k = 1; k <= 7; k++) if (APP.isOpen(k) && !S.done[k]) { target = k; break; } }
+    if (started) {
+      var last = 0; for (var d = 1; d <= 7; d++) if (S.done[d]) last = d;
+      target = 8; for (var k = 1; k <= 7; k++) if (!S.done[(k + last - 1) % 7 + 1]) { target = (k + last - 1) % 7 + 1; break; }
+    }
     function goBtn() { return el('button', { type: 'button', cls: 'btn big', text: started ? I.goBack : I.go, on: { click: function () { APP.show(target); } } }); }
     sec.appendChild(el('div', { cls: 'hero' }, [cv, gwrap, el('div', { cls: 'shade' }),
       el('div', { cls: 'readout' }, [yearEl, anomEl]),

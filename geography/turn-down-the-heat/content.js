@@ -55,7 +55,7 @@ window.TDTH = {
     paint: 'Each stripe is one year of Earth\'s average temperature, from 1850 to 2025. Blue years were cooler. Red years were warmer.',
     fact: 'In 2024, for the first time, a whole year was about 1.5 °C warmer than the late 1800s.',
     plan: 'In seven parts, you will find out how Earth\'s climate is changing, why it is happening, and what it does to people and places. Then you will run the world to 2100 and make a poster of your own stripes.',
-    time: 'It takes about 55 minutes. Your work is saved only on this computer, not in your school account. If you use a different computer next lesson, you will have to start again from Part 1.',
+    time: 'It takes about 55 minutes. Your work is not saved to your school account, so it may be gone after you log off. If it is gone next lesson, pick the part you were on from the numbers at the top.',
     go: 'Start Part 1',
     goBack: 'Carry on where you left off',
     anomWarm: '{t} °C warmer than the late 1800s',
