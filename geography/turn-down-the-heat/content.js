@@ -36,7 +36,7 @@ window.TDTH = {
     tray: 'Drag these',
     trayEmpty: 'Everything is placed.',
     spin: 'Drag the globe to spin it.',
-    layer: 'Colour layer',
+    layer: 'Slide to fade the colours',
     credits: 'Picture and data credits',
     close: 'Close',
     save: 'Save picture',
@@ -80,7 +80,7 @@ window.TDTH = {
               why: 'About 1 °C sounds small, but it is an average for the whole planet. Some places have warmed much more.' }
           ] },
         { id: 'p1-timeline', type: 'drag', layout: 'timeline', title: 'Put the events on the stripes',
-          do: 'Drag each event to the year it happened. When all five are placed, press Check my answers.',
+          do: 'Drag each event onto the year it happened. You can drop it on the stripes or in the year boxes below. When all five are placed, press Check my answers.',
           zones: [{ id: 'z1800', label: '1800s', year: 1850 }, { id: 'z1990', label: '1990', year: 1990 }, { id: 'z1997', label: '1997', year: 1997 }, { id: 'z2016', label: '2016', year: 2016 }, { id: 'z2018', label: '2018', year: 2018 }],
           items: [
             { id: 'e1', t: 'Factories begin burning coal in huge amounts. This is the Industrial Revolution.', zone: 'z1800', why: 'The Industrial Revolution began in the 1700s and 1800s, when factories started burning coal.' },
@@ -124,7 +124,7 @@ window.TDTH = {
         why: 'The Arctic has warmed over twice as much as the world as a whole.' },
       tasks: [
         { id: 'p2-machine', type: 'machine', title: 'Work the greenhouse machine',
-          do: 'Move the slider to each of the four settings. Watch what happens to the heat, and read the thermometer each time.',
+          do: 'Try each of the four settings, using the slider or the buttons under the picture. Watch what happens to the heat, and read the thermometer each time.',
           slider: 'How much greenhouse gas is in the air?',
           visited: 'Settings tried: {n} of 4.',
           legend: ['Yellow dots are sunlight coming in.', 'Red dots are heat going back out.', 'The balls are greenhouse gas molecules.'],
@@ -135,7 +135,7 @@ window.TDTH = {
             { label: 'If we carry on', temp: 17, line: 'If we carry on, even more heat is trapped. Earth could be about 17 °C on average by 2100, warmer than at any time in human history.' }
           ] },
         { id: 'p2-steps', type: 'drag', layout: 'rows', title: 'Label the greenhouse effect',
-          do: 'Look at the numbers on the machine. Drag each sentence to the number where it happens. When all five are placed, press Check my answers.',
+          do: 'Drag each sentence onto the number where it happens. You can drop it on a number in the picture or in the numbered boxes below. When all five are placed, press Check my answers.',
           alt: 'The greenhouse machine with five numbered places. 1 is on the ground. 2 is just above the ground. 3 is high in the sky above the gas layer. 4 is in the gas layer on the left. 5 is at the top of the thermometer.',
           zones: [{ id: 's1', label: '1' }, { id: 's2', label: '2' }, { id: 's3', label: '3' }, { id: 's4', label: '4' }, { id: 's5', label: '5' }],
           items: [
@@ -212,7 +212,7 @@ window.TDTH = {
         why: 'Cattle give off methane as they digest grass. Aeroplanes and coal power stations give off carbon dioxide.' },
       tasks: [
         { id: 'p4-map', type: 'drag', layout: 'places', title: 'Diagnose the world',
-          do: 'Read the report from each of the eight places on the map. Drag the effect that matches each report onto its place. When all eight are placed, press Check my answers.',
+          do: 'Each numbered place on the map has a report in the boxes below the map. Read each report, then drag the effect that matches it into that box or onto its number on the map. When all eight are placed, press Check my answers.',
           mapAlt: 'A map of the world with eight numbered places',
           zones: [
             { id: 'male', label: 'Malé, Maldives', lat: 4.2, lon: 73.5, img: 'male', report: 'Most of this island city is only about 1 metre above the sea. Storms already push sea water into the streets.' },
@@ -356,7 +356,7 @@ window.TDTH = {
           pickHint: 'You have chosen {n} of 3 actions for this round.',
           forecast: 'By 2100: about {t} °C warmer than the late 1800s',
           carryOn: 'If the world carries on as now: about {t} °C',
-          feel: 'How people feel: {n} out of 10',
+          feel: 'How people feel about your plan: {n} out of 10',
           protect: 'People protected from floods and drought: {p}',
           protectLevels: ['none yet', 'some', 'many'],
           feelings: { '1': 'People like this.', '-1': 'Some people grumble.', '-2': 'People are angry.' },
@@ -382,7 +382,7 @@ window.TDTH = {
           noPicks: 'You chose no actions this round, so the world carried on as before.',
           forecastLab: 'Warming by 2100',
           degrees: 'about {t} °C',
-          feelLab: 'How people feel',
+          feelLab: 'How people feel about your plan',
           outOf: '{n} out of 10',
           protectLab: 'People protected from floods and drought',
           /* Name, then what it does. The second line shows only after Lock in, so it cannot steer her choice. */
@@ -413,7 +413,7 @@ window.TDTH = {
           own: 'Or write your own slogan (up to 40 letters and spaces)',
           name: 'Your first name (you can leave this blank)',
           by2100: 'By 2100: about {t} °C',
-          mine: 'My first three actions',
+          mine: 'The actions in my plan',
           foot: 'Turn Down the Heat · OLS Geography'
         }
       ],
