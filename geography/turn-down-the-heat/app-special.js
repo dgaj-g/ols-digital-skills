@@ -717,7 +717,7 @@
       var n = S.stars[p.k] || 0, ink = ON[p.k];
       return el('div', { style: { background: p.colour, '--on': ink || '#fff' } }, [
         el('b', { text: fmt(E.partShort, { k: p.k }) }),
-        el('span', { cls: 's', 'aria-hidden': 'true', text: APP.starText(n), style: ink ? { color: ink, 'text-shadow': 'none' } : null }),
+        el('span', { cls: 's', 'aria-hidden': 'true', text: APP.starText(n) }),
         el('span', { cls: 'sr', text: p.name + '. ' + APP.starsLine(n) })
       ]);
     })));

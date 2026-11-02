@@ -140,7 +140,7 @@ class Stop extends Error {}
   async function dragTask(t, cd) {
     for (const it of t.items) {
       if (it.zone === null) continue;   /* a spare card: it stays in the tray */
-      const zone = await cd.$('[data-zone="' + it.zone + '"]');
+      const zone = await cd.$('.zone[data-zone="' + it.zone + '"]');
       if (!zone) throw new Stop(t.id + ': drop zone ' + it.zone + ' is missing');
       const chip = await cd.$('.chip[data-item="' + it.id + '"]');
       if (!chip) throw new Stop(t.id + ': chip ' + it.id + ' is missing');
@@ -195,7 +195,7 @@ class Stop extends Error {}
     if (early) fail('LEAK: ' + t.id + ' shows "' + C.ui.showMe + '" before two wrong Checks');
     if (t.type === 'mcq' || t.type === 'globe') await answerMcqs(cd);
     else if (t.type === 'drag') {
-      if (CONTROL && t.id === 'p1-timeline') await cd.evaluate(e => { const z = e.querySelector('[data-zone="z1997"]'); if (z) z.remove(); });
+      if (CONTROL && t.id === 'p1-timeline') await cd.evaluate(e => { const z = e.querySelector('.zone[data-zone="z1997"]'); if (z) z.remove(); });
       await dragTask(t, cd);
     } else if (t.type === 'binary') {
       for (const it of t.items) {

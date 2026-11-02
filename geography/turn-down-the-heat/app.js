@@ -322,8 +322,9 @@
   }
 
   /* Stripes 1850–2025 above a task, with year marks. */
-  function readStripes(host, pins) {
-    var strip = el('div', { cls: 'tl-strip' + (pins ? ' has-pins' : '') }), cv = el('canvas', { 'aria-hidden': 'true' });
+  function readStripes(host, pins, drop) {
+    /* With pins and a drop name, the stripes take a card too: she drops it on the year she sees, not only in the boxes below. */
+    var strip = el('div', { cls: 'tl-strip' + (pins ? ' has-pins' : ''), 'data-drop': drop || null }), cv = el('canvas', { 'aria-hidden': 'true' });
     strip.appendChild(cv);
     var span = TEMPS.values.length - 1;
     function pct(y) { return (y - TEMPS.start) / span * 100; }
@@ -335,7 +336,7 @@
         var b = el('b', { text: z.label });
         if (x < 4) { b.style.left = '0'; b.style.transform = 'none'; }
         if (x > 96) { b.style.left = 'auto'; b.style.right = '0'; b.style.transform = 'none'; }
-        strip.appendChild(el('span', { cls: 'tl-pin' + (up ? ' up' : ''), style: { left: x + '%' } }, [b]));
+        strip.appendChild(el('span', { cls: 'tl-pin' + (up ? ' up' : ''), style: { left: x + '%' }, 'data-zone': drop ? z.id : null, 'data-drop': drop || null }, [b]));
       });
     }
     host.appendChild(strip);
@@ -385,17 +386,24 @@
     var drop = 'drop-' + t.id, sel = null, hintMsg = '';
 
     /* pictures and diagrams above the tray */
-    if (L === 'timeline') readStripes(body, t.zones);
+    if (L === 'timeline') readStripes(body, t.zones, drop);
     if (L === 'rows') {
       var sm = el('div', { cls: 'steps-machine stage-dark' }), smc = el('canvas', { role: 'img', 'aria-label': t.alt || '' });
       sm.appendChild(smc); body.appendChild(sm);
-      if (window.TDTH_GREENHOUSE) { var gh = TDTH_GREENHOUSE.mount(smc, { level: 2, numbers: true }); onLeave(gh.dispose); }
+      if (window.TDTH_GREENHOUSE) {
+        var gh = TDTH_GREENHOUSE.mount(smc, { level: 2, numbers: true }); onLeave(gh.dispose);
+        /* the numbers in the picture take a card too, like the boxes below */
+        var spotEls = t.zones.map(function (z) { var s = el('span', { cls: 'mc-spot', 'data-zone': z.id, 'data-drop': drop, 'aria-hidden': 'true' }); sm.appendChild(s); return s; });
+        var placeSpots = function () { gh.spots().forEach(function (f, i) { if (spotEls[i]) { spotEls[i].style.left = f[0] * 100 + '%'; spotEls[i].style.top = f[1] * 100 + '%'; } }); };
+        placeSpots();
+        if (window.ResizeObserver) { var sro = new ResizeObserver(placeSpots); sro.observe(smc); onLeave(function () { sro.disconnect(); }); }
+      }
     }
     if (L === 'places') {
       var mw = el('div', { cls: 'map-wrap' }, [el('img', { cls: 'map', src: window.TDTH_EARTH || '', alt: t.mapAlt || '' })]);
       t.zones.forEach(function (z, n) {
         var x = (z.lon + 180) / 360 * 100, y = Math.max(7, Math.min(93, (90 - z.lat) / 180 * 100));
-        mw.appendChild(el('button', { type: 'button', cls: 'map-pin', 'data-pin': z.id, style: { left: x + '%', top: y + '%' }, 'aria-label': z.label, text: String(n + 1),
+        mw.appendChild(el('button', { type: 'button', cls: 'map-pin', 'data-pin': z.id, 'data-zone': z.id, 'data-drop': drop, style: { left: x + '%', top: y + '%' }, 'aria-label': z.label, text: String(n + 1),
           on: { click: function () { flash(z.id); } } }));
       });
       body.appendChild(mw);
@@ -450,8 +458,19 @@
       var wrap = el('div', { cls: 'chip-wrap' }, [c]);
       OLS_DRAG.makeDraggable(c, {
         canDrag: function () { return !st.done && data.locked.indexOf(id) < 0; },
-        zoneUnder: function (x, y, ch) { return OLS_DRAG.zoneUnder(x, y, ch, '[data-drop="' + drop + '"]'); },
-        onDrop: function (ch, z) { if (z) move(id, z.getAttribute('data-zone')); },
+        zoneUnder: function (x, y, ch) {
+          var z = OLS_DRAG.zoneUnder(x, y, ch, '[data-drop="' + drop + '"]');
+          if (z && z.classList.contains('tl-strip')) return nearestPin(z, x);
+          /* map numbers can overlap on a phone: the closest one wins */
+          if (z && z.classList.contains('map-pin')) return nearestSpot(z.parentNode.querySelectorAll('.map-pin'), x, y);
+          return z;
+        },
+        onDrop: function (ch, z) {
+          if (!z) return;
+          move(id, z.getAttribute('data-zone'));
+          /* Dropped on the picture: the card goes into that box below, so show her where it went. */
+          if (!z.classList.contains('zone') && !z.classList.contains('tray') && z.getAttribute('data-zone')) flash(z.getAttribute('data-zone'), true);
+        },
         onTap: function () { if (st.done || data.locked.indexOf(id) >= 0) return; select(sel === id ? null : id); },
         kbZones: function () { return [tray].concat(t.zones.map(function (z) { return zoneEls[z.id]; })); },
         announce: say,
@@ -464,14 +483,30 @@
     if (data.dragStars != null) complete(data.dragStars, true);
     refresh();
 
+    function nearestSpot(els, x, y) {
+      var best = null, bd = 1e9;
+      [].forEach.call(els, function (e) {
+        var r = e.getBoundingClientRect(), dx = r.left + r.width / 2 - x, dy = r.top + r.height / 2 - y, d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = e; }
+      });
+      return best;
+    }
+    function nearestPin(strip, x) {
+      var best = null, bd = 1e9;
+      [].forEach.call(strip.querySelectorAll('.tl-pin'), function (pin) {
+        var r = pin.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - x);
+        if (d < bd) { bd = d; best = pin; }
+      });
+      return best;
+    }
     function select(id) {
       if (sel) chips[sel].classList.remove('kb-pick');
       sel = id;
       if (sel) chips[sel].classList.add('kb-pick');
     }
-    function flash(zid) {
+    function flash(zid, still) {
       var z = zoneEls[zid];
-      z.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+      if (!still) z.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
       z.classList.add('flash'); setTimeout(function () { z.classList.remove('flash'); }, 1400);
     }
     function occupant(zid) { var f = null; t.items.forEach(function (it) { if (data.pos[it.id] === zid) f = it.id; }); return f; }

@@ -126,8 +126,9 @@
     }
     function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
+    function spotsXY() { return [[W * 0.36, H * 0.70], [W * 0.62, H * 0.64], [W * 0.66, H * 0.10], [W * 0.18, H * 0.42], [W - Math.max(46, W * 0.06), H * 0.06]]; }
     function numbers() {
-      var spots = [[W * 0.36, H * 0.70], [W * 0.62, H * 0.64], [W * 0.66, H * 0.10], [W * 0.18, H * 0.42], [W - Math.max(46, W * 0.06), H * 0.06]];
+      var spots = spotsXY();
       var r = Math.max(13, Math.min(W, H) / 26);
       ctx.font = '700 ' + Math.round(r * 1.25) + 'px "Anton", Impact, sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -146,6 +147,8 @@
 
     return {
       setLevel: function (i) { level = i; },
+      /* where the numbers sit, as fractions of the canvas, so a page can lay drop targets over them */
+      spots: function () { return spotsXY().map(function (s) { return [s[0] / W, s[1] / H]; }); },
       dispose: function () { alive = false; cancelAnimationFrame(raf); if (ro) ro.disconnect(); }
     };
   }

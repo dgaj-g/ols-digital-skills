@@ -168,10 +168,12 @@ body.dragging-active { cursor: grabbing; }
 .zone.board .zlabel { font: 400 19px/1.15 var(--display); letter-spacing: .01em; color: var(--ink); padding: 8px 10px; margin: -10px -10px 10px; border-radius: 11px 11px 0 0; background: var(--bc-soft, #EEF2F8); }
 
 /* places (world map) */
-.map-wrap { position: relative; border-radius: 14px; overflow: hidden; margin: 0 0 14px; background: #0D1F45; aspect-ratio: 2 / 1; }
+.map-wrap { position: relative; border-radius: 14px; overflow: hidden; margin: 0 auto 14px; width: min(100%, max(360px, (100vh - 360px) * 2)); background: #0D1F45; aspect-ratio: 2 / 1; }
 .map-wrap img.map { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.15) brightness(.85); }
 .map-pin { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; background: var(--wrong); color: #fff; font: 400 17px/28px var(--display); text-align: center; box-shadow: 0 0 0 0 rgba(239,59,44,.7); animation: pulse 2.2s infinite; padding: 0; }
 .map-pin.done { background: var(--right); animation: none; }
+.map-pin::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; }
+.map-pin.drop-hover { background: var(--gold); color: var(--ink); box-shadow: 0 0 0 4px var(--ink); animation: none; scale: 1.2; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239,59,44,.75); } 70% { box-shadow: 0 0 0 16px rgba(239,59,44,0); } 100% { box-shadow: 0 0 0 0 rgba(239,59,44,0); } }
 .places { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 .zone.place { display: grid; grid-template-columns: 96px 1fr; gap: 10px; background: #fff; border-style: solid; border-color: #C9D2E0; }
@@ -218,7 +220,7 @@ body.dragging-active { cursor: grabbing; }
 .earth-flat-over { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: normal; }
 .earth-flat-note { margin: 0; padding: 8px 12px; font-size: 14px; color: #fff; background: #0B1A3A; }
 .globe-box.is-flat { aspect-ratio: auto; cursor: default; }
-.machine canvas { width: 100%; height: clamp(300px, 48vw, 470px); display: block; }
+.machine canvas { width: 100%; height: clamp(300px, min(48vw, 100vh - 420px), 470px); display: block; }
 .machine .stops { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px; background: rgba(6,18,42,.6); }
 .machine .stops button { min-height: 54px; border-radius: 12px; border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); color: #fff; font-weight: 700; font-size: 15px; line-height: 1.15; padding: 6px; }
 .machine .stops button[aria-pressed="true"] { background: var(--gold); color: var(--ink); border-color: var(--gold); }
@@ -226,7 +228,10 @@ body.dragging-active { cursor: grabbing; }
 .machine .stop-line { margin: 0; padding: 12px 16px; min-height: 76px; background: rgba(6,18,42,.85); font-size: 17px; }
 .machine .slider-q { margin: 0; padding: 12px 16px 0; font-weight: 700; background: rgba(6,18,42,.6); }
 .visited { font-weight: 700; color: var(--navy); margin: 10px 0 0; }
-.steps-machine canvas { width: 100%; height: clamp(240px, 36vw, 360px); display: block; }
+.steps-machine { position: relative; }
+.steps-machine canvas { width: 100%; height: clamp(240px, min(36vw, 100vh - 460px), 360px); display: block; }
+.mc-spot { position: absolute; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; }
+.mc-spot.drop-hover { box-shadow: 0 0 0 4px var(--gold), 0 0 0 7px var(--ink); background: rgba(228,184,36,.25); }
 
 /* ---------- talk + part done ---------- */
 .talk { position: relative; margin: 6px 0 22px; padding: 18px 20px 18px 74px; border-radius: var(--r); background: linear-gradient(135deg, #FFF3C4, #FFE38A); color: var(--ink); box-shadow: var(--shadow); }
@@ -375,10 +380,10 @@ body.dragging-active { cursor: grabbing; }
 .groups span { padding: 6px 12px; border-radius: 999px; background: var(--card-2); font-weight: 700; font-size: 15px; }
 
 /* ---------- end ---------- */
-.end-stars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 10px 0 16px; }
+.end-stars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin: 10px 0 16px; }
 .end-stars div { border-radius: 12px; padding: 10px 6px; text-align: center; color: var(--on); font-weight: 700; font-size: 13px; }
 .end-stars b { display: block; font: 400 22px/1 var(--display); }
-.end-stars .s { color: var(--gold); font-size: 18px; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.end-stars .s { display: inline-block; margin-top: 4px; padding: 1px 8px 2px; border-radius: 999px; background: rgba(11,27,58,.85); color: var(--gold); font-size: 18px; letter-spacing: 1px; }
 .end-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 .end-grid img { border-radius: 12px; box-shadow: var(--shadow); }
 .show-teacher { font: 400 24px/1.1 var(--display); color: var(--navy); }
@@ -395,6 +400,11 @@ body.dragging-active { cursor: grabbing; }
 /* ---------- added with the special screens ---------- */
 .task, .talk, .partdone { scroll-margin-top: calc(var(--head-h, 112px) + 20px); }
 .tl-strip.has-pins { margin-top: 56px; }
+@media (min-width: 760px) { .tl-ticks ~ .tray .tray-chips { display: grid; grid-template-columns: 1fr 1fr; align-items: start; } }
+.tl-strip[data-drop]::before { content: ''; position: absolute; left: 0; right: 0; top: -56px; height: 56px; }
+.tl-pin.drop-hover { background: #fff; box-shadow: 0 0 0 3px var(--gold), 0 0 0 5px var(--ink); }
+.tl-pin.drop-hover b { background: var(--gold); color: var(--ink); scale: 1.15; }
+.zone.year.flash { border-color: var(--gold); border-style: solid; box-shadow: 0 0 0 5px var(--gold); }
 .tl-pin.up b { top: -50px; }
 /* The tray stays on screen while she scrolls to the zones. Capped so the zones always keep most of the screen; it scrolls inside itself. */
 .tray.sticky { position: sticky; top: calc(var(--head-h, 112px) + 6px); z-index: 20; box-shadow: 0 12px 24px -16px rgba(0,0,0,.45); max-height: min(36vh, 320px); overflow-y: auto; overscroll-behavior: contain; }
@@ -466,7 +476,9 @@ body.dragging-active { cursor: grabbing; }
   .zone.rank .zlabel { font-size: 14px; }
   .machine .stops { grid-template-columns: 1fr 1fr; }
   .mini-parts { grid-template-columns: repeat(4, 1fr); }
-  .end-stars { grid-template-columns: repeat(4, 1fr); }
+  .end-stars { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .end-stars div { padding: 8px 3px; }
+  .end-stars .s { font-size: 15px; padding: 1px 5px 2px; letter-spacing: 0; }
   .part-head .num { font-size: 48px; }
   .talk { padding-left: 18px; padding-top: 62px; }
   .hero { min-height: clamp(400px, calc(100svh - 210px), 640px); padding: 14px 14px 18px; }
