@@ -15,4 +15,4 @@ folder is served directly by GitHub Pages except `img/` (photos and OpenMoji ico
 ## Versions
 | Version | Date | Build token | What changed |
 |---|---|---|---|
-| 1 | not yet deployed | — | first build, PR for issue 42 |
+| 1 | 3 Nov 2026 19:34 | 15131c5bb7-3ad53a5b | first build (PR #107, squash 79cee92). Script ID 1awM41pyLhAxWd58hYEF4D7dhvkhuHOiZzuWJQsBuWmpOMSRmLTnmiThe, deployment AKfycbwcX6a9F3yyoToksv_xwpj7km0o7bBLRk4H4N_arO-x6ZlJw6KG98cJGgcnNXYotpbm. /exec URL in DESIGN/deploy/EXEC_URL.txt. |
