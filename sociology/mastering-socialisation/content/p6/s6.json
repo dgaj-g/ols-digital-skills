@@ -1,0 +1,206 @@
+{
+  "route": "s6",
+  "part": "p6",
+  "title": "Five-mark questions",
+  "lead": "Every five-mark question in this section is \"Explain the meaning of the term\", with an item. Three marks are for knowledge (AO1) and two for using the item (AO2). Each question has a Build, which is marked out of 5, and a Write, which gets the examiner's checklist and the model answer.",
+  "blocks": [
+    {
+      "h": "How the five marks are earned",
+      "list": [
+        "D: Define the term in a sentence of your own.",
+        "I: Make a link to the item, quoting its words and saying what they show.",
+        "E: Explain the term with an example of your own.",
+        "T: Make a theory link, naming a perspective or a writer.",
+        "The item is used twice in a full-mark answer, so the second item link earns the fifth mark."
+      ]
+    }
+  ],
+  "qs": [
+    {
+      "n": 1,
+      "id": "d5-01",
+      "term": "Culture",
+      "new": false,
+      "src": "Q1"
+    },
+    {
+      "n": 2,
+      "id": "d5-02",
+      "term": "Socialisation",
+      "new": true,
+      "src": "new"
+    },
+    {
+      "n": 3,
+      "id": "d5-03",
+      "term": "Formal sanctions",
+      "new": true,
+      "src": "new"
+    },
+    {
+      "n": 4,
+      "id": "d5-04",
+      "term": "Informal sanctions",
+      "new": true,
+      "src": "new"
+    },
+    {
+      "n": 5,
+      "id": "d5-05",
+      "term": "Norms",
+      "new": false,
+      "src": "Q3"
+    },
+    {
+      "n": 6,
+      "id": "d5-06",
+      "term": "Values",
+      "new": false,
+      "src": "Q14"
+    },
+    {
+      "n": 7,
+      "id": "d5-07",
+      "term": "Primary socialisation",
+      "new": false,
+      "src": "Q8"
+    },
+    {
+      "n": 8,
+      "id": "d5-08",
+      "term": "Sanctions",
+      "new": false,
+      "src": "Q2"
+    },
+    {
+      "n": 9,
+      "id": "d5-09",
+      "term": "Secondary socialisation",
+      "new": false,
+      "src": "Q4"
+    },
+    {
+      "n": 10,
+      "id": "d5-10",
+      "term": "Peer groups",
+      "new": false,
+      "src": "Q5"
+    },
+    {
+      "n": 11,
+      "id": "d5-11",
+      "term": "Agents of socialisation",
+      "new": false,
+      "src": "Q6"
+    },
+    {
+      "n": 12,
+      "id": "d5-12",
+      "term": "Culture",
+      "new": false,
+      "src": "Q7"
+    },
+    {
+      "n": 13,
+      "id": "d5-13",
+      "term": "Status",
+      "new": false,
+      "src": "Q9"
+    },
+    {
+      "n": 14,
+      "id": "d5-14",
+      "term": "Role model",
+      "new": false,
+      "src": "Q10"
+    },
+    {
+      "n": 15,
+      "id": "d5-15",
+      "term": "Nurture",
+      "new": false,
+      "src": "Q11"
+    },
+    {
+      "n": 16,
+      "id": "d5-16",
+      "term": "Tradition",
+      "new": false,
+      "src": "Q12"
+    },
+    {
+      "n": 17,
+      "id": "d5-17",
+      "term": "Socially constructed",
+      "new": false,
+      "src": "Q13"
+    },
+    {
+      "n": 18,
+      "id": "d5-18",
+      "term": "Beliefs",
+      "new": false,
+      "src": "Q15"
+    },
+    {
+      "n": 19,
+      "id": "d5-19",
+      "term": "Subculture",
+      "new": false,
+      "src": "Q16"
+    },
+    {
+      "n": 20,
+      "id": "d5-20",
+      "term": "Material culture",
+      "new": false,
+      "src": "Q17"
+    },
+    {
+      "n": 21,
+      "id": "d5-21",
+      "term": "Non-material culture",
+      "new": false,
+      "src": "Q18"
+    },
+    {
+      "n": 22,
+      "id": "d5-22",
+      "term": "Collectivist cultures",
+      "new": false,
+      "src": "Q19"
+    },
+    {
+      "n": 23,
+      "id": "d5-23",
+      "term": "Individualistic cultures",
+      "new": false,
+      "src": "Q20"
+    },
+    {
+      "n": 24,
+      "id": "d5-24",
+      "term": "Cultural diversity",
+      "new": false,
+      "src": "Q21"
+    },
+    {
+      "n": 25,
+      "id": "d5-25",
+      "term": "Social control",
+      "new": false,
+      "src": "Q22"
+    },
+    {
+      "n": 26,
+      "id": "d5-26",
+      "term": "Symbolism",
+      "new": false,
+      "src": "Q23"
+    }
+  ],
+  "next": {
+    "route": "s6/1",
+    "label": "Start with question 1"
+  }
+}

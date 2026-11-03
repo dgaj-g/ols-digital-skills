@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "t": "I can define primary socialisation and say who is mainly responsible for it.",
+      "test": "t1p"
+    },
+    {
+      "t": "I can name Parsons’ three stages of socialisation and say which one comes first.",
+      "test": "t1p"
+    },
+    {
+      "t": "I can give an example of primary socialisation, such as a parent teaching a child to say please.",
+      "test": "t1p"
+    },
+    {
+      "t": "I can define secondary socialisation and say how it differs from primary socialisation.",
+      "test": "t1s"
+    },
+    {
+      "t": "I can name agents of secondary socialisation, such as education, peers, the media and religious organisations.",
+      "test": "t1s"
+    },
+    {
+      "t": "I can say what Parsons meant by tertiary socialisation and give an example.",
+      "test": "t1s"
+    },
+    {
+      "t": "I can define formal socialisation using the idea of rules being deliberately and consciously taught.",
+      "test": "t1f"
+    },
+    {
+      "t": "I can give an example of formal socialisation and of a formal sanction, such as a school detention.",
+      "test": "t1f"
+    },
+    {
+      "t": "I can explain a criticism of Parsons: people may know the rules but choose not to follow them.",
+      "test": "t1f"
+    },
+    {
+      "t": "I can define informal socialisation and explain how it differs from formal socialisation.",
+      "test": "t1i"
+    },
+    {
+      "t": "I can give an example of informal socialisation, such as picking up canteen culture at work.",
+      "test": "t1i"
+    },
+    {
+      "t": "I can use Giddens’ definition of socialisation in an answer.",
+      "test": "t1i"
+    }
+  ]
+}

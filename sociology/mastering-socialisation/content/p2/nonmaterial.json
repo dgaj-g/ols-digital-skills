@@ -1,0 +1,53 @@
+{
+  "route": "s2/nonmaterial",
+  "part": "p2",
+  "title": "Non-material culture",
+  "lead": "Non-material culture is the second of the seven ideas, and it covers the side of a group’s way of life that you cannot touch.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Non-material culture consists of ideas and meanings, including language, beliefs, values and norms. These are learned through socialisation and can differ between groups.",
+        "In plain words, non-material culture is everything in a culture that you cannot hold, such as the words people use and the ideas they share."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "argue that learning shared norms and meanings helps people participate in group life."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "The different languages that families speak at a festival are shared meanings rather than physical objects.",
+        "The beliefs that families explain behind their celebrations are ideas, so they are non-material culture.",
+        "Greeting visitors and offering food are norms that children learn, so they are part of non-material culture.",
+        "Norms, values and beliefs are all examples of non-material culture.",
+        "The meaning of a thumbs-up emoji is shared and learned from other people, and it can differ between groups of users.",
+        "The Irish language is a set of words and meanings that a group shares and that children learn through socialisation."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: Non-material culture consists of ideas and meanings, including language, beliefs, values and norms. These are learned through socialisation and can differ between groups.",
+        "Item link: The languages and beliefs in the item are shared meanings rather than physical objects.",
+        "Explain with an example: Greeting visitors and offering food are norms children learn. They show how shared cultural ideas guide behaviour during a present-day celebration.",
+        "Theory link: Functionalists argue that learning shared norms and meanings helps people participate in group life."
+      ],
+      "quote": {
+        "t": "At the festival, families speak different languages and explain beliefs behind their celebrations. Children learn when it is polite to greet visitors or offer food.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/nonmaterial/quiz",
+    "label": "Take the quiz on non-material culture"
+  }
+}

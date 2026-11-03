@@ -1,0 +1,53 @@
+{
+  "route": "s2/beliefs",
+  "part": "p2",
+  "title": "Beliefs",
+  "lead": "Beliefs are the sixth of the seven ideas, and they cover what people accept as true about the world.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Beliefs are ideas people accept as true about the world. They are learned through experience and socialisation and may differ within one society.",
+        "In plain words, a belief is something a person thinks is true about the world."
+      ],
+      "writers": [
+        {
+          "name": "Interactionists",
+          "says": "examine how beliefs develop through experiences and discussions with others."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "A student who believes that qualifications are the best route to a good job holds a belief about how the world works.",
+        "Her friend believes that practical experience matters more, so two people in one society can hold different beliefs.",
+        "The beliefs that families explain behind their celebrations are ideas that they accept as true.",
+        "Family advice may shape choices such as university or an apprenticeship, and the item links these choices to what each student believes about work.",
+        "Some pupils believe that influencers on social media always tell the truth about the products they promote, while others believe that they are paid to say it.",
+        "A person who believes that a black cat crossing their path brings bad luck holds a belief that many other people do not accept."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: Beliefs are ideas people accept as true about the world. They are learned through experience and socialisation and may differ within one society.",
+        "Item link: The students in the item hold different beliefs about what leads to a good job, one trusting qualifications and the other practical experience.",
+        "Explain with an example: Family advice may shape choices such as university or an apprenticeship. A belief about how to succeed differs from a value about what matters, such as valuing education.",
+        "Theory link: Interactionists examine how beliefs develop through experiences and discussions with others."
+      ],
+      "quote": {
+        "t": "One student believes qualifications are the best route to a good job, while her friend believes practical experience matters more. Their families encourage different choices after school.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/beliefs/quiz",
+    "label": "Take the quiz on beliefs"
+  }
+}

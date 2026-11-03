@@ -1,0 +1,86 @@
+{
+  "route": "s3/workplace",
+  "part": "p3",
+  "agent": "workplace",
+  "title": "The workplace",
+  "lead": "Starting a job means learning a new set of rules. This page follows your teacher's summary diagram for work: how the workplace shapes behaviour, and how it controls it.",
+  "blocks": [
+    {
+      "h": "What this agent is",
+      "new": true,
+      "p": [
+        "The workplace is an important agent of adult socialisation, and an important part of our social identity. Your teacher's definition of tertiary socialisation is 'This is adult socialisation and takes place when people need to adapt to new situations such as becoming a parent, changing jobs, coping with illness or death'. Parsons claimed we acquire our culture in three ways: primary, secondary and tertiary socialisation.",
+        "Some textbooks call the workplace a secondary agent; your course treats adult socialisation as a third stage, tertiary socialisation.",
+        "As adults we have to learn to adapt to the demands of our profession or work position. This means learning the norms and values of the workplace. When you start a new job, or change jobs, you take on a new set of norms and values, and this is resocialisation.",
+        "Adults are also part of peer groups, because your teacher's definition of a peer group is that it often refers to our friends but could equally be our colleagues. Peers and adults socialise differently: adults aim for long-term adjustment, which is deferred gratification, while peers are concerned with immediate gratification and the desire to fit in and be included. At work, colleagues are adult peers, and their rules often come from agreements between workers, not from the top down."
+      ]
+    },
+    {
+      "h": "How it shapes behaviour",
+      "new": true,
+      "p": [
+        "**Teaching:** The process can be formal, for example training. Formal means deliberate, consciously taught: induction training, health and safety, and training for the job. It can also be informal, for example canteen culture, which is less obvious and learned through casual observation of others. Informal learning is about 'how much you can get away with', observing colleagues and asking for help.",
+        "**Imitation and role models:** Observing colleagues is how many people learn what is done in practice. A colleague who is good at the job, or a manager, can act as a role model in the same way that older children and adults do in other agents.",
+        "**Activities:** Training for the job guides workers to certain tasks and ways of doing them. McDonaldisation of work is your teacher's example of how tightly the way tasks are done can be shaped.",
+        "**Language:** Your teacher's notes give no workplace example for language, so this is a link you can make. Workers learn the words used in their workplace, such as job titles and professional terms.",
+        "**Identity:** Work is an important part of our social identity. Standards of professionalism, and belonging to a profession, shape how a person sees themselves."
+      ]
+    },
+    {
+      "h": "How it controls behaviour",
+      "new": true,
+      "p": [
+        "**Social control and sanctions:** Workers learn what is acceptable and unacceptable behaviour in the workplace. Your teacher lists professional codes of conduct and standards of professionalism. In professional occupations there may be formal rules or professional standards of conduct. Informal peer control could be agreements made between workers, for example swapping shifts or agreeing how much work should be done. Sanctions include sacking or ostracising.",
+        "**Expectations:** As adults we have to learn to adapt to the demands of our profession or work position. A new worker is expected to follow the written rules and to pick up the unwritten ones.",
+        "**Manipulation:** Your teacher's list of the ways we learn includes manipulation, with the examples sanctions, expectations, verbal appellations and canalisation. Her slide for this agent also names the McDonaldisation of work and shows four principles: Control, Predictability, Calculability and Efficiency. The slide does not define them, so the short meanings below are added to help you remember them."
+      ],
+      "list": [
+        "Control: workers are directed by rules, so they have little choice about how a task is done.",
+        "Predictability: the job is done in the same way every time.",
+        "Calculability: what matters is what can be counted, such as time taken and amount produced.",
+        "Efficiency: the quickest way of getting the job done is the one that is used."
+      ]
+    },
+    {
+      "h": "What the perspectives say",
+      "p": [
+        "These are the views your notes give that link to work. Use them as evidence in an answer."
+      ],
+      "writers": [
+        {
+          "name": "Parsons",
+          "says": "Claimed we acquire our culture in three ways: primary, secondary and tertiary socialisation. The workplace is your course's example of tertiary, or adult, socialisation.",
+          "new": true
+        },
+        {
+          "name": "Opie (adults and peers)",
+          "says": "The peers lesson that covers Opie's street culture also has your teacher's table comparing socialisation by adults and by peers. Adults aim at long-term adjustment (deferred gratification) and pass down rules with a clear hierarchy. Peers want immediate gratification and take part in making the rules. Both are present at work."
+        },
+        {
+          "name": "Functionalist",
+          "says": "Functionalists say that the purpose of socialisation is to unite society in a set of shared norms and values, which is a 'consensus' sociology. Learning the norms and values of the workplace fits this view.",
+          "new": true
+        },
+        {
+          "name": "Marxist",
+          "says": "Marxists say that socialisation is conditioning which prepares the masses for exploitation, and that people are taught an ideology. This is 'conflict' sociology. Training for the job and the McDonaldisation of work are the workplace examples that fit this view.",
+          "new": true
+        }
+      ]
+    }
+  ],
+  "check": [
+    "Could you write about teaching, giving one formal and one informal example from the workplace?",
+    "Could you write about imitation and role models, using observing colleagues?",
+    "Could you write about activities, using training for the job or McDonaldisation?",
+    "Could you write about language, using the words a workplace uses?",
+    "Could you write about identity, and why work is part of our social identity?",
+    "Could you write about social control and sanctions, using professional codes and informal peer control?",
+    "Could you write about expectations, using adapting to the demands of a work position?",
+    "Could you write about manipulation, naming the four principles of McDonaldisation?"
+  ],
+  "next": {
+    "route": "s3/workplace/firstday",
+    "label": "Next: First day at work"
+  }
+}

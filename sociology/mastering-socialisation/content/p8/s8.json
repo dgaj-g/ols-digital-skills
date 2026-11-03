@@ -1,0 +1,66 @@
+{
+  "route": "s8",
+  "part": "p8",
+  "title": "The Secret to AO2 Marks",
+  "lead": "AO2 is application. It marks whether you can apply what you know to the item and to the question, not only whether you know the term. Your teacher’s advice is to explain how the item illustrates the term rather than copying it. The five steps below show how to do that every time.",
+  "blocks": [
+    {
+      "h": "Five steps",
+      "p": [
+        "Follow these steps in order each time you meet an item."
+      ],
+      "list": [
+        "Step 1: Read the item twice, slowly, before you write anything.",
+        "Step 2: Underline the phrases in the item that match the term or the question.",
+        "Step 3: Quote one of those phrases and say what it shows.",
+        "Step 4: Connect it to a sociological idea, by saying which term, agent or perspective it illustrates.",
+        "Step 5: Link back to the question, so that your last sentence answers what was asked."
+      ]
+    },
+    {
+      "h": "Worked example",
+      "p": [
+        "Question: Explain the meaning of culture (5 marks). The words marked with « » are where the answer uses the item.",
+        "Culture is the learned and socially constructed way of life of a group, including norms, values, beliefs and traditions. It contains material objects and non-material ideas and can change over time.",
+        "The item describes «migration bringing traditions to the UK». For example, a family might continue celebrating Eid or Diwali while taking part in other local celebrations.",
+        "«Combining family traditions with friends’ music or fashion» illustrates the «hybrid identities» in the item: people can draw on more than one culture.",
+        "Postmodernists emphasise the variety of cultural influences people may combine when constructing an identity.",
+        "The AO2 marks here are for two things: explaining migration and traditions, and explaining the combination of influences that produces hybrid identities."
+      ],
+      "quote": {
+        "t": "Migration has contributed to the range of cultural traditions in the UK. Later generations may combine influences from their family with those of friends, music and fashion, developing hybrid identities.",
+        "who": "Item"
+      }
+    },
+    {
+      "h": "Worked example 2",
+      "p": [
+        "Question: Explain the meaning of primary socialisation (5 marks). The words marked with « » are where the answer uses the item.",
+        "Primary socialisation is the first stage of learning culture, usually through parents or carers. Children learn language, norms and values through observation, imitation, praise and correction.",
+        "The «early expectations in the item» might include learning to say “please”, with adults modelling the behaviour and praising the child.",
+        "The item also names «gender roles». Children may receive different messages about toys or activities, although families can deliberately challenge these stereotypes.",
+        "Feminists examine how early family socialisation can transmit gender expectations.",
+        "The AO2 marks here are for two things: explaining learning an early expectation, and explaining learning gender roles."
+      ],
+      "quote": {
+        "t": "From early childhood, people learn society’s expectations, norms, values and gender roles. This learning begins in the family and is known as primary socialisation.",
+        "who": "Item"
+      }
+    },
+    {
+      "h": "What AO2 is not",
+      "p": [
+        "These three habits look like using the item, but they do not earn AO2 marks."
+      ],
+      "list": [
+        "Copying the item. Writing out the item’s own words shows that you can read it, but it does not show that you can apply it.",
+        "Describing the item. Saying again, in other words, what the item says does not explain what it shows about the term.",
+        "An example with no link to the item. An example only helps when you say how it connects to the item in front of you."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s8/find",
+    "label": "Find the phrase that earns the mark"
+  }
+}

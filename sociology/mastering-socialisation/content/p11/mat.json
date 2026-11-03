@@ -1,0 +1,181 @@
+{
+  "route": "s11/mat",
+  "title": "Revision mat: Section A on one page",
+  "sections": [
+    {
+      "h": "Socialisation",
+      "p": [
+        "Socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation (Giddens, 2006). It begins from the moment of birth and extends to the point of death."
+      ],
+      "table": {
+        "head": [
+          "Kind",
+          "What it means",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Primary",
+            "The child learns from their family in the home, and learns the expectations the parents have for them. It is the first stage of a life-long process.",
+            "A parent teaching a child to say please"
+          ],
+          [
+            "Secondary",
+            "The child learns what wider society expects of its members, and this generally takes place outside the home.",
+            "Education, peer groups, the media, religion"
+          ],
+          [
+            "Formal",
+            "The process where people are deliberately and consciously taught to follow certain rules.",
+            "A teacher teaching the rules of the classroom"
+          ],
+          [
+            "Informal",
+            "People learn to fit into their culture by watching and learning from others around them. It is unintentional and less obvious.",
+            "Copying the way a parent talks"
+          ]
+        ]
+      }
+    },
+    {
+      "h": "Adult socialisation",
+      "p": [
+        "Adult socialisation is Parsons’ third stage, tertiary socialisation. It takes place when people need to adapt to new situations such as becoming a parent, changing jobs, or coping with illness or death."
+      ]
+    },
+    {
+      "h": "The six agents",
+      "table": {
+        "head": [
+          "Agent",
+          "Stage",
+          "How it shapes behaviour",
+          "How it controls behaviour"
+        ],
+        "rows": [
+          [
+            "Family",
+            "Primary",
+            "Teaching; imitation and role models; canalisation (guiding children to certain activities); verbal appellations, such as pet names like ‘Princess’",
+            "Sanctions; expectations; manipulation; childrearing practices; protection from harm"
+          ],
+          [
+            "Education",
+            "Secondary",
+            "Teaching through the formal curriculum and the hidden curriculum; teachers as role models; copying other pupils; canalisation into certain activities",
+            "Sanctions, such as merits and detentions; expectations; manipulation; protection from harm"
+          ],
+          [
+            "Peer group",
+            "Secondary",
+            "Teaching; imitation; activities; language",
+            "Peer pressure; sanctions through approval and rejection; expectations; manipulation"
+          ],
+          [
+            "Media",
+            "Secondary",
+            "Teaching; imitation; activities; language",
+            "Sanctions; expectations; manipulation"
+          ],
+          [
+            "Religion",
+            "Secondary",
+            "Teaching; passing on a parent’s faith; sharing in religious traditions; rites of passage",
+            "Sanctions; expectations; manipulation"
+          ],
+          [
+            "Workplace",
+            "Tertiary (adult)",
+            "Training for the job; learning from colleagues, as in canteen culture; professional codes of conduct",
+            "Sanctions; expectations; manipulation; standards of professionalism"
+          ]
+        ]
+      },
+      "p": [
+        "Some textbooks call the workplace a secondary agent; your course treats adult socialisation as a third stage, tertiary socialisation."
+      ]
+    },
+    {
+      "h": "Social control and sanctions",
+      "p": [
+        "Social control is the different processes through which society enforces conformity to the norms.",
+        "Sanctions are social reactions to either conformity (positive sanctions) or violation (negative sanctions) of the norms."
+      ],
+      "table": {
+        "head": [
+          "",
+          "Positive (a reward)",
+          "Negative (a punishment)"
+        ],
+        "rows": [
+          [
+            "Formal: given by an organisation with written rules, such as a school, an employer or a court",
+            "Graduation ceremony; a merit or certificate at school; promotion at work",
+            "Prison sentence; detention; a court fine"
+          ],
+          [
+            "Informal: given by anyone in everyday life",
+            "A pat on the back; being told ‘Well done’",
+            "Time-out at home; being left out of a group; ‘I’m very disappointed in you’"
+          ]
+        ]
+      }
+    },
+    {
+      "h": "Five-mark answers: DIET",
+      "p": [
+        "A five-mark question is marked for AO1 knowledge and understanding (3 marks) and AO2 application (2 marks). A named theory is not an automatic requirement for full marks."
+      ],
+      "list": [
+        "D, Define the term: an accurate definition, in the words the course uses.",
+        "I, Item link: use specific words from the item and say how they show the term.",
+        "E, Explain with an example: a relevant example, with a sentence that explains it.",
+        "T, Theory link: a brief, relevant link to a perspective, such as Functionalists or Feminists."
+      ]
+    },
+    {
+      "h": "Ten-mark answers: PEEL",
+      "p": [
+        "A ten-mark ‘using the item, explain’ answer is two PEEL paragraphs, one for each point."
+      ],
+      "list": [
+        "P, Point: answer the question in one sentence.",
+        "E, Evidence: name a writer, a perspective or a key term that fits your point.",
+        "A, Apply the item: quote the item’s own words and say what they show.",
+        "E, Explain: join your ideas with because, this means and so.",
+        "L, Link back: finish by returning to the wording of the question."
+      ]
+    },
+    {
+      "h": "Perspectives to use for the T",
+      "table": {
+        "head": [
+          "Perspective",
+          "What it says about socialisation"
+        ],
+        "rows": [
+          [
+            "Functionalist",
+            "A consensus view: socialisation unites society in a set of shared norms and values."
+          ],
+          [
+            "Marxist",
+            "A conflict view: socialisation gives people the ideas that the powerful promote, and prepares the masses for exploitation."
+          ],
+          [
+            "Feminist",
+            "Socialisation prepares us for different gender roles and to accept patriarchy; gender differences are due to culture, not biology."
+          ],
+          [
+            "Interactionist",
+            "People interpret meanings, and everyday reactions from others shape their identity."
+          ],
+          [
+            "Postmodernist",
+            "People can combine many cultural influences when they build an identity."
+          ]
+        ]
+      }
+    }
+  ]
+}

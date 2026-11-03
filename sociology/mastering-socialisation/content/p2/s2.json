@@ -1,0 +1,27 @@
+{
+  "route": "s2",
+  "part": "p2",
+  "title": "Culture",
+  "lead": "Culture is the learned and socially constructed way of life of a group, including norms, values, beliefs and traditions. There are seven ideas to master, and each one has its own page and quiz.",
+  "blocks": [
+    {
+      "h": "The seven ideas",
+      "list": [
+        "Material culture is the physical objects that go with a group’s way of life.",
+        "Non-material culture is the ideas and meanings a group shares, including language, beliefs, values and norms.",
+        "Values are shared ideas about what a group considers important, desirable or morally right.",
+        "Norms are social rules and expectations about how people should behave.",
+        "Customs are usual ways of behaving in a particular group or setting.",
+        "Beliefs are ideas people accept as true about the world.",
+        "Traditions are customs, beliefs or practices passed between generations."
+      ],
+      "new_items": [
+        4
+      ]
+    }
+  ],
+  "next": {
+    "route": "s2/material",
+    "label": "Start with material culture"
+  }
+}

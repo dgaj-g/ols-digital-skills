@@ -1,0 +1,87 @@
+{
+  "route": "s3/media",
+  "part": "p3",
+  "agent": "media",
+  "title": "The media",
+  "lead": "News, magazines, adverts, soaps and films all teach us how to behave. This page follows your teacher's summary diagram for the media: how it shapes behaviour, and how it controls it.",
+  "blocks": [
+    {
+      "h": "What this agent is",
+      "p": [
+        "The media has an impact on the development of gender roles, ethnic identities and social class identities. Your teacher's list of what the media includes is news reports, magazines, advertisements, soaps and films. It is a powerful way of influencing the audience.",
+        "The media is an agent of secondary socialisation. Your teacher also notes that some sociologists argue the media is playing more of a role in primary socialisation too.",
+        "The media is not always positive. Many argue it creates stereotypes.",
+        "The media also links to the family through pester power. Your teacher's definition is 'The ability of children to pressurize their parents into buying them products, especially items advertised in the media'."
+      ]
+    },
+    {
+      "h": "How it shapes behaviour",
+      "new": true,
+      "p": [
+        "**Teaching:** Your teacher's example is the news. Through watching the news we learn about deviant groups and how not to behave, for example criminals. Magazines, advertisements, soaps and films teach in the same way, mostly informally: unintentional, less obvious, perhaps through casual observation of others.",
+        "**Imitation and role models:** Your teacher asks whether the three ways children learn from their parents (imitation, role models and sanctions) can be applied to the media. They can. Audiences watch what people do on screen and in magazines and copy it, and they can take people they see there as role models, in the same way that children use their parents or other adults as role models and continue to imitate their behaviour.",
+        "**Activities:** Magazines point readers towards particular activities and interests. McRobbie found that girls' magazines tended to encourage romance and 'keeping a man', often through domesticity. Rutherford found a growth of male magazines such as FHM and Loaded.",
+        "**Language:** Your teacher's notes give no media example for language, so this is a link you can make. The media gives us words and labels for how people should look and behave, and Currie's concept of 'slimblondeness' is one such label.",
+        "**Identity:** The media influences gender identities, which means how men and women are 'expected' to behave and dress. It also has an impact on ethnic identities and social class identities."
+      ]
+    },
+    {
+      "h": "How it controls behaviour",
+      "new": true,
+      "p": [
+        "**Social control and sanctions:** Your teacher's bracket is '(social control)'. Through watching the news we learn about deviant groups and how not to behave, for example criminals. Sanctions are 'a process of social control which regulates our behaviour, ensuring conformity to the norms and values of society', and the news shows an audience which behaviour is treated as unacceptable.",
+        "**Expectations:** The media shows how men and women are 'expected' to behave, dress and look. Currie found an emphasis on beautification, and Rutherford found a focus on body image.",
+        "**Manipulation:** Your teacher's list of the ways we learn includes manipulation, with the examples sanctions, expectations, verbal appellations and canalisation. Advertising is her media example: pester power is children pressurising their parents into buying products, especially items advertised in the media."
+      ]
+    },
+    {
+      "h": "What the perspectives say",
+      "p": [
+        "Use McRobbie, Currie and Rutherford as your research evidence on the media. Your teacher's mark scheme for the ten-mark question gives 2 marks for one piece of research evidence and 2 marks for a second."
+      ],
+      "writers": [
+        {
+          "name": "McRobbie (1970s)",
+          "says": "Found that girls' magazines tended to encourage romance and 'keeping a man', often through domesticity."
+        },
+        {
+          "name": "Currie (1999)",
+          "says": "Found a dramatic increase in the emphasis on beautification in magazines. Your teacher's slide gives the concept of 'slimblondeness'."
+        },
+        {
+          "name": "Rutherford (2000 onwards)",
+          "says": "Found a growth of male magazines such as FHM and Loaded, and a focus on body image."
+        },
+        {
+          "name": "Functionalist",
+          "says": "Functionalists say that the purpose of socialisation is to unite society in a set of shared norms and values, which is a 'consensus' sociology. The news showing audiences how not to behave is an example that fits this view.",
+          "new": true
+        },
+        {
+          "name": "Marxist",
+          "says": "Marxists say that the purpose of socialisation is to control the weak and defenceless and to give them the ideas that the powerful promote, so that people are taught an ideology. This is 'conflict' sociology. A Marxist link to the media is that audiences are taught the ideas the powerful promote.",
+          "new": true
+        },
+        {
+          "name": "Feminist",
+          "says": "Feminists say socialisation is preparing us for differentiated gender roles and to accept patriarchy. McRobbie's finding about romance and 'keeping a man' is the media example that fits this view.",
+          "new": true
+        }
+      ]
+    }
+  ],
+  "check": [
+    "Could you write about teaching, using the news and deviant groups as your example?",
+    "Could you write about imitation and role models, and apply your teacher's three ways to the media?",
+    "Could you write about activities, using McRobbie's girls' magazines?",
+    "Could you write about language, using Currie's concept of 'slimblondeness'?",
+    "Could you write about identity, covering gender, ethnic and social class identities?",
+    "Could you write about social control and sanctions, using the news and criminals?",
+    "Could you write about expectations, using Currie and Rutherford on beautification and body image?",
+    "Could you write about manipulation, using advertising and pester power?"
+  ],
+  "next": {
+    "route": "s3/media/images",
+    "label": "Next: What is this image teaching?"
+  }
+}

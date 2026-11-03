@@ -1,0 +1,57 @@
+{
+  "route": "s9",
+  "part": "p9",
+  "title": "What WJEC Examiners Want",
+  "lead": "Examiners award marks for knowing the term and for applying it to the item. This page shows the five mistakes that lose marks, the eight habits of full-mark answers, and where the five marks come from.",
+  "blocks": [
+    {
+      "h": "Five ways marks are lost",
+      "p": [
+        "These five mistakes cost marks again and again. Your teacher’s list of examiner comments includes ignoring the item, giving examples without linking them, and repeating material."
+      ],
+      "list": [
+        "Defining a different term. A correct definition of the wrong word earns nothing, so read the named term again before you start.",
+        "No item link. An answer that never uses the item cannot earn the application marks.",
+        "An example with no explanation. An example needs a sentence that says what it shows about the term.",
+        "Copying the item. Writing out the item’s words shows that you can read it; the examiner wants to see you use it.",
+        "A list with no sentences. A list of key words explains nothing, so write full sentences."
+      ],
+      "new": true
+    },
+    {
+      "h": "Eight habits of full-mark answers",
+      "p": [
+        "These are the top examiner tips from your teacher’s list, with a line on how to use each one."
+      ],
+      "list": [
+        "Always use the item. Aim for two explained item links, and explain how the item illustrates the term rather than copying it.",
+        "Quote specific words. Pick the exact words from the item that matter and say what they show.",
+        "Use sociological terminology. Start with an accurate definition of the named term, using the words the course uses.",
+        "Develop explanations. Aim for three developed knowledge points, not three bare statements.",
+        "Give clear examples. Choose a relevant example and say how it shows the idea.",
+        "Link back to the question. Finish by answering what the question asked.",
+        "Distinguish AO1 from AO2. Know which sentences show what you know and which sentences apply it to the item.",
+        "Write in PEEL format. In a ten-mark answer, give each paragraph a Point, Evidence, Apply Item, Explain and Link Back."
+      ]
+    },
+    {
+      "h": "How the marks are split",
+      "p": [
+        "A five-mark question is marked for AO1 knowledge and understanding (3 marks) and AO2 application (2 marks). The marks are not given one for each sentence: examiners reward accurate answers and a good use of the item.",
+        "DIET shows where the marks come from. The letters stand for Define the term, Item link, Explain with an example and Theory link. A relevant theory can strengthen an explanation, but a named theory is not an automatic requirement for full marks.",
+        "In the five-mark activities on this site, D, E and T are the three AO1 marks, and the two item details in your item link are the two AO2 marks:"
+      ],
+      "list": [
+        "D, Define the term (AO1): an accurate definition of the term in the question.",
+        "I, Item link (AO2): the place where you apply the term to the item, using specific words from it. Aim for two explained item links; you do not need to quote the item twice.",
+        "E, Explain with an example (AO1): a relevant example, with a sentence that explains it.",
+        "T, Theory link (AO1): a brief, relevant link to a perspective, such as Functionalists or Feminists."
+      ],
+      "new": true
+    }
+  ],
+  "next": {
+    "route": "s9/eye",
+    "label": "Try Examiner’s eye"
+  }
+}

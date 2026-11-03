@@ -1,0 +1,193 @@
+{
+  "route": "s11/mindmap",
+  "title": "Mind map: agents and processes",
+  "sections": [
+    {
+      "h": "Centre: socialisation",
+      "p": [
+        "Socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation (Giddens, 2006). It begins from the moment of birth and extends to the point of death."
+      ]
+    },
+    {
+      "h": "Kinds of socialisation",
+      "list": [
+        "Primary: the family, the first stage",
+        "Secondary: education, peers, the media, religion",
+        "Tertiary (adult): the workplace",
+        "Formal: deliberate, consciously taught",
+        "Informal: unintentional, learned by watching others"
+      ]
+    },
+    {
+      "h": "Agents of socialisation: two branches each",
+      "list": [
+        "Family (primary)",
+        [
+          "Shapes behaviour",
+          [
+            "Teaching",
+            "Imitation and role models",
+            "Canalisation",
+            "Verbal appellations"
+          ],
+          "Controls behaviour",
+          [
+            "Sanctions",
+            "Expectations",
+            "Childrearing practices",
+            "Protection from harm"
+          ]
+        ],
+        "Education (secondary)",
+        [
+          "Shapes behaviour",
+          [
+            "Formal curriculum",
+            "Hidden curriculum",
+            "Teachers as role models",
+            "Canalisation"
+          ],
+          "Controls behaviour",
+          [
+            "Sanctions",
+            "Expectations",
+            "Protection from harm"
+          ]
+        ],
+        "Peer group (secondary)",
+        [
+          "Shapes behaviour",
+          [
+            "Teaching",
+            "Imitation",
+            "Activities",
+            "Language"
+          ],
+          "Controls behaviour",
+          [
+            "Peer pressure",
+            "Sanctions",
+            "Expectations"
+          ]
+        ],
+        "Media (secondary)",
+        [
+          "Shapes behaviour",
+          [
+            "Teaching",
+            "Imitation",
+            "Activities",
+            "Language"
+          ],
+          "Controls behaviour",
+          [
+            "Sanctions",
+            "Expectations",
+            "Manipulation"
+          ]
+        ],
+        "Religion (secondary)",
+        [
+          "Shapes behaviour",
+          [
+            "Teaching",
+            "Passing on a parent’s faith",
+            "Rites of passage",
+            "Shared traditions"
+          ],
+          "Controls behaviour",
+          [
+            "Sanctions",
+            "Expectations",
+            "Manipulation"
+          ]
+        ],
+        "Workplace (tertiary)",
+        [
+          "Shapes behaviour",
+          [
+            "Training",
+            "Canteen culture",
+            "Professional codes of conduct"
+          ],
+          "Controls behaviour",
+          [
+            "Sanctions",
+            "Expectations",
+            "Standards of professionalism"
+          ]
+        ]
+      ]
+    },
+    {
+      "h": "How we learn the rules",
+      "list": [
+        "Formal and informal processes",
+        "Agents of socialisation",
+        [
+          "Primary agents",
+          "Secondary agents"
+        ],
+        "Manipulation",
+        [
+          "Sanctions",
+          "Expectations",
+          "Verbal appellations",
+          "Canalisation"
+        ],
+        "Observation of others",
+        [
+          "Imitation",
+          "Role models",
+          "Copycat behaviour",
+          "Differentiated activities"
+        ]
+      ]
+    },
+    {
+      "h": "Social control",
+      "list": [
+        "Formal: given by an organisation with written rules",
+        [
+          "Positive: graduation ceremony, merit, promotion",
+          "Negative: prison sentence, detention, court fine"
+        ],
+        "Informal: given by anyone in everyday life",
+        [
+          "Positive: a pat on the back, ‘Well done’",
+          "Negative: time-out at home, being left out of a group"
+        ]
+      ]
+    },
+    {
+      "h": "Perspectives",
+      "list": [
+        "Functionalist",
+        [
+          "Consensus",
+          "Shared norms and values unite society"
+        ],
+        "Marxist",
+        [
+          "Conflict",
+          "Socialisation prepares the masses for exploitation"
+        ],
+        "Feminist",
+        [
+          "Different gender roles",
+          "Gender differences are due to culture, not biology"
+        ],
+        "Interactionist",
+        [
+          "Meanings",
+          "Everyday reactions shape identity"
+        ],
+        "Postmodernist",
+        [
+          "Many cultural influences",
+          "Identity is built from a mix"
+        ]
+      ]
+    }
+  ]
+}

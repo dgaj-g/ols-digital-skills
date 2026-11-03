@@ -1,0 +1,53 @@
+{
+  "route": "s2/norms",
+  "part": "p2",
+  "title": "Norms",
+  "lead": "Norms are the fourth of the seven ideas, and they cover the rules for how people are expected to behave.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Norms are social rules and expectations about how people should behave. They are learned through socialisation and can vary between cultures or change over time.",
+        "In plain words, norms are the unwritten rules for how to behave."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "argue that shared norms make behaviour more predictable and help people cooperate."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "Taking turns when speaking is a norm that parents and carers may teach, reinforced through praise.",
+        "Teaching greetings to children passes norms between generations, and what counts as a polite greeting may differ between cultural settings.",
+        "Queuing for a bus and good table manners are norms of general behaviour that children learn in the family.",
+        "Saying “please” is a norm that children learn when adults model the behaviour and praise the child.",
+        "Putting your phone away when a teacher or a friend is talking to you is a norm that many young people learn.",
+        "Using headphones instead of a speaker to watch videos on a bus is a norm that many people expect."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: Norms are social rules and expectations about how people should behave. They are learned through socialisation and can vary between cultures or change over time.",
+        "Item link: The parents and carers in the item may teach a child to take turns when speaking, reinforcing an everyday expectation through praise.",
+        "Explain with an example: Teaching greetings to children illustrates the transmission between generations in the item. What counts as a polite greeting may differ between cultural settings.",
+        "Theory link: Functionalists argue that shared norms make behaviour more predictable and help people cooperate."
+      ],
+      "quote": {
+        "t": "Culture varies between societies and is passed between generations through socialisation. Parents and carers are important in teaching children their earliest everyday expectations about behaviour.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/norms/quiz",
+    "label": "Take the quiz on norms"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "route": "s2/material",
+  "part": "p2",
+  "title": "Material culture",
+  "lead": "Material culture is the first of the seven ideas, and it covers the physical side of a group’s way of life.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Material culture consists of physical objects associated with a group’s way of life. Objects can carry cultural meanings and help transmit traditions, while changing over time.",
+        "In plain words, material culture is the things you can see and touch that belong to a group’s way of life."
+      ],
+      "writers": [
+        {
+          "name": "Interactionists",
+          "says": "emphasise that an object’s significance is socially created: a flag is fabric, but people attach identity and meaning to it."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "Traditional clothing at a cultural festival is a physical object that can express cultural identity.",
+        "A flag is material culture because it is fabric, but people attach identity and meaning to it.",
+        "Handmade decorations at a festival are physical objects that belong to a group’s way of life.",
+        "Festival food is also material culture, and sharing a family recipe with younger relatives may help to pass a tradition to another generation.",
+        "A school blazer with the school crest is a physical object that shows which school a pupil belongs to.",
+        "A smartphone is a physical object, and the way young people use it for group chats and photos is part of their everyday way of life."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: Material culture consists of physical objects associated with a group’s way of life. Objects can carry cultural meanings and help transmit traditions, while changing over time.",
+        "Item link: The clothing and flags in the item are visible, physical objects that may express cultural identity.",
+        "Explain with an example: Festival food is also material culture. Sharing a family recipe with younger relatives may help pass a tradition to another generation.",
+        "Theory link: Interactionists emphasise that an object’s significance is socially created: a flag is fabric, but people attach identity and meaning to it."
+      ],
+      "quote": {
+        "t": "At a cultural festival, visitors see traditional clothing, flags and handmade decorations. Families bring foods associated with their cultural backgrounds.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/material/quiz",
+    "label": "Take the quiz on material culture"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "route": "s1",
+  "part": "p1",
+  "title": "The four kinds of socialisation",
+  "lead": "Part 1 covers primary, secondary, formal and informal socialisation, with a short page and a mini-test for each one. The checklist below ticks itself as you pass the mini-tests.",
+  "blocks": [
+    {
+      "h": "The four kinds",
+      "p": [
+        "Primary and secondary describe when and where you learn. Formal and informal describe how you learn."
+      ],
+      "list": [
+        "Primary socialisation is the first stage of learning culture, usually through parents or carers.",
+        "Secondary socialisation is the continuing process of learning norms, values and roles beyond the earliest learning in the family.",
+        "Formal socialisation is the process where people are deliberately and consciously manipulated to ensure they learn to follow certain rules.",
+        "Informal socialisation is the process where people learn to fit into their culture by watching and learning from others around them."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s1/primary",
+    "label": "Start with primary socialisation"
+  }
+}

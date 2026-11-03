@@ -1,0 +1,73 @@
+{
+  "route": "s3/family",
+  "part": "p3",
+  "agent": "family",
+  "title": "The family",
+  "lead": "The family is the agent of primary socialisation. This page follows your teacher’s summary diagram: how the family shapes behaviour, and how it controls behaviour.",
+  "blocks": [
+    {
+      "h": "What this agent is",
+      "p": [
+        "The family is the agent of primary socialisation. It is the first point of an individual’s interaction and arguably the most important agent of socialisation. The people involved are our parents and other family members, who are our ‘significant others’ because they have a great influence on us and we care about their judgements of us. It happens in the early years of life, when we are normally in intimate and prolonged contact with our parents. This is when we learn the attitudes, values and norms of our culture, such as queuing for a bus and table manners, and the norms and values associated particularly with gender and ethnicity. Many claim that the family is no longer as important as it used to be, because of a lack of quality parenting and the increased use of child minders and ‘electronic babysitters’."
+      ]
+    },
+    {
+      "h": "How it shapes behaviour",
+      "p": [
+        "**Teaching:** Parents teach their children, and the teaching can be formal or informal. Formal teaching is deliberate: you must learn these rules and you are consciously taught them. Informal teaching is unintentional and less obvious, perhaps through casual observation of others. Parents teach traditions, manners, emotions and history, and through the family we develop a sense of self, learn how to interact and cooperate with others, and learn emotional responses and empathy with others.",
+        "**Imitation and role models:** One way children learn from their parents is through imitation. For example, they may copy the way their parents talk. By copying the behaviour of adults, children are learning about role taking, and playing ‘house’ or ‘mummies and daddies’ develops empathy because children learn what it might feel like to be a parent. Identification is linked to imitation: children will often think of someone they admire and dress up and act as that person, usually someone they know. By dressing up as Princess Anna or Superman, children are learning important cultural lessons about gender roles. As children get older they use their parents or other adults as role models and continue to imitate their behaviour. Bandura is the name to link with imitation.",
+        "**Activities (canalisation):** Children are guided to certain activities by their parents, through the range of toys and activities the parents provide, often with a gendered slant. For example, children can learn the value of money, competition and achievement from games like Monopoly, and the value of team work from games like Pictionary. This teaches them about wider culture, what is valuable and how to act.",
+        "**Language (verbal appellations):** The language used in families, and the pet names given, can teach a child gender expectations, for example ‘sweetie’, ‘Princess’ and ‘monkey’. Oakley (1974) refers to these labels in gender role socialisation as verbal appellations."
+      ]
+    },
+    {
+      "h": "How it controls behaviour",
+      "p": [
+        "**Social control and sanctions:** Sanctions are a process of social control which regulates our behaviour, ensuring conformity to the norms and values of society. Sanctions can be positive or negative, and formal or informal. With the application of formal and informal sanctions, children learn what is acceptable and unacceptable. A formal sanction is an expected reward or punishment, and an informal sanction is less obvious. Positive sanctions are praise, medals, certificates and rewards. Negative sanctions are punishment, being grounded, smacking and the ‘bold step’.",
+        "**Expectations:** Parents expect certain things from their children, and children are quick to learn what their parents hope for them. Labels given to children, such as ‘gifted and talented’, will see parents directing their children into challenging extra-curricular activities, tutoring and so on from a very young age.",
+        "**Manipulation:** Manipulation is the way in which parents encourage and reward behaviour they think is appropriate, or discourage behaviour they think is inappropriate. It can take very subtle guises, so when we were young we may not have been aware that we were being manipulated into behaving in certain ways. It includes emotional blackmail (‘Be good or I’ll tell Santa’), threats, explicit or implicit (such as physical punishment), deceit (‘If you tell lies your nose grows bigger’), control through money or material goods, positive reinforcement of a behaviour, and coercion (‘No video games until you do your homework!’). Socialisation is also a two-way process, because parents can continue their own socialisation by learning from their children. Pester power is the ability of children to pressurise their parents into buying them products, especially items advertised in the media.",
+        "**Childrearing practices:** Childrearing practices are the ways in which parents bring up their children. Sanctions, manipulation and protection, described on this page, are all part of how a family rears its children.",
+        "**Protection from harm:** Families are responsible for the protection of children, and there are a range of laws around ‘child protection’. Parents ensure control of disease through teaching bodily hygiene. They also use parental locks and controls on electronic devices, and home protection equipment such as stair gates and baby monitors."
+      ],
+      "new_p": [
+        3
+      ]
+    },
+    {
+      "h": "What the perspectives say",
+      "p": [
+        "Each perspective explains the family’s part in socialisation in a different way."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "see the family as a ‘personality factory’. The child is a blank slate at birth, and the role of the parent is to mould and train the passive child to conformity, so that the child becomes an accepted member of society. Socialisation is necessary to mould the child. Functionalists mainly believe that it is essential for women to take the lead in primary socialisation of their children, in what they call the nurturing ‘expressive role’. Talcott Parsons said that all societies have functional prerequisites which must be met, and shared culture provides for these needs. A criticism is that this view ignores the negatives of parenting, such as poor role models, stereotyping and neglect."
+        },
+        {
+          "name": "Marxists",
+          "says": "see the family as a negative institution, teaching children about obedience, conformity and submission to authority. These qualities will be beneficial to their future capitalist employer. Marxists say that the purpose of socialisation is to control the weak and defenceless and to give them the ideas that the powerful promote. People are taught an ideology, and this is known as ‘conflict’ sociology. Socialisation is conditioning which prepares the masses for exploitation."
+        },
+        {
+          "name": "Feminists",
+          "says": "argue that socialisation perpetuates gender inequality (Oakley, 1974) and that gender differences are due to culture, not biology. Socialisation is preparing us for differentiated gender roles and to accept patriarchy. Feminists examine how early family socialisation can transmit gender expectations."
+        }
+      ]
+    }
+  ],
+  "check": [
+    "Could you write about teaching in the family, both formal and informal?",
+    "Could you write about imitation and role models in the family?",
+    "Could you write about activities (canalisation) in the family?",
+    "Could you write about language and verbal appellations in the family?",
+    "Could you write about social control and sanctions in the family?",
+    "Could you write about expectations in the family?",
+    "Could you write about manipulation in the family?",
+    "Could you write about childrearing practices in the family?",
+    "Could you write about protection from harm in the family?"
+  ],
+  "new": true,
+  "next": {
+    "route": "s3/family/match",
+    "label": "Match the process"
+  }
+}
