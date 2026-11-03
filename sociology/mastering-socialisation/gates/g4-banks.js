@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* gates/gates/g4-banks.js - runs the bank checker (DESIGN/tools/check-banks.js) on the DESIGN folder, copies
+/* gates/g4-banks.js - runs the bank checker (DESIGN/tools/check-banks.js) on the DESIGN folder, copies
  * every line it prints to gates/out/g4.txt, and exits with its exit code. The script itself lives in DESIGN, beside the private
  * banks it reads, so nothing private enters the repo. Usage: node gates/g4-banks.js */
 'use strict';

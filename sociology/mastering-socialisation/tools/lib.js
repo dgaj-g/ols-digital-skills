@@ -59,14 +59,16 @@ const asciiHtml = (s) => s.replace(/[\u0080-\u{10ffff}]/gu, (c) => '&#' + c.code
 const asciiCss = (s) => s.replace(/[\u0080-￿]/g, (c) => '\\' + c.charCodeAt(0).toString(16) + ' ');
 
 // strings a page must never hold: the key fields' text from every bank (30+ characters), lex as JSON, the staff secrets
-// and the private names. A bank string that is also, word for word, in the public content/ is exempt (it is public there).
+// and the private names. A bank string that is also, word for word, in the public content/ (a whole string or a sentence inside
+// one, e.g. a why quoted from the lesson notes) is exempt: it is public there.
 const KEY_FIELDS = ['why', 'whys', 'why_marks', 'model', 'then', 'ao', 'lex'];
 function leakList(opt) {
   const { banks, content, staff, pass, teachers } = opt;
-  const pub = new Set();
-  (function each(v) { if (typeof v === 'string') pub.add(v.trim()); else if (v && typeof v === 'object') Object.values(v).forEach(each); })(content);
+  const pub = [];
+  (function each(v) { if (typeof v === 'string') pub.push(v.trim()); else if (v && typeof v === 'object') Object.values(v).forEach(each); })(content);
+  const pubText = pub.join('\u0000');
   const guarded = new Map(), exempt = new Set();
-  const add = (s, why) => { s = String(s).trim(); if (s.length < 30) return; if (pub.has(s)) { exempt.add(s); return; } if (!guarded.has(s)) guarded.set(s, why); };
+  const add = (s, why) => { s = String(s).trim(); if (s.length < 30) return; if (pubText.indexOf(s) !== -1) { exempt.add(s); return; } if (!guarded.has(s)) guarded.set(s, why); };
   const strings = (v, f) => { if (typeof v === 'string') f(v); else if (v && typeof v === 'object') Object.values(v).forEach((x) => strings(x, f)); };
   (function visit(v, where) {
     if (!v || typeof v !== 'object') return;

@@ -1,0 +1,111 @@
+PASS build — build 15131c5bb7-fb1c6890 · ground-truth token soc-15131c5bb7-fb1c6890
+PASS dev server — port 8781, store /private/tmp/claude-501/-Users-damiengartland-Desktop-Claude-Work/a55740e5-6e49-4b1b-a864-aeef14f26d5e/scratchpad/impl/g0-store.json
+PASS guard not-signed-in — error not-signed-in
+PASS guard not-signed-in (staff) — error not-signed-in
+PASS guard domain — error domain
+PASS guard domain (staff) — error domain
+PASS guard unknown-class — error unknown-class
+PASS guard unknown-class (open) — error unknown-class
+PASS owner creates a class — ok slug g0-class
+PASS owner creates a second class — ok
+PASS create a taken name — error taken
+PASS create a bad class name — error bad-name
+PASS boot with no class — ok
+PASS boot names the pupil from her account — ok name Aoife
+PASS boot with no account name asks for one — ok
+PASS name set — ok
+PASS name persists — Aoife B
+PASS boot shape — today 2026-11-03, week 2026-W45, v 15131c5bb7-fb1c6890
+PASS maxima — 93 acts, parts sum 411 = acts sum 411, daily 5, weekly 20
+PASS every five and ten in the banks is an act — 26 fives, 7 tens
+PASS bad-name refused — 4 acts
+PASS open — 60 acts
+PASS max matches boot — 60 acts
+PASS view has no key fields — 60 acts
+PASS incomplete answer refused — 60 acts
+PASS all-wrong scores 0 — 60 acts
+PASS per has one entry per item — 60 acts
+PASS attempts increment — 60 acts
+PASS the next attempt reshuffles the view — 60 acts
+PASS all-right scores full — 63 acts
+PASS best reaches the act maximum — 60 acts
+PASS attempts count every check — 60 acts
+PASS best never decreases — 60 acts
+PASS pts in every reply = the sum of the header — 60 acts
+PASS order mark returns the whys after the check — 1 acts
+PASS builder mark returns the model after the check — 33 acts
+PASS no bank key text in any open reply — 327 key-only strings checked over 60 acts (199 key sentences are also shown text, not counted)
+PASS family badge fires — fired: culture, family, education, sanctions
+PASS culture badge fires
+PASS family badge never un-fires (after an all-wrong f-match) — bd culture,family,education,sanctions
+PASS socialisation badge waits for all twelve ticks — ok
+PASS socialisation badge fires on the twelfth tick — badges ["socialisation"]
+PASS socialisation badge stays when ticks are cleared — bd culture,family,education,sanctions,socialisation
+PASS ticks persist — [1,0,1,0,0,1,0,0,0,0,1,1]
+PASS pile persists (card terms only) — {"culture":1,"socialisation":0}
+PASS pile: null takes a card off — {"socialisation":0}
+PASS write view has no model or key — ok 
+PASS empty text: n 0, no model, nothing stored — ok n 0
+PASS apiWrite on a build act refused — error bad-act
+PASS every write: the model only after a check, judge lines, practice point for the model answer — 33 writes
+PASS the w: key is gzip+base64 of {t, t2, n, tmin} — n 5, 552 chars
+PASS apiWritten returns the stored answer — ok
+PASS apiOpen on a write returns the saved answer — ok
+PASS a weaker rewrite keeps the best and the practice point — best 5
+INFO quoted (wq) set on 6 of 7 ten-mark writes
+PASS lock a part — error locked lock ["p2"]
+PASS unlock it — ok
+PASS setPart refuses an unknown part — error bad-op
+PASS a locked part 10 locks the daily five — error locked
+PASS board on — ok rank 1
+PASS board off — {"lb":0,"ok":true,"v":"15131c5bb7-fb1c6890"}
+PASS board toggles back on — ok
+PASS daily: five questions, no key — ok t1f:0,c-mat:0,w-test:2,vquiz:3,ex-eye:5
+PASS daily: the same set twice for the same class
+PASS daily: another class gets a different set — t1p:2,c-val:1,w-test:2,vquiz:28,ex-eye:1
+PASS apiOpen daily = apiDaily — ok
+PASS daily: incomplete answer refused — error incomplete
+PASS daily: all right scores 5 and is stored — ok 5
+PASS daily: stored once (a second try changes nothing) — dl {"2026-11-03":5}
+PASS weekly: two five builds and one ten build, max 20, no key — ok five,five,ten max 20
+PASS weekly: the two fives are different terms — d5-24,d5-06,d10-4
+PASS apiOpen weekly = apiWeekly — ok
+PASS weekly: incomplete answer refused — error incomplete
+PASS weekly: all right scores 20 and is stored — ok 20
+PASS weekly: stored once — wk {"2026-W45":20}
+PASS pts = Σb + Σpr + Σdl + Σwk — 436 = 378 + 33 + 5 + 20
+PASS ping writes s: — ok 441715
+PASS streak: a check the next day adds one — 1 -> 2
+PASS streak: a missed day starts again at one — n 1
+PASS old dailies and weeklies roll into dlx/wkx and still count — dl 8, dlx 15, wk 5, wkx 40, pts 606
+PASS header ≤ 1500 bytes after a full run — 1046 bytes (93 acts, 33 writes, 8 dailies, 5 weeklies, 6 badges max)
+INFO badges fired over the run: culture, family, education, sanctions, socialisation, ao2
+PASS each badge fires once — culture,family,education,sanctions,socialisation,ao2
+PASS a pupil calling a staff op gets not-staff — error not-staff
+PASS check with no passcode: not admitted — ok
+PASS a wrong passcode gives bad-pass — error bad-pass
+PASS the right passcode admits (role pass, no classes) — ok role pass
+PASS the passcode is remembered — ok
+PASS a passcode user cannot see another teacher's class — error unknown-class
+PASS owner check: role owner — ok role owner
+PASS owner classes (with pupil counts) — ok g0-class n 2
+PASS parts — ok p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11
+PASS tracker — ok pts 606, parts 9
+PASS pupil (marks and re-judged writes) — ok 33 writes, 60 acts
+PASS pupil: unknown pupil — error unknown-pupil
+PASS csv — ok g0-class-mastering-socialisation.csv 30729 chars
+PASS an unknown op gives bad-op — error bad-op
+PASS delete a class and every key under it — ok leftover 0
+PASS clearMe removes the owner's own pupil keys — ok
+PASS archive (owner, forced) — ok moved 0, size 23199
+PASS teacher (teachers property): admitted, role teacher — ok role teacher
+PASS a teacher sees only her own classes — ok g0-t2
+PASS a teacher cannot open another teacher's class — error unknown-class
+PASS archive is owner-only — error owner-only
+PASS a teacher opens her own class tracker — ok
+PASS a hods address sees every class — ok g0-class,g0-other,g0-t2
+PASS a head of department cannot delete another teacher's class — error owner-only
+SKIP teacher (TEACHERS.txt) — DESIGN/TEACHERS.txt lists no address yet; the teachers script property is tested instead
+PASS archive: the owner's visit moves the oldest writes to the Sheet — 66 padding keys, store 411 KB -> 317 KB, 16 moved, 16 Sheet rows, marks kept
+PASS the archive Sheet is named — OLS Sociology — Mastering Socialisation — Archive
+g0: 107 PASS, 0 FAIL, 1 SKIP

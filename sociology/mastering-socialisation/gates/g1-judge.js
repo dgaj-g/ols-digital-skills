@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* gates/gates/g1-judge.js - runs the separated judge and its controls (DESIGN/judge/controls.js) on the DESIGN folder, copies
+/* gates/g1-judge.js - runs the separated judge and its controls (DESIGN/judge/controls.js) on the DESIGN folder, copies
  * every line it prints to gates/out/g1.txt, and exits with its exit code. The script itself lives in DESIGN, beside the private
  * banks it reads, so nothing private enters the repo. Usage: node gates/g1-judge.js */
 'use strict';

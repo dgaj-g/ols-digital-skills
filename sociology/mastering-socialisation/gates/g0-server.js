@@ -9,7 +9,7 @@ const path = require('path');
 const zlib = require('zlib');
 const crypto = require('crypto');
 const { spawn } = require('child_process');
-const { SCRATCH, sheet, pagePlan, build, L } = require('./common.js');
+const { SCRATCH, sheet, pagePlan, build, redact, L } = require('./common.js');
 
 const PORT = 8781, BASE = 'http://localhost:' + PORT;
 const OWNER = 'dgartland021@c2ken.net', P1 = 'pupil1@c2ken.net', P2 = 'pupil2@c2ken.net', P3 = 'pupil3@c2ken.net';
@@ -66,15 +66,18 @@ function keyHits(o, form) {
   })(o, '');
   return hits;
 }
-// bank key text (why/whys/why_marks/model, 30+ characters) that must never be in an open reply
-const KEYTEXT = [];
+// bank key text (why/whys/why_marks/model, 30+ characters) that must never be in an open reply. A key sentence that is also
+// shown text somewhere (an option, a step, a card: a model is built from right options) or public in content/ is not counted.
+const KEYTEXT = [], SHOWN = [];
 (function visit(v) {
   if (!v || typeof v !== 'object') return;
   for (const [k, x] of Object.entries(v)) {
     if (['why', 'whys', 'why_marks', 'model'].includes(k)) flat(x).forEach((s) => { if (s.trim().length >= 30) KEYTEXT.push(s.trim()); });
-    else visit(x);
+    else if (!['k', 'ph_k', 'then', 'ao', 'lex'].includes(k)) { if (typeof x === 'string') SHOWN.push(x.trim()); else visit(x); }
   }
 })(banks);
+const shownText = SHOWN.concat(flat(L.readContent())).join('\u0000');
+const KEYONLY = KEYTEXT.filter((s) => shownText.indexOf(s) === -1);
 
 // ---------- right and wrong answers from the banks ----------
 function bankOf(act) {
@@ -164,7 +167,7 @@ async function main() {
   fs.mkdirSync(plan.deploy, { recursive: true });
   const b = build(plan);
   const lastLine = b.out.trim().split('\n').filter(Boolean).slice(-1)[0] || '';
-  sh.check(b.code === 0 && fs.existsSync(path.join(plan.deploy, 'Code.gs')), 'build', b.code === 0 ? lastLine : b.out.trim().split('\n').slice(-3).join(' | '));
+  sh.check(b.code === 0 && fs.existsSync(path.join(plan.deploy, 'Code.gs')), 'build', b.code === 0 ? lastLine : redact(b.out.trim().split('\n').slice(-3).join(' | ')));
   if (b.code !== 0) return;
   if (!PASS) sh.fail('staff passcode', 'DESIGN/STAFF_PASSCODE.txt has no passcode line');
   try { const busy = await fetch(BASE + '/'); sh.fail('port ' + PORT, 'something is already listening (' + busy.status + ')'); return; } catch (e) { /* free */ }
@@ -242,8 +245,8 @@ async function main() {
     const kh = keyHits(o0, form);
     t('view has no key fields', act, !kh.length, kh.slice(0, 3).join(', '));
     const js = JSON.stringify(o0);
-    const lk = KEYTEXT.filter((s) => js.indexOf(JSON.stringify(s).slice(1, -1)) !== -1);
-    if (lk.length) leaksText.push(act + ': ' + lk[0].slice(0, 50));
+    const lk = KEYONLY.filter((s) => js.indexOf(JSON.stringify(s).slice(1, -1)) !== -1);
+    if (lk.length) leaksText.push(act + ': ' + lk.length + ' key sentence(s), text withheld so this file stays public');
     let v = o0.view, a = o0.a;
     try {
       r = await call('apiMark', { cls: CLS, act, a, round: o0.round, ans: incomplete(form) });
@@ -281,7 +284,7 @@ async function main() {
   }
   flushTally();
   for (const k of Object.keys(tally)) delete tally[k];
-  sh.check(!leaksText.length, 'no bank key text in any open reply', leaksText.length ? leaksText.slice(0, 3).join('; ') : KEYTEXT.length + ' strings checked over ' + markActs.length + ' acts');
+  sh.check(!leaksText.length, 'no bank key text in any open reply', leaksText.length ? leaksText.slice(0, 3).join('; ') : KEYONLY.length + ' key-only strings checked over ' + markActs.length + ' acts (' + (KEYTEXT.length - KEYONLY.length) + ' key sentences are also shown text, not counted)');
 
   // ---------- badges ----------
   sh.check(fired.includes('family'), 'family badge fires', 'fired: ' + Array.from(new Set(fired)).join(', '));

@@ -59,4 +59,6 @@ function build(plan) {
   const r = spawnSync(process.execPath, [path.join(L.REPO, 'tools', 'build-server.js')], { env, encoding: 'utf8' });
   return { code: r.status, out: (r.stdout || '') + (r.stderr || ''), env };
 }
-module.exports = { SCRATCH, OUT, sheet, writeStandin, pagePlan, build, L };
+// the build prints the first leaked string on a refusal; gates/out/ is committed, so the gates print only where it came from
+const redact = (s) => String(s).replace(/first ".*?" from/g, 'first (text withheld) from');
+module.exports = { SCRATCH, OUT, sheet, writeStandin, pagePlan, build, redact, L };

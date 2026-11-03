@@ -1,0 +1,68 @@
+banks/p1/t1p.json 5 qs
+banks/p1/t1s.json 5 qs
+banks/p1/t1f.json 5 qs
+banks/p1/t1i.json 5 qs
+banks/p2/c-mat.json 4 qs
+banks/p2/c-non.json 4 qs
+banks/p2/c-val.json 4 qs
+banks/p2/c-nor.json 4 qs
+banks/p2/c-cus.json 4 qs
+banks/p2/c-bel.json 4 qs
+banks/p2/c-tra.json 4 qs
+banks/p2/c-sort.json 7 bins 21 cards
+banks/p3/f-match.json 8 chips 8 cards
+banks/p3/f-scen.json 6 scenes
+banks/p3/f-apply.json 2 items
+banks/p3/e-spot.json 12 rows
+banks/p3/e-school.json 8 scenes
+banks/p3/p-decide.json 5 steps 5 asks
+banks/p3/m-images.json 6 qs
+banks/p3/m-stereo.json 10 rows
+banks/p3/r-test.json 5 qs
+banks/p3/w-first.json 6 steps
+banks/p3/w-test.json 5 qs
+banks/p4/sc-sort.json 4 bins 16 cards
+banks/p5/vquiz.json 30 qs
+banks/p6/five.json 26 five-mark
+banks/p8/ao2-find.json 4 items
+banks/p9/ex-eye.json 6 qs
+banks/p7/ten-q1.json 10 slots 5+5
+banks/p7/ten-q2.json 10 slots 5+5
+banks/p7/ten-q3.json 10 slots 5+5
+banks/p7/ten-q4.json 10 slots 5+5
+banks/p7/ten-q5.json 10 slots 5+5
+banks/p7/ten-q6.json 10 slots 3+2+2+2+1
+banks/p7/ten-q7.json 10 slots 5+5
+content/p1/s1.json 1 blocks
+content/p1/primary.json 4 blocks
+content/p1/secondary.json 4 blocks
+content/p1/formal.json 4 blocks
+content/p1/informal.json 4 blocks
+content/p1/checklist.json 12 items
+content/p2/s2.json 1 blocks
+content/p2/material.json 3 blocks
+content/p2/nonmaterial.json 3 blocks
+content/p2/values.json 3 blocks
+content/p2/norms.json 3 blocks
+content/p2/customs.json 3 blocks
+content/p2/beliefs.json 3 blocks
+content/p2/traditions.json 3 blocks
+content/p3/s3.json 2 blocks
+content/p3/family.json 4 blocks
+content/p3/education.json 4 blocks
+content/p3/peers.json 4 blocks
+content/p3/media.json 4 blocks
+content/p3/religion.json 4 blocks
+content/p3/workplace.json 4 blocks
+content/p4/s4.json 5 blocks
+content/p5/cards.json 17 terms
+content/p8/s8.json 4 blocks
+content/p9/s9.json 3 blocks
+content/p11/mat.json 7 sections
+content/p11/organiser.json 11 sections
+content/p11/mindmap.json 6 sections
+content/p11/quiz.json 3 sections
+content/p11/checklist.json 4 sections
+content/p11/lastminute.json 8 sections
+PASS 66 files read, 0 errors
+g4: PASS (exit 0)
