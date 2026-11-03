@@ -404,62 +404,90 @@ var Engine = (function(){
     if (extra.why_marks && extra.why_marks.length) html += '<div class="strip"><b>' + h(S.markStrip) + '</b><ul>' + extra.why_marks.map(function(w){ return '<li>' + h(w) + '</li>'; }).join("") + '</ul></div>';
     return html + '</div>';
   }
-  function builder(root, open, o){
-    var v = open.view, slots = v.slots, ans = {}, orders = {};
-    var isTen = !!v.scheme;
-    root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? S.tenBuildIntro : S.buildIntro)) + '</p>'));
+  function builderPanel(root, v, open){
+    var slots = v.slots, ans = {}, orders = {}, isTen = !!v.scheme;
     var qq = v.q || v.stem; if (qq) root.appendChild(el('<div class="q"><div class="qn">' + h(S.questionHead) + '</div><div class="qt">' + h(qq) + (v.marks ? ' <span class="pill">' + h(fmt(S.qMarks, {m: v.marks})) + '</span>' : '') + '</div></div>'));
     if (v.item) root.appendChild(el(itemBox(v.item)));
     if (isTen && !v.item) root.appendChild(el('<p class="say">' + h(S.tenNoItem) + ' ' + h(S.schemeHer) + '</p>'));
     var list = el('<div class="slots"></div>'); root.appendChild(list);
     var lastPara = null;
+    function want(sl){ return sl.pickN || sl.picks || (isTen ? 1 : 2); }
     slots.forEach(function(sl, si){
-      if (isTen && sl.para && sl.para !== lastPara){ list.appendChild(el('<h3 class="para">' + h(sl.para === "1" ? S.para1 : S.para2) + '</h3>')); lastPara = sl.para; }
+      if (isTen && sl.para && sl.para !== lastPara){ list.appendChild(el('<h3 class="para">' + h(sl.para === "1" || sl.para === 1 ? S.para1 : S.para2) + '</h3>')); lastPara = sl.para; }
       var head = '<div class="sl"><span class="let">' + h(sl.label || "") + '</span>' + (sl.ao ? ' <span class="tag ' + sl.ao.toLowerCase() + '">' + h(sl.ao) + '</span>' : '') + '</div>';
       var body = "";
       if (sl.type === "pick") body = '<p class="small mute">' + h(S.slotPick) + '</p><div class="opts">' + sl.opts.map(function(op, oi){ return '<button class="opt" aria-pressed="false" data-o="' + oi + '"><span class="k">' + letter(oi) + '</span><span>' + h(op) + '</span></button>'; }).join("") + '</div>';
-      else if (sl.type === "tap") body = '<p class="small mute">' + h(sl.pickN === 1 || isTen ? S.slotTapOne : S.slotTap) + '</p>' + itemBox(sl.item || v.item, sl.phrases);
+      else if (sl.type === "tap") body = '<p class="small mute">' + h(want(sl) === 1 ? S.slotTapOne : S.slotTap) + '</p>' + itemBox(sl.item || v.item, sl.phrases);
       else if (sl.type === "order") body = '<p class="small mute">' + h(S.slotOrder) + '</p>';
       var c = el('<div class="slotc" data-s="' + si + '" data-type="' + h(sl.type) + '">' + head + body + '</div>');
       list.appendChild(c);
       if (sl.type === "order"){ orders[si] = orderList(c, sl.steps, {onChange: function(){}}); ans[si] = true; }
     });
-    var need = slots.length;
-    function filled(){ return slots.filter(function(sl, si){ return sl.type === "order" ? true : (sl.type === "tap" ? (ans[si] && ans[si].length === (isTen ? 1 : 2)) : ans[si] != null); }).length; }
-    var bar = checkBar(root, need, {countText: function(n, m){ return n + " of " + m + " parts filled"; }, onCheck: function(btn){
-      var arr = slots.map(function(sl, si){ return sl.type === "order" ? orders[si].get() : ans[si]; });
-      mark(root, open, arr, o, btn, function(r){
-        bar.done();
-        r.per.forEach(function(p, si){
-          var c = q(list, '[data-s="' + si + '"]'), sl = slots[si];
-          c.classList.add(p.ok ? "ok" : "no");
-          if (sl.type === "pick"){ qa(c, ".opt").forEach(function(b, oi){ b.disabled = true; if (oi === p.k) b.classList.add("right"); else if (oi === ans[si]) b.classList.add("wrong"); }); }
-          else if (sl.type === "tap"){ qa(c, ".ph").forEach(function(s){ var k = +s.dataset.i; s.classList.add("done"); s.setAttribute("tabindex", "-1"); if ((p.k || []).indexOf(k) >= 0) s.classList.add("ok"); else if ((ans[si] || []).indexOf(k) >= 0) s.classList.add("no"); }); }
-          else if (sl.type === "order"){ orders[si].lock(); var byT = {}; (p.per || []).forEach(function(x){ byT[x.t] = x; }); orders[si].show(orders[si].get().map(function(t){ return byT[t] || {ok: p.ok, pos: ""}; }), null); }
-          var line = '<div class="why ' + (p.ok ? "ok" : "no") + '"><span class="mark ' + (p.ok ? "ok" : "no") + '">' + (p.ok ? "✓" : "✗") + '</span> ';
-          if (!p.ok && sl.type === "pick") line += '<b>' + h(fmt(S.rightWas, {k: sl.opts[p.k]})) + '</b> ';
-          if (!p.ok && sl.type === "tap") line += '<b>' + h(S.phrasesRight) + ' ' + (p.k || []).map(function(k){ return (sl.phrases || [])[k]; }).join(" / ") + '</b> ';
-          if (p.why) line += h(S.whyLabel) + ' ' + h(p.why);
-          c.appendChild(el(line + '</div>'));
-        });
+    function filled(){ return slots.filter(function(sl, si){ return sl.type === "order" ? true : (sl.type === "tap" ? (ans[si] && ans[si].length === want(sl)) : ans[si] != null); }).length; }
+    function get(){ return slots.map(function(sl, si){ return sl.type === "order" ? orders[si].get() : ans[si]; }); }
+    function show(per, extra){
+      (per || []).forEach(function(p, si){
+        var c = q(list, '[data-s="' + si + '"]'), sl = slots[si]; if (!c || !sl) return;
+        c.classList.add(p.ok ? "ok" : "no");
+        if (sl.type === "pick"){ qa(c, ".opt").forEach(function(b, oi){ b.disabled = true; if (oi === p.k) b.classList.add("right"); else if (oi === ans[si]) b.classList.add("wrong"); }); }
+        else if (sl.type === "tap"){ qa(c, ".ph").forEach(function(s){ var k = +s.dataset.i; s.classList.add("done"); s.setAttribute("tabindex", "-1"); if ((p.k || []).indexOf(k) >= 0) s.classList.add("ok"); else if ((ans[si] || []).indexOf(k) >= 0) s.classList.add("no"); }); }
+        else if (sl.type === "order"){ orders[si].lock(); var byT = {}; (p.per || []).forEach(function(x){ byT[x.t] = x; }); orders[si].show(orders[si].get().map(function(t){ return byT[t] || {ok: p.ok, pos: ""}; }), null); }
+        var line = '<div class="why ' + (p.ok ? "ok" : "no") + '"><span class="mark ' + (p.ok ? "ok" : "no") + '">' + (p.ok ? "✓" : "✗") + '</span> ';
+        if (!p.ok && sl.type === "pick") line += '<b>' + h(fmt(S.rightWas, {k: sl.opts[p.k]})) + '</b> ';
+        if (!p.ok && sl.type === "tap") line += '<b>' + h(S.phrasesRight) + ' ' + (p.k || []).map(function(k){ return (sl.phrases || [])[k]; }).join(" / ") + '</b> ';
+        if (p.why) line += h(S.whyLabel) + ' ' + h(p.why);
+        c.appendChild(el(line + '</div>'));
+      });
+      if (extra) root.appendChild(el('<div class="model-wrap">' + modelPanel(extra, v.scheme) + '</div>'));
+    }
+    var onChange = function(){};
+    list.addEventListener("click", function(e){
+      var b = e.target.closest(".opt"); var s = e.target.closest(".ph");
+      if (b && !b.disabled){ var c = b.closest(".slotc"), si = +c.dataset.s; qa(c, ".opt").forEach(function(x){ x.setAttribute("aria-pressed", "false"); }); b.setAttribute("aria-pressed", "true"); ans[si] = +b.dataset.o; onChange(); }
+      if (s && !s.classList.contains("done")) pickPh(s);
+    });
+    list.addEventListener("keydown", function(e){ var s = e.target.closest(".ph"); if (s && !s.classList.contains("done") && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); pickPh(s); } });
+    function pickPh(s){
+      var c = s.closest(".slotc"), si = +c.dataset.s, k = +s.dataset.i, w = want(slots[si]);
+      var cur = (ans[si] || []).slice(), at = cur.indexOf(k);
+      if (at >= 0) cur.splice(at, 1); else { if (cur.length >= w) { var old = cur.shift(); var oe = q(c, '.ph[data-i="' + old + '"]'); if (oe) oe.setAttribute("aria-pressed", "false"); } cur.push(k); }
+      s.setAttribute("aria-pressed", at >= 0 ? "false" : "true"); ans[si] = cur; onChange();
+    }
+    return {need: slots.length, filled: filled, get: get, show: show, change: function(f){ onChange = f; }, isTen: isTen};
+  }
+  function builder(root, open, o){
+    var v = open.view, isTen = !!v.scheme;
+    root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? S.tenBuildIntro : S.buildIntro)) + '</p>'));
+    var panel = builderPanel(root, v, open);
+    var bar = checkBar(root, panel.need, {countText: function(n, m){ return n + " of " + m + " parts filled"; }, onCheck: function(btn){
+      mark(root, open, panel.get(), o, btn, function(r){
+        bar.done(); panel.show(r.per, null);
         var rc = resultCard(r, open, modelPanel(r.extra, v.scheme)); root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o);
         var again = q(rc, "#again"); if (again) again.textContent = S.again;
         rc.scrollIntoView({behavior: "smooth", block: "start"});
       });
     }});
-    bar.set(filled());
-    list.addEventListener("click", function(e){
-      var b = e.target.closest(".opt"); var s = e.target.closest(".ph");
-      if (b && !b.disabled){ var c = b.closest(".slotc"), si = +c.dataset.s; qa(c, ".opt").forEach(function(x){ x.setAttribute("aria-pressed", "false"); }); b.setAttribute("aria-pressed", "true"); ans[si] = +b.dataset.o; bar.set(filled()); }
-      if (s && !s.classList.contains("done")) pickPh(s);
+    panel.change(function(){ bar.set(panel.filled()); }); bar.set(panel.filled());
+  }
+  /* ---------- weekly mock: three builds (two five-mark, one ten-mark) checked together ---------- */
+  function weekly(root, open, o){
+    var builds = (open.view && open.view.builds) || [], panels = [], need = 0;
+    root.appendChild(el('<p class="intro">' + h(open.intro || S.weeklyLead) + '</p>'));
+    builds.forEach(function(v, i){
+      var sec = el('<section class="wk-part" data-b="' + i + '"><h2>' + h(fmt(S.weeklyPart, {n: i + 1})) + '</h2></section>'); root.appendChild(sec);
+      var p = builderPanel(sec, v, open); panels.push(p); need += p.need;
     });
-    list.addEventListener("keydown", function(e){ var s = e.target.closest(".ph"); if (s && !s.classList.contains("done") && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); pickPh(s); } });
-    function pickPh(s){
-      var c = s.closest(".slotc"), si = +c.dataset.s, k = +s.dataset.i, want = isTen ? 1 : 2;
-      var cur = (ans[si] || []).slice(), at = cur.indexOf(k);
-      if (at >= 0) cur.splice(at, 1); else { if (cur.length >= want) { var old = cur.shift(); var oe = q(c, '.ph[data-i="' + old + '"]'); if (oe) oe.setAttribute("aria-pressed", "false"); } cur.push(k); }
-      s.setAttribute("aria-pressed", at >= 0 ? "false" : "true"); ans[si] = cur; bar.set(filled());
-    }
+    function filled(){ return panels.reduce(function(t, p){ return t + p.filled(); }, 0); }
+    var bar = checkBar(root, need, {countText: function(n, m){ return n + " of " + m + " parts filled"; }, onCheck: function(btn){
+      mark(root, open, {builds: panels.map(function(p){ return p.get(); })}, o, btn, function(r){
+        bar.done();
+        panels.forEach(function(p, i){ p.show((r.per || [])[i], (r.extra && r.extra.builds || [])[i]); });
+        var rc = resultCard(r, open, ""); root.insertBefore(rc, bar.btn.parentNode);
+        var again = q(rc, "#again"); if (again) again.remove();
+        rc.scrollIntoView({behavior: "smooth", block: "start"});
+      });
+    }});
+    panels.forEach(function(p){ p.change(function(){ bar.set(filled()); }); }); bar.set(filled());
   }
 
   /* ---------- write (judged free text; model after the attempt) ---------- */
@@ -556,7 +584,7 @@ var Engine = (function(){
   }
 
   /* ---------- mount ---------- */
-  var FORMS = {mcq: mcq, bins: bins, match: match, tick: tick, scenes: mcq, branch: branch, order: order, tap: tap, builder: builder, write: write, cards: cards};
+  var FORMS = {mcq: mcq, bins: bins, match: match, tick: tick, scenes: mcq, branch: branch, order: order, tap: tap, builder: builder, weekly: weekly, write: write, cards: cards};
   function mount(root, open, o){
     root.innerHTML = "";
     if (open.form !== "write" && open.form !== "cards") root.appendChild(el('<div class="act-head"><div class="best">' + h(bestLine(open)) + '</div></div>'));

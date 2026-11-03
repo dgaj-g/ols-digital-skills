@@ -186,6 +186,18 @@ var App = (function(){
     if (!keys.length) return "";
     return '<section class="blk"><h2>' + h(S.learnTest) + '</h2><div class="row">' + keys.map(function(k){ var t = TESTS[k]; return '<a class="btn acc big" href="#' + h(k) + '">' + h(t.t) + '</a><span class="small mute">' + h(bestOf(t.act)) + '</span>'; }).join("") + '</div></section>';
   }
+  // Photos on the six agent pages and three culture pages (Wikimedia Commons; credits in img/CREDITS.md)
+  var HERO = {
+    "s3/family": {f: "agent-family.jpg", alt: "A family sitting together around a table sharing a meal.", cap: "A family meal: where much primary socialisation happens. Photo: National Cancer Institute, public domain, Wikimedia Commons.", w: 1200, h: 800},
+    "s3/education": {f: "agent-education.jpg", alt: "Pupils sitting at desks in a classroom during a lesson.", cap: "A lesson in progress. Photo: Zaqwsxcde123, CC BY-SA 3.0, Wikimedia Commons.", w: 1200, h: 675},
+    "s3/peers": {f: "agent-peers.jpg", alt: "A group of young people together at a festival.", cap: "Friends of the same age at a festival. Photo: Stig Nygaard, CC BY 2.0, Wikimedia Commons.", w: 1200, h: 800},
+    "s3/media": {f: "agent-media.jpg", alt: "Journalists at work in a newspaper office.", cap: "A newspaper office. Photo: Rob Hendriks, CC0, Wikimedia Commons.", w: 1200, h: 857},
+    "s3/religion": {f: "agent-religion.jpg", alt: "A congregation seated inside a chapel during a service.", cap: "A congregation at a service. Photo: Wilfredor, CC0, Wikimedia Commons.", w: 1200, h: 797},
+    "s3/workplace": {f: "agent-workplace.jpg", alt: "Workers at their stations on a factory floor.", cap: "Workers on a factory floor. Photo: YeraC, CC BY-SA 4.0, Wikimedia Commons.", w: 1200, h: 900},
+    "s2/material": {f: "culture-material.jpg", alt: "Household goods laid out for sale at a market stall.", cap: "Objects a society makes and uses: a market stall. Photo: Kolforn, CC BY-SA 4.0, Wikimedia Commons.", w: 1200, h: 900},
+    "s2/traditions": {f: "culture-tradition.jpg", alt: "A lion dance performed in a Paris street.", cap: "A tradition passed down the generations: a lion dance. Photo: Lasupremevie, CC BY-SA 4.0, Wikimedia Commons.", w: 1200, h: 800},
+    "s2/customs": {f: "culture-custom.jpg", alt: "Two women bowing to each other in Japan, about 1880.", cap: "A custom: bowing to greet, Japan around 1880. Photo: author unknown, public domain, Wikimedia Commons.", w: 831, h: 1200}
+  };
   function learn(route){
     var key = contentKey(route), page = C[key];
     if (!page) return go("home");
@@ -194,6 +206,7 @@ var App = (function(){
     var agent = page.agent ? AGENTS.filter(function(a){ return a.id === page.agent; })[0] : null;
     var html = '<h1>' + (agent ? '<img class="ico" src="' + h(emoji(agent.emoji)) + '" alt="" width="40" height="40"> ' : '') + h(page.title) + (page.new ? ' <span class="tag new">New</span>' : '') + '</h1>' + (page.lead ? '<p class="lead">' + h(page.lead) + '</p>' : '');
     if (page.new || (page.blocks || []).some(function(b){ return b.new || (b.new_items && b.new_items.length) || (b.new_p && b.new_p.length); })) html += '<p class="small mute">' + h(S.newNote) + '</p>';
+    var hero = HERO[route]; if (hero) html += '<figure class="hero"><img src="' + h(img(hero.f)) + '" alt="' + h(hero.alt) + '" width="' + hero.w + '" height="' + hero.h + '" loading="lazy"><figcaption class="cap">' + h(hero.cap) + '</figcaption></figure>';
     if (route === "s3") html += '<div class="agents">' + AGENTS.map(function(a){ return '<a class="tile" data-part="' + a.id + '" href="#s3/' + a.id + '"><img src="' + h(emoji(a.emoji)) + '" alt="" width="48" height="48"><span class="tt">' + h(a.t) + '</span></a>'; }).join("") + '</div>';
     html += blocks(page.blocks);
     if (page.check) html += '<section class="blk"><h2>' + h(S.learnSay) + '</h2><ul class="cklist">' + page.check.map(function(c){ return '<li><span class="mark ok" aria-hidden="true">✓</span> ' + h(c) + '</li>'; }).join("") + '</ul></section>';
@@ -269,7 +282,7 @@ var App = (function(){
     var a = mode === "write" ? writeAct : buildAct, box = body.querySelector("#act");
     var req = {act: a};
     var p = call("apiOpen", req);
-    if (mode === "write") p = p.then(function(r){ return call("apiWritten", {act: a}, {quiet: true}).then(function(w){ if (w && w.t){ r.view.prev = w; } return r; }, function(){ return r; }); });
+    if (mode === "write") p = p.then(function(r){ if (r.written && r.written.t){ r.view.prev = r.written; return r; } return call("apiWritten", {act: a}, {quiet: true}).then(function(w){ if (w && w.t){ r.view.prev = w; } return r; }, function(){ return r; }); });
     p.then(function(r){
       r.max = r.max || (ME.max || {})[a] || (part === "p6" ? 5 : 10); r.intro = r.intro || "";
       if (part === "p7"){ r.view.scheme = r.view.scheme || q.scheme; r.view.marks = r.view.marks || q.marks; r.view.hasItem = q.hasItem; r.view.q = r.view.q || q.q; }
@@ -320,7 +333,7 @@ var App = (function(){
     call("apiWeekly", {}).then(function(r){
       var box = body.querySelector("#act"); box.innerHTML = "";
       if (r.done != null) box.appendChild(el('<p class="say"><b>' + h(fmt(S.weeklyDone, {n: r.done})) + '</b></p>'));
-      Engine.mount(box, {act: "weekly", form: "builder", view: r.view, max: 20, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.tenBuildIntro}, {reopen: weekly});
+      Engine.mount(box, {act: "weekly", form: "weekly", view: r.view, max: r.max || 20, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.weeklyLead}, {reopen: weekly});
     }).catch(function(){});
   }
   // ---- Part 11: revision sheets (on screen, printable) ----

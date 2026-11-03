@@ -695,9 +695,9 @@ function apiPile_(req) {
   return withLock_(function () {
     var H = hdrOr_(x.slug, x.email);
     Object.keys(pile).slice(0, 60).forEach(function (t) {
-      var key = str_(t).slice(0, 40), at = TERM_AT_[key.toLowerCase()];
+      var key = str_(t).slice(0, 40), at = has_(TERM_AT_, key.toLowerCase()) ? TERM_AT_[key.toLowerCase()] : null;
       if (at != null) key = TERMS_[at];
-      else if (!TERMS_.length || Object.keys(H.pile).length >= 60) return; // only the cards' own terms when they are known
+      else if (TERMS_.length || Object.keys(H.pile).length >= 60) return; // only the cards' own terms when they are known; any 60 when not
       if (pile[t] == null) delete H.pile[key]; else H.pile[key] = pile[t] ? 1 : 0;
     });
     var fresh = settle_(H, false);

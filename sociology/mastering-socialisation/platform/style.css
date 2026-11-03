@@ -347,3 +347,16 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 @media (min-width:1000px){.tiles{grid-template-columns:repeat(4,1fr)}.bins{grid-template-columns:repeat(4,1fr)}.bins.two{grid-template-columns:repeat(2,1fr)}.hub{grid-template-columns:repeat(5,1fr)}.tray{max-height:38vh}}
 @media (max-width:599px){h1{font-size:30px}h2{font-size:22px}.top .brand{font-size:17px}.top .who{font-size:13px;gap:6px}.top .who .pts{display:none}.wrap{padding:14px 16px 60px}.card{padding:14px}.q{padding:14px}.bn .btn{min-width:0;flex:1}.tray{max-height:40vh}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.fc{transition:none}}
+
+/* ---- late additions (app.js / staff.js) ---- */
+h1 .ico{vertical-align:middle;margin-right:.25rem}
+.link{color:var(--acc,#0E8C7F);text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:0;font:inherit;padding:0}
+.link:hover{text-decoration-thickness:2px}
+.who .nm{font-weight:700}
+.guard{display:grid;place-items:center;min-height:50vh}
+.guard .card{max-width:34rem;text-align:center;font-size:1.1rem}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center;margin:1rem 0}
+.hero img{width:100%;height:auto;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.hero .cap{font-size:.8rem;color:var(--mute,#5a6470)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}}
+@media print{.no-print,.top,.rainbow,.crumb,.stage,.bn,.ft,#sys,#toast,.savebar{display:none!important}}
