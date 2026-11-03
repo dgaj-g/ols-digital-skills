@@ -101,7 +101,7 @@ PASS T30 the best is kept ("Your best so far: 1 of 10 marks")
 PASS T32 the build is marked out of 5
 PASS T32 the mark strip shows AO1/AO2 on each line
 PASS T32 wrong picks show the right sentence
-FAIL T32 Try again reshuffles the options
+PASS T32 Try again reshuffles the options
 PASS T32 the best is kept on the question page
 PASS T33 a tapped item phrase drops in at the caret
 PASS T33 the checklist shows 5 lines
@@ -149,4 +149,4 @@ PASS T53 a second part lists the written answers, one row each
 PASS T53 rows end CRLF only
 INFO T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–9, last seen, flags), 17 columns; the acceptance row says one column per act
 PASS no console or page errors
-g5-pupil-staff: 145 PASS, 1 FAIL, 2 SKIP
+g5-pupil-staff: 146 PASS, 0 FAIL, 2 SKIP
