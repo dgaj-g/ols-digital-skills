@@ -3,11 +3,12 @@ var Staff = (function(){
   var T, S, ME, PASS = "", CL = [], CUR = "", ROLE = "";
   function h(s){ return T.h(s); }
   function el(html){ return T.el(html); }
+  function row(html){ var t = document.createElement("table"); t.innerHTML = "<tbody>" + html + "</tbody>"; return t.querySelector("tr"); }
   function api(op, more, opt){ return T.call("apiStaff", Object.assign({op: op, pass: PASS}, more || {}), opt || {}); }
   function start(me, t){ T = t; S = t.S; ME = me; check(""); }
   function check(pass){
     PASS = pass;
-    api("check", {}, {quiet: true}).then(function(r){ ROLE = r.role || "teacher"; CL = r.classes || []; tabs("classes"); }).catch(function(e){ door(e.code === "bad-pass" && pass ? S.staffWrong : ""); });
+    api("check", {}, {quiet: true}).then(function(r){ if (!r.admitted) return door(pass ? S.staffWrong : ""); ROLE = r.role || "teacher"; CL = r.classes || []; tabs("classes"); }).catch(function(e){ if (!e || !e.code) { try { console.error("staff page", e); } catch (x) {} } door(e && e.code === "bad-pass" && pass ? S.staffWrong : ""); });
   }
   function door(err){
     var b = el('<div class="door"><div class="card acc"><h2>' + h(S.staffDoor) + '</h2><p>' + h(S.staffDoorSub) + '</p><div class="row"><input id="pw" type="password" autocomplete="current-password" aria-label="Staff passcode"><button class="btn acc" id="in">' + h(S.staffIn) + '</button></div><p class="small mute" id="pwErr">' + h(err || "") + '</p><p><a class="link" href="#home">' + h(S.staffPupilView) + '</a></p></div></div>');
@@ -56,7 +57,8 @@ var Staff = (function(){
     var tb = tbl.querySelector("tbody");
     if (!CL.length) box.appendChild(el('<p class="say">' + h(S.staffNoClass) + '</p>'));
     CL.forEach(function(c){
-      var tr = el('<tr><td><b>' + h(c.name) + '</b><br><span class="small mute">' + h(c.slug) + (c.o ? '' : ' · ' + h(S.staffNotOwner)) + '</span></td><td>' + h(c.n || 0) + '</td><td><button class="btn sm ghost lb">' + h(c.lb ? S.staffLbOn : S.staffLbOff) + '</button></td><td><button class="btn sm cp">' + h(S.staffCopy) + '</button></td><td>' + (c.o ? '<button class="btn sm ghost del">' + h(S.staffDelete) + '</button>' : '') + '</td></tr>');
+      var mayDel = c.mine || ROLE === "owner" || ROLE === "hod";
+      var tr = row('<tr><td><b>' + h(c.name) + '</b><br><span class="small mute">' + h(c.slug) + (c.mine ? '' : ' · ' + h(S.staffNotOwner) + (c.on ? ' (' + h(c.on) + ')' : '')) + '</span></td><td>' + h(c.n || 0) + '</td><td><button class="btn sm ghost lb">' + h(c.lb ? S.staffLbOn : S.staffLbOff) + '</button></td><td><button class="btn sm cp">' + h(S.staffCopy) + '</button></td><td>' + (mayDel ? '<button class="btn sm ghost del">' + h(S.staffDelete) + '</button>' : '') + '</td></tr>');
       tr.querySelector(".cp").onclick = function(){ copyLink(c.slug, tr.querySelector(".cp")); };
       tr.querySelector(".lb").onclick = function(){ api("lb", {slug: c.slug, lb: c.lb ? 0 : 1}, {save: true}).then(function(){ c.lb = c.lb ? 0 : 1; tr.querySelector(".lb").textContent = c.lb ? S.staffLbOn : S.staffLbOff; T.toast(S.saved); }).catch(function(){}); };
       var del = tr.querySelector(".del"); if (del) twoPress(del, S.staffDeleteSure, function(){ api("delete", {slug: c.slug}, {save: true}).then(function(){ CL = CL.filter(function(x){ return x.slug !== c.slug; }); tabs("classes"); T.toast(S.staffDeleted); }).catch(function(){}); });
@@ -66,7 +68,7 @@ var Staff = (function(){
     var mk = el('<div class="card"><h3>' + h(S.staffNew) + '</h3><div class="row"><input id="cn" maxlength="40" aria-label="Class name" placeholder="' + h(S.staffNewEg) + '"><button class="btn acc" id="mkb">' + h(S.staffCreate) + '</button></div><p class="small mute" id="mkErr"></p></div>');
     box.appendChild(mk);
     var inp = mk.querySelector("#cn"), err = mk.querySelector("#mkErr");
-    function create(){ var name = inp.value.trim(); if (!name) return; api("create", {name: name}, {save: true, btn: mk.querySelector("#mkb")}).then(function(r){ CL.push({slug: r.slug, name: name, o: 1, on: 1, lb: 1, lock: [], n: 0}); tabs("classes"); T.toast(S.staffCreated); }).catch(function(e){ err.textContent = e.code === "taken" ? S.staffTaken : e.code === "bad-name" ? S.staffBadName : S.serverErr; }); }
+    function create(){ var name = inp.value.trim(); if (!name) return; api("create", {name: name}, {save: true, btn: mk.querySelector("#mkb")}).then(function(r){ CL.push({slug: r.slug, name: name, o: ME.email, on: ME.name || "", mine: true, lb: 1, lock: [], n: 0}); tabs("classes"); T.toast(S.staffCreated); }).catch(function(e){ err.textContent = e.code === "taken" ? S.staffTaken : e.code === "bad-name" ? S.staffBadName : S.serverErr; }); }
     mk.querySelector("#mkb").onclick = create; inp.onkeydown = function(e){ if (e.key === "Enter") create(); };
   }
   function parts(box){
@@ -98,7 +100,7 @@ var Staff = (function(){
         var tbl = el('<div class="tw"><table aria-label="' + h(S.trackerHead) + '"><thead><tr><th>Pupil</th><th>Points</th><th>Badges</th><th>Streak</th>' + T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ return '<th>' + P.n + '</th>'; }).join("") + '<th>Last seen</th></tr></thead><tbody></tbody></table></div>');
         var tb = tbl.querySelector("tbody");
         rows.forEach(function(p){
-          var tr = el('<tr><td><a class="link" href="#">' + h(p.n || p.email) + '</a><br><span class="small mute">' + h(p.email) + '</span>' + (p.flags || []).map(function(f){ return '<br><span class="flag">' + h(f) + '</span>'; }).join("") + '</td><td>' + h(p.pts || 0) + '</td><td>' + h(p.bd != null ? p.bd : 0) + '</td><td>' + h(p.st || 0) + '</td>' +
+          var tr = row('<tr><td><a class="link" href="#">' + h(p.n || p.email) + '</a><br><span class="small mute">' + h(p.email) + '</span>' + (p.flags || []).map(function(f){ return '<br><span class="flag">' + h(f) + '</span>'; }).join("") + '</td><td>' + h(p.pts || 0) + '</td><td>' + h(p.bd != null ? p.bd : 0) + '</td><td>' + h(p.st || 0) + '</td>' +
             T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ var x = (p.parts || {})[P.id] || [0, 0]; return '<td>' + h(x[0]) + '/' + h(x[1]) + '</td>'; }).join("") + '<td>' + h(p.last || "") + '</td></tr>');
           tr.querySelector("a").onclick = function(e){ e.preventDefault(); pupil(box, slug, p); };
           tb.appendChild(tr);

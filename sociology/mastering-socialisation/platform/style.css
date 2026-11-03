@@ -118,8 +118,8 @@ input:focus,textarea:focus,button:focus-visible,[tabindex]:focus-visible{outline
 .tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--acc)}
 .tile:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
 .tile .tn{font-size:13px;font-weight:700;color:var(--accd);text-transform:uppercase;letter-spacing:.05em;margin-left:6px}
-.tile .tt{font-family:var(--disp);font-weight:700;font-size:20px;margin:2px 0 6px 6px;line-height:1.15}
-.tile .tl{font-size:14px;color:var(--mute);margin-left:6px;min-height:2.6em}
+.tile .tt{display:block;font-family:var(--disp);font-weight:700;font-size:20px;margin:2px 0 6px 6px;line-height:1.15;padding-right:50px}
+.tile .tl{display:block;font-size:14px;color:var(--mute);margin-left:6px;min-height:2.6em}
 .tile .ring{position:absolute;right:12px;top:12px;width:44px;height:44px}
 .tile .ring svg{width:44px;height:44px;transform:rotate(-90deg)}
 .tile .ring .bg{fill:none;stroke:var(--line);stroke-width:5}
@@ -217,7 +217,7 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .mrow{background:#fff;border:2px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);padding:12px;display:grid;grid-template-columns:1fr;gap:10px;align-items:center}
 .mrow .mt{font-size:15px}
 .mrow .slot{min-height:46px;border:2px dashed var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:6px;color:var(--mute);font-size:14px;transition:background .15s}
-.mrow .slot.over{background:var(--acc-soft)}
+.mrow .slot.over,.mrow.over .slot{background:var(--acc-soft)}
 .mrow .slot .dcard{width:100%;text-align:center;font-weight:600;cursor:grab}
 .mrow .slot.ok{border-color:var(--ok);background:var(--ok-soft)}
 .mrow .slot.no{border-color:var(--bad);background:var(--bad-soft)}

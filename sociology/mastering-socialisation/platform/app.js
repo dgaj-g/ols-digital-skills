@@ -99,7 +99,7 @@ var App = (function(){
   function paintWho(){
     var w = document.getElementById("who"); if (!w || !ME) return;
     var H = ME.hdr || {}, st = H.st || {};
-    w.innerHTML = '<span class="nm">' + h(ME.name || "") + '</span><span class="pts">' + h(H.pts === 1 ? S.pts1 : fmt(S.pts, {n: H.pts || 0})) + '</span>' +
+    w.innerHTML = '<span class="nm">' + h(ME.name ? fmt(S.hi, {name: ME.name}) : "") + '</span><span class="pts">' + h(H.pts === 1 ? S.pts1 : fmt(S.pts, {n: H.pts || 0})) + '</span>' +
       (st.n > 0 ? '<span class="stk"><span class="fl" aria-hidden="true">🔥</span>' + h(st.n === 1 ? S.streak1 : fmt(S.streak, {n: st.n})) + '</span>' : '') +
       (ME.staff ? '<a class="staff link" href="#staff">Staff</a>' : '');
   }
@@ -362,7 +362,8 @@ var App = (function(){
   function route(r){
     r = r || "home"; CUR = r; try { sessionStorage.setItem("soc-route", r); } catch (x) {}
     if (!ME) return boot();
-    if (r === "staff"){ if (ME.staff && window.Staff) return Staff.start(ME, T); return go("home"); }
+    if (!ME.cls){ if (window.Staff){ CUR = "staff"; return Staff.start(ME, T); } return guard(S.noClass); }
+    if (r === "staff"){ if (window.Staff) return Staff.start(ME, T); return go("home"); }
     if (!ME.named) return nameScreen();
     if (r === "home") return home();
     if (TESTS[r]) return act(r);
@@ -378,11 +379,14 @@ var App = (function(){
     go("home");
   }
   var T = {S: S, fmt: fmt, h: h, el: el, call: call, toast: toast, img: img, emoji: emoji, hdr: hdr, marked: marked, boot: BOOT, me: function(){ return ME; }, go: go, frame: frame, bare: bare, guard: guard, wire: wire, home: function(){ go("home"); }, reboot: reboot, PARTS: PARTS};
+  var BOOTED = false;
   function boot(){
-    if (!BOOT.cls) return guard(S.noClass);
+    if (BOOTED) return; BOOTED = true;
     guard(S.signing);
     call("apiBoot", {}).then(function(r){
       ME = flatMax(r); Engine.init(T);
+      // a link with no class on it is the staff page (the door, or straight in for staff), as on the S1 Unit 1 shell
+      if (!r.cls){ if (window.Staff){ CUR = "staff"; return Staff.start(r, T); } return guard(S.noClass); }
       var start = location.hash.slice(1); if (!start){ try { start = sessionStorage.getItem("soc-route") || ""; } catch (x) {} }
       if (r.staff && (!start || start === "staff" || start === "home") && window.Staff){ CUR = "staff"; return Staff.start(r, T); }
       if (!r.named) return nameScreen();
@@ -390,9 +394,10 @@ var App = (function(){
       if (!pingT) pingT = setInterval(function(){ if (document.visibilityState === "visible" && Date.now() - used < 120000) call("apiPing", {}, {quiet: true}).catch(function(){}); }, 60000);
       if (BOOT.sit && window.Sit) Sit.run(T);
     }).catch(function(e){
+      BOOTED = false;
       if (e.code === "domain") guard(S.domain); else if (e.code === "unknown-class") guard(S.noClass); else if (e.code === "not-signed-in") guard(S.expired); else if (e.code !== "offline") guard(S.serverErr);
     });
   }
-  document.addEventListener("DOMContentLoaded", boot);
+  // the built page calls App.boot() on DOMContentLoaded (tools/build-server.js); no second listener here
   return {T: T, go: go, boot: boot, route: route};
 })();

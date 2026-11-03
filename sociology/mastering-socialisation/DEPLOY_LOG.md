@@ -10,7 +10,7 @@ folder is served directly by GitHub Pages except `img/` (photos and OpenMoji ico
    `Code.gs` and `Index.html`, set `appsscript.json` from `server/appsscript.json`, deploy as a web app:
    Execute as **User accessing the web app**, Who has access **Anyone within c2ken.net**.
 3. Put the `/exec` URL in `DESIGN/deploy/EXEC_URL.txt`; class links are `<exec>?class=<slug>` (made on the staff page).
-4. Staff passcode: `DESIGN/STAFF_PASSCODE.txt` (line 2). Teachers on `DESIGN/TEACHERS.txt` go straight in.
+4. Staff passcode: `DESIGN/STAFF_PASSCODE.txt` (the first non-empty line after the heading line). Teachers on `DESIGN/TEACHERS.txt` go straight in.
 
 ## Versions
 | Version | Date | Build token | What changed |

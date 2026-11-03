@@ -309,11 +309,12 @@ var Engine = (function(){
       slot.textContent = ""; slot.appendChild(card); card.setAttribute("aria-pressed", "false"); sel = null; count();
     }
     function toTray(card){ var slot = card.closest(".slot"); q(tray, "#tin").appendChild(card); if (slot && !q(slot, ".dcard")) slot.textContent = S.drop; card.setAttribute("aria-pressed", "false"); sel = null; count(); }
-    drag(root, {cardSel: ".dcard", targetSel: ".slot, .tray", canDrag: function(){ return !done; },
+    function slotOf(tg){ return tg.classList.contains("mrow") ? q(tg, ".slot") : tg; }
+    drag(root, {cardSel: ".dcard", targetSel: ".mrow, .tray", canDrag: function(){ return !done; },
       onStart: function(card){ var slot = card.closest(".slot"); if (slot) slot.dataset.from = "1"; },
-      onDrop: function(card, tg){ var from = card.closest(".slot"); if (tg.classList.contains("tray")) toTray(card); else { place(card, tg); } if (from && from !== tg && !q(from, ".dcard")) from.textContent = S.drop; },
+      onDrop: function(card, tg){ tg = slotOf(tg); var from = card.closest(".slot"); if (tg.classList.contains("tray")) toTray(card); else { place(card, tg); } if (from && from !== tg && !q(from, ".dcard")) from.textContent = S.drop; },
       onTap: function(card){ if (done) return; var on = card.getAttribute("aria-pressed") === "true"; qa(root, ".dcard").forEach(function(c){ c.setAttribute("aria-pressed", "false"); }); if (!on){ card.setAttribute("aria-pressed", "true"); sel = card; } else sel = null; },
-      onTapTarget: function(tg){ if (done || !sel) return; var from = sel.closest(".slot"); if (tg.classList.contains("tray")) toTray(sel); else place(sel, tg); if (from && from !== tg && !q(from, ".dcard")) from.textContent = S.drop; }
+      onTapTarget: function(tg){ if (done || !sel) return; tg = slotOf(tg); var from = sel.closest(".slot"); if (tg.classList.contains("tray")) toTray(sel); else place(sel, tg); if (from && from !== tg && !q(from, ".dcard")) from.textContent = S.drop; }
     });
     var bar = checkBar(root, n, {onCheck: function(btn){
       var ans = v.cards.map(function(c){ var e = q(list, '.mrow[data-i="' + c.i + '"] .slot .dcard'); return e ? e.dataset.chip : null; });
@@ -532,7 +533,7 @@ var Engine = (function(){
     function ckl(lines){ return '<ul class="ckl">' + lines.map(function(l){ return '<li><span class="st ' + (l.ok ? "ok" : "no") + '">' + h(l.ok ? S.found : S.missing) + '</span> <b>' + h(l.t) + '</b>' + (l.why ? '<br><span class="small mute">' + h(l.why) + '</span>' : '') + '</li>'; }).join("") + '</ul>'; }
     function show(r, hadBefore){
       out.innerHTML = "";
-      var html = '<div class="res' + (r.n >= r.max ? " full" : "") + '" role="status"><div class="score">' + h(fmt(S.result, {n: r.n, m: r.max})) + '</div><p class="line">' + h(S.checklistHead) + '</p>';
+      var html = '<div class="res' + (r.n >= r.max ? " full" : "") + '" role="status"><div class="score">' + h(fmt(S.writeResult, {n: r.n, m: r.max})) + '</div><p class="line">' + h(S.checklistHead) + '</p>';
       if (r.lines) html += ckl(r.lines);
       if (r.paras) html += r.paras.map(function(p, i){ return '<h4>' + h(two ? (i ? S.para2 : S.para1) : S.questionHead) + '</h4>' + ckl(p.lines); }).join("");
       if (r.notes && r.notes.length) html += '<ul class="notes">' + r.notes.map(function(n){ return '<li>' + h(n) + '</li>'; }).join("") + '</ul>';
