@@ -1,0 +1,59 @@
+{
+  "route": "s1/primary",
+  "part": "p1",
+  "title": "Primary socialisation",
+  "lead": "Primary socialisation is the first stage of learning your culture, and it happens mostly in the family.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Primary socialisation is the first stage of learning culture, usually through parents or carers. Children learn language, norms and values through observation, imitation, praise and correction.",
+        "In plain words, it is how a young child first learns to talk, to behave and to get along, mostly from the people who bring them up."
+      ]
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "In Parsons’ three stages, primary socialisation comes first. The child learns from their family in the home. They adopt the beliefs and values of the family and learn the expectations which the parents have for them. This is the first stage of a life long process."
+      ],
+      "list": [
+        "Who: parents or carers, which makes the family the main agent.",
+        "When: in the earliest years of life, roughly ages 0 to 4, and it begins from the moment of birth.",
+        "How: through observation, imitation, praise and correction."
+      ]
+    },
+    {
+      "h": "Examples and writers",
+      "p": [
+        "A parent who praises a child for sharing, or who removes a privilege after repeated unkindness, is encouraging the child to follow expected behaviour.",
+        "Teaching greetings, learning to say “please” and taking turns when speaking are everyday examples of norms that children learn in the family."
+      ],
+      "writers": [
+        {
+          "name": "Parsons",
+          "says": "Described socialisation in three stages: primary, secondary and tertiary. Primary is the first stage and takes place in the family. He saw unusual or strange behaviour as evidence of poor family socialisation."
+        },
+        {
+          "name": "Giddens (2006)",
+          "says": "Said that socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation."
+        }
+      ]
+    },
+    {
+      "h": "In real life now",
+      "new": true,
+      "p": [
+        "Here are three ways primary socialisation can look in 2026."
+      ],
+      "list": [
+        "A three-year-old learns to say please and thank you at the dinner table because their parents praise them when they remember and correct them when they forget.",
+        "A toddler copies a parent saying hello to grandparents on a video call, and learns how to greet family members.",
+        "A parent has a rule that tablets are put away at bedtime and takes the tablet away for the evening when the rule is broken, which teaches a norm through a sanction."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s1/primary/test",
+    "label": "Take the primary socialisation mini-test"
+  }
+}

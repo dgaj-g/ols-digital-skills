@@ -1,0 +1,3 @@
+SKIP d10-06 single paragraph (3+2+2+2+1 scheme marks the whole answer)
+PASS 163 control runs, 0 failed, 26 five-mark + 7 ten-mark questions
+g1: PASS (exit 0)

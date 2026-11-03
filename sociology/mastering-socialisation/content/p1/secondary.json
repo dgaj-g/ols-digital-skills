@@ -1,0 +1,60 @@
+{
+  "route": "s1/secondary",
+  "part": "p1",
+  "title": "Secondary socialisation",
+  "lead": "Secondary socialisation is the continuing learning that happens outside the home, through agents such as education, peers, the media and religious organisations.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Secondary socialisation is the continuing process of learning norms, values and roles beyond the earliest learning in the family. Agents include education, peers, media and workplaces.",
+        "In plain words, it is what you learn about wider society once you are out in the world beyond your family."
+      ]
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "In Parsons’ three stages, secondary socialisation comes second. The child learns what wider society expects of its members, and this generally takes place outside the home.",
+        "Parsons’ third stage is tertiary socialisation. This is adult socialisation and takes place when people need to adapt to new situations such as becoming a parent, changing jobs, coping with illness or death. Some textbooks call the workplace a secondary agent; your course treats adult socialisation as a third stage, tertiary socialisation."
+      ],
+      "list": [
+        "Who: agents outside the family, such as friendship groups, education, mass media and religious organisations.",
+        "When: after primary socialisation, for example when children start school, meet new people and develop peer groups.",
+        "How: by learning the norms, values and roles that each agent expects, including the hidden curriculum at school, such as punctuality and respect for authority."
+      ]
+    },
+    {
+      "h": "Examples and writers",
+      "p": [
+        "A school teaches pupils to be on time and to respect authority, which are part of the hidden curriculum.",
+        "Media can convey messages about the behaviour and roles expected of boys and girls, and other agents can challenge those messages. A girls’ football team, for example, may challenge the idea that sport is mainly for boys."
+      ],
+      "writers": [
+        {
+          "name": "Parsons",
+          "says": "Described three stages of socialisation. Secondary is the second stage: the child learns what wider society expects of its members, mostly outside the home."
+        },
+        {
+          "name": "Giddens (2006)",
+          "says": "Said that socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation."
+        }
+      ]
+    },
+    {
+      "h": "In real life now",
+      "new": true,
+      "p": [
+        "Here are three ways secondary socialisation can look in 2026."
+      ],
+      "list": [
+        "A sixth-form student learns how sixth form works, including free periods, private study and the expectation that students manage their own time.",
+        "A group chat teaches what is acceptable to post and how quickly people are expected to reply, because friends react when someone breaks the unwritten rules.",
+        "Joining a school football team teaches a pupil the roles of captain, player and substitute, and what each one is expected to do."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s1/secondary/test",
+    "label": "Take the secondary socialisation mini-test"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "route": "s1/informal",
+  "part": "p1",
+  "title": "Informal socialisation",
+  "lead": "Informal socialisation is learning what is acceptable by watching and learning from the people around you, without anyone formally teaching you.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Informal socialisation is the process where people learn to fit into their culture by watching and learning from others around them. People learn what is seen as acceptable behaviour and their own place in their society.",
+        "In plain words, you pick it up from the people around you instead of being taught the rules. The slides describe it as unintentional and less obvious than formal socialisation, perhaps through casual observation of others."
+      ]
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "Informal social control works through everyday reactions, such as praise, disapproval or a joke, rather than through official rules and penalties."
+      ],
+      "list": [
+        "Who: family members, friends, classmates and colleagues, in fact anyone you spend time around.",
+        "When: all through life, in everyday settings.",
+        "How: by watching, copying and noticing how others react, using imitation, role models and copycat behaviour, and informal sanctions such as friends’ disapproval."
+      ]
+    },
+    {
+      "h": "Examples and writers",
+      "p": [
+        "Praise or disapproval from classmates is informal control. Peer reactions, including in a group chat, can influence whether behaviour is repeated.",
+        "Queuing for a bus and good table manners are norms that people often learn by watching others. At work, canteen culture is informal: new staff learn how things are done by watching their colleagues."
+      ],
+      "writers": [
+        {
+          "name": "Parsons",
+          "says": "Described three stages of socialisation: primary, secondary and tertiary. Informal socialisation is one of the processes by which people learn during those stages."
+        },
+        {
+          "name": "Giddens (2006)",
+          "says": "Said that socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation."
+        }
+      ]
+    },
+    {
+      "h": "In real life now",
+      "new": true,
+      "p": [
+        "Here are three ways informal socialisation can look in 2026."
+      ],
+      "list": [
+        "A group chat teaches what is acceptable to post, because friends react with emojis, silence or a joke when someone steps outside the unwritten rules.",
+        "A new sixth-form student learns where to sit and how to talk to teachers by watching older students.",
+        "A trainee in a part-time job picks up how things are really done on the shop floor by watching colleagues."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s1/informal/test",
+    "label": "Take the informal socialisation mini-test"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "terms": [
+    {
+      "term": "culture",
+      "def": "Culture is the learned and socially constructed way of life of a group, including norms, values, beliefs and traditions. It contains material objects and non-material ideas and can change over time.",
+      "exam": "Open with “the learned and socially constructed way of life of a group”, then name norms, values, beliefs and traditions.",
+      "eg": "A family continues to celebrate Eid or Diwali while also taking part in other local celebrations.",
+      "mistake": "Writing that culture is only the art, music or food of a country, when it is a whole way of life."
+    },
+    {
+      "term": "socialisation",
+      "def": "Socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation (Giddens, 2006). It begins from the moment of birth and extends to the point of death.",
+      "exam": "Open with Giddens: humans learn and internalise their culture’s norms and values.",
+      "eg": "A parent teaches a child to say please.",
+      "mistake": "Writing that socialisation only happens in childhood, when it carries on throughout life."
+    },
+    {
+      "term": "identity",
+      "def": "Identity is a person’s sense of who they are, shaped by the groups, roles and culture they learn through socialisation.",
+      "exam": "Open with a person’s sense of who they are, then say how socialisation shapes it.",
+      "eg": "Combining family traditions with friends’ music or fashion can give a young person a hybrid identity.",
+      "mistake": "Writing that identity is fixed at birth, when socialisation shapes it and people can combine more than one influence.",
+      "new": true
+    },
+    {
+      "term": "norms",
+      "def": "Norms are social rules and expectations about how people should behave. They are learned through socialisation and can vary between cultures or change over time.",
+      "exam": "Open with “social rules and expectations about how people should behave”, then say they are learned and can change.",
+      "eg": "Queuing for a bus and good table manners are norms that children learn in the family.",
+      "mistake": "Writing that norms are the same in every culture, when they can vary or change over time."
+    },
+    {
+      "term": "values",
+      "def": "Values are shared ideas about what a group considers important, desirable or morally right. They guide behaviour and can underpin norms.",
+      "exam": "Open with “shared ideas about what a group considers important, desirable or morally right”, then link them to norms.",
+      "eg": "Inclusion is a value, so praising pupils who help a newcomer encourages a norm of helpful behaviour.",
+      "mistake": "Mixing up values and norms: a value is what matters, such as inclusion, while a norm is the rule for behaviour."
+    },
+    {
+      "term": "roles",
+      "def": "A role is the set of behaviours expected of a person in a particular position, such as pupil, parent or team captain.",
+      "exam": "Open with the behaviour expected of a person in a particular position, then say it is learned.",
+      "eg": "Children may get different messages about toys or activities, which teaches them gender roles.",
+      "mistake": "Mixing up role and status: status is the position itself, while the role is the behaviour expected in that position.",
+      "new": true
+    },
+    {
+      "term": "status",
+      "def": "Status is a person’s social position or standing. It can be ascribed, such as age, or achieved, such as becoming a team captain, and may bring influence and expectations.",
+      "exam": "Open with “a person’s social position or standing”, then give one ascribed and one achieved example.",
+      "eg": "Age is an ascribed status, and becoming a team captain is an achieved status.",
+      "mistake": "Writing that status only means being rich or famous, when it can be ascribed or achieved."
+    },
+    {
+      "term": "beliefs",
+      "def": "Beliefs are ideas people accept as true about the world. They are learned through experience and socialisation and may differ within one society.",
+      "exam": "Open with “ideas people accept as true about the world”, then say they are learned and can differ.",
+      "eg": "One student trusts qualifications to get a good job, while another trusts practical experience.",
+      "mistake": "Mixing up beliefs and values: a belief is what you accept as true, while a value is what matters, such as valuing education."
+    },
+    {
+      "term": "customs",
+      "def": "A custom is a usual way of behaving in a particular group or setting. Customs are learned through socialisation, they can differ between groups and they can change over time.",
+      "exam": "Open with “a usual way of behaving in a particular group or setting”, then say a custom passed between generations is a tradition.",
+      "eg": "A family that always eats a meal together on Sundays.",
+      "mistake": "Treating customs and traditions as exactly the same, when a tradition is passed between generations.",
+      "new": true
+    },
+    {
+      "term": "traditions",
+      "def": "A tradition is a custom, belief or practice passed between generations. It can create continuity and group identity, while adapting over time.",
+      "exam": "Open with “a custom, belief or practice passed between generations”, then say what it creates for the group.",
+      "eg": "Morris dancers with bells and handkerchiefs link a current performance to earlier ones.",
+      "mistake": "Writing that traditions never change, when they can adapt over time."
+    },
+    {
+      "term": "formal sanctions",
+      "def": "Formal sanctions are rewards or punishments given by an organisation with written rules, such as a school, an employer or a court. A school detention is an example.",
+      "exam": "Open with rewards or punishments given by an organisation with written rules, then name the organisation.",
+      "eg": "A school gives a detention to a pupil who breaks the anti-bullying rule.",
+      "mistake": "Writing that sanctions are only punishments, when positive sanctions reward approved behaviour.",
+      "new": true
+    },
+    {
+      "term": "informal sanctions",
+      "def": "Informal sanctions are everyday reactions from other people, such as praise or disapproval, that encourage conformity to norms.",
+      "exam": "Open with everyday reactions such as praise or disapproval, then say they encourage conformity to norms.",
+      "eg": "Friends show disapproval of someone’s behaviour, or classmates praise it.",
+      "mistake": "Writing that informal sanctions are not real sanctions, when peer reactions can influence whether behaviour is repeated.",
+      "new": true
+    },
+    {
+      "term": "social control",
+      "def": "Social control means the ways groups encourage conformity to norms and discourage unacceptable behaviour. It can be formal through official rules and penalties, or informal through everyday reactions.",
+      "exam": "Open with “the ways groups encourage conformity to norms and discourage unacceptable behaviour”, then say whether it is formal or informal.",
+      "eg": "An anti-bullying rule backed by detention is formal control, while classmates’ praise or disapproval is informal control.",
+      "mistake": "Writing that social control is only done through official rules and penalties, when it can also be informal."
+    },
+    {
+      "term": "primary socialisation",
+      "def": "Primary socialisation is the first stage of learning culture, usually through parents or carers. Children learn language, norms and values through observation, imitation, praise and correction.",
+      "exam": "Open with “the first stage of learning culture, usually through parents or carers”, then say what children learn.",
+      "eg": "A parent praises a child for sharing, or removes a privilege after repeated unkindness.",
+      "mistake": "Writing that primary socialisation takes place at school, when it takes place mainly in the family."
+    },
+    {
+      "term": "secondary socialisation",
+      "def": "Secondary socialisation is the continuing process of learning norms, values and roles beyond the earliest learning in the family. Agents include education, peers, media and workplaces.",
+      "exam": "Open with “the continuing process of learning norms, values and roles beyond the earliest learning in the family”, then name an agent.",
+      "eg": "A girls’ football team may challenge the idea that sport is mainly for boys.",
+      "mistake": "Writing that secondary socialisation replaces the family, when it carries on the learning beyond the family."
+    },
+    {
+      "term": "agents of socialisation",
+      "def": "Agents of socialisation are people, groups and institutions through which individuals learn culture, norms and values. The family is an early agent; schools, peers and media also influence people.",
+      "exam": "Open with “people, groups and institutions through which individuals learn culture, norms and values”, then name two agents.",
+      "eg": "Pupils may learn at school that expectations vary between settings, such as speaking up or working independently.",
+      "mistake": "Listing agents without saying what each one teaches, when each agent should be linked to a norm or value it passes on."
+    },
+    {
+      "term": "resocialisation",
+      "def": "Resocialisation is learning a new set of norms and values to replace earlier ones, usually after a major change in a person’s life.",
+      "exam": "Open with learning new norms and values to replace earlier ones, then name the life change.",
+      "eg": "A person coping with a major change, such as illness or moving to a new country, has to learn new expectations.",
+      "mistake": "Mixing up resocialisation with primary socialisation, when resocialisation happens later in life, after earlier learning.",
+      "new": true
+    }
+  ]
+}

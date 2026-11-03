@@ -1,0 +1,59 @@
+{
+  "route": "s1/formal",
+  "part": "p1",
+  "title": "Formal socialisation",
+  "lead": "Formal socialisation is learning rules that are taught on purpose, usually by an organisation with written rules such as a school, an employer or a court.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Formal socialisation is the process where people are deliberately and consciously manipulated to ensure they learn to follow certain rules.",
+        "In plain words, the rules are taught on purpose and you are expected to learn them."
+      ]
+    },
+    {
+      "h": "How it works",
+      "p": [
+        "The slides describe formal processes as deliberate: you must learn these rules and they are consciously taught. The word manipulated in the definition fits the way of learning that the slides call manipulation, which includes sanctions and expectations.",
+        "Sanctions are rewards or punishments used to encourage conformity to norms. Positive sanctions reward approved behaviour, while negative sanctions discourage behaviour considered unacceptable."
+      ],
+      "list": [
+        "Who: organisations and people with authority, such as schools, employers and courts.",
+        "When: whenever someone comes under an organisation’s written rules, for example when a child starts school or an adult starts a job.",
+        "How: the rules are set out and taught on purpose, and formal sanctions, such as a school detention, encourage people to follow them."
+      ]
+    },
+    {
+      "h": "Examples and writers",
+      "p": [
+        "A school’s anti-bullying rule, backed by detention for pupils who break it, is an example of formal social control. Training at work is also formal socialisation, because the employer teaches the rules deliberately."
+      ],
+      "writers": [
+        {
+          "name": "Parsons",
+          "says": "Described three stages of socialisation and saw unusual or strange behaviour as evidence of poor family socialisation. A criticism of this view is that people may know the rules but deliberately choose not to follow them."
+        },
+        {
+          "name": "Giddens (2006)",
+          "says": "Said that socialisation is the process through which humans learn and internalise their culture’s norms and values, which is passed from generation to generation."
+        }
+      ]
+    },
+    {
+      "h": "In real life now",
+      "new": true,
+      "p": [
+        "Here are three ways formal socialisation can look in 2026."
+      ],
+      "list": [
+        "A new part-time worker in a shop or café completes induction training and is told the uniform and timekeeping rules.",
+        "A school’s mobile phone policy sets out when phones must be switched off or handed in, and a pupil who breaks it can be given a sanction.",
+        "A 17-year-old learner driver is taught the Highway Code and has to pass a theory test and a practical test before getting a licence."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s1/formal/test",
+    "label": "Take the formal socialisation mini-test"
+  }
+}

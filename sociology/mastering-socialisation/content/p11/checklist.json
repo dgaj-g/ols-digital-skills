@@ -1,0 +1,53 @@
+{
+  "route": "s11/checklist",
+  "title": "Exam checklist",
+  "sections": [
+    {
+      "h": "Before you write",
+      "list": [
+        "☐ I have read the question and found the named term.",
+        "☐ I have read the item and marked the key words in it.",
+        "☐ I know whether the question is worth five marks or ten."
+      ]
+    },
+    {
+      "h": "Five-mark answer (DIET)",
+      "p": [
+        "Tick each line before you move on."
+      ],
+      "list": [
+        "☐ Accurate definition of the named term.",
+        "☐ Three developed knowledge points.",
+        "☐ Two explained item links, using specific words from the item.",
+        "☐ I explained how the item illustrates the term and did not copy it.",
+        "☐ A relevant example, with a sentence that explains it.",
+        "☐ A brief theory link to a relevant perspective."
+      ]
+    },
+    {
+      "h": "Ten-mark answer (PEEL)",
+      "p": [
+        "Check both paragraphs. Each one needs all five parts."
+      ],
+      "list": [
+        "☐ Point: a sentence that answers the question.",
+        "☐ Evidence: a writer, a perspective or a key term that fits the point.",
+        "☐ Apply the item: I quoted the item’s own words and said what they show.",
+        "☐ Explain: I joined my ideas with because, this means and so.",
+        "☐ Link back: I finished by returning to the wording of the question.",
+        "☐ I wrote two paragraphs, each with a different point."
+      ]
+    },
+    {
+      "h": "Before you move on",
+      "list": [
+        "☐ I wrote full sentences and not a list of key words.",
+        "☐ I defined the term that was asked for.",
+        "☐ I used the item and did not copy it.",
+        "☐ Every example has an explanation.",
+        "☐ I used sociological terms such as norms, values and sanctions correctly."
+      ],
+      "new": true
+    }
+  ]
+}

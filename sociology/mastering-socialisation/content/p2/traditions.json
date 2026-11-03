@@ -1,0 +1,53 @@
+{
+  "route": "s2/traditions",
+  "part": "p2",
+  "title": "Traditions",
+  "lead": "Traditions are the seventh of the seven ideas, and they cover what is handed on from one generation to the next.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "A tradition is a custom, belief or practice passed between generations. It can create continuity and group identity, while adapting over time.",
+        "In plain words, a tradition is a way of doing things that older people have handed on to younger people."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "emphasise how traditions can create a shared identity and sense of belonging."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "Morris dancing in England keeps features such as bells, sticks and handkerchiefs that connect it to earlier performances.",
+        "A family might continue celebrating Eid or Diwali while taking part in other local celebrations.",
+        "Sharing a family recipe with younger relatives may help to pass a tradition to another generation.",
+        "A present-day community festival can retain established dances while sharing performances online, so the tradition continues while some things change.",
+        "A school carol service held every December keeps readings and hymns that earlier generations of pupils heard, while a video now lets relatives who cannot attend watch it.",
+        "Relatives who live abroad joining a long-standing family Christmas or Eid meal by video call are keeping the tradition going in a new way."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: A tradition is a custom, belief or practice passed between generations. It can create continuity and group identity, while adapting over time.",
+        "Item link: The bells and handkerchiefs in the item connect current Morris dancing to earlier performances, making the tradition recognisable.",
+        "Explain with an example: The musicians and pub venues show that a tradition may continue while aspects change. A present-day community festival can retain established dances while sharing performances online.",
+        "Theory link: Functionalists emphasise how traditions can create a shared identity and sense of belonging."
+      ],
+      "quote": {
+        "t": "Morris dancing continues in England. Dancers retain features such as bells, sticks and handkerchiefs, but may perform with their own musicians or in different venues, including pubs.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/traditions/quiz",
+    "label": "Take the quiz on traditions"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "route": "s3/religion/examples",
+  "part": "p3",
+  "agent": "religion",
+  "title": "Religion in action",
+  "lead": "Six religious practices from your notes. Each one passes on a norm or a value, and each one shows one part of your teacher's summary diagram.",
+  "blocks": [
+    {
+      "h": "The Ten Commandments",
+      "new": true,
+      "p": [
+        "Religion often provides social norms and values, and the Ten Commandments are your teacher's example. They pass on the norm that members must not kill and the value that life is to be respected. This shows **Teaching**, because the rules are set out deliberately so that members learn them."
+      ]
+    },
+    {
+      "h": "Sharing in religious traditions",
+      "new": true,
+      "p": [
+        "Your teacher's slide shows a decorated Christmas tree with presents beside the words 'sharing in religious traditions'. A family that decorates a tree and gives presents is passing on the norm of marking a festival together, and the passing on of a parent's faith. This shows **Activities**, because children are guided into doing the same things as their family."
+      ]
+    },
+    {
+      "h": "Dietary laws",
+      "new": true,
+      "p": [
+        "Dietary laws are rules about things that cannot be eaten, and your teacher says they obviously affect an individual's norms and values. They pass on the norm that some foods are not acceptable for a member of the faith. This shows **Sanctions**, because a rule that forbids something regulates behaviour and ensures conformity to the norms of the group."
+      ]
+    },
+    {
+      "h": "Dress codes",
+      "new": true,
+      "p": [
+        "Many religions have dress codes to follow. They pass on the norm of dressing in a set way and the value of showing that you belong. This shows **Identity**, because what a person wears tells other people which faith they are part of."
+      ]
+    },
+    {
+      "h": "Rites of passage",
+      "new": true,
+      "p": [
+        "Your teacher's slide lists rites of passage and shows a christening, with water poured over an infant's head. A rite of passage is a ceremony that marks a move to a new stage of life. It passes on the norm that a child is welcomed into the faith in a set way. This shows **Expectations**, because the family and the faith community expect the ceremony to take place."
+      ]
+    },
+    {
+      "h": "'Thou shalt not murder'",
+      "new": true,
+      "p": [
+        "'Thou shalt not murder' is your teacher's example of a religious norm, and religions also oppose theft, promiscuity and adultery. The rule is worded as a short command in the words of the faith, and this passes on the value of right and wrong in religious language. This shows **Language**, because a rule becomes part of the words members use to say what is right and what is wrong."
+      ]
+    }
+  ],
+  "next": {
+    "route": "s3/religion/test",
+    "label": "Next: Religion test"
+  }
+}

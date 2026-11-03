@@ -1,0 +1,88 @@
+{
+  "route": "s7",
+  "part": "p7",
+  "title": "Ten-mark questions",
+  "lead": "Ten-mark questions ask you to use the item. Each paragraph needs a Point, Evidence, the item Applied, an Explanation and a Link back to the question. Each question has a Build, which is marked out of 10, and a Write, which gets the examiner's checklist for each paragraph and the model answer.",
+  "blocks": [
+    {
+      "h": "How the ten marks are earned",
+      "list": [
+        "Point: a clear point that answers the question, not a definition.",
+        "Evidence: a writer, a study or a concept that fits the point.",
+        "Apply the item: quote the words of the item that show your point.",
+        "Explain: say why, what it means and so what, in that order.",
+        "Link back: end the paragraph on the words of the question.",
+        "Two paragraphs, five marks each, make ten."
+      ]
+    }
+  ],
+  "qs": [
+    {
+      "n": 1,
+      "id": "d10-01",
+      "q": "Using the item, explain how people acquire culture.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    },
+    {
+      "n": 2,
+      "id": "d10-02",
+      "q": "Using the item, explain how socialisation shapes identity.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    },
+    {
+      "n": 3,
+      "id": "d10-03",
+      "q": "Using the item, explain how socialisation in the family shapes behaviour.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    },
+    {
+      "n": 4,
+      "id": "d10-04",
+      "q": "Using the item, explain the role of education in socialisation.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    },
+    {
+      "n": 5,
+      "id": "d10-05",
+      "q": "Using the item, explain how peer groups influence identity.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    },
+    {
+      "n": 6,
+      "id": "d10-06",
+      "q": "Using evidence from sociological research and your own examples explain how the media acts as an agent of secondary socialisation.",
+      "marks": 10,
+      "scheme": "3+2+2+2+1",
+      "new": false,
+      "hasItem": false
+    },
+    {
+      "n": 7,
+      "id": "d10-07",
+      "q": "Using material from the item and your knowledge, describe and explain how any two agents of socialisation influence the behaviour of children.",
+      "marks": 10,
+      "scheme": "5+5",
+      "new": true,
+      "hasItem": true
+    }
+  ],
+  "next": {
+    "route": "s7/1",
+    "label": "Start with question 1"
+  }
+}

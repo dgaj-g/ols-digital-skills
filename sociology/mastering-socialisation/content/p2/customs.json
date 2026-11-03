@@ -1,0 +1,58 @@
+{
+  "route": "s2/customs",
+  "part": "p2",
+  "title": "Customs",
+  "lead": "Customs are the fifth of the seven ideas, and they cover how a particular group usually does things.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "A custom is a usual way of behaving in a particular group or setting. Customs are learned through socialisation, they can differ between groups and they can change over time.",
+        "In plain words, a custom is what a particular group usually does, and it becomes a tradition when it is passed down the generations."
+      ],
+      "writers": [
+        {
+          "name": "Interactionists",
+          "says": "examine how people learn the usual ways of a group through everyday contact with its members."
+        }
+      ],
+      "new": true
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "A friendship group who usually meet at the same café after school on Fridays have a custom of their own.",
+        "A team that usually sings the same song on the bus home after a win has a custom that new players soon learn.",
+        "A friendship group that usually sends a voice note to say goodnight has a custom that belongs to that group only.",
+        "Colleagues in a workplace who usually take turns to bring in cakes on a Friday have a custom of their own.",
+        "A family that usually eats together at the table on Sundays has a custom that guests soon notice."
+      ],
+      "new_items": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: A custom is a usual way of behaving in a particular group or setting. Customs are learned through socialisation, they can differ between groups and they can change over time.",
+        "Item link: The item describes groups developing their own usual ways of behaving. For example, a team may always huddle and sing the same song before a match, and newcomers learn this by joining in.",
+        "Explain with an example: Newcomers copying the group in the item illustrates how customs are learned by watching and joining in. A friendship group that always sends a voice note to say goodnight has a custom, not a tradition, because it has not been passed down the generations.",
+        "Theory link: Interactionists examine how people learn the usual ways of a group through everyday contact with its members."
+      ],
+      "quote": {
+        "t": "Groups develop their own usual ways of behaving, such as how members greet one another or what they do before a match. Newcomers learn these habits by watching other members and joining in.",
+        "who": "Item"
+      },
+      "new": true
+    }
+  ],
+  "new": true,
+  "next": {
+    "route": "s2/customs/quiz",
+    "label": "Take the quiz on customs"
+  }
+}

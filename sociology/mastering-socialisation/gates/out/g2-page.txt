@@ -1,0 +1,17 @@
+PASS routes: every page and test has its content, every content file a route — 35 content files
+PASS pictures: every img()/emoji() file exists in img/ — 24 files
+PASS PARTS: 11 parts in SPEC order with SPEC titles
+PASS AGENTS: the six agents in SPEC order — family education peers media religion workplace
+PASS BADGES: the teacher's six names in SPEC order
+INFO SPEC §3 says ten-mark ×6; app and banks have 7 (banks/p7 has 7 questions) — SPEC wording to settle
+PASS print rule hides .top, .bn and .savebar
+PASS reduced motion turns animation off
+PASS index.html has lang
+PASS index.html has a viewport meta
+PASS index.html has a charset
+PASS index.html has a single #app
+PASS CONTROL: app.js with s3/religion/examples removed is reported — content p3/religion-examples has no route
+PASS content: every ** bold label closes (58 pairs)
+PASS app.js renders **label** paragraphs as <b>, never raw asterisks
+PASS CONTROL: app.js without md(p) is reported
+g2-page: 15 PASS, 0 FAIL, 0 SKIP

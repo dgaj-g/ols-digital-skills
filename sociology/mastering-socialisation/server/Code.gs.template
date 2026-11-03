@@ -1,0 +1,889 @@
+/* OLS Sociology - Mastering Socialisation - server (Apps Script, V8). Built by tools/build-server.js, which puts the
+ * judge (JudgeCommon, JudgeFive, JudgeTen), the private banks (var BANKS = {act id: bank}) and the public card terms
+ * (var CARD_TERMS) above this file and fills the placeholders. Runs as the user accessing the web app (DOMAIN access), so
+ * Session.getActiveUser() is the pupil. Records live in Script Properties (API.md "Script Properties"). A pupil's view of
+ * an act is rebuilt from its seed on every open and mark and never stored, so no key ever leaves this file.
+ * The pupil path never touches a Sheet: the archive runs only on the owner's staff visit. */
+
+var OWNER_EMAIL = '@@OWNER_EMAIL@@';
+var STAFF_SALT = '@@STAFF_SALT@@';
+var STAFF_HASH = '@@STAFF_HASH@@';
+var TEACHERS = '@@TEACHERS@@'; // named teachers (private list, filled at build): straight in with their school account
+var BUILD = '@@BUILD@@';
+var TITLE = '@@TITLE@@';
+var DOMAIN = 'c2ken.net';
+var TZ = 'Europe/London';
+var ARCHIVE_AT = 400 * 1024;
+var STAFF_MARK = 'socstaff';
+var FLAG_A = 'Writes but never builds';
+var FLAG_B = 'Builds full marks, never writes';
+var VQ_N = 10;          // vquiz draws 10 of its 30
+var DL_KEEP = 8;        // daily scores kept by date in the header; older ones roll into dlx (still counted in pts)
+var WK_KEEP = 5;        // weekly scores kept by week; older ones roll into wkx
+var TERMS_ = typeof CARD_TERMS !== 'undefined' ? CARD_TERMS : [];
+
+// ---------- helpers (as S1) ----------
+function sp_() { return PropertiesService.getScriptProperties(); }
+function up_() { return PropertiesService.getUserProperties(); }
+function str_(v) { return String(v == null ? '' : v); }
+function has_(o, k) { return !!o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k); }
+function range_(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+function pad2_(n) { return (n < 10 ? '0' : '') + n; }
+function num_(a, b) { return a - b; }
+function int_(v) { if (typeof v === 'number') return isFinite(v) && Math.floor(v) === v ? v : NaN; return typeof v === 'string' && /^\d{1,6}$/.test(v) ? Number(v) : NaN; }
+function tmin_() { return Math.floor((Date.now() - 1767225600000) / 60000); }
+function tminIso_(t) { return t ? new Date(1767225600000 + t * 60000).toISOString() : ''; }
+function userEmail_() { try { return String(Session.getActiveUser().getEmail() || '').toLowerCase(); } catch (e) { return ''; } }
+function jget_(store, key, fallback) { try { var raw = store.getProperty(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
+function jset_(store, key, obj) { store.setProperty(key, JSON.stringify(obj)); }
+function withLock_(fn) { var lock = LockService.getScriptLock(); lock.waitLock(10000); try { return fn(); } finally { lock.releaseLock(); } }
+function sha256hex_(s) { var b = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8); return b.map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join(''); }
+function ok_(o) { o = o || {}; o.ok = true; o.v = BUILD; return o; }
+function err_(code) { return { ok: false, error: code, v: BUILD }; }
+function domainOk_(email) { return !!email && email.slice(-(DOMAIN.length + 1)) === '@' + DOMAIN; }
+function isOwner_(email) { return !!email && email === OWNER_EMAIL; }
+function slug_(v) { return str_(v).replace(/[^A-Za-z0-9-]/g, '').toLowerCase().slice(0, 40); }
+function autoName_() {
+  try {
+    var res = UrlFetchApp.fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) return '';
+    var j = JSON.parse(res.getContentText() || '{}');
+    return str_(j.given_name || str_(j.name).split(' ')[0]).trim().slice(0, 40);
+  } catch (e) { return ''; }
+}
+function hodList_() { return (jget_(sp_(), 'hods', []) || []).map(function (x) { return str_(x).toLowerCase(); }); }
+function isHod_(email) { return hodList_().indexOf(email) !== -1; }
+function teacherList_() { return TEACHERS.concat(jget_(sp_(), 'teachers', []) || []).map(function (x) { return str_(x).toLowerCase(); }); }
+function isTeacher_(email) { return teacherList_().indexOf(email) !== -1; }
+function seesAll_(email) { return isOwner_(email) || isHod_(email); } // everyone else sees only the classes they made
+function classList_() { return jget_(sp_(), 'classes', []) || []; }
+function ownsAnyClass_(email) { return classList_().some(function (s) { var c = jget_(sp_(), 'cls:' + s, null); return c && c.o === email; }); }
+function safe_(fn) { return function (req) { try { return fn(req || {}); } catch (e) { var m = str_(e && e.message); return { ok: false, error: /lock/i.test(m) ? 'busy' : 'server', detail: m.slice(0, 200), v: BUILD }; } }; }
+function zip_(o) { return Utilities.base64Encode(Utilities.gzip(Utilities.newBlob(JSON.stringify(o), 'application/json')).getBytes()); }
+function unzip_(s) { try { return JSON.parse(Utilities.ungzip(Utilities.newBlob(Utilities.base64Decode(str_(s)), 'application/x-gzip')).getDataAsString()); } catch (e) { return null; } }
+
+// ---------- seeds: FNV-1a 32-bit -> mulberry32; Fisher-Yates. Node and V8 give the same numbers ----------
+function fnv_(s) { s = str_(s); var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return h >>> 0; }
+function rng_(s) {
+  var a = fnv_(s);
+  return function () { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function shuffle_(arr, r) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+// an order puzzle never arrives already solved
+function mix_(n, r) { var p = shuffle_(range_(n), r); if (n > 1 && p.every(function (v, i) { return v === i; })) p.push(p.shift()); return p; }
+// phrase indices in the order they occur in the item (a phrase not found keeps its place at the end)
+function itemOrder_(item, phrases) {
+  return phrases.map(function (p, i) { var at = str_(item).indexOf(str_(p)); return [at < 0 ? 1e9 + i : at, i]; })
+    .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[1]; });
+}
+
+// ---------- dates (Europe/London) ----------
+function today_() { return Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'); }
+function utc_(ds) { var p = str_(ds).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+function dayDiff_(a, b) { return Math.round((utc_(b) - utc_(a)) / 86400000); }
+function isoWeek_(ds) {
+  var d = new Date(utc_(ds)), day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  var y = d.getUTCFullYear(), w = Math.ceil(((d.getTime() - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7);
+  return y + '-W' + pad2_(w);
+}
+
+// ---------- the acts (built from BANKS at load, so the maxima are always right) ----------
+var NAMED = ['t1p', 't1s', 't1f', 't1i', 'c-mat', 'c-non', 'c-val', 'c-nor', 'c-cus', 'c-bel', 'c-tra', 'c-sort', 'f-match', 'f-scen', 'f-apply',
+  'e-spot', 'e-school', 'p-decide', 'm-images', 'm-stereo', 'r-test', 'w-first', 'w-test', 'sc-sort', 'vquiz', 'ao2-find', 'ex-eye']; // fixed: header positions
+var PARTS10 = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10'];
+var PARTS9 = PARTS10.slice(0, 9);
+var LOCK_PARTS = PARTS10.concat(['p11']);
+var BADGES = ['culture', 'family', 'education', 'sanctions', 'socialisation', 'ao2'];
+var FIVE = Array.isArray(BANKS.five) ? BANKS.five : ((BANKS.five && BANKS.five.qs) || []);
+var ACT = {}, ACTS = [], ALIAS = {}, FIVE_IDS = [], TEN_IDS = [], SANCT = [];
+
+function partOf_(id) {
+  id = str_(id);
+  if (/^t1/.test(id)) return 'p1';
+  if (id === 'sc-sort') return 'p4';
+  if (/^c-/.test(id)) return 'p2';
+  if (/^(f-|e-|m-)/.test(id) || ['p-decide', 'r-test', 'w-first', 'w-test'].indexOf(id) !== -1) return 'p3';
+  if (id === 'vquiz') return 'p5';
+  if (/^(d5|w5)-/.test(id)) return 'p6';
+  if (/^(d10|w10)-/.test(id)) return 'p7';
+  if (id === 'ao2-find') return 'p8';
+  if (id === 'ex-eye') return 'p9';
+  if (id === 'daily' || id === 'weekly') return 'p10';
+  return '';
+}
+function formOf_(B) {
+  if (!B || typeof B !== 'object') return '';
+  if (B.qs) return 'mcq'; if (B.bins) return 'bins'; if (B.chips) return 'match'; if (B.rows) return 'tick';
+  if (B.scenes) return 'scenes'; if (B.asks) return 'branch'; if (B.steps) return 'order'; if (B.items) return 'tap';
+  return '';
+}
+function maxOf_(id, B, f) {
+  if (f === 'mcq') return id === 'vquiz' ? Math.min(VQ_N, B.qs.length) : B.qs.length;
+  if (f === 'bins' || f === 'match') return B.cards.length;
+  if (f === 'tick') return B.rows.length;
+  if (f === 'scenes') return B.scenes.length;
+  if (f === 'branch') return B.asks.length;
+  if (f === 'order') return B.steps.length;
+  if (f === 'tap') return B.items.length;
+  return 0;
+}
+function reg_(A) { if (!A.part) return; ACT[A.id] = A; ACTS.push(A.id); }
+NAMED.forEach(function (id) {
+  var B = BANKS[id], f = formOf_(B);
+  if (f) reg_({ id: id, form: f, part: partOf_(id), max: maxOf_(id, B, f), B: B, title: str_(B.title), intro: str_(B.intro) });
+});
+FIVE.forEach(function (q, i) {
+  var nn = pad2_(i + 1), d = 'd5-' + nn;
+  reg_({ id: d, form: 'builder', kind: 'five', part: 'p6', max: 5, q: q, title: str_(q.term), intro: str_(q.stem) });
+  reg_({ id: 'w5-' + nn, form: 'write', kind: 'five', part: 'p6', max: 1, q: q, title: str_(q.term), intro: str_(q.stem) });
+  FIVE_IDS.push(d);
+  if (q.id && q.id !== d) ALIAS[str_(q.id)] = d;
+  if (['sanctions', 'social control'].indexOf(str_(q.term).trim().toLowerCase()) !== -1) SANCT.push(d);
+});
+for (var n_ = 1; n_ <= 30; n_++) {
+  var T_ = BANKS['ten-q' + n_];
+  if (!T_ || !T_.slots) continue;
+  reg_({ id: 'd10-' + n_, form: 'builder', kind: 'ten', part: 'p7', max: T_.slots.length, q: T_, title: 'Ten-mark question ' + n_, intro: str_(T_.q) });
+  reg_({ id: 'w10-' + n_, form: 'write', kind: 'ten', part: 'p7', max: 1, q: T_, title: 'Ten-mark question ' + n_, intro: str_(T_.q) });
+  TEN_IDS.push('d10-' + n_);
+  if (T_.id && T_.id !== 'd10-' + n_) ALIAS[str_(T_.id)] = 'd10-' + n_;
+}
+var DAILY_POOL = NAMED.filter(function (id) { return ACT[id] && ACT[id].form === 'mcq'; });
+var MAX_ACTS = {}, MAX_PARTS = {};
+PARTS10.forEach(function (p) { MAX_PARTS[p] = 0; });
+ACTS.forEach(function (id) { MAX_ACTS[id] = ACT[id].max; MAX_PARTS[ACT[id].part] += ACT[id].max; });
+MAX_ACTS.daily = 5; MAX_ACTS.weekly = 20; // on top of the parts (p10 counts 0)
+function actOf_(id) { id = str_(id); if (has_(ACT, id)) return ACT[id]; if (has_(ALIAS, id)) return ACT[ALIAS[id]]; return null; }
+function locked_(c, part) { return (c.lock || []).indexOf(part) !== -1; }
+
+// ---------- the pupil header p:<cls>:<email> (packed in the store, full shape in every reply) ----------
+// b/a/w/wq/pr are packed by fixed position: "_" = NAMED order, d5/w5 by NN, d10/w10 by N; -1 = absent; anything else under "x".
+function pKey_(slug, email) { return 'p:' + slug + ':' + email; }
+function wKey_(slug, email, act) { return 'w:' + slug + ':' + email + ':' + act; }
+function hdrNew_(name) { return { n: str_(name), b: {}, r: {}, a: {}, w: {}, wq: {}, pr: {}, pts: 0, bd: [], bdt: {}, st: { d: '', n: 0 }, ck: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pile: {}, dl: {}, dlx: 0, wk: {}, wkx: 0, t: 0 }; }
+function slotOf_(id) {
+  var i = NAMED.indexOf(id); if (i !== -1) return ['_', i];
+  var m = /^(d5|w5|d10|w10)-(\d{1,3})$/.exec(id); if (!m) return null;
+  if ((m[1] === 'd5' || m[1] === 'w5') && m[2].length !== 2) return null;
+  if ((m[1] === 'd10' || m[1] === 'w10') && m[2].charAt(0) === '0') return null;
+  return Number(m[2]) >= 1 ? [m[1], Number(m[2]) - 1] : null;
+}
+function idOf_(g, i) { if (g === '_') return NAMED[i]; return g + '-' + (g === 'd5' || g === 'w5' ? pad2_(i + 1) : String(i + 1)); }
+function packMap_(m) {
+  var out = {}, any = false;
+  Object.keys(m || {}).forEach(function (id) {
+    var v = m[id], s = slotOf_(id); any = true;
+    if (!s) { out.x = out.x || {}; out.x[id] = v; return; }
+    var arr = out[s[0]] = out[s[0]] || [];
+    while (arr.length <= s[1]) arr.push(-1);
+    arr[s[1]] = v;
+  });
+  return any ? out : null;
+}
+function unpackMap_(p) {
+  var m = {};
+  Object.keys(p || {}).forEach(function (g) {
+    if (g === 'x') { Object.keys(p.x || {}).forEach(function (id) { m[id] = p.x[id]; }); return; }
+    (p[g] || []).forEach(function (v, i) { if (v !== -1 && v != null) m[idOf_(g, i)] = v; });
+  });
+  return m;
+}
+var TERM_AT_ = {}; TERMS_.forEach(function (t, i) { TERM_AT_[str_(t).toLowerCase()] = i; });
+function packHdr_(H) {
+  var o = {};
+  if (H.n) o.n = H.n;
+  ['b', 'a', 'w', 'wq', 'pr'].forEach(function (f) { var p = packMap_(H[f]); if (p) o[f] = p; });
+  if (Object.keys(H.r || {}).length) o.r = H.r;
+  if (H.pts) o.pts = H.pts;
+  if (H.bd.length) { o.bd = H.bd.slice(); o.bdt = H.bd.map(function (id) { return str_(H.bdt[id]); }); }
+  if (H.st && H.st.n) o.st = H.st;
+  if (H.ck.some(function (v) { return v; })) o.ck = H.ck.map(function (v) { return v ? '1' : '0'; }).join('');
+  var pk = '', px = null;
+  Object.keys(H.pile || {}).forEach(function (t) {
+    var i = has_(TERM_AT_, t.toLowerCase()) ? TERM_AT_[t.toLowerCase()] : -1, v = H.pile[t] ? '1' : '0';
+    if (i === -1) { px = px || {}; px[t] = H.pile[t] ? 1 : 0; return; }
+    while (pk.length <= i) pk += '.';
+    pk = pk.slice(0, i) + v + pk.slice(i + 1);
+  });
+  if (pk) o.pile = pk;
+  if (px) o.px = px;
+  if (Object.keys(H.dl).length) o.dl = H.dl;
+  if (H.dlx) o.dlx = H.dlx;
+  if (Object.keys(H.wk).length) o.wk = H.wk;
+  if (H.wkx) o.wkx = H.wkx;
+  if (H.t) o.t = H.t;
+  if (H.j) o.j = H.j;
+  return o;
+}
+function unpackHdr_(o) {
+  o = o || {};
+  var H = hdrNew_(o.n);
+  ['b', 'a', 'w', 'wq', 'pr'].forEach(function (f) { H[f] = unpackMap_(o[f]); });
+  H.r = o.r || {};
+  H.pts = o.pts || 0;
+  H.bd = (o.bd || []).slice();
+  H.bd.forEach(function (id, i) { H.bdt[id] = str_((o.bdt || [])[i]); });
+  H.st = o.st || { d: '', n: 0 };
+  var ck = str_(o.ck); for (var i = 0; i < 12; i++) H.ck[i] = ck.charAt(i) === '1' ? 1 : 0;
+  str_(o.pile).split('').forEach(function (ch, i) { if (ch !== '.' && i < TERMS_.length) H.pile[TERMS_[i]] = ch === '1' ? 1 : 0; });
+  Object.keys(o.px || {}).forEach(function (t) { H.pile[t] = o.px[t] ? 1 : 0; });
+  H.dl = o.dl || {}; H.dlx = o.dlx || 0; H.wk = o.wk || {}; H.wkx = o.wkx || 0; H.t = o.t || 0;
+  if (o.j) H.j = o.j;
+  return H;
+}
+function hdrGet_(slug, email) { var raw = jget_(sp_(), pKey_(slug, email), null); return raw ? unpackHdr_(raw) : null; }
+function hdrOr_(slug, email) { return hdrGet_(slug, email) || hdrNew_(''); }
+function hdrPut_(slug, email, H) { jset_(sp_(), pKey_(slug, email), packHdr_(H)); }
+function hdrOut_(H) {
+  var o = { n: H.n, b: H.b, r: H.r, a: H.a, w: H.w, wq: H.wq, pr: H.pr, pts: H.pts, bd: H.bd, bdt: H.bdt, st: H.st, ck: H.ck, pile: H.pile, dl: H.dl, wk: H.wk, t: H.t };
+  if (H.dlx) o.dlx = H.dlx;
+  if (H.wkx) o.wkx = H.wkx;
+  return JSON.parse(JSON.stringify(o));
+}
+function sumVals_(m) { return Object.keys(m || {}).reduce(function (t, k) { var v = Number(m[k]); return t + (v > 0 ? v : 0); }, 0); }
+function pts_(H) { return sumVals_(H.b) + sumVals_(H.pr) + sumVals_(H.dl) + (H.dlx || 0) + sumVals_(H.wk) + (H.wkx || 0); }
+function roll_(m, keep) { var ks = Object.keys(m).sort(), x = 0; while (ks.length > keep) { var k = ks.shift(); x += Number(m[k]) || 0; delete m[k]; } return x; }
+function streak_(H, d) {
+  var s = H.st && H.st.d ? H.st : { d: '', n: 0 };
+  if (s.d === d) return;
+  H.st = { d: d, n: s.d && dayDiff_(s.d, d) === 1 ? (s.n || 0) + 1 : 1 };
+}
+function reach_(H, id, full) { var A = ACT[id]; if (!A || !has_(H.b, id)) return false; return Number(H.b[id]) >= (full ? A.max : A.max - 1); }
+// SPEC 8; "at least n-1 of n" is each rule's own number (3/4, 5/6, 11/12, 7/8, 4/5, 9/10)
+function earned_(H) {
+  var e = {};
+  e.culture = ['c-mat', 'c-non', 'c-val', 'c-nor', 'c-cus', 'c-bel', 'c-tra'].every(function (id) { return reach_(H, id, false); }) && reach_(H, 'c-sort', true);
+  e.family = reach_(H, 'f-match', true) && reach_(H, 'f-scen', false) && reach_(H, 'f-apply', true);
+  e.education = reach_(H, 'e-spot', false) && reach_(H, 'e-school', false);
+  e.sanctions = reach_(H, 'sc-sort', true) && SANCT.every(function (id) { return reach_(H, id, true); }); // a term not in five.json counts as met
+  e.socialisation = ['t1p', 't1s', 't1f', 't1i'].every(function (id) { return reach_(H, id, false); }) && H.ck.length === 12 && H.ck.every(function (v) { return v; }) && reach_(H, 'vquiz', false);
+  e.ao2 = reach_(H, 'ao2-find', true) && reach_(H, 'ex-eye', true) && TEN_IDS.filter(function (id) { return reach_(H, id, false); }).length >= 3 && Object.keys(H.wq).length >= 3;
+  return e;
+}
+// after every store: streak (on a check), last time, rolled dates, points, then any newly earned badge (never removed)
+function settle_(H, isCheck) {
+  var d = today_();
+  if (isCheck) { streak_(H, d); H.t = tmin_(); }
+  H.dlx = (H.dlx || 0) + roll_(H.dl, DL_KEEP);
+  H.wkx = (H.wkx || 0) + roll_(H.wk, WK_KEEP);
+  H.pts = pts_(H);
+  var e = earned_(H), fresh = [];
+  BADGES.forEach(function (id) { if (e[id] && H.bd.indexOf(id) === -1) { H.bd.push(id); H.bdt[id] = d; fresh.push(id); } });
+  return fresh;
+}
+
+// ---------- views (key-free) and their keys ----------
+function mcqItems_(list, r) {
+  var qs = [], key = [];
+  list.forEach(function (it) {
+    var q = it.q, p = shuffle_(range_(q.opts.length), r), v = { i: it.i, q: q.q, opts: p.map(function (j) { return q.opts[j]; }) };
+    if (it.act) v.act = it.act;
+    if (q.img) v.img = { file: str_(q.img.file), alt: str_(q.img.alt), credit: str_(q.img.credit) };
+    qs.push(v); key.push({ t: 'pick', k: p.indexOf(q.k), n: q.opts.length, why: str_(q.why) });
+  });
+  return { qs: qs, key: key };
+}
+function pickSlot_(slots, key, part, label, b, why, r) {
+  var p = shuffle_(range_(b.opts.length), r);
+  slots.push({ i: slots.length, part: part, label: label, type: 'pick', opts: p.map(function (j) { return b.opts[j]; }) });
+  key.push({ t: 'pick', k: p.indexOf(b.k), n: b.opts.length, why: str_(why) });
+}
+function fiveBuild_(q, r) {
+  var slots = [], key = [], wm = q.why_marks || [];
+  pickSlot_(slots, key, 'd', 'D - Define the term', q.build.d, wm[0], r);
+  slots.push({ i: 1, part: 'i', label: 'Tap the phrase in the item that earns the item mark', type: 'tap', item: str_(q.item), phrases: (q.phrases || []).slice(), picks: (q.ph_k || []).length, pickN: (q.ph_k || []).length });
+  key.push({ t: 'tapset', k: (q.ph_k || []).slice().sort(num_), n: (q.phrases || []).length, why: str_(wm[1]) });
+  pickSlot_(slots, key, 'i2', 'I - Item link', q.build.i, wm[2], r);
+  pickSlot_(slots, key, 'e', 'E - Explain with an example', q.build.e, wm[3], r);
+  pickSlot_(slots, key, 't', 'T - Theory link', q.build.t, wm[4], r);
+  return { view: { q: str_(q.stem), stem: str_(q.stem), term: str_(q.term), item: str_(q.item), marks: 5, slots: slots }, key: key, max: 5 };
+}
+function tenBuild_(T, r) {
+  var slots = [], key = [], wm = T.why_marks || [];
+  T.slots.forEach(function (s, i) {
+    var o = { i: i, para: s.para, part: s.part, label: s.label, type: s.type }, why = str_(wm[i]), p;
+    if (s.type === 'tap') {
+      p = itemOrder_(T.item, s.phrases);
+      o.item = str_(T.item); o.phrases = p.map(function (j) { return s.phrases[j]; }); o.picks = 1; o.pickN = 1;
+      key.push({ t: 'tapany', k: (s.k || []).map(function (j) { return p.indexOf(j); }).sort(num_), n: s.phrases.length, why: why });
+    } else if (s.type === 'order') {
+      p = mix_(s.steps.length, r);
+      o.steps = p.map(function (j) { return s.steps[j]; });
+      key.push({ t: 'steps', steps: s.steps.slice(), view: o.steps, why: why });
+    } else {
+      p = shuffle_(range_(s.opts.length), r);
+      o.type = 'pick'; o.opts = p.map(function (j) { return s.opts[j]; });
+      key.push({ t: 'pick', k: p.indexOf(s.k), n: s.opts.length, why: why });
+    }
+    slots.push(o);
+  });
+  return { view: { q: str_(T.q), item: str_(T.item), scheme: str_(T.scheme), n: T.n, marks: Number(T.marks) || slots.length, slots: slots }, key: key, max: slots.length };
+}
+function buildExtra_(A) {
+  var q = A.q;
+  return A.kind === 'five' ? { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: 'DIET' } : { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: q.scheme };
+}
+function roundsOf_(B) { var per = B.per_round || B.cards.length; return { per: per, rounds: Math.max(1, Math.ceil(B.cards.length / per)) }; }
+function roundArg_(req, A) { var R = roundsOf_(A.B), r = int_(req.round != null ? req.round : (req.ans && req.ans.round)); return r >= 1 && r <= R.rounds ? r : 1; }
+function attArg_(v, H, id) { var a = int_(v); return a >= 0 && a < 100000 ? a : (H.a[id] || 0); }
+// the act's view for attempt a (and round for bins): the same seed always gives the same view
+function build_(A, email, a, round) {
+  var B = A.B, f = A.form, seed = email + '|' + A.id + '|' + a, r, p;
+  if (f === 'builder') return A.kind === 'five' ? fiveBuild_(A.q, rng_(seed)) : tenBuild_(A.q, rng_(seed));
+  if (f === 'bins') {
+    // the round split is the pupil's own and stable (seed without a), dealt one card per bin in turn so each round has a spread
+    var R = roundsOf_(B), rs = rng_(email + '|' + A.id), byBin = {}, deal = [];
+    B.cards.forEach(function (c, i) { (byBin[c.bin] = byBin[c.bin] || []).push(i); });
+    var bins = shuffle_(Object.keys(byBin).sort(), rs);
+    bins.forEach(function (b) { byBin[b] = shuffle_(byBin[b], rs); });
+    for (var k = 0; deal.length < B.cards.length; k++) bins.forEach(function (b) { if (byBin[b][k] != null) deal.push(byBin[b][k]); });
+    var rr = round >= 1 && round <= R.rounds ? round : 1;
+    var ids = shuffle_(deal.slice((rr - 1) * R.per, rr * R.per), rng_(seed + '|' + rr));
+    return { view: { bins: B.bins.map(function (b) { return { id: b.id, label: b.label, hint: b.hint }; }), cards: ids.map(function (i) { return { i: i, t: B.cards[i].t }; }), round: rr, rounds: R.rounds, per_round: R.per },
+      key: ids.map(function (i) { return { t: 'bin', bin: B.cards[i].bin, i: i, bins: B.bins.map(function (b) { return b.id; }) }; }), max: ids.length, round: rr, rounds: R.rounds };
+  }
+  r = rng_(seed);
+  if (f === 'mcq') {
+    var idx = range_(B.qs.length);
+    if (A.id === 'vquiz') idx = shuffle_(idx, r).slice(0, A.max);
+    var m = mcqItems_(idx.map(function (i) { return { q: B.qs[i], i: i }; }), r);
+    return { view: { qs: m.qs }, key: m.key, max: m.key.length };
+  }
+  if (f === 'match') {
+    var cp = shuffle_(range_(B.chips.length), r), chips = cp.map(function (j) { return B.chips[j]; });
+    p = shuffle_(range_(B.cards.length), r);
+    return { view: { chips: chips, cards: p.map(function (i) { return { i: i, t: B.cards[i].t }; }) },
+      key: p.map(function (i) { return { t: 'chip', chip: B.cards[i].chip, i: i, chips: chips }; }), max: p.length };
+  }
+  if (f === 'tick') {
+    p = shuffle_(range_(B.rows.length), r);
+    return { view: { a: B.a, b: B.b, rows: p.map(function (i) { return { i: i, t: B.rows[i].t }; }) },
+      key: p.map(function (i) { return { t: 'pick', k: B.rows[i].k, n: 2, why: str_(B.rows[i].why) }; }), max: p.length };
+  }
+  if (f === 'scenes') {
+    var sv = [], sk = [];
+    B.scenes.forEach(function (s, i) {
+      var q = shuffle_(range_(s.opts.length), r);
+      sv.push({ i: i, t: s.t, opts: q.map(function (j) { return s.opts[j]; }) });
+      sk.push({ t: 'pick', k: q.indexOf(s.k), n: s.opts.length, why: str_(s.why), tag: str_(s.tag) });
+    });
+    return { view: { scenes: sv }, key: sk, max: sk.length };
+  }
+  if (f === 'branch') {
+    var m2 = mcqItems_(B.asks.map(function (q, i) { return { q: q, i: i }; }), r);
+    return { view: { steps: B.steps.map(function (s) { return { t: s.t, choices: (s.choices || []).map(function (c) { return { t: c.t, then: c.then }; }) }; }), asks: m2.qs }, key: m2.key, max: m2.key.length };
+  }
+  if (f === 'order') {
+    p = mix_(B.steps.length, r);
+    var steps = p.map(function (j) { return B.steps[j]; });
+    return { view: { steps: steps }, key: { t: 'order', steps: B.steps.slice(), view: steps }, max: B.steps.length };
+  }
+  if (f === 'tap') {
+    var tv = [], tk = [];
+    shuffle_(range_(B.items.length), r).forEach(function (i) {
+      var it = B.items[i], o = itemOrder_(it.item, it.phrases);
+      tv.push({ i: i, item: it.item, phrases: o.map(function (j) { return it.phrases[j]; }), picks: (it.k || []).length });
+      tk.push({ t: 'tapset', k: (it.k || []).map(function (j) { return o.indexOf(j); }).sort(num_), n: it.phrases.length, why: str_(it.why) });
+    });
+    return { view: { items: tv }, key: tk, max: tk.length };
+  }
+  return null;
+}
+function writeView_(A) {
+  var q = A.q;
+  if (A.kind === 'five') return { q: str_(q.stem), stem: str_(q.stem), term: str_(q.term), item: str_(q.item), phrases: (q.phrases || []).slice() };
+  var tap = (q.slots || []).filter(function (s) { return s.type === 'tap'; })[0];
+  return { q: str_(q.q), item: str_(q.item), scheme: str_(q.scheme), n: q.n, phrases: tap ? itemOrder_(q.item, tap.phrases).map(function (j) { return tap.phrases[j]; }) : [] };
+}
+
+// ---------- marking: an answer per key; null = incomplete ----------
+function seq_(a, view, right) { // the pupil's order as step texts (a permutation of right), from texts or view indices
+  if (!Array.isArray(a) || a.length !== right.length) return null;
+  var out = [], seen = {};
+  for (var i = 0; i < a.length; i++) {
+    var v = a[i], j = int_(v), t = typeof v === 'string' && right.indexOf(v) !== -1 ? v : (j >= 0 && j < view.length ? view[j] : null);
+    if (t == null || seen[t]) return null;
+    seen[t] = 1; out.push(t);
+  }
+  return out;
+}
+function picks_(a, n) { // a non-empty set of distinct option indices
+  if (!Array.isArray(a) || !a.length) return null;
+  var out = [];
+  for (var i = 0; i < a.length; i++) { var j = int_(a[i]); if (!(j >= 0 && j < n) || out.indexOf(j) !== -1) return null; out.push(j); }
+  return out.sort(num_);
+}
+function one_(k, a) {
+  var j, s;
+  if (k.t === 'pick') { j = int_(a); if (!(j >= 0 && j < k.n)) return null; return { ok: j === k.k, right: k.k }; }
+  if (k.t === 'tapset' || k.t === 'tapany') {
+    s = picks_(a, k.n); if (!s) return null;
+    var ok = k.t === 'tapset' ? s.join(',') === k.k.join(',') : s.every(function (x) { return k.k.indexOf(x) !== -1; });
+    return { ok: ok, right: k.k.slice() };
+  }
+  if (k.t === 'steps') {
+    s = seq_(a, k.view, k.steps); if (!s) return null;
+    return { ok: s.join('\n') === k.steps.join('\n'), right: k.steps.slice(), per: s.map(function (t, i) { var pos = k.steps.indexOf(t) + 1; return { t: t, ok: pos === i + 1, pos: pos }; }) };
+  }
+  if (k.t === 'bin') { if (k.bins.indexOf(str_(a)) === -1) return null; return { ok: str_(a) === k.bin, right: k.bin }; }
+  if (k.t === 'chip') {
+    j = int_(a); var t = typeof a === 'string' && k.chips.indexOf(a) !== -1 ? a : (j >= 0 && j < k.chips.length ? k.chips[j] : null);
+    if (t == null) return null; return { ok: t === k.chip, right: k.chip };
+  }
+  return null;
+}
+function score_(Bv, form, ans) {
+  var per = [], score = 0;
+  if (form === 'order') {
+    var s = seq_(ans, Bv.key.view, Bv.key.steps); if (!s) return null;
+    s.forEach(function (t, i) { var pos = Bv.key.steps.indexOf(t) + 1, ok = pos === i + 1; if (ok) score++; per.push({ t: t, ok: ok, pos: pos }); });
+    return { score: score, per: per };
+  }
+  if (!Array.isArray(ans) || ans.length !== Bv.key.length) return null;
+  for (var i = 0; i < Bv.key.length; i++) {
+    var k = Bv.key[i], res = one_(k, ans[i]);
+    if (!res) return null;
+    if (res.ok) score++;
+    if (form === 'builder') { var pb = { ok: res.ok, right: res.right, k: res.right, why: k.why }; if (res.per) pb.per = res.per; per.push(pb); }
+    else if (form === 'bins') per.push({ i: k.i, ok: res.ok, bin: k.bin });
+    else if (form === 'match') per.push({ i: k.i, ok: res.ok, chip: k.chip });
+    else if (form === 'tap') per.push({ ok: res.ok, k: res.right, why: k.why });
+    else if (form === 'scenes') per.push({ ok: res.ok, k: k.k, why: k.why, tag: k.tag });
+    else per.push({ ok: res.ok, k: k.k, why: k.why });
+  }
+  return { score: score, per: per };
+}
+
+// ---------- daily and weekly (seeded by date / ISO week + class: the same for the whole class) ----------
+function dailySet_(date, slug) {
+  var r = rng_(date + '|' + slug), byPart = {}, picks = [], used = {};
+  DAILY_POOL.forEach(function (id) { var p = ACT[id].part; (byPart[p] = byPart[p] || []).push(id); });
+  shuffle_(Object.keys(byPart).sort(), r).forEach(function (p) { // one question per part where possible
+    if (picks.length >= 5) return;
+    var acts = byPart[p], id = acts[Math.floor(r() * acts.length)], i = Math.floor(r() * ACT[id].B.qs.length);
+    picks.push({ act: id, i: i, p: PARTS10.indexOf(p) }); used[id + '|' + i] = 1;
+  });
+  if (picks.length < 5) {
+    var rest = [];
+    DAILY_POOL.forEach(function (id) { ACT[id].B.qs.forEach(function (q, i) { if (!used[id + '|' + i]) rest.push({ act: id, i: i, p: PARTS10.indexOf(ACT[id].part) }); }); });
+    shuffle_(rest, r).slice(0, 5 - picks.length).forEach(function (x) { picks.push(x); });
+  }
+  picks.sort(function (a, b) { return a.p - b.p; });
+  return mcqItems_(picks.map(function (x) { return { q: ACT[x.act].B.qs[x.i], i: x.i, act: x.act }; }), r);
+}
+function weeklySet_(week, slug) {
+  var r = rng_(week + '|' + slug), fives = shuffle_(FIVE_IDS, r), pick = [];
+  fives.forEach(function (id) { if (pick.length < 2 && !pick.some(function (p) { return str_(ACT[p].q.term).toLowerCase() === str_(ACT[id].q.term).toLowerCase(); })) pick.push(id); });
+  pick = pick.concat(shuffle_(TEN_IDS, r).slice(0, 1));
+  return pick.map(function (id) {
+    var A = ACT[id], Bv = A.kind === 'five' ? fiveBuild_(A.q, r) : tenBuild_(A.q, r);
+    Bv.view.act = id; Bv.view.kind = A.kind; Bv.view.title = A.title; Bv.A = A;
+    return Bv;
+  });
+}
+
+// ---------- context ----------
+function pupilCtx_(req) {
+  var email = userEmail_();
+  if (!email) return { err: 'not-signed-in' };
+  if (!domainOk_(email)) return { err: 'domain' };
+  var slug = slug_(req.cls);
+  var c = slug ? jget_(sp_(), 'cls:' + slug, null) : null;
+  if (!c) return { err: 'unknown-class' };
+  return { email: email, slug: slug, c: c };
+}
+function staffish_(email) { return isOwner_(email) || isHod_(email) || isTeacher_(email) || ownsAnyClass_(email); }
+
+// ---------- web app ----------
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  var t = HtmlService.createTemplateFromFile('Index');
+  t.classCode = p['class'] ? String(p['class']).replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) : '';
+  t.baseUrl = ScriptApp.getService().getUrl();
+  t.sit = /^(1|[a-z0-9-]{1,30})$/.test(str_(p.sit)) ? String(p.sit) : '';
+  t.showBuild = p.build !== undefined ? '1' : '';
+  return t.evaluate().setTitle(TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover').setSandboxMode(HtmlService.SandboxMode.IFRAME);
+}
+
+// ---------- pupil API ----------
+function apiBoot(req) { return safe_(apiBoot_)(req); }
+function apiBoot_(req) {
+  var email = userEmail_();
+  if (!email) return err_('not-signed-in');
+  if (!domainOk_(email)) return err_('domain');
+  var d = today_();
+  if (!slug_(req.cls)) return ok_({ email: email, cls: null, staff: staffish_(email), today: d, week: isoWeek_(d) });
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var H = hdrGet_(x.slug, email);
+  if (!H) {
+    var nm = autoName_();
+    H = withLock_(function () {
+      var h = hdrGet_(x.slug, email);
+      if (!h) { h = hdrNew_(nm); h.j = tmin_(); hdrPut_(x.slug, email, h); }
+      return h;
+    });
+  }
+  sp_().setProperty('s:' + x.slug + ':' + email, String(tmin_()));
+  return ok_({ email: email, name: H.n || '', named: !!H.n, hdr: hdrOut_(H), cls: { slug: x.slug, name: x.c.name, lb: x.c.lb === 0 ? 0 : 1, lock: (x.c.lock || []).slice() },
+    max: { acts: MAX_ACTS, parts: MAX_PARTS }, today: d, week: isoWeek_(d), staff: staffish_(email) });
+}
+
+function apiName(req) { return safe_(apiName_)(req); }
+function apiName_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var name = str_(req.name).replace(/\s+/g, ' ').trim();
+  if (!name || name.length > 40 || !/^[A-Za-zÀ-ɏ' ’-]+$/.test(name)) return err_('bad-name');
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email); H.n = name; hdrPut_(x.slug, x.email, H);
+    return ok_({ name: name });
+  });
+}
+
+function apiOpen(req) { return safe_(apiOpen_)(req); }
+function apiOpen_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var act = str_(req.act), H = hdrOr_(x.slug, x.email), d;
+  if (act === 'daily' || act === 'weekly') {
+    if (locked_(x.c, 'p10')) return err_('locked');
+    d = today_();
+    if (act === 'daily') { var D = dailySet_(d, x.slug); return ok_({ act: 'daily', form: 'mcq', part: 'p10', title: 'Daily five', intro: '', a: 0, date: d, view: { qs: D.qs }, best: has_(H.dl, d) ? H.dl[d] : null, done: has_(H.dl, d) ? H.dl[d] : null, attempts: 0, max: D.key.length }); }
+    var wk = isoWeek_(d), W = weeklySet_(wk, x.slug);
+    return ok_({ act: 'weekly', form: 'weekly', part: 'p10', title: 'Weekly challenge', intro: '', a: 0, week: wk, view: { builds: W.map(function (b) { return b.view; }) }, best: has_(H.wk, wk) ? H.wk[wk] : null, done: has_(H.wk, wk) ? H.wk[wk] : null, attempts: 0, max: W.reduce(function (t, b) { return t + b.max; }, 0) });
+  }
+  var A = actOf_(act); if (!A) return err_('bad-act');
+  if (locked_(x.c, A.part)) return err_('locked');
+  var out = { act: A.id, form: A.form, part: A.part, title: A.title, intro: A.intro, best: has_(H.b, A.id) ? H.b[A.id] : null, attempts: H.a[A.id] || 0, max: A.max };
+  if (A.form === 'write') {
+    out.a = 0; out.view = writeView_(A); out.max = A.kind === 'five' ? 5 : 10; out.best = has_(H.w, A.id) ? H.w[A.id] : null; out.practice = !!H.pr[A.id];
+    var wr = unzip_(sp_().getProperty(wKey_(x.slug, x.email, A.id)));
+    out.written = wr ? { t: wr.t, t2: wr.t2, n: wr.n } : {};
+    return ok_(out);
+  }
+  var a = attArg_(req.a, H, A.id), Bv = build_(A, x.email, a, A.form === 'bins' ? roundArg_(req, A) : 0);
+  out.a = a; out.view = Bv.view;
+  if (A.form === 'bins') { var rb = (H.r[A.id] || [])[Bv.round - 1]; out.round = Bv.round; out.rounds = Bv.rounds; out.roundMax = Bv.max; out.roundBest = rb == null ? null : rb; out.roundBests = (H.r[A.id] || []).slice(); }
+  return ok_(out);
+}
+
+function apiMark(req) { return safe_(apiMark_)(req); }
+function apiMark_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var act = str_(req.act);
+  if (act === 'daily') return markDaily_(x, req);
+  if (act === 'weekly') return markWeekly_(x, req);
+  var A = actOf_(act); if (!A || A.form === 'write') return err_('bad-act');
+  if (locked_(x.c, A.part)) return err_('locked');
+  var H0 = hdrOr_(x.slug, x.email), a = attArg_(req.a, H0, A.id);
+  var Bv = build_(A, x.email, a, A.form === 'bins' ? roundArg_(req, A) : 0);
+  var ans = req.ans; if (A.form === 'bins' && ans && !Array.isArray(ans)) ans = ans.bin;
+  var S = score_(Bv, A.form, ans); if (!S) return err_('incomplete');
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email), id = A.id, old, p0 = H.pts || 0, out = { score: S.score, max: Bv.max, per: S.per };
+    if (A.form === 'bins') {
+      var rb = H.r[id] = (H.r[id] || []).slice(0, Bv.rounds);
+      while (rb.length < Bv.rounds) rb.push(null);
+      old = rb[Bv.round - 1];
+      if (old == null || S.score > old) rb[Bv.round - 1] = S.score;
+      H.b[id] = rb.reduce(function (t, v) { return t + (v || 0); }, 0);
+      out.round = Bv.round; out.rounds = Bv.rounds; out.roundBest = rb[Bv.round - 1]; out.actMax = A.max;
+    } else {
+      old = has_(H.b, id) ? H.b[id] : null;
+      if (old == null || S.score > old) H.b[id] = S.score;
+    }
+    out.newBest = S.score > (old || 0);
+    H.a[id] = Math.max(H.a[id] || 0, a + 1);
+    var fresh = settle_(H, true);
+    hdrPut_(x.slug, x.email, H);
+    out.best = H.b[id]; out.attempts = H.a[id]; out.pts = H.pts; out.gain = H.pts - p0; out.badges = fresh; out.hdr = hdrOut_(H);
+    if (A.form === 'builder') out.extra = buildExtra_(A);
+    if (A.form === 'order') out.extra = { whys: (A.B.whys || []).slice() };
+    return ok_(out);
+  });
+}
+function markDaily_(x, req) {
+  if (locked_(x.c, 'p10')) return err_('locked');
+  var d = today_(), D = dailySet_(d, x.slug), S = score_({ key: D.key }, 'mcq', req.ans);
+  if (!S) return err_('incomplete');
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email), first = !has_(H.dl, d), p0 = H.pts || 0;
+    if (first) H.dl[d] = S.score;
+    var fresh = settle_(H, true);
+    hdrPut_(x.slug, x.email, H);
+    return ok_({ score: S.score, max: D.key.length, per: S.per, date: d, best: H.dl[d], done: H.dl[d], newBest: first, stored: first, pts: H.pts, gain: H.pts - p0, badges: fresh, hdr: hdrOut_(H) });
+  });
+}
+function markWeekly_(x, req) {
+  if (locked_(x.c, 'p10')) return err_('locked');
+  var wk = isoWeek_(today_()), W = weeklySet_(wk, x.slug), ans = (req.ans || {}).builds, per = [], score = 0, max = 0;
+  if (!Array.isArray(ans) || ans.length !== W.length) return err_('incomplete');
+  for (var i = 0; i < W.length; i++) { var S = score_(W[i], 'builder', ans[i]); if (!S) return err_('incomplete'); per.push(S.per); score += S.score; max += W[i].max; }
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email), first = !has_(H.wk, wk), p0 = H.pts || 0;
+    if (first) H.wk[wk] = score;
+    var fresh = settle_(H, true);
+    hdrPut_(x.slug, x.email, H);
+    return ok_({ score: score, max: max, per: per, week: wk, best: H.wk[wk], done: H.wk[wk], newBest: first, stored: first, pts: H.pts, gain: H.pts - p0, badges: fresh, hdr: hdrOut_(H),
+      extra: { builds: W.map(function (b) { return buildExtra_(b.A); }) } });
+  });
+}
+
+function apiDaily(req) { return safe_(apiDaily_)(req); }
+function apiDaily_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (locked_(x.c, 'p10')) return err_('locked');
+  var d = today_(), H = hdrOr_(x.slug, x.email), D = dailySet_(d, x.slug);
+  return ok_({ date: d, done: has_(H.dl, d) ? H.dl[d] : null, max: D.key.length, view: { qs: D.qs } });
+}
+function apiWeekly(req) { return safe_(apiWeekly_)(req); }
+function apiWeekly_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (locked_(x.c, 'p10')) return err_('locked');
+  var wk = isoWeek_(today_()), H = hdrOr_(x.slug, x.email), W = weeklySet_(wk, x.slug);
+  return ok_({ week: wk, done: has_(H.wk, wk) ? H.wk[wk] : null, max: W.reduce(function (t, b) { return t + b.max; }, 0), view: { builds: W.map(function (b) { return b.view; }) } });
+}
+
+function apiWrite(req) { return safe_(apiWrite_)(req); }
+function apiWrite_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var A = actOf_(req.act); if (!A || A.form !== 'write') return err_('bad-act');
+  if (locked_(x.c, A.part)) return err_('locked');
+  var five = A.kind === 'five', q = A.q, text = str_(req.text).slice(0, 6000), text2 = five ? '' : str_(req.text2).slice(0, 6000);
+  var J = five ? JudgeFive.judge(q, text, FIVE) : JudgeTen.judge(q, text, text2), n = Number(J.n) || 0;
+  var out = { n: n, max: five ? 5 : 10, notes: J.notes || [] };
+  if (five) out.lines = J.lines; else out.paras = J.paras;
+  if (!text.trim() && !text2.trim()) { var H0 = hdrOr_(x.slug, x.email); out.n = 0; out.practice = !!H0.pr[A.id]; out.newPractice = false; out.hdr = hdrOut_(H0); return ok_(out); }
+  out.model = q.model; out.ao = q.ao; out.why_marks = q.why_marks; if (!five) out.scheme = q.scheme;
+  var quoted = false;
+  if (!five && str_(q.item) && q.scheme === '5+5') { try { quoted = !!(J.paras[0].lines[2].ok && J.paras[1].lines[2].ok); } catch (e) { quoted = false; } }
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email), id = A.id, given = false, p0 = H.pts || 0;
+    sp_().setProperty(wKey_(x.slug, x.email, id), zip_({ t: text.slice(0, 900), t2: text2.slice(0, 900), n: n, tmin: tmin_() }));
+    H.w[id] = Math.max(has_(H.w, id) ? Number(H.w[id]) : 0, n);
+    if (!H.pr[id] && n >= (five ? 3 : 6)) { H.pr[id] = 1; given = true; }
+    if (quoted) H.wq[id] = 1;
+    var fresh = settle_(H, true);
+    hdrPut_(x.slug, x.email, H);
+    out.best = H.w[id]; out.practice = !!H.pr[id]; out.newPractice = given; out.quoted = quoted; out.pts = H.pts; out.gain = H.pts - p0; out.badges = fresh; out.hdr = hdrOut_(H);
+    return ok_(out);
+  });
+}
+function apiWritten(req) { return safe_(apiWritten_)(req); }
+function apiWritten_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var A = actOf_(req.act); if (!A || A.form !== 'write') return err_('bad-act');
+  var o = unzip_(sp_().getProperty(wKey_(x.slug, x.email, A.id)));
+  return ok_(o ? { t: o.t, t2: o.t2, n: o.n } : {});
+}
+
+function apiTick(req) { return safe_(apiTick_)(req); }
+function apiTick_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var ck = Array.isArray(req.ck) ? req.ck : [];
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email);
+    for (var i = 0; i < 12; i++) H.ck[i] = ck[i] === 1 || ck[i] === true || ck[i] === '1' ? 1 : 0;
+    var fresh = settle_(H, false);
+    hdrPut_(x.slug, x.email, H);
+    return ok_({ hdr: hdrOut_(H), pts: H.pts, badges: fresh });
+  });
+}
+function apiPile(req) { return safe_(apiPile_)(req); }
+function apiPile_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var pile = req.pile && typeof req.pile === 'object' && !Array.isArray(req.pile) ? req.pile : {};
+  return withLock_(function () {
+    var H = hdrOr_(x.slug, x.email);
+    Object.keys(pile).slice(0, 60).forEach(function (t) {
+      var key = str_(t).slice(0, 40), at = has_(TERM_AT_, key.toLowerCase()) ? TERM_AT_[key.toLowerCase()] : null;
+      if (at != null) key = TERMS_[at];
+      else if (TERMS_.length || Object.keys(H.pile).length >= 60) return; // only the cards' own terms when they are known; any 60 when not
+      if (pile[t] == null) delete H.pile[key]; else H.pile[key] = pile[t] ? 1 : 0;
+    });
+    var fresh = settle_(H, false);
+    hdrPut_(x.slug, x.email, H);
+    return ok_({ hdr: hdrOut_(H), badges: fresh });
+  });
+}
+function apiPing(req) { return safe_(apiPing_)(req); }
+function apiPing_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  sp_().setProperty('s:' + x.slug + ':' + x.email, String(tmin_()));
+  return ok_({});
+}
+function apiBoard(req) { return safe_(apiBoard_)(req); }
+function apiBoard_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  if (x.c.lb === 0) return ok_({ lb: 0 });
+  var all = sp_().getProperties(), pre = 'p:' + x.slug + ':', rows = [], total = 0;
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf(pre) !== 0) return;
+    var o; try { o = JSON.parse(all[k]); } catch (e) { return; }
+    var pts = Number(o.pts) || 0; total += pts;
+    rows.push({ n: str_(o.n) || 'Pupil', pts: pts, bd: (o.bd || []).length, me: k.slice(pre.length) === x.email });
+  });
+  rows.sort(function (a, b) { return b.pts - a.pts || (a.n < b.n ? -1 : a.n > b.n ? 1 : 0); });
+  var mi = -1; rows.forEach(function (r, i) { if (r.me && mi === -1) mi = i; });
+  return ok_({ lb: 1, rows: rows.slice(0, 10), me: { rank: mi + 1, pts: mi === -1 ? 0 : rows[mi].pts }, total: total });
+}
+
+// ---------- staff ----------
+function passOk_(pass) { var plain = str_(sp_().getProperty('staffPasscode')); var given = str_(pass).trim(); if (!given) return false; if (plain) return given === plain; return sha256hex_(STAFF_SALT + given) === STAFF_HASH; }
+function passMark_() { return sha256hex_(STAFF_SALT + 'ok:' + (str_(sp_().getProperty('staffPasscode')) || STAFF_HASH)); }
+function staffIn_(email) { if (!email) return false; if (staffish_(email)) return true; return up_().getProperty(STAFF_MARK) === passMark_(); }
+function roleOf_(email) { if (isOwner_(email)) return 'owner'; if (isHod_(email)) return 'hod'; if (isTeacher_(email) || ownsAnyClass_(email)) return 'teacher'; return 'pass'; }
+function pupilsOf_(slug, keys) {
+  var pre = 'p:' + slug + ':';
+  return keys.filter(function (k) { return k.indexOf(pre) === 0; }).map(function (k) { return k.slice(pre.length); }).sort();
+}
+function visible_(email) { return classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null)]; }).filter(function (x) { return x[1] && (seesAll_(email) || x[1].o === email); }); }
+function hdrFrom_(all, slug, email) { var o = null; try { o = JSON.parse(all[pKey_(slug, email)] || 'null'); } catch (e) { o = null; } return o ? unpackHdr_(o) : null; }
+function trackRow_(slug, email, all) {
+  var H = hdrFrom_(all, slug, email) || hdrNew_(''), parts = {};
+  PARTS9.forEach(function (p) { parts[p] = [0, MAX_PARTS[p]]; });
+  Object.keys(H.b).forEach(function (id) { var A = ACT[id]; if (A && parts[A.part]) parts[A.part][0] += Number(H.b[id]) || 0; });
+  Object.keys(H.pr).forEach(function (id) { var A = ACT[id]; if (A && parts[A.part] && H.pr[id]) parts[A.part][0] += 1; });
+  var writes = Object.keys(H.w).length, builds = Object.keys(H.b).filter(function (id) { return /^d(5|10)-/.test(id); }).length;
+  var full5 = Object.keys(H.b).filter(function (id) { return /^d5-/.test(id) && ACT[id] && Number(H.b[id]) >= ACT[id].max; }).length, flags = [];
+  if (writes > 0 && builds === 0) flags.push(FLAG_A);
+  if (full5 >= 5 && writes === 0) flags.push(FLAG_B);
+  var seen = Math.max(Number(all['s:' + slug + ':' + email] || 0), H.t || 0);
+  return { email: email, n: H.n || email.split('@')[0], pts: H.pts || 0, bd: H.bd.slice(), st: H.st, parts: parts, last: tminIso_(seen), flags: flags };
+}
+function csvCell_(v) { v = str_(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function storeSize_(all) { return Object.keys(all).reduce(function (n, k) { return n + k.length + str_(all[k]).length; }, 0); }
+function archive_(all, force) {
+  // Owner's staff visit only. Moves the oldest written answers (w: keys) to the named Sheet until the store is back under
+  // 80% of the line. The marks and the practice points stay in the header; the pupil's box is empty after that.
+  var size = storeSize_(all); if (!force && size < ARCHIVE_AT) return 0;
+  var cands = [];
+  Object.keys(all).forEach(function (k) { if (k.indexOf('w:') !== 0) return; var o = unzip_(all[k]); cands.push({ k: k, o: o, tm: o && o.tmin ? o.tmin : 0 }); });
+  cands.sort(function (a, b) { return a.tm - b.tm; });
+  if (!cands.length || size < ARCHIVE_AT * 0.8) return 0;
+  var id = sp_().getProperty('archiveId'), ss;
+  try { ss = id ? SpreadsheetApp.openById(id) : null; } catch (e) { ss = null; }
+  if (!ss) { ss = SpreadsheetApp.create(TITLE + ' — Archive'); sp_().setProperty('archiveId', ss.getId()); }
+  var sheet = ss.getSheets()[0], rows = [], moved = [];
+  for (var i = 0; i < cands.length && size >= ARCHIVE_AT * 0.8; i++) {
+    var cd = cands[i], bits = cd.k.split(':'), o = cd.o || {};
+    rows.push([new Date(), bits[1] || '', bits[2] || '', bits[3] || '', o.n == null ? '' : o.n, str_(o.t), str_(o.t2), tminIso_(o.tmin)]);
+    moved.push(cd.k); size -= cd.k.length + str_(all[cd.k]).length;
+  }
+  if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+  moved.forEach(function (k) { sp_().deleteProperty(k); });
+  return moved.length;
+}
+function writesOf_(slug, email, all) {
+  var out = [];
+  ACTS.forEach(function (id) {
+    var A = ACT[id]; if (A.form !== 'write' || !all[wKey_(slug, email, id)]) return;
+    var o = unzip_(all[wKey_(slug, email, id)]); if (!o) return;
+    var w = { act: id, title: A.title, part: A.part, t: str_(o.t), t2: str_(o.t2), n: o.n, max: A.kind === 'five' ? 5 : 10, tmin: o.tmin || 0, saved: tminIso_(o.tmin) };
+    try { var J = A.kind === 'five' ? JudgeFive.judge(A.q, w.t, FIVE) : JudgeTen.judge(A.q, w.t, w.t2); if (A.kind === 'five') w.lines = J.lines; else w.paras = J.paras; } catch (e) { /* the stored n stands */ }
+    out.push(w);
+  });
+  return out;
+}
+
+function apiStaff(req) { return safe_(apiStaff_)(req); }
+function apiStaff_(req) {
+  var email = userEmail_();
+  if (!email) return err_('not-signed-in');
+  if (!domainOk_(email)) return err_('domain');
+  var op = str_(req.op);
+  function classesOut() { return visible_(email).map(function (x) { return { slug: x[0], name: x[1].name || x[0], o: x[1].o, on: x[1].on || '', lb: x[1].lb === 0 ? 0 : 1, lock: x[1].lock || [], mine: x[1].o === email }; }); }
+  if (op === 'check') {
+    if (staffIn_(email)) return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: isOwner_(email), email: email, classes: classesOut() });
+    if (req.pass == null || req.pass === '') return ok_({ admitted: false, staff: false, role: '', owner: false, email: email });
+    if (!passOk_(req.pass)) return err_('bad-pass');
+    up_().setProperty(STAFF_MARK, passMark_());
+    return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: false, email: email, classes: classesOut() });
+  }
+  if (!staffIn_(email)) return err_('not-staff');
+  var all = sp_().getProperties(), keys = Object.keys(all);
+  if (op === 'classes') {
+    var archived = isOwner_(email) ? withLock_(function () { return archive_(all, false); }) : 0;
+    if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
+    return ok_({ archived: archived, role: roleOf_(email), classes: classesOut().map(function (c) { c.n = pupilsOf_(c.slug, keys).length; return c; }) });
+  }
+  if (op === 'archive') {
+    if (!isOwner_(email)) return err_('owner-only');
+    var moved = withLock_(function () { return archive_(all, true); });
+    return ok_({ moved: moved, size: storeSize_(sp_().getProperties()) });
+  }
+  if (op === 'clearMe') {
+    return withLock_(function () {
+      keys.forEach(function (k) { var m = /^(p|s|w):([^:]+):([^:]+)(:.*)?$/.exec(k); if (m && m[3] === email) sp_().deleteProperty(k); });
+      return ok_({});
+    });
+  }
+  if (op === 'create') {
+    var name = str_(req.name).replace(/\s+/g, ' ').trim();
+    var slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    if (!name || name.length > 30 || !slug) return err_('bad-name');
+    var maker = autoName_();
+    return withLock_(function () {
+      var list = classList_();
+      if (list.indexOf(slug) !== -1 || sp_().getProperty('cls:' + slug)) return err_('taken');
+      jset_(sp_(), 'cls:' + slug, { name: name, o: email, on: maker, c: tmin_(), lb: 1, lock: [] });
+      list.push(slug); jset_(sp_(), 'classes', list);
+      return ok_({ slug: slug, name: name });
+    });
+  }
+  var slugC = slug_(req.slug != null && req.slug !== '' ? req.slug : req.cls), c = slugC ? jget_(sp_(), 'cls:' + slugC, null) : null;
+  if (!c || (!seesAll_(email) && c.o !== email)) return err_('unknown-class'); // another teacher's class is not there for you
+  if (op === 'delete') {
+    if (c.o !== email && !isOwner_(email)) return err_('owner-only');
+    return withLock_(function () {
+      var store = sp_(), pres = ['p:' + slugC + ':', 'w:' + slugC + ':', 's:' + slugC + ':'];
+      store.getKeys().forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
+      store.deleteProperty('cls:' + slugC);
+      jset_(store, 'classes', classList_().filter(function (s) { return s !== slugC; }));
+      return ok_({});
+    });
+  }
+  if (op === 'lb') {
+    return withLock_(function () {
+      var cc = jget_(sp_(), 'cls:' + slugC, null), cur = cc.lb === 0 ? 0 : 1;
+      cc.lb = req.lb == null || req.lb === '' ? 1 - cur : (req.lb === true || req.lb === 1 || req.lb === '1' ? 1 : 0);
+      jset_(sp_(), 'cls:' + slugC, cc);
+      return ok_({ lb: cc.lb });
+    });
+  }
+  if (op === 'parts') return ok_({ name: c.name, lock: (c.lock || []).slice(), parts: LOCK_PARTS.slice() });
+  if (op === 'setPart') {
+    var part = str_(req.part);
+    if (LOCK_PARTS.indexOf(part) === -1) return err_('bad-op');
+    var lockIt = req.locked != null ? !!req.locked && req.locked !== '0' : req.open != null ? !req.open : true;
+    return withLock_(function () {
+      var cc = jget_(sp_(), 'cls:' + slugC, null);
+      cc.lock = (cc.lock || []).filter(function (p) { return p !== part; });
+      if (lockIt) cc.lock.push(part);
+      jset_(sp_(), 'cls:' + slugC, cc);
+      return ok_({ part: part, locked: lockIt, lock: cc.lock.slice() });
+    });
+  }
+  var pupils = pupilsOf_(slugC, keys);
+  if (op === 'tracker') return ok_({ name: c.name, max: MAX_PARTS, rows: pupils.map(function (em) { return trackRow_(slugC, em, all); }) });
+  if (op === 'pupil') {
+    var pe = str_(req.email).toLowerCase(), H = hdrFrom_(all, slugC, pe);
+    if (!H) return err_('unknown-pupil');
+    return ok_({ email: pe, name: H.n || pe.split('@')[0], hdr: hdrOut_(H), row: trackRow_(slugC, pe, all),
+      acts: ACTS.filter(function (id) { return ACT[id].form !== 'write'; }).map(function (id) { return { act: id, title: ACT[id].title, part: ACT[id].part, best: has_(H.b, id) ? H.b[id] : null, max: ACT[id].max }; }),
+      writes: writesOf_(slugC, pe, all) });
+  }
+  if (op === 'csv') {
+    var head = ['class', 'pupil', 'email', 'points', 'badges', 'streak'].concat(PARTS9.map(function (p) { return 'Part ' + p.slice(1); })).concat(['last seen', 'flags']);
+    var lines = [head.map(csvCell_).join(',')], wl = [];
+    pupils.forEach(function (em) {
+      var row = trackRow_(slugC, em, all);
+      lines.push([c.name, row.n, em, row.pts, row.bd.join('; '), row.st && row.st.n ? row.st.n : 0].concat(PARTS9.map(function (p) { return row.parts[p][0] + ' of ' + row.parts[p][1]; }))
+        .concat([row.last, row.flags.join('; ')]).map(csvCell_).join(','));
+      writesOf_(slugC, em, all).forEach(function (w) { wl.push([c.name, row.n, em, w.act, w.title, w.n, w.max, w.t, w.t2, w.saved].map(csvCell_).join(',')); });
+    });
+    lines.push('');
+    lines.push(['class', 'pupil', 'email', 'activity', 'question', 'found', 'out of', 'first paragraph', 'second paragraph', 'saved'].join(','));
+    return ok_({ filename: slugC + '-mastering-socialisation.csv', csv: lines.concat(wl).join('\r\n') + '\r\n' });
+  }
+  return err_('bad-op');
+}

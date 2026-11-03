@@ -1,0 +1,101 @@
+{
+  "route": "s3/peers",
+  "part": "p3",
+  "agent": "peers",
+  "title": "Peer groups",
+  "lead": "Your friends and your colleagues also teach you how to behave. This page follows your teacher's summary diagram for the peer group: how peers shape behaviour, and how they control it.",
+  "blocks": [
+    {
+      "h": "What this agent is",
+      "p": [
+        "A peer group often means your friends, but it could equally mean your colleagues.",
+        "Peer groups usually form around a similar interest, for example scouts or a football team. They also form around what members have in common, such as ethnicity, gender or class. Each group has its own norms and values.",
+        "The peer group is an agent of secondary socialisation. Agents of socialisation are the people, social groups or organisations that play a part in our socialisation, and sometimes they play an important part without us realising it.",
+        "Even adults continue to be socialised by their peer group. In professional occupations there may be formal rules or professional standards of conduct.",
+        "Peers and adults socialise in different ways. Your teacher's table sets them side by side."
+      ],
+      "list": [
+        "Adults socialise children into society's common core values. Peers may have different values from society, which can lead to conflict with adults.",
+        "Adults socialise for long-term adjustment to society, which is deferred gratification. Peers are concerned with immediate gratification and the desire to fit in and be included.",
+        "With adults, children follow the rules passed down to them, with a clear sense of hierarchy and who is in charge. With peers, the children take part in making the rules, and the rules are not imposed from above."
+      ],
+      "quote": {
+        "t": "People who are the same age and status as oneself, who we come into regular contact with.",
+        "who": "Your teacher's definition of a peer group"
+      }
+    },
+    {
+      "h": "How it shapes behaviour",
+      "p": [
+        "**Teaching:** Peers teach through the life of the group. In peer groups where members are 'jockeying for position' to achieve a higher status than others, an individual learns about hierarchies. Children's street culture is the cumulative culture created by young children and passed down from one generation of urban children to the next. It teaches urban legends such as 'the boogie man', and values such as time keeping, for example being in by a certain time. It also teaches turn taking through games such as hopscotch and tag.",
+        "**Imitation and role models:** Peer groups can apply pressure to imitate or conform to their rules, for example pressure to smoke or drink. Inside a group, the higher status individuals act as role models for others. A role model can be positive, such as a prefect who shows academic skills at school, or negative, such as a class bully.",
+        "**Activities:** Children are guided to certain activities by their peers, and this teaches them much about their gender roles. Skelton and Francis noted how boys tend to dominate playground space by playing football, whereas girls are pushed to the periphery, skipping or talking.",
+        "**Language:** Peers pass on their own language. Your teacher's example, from children's street culture, is youth slang.",
+        "**Identity:** Peer groups are where we can learn about class, ethnic or gender identity. Sewell uses the term 'cultural comfort zones' to describe how peer groups tend to include people from similar social backgrounds. For example, in schools typified by diversity, students will tend to group themselves by similar ethnic identity, and this common trait allows the continuation of shared culture. Peer groups also offer an alternative expression of identity, and these are often seen as deviant subcultures, for example emos and hoodies. Your teacher's slide carries a warning beside this example: do not choose this group if you want to successfully pass on culture, norms or values."
+      ]
+    },
+    {
+      "h": "How it controls behaviour",
+      "p": [
+        "**Social control and sanctions:** Each group has norms and values, and we are encouraged to conform through peer group pressure. Rewards and sanctions will be issued to ensure conformity. Failure to conform can lead to rejection, isolation, bullying and so on. Adult peer groups use sanctions too: sacking or ostracising may follow if a person does not conform.",
+        "**Expectations:** A peer group expects its members to fit in. Your teacher's table says peers are 'concerned with immediate gratification and desire to fit in and be included', and that the peers or children take part in making the rules, which are not imposed from above.",
+        "**Manipulation:** Your teacher's list of the ways we learn includes manipulation, with the examples sanctions, expectations, verbal appellations and canalisation. In a peer group, the rewards and sanctions that make members conform are manipulation, and so is guiding members to certain activities. Among adults, informal peer control could be agreements made between workers, for example swapping shifts or agreeing how much work should be done.",
+        "**Peer pressure:** Your teacher's definition is 'Peer pressure is influence of a peer group, exerting that others change their attitudes, values, or behaviours to conform to the groups'. It can be a very powerful form of coercion. It can be positive, such as friends being a good influence on studying and exercise, or negative, such as drugs and smoking. Peer groups can encourage conformity and deviance. Youths often question and test rules, and resisting the established norms and values is generally an accepted part of growing up."
+      ],
+      "new": true
+    },
+    {
+      "h": "What the perspectives say",
+      "p": [
+        "These are the writers and views your notes give for the peer group. Use them as evidence in an answer."
+      ],
+      "writers": [
+        {
+          "name": "Sewell",
+          "says": "Uses the term 'cultural comfort zones' to describe how peer groups tend to include people from similar social backgrounds. This is where we can learn about class, ethnic or gender identity."
+        },
+        {
+          "name": "Skelton and Francis",
+          "says": "They noted how boys tend to dominate playground space by playing football, whereas girls are pushed to the periphery, skipping or talking. This teaches children much about their gender roles."
+        },
+        {
+          "name": "Peter Opie",
+          "says": "He claims that children have a street culture from which adults are excluded. Your teacher's slide adds that this is becoming eroded by media culture and more protective parenting. It is most common in children between the ages of seven and twelve, and it is strongest in urban working class industrial districts where children are traditionally free to 'play out' in the streets for long periods without supervision."
+        },
+        {
+          "name": "Gerald Handel (Interactionist)",
+          "says": "He argues that in the peer group 'a child learns to function more independently, to acquire and test skills and beliefs that earn them a place among people of the same generation, to develop new outlooks that reflect youthful interests rather than adult interests'."
+        },
+        {
+          "name": "Interactionist",
+          "says": "Interactionists do not see socialisation as a passive process of simply acquiring culture or learning society's norms and values. Deviant youth subcultures prove that young people are part of the process: the agent is certainly an influence, but they can also influence others around them too."
+        },
+        {
+          "name": "Functionalist",
+          "says": "Functionalists say that the purpose of socialisation is to unite society in a set of shared norms and values, which is a 'consensus' sociology. In your teacher's table, adults socialise children into society's common core values, while peers may hold different values that conflict with adults.",
+          "new": true
+        },
+        {
+          "name": "Feminist",
+          "says": "Feminists say socialisation is preparing us for differentiated gender roles and to accept patriarchy. The playground finding of Skelton and Francis is the peer-group example that fits this view.",
+          "new": true
+        }
+      ]
+    }
+  ],
+  "check": [
+    "Could you write about teaching, and say what a peer group teaches, such as hierarchies or the values of street culture?",
+    "Could you write about imitation and role models, with one positive and one negative example?",
+    "Could you write about activities, using what Skelton and Francis noted in the playground?",
+    "Could you write about language, using youth slang as your example?",
+    "Could you write about identity, using Sewell's cultural comfort zones or a youth subculture?",
+    "Could you write about social control and sanctions, including rejection, isolation and bullying?",
+    "Could you write about expectations, and what a group expects of its members?",
+    "Could you write about manipulation, and how a group gets its members to conform?",
+    "Could you write about peer pressure, giving your teacher's definition and an example?"
+  ],
+  "next": {
+    "route": "s3/peers/decide",
+    "label": "Next: Friday night"
+  }
+}

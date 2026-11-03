@@ -1,0 +1,53 @@
+{
+  "route": "s2/values",
+  "part": "p2",
+  "title": "Values",
+  "lead": "Values are the third of the seven ideas, and they cover what a group thinks matters most.",
+  "blocks": [
+    {
+      "h": "What it means",
+      "p": [
+        "Values are shared ideas about what a group considers important, desirable or morally right. They guide behaviour and can underpin norms.",
+        "In plain words, values are the things a group cares about most."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "argue that shared values help people cooperate and feel part of a community."
+        }
+      ]
+    },
+    {
+      "h": "Examples",
+      "list": [
+        "Fairness and inclusion are values, because they are principles that a school wants its pupils to accept.",
+        "Inclusion is the principle, and helping a new pupil to settle in is the behaviour that puts it into practice.",
+        "Valuing education is a value, because it is about what matters rather than about how to succeed.",
+        "School subjects can reflect values: PE the value of good health, History the value of national identity and Religion the value of morality.",
+        "A school that asks pupils to recycle and join a litter pick shows that it sees caring for the environment as important.",
+        "A school that expects respect for other people, including when pupils talk online, shows that it sees respect as important."
+      ],
+      "new_items": [
+        4,
+        5
+      ]
+    },
+    {
+      "h": "In an exam answer",
+      "p": [
+        "Define the term: Values are shared ideas about what a group considers important, desirable or morally right. They guide behaviour and can underpin norms.",
+        "Item link: Fairness and inclusion in the item are values because they are principles the school wants pupils to accept.",
+        "Explain with an example: Praising pupils who help a newcomer encourages a norm of helpful behaviour based on those values. Inclusion is the principle; helping the new pupil puts it into practice.",
+        "Theory link: Functionalists argue that shared values help people cooperate and feel part of a community."
+      ],
+      "quote": {
+        "t": "A school encourages pupils to include others and treat them fairly. Students who help a new pupil settle in are praised by teachers and classmates.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s2/values/quiz",
+    "label": "Take the quiz on values"
+  }
+}

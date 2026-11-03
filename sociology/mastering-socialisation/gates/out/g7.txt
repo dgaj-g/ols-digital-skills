@@ -1,0 +1,24 @@
+PASS build — build 15131c5bb7-fb1c6890 · ground-truth token soc-15131c5bb7-fb1c6890
+INFO Index.html 363.6 KB -> /Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Sociology/deploy/Index.html
+PASS each of the four scriptlets exactly once — <?= classCode ?> x1, <?= baseUrl ?> x1, <?= sit ?> x1, <?= showBuild ?> x1
+PASS no other <? or ?> (Apps Script templating) — 0 stray
+PASS script blocks balanced (each <script> closed before the next opens) — 7 blocks
+PASS Index.html is pure ASCII — 372313 bytes
+PASS boot block and App.boot() present
+PASS window.CONTENT present and equal to content/ — 35 files, 126.5 KB in the page
+PASS no "k": in the page
+PASS no judge, BANKS, key field or STAFF_ name in the page — 11 fixed strings
+PASS staff secrets exist to check against — salt, hash and passcode read
+PASS no STAFF_ value (salt, hash, passcode) or named teacher in the page — 3 secrets
+PASS no bank key text in the page (leak guard) — 547 bank strings checked
+INFO leak-guard exemptions: 49 bank key strings are word for word in the public content/ and are not counted
+PASS Code.gs is mode 600 — 600
+PASS Code.gs parses, holds the banks and judge, no unfilled placeholder — 325.7 KB
+PASS the deploy folder is outside the git worktree — /Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Sociology/deploy
+PASS git tracks no banks/, judge/, deploy/, Code.gs, STAFF_PASSCODE, TEACHERS.txt or dev-store — 91 tracked files
+PASS nothing private waits untracked to be added — 6 untracked files
+PASS no repo file holds the staff salt, hash, passcode or a named teacher — 81 text files read
+PASS no repo file outside content/ holds bank key text — 81 text files read
+PASS appsscript.json scopes match s1-unit1 — userinfo.email, userinfo.profile, script.external_request, spreadsheets
+PASS web app runs as the user, domain only, V8, Europe/London — {"executeAs":"USER_ACCESSING","access":"DOMAIN"}
+g7: 21 PASS, 0 FAIL, 0 SKIP

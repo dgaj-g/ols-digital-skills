@@ -1,0 +1,11 @@
+PASS every S.<name> in app.js, engine.js and staff.js exists in strings.js — 193 names used
+PASS every S value is a string
+PASS no all-caps slogans
+PASS no line ends in "!"
+PASS every number placeholder has its thing
+INFO held to their wording: ring "{n}% of this part's marks earned" | cardsLeft "{n} cards left in "Not yet"" | clearMe "Clear my own test data (press twice)"
+PASS every string is a full sentence or a label of five words or fewer
+PASS PARTS, AGENTS and BADGES names are short labels
+PASS CONTROL: strings.js with checkN deleted fails — checkN (engine.js)
+PASS CONTROL: "{n}/{m}" and a bare "{n} of {m}" are caught — 4 caught
+g3-strings: 9 PASS, 0 FAIL, 0 SKIP

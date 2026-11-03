@@ -1,0 +1,227 @@
+{
+  "route": "s11/quiz",
+  "title": "Quick quiz: 20 questions",
+  "sections": [
+    {
+      "h": "Questions 1 to 10",
+      "p": [
+        "Write each answer in the last column, then check against the answers at the end."
+      ],
+      "table": {
+        "head": [
+          "No.",
+          "Question",
+          "Your answer"
+        ],
+        "rows": [
+          [
+            "1",
+            "In your teacher’s words, what is socialisation?",
+            ""
+          ],
+          [
+            "2",
+            "When does socialisation begin and when does it end?",
+            ""
+          ],
+          [
+            "3",
+            "Name Parsons’ three stages of socialisation.",
+            ""
+          ],
+          [
+            "4",
+            "Which agent is the main agent of primary socialisation?",
+            ""
+          ],
+          [
+            "5",
+            "Name four agents of secondary socialisation.",
+            ""
+          ],
+          [
+            "6",
+            "Which agent is an important agent of adult (tertiary) socialisation?",
+            ""
+          ],
+          [
+            "7",
+            "What is the difference between formal and informal socialisation?",
+            ""
+          ],
+          [
+            "8",
+            "What is the hidden curriculum?",
+            ""
+          ],
+          [
+            "9",
+            "What are verbal appellations? Give an example.",
+            ""
+          ],
+          [
+            "10",
+            "What is canalisation?",
+            ""
+          ]
+        ]
+      },
+      "new": true
+    },
+    {
+      "h": "Questions 11 to 20",
+      "table": {
+        "head": [
+          "No.",
+          "Question",
+          "Your answer"
+        ],
+        "rows": [
+          [
+            "11",
+            "What are sanctions?",
+            ""
+          ],
+          [
+            "12",
+            "Is a detention a formal or an informal sanction? Say why.",
+            ""
+          ],
+          [
+            "13",
+            "Give one example of an informal negative sanction.",
+            ""
+          ],
+          [
+            "14",
+            "What is social control?",
+            ""
+          ],
+          [
+            "15",
+            "Define norms and values in one sentence each.",
+            ""
+          ],
+          [
+            "16",
+            "Which writer used the term ‘cultural comfort zones’ about peer groups?",
+            ""
+          ],
+          [
+            "17",
+            "What does DIET stand for?",
+            ""
+          ],
+          [
+            "18",
+            "How are the marks split on a five-mark question?",
+            ""
+          ],
+          [
+            "19",
+            "What does PEEL stand for?",
+            ""
+          ],
+          [
+            "20",
+            "Name two perspectives and say one thing each says about socialisation.",
+            ""
+          ]
+        ]
+      },
+      "new": true
+    },
+    {
+      "h": "Answers",
+      "table": {
+        "head": [
+          "No.",
+          "Answer"
+        ],
+        "rows": [
+          [
+            "1",
+            "The process by which humans learn and internalise their culture’s norms and values."
+          ],
+          [
+            "2",
+            "It begins from the moment of birth and extends to the point of death."
+          ],
+          [
+            "3",
+            "Primary, secondary and tertiary socialisation."
+          ],
+          [
+            "4",
+            "The family."
+          ],
+          [
+            "5",
+            "Any four of: education, peer groups, the media, religion (the workplace is shown as tertiary on this site)."
+          ],
+          [
+            "6",
+            "The workplace."
+          ],
+          [
+            "7",
+            "Formal: people are deliberately and consciously taught rules. Informal: people learn by watching and learning from others, unintentionally."
+          ],
+          [
+            "8",
+            "The social norms children learn at school without being officially or formally taught."
+          ],
+          [
+            "9",
+            "Labels or pet names used in the family that can teach gender expectations, such as ‘Princess’."
+          ],
+          [
+            "10",
+            "Guiding a child’s interests towards certain toys and activities, such as boys being encouraged to play football and girls to play house."
+          ],
+          [
+            "11",
+            "Social reactions to conformity (positive sanctions) or violation (negative sanctions) of the norms: rewards or punishments used to encourage conformity."
+          ],
+          [
+            "12",
+            "Formal, because it is given by an organisation (the school) with written rules."
+          ],
+          [
+            "13",
+            "Any one of: time-out at home, being left out of a group, ‘I’m very disappointed in you’."
+          ],
+          [
+            "14",
+            "The different processes through which society enforces conformity to the norms."
+          ],
+          [
+            "15",
+            "Norms are social rules and expectations about how people should behave. Values are shared ideas about what a group considers important, desirable or morally right."
+          ],
+          [
+            "16",
+            "Sewell."
+          ],
+          [
+            "17",
+            "Define the term, Item link, Explain with an example, Theory link."
+          ],
+          [
+            "18",
+            "AO1 knowledge and understanding 3 marks, AO2 application 2 marks."
+          ],
+          [
+            "19",
+            "Point, Evidence, Apply the item, Explain, Link back."
+          ],
+          [
+            "20",
+            "Any two, for example: Functionalists, who say socialisation unites society in shared norms and values; Marxists, who say it gives people the ideas the powerful promote."
+          ]
+        ]
+      },
+      "new": true
+    }
+  ]
+}

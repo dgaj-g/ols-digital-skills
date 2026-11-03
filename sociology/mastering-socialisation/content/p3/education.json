@@ -1,0 +1,75 @@
+{
+  "route": "s3/education",
+  "part": "p3",
+  "agent": "education",
+  "title": "Education",
+  "lead": "Education is an agent of secondary socialisation. This page follows your teacher’s summary diagram: how school shapes behaviour, and how it controls behaviour.",
+  "blocks": [
+    {
+      "h": "What this agent is",
+      "p": [
+        "Education is an agent of secondary socialisation. Children step into the education system when they start school, and they spend at least the next 11 years of their lives there. The family continues to be important for socialisation, but education also plays a big role. The people involved are teachers and other pupils, and we are taught in two ways: through the formal curriculum and through the informal, or hidden, curriculum."
+      ]
+    },
+    {
+      "h": "How it shapes behaviour",
+      "p": [
+        "**Teaching:** In school we are taught in two ways, formally and informally. The formal curriculum is the official one, and the hidden curriculum, which is also called the informal curriculum, is the one pupils are not officially taught.",
+        "**Formal curriculum:** The formal curriculum is the ‘official or national curriculum’. Children need to learn to adapt to a new set of ‘norms and rules’. They are taught core skills such as numeracy and literacy. Certain subjects reflect society’s values: PE the value of good health, History the value of national identity and Religion the value of morality. All of this is important for transmitting culture. Some people are critical of the curriculum and see it as ethnocentric.",
+        "**Hidden curriculum:** The hidden curriculum is the social norms that children learn without being officially or formally taught. These are implicit rules, such as learning to wait quietly, exercising restraint, trying, completing work, keeping busy, cooperating, being neat and punctual, and conducting oneself courteously. Your teacher’s worked examples show what pupils learn from features of school life. Privileges and responsibilities for sixth formers teach respect for elders. School rules and sanctions teach conformity to society’s rules and laws. Competition and sports teach the value of competition. Standing when a teacher enters the classroom teaches respect for authority. Punctuality teaches the value of time-keeping. The grading of tests and ability teaches the value of meritocracy, where people are selected according to merit.",
+        "**Imitation and role models:** Children are keen to ‘fit in’ at school, and they will often copy the behaviour of other students to ensure that they do. Bandura is the name to link with imitation. As well as teaching all aspects of the formal curriculum, teachers also act as role models, for example female science teachers and GIST (girls into science) policies. Teachers will also guide students towards other appropriate role models in the form of historic figures, which can help to shape their future identity, for example gender identity.",
+        "**Activities (canalisation):** Children’s interests are directed into certain toys and play activities. For example, boys may be encouraged to play football and girls to play house.",
+        "**Language (verbal appellations):** Teachers may label and refer to some children as bright, smart, good, a star pupil, pupil of the week, or a good girl or good boy."
+      ]
+    },
+    {
+      "h": "How it controls behaviour",
+      "p": [
+        "**Social control and sanctions:** Teachers will encourage certain behaviour through manipulation and sanctions. Sanctions are a process of social control ensuring conformity to the norms and values of society, and they can be positive or negative. Teachers may reward good behaviour with merits, badges, certificates and praise, which are positive sanctions. Poor behaviour may receive a d-merit, a note in the diary, a detention and so on, which are negative sanctions. Sanctions can be formal, such as a school detention, or informal, such as friends’ disapproval.",
+        "**Expectations:** Schools expect certain behaviour from pupils, for example being punctual, completing work and conducting themselves courteously. Pupils learn these expectations through the hidden curriculum.",
+        "**Manipulation:** In school, as in the family, adults encourage and reward behaviour they think is appropriate, or discourage behaviour they think is inappropriate. Merits and praise encourage, and a d-merit or a note in the diary discourages.",
+        "**Protection:** A school is also responsible for protecting its pupils from harm, for example through anti-bullying rules."
+      ],
+      "new_p": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "h": "What the perspectives say",
+      "p": [
+        "Each perspective explains the school’s part in socialisation in a different way."
+      ],
+      "writers": [
+        {
+          "name": "Functionalists",
+          "says": "believe that the education system is essential in transmitting shared cultural values, which produce conformity and consensus. They point to values like achievement, competition and individualism. Education acts like a bridge between the family and society, and it prepares young people for the world of work."
+        },
+        {
+          "name": "Marxists",
+          "says": "believe that the education system is dominated by the hidden curriculum. Ruling class ideologies are being transmitted in the preparation of the young for work. Schools are teaching conformity, obedience and acceptance of hierarchical structures. The focus on values like competition and achievement at all costs discourages collaboration and team work."
+        },
+        {
+          "name": "Feminists",
+          "says": "argue that socialisation perpetuates gender inequality (Oakley, 1974) and that gender differences are due to culture, not biology. Thorne (1993) argues that school systems also reinforce gender differences. Socialisation is preparing us for differentiated gender roles and to accept patriarchy."
+        }
+      ]
+    }
+  ],
+  "check": [
+    "Could you write about teaching in school, both the formal and the hidden curriculum?",
+    "Could you write about imitation and role models in school?",
+    "Could you write about activities (canalisation) in school?",
+    "Could you write about language and verbal appellations in school?",
+    "Could you write about social control and sanctions in school?",
+    "Could you write about expectations in school?",
+    "Could you write about manipulation in school?",
+    "Could you write about protection from harm in school?"
+  ],
+  "new": true,
+  "next": {
+    "route": "s3/education/spot",
+    "label": "Sort the school examples"
+  }
+}

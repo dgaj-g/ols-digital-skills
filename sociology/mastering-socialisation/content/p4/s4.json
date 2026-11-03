@@ -1,0 +1,79 @@
+{
+  "route": "s4",
+  "part": "p4",
+  "title": "Social control and sanctions",
+  "lead": "Most of the time people follow the norms of society without thinking about it. This page explains the ways society encourages them to follow those norms, and how to name those ways in an exam answer.",
+  "blocks": [
+    {
+      "h": "What social control means",
+      "p": [
+        "Social control means the ways groups encourage conformity to norms and discourage unacceptable behaviour. It can be formal through official rules and penalties, or informal through everyday reactions.",
+        "Your teacher’s handout puts it this way: social control is the different processes through which society enforces conformity to the norms.",
+        "Social control does not always involve punishment. When someone is offered the chance of promotion for working, they are also being persuaded to follow the norms and values of the workplace.",
+        "Often the actual punishment or reward is not needed. Once people realise that certain behaviours have particular consequences, that is often enough to enforce the norms."
+      ]
+    },
+    {
+      "h": "What sanctions are",
+      "p": [
+        "Sanctions are rewards or punishments used to encourage conformity to norms. Positive sanctions reward approved behaviour, while negative sanctions discourage behaviour considered unacceptable.",
+        "Sanctions are also formal or informal. A formal sanction is given by an organisation with written rules, such as a school, an employer or a court. An informal sanction is given by anyone in everyday life, such as a parent, a friend or a classmate.",
+        "A school detention is a formal sanction, because the school sets the rule and gives the punishment. Putting the two pairs together gives four kinds of sanction, with one example of each from your teacher’s handout:"
+      ],
+      "list": [
+        "Formal and positive: a graduation ceremony.",
+        "Formal and negative: a prison sentence.",
+        "Informal and positive: a pat on the back for a good shot in a basketball game.",
+        "Informal and negative: a time-out given to an unruly child."
+      ]
+    },
+    {
+      "h": "Examples from everyday life",
+      "p": [
+        "Each of these is a sanction. Say whether it is formal or informal, and whether it is positive or negative."
+      ],
+      "list": [
+        "A pat on the back for a good shot in a basketball game (informal, positive).",
+        "A graduation ceremony (formal, positive).",
+        "A time-out given to an unruly child (informal, negative).",
+        "A prison sentence for a crime (formal, negative).",
+        "Merits, badges and certificates at school (formal, positive).",
+        "A d-merit, a note in the diary or a detention at school (formal, negative).",
+        "A parent saying “I’m very disappointed” (informal, negative).",
+        "Disapproval from friends, or being left out of a group you want to belong to (informal, negative)."
+      ]
+    },
+    {
+      "h": "In an exam answer: sanctions",
+      "p": [
+        "Question: Explain the meaning of sanctions (5 marks). The model answer below is in four short paragraphs: the definition, the item link, an example, and a theory link.",
+        "Sanctions are rewards or punishments used to encourage conformity to norms. Positive sanctions reward approved behaviour, while negative sanctions discourage behaviour considered unacceptable.",
+        "The agents in the item might include parents who praise sharing or remove a privilege after repeated unkindness, encouraging a child to follow expected behaviour.",
+        "Sanctions can be formal, such as a school detention, or informal, such as friends’ disapproval. Both show how the item’s agents can control behaviour.",
+        "Functionalists argue that sanctions help people learn shared expectations and maintain social order."
+      ],
+      "quote": {
+        "t": "People learn what behaviour is expected in their different roles. Agents of primary and secondary socialisation use sanctions to encourage conformity and influence behaviour.",
+        "who": "Item"
+      }
+    },
+    {
+      "h": "In an exam answer: social control",
+      "p": [
+        "Question: Explain the meaning of social control (5 marks). The model answer below is in four short paragraphs, in the same order.",
+        "Social control means the ways groups encourage conformity to norms and discourage unacceptable behaviour. It can be formal through official rules and penalties, or informal through everyday reactions.",
+        "The anti-bullying rule and detention in the item are formal control because an institution sets and enforces them.",
+        "Praise or disapproval from classmates is informal control. Peer reactions, including in a group chat, can influence whether behaviour is repeated.",
+        "Functionalists argue that social control helps maintain shared expectations and social order."
+      ],
+      "quote": {
+        "t": "A school has anti-bullying rules and may issue a detention when a pupil breaks them. Classmates may praise someone who speaks up for another pupil or disapprove of unkind behaviour.",
+        "who": "Item"
+      }
+    }
+  ],
+  "next": {
+    "route": "s4/sorter",
+    "label": "Try the Sanction Sorter"
+  }
+}

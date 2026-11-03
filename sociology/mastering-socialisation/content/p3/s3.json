@@ -1,0 +1,27 @@
+{
+  "route": "s3",
+  "part": "p3",
+  "title": "Agents of socialisation",
+  "lead": "An agent of socialisation is a group or institution that teaches us the norms and values of our culture. Your teacher's summary diagram names six: the family, education, peer groups, the media, religion and the workplace. Each one has its own page and its own activities.",
+  "blocks": [
+    {
+      "h": "The six agents",
+      "list": [
+        "The family: the agent of primary socialisation, where we first learn language, values and accepted patterns of behaviour.",
+        "Education: an agent of secondary socialisation, teaching through the formal curriculum and the hidden curriculum.",
+        "Peer groups: people of a similar age or status, whose approval and disapproval shape how we behave.",
+        "The media: newspapers, magazines, television, film and social media, which teach us what is normal through the images they repeat.",
+        "Religion: an agent that can have a profound effect on behaviour through its teachings, its rituals and its sanctions.",
+        "The workplace: where adults learn a new set of rules; some textbooks call this tertiary socialisation."
+      ]
+    },
+    {
+      "h": "Two branches for every agent",
+      "p": [
+        "Every agent page follows the same shape as your teacher's summary diagram. One branch shows how the agent shapes behaviour, for example through teaching, imitation, role models or canalisation. The other branch shows how the agent controls behaviour, for example through sanctions, expectations and protection.",
+        "Learn one agent at a time, then do its activities. The ring on each tile fills as you earn that agent's marks."
+      ]
+    }
+  ],
+  "next": { "route": "s3/family", "label": "Start with the family" }
+}
