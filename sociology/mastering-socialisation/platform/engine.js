@@ -406,7 +406,7 @@ var Engine = (function(){
     return html + '</div>';
   }
   function builderPanel(root, v, open){
-    var slots = v.slots, ans = {}, orders = {}, isTen = !!v.scheme;
+    var slots = v.slots, ans = {}, orders = {}, moved = {}, isTen = !!v.scheme;
     var qq = v.q || v.stem; if (qq) root.appendChild(el('<div class="q"><div class="qn">' + h(S.questionHead) + '</div><div class="qt">' + h(qq) + (v.marks ? ' <span class="pill">' + h(fmt(S.qMarks, {m: v.marks})) + '</span>' : '') + '</div></div>'));
     if (v.item) root.appendChild(el(itemBox(v.item)));
     if (isTen && !v.item) root.appendChild(el('<p class="say">' + h(S.tenNoItem) + ' ' + h(S.schemeHer) + '</p>'));
@@ -422,9 +422,9 @@ var Engine = (function(){
       else if (sl.type === "order") body = '<p class="small mute">' + h(S.slotOrder) + '</p>';
       var c = el('<div class="slotc" data-s="' + si + '" data-type="' + h(sl.type) + '">' + head + body + '</div>');
       list.appendChild(c);
-      if (sl.type === "order"){ orders[si] = orderList(c, sl.steps, {onChange: function(){}}); ans[si] = true; }
+      if (sl.type === "order"){ orders[si] = orderList(c, sl.steps, {onChange: function(){ moved[si] = true; onChange(); }}); }
     });
-    function filled(){ return slots.filter(function(sl, si){ return sl.type === "order" ? true : (sl.type === "tap" ? (ans[si] && ans[si].length === want(sl)) : ans[si] != null); }).length; }
+    function filled(){ return slots.filter(function(sl, si){ return sl.type === "order" ? !!moved[si] : (sl.type === "tap" ? (ans[si] && ans[si].length === want(sl)) : ans[si] != null); }).length; }
     function get(){ return slots.map(function(sl, si){ return sl.type === "order" ? orders[si].get() : ans[si]; }); }
     function show(per, extra){
       (per || []).forEach(function(p, si){
@@ -537,8 +537,8 @@ var Engine = (function(){
       if (r.lines) html += ckl(r.lines);
       if (r.paras) html += r.paras.map(function(p, i){ return '<h4>' + h(two ? (i ? S.para2 : S.para1) : S.questionHead) + '</h4>' + ckl(p.lines); }).join("");
       if (r.notes && r.notes.length) html += '<ul class="notes">' + r.notes.map(function(n){ return '<li>' + h(n) + '</li>'; }).join("") + '</ul>';
-      if (r.practice) html += '<p class="line"><b>' + h(isTen ? fmt(S.practicePt10, {n: r.n, m: r.max}) : fmt(S.practicePt, {n: r.n})) + '</b></p>';
-      else if (hadBefore) html += '<p class="line">' + h(S.practiceHad) + '</p>';
+      if (r.newPractice) html += '<p class="line"><b>' + h(isTen ? fmt(S.practicePt10, {n: r.n, m: r.max}) : fmt(S.practicePt, {n: r.n})) + '</b></p>';
+      else if (hadBefore || r.practice) html += '<p class="line">' + h(S.practiceHad) + '</p>';
       else html += '<p class="line">' + h(isTen ? fmt(S.practiceNo10, {n: r.n, m: r.max}) : fmt(S.practiceNo, {n: r.n})) + '</p>';
       html += modelPanel({model: r.model, ao: r.ao, why_marks: r.why_marks, phrases: v.phrases}, v.scheme);
       html += '<p class="line">' + h(S.writeDone) + '</p></div>';
@@ -588,7 +588,7 @@ var Engine = (function(){
   var FORMS = {mcq: mcq, bins: bins, match: match, tick: tick, scenes: mcq, branch: branch, order: order, tap: tap, builder: builder, weekly: weekly, write: write, cards: cards};
   function mount(root, open, o){
     root.innerHTML = "";
-    if (open.form !== "write" && open.form !== "cards") root.appendChild(el('<div class="act-head"><div class="best">' + h(bestLine(open)) + '</div></div>'));
+    if (open.form !== "write" && open.form !== "cards" && !open.noHead) root.appendChild(el('<div class="act-head"><div class="best">' + h(bestLine(open)) + '</div></div>'));
     var f = FORMS[open.form];
     if (!f){ root.appendChild(el('<p class="say">' + h(S.serverErr) + '</p>')); return; }
     f(root, open, o);

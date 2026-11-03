@@ -247,7 +247,7 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .slotc .sl b{font-size:16px}
 .slotc.ok{border-color:var(--ok)}.slotc.no{border-color:var(--bad)}
 .modes{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden;box-shadow:var(--sh-s);margin:0 0 16px}
-.modes button{min-height:42px;padding:0 18px;background:#fff;border:0;font-weight:600}
+.modes button{min-height:42px;padding:0 18px;background:#fff;color:var(--ink);border:0;font-weight:600}
 .modes button+button{border-left:2px solid var(--ink)}
 .modes button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .diet{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;font-size:14px}

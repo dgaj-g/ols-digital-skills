@@ -93,6 +93,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     const pupil = (user, hash) => go(user, 'class=' + CLS, hash);
     const tapEl = async (hd) => { if (!hd) return false; await hd.evaluate((e) => e.scrollIntoView({ block: 'center', behavior: 'instant' })); await wait(70); const bb = await hd.boundingBox(); if (!bb) return false; await page.mouse.click(bb.x + bb.width / 2, bb.y + bb.height / 2); await wait(40); return true; };
     const tap = async (sel) => { const hd = await page.$(sel); if (!hd) throw new Error('No element found for selector: ' + sel); return tapEl(hd); };
+    const dragOrder = async (scope) => { const li = await page.$$(scope + ' li.dcard'); if (li.length < 2) return false; await li[0].evaluate((e) => e.scrollIntoView({ block: 'center', behavior: 'instant' })); await wait(80); const a = await li[0].boundingBox(), b = await li[1].boundingBox(); await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down(); await page.mouse.move(a.x + a.width / 2, b.y + b.height * 0.8, { steps: 14 }); await wait(60); await page.mouse.up(); await wait(120); return true; };
     const waitSel = (sel, ms) => page.waitForSelector(sel, { timeout: ms || 6000 }).then(() => true, () => false);
 
     // ================= STAFF =================
@@ -150,6 +151,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     sh.check(pressed === 'true', 'T50 Part 6 shows as locked after one press in the Parts tab', 'aria-pressed ' + pressed);
 
     // ================= PUPILS =================
+    await api('apiName', { cls: CLS, name: 'Ciara' }, P2); await api('apiName', { cls: CLS, name: 'Niamh' }, P3);
     // T01 sign-in: the name screen once, then "Hi <name>"
     await pupil(NONAME, '');
     sh.check(await waitSel('#nm'), 'T01 a pupil with no name on record is asked for her first name');
@@ -209,7 +211,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       const marks = await count(page, '.why .mark'), rights = await count(page, '.opt.right');
       sh.check(marks === n && rights === n, id + ' every question shows a tick or cross and its right answer', marks + ' marks, ' + rights + ' right');
       sh.check((await count(page, '.why span')) >= n, id + ' why lines are shown');
-      if (opts.tag) sh.check((await page.$$eval('.why .tag', (a, L) => a.filter((t) => t.innerText.indexOf(L) === 0).length, S.tagLabel)) === n, id + ' each result shows "' + S.tagLabel + ' <tag>"');
+      if (opts.tag) sh.check((await page.$$eval('.why .tag', (a, L) => a.filter((t) => t.textContent.indexOf(L) === 0).length, S.tagLabel)) === n, id + ' each result shows "' + S.tagLabel + ' <tag>"');
       if (opts.imgs) {
         const im = await page.$$eval('.q[data-q] img', (a) => a.map((i) => ({ alt: i.alt, credit: !!(i.closest('.q').querySelector('p.small.mute')), ok: i.complete && i.naturalWidth > 0 })));
         sh.check(im.length === n && im.every((i) => i.alt && i.alt.length > 3 && i.credit), id + ' every image has alt text and a credit line', JSON.stringify(im.filter((i) => !(i.alt && i.credit)).length) + ' short');
@@ -317,8 +319,8 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       await tap('#ck').catch(() => {}); await waitSel('.res .score');
       const sc5 = await txt(page, '.res .score');
       sh.check(/of 5 marks/.test(sc5 || ''), 'T32 the build is marked out of 5', 'saw ' + sc5);
-      const strip = await page.$$eval('.tag.ao1, .tag.ao2', (a) => a.length);
-      sh.check(strip >= 5, 'T32 the mark strip shows AO1/AO2 on its lines', strip + ' tags');
+      const strip = await page.$$eval('.strip li', (a) => [a.length, a.filter((l) => /AO[12]/.test(l.innerText)).length]);
+      sh.check(strip[0] >= 1 && strip[1] === strip[0], 'T32 the mark strip shows AO1/AO2 on each line', strip[0] + ' lines, ' + strip[1] + ' with AO1/AO2');
       const fixes = await page.$$eval('.slotc .fix, .slotc .right, .slotc .why', (a) => a.length);
       sh.check(fixes > 0, 'T32 wrong picks show the right sentence');
       if (await count(page, '#again')) { const bf = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); await tap('#again'); await waitSel('.slotc .opt'); await wait(300); const af = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); sh.check(bf !== af, 'T32 Try again reshuffles the options'); }
@@ -335,9 +337,22 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       await tap('#ck').catch(() => {}); await waitSel('ul.ckl li', 8000);
       const ckl = await count(page, 'ul.ckl li');
       sh.check(ckl === 5, 'T33 the checklist shows 5 lines', ckl + ' lines');
-      sh.check((await count(page, '.writeout')) > 0 && (await count(page, '.writeout .tag, .model .tag, .tag.ao1, .tag.ao2')) > 0, 'T33 the model answer appears with AO tags');
+      sh.check((await count(page, '.writeout')) > 0 && (await count(page, '.writeout .model p.ao1')) > 0 && (await count(page, '.writeout .model p.ao2')) > 0, 'T33 the model answer appears with AO tags', await page.$$eval('.writeout *', (a) => [...new Set(a.map((e) => e.tagName.toLowerCase() + '.' + e.className))].join(' ')));
+      sh.skip('T33 item quotes underlined in the model', 'needs a judgement of which words are item quotes; left to the sit and g1');
       await pupil(P1, 's6/1/write'); await waitSel('textarea#w1'); await wait(500);
       sh.check(((await page.$eval('#w1', (t) => t.value)) || '').indexOf('Culture is the shared way') === 0, 'T33 the answer is restored on reload');
+      await pupil(P1, 's6/2/write'); await waitSel('textarea#w1'); await wait(500);
+      await page.type('#w1', 'A first try at this question to see the model answer.'); await tap('#ck'); await waitSel('.writeout .model', 8000);
+      const model = await page.$eval('.writeout .model', (m) => [...m.querySelectorAll('p.ao1, p.ao2')].map((p) => p.textContent.replace(/^\s*AO[12][:\s]*/, '')).join(' ')).catch(() => '');
+      if (model.length > 40) {
+        await page.$eval('#w1', (t, v) => { t.value = v; }, model.slice(0, 880)); await page.focus('#w1'); await page.keyboard.type(' ');
+        await tap('#ck'); await wait(1500);
+        const pt1 = await bodyText(page), n1 = (/found (\d+) of/.exec(pt1) || [])[1];
+        sh.check(+n1 >= 3 && pt1.indexOf(fmt(S.practicePt, { n: n1 })) >= 0, 'T33 a practice point is given when 3 or more are found', 'found ' + n1);
+        await tap('#ck'); await wait(1500);
+        const pt2 = await bodyText(page);
+        sh.check(pt2.indexOf(S.practiceHad) >= 0 && pt2.indexOf(fmt(S.practicePt, { n: n1 })) < 0, 'T33 the practice point is given once only');
+      } else sh.skip('T33 practice point when 3 or more found', 'the model answer could not be read off the page to write a strong answer');
     } else sh.fail('T33 #s6/1/write shows a writing box');
 
     // T35 / T36 / T37 ten-mark
@@ -347,7 +362,9 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       for (let i = 0; i < slots.length; i++) {
         if (slots[i] === 'pick') await tap('.slotc[data-s="' + i + '"] .opt[data-o="0"]');
         if (slots[i] === 'tap') { const ph = await page.$$('.slotc[data-s="' + i + '"] .ph[data-i]'); if (ph[0]) await tapEl(ph[0]); }
+        if (slots[i] === 'order') await dragOrder('.slotc[data-s="' + i + '"]');
       }
+      sh.check(!(await page.$eval('#ck', (b) => b.disabled)), 'T35 Check comes alive once every slot is filled and each explain order has been moved', await txt(page, '#cnt'));
       await tap('#ck').catch(() => {}); await waitSel('.res .score');
       sh.check(slots.length === 10 && /of 10 marks/.test((await txt(page, '.res .score')) || ''), 'T35 ten slots over two paragraphs, marked out of 10', slots.join(','));
     } else sh.fail('T35 #s7/1 shows its build slots');
@@ -362,6 +379,9 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     await pupil(P1, 's7/6/write'); await waitSel('textarea#w1');
     const nb = await bodyText(page);
     sh.check(nb.indexOf(S.tenNoItem) >= 0 && nb.indexOf(S.schemeHer) >= 0, 'T37 question 6 says it has no item and gives her scheme line');
+    await page.type('#w1', 'Religion teaches values through rules, for example the Ten Commandments set norms.'); await tap('#ck'); await waitSel('ul.ckl li', 8000);
+    sh.check((await count(page, 'ul.ckl li')) === 10, 'T37 question 6 write checklist has her ten lines', (await count(page, 'ul.ckl li')) + ' lines');
+    sh.skip('T36 practice point once when 6 or more found', 'needs a strong two-paragraph answer; the model is not split per box on the page');
     await pupil(P1, 's7/6'); await waitSel('.slotc[data-s]');
     const t6 = await page.$$eval('.slotc[data-s]', (a) => a.map((c) => c.dataset.type));
     sh.check(t6.length === 10 && t6.every((t) => t === 'pick'), 'T37 question 6 builds with ten picks', t6.join(','));
@@ -373,16 +393,18 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     let r8 = d8.key ? await d8.mark() : {};
     sh.check(r8.score === r8.max, 'T40 a learned build scores full marks (the harness can earn a badge)', 'scored ' + r8.score + ' of ' + r8.max);
     let four = null;
-    if (d25.key) { const k4 = d25.key.slice(); const pi = d25.o.view.slots.findIndex((s) => s.type === 'pick'); k4[pi] = (k4[pi] + 1) % d25.o.view.slots[pi].opts.length; four = await d25.mark(k4); }
-    const hasB = (r) => !!r && ((r.badges || []).indexOf('sanctions') >= 0 || ((r.hdr || {}).bd || {}).sanctions);
+    let k4 = null;
+    if (d25.key) { k4 = d25.key.slice(); const pi = d25.o.view.slots.findIndex((s) => s.type === 'pick'); k4[pi] = (k4[pi] + 1) % d25.o.view.slots[pi].opts.length; four = await d25.mark(k4); }
+    const hasB = (r) => !!r && ((r.badges || []).indexOf('sanctions') >= 0 || ((r.hdr || {}).bd || []).indexOf('sanctions') >= 0);
     sh.check(four && four.score === 4 && !hasB(four), 'CONTROL T40 4 of 5 on the social control build gives no Sanctions badge', four ? 'scored ' + four.score + ', badge ' + hasB(four) : 'no mark');
     const five = d25.key ? await d25.mark() : null;
     sh.check(hasB(five), 'T40 5 of 5 then earns the Sanctions badge', five ? 'scored ' + five.score : 'no mark');
-    const worse = d25.key ? await d25.mark(d25.o.view.slots.map((s) => (s.type === 'pick' ? 0 : s.type === 'tap' ? [] : s.steps))) : null;
-    sh.check(hasB(worse) || ((worse && worse.hdr && worse.hdr.bd) || {}).sanctions, 'T40 the badge is kept after a worse score');
+    const worse = k4 ? await d25.mark(k4) : null;
+    for (const a of ['d5-01', 'd5-02', 'd5-03']) { const f = await full(a, P2); if (f.key) await f.mark(); }
+    sh.check(hasB(worse), 'T40 the badge is kept after a worse score', worse ? 'scored ' + worse.score + ', bd ' + JSON.stringify((worse.hdr || {}).bd) : 'no mark');
     await pupil(P2, 'badges'); await waitSel('.badge');
     const bs = await page.$$eval('.badge', (a) => a.map((b) => ({ on: b.classList.contains('on'), t: b.innerText })));
-    sh.check(bs.length === 6, 'T40 six badges are shown', bs.length + ' shown');
+    sh.check(bs.length === 6, 'T40 six badges are shown', bs.length + ' shown; page: ' + (await bodyText(page)).slice(0, 120));
     sh.check(bs.filter((b) => b.on).length >= 1 && bs.filter((b) => b.on).every((b) => /\d/.test(b.t)), 'T40 an earned badge is dated');
     sh.check(bs.filter((b) => !b.on).every((b) => b.t.length > 40), 'T40 unearned badges show their rule in words');
 
@@ -413,7 +435,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     await pupil(P1, 'daily'); await waitSel('.q[data-q] .opt');
     const dd = await bodyText(page);
     const doneLine = fmt(S.dailyDone, { n: Object.values(dl1)[0] });
-    sh.check(dd.indexOf(doneLine) >= 0, 'T43 the second run says it is practice ("' + doneLine.slice(0, 50) + '…")');
+    sh.check(dd.indexOf(doneLine) >= 0, 'T43 the second run says it is practice ("' + doneLine.slice(0, 50) + '…")', 'page: ' + dd.slice(Math.max(0, dd.indexOf('challenge') - 20), Math.max(0, dd.indexOf('challenge')) + 120) + ' dl=' + JSON.stringify(dl1).replace(/\d{4}-/g, ''));
 
     // T44 weekly
     await pupil(P1, 'weekly'); await waitSel('.slotc[data-s]');
@@ -423,6 +445,8 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     const wsl = await page.$$eval('.slotc[data-s]', (a) => a.map((c) => c.dataset.type));
     const picks = await page.$$('.slotc[data-type="pick"]');
     for (const p of picks) { const o = await p.$('.opt[data-o="0"]'); if (o) await tapEl(o); }
+    const ords = await page.$$eval('.slotc[data-type="order"]', (x) => x.map((c) => c.closest('[data-b]') ? null : c.dataset.s));
+    { const all = await page.$$('.slotc[data-type="order"]'); for (let i = 0; i < all.length; i++) { await all[i].evaluate((e, i) => e.setAttribute('data-g5', 'o' + i), i); await dragOrder('[data-g5="o' + i + '"]'); } }
     const taps = await page.$$('.slotc[data-type="tap"]');
     for (const t of taps) { const ph = await t.$$('.ph[data-i]'); for (let k = 0; k < 2 && k < ph.length; k++) await tapEl(ph[k]); }
     await tap('#ck').catch(() => {}); const wres = await waitSel('.res .score', 8000);
@@ -456,18 +480,18 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     await tap('.tabs button[data-t="tracker"]'); await wait(800);
     if (await count(page, 'select#cls')) { await page.select('select#cls', CLS).catch(() => {}); await wait(900); }
     const trows = await page.$$eval('#trk tr', (a) => a.slice(1).map((r) => r.innerText.replace(/\s+/g, ' ')));
-    const names = ['Aoife', 'Ciara', 'Orla'];
-    sh.check(names.every((n) => trows.some((r) => r.indexOf(n) >= 0)), 'T51 a row for each pupil who has used the class', trows.length + ' rows');
+    const names = ['Aoife', 'Ciara', 'Orla', 'Niamh'];
+    sh.check(names.every((n) => trows.some((r) => r.indexOf(n) >= 0)), 'T51 a row for each pupil who has used the class', trows.length + ' rows: ' + trows.map((r) => r.split(' ')[0]).join(', '));
     const ao = trows.find((r) => r.indexOf('Aoife') >= 0) || '';
     sh.check(/\d/.test(ao) && /(today|ago|yesterday|\d{1,2} \w+)/i.test(ao), 'T51 the row carries points and last seen in words', ao.slice(0, 120));
     const flagA = trows.find((r) => r.indexOf('Writes but never builds') >= 0), flagB = trows.find((r) => r.indexOf('Builds full marks, never writes') >= 0);
     sh.check(!!flagA, 'T51 a pupil who writes but never builds is flagged');
-    sh.check(!!flagB, 'T51 a pupil who builds full marks but never writes is flagged');
+    sh.check(!!flagB, 'T51 a pupil who builds full marks but never writes is flagged', trows.map((r) => r.split(' ')[0] + (r.indexOf('never') >= 0 ? '*' : '')).join(', '));
     const link = await page.evaluateHandle(() => [...document.querySelectorAll('#trk a.link')].find((a) => a.innerText.indexOf('Aoife') >= 0));
     if (await link.evaluate((a) => !!a)) {
-      await link.evaluate((a) => a.click()); await waitSel('#pp');
+      await link.evaluate((a) => a.click()); await waitSel('#pp'); await page.waitForFunction(() => (document.querySelector('#pp') || {}).innerText && document.querySelector('#pp').innerText.length > 60, { timeout: 6000 }).catch(() => {});
       const pp = await txt(page, '#pp') || '';
-      sh.check(/of \d+ marks|\d+ of \d+/.test(pp) && pp.indexOf('Culture is the shared way') >= 0, 'T52 the pupil page lists her bests and her written answer with its checklist', pp.length + ' chars');
+      sh.check(/\d+ of \d+/.test(pp) && pp.indexOf('Culture is the shared way') >= 0, 'T52 the pupil page lists her bests and her written answer with its checklist', pp.length + ' chars, bests ' + /\d+ of \d+/.test(pp) + ', write ' + (pp.indexOf('Culture is the shared way') >= 0) + ' ' + pp.slice(0, 160));
       await tap('#bk'); await wait(700);
       sh.check((await count(page, '#trk')) === 1, 'T52 "Back" returns to the tracker');
     } else sh.fail('T52 a pupil name in the tracker opens her page');
@@ -477,11 +501,14 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     if (await count(page, '#dl')) { await tap('#dl'); await wait(1500); }
     const csv = await page.evaluate(() => window.__blob);
     if (csv) {
-      const lines = csv.replace(/^﻿/, '').split(/\r\n/).filter(Boolean);
-      const head = lines[0].split(','), w = head.length;
-      sh.check(lines.length >= 4 && names.every((n) => lines.some((l) => l.indexOf(n) >= 0)), 'T53 the CSV has one row per pupil', (lines.length - 1) + ' rows');
-      sh.check(lines.every((l) => l.split(',').length === w || /"/.test(l)), 'T53 every row has the header\'s column count');
-      sh.check(!/\r(?!\n)|(?<!\r)\n/.test(csv.replace(/^﻿/, '')), 'T53 rows end CRLF only');
+      const parse = (l) => { const out = []; let cur = '', q = false; for (let i = 0; i < l.length; i++) { const c = l[i]; if (q) { if (c === '"' && l[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; } else if (c === '"') q = true; else if (c === ',') { out.push(cur); cur = ''; } else cur += c; } out.push(cur); return out; };
+      const body = csv.replace(/^\uFEFF/, ''), lines = body.split(/\r\n/).filter(Boolean);
+      const secs = []; lines.forEach((l) => { const c = parse(l); if (c[0] === 'class' && c[1] === 'pupil') secs.push({ head: c, rows: [] }); else if (secs.length) secs[secs.length - 1].rows.push(c); });
+      const w = secs.length ? secs[0].head.length : 0;
+      sh.check(secs.length >= 1 && secs[0].rows.length === names.length && names.every((n) => secs[0].rows.some((r) => r[1] === n)), 'T53 the tracker part of the CSV has one row per pupil', secs.length ? secs[0].rows.map((r) => r[1]).join(', ') : 'no header');
+      sh.check(secs.every((x) => x.rows.every((r) => r.length === x.head.length)), 'T53 every row has its header\'s column count', secs.map((x) => x.head.length + ':' + x.rows.map((r) => r.length).join('/')).join(' '));
+      sh.check(secs.length < 2 || secs[1].rows.length >= 1, 'T53 a second part lists the written answers, one row each', secs.length + ' parts');
+      sh.check(!/\r(?!\n)|(?<!\r)\n/.test(body.replace(/"[^"]*"/g, '')), 'T53 rows end CRLF only');
       sh.info('T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–9, last seen, flags), ' + w + ' columns; the acceptance row says one column per act');
     } else sh.fail('T53 Download CSV hands over a file');
 

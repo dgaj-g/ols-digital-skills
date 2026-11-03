@@ -289,6 +289,7 @@ var App = (function(){
     p.then(function(r){
       r.max = r.max || (ME.max || {})[a] || (part === "p6" ? 5 : 10); r.intro = r.intro || "";
       if (part === "p7"){ r.view.scheme = r.view.scheme || q.scheme; r.view.marks = r.view.marks || q.marks; r.view.hasItem = q.hasItem; r.view.q = r.view.q || q.q; }
+      r.noHead = true; // the line above the box already says the best score and the writing state
       Engine.mount(box, r, {reopen: function(){ question(part, n, mode); }});
     }).catch(function(e){ if (e.code && e.code !== "locked" && e.code !== "offline") box.innerHTML = '<p class="say">' + h(S.serverErr) + '</p>'; });
   }
@@ -326,8 +327,8 @@ var App = (function(){
     shell("daily", body, {crumb: S.hubDaily, back: "hub"});
     call("apiDaily", {}).then(function(r){
       var box = body.querySelector("#act"); box.innerHTML = "";
-      if (r.done != null) box.appendChild(el('<p class="say"><b>' + h(fmt(S.dailyDone, {n: r.done})) + '</b></p>'));
       Engine.mount(box, {act: "daily", form: "mcq", view: r.view, max: 5, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.mcqIntro}, {reopen: daily});
+      if (r.done != null) box.insertBefore(el('<p class="say"><b>' + h(fmt(S.dailyDone, {n: r.done})) + '</b></p>'), box.firstChild);
     }).catch(function(){});
   }
   function weekly(){
@@ -335,8 +336,8 @@ var App = (function(){
     shell("weekly", body, {crumb: S.hubWeekly, back: "hub"});
     call("apiWeekly", {}).then(function(r){
       var box = body.querySelector("#act"); box.innerHTML = "";
-      if (r.done != null) box.appendChild(el('<p class="say"><b>' + h(fmt(S.weeklyDone, {n: r.done})) + '</b></p>'));
       Engine.mount(box, {act: "weekly", form: "weekly", view: r.view, max: r.max || 20, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.weeklyLead}, {reopen: weekly});
+      if (r.done != null) box.insertBefore(el('<p class="say"><b>' + h(fmt(S.weeklyDone, {n: r.done})) + '</b></p>'), box.firstChild);
     }).catch(function(){});
   }
   // ---- Part 11: revision sheets (on screen, printable) ----
@@ -379,7 +380,13 @@ var App = (function(){
     if (C[contentKey(r)]) return learn(r);
     go("home");
   }
-  var T = {S: S, fmt: fmt, h: h, el: el, call: call, toast: toast, img: img, emoji: emoji, hdr: hdr, marked: marked, boot: BOOT, me: function(){ return ME; }, go: go, frame: frame, bare: bare, guard: guard, wire: wire, home: function(){ go("home"); }, reboot: reboot, PARTS: PARTS};
+  function titleOf(act){ // a plain title for an act id: the page's own TESTS table first, then the five- and ten-mark ids (staff pages use it when the server sends no title)
+    for (var k in TESTS) if (TESTS[k].act === act) return TESTS[k].t;
+    var m = /^([dw])(5|10)-0?(\d+)$/.exec(act || "");
+    if (m) return (m[2] === "5" ? "Five-mark question " : "Ten-mark question ") + m[3] + (m[1] === "w" ? " (written)" : " (built)");
+    return "";
+  }
+  var T = {S: S, fmt: fmt, titleOf: titleOf, h: h, el: el, call: call, toast: toast, img: img, emoji: emoji, hdr: hdr, marked: marked, boot: BOOT, me: function(){ return ME; }, go: go, frame: frame, bare: bare, guard: guard, wire: wire, home: function(){ go("home"); }, reboot: reboot, PARTS: PARTS};
   var BOOTED = false;
   function boot(){
     if (BOOTED) return; BOOTED = true;

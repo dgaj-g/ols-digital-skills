@@ -236,6 +236,7 @@ var SOCS = (function(){
     staffBackTracker: "Back to the tracker",
     staffBuilds: "Best marks",
     staffNoBuilds: "Nothing checked yet.",
+    staffBestCell: "{n} of {m} marks",
     staffWrites: "Written answers",
     staffNoWrites: "No written answers yet.",
     staffExportLead: "Download every pupil's marks, points and badges as a spreadsheet.",
