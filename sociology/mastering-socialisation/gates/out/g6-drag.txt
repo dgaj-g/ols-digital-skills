@@ -1,0 +1,121 @@
+PASS CONTROL 1280 c-sort: a drag made only of dispatched mouse and drag events does not move the card — still in tray true
+PASS 1280 c-sort: picking a card up in the stuck tray does not scroll the page under it — page moved 0 px
+INFO 1280 c-sort: 7 cards, 7 bins
+PASS 1280 c-sort: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 1280 c-sort: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 1280 c-sort: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 1280 c-sort: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.0 px
+PASS 1280 c-sort: a drop in empty space snaps the card back to the tray
+PASS CONTROL 1280 c-sort: a drop outside every target leaves the counter unchanged — 3 of 7 cards placed -> 3 of 7 cards placed
+PASS 1280 c-sort: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 1280 c-sort: every card can be placed (tap a card, tap a bin) — 7 of 7
+PASS 1280 c-sort: Check comes alive once every card is placed
+PASS 1280 c-sort: after Check every wrong card names its right bin — 6 of 6 wrong cards name another bin; result card true
+INFO 1280 sc-sort round 1: 8 cards, 4 bins
+PASS 1280 sc-sort round 1: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 1: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 1: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 1: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.0 px
+PASS 1280 sc-sort round 1: a drop in empty space snaps the card back to the tray
+PASS CONTROL 1280 sc-sort round 1: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 1280 sc-sort round 1: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 1280 sc-sort round 1: every card can be placed (tap a card, tap a bin) — 8 of 8
+PASS 1280 sc-sort round 1: Check comes alive once every card is placed
+PASS 1280 sc-sort round 1: after Check every wrong card names its right bin — 6 of 6 wrong cards name another bin; result card true
+PASS 1280 sc-sort: after round 1 there is a button to the next round
+PASS 1280 sc-sort: round 2 brings new cards, 16 in all over the two rounds — 8 + 8 cards, 16 different
+INFO 1280 sc-sort round 2: 8 cards, 4 bins
+PASS 1280 sc-sort round 2: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 2: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 2: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 1280 sc-sort round 2: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.0 px
+PASS 1280 sc-sort round 2: a drop in empty space snaps the card back to the tray
+PASS CONTROL 1280 sc-sort round 2: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 1280 sc-sort round 2: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 1280 sc-sort round 2: every card can be placed (tap a card, tap a bin) — 8 of 8
+PASS 1280 sc-sort round 2: Check comes alive once every card is placed
+PASS 1280 sc-sort round 2: after Check every wrong card names its right bin — 5 of 5 wrong cards name another bin; result card true
+INFO 1280 f-match: 8 examples
+PASS 1280 f-match: a chip dropped on the example card's centre lands in its slot
+PASS 1280 f-match: a chip dropped on the example card's corner lands in its slot
+PASS 1280 f-match: a chip dropped on the example card's text lands in its slot
+PASS 1280 f-match: the dragged chip follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.0 px
+PASS 1280 f-match: a drop in empty space snaps the chip back to the tray
+PASS CONTROL 1280 f-match: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 1280 f-match: Check is inert while examples are empty
+PASS 1280 f-match: every example can be filled (tap a chip, tap an example) — 8 of 8
+PASS 1280 f-match: Check comes alive once every example is filled
+PASS 1280 f-match: Check gives a result card — wrong slots 7
+PASS 1280 f-match: every wrong example shows its right way — 7 fix lines for 7 wrong
+INFO 1280 w-first: 6 steps; Check is live at once (true) because an order list starts fully placed, so place-all-then-check does not apply
+PASS 1280 w-first: the dragged step follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.0 px
+PASS 1280 w-first: a step dragged down the list lands lower and the others close up — step 1 now at 5
+PASS 1280 w-first: the step numbers renumber after the move
+INFO 1280 w-first: a step dragged sideways off the list keeps its place: yes
+PASS 1280 w-first: Check gives a result card
+PASS 1280 w-first: every step out of place shows its right step number — 5 of 5
+PASS 1280: no console or page errors
+PASS 375 c-sort: no sideways scroll — page is 0 px too wide
+PASS 375 c-sort: with the last target in view the tray stays stuck at the top and its first card can be touched — tray top 0, bottom 325, card reachable true, page scrolled 1118
+PASS 375 c-sort: picking a card up in the stuck tray does not scroll the page under it — page moved 0 px
+INFO 375 c-sort: 7 cards, 7 bins
+PASS 375 c-sort: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 375 c-sort: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 375 c-sort: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 375 c-sort: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.5 px
+PASS 375 c-sort: a drop in empty space snaps the card back to the tray
+PASS CONTROL 375 c-sort: a drop outside every target leaves the counter unchanged — 3 of 7 cards placed -> 3 of 7 cards placed
+PASS 375 c-sort: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 375 c-sort: every card can be placed (tap a card, tap a bin) — 7 of 7
+PASS 375 c-sort: Check comes alive once every card is placed
+PASS 375 c-sort: after Check every wrong card names its right bin — 6 of 6 wrong cards name another bin; result card true
+PASS 375 sc-sort: no sideways scroll — page is 0 px too wide
+PASS 375 sc-sort: with the last target in view the tray stays stuck at the top and its first card can be touched — tray top 0, bottom 325, card reachable true, page scrolled 736
+INFO 375 sc-sort round 1: 8 cards, 4 bins
+PASS 375 sc-sort round 1: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 1: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 1: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 1: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.7 px
+PASS 375 sc-sort round 1: a drop in empty space snaps the card back to the tray
+PASS CONTROL 375 sc-sort round 1: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 375 sc-sort round 1: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 375 sc-sort round 1: every card can be placed (tap a card, tap a bin) — 8 of 8
+PASS 375 sc-sort round 1: Check comes alive once every card is placed
+PASS 375 sc-sort round 1: after Check every wrong card names its right bin — 6 of 6 wrong cards name another bin; result card true
+PASS 375 sc-sort: after round 1 there is a button to the next round
+PASS 375 sc-sort: round 2 brings new cards, 16 in all over the two rounds — 8 + 8 cards, 16 different
+INFO 375 sc-sort round 2: 8 cards, 4 bins
+PASS 375 sc-sort round 2: a drop on a bin's centre lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 2: a drop on a bin's corner lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 2: a drop on a bin's label (its heading) lands the card in that bin — bin held 0 then 1
+PASS 375 sc-sort round 2: the dragged card follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.7 px
+PASS 375 sc-sort round 2: a drop in empty space snaps the card back to the tray
+PASS CONTROL 375 sc-sort round 2: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 375 sc-sort round 2: Check is inert while cards are left in the tray — disabled=true, marks sent 0
+PASS 375 sc-sort round 2: every card can be placed (tap a card, tap a bin) — 8 of 8
+PASS 375 sc-sort round 2: Check comes alive once every card is placed
+PASS 375 sc-sort round 2: after Check every wrong card names its right bin — 6 of 6 wrong cards name another bin; result card true
+PASS 375 f-match: no sideways scroll — page is 0 px too wide
+PASS 375 f-match: with the last target in view the tray stays stuck at the top and its first card can be touched — tray top 0, bottom 325, card reachable true, page scrolled 1428
+INFO 375 f-match: 8 examples
+PASS 375 f-match: a chip dropped on the example card's centre lands in its slot
+PASS 375 f-match: a chip dropped on the example card's corner lands in its slot
+PASS 375 f-match: a chip dropped on the example card's text lands in its slot
+PASS 375 f-match: the dragged chip follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.6 px
+PASS 375 f-match: a drop in empty space snaps the chip back to the tray
+PASS CONTROL 375 f-match: a drop outside every target leaves the counter unchanged — 3 of 8 cards placed -> 3 of 8 cards placed
+PASS 375 f-match: Check is inert while examples are empty
+PASS 375 f-match: every example can be filled (tap a chip, tap an example) — 8 of 8
+PASS 375 f-match: Check comes alive once every example is filled
+PASS 375 f-match: Check gives a result card — wrong slots 7
+PASS 375 f-match: every wrong example shows its right way — 7 fix lines for 7 wrong
+PASS 375 w-first: no sideways scroll — page is 0 px too wide
+INFO 375 w-first: 6 steps; Check is live at once (true) because an order list starts fully placed, so place-all-then-check does not apply
+PASS 375 w-first: the dragged step follows the pointer 1:1 (3 samples within 4 px) — largest drift 0.2 px
+PASS 375 w-first: a step dragged down the list lands lower and the others close up — step 1 now at 5
+PASS 375 w-first: the step numbers renumber after the move
+INFO 375 w-first: a step dragged sideways off the list keeps its place: yes
+PASS 375 w-first: Check gives a result card
+PASS 375 w-first: every step out of place shows its right step number — 6 of 6
+PASS 375: no console or page errors
+g6-drag: 108 PASS, 0 FAIL, 0 SKIP

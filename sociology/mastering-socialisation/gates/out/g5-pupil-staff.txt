@@ -1,0 +1,76 @@
+PASS T48 a bare staff link shows the passcode door to a teacher who is not on the list
+PASS T48 a wrong passcode says "That passcode is not right."
+PASS CONTROL T48 a wrong passcode shows no tabs
+PASS T48 the right passcode opens the staff tabs
+PASS T48 the passcode is not in the served page source (staff and pupil links)
+PASS CONTROL T48 the source check catches a page that holds the passcode
+PASS T49 the owner goes straight to the staff tabs on a bare link
+PASS T49 "12A Sociology" appears in the class list after Create
+PASS T49 the class slug is "12a-sociology"
+PASS T49 Copy class link copies base + "?class=12a-sociology"
+PASS T49 the board button flips the class board
+PASS T49 a spare class can be made
+PASS CONTROL T49 one press of Delete deletes nothing
+PASS T49 the first press asks "Press again to delete"
+PASS T49 the second press deletes the class
+PASS T50 Part 6 shows as locked after one press in the Parts tab
+PASS T01 a pupil with no name on record is asked for her first name
+PASS T01 the bar says "Hi Orla" after naming
+PASS T01 the next load goes straight home with "Hi Orla"
+PASS T02 a gmail user sees the domain line and nothing else
+PASS T02 no API call succeeds for a gmail user
+PASS T03 a link with an unknown class shows the no-class line and nothing else
+PASS T03 a bare link (no ?class=) shows no pupil parts
+INFO T03 a bare link now opens the staff page (the door) for everyone, by the build ruling that copies the S1 Unit 1 shell; the acceptance row still expects the no-class line there
+PASS T06 the Part 6 tile shows a lock
+PASS T06 every other tile is open
+PASS T06 #s6 says "Your teacher has not opened this part yet."
+PASS T06 Part 7 still opens
+PASS T09 Check is inert with 4 of 5 answered
+PASS T09 Check reads "Answer all 5 to check"
+PASS T09 Check comes alive when all 5 are answered
+PASS T09 the result says "You scored n of 5 marks."
+PASS T09 every question shows a tick or cross and its right answer
+PASS T09 why lines are shown
+PASS T09 Try again reshuffles
+PASS T09 the best is kept ("Your best so far: 2 of 5 marks")
+PASS T13 Check is inert with 3 of 4 answered
+PASS T13 Check reads "Answer all 4 to check"
+PASS T13 Check comes alive when all 4 are answered
+PASS T13 the result says "You scored n of 4 marks."
+PASS T13 every question shows a tick or cross and its right answer
+PASS T13 why lines are shown
+PASS T13 Try again reshuffles
+PASS T13 the best is kept ("Your best so far: 1 of 4 marks")
+PASS T26 Check is inert with 4 of 5 answered
+PASS T26 Check reads "Answer all 5 to check"
+PASS T26 Check comes alive when all 5 are answered
+PASS T26 the result says "You scored n of 5 marks."
+PASS T26 every question shows a tick or cross and its right answer
+PASS T26 why lines are shown
+PASS T26 Try again reshuffles
+PASS T26 the best is kept ("Your best so far: 2 of 5 marks")
+PASS T26 Check is inert with 4 of 5 answered
+PASS T26 Check reads "Answer all 5 to check"
+PASS T26 Check comes alive when all 5 are answered
+PASS T26 the result says "You scored n of 5 marks."
+PASS T26 every question shows a tick or cross and its right answer
+PASS T26 why lines are shown
+PASS T26 Try again reshuffles
+PASS T26 the best is kept ("Your best so far: 1 of 5 marks")
+PASS T24 Check is inert with 5 of 6 answered
+PASS T24 Check comes alive when all 6 are answered
+PASS T24 the result says "You scored n of 6 marks."
+PASS T24 every question shows a tick or cross and its right answer
+PASS T24 why lines are shown
+PASS T24 every image has alt text and a credit line
+PASS T24 every image loads
+PASS T24 Try again reshuffles
+PASS T24 the best is kept ("Your best so far: 2 of 6 marks")
+PASS T19 Check is inert with 5 of 6 answered
+PASS T19 Check comes alive when all 6 are answered
+PASS T19 the result says "You scored n of 6 marks."
+PASS T19 every question shows a tick or cross and its right answer
+PASS T19 why lines are shown
+FAIL the gate ran to the end — ReferenceError: S is not defined pptr:$$eval;quiz%20(%2FUsers%2Fdamiengartland%2FSites%2Fols-wt-issue-42%2Fsociology%2Fmastering-socialisation%2Fgates%2Fg5-pupi
+g5-pupil-staff: 73 PASS, 1 FAIL, 0 SKIP

@@ -172,10 +172,10 @@ var App = (function(){
   function blocks(bs){
     return (bs || []).map(function(b){
       var out = '<section class="blk">';
-      if (b.h) out += '<h2>' + h(b.h) + (b.new ? ' <span class="tag new">New</span>' : '') + '</h2>';
-      (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new">New</span> ' : '') + h(p) + '</p>'; });
+      if (b.h) out += '<h2>' + h(b.h) + (b.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h2>';
+      (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(p) + '</p>'; });
       if (b.quote) out += '<blockquote class="say">' + h(b.quote.t) + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + '</blockquote>';
-      if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new">New</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
+      if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
       if (b.writers) out += '<table class="tbl"><thead><tr><th>Writer</th><th>What they say</th></tr></thead><tbody>' + b.writers.map(function(w){ return '<tr><td><b>' + h(w.name) + '</b></td><td>' + h(w.says) + '</td></tr>'; }).join("") + '</tbody></table>';
       if (b.table) out += '<table class="tbl"><thead><tr>' + b.table.head.map(function(x){ return '<th>' + h(x) + '</th>'; }).join("") + '</tr></thead><tbody>' + b.table.rows.map(function(r){ return '<tr>' + r.map(function(x){ return '<td>' + h(x) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table>';
       if (b.img) out += '<figure class="figure"><img src="' + h(img(b.img.file)) + '" alt="' + h(b.img.alt || "") + '"><figcaption class="cap">' + h(b.img.credit || "") + '</figcaption></figure>';
@@ -206,7 +206,7 @@ var App = (function(){
     var pid = partOf(route);
     if (locked(pid)) return lockedScreen(route, pid);
     var agent = page.agent ? AGENTS.filter(function(a){ return a.id === page.agent; })[0] : null;
-    var html = '<h1>' + (agent ? '<img class="ico" src="' + h(emoji(agent.emoji)) + '" alt="" width="40" height="40"> ' : '') + h(page.title) + (page.new ? ' <span class="tag new">New</span>' : '') + '</h1>' + (page.lead ? '<p class="lead">' + h(page.lead) + '</p>' : '');
+    var html = '<h1>' + (agent ? '<img class="ico" src="' + h(emoji(agent.emoji)) + '" alt="" width="40" height="40"> ' : '') + h(page.title) + (page.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h1>' + (page.lead ? '<p class="lead">' + h(page.lead) + '</p>' : '');
     if (page.new || (page.blocks || []).some(function(b){ return b.new || (b.new_items && b.new_items.length) || (b.new_p && b.new_p.length); })) html += '<p class="small mute">' + h(S.newNote) + '</p>';
     var hero = HERO[route]; if (hero) html += '<figure class="hero"><img src="' + h(img(hero.f)) + '" alt="' + h(hero.alt) + '" width="' + hero.w + '" height="' + hero.h + '" loading="lazy"><figcaption class="cap">' + h(hero.cap) + '</figcaption></figure>';
     if (route === "s3") html += '<div class="agents">' + AGENTS.map(function(a){ return '<a class="tile" data-part="' + a.id + '" href="#s3/' + a.id + '"><img src="' + h(emoji(a.emoji)) + '" alt="" width="48" height="48"><span class="tt">' + h(a.t) + '</span></a>'; }).join("") + '</div>';
@@ -234,6 +234,7 @@ var App = (function(){
     var body = el('<div><h1>' + h(t.t) + '</h1><div id="act"><p class="say">' + h(S.busy) + '</p></div></div>');
     var pi = pageIndex(route);
     shell(route, body, {crumb: t.t, back: pi.base, next: nextAfter(route)});
+    if (t.act === "cards"){ Engine.mount(body.querySelector("#act"), {act: "cards", form: "cards", part: "p5", title: t.t, intro: "", view: {terms: (C["p5/cards"] || {terms: []}).terms}}, {reopen: function(){ act(route); }}); return; }
     var req = {act: t.act}; if (opts && opts.round) req.round = opts.round;
     call("apiOpen", req).then(function(r){
       r.max = r.max || (ME.max || {})[t.act]; r.intro = r.intro || "";
@@ -259,14 +260,14 @@ var App = (function(){
     var H = ME.hdr || {};
     return '<section class="blk"><p class="diet">' + h(S.dietLabel) + '</p><table class="tbl qtable"><thead><tr><th>No.</th><th>Term</th><th>Build</th><th>Write</th></tr></thead><tbody>' + page.qs.map(function(q){
       var b = (H.b || {})[q.id], w = (H.w || {})["w5-" + q.id.slice(3)];
-      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s6/' + q.n + '">' + h(q.term) + '</a>' + (q.new ? ' <span class="tag new">New</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 5})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
+      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s6/' + q.n + '">' + h(q.term) + '</a>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 5})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
     }).join("") + '</tbody></table></section>';
   }
   function tenList(page){
     var H = ME.hdr || {};
     return '<section class="blk"><table class="tbl qtable"><thead><tr><th>No.</th><th>Question</th><th>Build</th><th>Write</th></tr></thead><tbody>' + page.qs.map(function(q){
       var b = (H.b || {})[q.id], w = (H.w || {})["w10-" + q.n];
-      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s7/' + q.n + '">' + h(q.q) + '</a> <span class="pill">' + h(fmt(S.qMarks, {m: q.marks})) + '</span>' + (q.new ? ' <span class="tag new">New</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 10})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
+      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s7/' + q.n + '">' + h(q.q) + '</a> <span class="pill">' + h(fmt(S.qMarks, {m: q.marks})) + '</span>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 10})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
     }).join("") + '</tbody></table></section>';
   }
   function question(part, n, mode, opts){

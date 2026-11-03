@@ -3,6 +3,9 @@ var Staff = (function(){
   var T, S, ME, PASS = "", CL = [], CUR = "", ROLE = "";
   function h(s){ return T.h(s); }
   function el(html){ return T.el(html); }
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // a server time (ISO) shown as a plain date and time in the teacher's own clock
+  function when(iso){ if (!iso) return ""; var d = new Date(iso); if (isNaN(d.getTime())) return String(iso); return d.getDate() + " " + MON[d.getMonth()] + " " + d.getFullYear() + ", " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
   function row(html){ var t = document.createElement("table"); t.innerHTML = "<tbody>" + html + "</tbody>"; return t.querySelector("tr"); }
   function api(op, more, opt){ return T.call("apiStaff", Object.assign({op: op, pass: PASS}, more || {}), opt || {}); }
   function start(me, t){ T = t; S = t.S; ME = me; check(""); }
@@ -100,8 +103,8 @@ var Staff = (function(){
         var tbl = el('<div class="tw"><table aria-label="' + h(S.trackerHead) + '"><thead><tr><th>Pupil</th><th>Points</th><th>Badges</th><th>Streak</th>' + T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ return '<th>' + P.n + '</th>'; }).join("") + '<th>Last seen</th></tr></thead><tbody></tbody></table></div>');
         var tb = tbl.querySelector("tbody");
         rows.forEach(function(p){
-          var tr = row('<tr><td><a class="link" href="#">' + h(p.n || p.email) + '</a><br><span class="small mute">' + h(p.email) + '</span>' + (p.flags || []).map(function(f){ return '<br><span class="flag">' + h(f) + '</span>'; }).join("") + '</td><td>' + h(p.pts || 0) + '</td><td>' + h(p.bd != null ? p.bd : 0) + '</td><td>' + h(p.st || 0) + '</td>' +
-            T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ var x = (p.parts || {})[P.id] || [0, 0]; return '<td>' + h(x[0]) + '/' + h(x[1]) + '</td>'; }).join("") + '<td>' + h(p.last || "") + '</td></tr>');
+          var tr = row('<tr><td><a class="link" href="#">' + h(p.n || p.email) + '</a><br><span class="small mute">' + h(p.email) + '</span>' + (p.flags || []).map(function(f){ return '<br><span class="flag">' + h(f) + '</span>'; }).join("") + '</td><td>' + h(p.pts || 0) + '</td><td>' + h(Array.isArray(p.bd) ? p.bd.length : (p.bd || 0)) + '</td><td>' + h(p.st && p.st.n != null ? p.st.n : (p.st || 0)) + '</td>' +
+            T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ var x = (p.parts || {})[P.id] || [0, 0]; return '<td>' + h(x[0]) + '/' + h(x[1]) + '</td>'; }).join("") + '<td>' + h(when(p.last)) + '</td></tr>');
           tr.querySelector("a").onclick = function(e){ e.preventDefault(); pupil(box, slug, p); };
           tb.appendChild(tr);
         });
