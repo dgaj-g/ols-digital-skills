@@ -323,7 +323,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       sh.check(strip[0] >= 1 && strip[1] === strip[0], 'T32 the mark strip shows AO1/AO2 on each line', strip[0] + ' lines, ' + strip[1] + ' with AO1/AO2');
       const fixes = await page.$$eval('.slotc .fix, .slotc .right, .slotc .why', (a) => a.length);
       sh.check(fixes > 0, 'T32 wrong picks show the right sentence');
-      if (await count(page, '#again')) { const bf = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); await tap('#again'); await waitSel('.slotc .opt'); await wait(300); const af = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); sh.check(bf !== af, 'T32 Try again reshuffles the options'); }
+      if (await count(page, '#again')) { const bf = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); await wait(800); await tap('#again'); await waitSel('.slotc .opt'); await wait(300); const af = await page.$$eval('.slotc .opt', (a) => a.map((x) => x.innerText).join('|')); sh.check(bf !== af, 'T32 Try again reshuffles the options'); }
       sh.check((await bodyText(page)).indexOf('Build: ') >= 0 || (await bodyText(page)).indexOf('Your best so far') >= 0, 'T32 the best is kept on the question page');
     } else sh.fail('T32 #s6/1 shows its build slots');
     await pupil(P1, 's6/1/write'); const w5 = await waitSel('textarea#w1');

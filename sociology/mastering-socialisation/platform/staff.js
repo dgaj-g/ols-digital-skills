@@ -100,7 +100,7 @@ var Staff = (function(){
         var rows = r.rows || [];
         if (!rows.length){ wrap.innerHTML = '<p class="say">' + h(S.staffNoPupils) + '</p>'; return; }
         wrap.innerHTML = '<p>' + h(rows.length === 1 ? S.pupils1 : T.fmt(S.pupils, {n: rows.length})) + '</p>';
-        var tbl = el('<div class="tw"><table aria-label="' + h(S.trackerHead) + '"><thead><tr><th>Pupil</th><th>Points</th><th>Badges</th><th>Streak</th>' + T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ return '<th>' + P.n + '</th>'; }).join("") + '<th>Last seen</th></tr></thead><tbody></tbody></table></div>');
+        var tbl = el('<div class="tw"><table aria-label="' + h(S.trackerHead) + '"><thead><tr><th>Pupil</th><th>Points</th><th>Badges</th><th>Streak</th>' + T.PARTS.filter(function(P){ return P.n <= 9; }).map(function(P){ return '<th>Part ' + P.n + '</th>'; }).join("") + '<th>Last seen</th></tr></thead><tbody></tbody></table></div>');
         var tb = tbl.querySelector("tbody");
         rows.forEach(function(p){
           var tr = row('<tr><td><a class="link" href="#">' + h(p.n || p.email) + '</a><br><span class="small mute">' + h(p.email) + '</span>' + (p.flags || []).map(function(f){ return '<br><span class="flag">' + h(f) + '</span>'; }).join("") + '</td><td>' + h(p.pts || 0) + '</td><td>' + h(Array.isArray(p.bd) ? p.bd.length : (p.bd || 0)) + '</td><td>' + h(p.st && p.st.n != null ? p.st.n : (p.st || 0)) + '</td>' +
@@ -119,7 +119,7 @@ var Staff = (function(){
       var pp = box.querySelector("#pp"), H = r.hdr || {};
       var acts = (r.acts || []).filter(function(a){ return a.best != null; });
       var html = '<p>' + h(T.fmt(S.pts, {n: H.pts || 0})) + ' · ' + h((H.bd || []).length + " badges") + '</p>';
-      html += '<h3>' + h(S.staffBuilds) + '</h3>' + (acts.length ? '<table><thead><tr><th>Activity</th><th>Best</th></tr></thead><tbody>' + acts.map(function(a){ return '<tr><td>' + h(a.title || T.titleOf(a.act) || a.act) + '</td><td>' + h(T.fmt(S.staffBestCell, {n: a.best, m: a.max})) + '</td></tr>'; }).join("") + '</tbody></table>' : '<p class="say">' + h(S.staffNoBuilds) + '</p>');
+      html += '<h3>' + h(S.staffBuilds) + '</h3>' + (acts.length ? '<table><thead><tr><th>Activity</th><th>Best</th></tr></thead><tbody>' + acts.map(function(a){ return '<tr><td>' + h(T.titleOf(a.act) || a.title || a.act) + '</td><td>' + h(T.fmt(S.staffBestCell, {n: a.best, m: a.max})) + '</td></tr>'; }).join("") + '</tbody></table>' : '<p class="say">' + h(S.staffNoBuilds) + '</p>');
       html += '<h3>' + h(S.staffWrites) + '</h3>' + ((r.writes || []).length ? (r.writes || []).map(function(w){ return '<div class="card"><p><b>' + h(w.act) + '</b> · ' + h(w.n != null ? w.n + " of the checklist" : "") + (w.tmin ? ' · ' + h(w.tmin + " min") : '') + '</p><p>' + h(w.t || "") + '</p>' + (w.t2 ? '<p>' + h(w.t2) + '</p>' : '') + '</div>'; }).join("") : '<p class="say">' + h(S.staffNoWrites) + '</p>');
       pp.innerHTML = html;
     }).catch(function(){ box.querySelector("#pp").innerHTML = '<p class="say">' + h(S.serverErr) + '</p>'; });

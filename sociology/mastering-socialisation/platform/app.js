@@ -4,6 +4,7 @@ var App = (function(){
   var S = SOCS.S, PARTS = SOCS.PARTS, AGENTS = SOCS.AGENTS, BADGES = SOCS.BADGES, BOOT = window.SOCBOOT || {}, C = window.CONTENT || {};
   var ME = null, CUR = "", pingT = null, used = Date.now();
   function h(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function md(s){ return h(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); } // **Label:** in a content paragraph renders bold; everything else is escaped text
   function fmt(s, o){ return String(s).replace(/\{(\w+)\}/g, function(_, k){ return o[k]; }); }
   function el(html){ var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
   function img(f){ return (BOOT.img || "../img/") + f; }
@@ -173,7 +174,7 @@ var App = (function(){
     return (bs || []).map(function(b){
       var out = '<section class="blk">';
       if (b.h) out += '<h2>' + h(b.h) + (b.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h2>';
-      (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(p) + '</p>'; });
+      (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + md(p) + '</p>'; });
       if (b.quote) out += '<blockquote class="say">' + h(b.quote.t) + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + '</blockquote>';
       if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
       if (b.writers) out += '<table class="tbl"><thead><tr><th>Writer</th><th>What they say</th></tr></thead><tbody>' + b.writers.map(function(w){ return '<tr><td><b>' + h(w.name) + '</b></td><td>' + h(w.says) + '</td></tr>'; }).join("") + '</tbody></table>';

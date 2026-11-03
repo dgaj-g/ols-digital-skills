@@ -1,4 +1,4 @@
-PASS every S.<name> in app.js, engine.js and staff.js exists in strings.js — 192 names used
+PASS every S.<name> in app.js, engine.js and staff.js exists in strings.js — 193 names used
 PASS every S value is a string
 PASS no all-caps slogans
 PASS no line ends in "!"

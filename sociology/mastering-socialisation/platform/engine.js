@@ -153,7 +153,7 @@ var Engine = (function(){
       return r;
     }).catch(function(e){ if (o && o.onErr) o.onErr(e); });
   }
-  function wireAgain(card, o){ var b = q(card, "#again"); if (b) b.addEventListener("click", function(){ o.reopen(); }); }
+  function wireAgain(card, o){ var b = q(card, "#again"), t0 = Date.now(); if (b) b.addEventListener("click", function(){ if (Date.now() - t0 < 700) return; o.reopen(); }); } // a second quick tap on Check must not land on "try again" as the result card slides in
 
   /* ---------- MCQ (also scenes, daily) ---------- */
   function mcq(root, open, o){
@@ -460,7 +460,7 @@ var Engine = (function(){
     var v = open.view, isTen = !!v.scheme;
     root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? S.tenBuildIntro : S.buildIntro)) + '</p>'));
     var panel = builderPanel(root, v, open);
-    var bar = checkBar(root, panel.need, {countText: function(n, m){ return n + " of " + m + " parts filled"; }, onCheck: function(btn){
+    var bar = checkBar(root, panel.need, {countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, panel.get(), o, btn, function(r){
         bar.done(); panel.show(r.per, null);
         var rc = resultCard(r, open, modelPanel(r.extra, v.scheme)); root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o);
@@ -479,7 +479,7 @@ var Engine = (function(){
       var p = builderPanel(sec, v, open); panels.push(p); need += p.need;
     });
     function filled(){ return panels.reduce(function(t, p){ return t + p.filled(); }, 0); }
-    var bar = checkBar(root, need, {countText: function(n, m){ return n + " of " + m + " parts filled"; }, onCheck: function(btn){
+    var bar = checkBar(root, need, {countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, {builds: panels.map(function(p){ return p.get(); })}, o, btn, function(r){
         bar.done();
         panels.forEach(function(p, i){ p.show((r.per || [])[i], (r.extra && r.extra.builds || [])[i]); });

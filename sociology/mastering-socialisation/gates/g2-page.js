@@ -97,4 +97,11 @@ sh.check((idx.match(/id="app"/g) || []).length === 1, 'index.html has a single #
 const victim = 's3/religion/examples', copy = app.replace('"' + victim + '", ', '');
 const cprobs = copy === app ? [] : routeProblems(tables(copy), C);
 sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: app.js with ' + victim + ' removed is reported', cprobs.join('; ') || 'not reported');
+
+// bold labels: a content paragraph may carry **Label:** pairs; app.js must render them bold and every pair must close
+{ const bad = []; let pairs = 0;
+  Object.keys(C).forEach((k) => { JSON.stringify(C[k]).replace(/"((?:[^"\\]|\\.)*)"/g, (m, str) => { const n = (str.match(/\*\*/g) || []).length; if (n % 2) bad.push(k + ': ' + str.slice(0, 40)); pairs += n / 2; return m; }); });
+  sh.check(bad.length === 0, 'content: every ** bold label closes (' + pairs + ' pairs)', bad.slice(0, 4).join('; '));
+  sh.check(/function md\(/.test(app) && /md\(p\)/.test(app) && /<b>\$1<\/b>/.test(app), 'app.js renders **label** paragraphs as <b>, never raw asterisks');
+  const ctrl = app.replace('md(p)', 'h(p)'); sh.check(!/md\(p\)/.test(ctrl) && !(/function md\(/.test(ctrl) && /md\(p\)/.test(ctrl)), 'CONTROL: app.js without md(p) is reported'); }
 sh.finish();

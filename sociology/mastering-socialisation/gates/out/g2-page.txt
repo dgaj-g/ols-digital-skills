@@ -11,4 +11,7 @@ PASS index.html has a viewport meta
 PASS index.html has a charset
 PASS index.html has a single #app
 PASS CONTROL: app.js with s3/religion/examples removed is reported — content p3/religion-examples has no route
-g2-page: 12 PASS, 0 FAIL, 0 SKIP
+PASS content: every ** bold label closes (58 pairs)
+PASS app.js renders **label** paragraphs as <b>, never raw asterisks
+PASS CONTROL: app.js without md(p) is reported
+g2-page: 15 PASS, 0 FAIL, 0 SKIP
