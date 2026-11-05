@@ -4,6 +4,7 @@
 (function (root) {
   'use strict';
   var WORDS = ['binary', '8', '1024', 'lossy', 'pixel', 'bit', 'byte', 'integer', 'ASCII', 'sample rate', '2', 'Unicode', 'resolution', 'hexadecimal'];
+  var LONG = (function () { var t = ''; while (t.length < 1000) t += 'It uses bits to store the data so the computer’s café can work with it. '; return t.slice(0, 1000); })();
   function h32(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function pickN(options, n, seed) {
     var ranked = options.map(function (o, i) { return { o: o, k: h32(seed + '|' + i + '|' + o) }; }).sort(function (a, b) { return a.k - b.k; });
@@ -14,7 +15,7 @@
     if (v.form === 'pick1' || v.form === 'pickN') return { picks: pickN(v.options, v.n, s) };
     if (v.form === 'writepick') {
       var skip = h % 3 === 0;
-      return { text: skip ? '' : 'It uses bits to store the data so the computer can work with it', skipped: skip,
+      return { text: skip ? '' : LONG, skipped: skip, // a full-length answer every time: the 1,000-character box must save whole (15 Oct 2026)
         parts: v.parts.map(function (p, k) { return { picks: pickN(p.options, p.n, s + '|' + k) }; }) };
     }
     if (v.form === 'type') {

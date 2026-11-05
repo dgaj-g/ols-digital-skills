@@ -70,7 +70,8 @@ function pickAudit(banks, SS) {
   }))));
   return f;
 }
-const BANKS = ['bank_digital_data.js', 'bank_software.js'].map((b) => vm.runInNewContext(read(path.join(DESIGN, 'content', b)) + '\n;(typeof BANK_SOFTWARE !== "undefined" ? BANK_SOFTWARE : BANK_DIGITAL_DATA)', {}));
+const BANKS = [['bank_digital_data.js', 'BANK_DIGITAL_DATA'], ['bank_software.js', 'BANK_SOFTWARE'], ['bank_databases.js', 'BANK_DATABASES'], ['bank_spreadsheets.js', 'BANK_SPREADSHEETS']] // v7: four banks, each file's own constant
+  .map(([b, v]) => vm.runInNewContext(read(path.join(DESIGN, 'content', b)) + '\n;' + v, {}));
 const pa = pickAudit(BANKS, W.S);
 check('every pick question has a "Pick N." line and a limit line for its own n, and its label names the same n', pa.length === 0, pa.join(' | '));
 // ---- controls: each must fail

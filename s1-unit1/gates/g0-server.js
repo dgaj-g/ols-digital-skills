@@ -22,6 +22,7 @@ const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude 
 const Judge = require(path.join(DESIGN, 'judge', 'judge.js'));
 const BANK = require(path.join(DESIGN, 'content', 'bank_digital_data.js'));
 const BANK_SW = require(path.join(DESIGN, 'content', 'bank_software.js')); // v6
+const BANK_DB = require(path.join(DESIGN, 'content', 'bank_databases.js')), BANK_SS = require(path.join(DESIGN, 'content', 'bank_spreadsheets.js')); // v7
 const BANK_V5 = require(path.join(DESIGN, 'build', 'v6-backup', 'bank_digital_data.v5.js')); // v6: the live v5 bank, to prove round-1 orders did not move
 const Policy = require(path.join(ROOT, 'platform', 'sitpolicy.js'));
 const OUT = path.join(ROOT, 'gates', 'out', 'g0-server.txt');
@@ -33,7 +34,7 @@ const lines = [];
 let fails = 0;
 const ok = (cond, msg) => { lines.push((cond ? 'PASS ' : 'FAIL ') + msg); if (!cond) fails++; };
 const allQ = [];
-[BANK, BANK_SW].forEach((B) => B.stages.forEach((s) => s.questions.forEach((q) => allQ.push(Object.assign({ st: s.n, t: B.id }, { q })))));
+[BANK, BANK_SW, BANK_DB, BANK_SS].forEach((B) => B.stages.forEach((s) => s.questions.forEach((q) => allQ.push(Object.assign({ st: s.n, t: B.id }, { q })))));
 
 // ---------- A: pack round trip in a vm ----------
 const ctx = { console, PropertiesService: {}, Session: {}, LockService: {}, UrlFetchApp: {}, ScriptApp: {}, Utilities: {}, SpreadsheetApp: {}, HtmlService: {} };
@@ -117,8 +118,11 @@ async function playStage(user, cls, round, st, opts) {
     const q = allQ.find((x) => x.q.id === qid).q;
     const want = Judge.judge(q, a.idk ? { texts: v.items.map(() => '') } : a, v).marks;
     if (r.r.marks !== want) throw new Error('marks differ on ' + qid + ': server ' + r.r.marks + ' node ' + want);
+    if (v.form === 'writepick' && a.text && (!r.a || r.a.text !== a.text)) throw new Error('writing not kept whole on ' + qid + ': ' + (r.a && r.a.text || '').length + ' of ' + a.text.length);
     sum += r.r.marks; n++;
   }
+  const back = await api('apiStage', { cls, topic, round, stage: st }, user); // her writing comes back whole on the look back (1,000 characters, 15 Oct 2026)
+  s.order.forEach((qid, i) => { const v = s.views[i], d = back.done && back.done[qid]; if (v.form !== 'writepick' || !d) return; const a = Policy.answer(v, user + '|' + round); if (a.text && d.a.text !== a.text) throw new Error('writing not kept whole on ' + qid + ': ' + (d.a.text || '').length + ' of ' + a.text.length); });
   return { s, sum, n };
 }
 
@@ -153,7 +157,7 @@ async function flows() {
 
   // topic locking (DECISIONS §16): a new class starts locked; staff open and lock it; a class made before locking stays open
   r = await api('apiStaff', { op: 'topics', cls }, OWNER);
-  ok(r.ok && r.topics.length === 2 && r.topics[0].id === T && r.topics[1].id === "software" && r.topics.every((t) => t.open === false), "B a new class starts with Digital Data and Software both locked");
+  ok(r.ok && r.topics.map((t) => t.id).join() === [T, 'software', 'databases', 'spreadsheets'].join() && r.topics.every((t) => t.open === false), "B v7 a new class starts with its four topics (Digital Data, Software, Databases, Spreadsheets) all locked (" + (r.topics || []).map((t) => t.id + ':' + t.open).join(' ') + ')');
   r = await api('apiBoot', { cls }, 'early@c2ken.net');
   ok(r.ok && dd(r).open === false, 'B pupil boot says the topic is locked');
   r = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
@@ -186,6 +190,10 @@ async function flows() {
   const oldSt = await api('apiStage', { cls: 'old-9z', topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
   ok(r.ok && dd(r).open === true && oldSt.ok, 'B a class made before topic locking stays open');
   ok(r.ok && sw(r).open === false && sw(r).title === 'Software', 'B v6: on that old class Software starts locked (only Digital Data was ever open there)');
+  const tp = (b, id) => (b.topics || []).filter((t) => t.id === id)[0] || {};
+  ok(r.ok && r.topics.length === 4 && tp(r, 'databases').open === false && tp(r, 'spreadsheets').open === false && tp(r, 'databases').title === 'Database applications' && tp(r, 'spreadsheets').title === 'Spreadsheet applications',
+    'B v7: on that old class Databases and Spreadsheets start locked too (the stays-open rule is Digital Data only)');
+  for (const id of ['databases', 'spreadsheets']) { const x = await api('apiStage', { cls: 'old-9z', topic: id, round: 1, stage: 1 }, 'early@c2ken.net'); ok(!x.ok && x.error === 'locked', 'B v7 control: on the old class a ' + id + ' stage will not load (' + x.error + ')'); }
 
   r = await api('apiBoot', { cls });
   ok(r.ok && r.name === 'Aoife' && !r.needName && dd(r).round === 1 && dd(r).stages.length === 4, 'B pupil boot: name from the account, round 1, four stages');
@@ -248,8 +256,11 @@ async function flows() {
   // storage cost of one pupil-round
   const store = await post('/__store', {});
   const mine = Object.entries(store.script).filter(([k]) => k.indexOf(':pupil1@c2ken.net') !== -1);
-  const bytes = mine.reduce((n, [k, v]) => n + k.length + v.length, 0);
-  ok(bytes < 4096, 'B one pupil-round costs ' + bytes + ' bytes of Script Properties (budget 4096)');
+  const writ = mine.reduce((n, [k, v]) => n + ((v.match(/"t":"[^"]*"/g) || []).join('').length), 0); // the unmarked writing, full length in this sit
+  const bytes = mine.reduce((n, [k, v]) => n + k.length + v.length, 0) - writ;
+  ok(bytes < 4096, 'B one pupil-round costs ' + bytes + ' bytes of Script Properties besides her writing (budget 4096)');
+  const bigW = mine.reduce((m, [k, v]) => Math.max(m, Buffer.byteLength(k) + Buffer.byteLength(v)), 0);
+  ok(writ > 5000 && bigW < 9216, 'B every record stays under the 9 KB a property holds with every writing box full (largest ' + bigW + ' bytes, writing ' + writ + ')');
   const big = Object.entries(store.script).reduce((m, [k, v]) => Math.max(m, k.length + v.length), 0);
   ok(big < 9216, 'B largest single value ' + big + ' bytes (< 9 KB)');
 
@@ -382,7 +393,7 @@ async function flows() {
   ok(r.ok && r.open === true, 'v6 the owner opens Software on its own');
   r = await api('apiBoot', { cls: c6 }, P6);
   const swb = sw(r), swq = swb.stages ? swb.stages.reduce((t, s) => t + s.q, 0) : 0, swx = swb.stages ? swb.stages.reduce((t, s) => t + s.x, 0) : 0;
-  ok(r.ok && r.topics.length === 2 && swb.open === true && dd(r).open === false && swb.round === 1 && swb.stages.length === 4 && swq === 29 && swx === 59 && swb.spec === '1.2',
+  ok(r.ok && r.topics.length === 4 && swb.open === true && dd(r).open === false && swb.round === 1 && swb.stages.length === 4 && swq === 29 && swx === 59 && swb.spec === '1.2',
     'v6 pupil boot: Software open (4 stages · ' + swq + ' questions · ' + swx + ' marks), Digital Data still locked');
   r = await api('apiStage', { cls: c6, topic: T, round: 1, stage: 1 }, P6);
   ok(!r.ok && r.error === 'locked', 'v6 control: Digital Data stays locked in that class (' + r.error + ')');
@@ -443,5 +454,47 @@ async function flows() {
   ok(!r.ok && r.error === 'bad-question', 'v6 control: a round-1-only question cannot be marked in round 2 (' + r.error + ')');
   st6 = (await post('/__store', {})).script;
   ok(st6['p:' + c6 + ':' + R6] && !st6['t:' + c6 + ':' + R6 + ':digital-data'] && !Object.keys(st6).some((k) => k.indexOf(':digital-data:') !== -1 && /^q:/.test(k)), 'v6 Digital Data still writes the v5 keys (p: header, q: shards without a topic)');
+
+  // ---- v7: Databases (1.3) and Spreadsheets (1.4) beside the first two; locked until opened; formula answers marked by the judge
+  const c7 = '11d-dt', A7 = 'seven@c2ken.net', B7 = 'sevenb@c2ken.net';
+  r = await api('apiStaff', { op: 'create', name: '11D DT' }, OWNER);
+  ok(r.ok && r.slug === c7, 'v7 class made: 11D DT');
+  for (const B of [BANK_DB, BANK_SS]) {
+    const id = B.id, nq = B.stages.reduce((t, s) => t + s.questions.length, 0), nx = B.stages.reduce((t, s) => t + s.questions.reduce((a, q) => a + q.marks, 0), 0);
+    const pq = B.stages[0].questions.find((q) => q.form === 'pick1');
+    await api('apiBoot', { cls: c7 }, A7);
+    let x = await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, A7);
+    const y = await api('apiMark', { cls: c7, topic: id, round: 1, qid: pq.id, answer: { picks: [pq.keys[0]] } }, A7);
+    const z = await api('apiEval', { cls: c7, topic: id, round: 1, stage: 1, payload: { rating: 3 } }, A7);
+    ok(!x.ok && x.error === 'locked' && !y.ok && y.error === 'locked' && !z.ok && z.error === 'locked', 'v7 ' + id + ' locked: stage, mark and stage card all refused to a pupil (' + [x.error, y.error, z.error].join(' ') + ')');
+    r = await api('apiStaff', { op: 'setTopic', cls: c7, topic: id, open: true }, OWNER);
+    ok(r.ok && r.open === true, 'v7 the owner opens ' + B.title);
+    r = await api('apiBoot', { cls: c7 }, A7);
+    const tb = tp(r, id), bq = tb.stages ? tb.stages.reduce((t, s) => t + s.q, 0) : 0, bx = tb.stages ? tb.stages.reduce((t, s) => t + s.x, 0) : 0;
+    ok(r.ok && r.topics.length === 4 && tb.open === true && tb.title === B.title && tb.spec === B.spec && tb.stages.length === 5 && bq === nq && bx === nx,
+      'v7 pupil boot: ' + B.title + ' (' + tb.spec + ') open, ' + (tb.stages || []).length + ' stages · ' + bq + ' questions · ' + bx + ' marks');
+    x = await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, A7);
+    ok(x.ok && x.views.length === B.stages[0].questions.length && x.order.indexOf(pq.id) !== -1, 'v7 ' + id + ' stage 1 loads (' + (x.views || []).length + ' questions)');
+    const pv = x.views[x.order.indexOf(pq.id)], wrong = pv.options.find((o) => pq.keys.indexOf(o) === -1);
+    await api('apiBoot', { cls: c7 }, B7); await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, B7);
+    const right = await api('apiMark', { cls: c7, topic: id, round: 1, qid: pq.id, answer: { picks: [pq.keys[0]] } }, A7);
+    const bad = await api('apiMark', { cls: c7, topic: id, round: 1, qid: pq.id, answer: { picks: [wrong] } }, B7);
+    ok(right.ok && right.r.marks === pq.marks && bad.ok && bad.r.marks === 0, 'v7 ' + id + ' ' + pq.id + ': the right pick scores ' + (right.r || {}).marks + ' of ' + pq.marks + ', a wrong pick scores ' + (bad.r || {}).marks);
+  }
+  // a formula item: its first accepted formula typed WITHOUT the leading = scores full marks; a rejected formula scores 0
+  let fs7 = null;
+  BANK_SS.stages.forEach((s) => s.questions.forEach((q) => { if (!fs7 && q.form === 'type' && q.items.length === 1 && q.items[0].formula && /^=/.test(q.items[0].accept[0])) fs7 = { q, st: s.n }; }));
+  const fq = fs7.q, fit = fq.items[0], bare = fit.accept[0].replace(/^=/, '');
+  for (const u of [A7, B7]) await api('apiStage', { cls: c7, topic: 'spreadsheets', round: 1, stage: fs7.st }, u);
+  const fr = await api('apiMark', { cls: c7, topic: 'spreadsheets', round: 1, qid: fq.id, answer: { texts: [bare] } }, A7);
+  const fw = await api('apiMark', { cls: c7, topic: 'spreadsheets', round: 1, qid: fq.id, answer: { texts: [fit.reject[0]] } }, B7);
+  ok(fr.ok && fr.r.marks === fq.marks && fw.ok && fw.r.marks === 0, 'v7 formula ' + fq.id + ': "' + bare + '" (no =) scores ' + (fr.r || {}).marks + ' of ' + fq.marks + '; rejected "' + fit.reject[0] + '" scores ' + (fw.r || {}).marks);
+  const nfT = allQ.filter((y) => y.t === 'spreadsheets' && y.q.form === 'type').reduce((t, y) => t + y.q.items.filter((it) => it.formula).length, 0);
+  const nfG = allQ.filter((y) => y.t === 'spreadsheets' && y.q.form === 'gaps').reduce((t, y) => t + y.q.gaps.filter((g) => g.formula).length, 0);
+  ok(nfT + nfG === 26, 'v7 Spreadsheets carries ' + (nfT + nfG) + ' formula answers (26 designed: ' + nfT + ' type items, ' + nfG + ' gaps)');
+  const gq = allQ.find((y) => y.t === 'spreadsheets' && y.q.form === 'gaps' && y.q.gaps.some((g) => g.formula)), gv = gq && ctx.viewFor_(A7, 1, gq.q);
+  ok(gv && Array.isArray(gv.fml) && gv.fml.length === gq.q.gaps.length && gv.fml.some(Boolean), 'v7 a formula gap (' + (gq && gq.q.id) + ') reaches the page view as fml ' + JSON.stringify(gv && gv.fml));
+  r = await api('apiStaff', { op: 'tracker', cls: c7, topic: 'spreadsheets' }, OWNER);
+  ok(r.ok && r.title === 'Spreadsheet applications' && r.rows.some((w) => w.email === A7), 'v7 tracker with topic Spreadsheets: title and the pupil\'s row');
 }
 main();

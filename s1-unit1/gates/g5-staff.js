@@ -111,11 +111,11 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const topicRows = () => page.evaluate(() => [...document.querySelectorAll('.tlist .trow')].map((r) => r.innerText.replace(/\s+/g, ' ').trim()));
     const pupilTile = async () => { const pp = await browser.newPage(); await pp.setViewport({ width: 1280, height: 800 }); pp.on('pageerror', (e) => errs.push('pupil pageerror: ' + e.message));
       await pp.goto(BASE + '/?class=' + CLS + '&as=' + encodeURIComponent(P), { waitUntil: 'domcontentloaded' }); await pp.waitForFunction(() => App.t.cur().screen === 'home', { timeout: 15000 });
-      const t = await pp.evaluate(() => ({ text: document.querySelector('.tiles .topic').innerText.replace(/\s+/g, ' '), open: !!document.querySelector('.tiles .topic [data-open="digital-data"]'), sw: (document.querySelectorAll('.tiles .topic')[1] || {}).innerText.replace(/\s+/g, ' '), swOpen: !!document.querySelector('.tiles .topic [data-open="software"]') })); await pp.close(); return t; };
+      const t = await pp.evaluate(() => ({ text: document.querySelector('.tiles .topic').innerText.replace(/\s+/g, ' '), open: !!document.querySelector('.tiles .topic [data-open="digital-data"]'), sw: (document.querySelectorAll('.tiles .topic')[1] || {}).innerText.replace(/\s+/g, ' '), swOpen: !!document.querySelector('.tiles .topic [data-open="software"]'), db: ((document.querySelectorAll('.tiles .topic')[2] || {}).innerText || '').replace(/\s+/g, ' '), ss: ((document.querySelectorAll('.tiles .topic')[3] || {}).innerText || '').replace(/\s+/g, ' '), newOpen: !!document.querySelector('.tiles .topic [data-open="databases"], .tiles .topic [data-open="spreadsheets"]') })); await pp.close(); return t; };
     const lockedTile = (t) => /Not opened yet/.test(t.text) && /Your teacher opens topics in class\./.test(t.text) && !t.open;
     await clickTab(page, 'Topics'); await page.waitForSelector('.tlist', { timeout: 10000 });
     let tr = await topicRows();
-    check('Topics: nine rows; Digital Data "Open" with a Lock button; Software "Locked" with an Open button (v6); the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && /^1\.2 Software Locked Open$/.test(tr[1]) && tr.slice(2).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 2, tr.join(' | ') + ' · buttons ' + (await page.$$eval('[data-t]', (b) => b.map((e) => e.outerHTML).join(' '))));
+    check('Topics: nine rows; Digital Data "Open" with a Lock button; Software, Database applications, Spreadsheet applications "Locked" with an Open button (v6, v7); the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && /^1\.2 Software Locked Open$/.test(tr[1]) && /^1\.3 Database applications Locked Open$/.test(tr[2]) && /^1\.4 Spreadsheet applications Locked Open$/.test(tr[3]) && tr.slice(4).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 4, tr.join(' | ') + ' · buttons ' + (await page.$$eval('[data-t]', (b) => b.map((e) => e.outerHTML).join(' '))));
     const tText = await page.evaluate(() => document.getElementById('app').innerText);
     check('Topics: the note "Pupils see locked topics as “Not opened yet”."', tText.indexOf('Pupils see locked topics as “Not opened yet”.') !== -1, tText.slice(0, 300));
     lay = await page.evaluate(LAYOUT); check('Topics: nothing wider than its box', lay.length === 0, lay.join(' | '));
@@ -134,6 +134,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     check('Topics: Open pressed -> the pupil tile has Open again', !lockedTile(backTile) && backTile.open, JSON.stringify(backTile));
     // ---- v6: Software opens on its own; the pupil sees a second live tile; the staff topic picker switches the tracker
     check('CONTROL pupil home: Software, still locked, has no Open on its tile', !backTile.swOpen && /Not opened yet/.test(backTile.sw), JSON.stringify(backTile));
+    check('pupil home (v7): the third and fourth tiles are Database applications and Spreadsheet applications, both "Not opened yet" with no Open', /Database applications/.test(backTile.db) && /Spreadsheet applications/.test(backTile.ss) && /Not opened yet/.test(backTile.db) && /Not opened yet/.test(backTile.ss) && !backTile.newOpen, JSON.stringify(backTile));
     await page.click('[data-t="software"]'); await page.waitForFunction(() => /Open Lock$/.test((([...document.querySelectorAll('.tlist .trow')][1] || {}).innerText || '').replace(/\s+/g, ' ').trim()), { timeout: 10000 });
     tr = await topicRows();
     check('Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged', /^1\.2 Software Open Lock$/.test(tr[1]) && /^1\.1 Digital data Open Lock$/.test(tr[0]), tr.slice(0, 2).join(' | '));
@@ -143,7 +144,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const h1 = () => page.evaluate(() => (document.querySelector('h1') || {}).innerText || '');
     const pk = await page.evaluate(() => { const q = document.getElementById('tq'); return q ? [...q.options].map((o) => o.value + '=' + o.text).join('|') : null; });
     let h1t = await h1();
-    check('Tracker: a Topic picker lists Digital data and Software; the heading names Digital data', pk === 'digital-data=Digital data|software=Software' && /· Digital data ·/.test(h1t) && !/Software/.test(h1t), pk + ' · ' + h1t);
+    check('Tracker: a Topic picker lists the four topics (v7); the heading names Digital data', pk === 'digital-data=Digital data|software=Software|databases=Database applications|spreadsheets=Spreadsheet applications' && /· Digital data ·/.test(h1t) && !/Software/.test(h1t), pk + ' · ' + h1t);
     await page.select('#tq', 'software'); await page.waitForFunction(() => /· Software ·/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 }).catch(() => {});
     h1t = await h1();
     const swRows = await trackerRows(page);
