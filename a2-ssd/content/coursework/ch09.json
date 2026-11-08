@@ -419,6 +419,12 @@
         "src": "try:ch09_reports.sql#workload",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "SET @To = '2099-12-31';",
           "Two dates in two boxes",
@@ -431,17 +437,23 @@
           "EXEC runs the stored procedure with the two dates. The rows it makes come back as a table in the Results tab."
          ]
         ],
-        "text": "-- Which mechanic did the most work?\n-- Four rows, one per mechanic, biggest earner first.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_MechanicWorkload @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- Which mechanic did the most work?\n-- Four rows, one per mechanic, biggest earner first.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_MechanicWorkload @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Two dates in two boxes",
           "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
-          7,
-          7,
+          9,
+          9,
           "Run the report",
           "EXEC runs the stored procedure with the two dates. The rows it makes come back as a table in the Results tab."
          ]
@@ -801,6 +813,12 @@
         "src": "try:ch09_reports.sql#income",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "SET @To = '2099-12-31';",
           "Two dates in two boxes",
@@ -813,17 +831,23 @@
           "EXEC runs the stored procedure with the two dates. The stacked rows come back as one table in the Results tab."
          ]
         ],
-        "text": "-- Where did the money come from, day by day?\n-- One row per day per source: Workshop, Bike hire or Parts.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Income @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- Where did the money come from, day by day?\n-- One row per day per source: Workshop, Bike hire or Parts.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Income @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Two dates in two boxes",
           "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
-          7,
-          7,
+          9,
+          9,
           "Run the report",
           "EXEC runs the stored procedure with the two dates. The stacked rows come back as one table in the Results tab."
          ]
@@ -1151,6 +1175,12 @@
         "src": "try:ch09_reports.sql#activity",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "SET @To = '2099-12-31';",
           "Two dates in two boxes",
@@ -1163,17 +1193,23 @@
           "EXEC runs the stored procedure with the two dates. Five rows come back in the Results tab, in the order the SELECTs are stacked."
          ]
         ],
-        "text": "-- How much happened?  Five rows, one count each.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Activity @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- How much happened?  Five rows, one count each.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_Activity @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           4,
+          6,
           "Two dates in two boxes",
           "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
-          6,
-          6,
+          8,
+          8,
           "Run the report",
           "EXEC runs the stored procedure with the two dates. Five rows come back in the Results tab, in the order the SELECTs are stacked."
          ]
@@ -1444,6 +1480,12 @@
         "src": "try:ch09_reports.sql#services",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "SET @To = '2099-12-31';",
           "Two dates in two boxes",
@@ -1456,17 +1498,23 @@
           "EXEC runs the stored procedure with the two dates. One row per service comes back in the Results tab."
          ]
         ],
-        "text": "-- Which services were booked most?\n-- Every service is listed, even one that nobody booked.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularServices @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- Which services were booked most?\n-- Every service is listed, even one that nobody booked.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularServices @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Two dates in two boxes",
           "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
-          7,
-          7,
+          9,
+          9,
           "Run the report",
           "EXEC runs the stored procedure with the two dates. One row per service comes back in the Results tab."
          ]
@@ -1703,6 +1751,12 @@
         "src": "try:ch09_reports.sql#parts",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "SET @To = '2099-12-31';",
           "Two dates in two boxes",
@@ -1715,17 +1769,23 @@
           "EXEC runs your stored procedure with the two dates. One row per part comes back in the Results tab."
          ]
         ],
-        "text": "-- Which parts sold most?\n-- Every part is listed, even one that nobody bought.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularParts @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- Which parts sold most?\n-- Every part is listed, even one that nobody bought.\nDECLARE @From DATE, @To DATE;\nSET @From = '2020-01-01';\nSET @To = '2099-12-31';\n\nEXEC usp_Report_PopularParts @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Two dates in two boxes",
           "A variable is a named box that holds one value while the script runs. The two boxes hold 1 January 2020 and 31 December 2099, dates far enough apart to take in every record in the sample data, whatever year you run it. Change either SET line to ask about different dates."
          ],
          [
-          7,
-          7,
+          9,
+          9,
           "Run the report",
           "EXEC runs your stored procedure with the two dates. One row per part comes back in the Results tab."
          ]

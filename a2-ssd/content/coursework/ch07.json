@@ -621,6 +621,12 @@
         "src": "try:ch07_bookings.sql#good",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Day DATE, @Start DATETIME, @NewID INT, @Message VARCHAR(200);",
           "DECLARE @Day DATE, @Start DATETIME, @NewID INT, @Message VARCHAR(200);",
           "Four boxes to hold values",
@@ -651,35 +657,41 @@
           "If @Message holds a sentence, the stored procedure refused, and the sentence is printed as it is."
          ]
         ],
-        "text": "-- Book Aoife (mechanic 3) for a basic service (service 6) at 13:00 on the test\n-- day.\n-- Run it once: it books.  Run it again: the same slot is refused.\nDECLARE @Day DATE, @Start DATETIME, @NewID INT, @Message VARCHAR(200);\n-- tomorrow\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\n-- the workshop is shut on Sundays\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 13:00 on the test day\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 1, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Blue Trek hybrid', @Notes = NULL, @BookedByStaffID = 2,\n     @NewAppointmentID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Booked. New appointment number ' + CAST(@NewID AS VARCHAR) + ' at '\n        + CAST(CAST(@Start AS TIME) AS VARCHAR(5)) + ' on '\n        + CAST(@Day AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Book Aoife (mechanic 3) for a basic service (service 6) at 13:00 on the test\n-- day.\n-- Run it once: it books.  Run it again: the same slot is refused.\nDECLARE @Day DATE, @Start DATETIME, @NewID INT, @Message VARCHAR(200);\n-- tomorrow\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\n-- the workshop is shut on Sundays\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 13:00 on the test day\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 1, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Blue Trek hybrid', @Notes = NULL, @BookedByStaffID = 2,\n     @NewAppointmentID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Booked. New appointment number ' + CAST(@NewID AS VARCHAR) + ' at '\n        + CAST(CAST(@Start AS TIME) AS VARCHAR(5)) + ' on '\n        + CAST(@Day AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
         "partLines": [
          [
-          4,
-          4,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          6,
+          6,
           "Four boxes to hold values",
           "A variable is a named box that holds one value while the script runs. @Day will hold the test day, @Start the start time, @NewID the number of the new booking, and @Message the stored procedure's answer."
          ],
          [
-          6,
-          10,
+          8,
+          12,
           "Pick tomorrow at 13:00",
           "GETDATE() is today. Adding one day gives tomorrow. If tomorrow is a Sunday, the test moves on one more day, because the workshop is shut. Then 13 hours are added to the start of that day, which gives 13:00."
          ],
          [
-          12,
-          15,
+          14,
+          17,
           "Run the stored procedure",
           "EXEC runs the stored procedure. Each parameter is named, so the order does not matter. Customer 1, mechanic 3 (Aoife) and service 6 (a basic service) are rows from the sample data. The two boxes marked OUTPUT are filled in by the stored procedure."
          ],
          [
-          17,
-          22,
+          19,
+          24,
           "If the message is empty, it worked",
           "An empty message means the booking was saved. PRINT writes one line in the Messages pane, with the new number, the time and the day. CAST turns a number or a date into text so that it can be joined to the words."
          ],
          [
-          23,
-          26,
+          25,
+          28,
           "Otherwise, print the refusal",
           "If @Message holds a sentence, the stored procedure refused, and the sentence is printed as it is."
          ]
@@ -1056,6 +1068,12 @@
         "src": "try:ch07_bookings.sql#move",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Day DATE, @Start DATETIME, @B INT",
           "SET @Start = DATEADD(HOUR, 15",
           "Set up tomorrow at 15:00",
@@ -1086,35 +1104,41 @@
           "13:30 is inside Aoife Byrne's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
          ]
         ],
-        "text": "-- Book Aoife at 15:00, then move that booking three times: onto itself, to\n-- 15:15, and onto her 13:00 booking.\nDECLARE @Day DATE, @Start DATETIME, @B INT, @Message VARCHAR(200);\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 15:00 on the test day\nSET @Start = DATEADD(HOUR, 15, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 2, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Black Giant road bike', @Notes = NULL,\n         @BookedByStaffID = 2,\n     @NewAppointmentID = @B OUTPUT, @Message = @Message OUTPUT;\nIF @Message <> ''\nBEGIN\n    PRINT 'Could not make the 15:00 booking: ' + @Message;\n    -- stop here\n    RETURN;\nEND\nPRINT 'Booked number ' + CAST(@B AS VARCHAR) + ' at 15:00.';\n\n-- 1. Onto its own time: a booking never clashes with itself.\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved onto itself: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved onto itself: ' + @Message;\nEND\n\n-- 2. To 15:15: the only booking it overlaps is itself, so still allowed.\nSET @Start = DATEADD(MINUTE, 15, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 15:15: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved to 15:15: ' + @Message;\nEND\n\n-- 3. To 13:30: inside the 13:00 booking from the stage 2 test, so refused.\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\nSET @Start = DATEADD(MINUTE, 30, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 13:30: allowed. (Run the stage 2 test first and this ' +\n        'move is refused.)';\nEND\nELSE BEGIN PRINT 'Move to 13:30 refused: ' + @Message; END",
+        "text": "USE BikeShop;\n\n-- Book Aoife at 15:00, then move that booking three times: onto itself, to\n-- 15:15, and onto her 13:00 booking.\nDECLARE @Day DATE, @Start DATETIME, @B INT, @Message VARCHAR(200);\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\n-- 15:00 on the test day\nSET @Start = DATEADD(HOUR, 15, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_Add\n     @CustomerID = 2, @MechanicID = 3, @ServiceTypeID = 6, @StartTime = @Start,\n     @BikeDescription = 'Black Giant road bike', @Notes = NULL,\n         @BookedByStaffID = 2,\n     @NewAppointmentID = @B OUTPUT, @Message = @Message OUTPUT;\nIF @Message <> ''\nBEGIN\n    PRINT 'Could not make the 15:00 booking: ' + @Message;\n    -- stop here\n    RETURN;\nEND\nPRINT 'Booked number ' + CAST(@B AS VARCHAR) + ' at 15:00.';\n\n-- 1. Onto its own time: a booking never clashes with itself.\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved onto itself: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved onto itself: ' + @Message;\nEND\n\n-- 2. To 15:15: the only booking it overlaps is itself, so still allowed.\nSET @Start = DATEADD(MINUTE, 15, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 15:15: allowed.';\nEND\nELSE\nBEGIN\n    PRINT 'Moved to 15:15: ' + @Message;\nEND\n\n-- 3. To 13:30: inside the 13:00 booking from the stage 2 test, so refused.\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\nSET @Start = DATEADD(MINUTE, 30, @Start);\nEXEC usp_Appointment_Move @AppointmentID = @B, @NewStartTime = @Start,\n    @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Moved to 13:30: allowed. (Run the stage 2 test first and this ' +\n        'move is refused.)';\nEND\nELSE BEGIN PRINT 'Move to 13:30 refused: ' + @Message; END",
         "partLines": [
          [
-          3,
-          7,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          9,
           "Set up tomorrow at 15:00",
           "The same four boxes as the first test. @B will hold the number of the booking that gets moved."
          ],
          [
-          9,
-          20,
+          11,
+          22,
           "Make a booking at 15:00 to move",
           "EXEC books Aoife at 15:00. If the stored procedure refused, the message is not empty: the test prints why, and RETURN stops the whole test. Otherwise it prints the new number."
          ],
          [
-          23,
-          32,
+          25,
+          34,
           "Move 1: onto its own time",
           "The new start time is the same as the old one. The extra line in the stored procedure leaves the booking itself out of the clash test, so this is allowed."
          ],
          [
-          35,
-          45,
+          37,
+          47,
           "Move 2: fifteen minutes later",
           "From 15:15 to 16:15 overlaps only the place where this booking already is, so it is allowed."
          ],
          [
-          48,
-          57,
+          50,
+          59,
           "Move 3: onto the 13:00 booking",
           "13:30 is inside Aoife Byrne's 13:00 to 14:00 booking from stage 2. Both answers are yes, so the move is refused, and the booking stays at 15:15."
          ]
@@ -1381,6 +1405,12 @@
         "src": "try:ch07_bookings.sql#hire",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE, @H INT",
           "SET @To = DATEADD(DAY, 3, @From);",
           "Pick three days, ten days from now",
@@ -1405,29 +1435,35 @@
           "This one must be refused. If the line that says the rule is broken is printed, your clash test let it through."
          ]
         ],
-        "text": "-- Hire bike 1 to customer 1 for three days, starting ten days from now.  Then\n-- try the same bike for dates that overlap.\nDECLARE @From DATE, @To DATE, @H INT, @Message VARCHAR(200);\nSET @From = DATEADD(DAY, 10, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 3, @From);\n\nEXEC usp_Hire_Add @BikeID = 1, @CustomerID = 1, @StartDate = @From,\n    @EndDate = @To,\n     @DepositPaid = 50, @BookedByStaffID = 2, @NewHireID = @H OUTPUT,\n         @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hired. New hire number ' + CAST(@H AS VARCHAR) + ' from '\n        + CAST(@From AS VARCHAR) + ' for 3 days.';\nEND\nELSE BEGIN PRINT 'Hire refused: ' + @Message; END\n\n-- The same bike again, starting the day before that hire ends: the dates\n-- overlap, so it must be refused.\nSET @From = DATEADD(DAY, 2, @From);\nSET @To = DATEADD(DAY, 3, @From);\nEXEC usp_Hire_Add @BikeID = 1, @CustomerID = 2, @StartDate = @From,\n    @EndDate = @To,\n     @DepositPaid = 50, @BookedByStaffID = 2, @NewHireID = @H OUTPUT,\n         @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The overlapping hire got through: the rule is broken.';\nEND\nELSE BEGIN PRINT 'Overlapping hire refused: ' + @Message; END",
+        "text": "USE BikeShop;\n\n-- Hire bike 1 to customer 1 for three days, starting ten days from now.  Then\n-- try the same bike for dates that overlap.\nDECLARE @From DATE, @To DATE, @H INT, @Message VARCHAR(200);\nSET @From = DATEADD(DAY, 10, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 3, @From);\n\nEXEC usp_Hire_Add @BikeID = 1, @CustomerID = 1, @StartDate = @From,\n    @EndDate = @To,\n     @DepositPaid = 50, @BookedByStaffID = 2, @NewHireID = @H OUTPUT,\n         @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hired. New hire number ' + CAST(@H AS VARCHAR) + ' from '\n        + CAST(@From AS VARCHAR) + ' for 3 days.';\nEND\nELSE BEGIN PRINT 'Hire refused: ' + @Message; END\n\n-- The same bike again, starting the day before that hire ends: the dates\n-- overlap, so it must be refused.\nSET @From = DATEADD(DAY, 2, @From);\nSET @To = DATEADD(DAY, 3, @From);\nEXEC usp_Hire_Add @BikeID = 1, @CustomerID = 2, @StartDate = @From,\n    @EndDate = @To,\n     @DepositPaid = 50, @BookedByStaffID = 2, @NewHireID = @H OUTPUT,\n         @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The overlapping hire got through: the rule is broken.';\nEND\nELSE BEGIN PRINT 'Overlapping hire refused: ' + @Message; END",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Pick three days, ten days from now",
           "@From is ten days from today. @To is three days after that. @H will hold the new hire number."
          ],
          [
-          7,
-          16,
+          9,
+          18,
           "Hire bike 1 to customer 1",
           "The first hire should work. The test prints the new number and the dates, or the reason it was refused."
          ],
          [
-          20,
-          21,
+          22,
+          23,
           "Move the dates two days on",
           "The second hire starts two days into the first one, so the two overlap by one day."
          ],
          [
-          22,
-          30,
+          24,
+          32,
           "Try the same bike again",
           "This one must be refused. If the line that says the rule is broken is printed, your clash test let it through."
          ]
@@ -1672,6 +1708,12 @@
         "src": "try:ch07_bookings.sql#free",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Day DATE, @Start DATETIME;",
           "SET @Start = DATEADD(HOUR, 13",
           "Tomorrow at 13:00 again",
@@ -1684,17 +1726,23 @@
           "Service 6 is a basic service. The answer is a list, so it appears in the Results pane, not the Messages pane."
          ]
         ],
-        "text": "-- Who is free at 13:00 on the test day for a basic service?  After the\n-- stage 2 test, Aoife is missing from the list.\nDECLARE @Day DATE, @Start DATETIME;\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_GetFreeMechanics @StartTime = @Start, @ServiceTypeID = 6;",
+        "text": "USE BikeShop;\n\n-- Who is free at 13:00 on the test day for a basic service?  After the\n-- stage 2 test, Aoife is missing from the list.\nDECLARE @Day DATE, @Start DATETIME;\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nSET @Start = DATEADD(HOUR, 13, CAST(@Day AS DATETIME));\n\nEXEC usp_Appointment_GetFreeMechanics @StartTime = @Start, @ServiceTypeID = 6;",
         "partLines": [
          [
-          3,
-          6,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          8,
           "Tomorrow at 13:00 again",
           "The same two SET lines as the first test, so the time matches your 13:00 booking."
          ],
          [
-          8,
-          8,
+          10,
+          10,
           "Ask who is free",
           "Service 6 is a basic service. The answer is a list, so it appears in the Results pane, not the Messages pane."
          ]
@@ -4657,6 +4705,12 @@
         "src": "try:ch07_bookings.sql#cancel",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @ID INT, @Day DATE",
           "SET @ID = 0;",
           "Put your booking number here",
@@ -4675,23 +4729,29 @@
           "The same day as your tests. The cancelled row is still in the list, with its Status reading Cancelled."
          ]
         ],
-        "text": "-- Cancel one booking by its number, then look at the day: the row is still\n-- there, marked Cancelled.\nDECLARE @ID INT, @Day DATE, @Message VARCHAR(200);\n-- <-- put the number that the stage 2 test printed for you here\nSET @ID = 0;\n\nEXEC usp_Appointment_Cancel @AppointmentID = @ID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled number ' + CAST(@ID AS VARCHAR)\n        + '. It is still in the diary, marked Cancelled.';\nEND\nELSE BEGIN PRINT @Message; END\n\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nEXEC usp_Appointment_GetByDay @Day = @Day;",
+        "text": "USE BikeShop;\n\n-- Cancel one booking by its number, then look at the day: the row is still\n-- there, marked Cancelled.\nDECLARE @ID INT, @Day DATE, @Message VARCHAR(200);\n-- <-- put the number that the stage 2 test printed for you here\nSET @ID = 0;\n\nEXEC usp_Appointment_Cancel @AppointmentID = @ID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled number ' + CAST(@ID AS VARCHAR)\n        + '. It is still in the diary, marked Cancelled.';\nEND\nELSE BEGIN PRINT @Message; END\n\nSET @Day = DATEADD(DAY, 1, CAST(GETDATE() AS DATE));\nIF DATENAME(WEEKDAY, @Day) = 'Sunday' SET @Day = DATEADD(DAY, 1, @Day);\nEXEC usp_Appointment_GetByDay @Day = @Day;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "Put your booking number here",
           "Replace the 0 with the number that the first test printed for you in stage 2."
          ],
          [
-          7,
-          13,
+          9,
+          15,
           "Cancel it and print what happened",
           "An empty message means it was cancelled. A sentence means it was refused, and the sentence is printed."
          ],
          [
-          15,
           17,
+          19,
           "Look at the day",
           "The same day as your tests. The cancelled row is still in the list, with its Status reading Cancelled."
          ]
