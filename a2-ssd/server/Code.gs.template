@@ -626,6 +626,14 @@ function apiStaff(req) {
       return ok_({ name: name });
     });
   }
+  // the staff page calls health with no class (D76), so it sits above the class check: below it, it only ever answered unknown-class
+  // and the archive never ran (found 5 Nov 2026)
+  if (op === 'health') {
+    props = allProps_();
+    var bytes = storeBytes_(props), moved = 0;
+    if (isOwner_(email) && bytes > ARCHIVE_AT) moved = archive_(props);
+    return ok_({ bytes: bytes, moved: moved });
+  }
   if (!realClass_(name)) return err_('unknown-class');
   if (op === 'delete') {
     if (!isClassOwner_(name, email) && !isOwner_(email)) return err_('owner-only');
@@ -747,12 +755,6 @@ function apiStaff(req) {
     });
     return ok_({ csv: lines.join('\r\n'), file: name + '.csv' });
   }
-  if (op === 'health') {
-    props = allProps_();
-    var bytes = storeBytes_(props), moved = 0;
-    if (isOwner_(email) && bytes > ARCHIVE_AT) moved = archive_(props);
-    return ok_({ bytes: bytes, moved: moved });
-  }
   return err_('bad-op');
 }
 
@@ -782,13 +784,18 @@ function archive_(props) {
     paper.parts.forEach(function (q) {
       var k = dKey_(c.cls, c.email, q.id);
       if (!props[k]) return;
-      rows.push([new Date(), c.cls, c.email, q.id, JSON.stringify(readScripts_(c.cls, c.email, q.id))]);
+      rows.push([new Date(), c.cls, c.email, q.id, JSON.stringify(decodeScripts_(props[k]))]);
       dead.push(k); bytes -= k.length + props[k].length;
     });
   }
   if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 5).setValues(rows);
-  dead.forEach(function (k) { sp_().deleteProperty(k); });
-  return dead.length;
+  // a key goes only if it still holds exactly what was copied: a pupil who marked that part again meanwhile keeps it,
+  // and the next run copies it again. One short lock per key, so pupils' saves are never held up for long.
+  var moved = 0;
+  dead.forEach(function (k) {
+    withLock_(function () { if (sp_().getProperty(k) === props[k]) { sp_().deleteProperty(k); moved++; } });
+  });
+  return moved;
 }
 
 /* ---------- re-mark (his ruling 28 Sep 2026, D97): every stored answer re-judged under today's marking; marks only ever go up ----------
