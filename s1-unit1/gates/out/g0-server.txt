@@ -1,7 +1,21 @@
-G0 server GREEN · 2026-11-04T20:28:14.899Z · build ad9099a22e-c59479cf
+G0 server GREEN · 2026-11-08T16:02:34.218Z · build ad9099a22e-c59479cf
 PASS A pack->unpack->judge == judge on 10080 answers across 252 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
+PASS C under the line (49 KB): the owner's visit moves nothing
+PASS C setup: the store is over the line (393 KB of 350)
+PASS C a teacher who is not the owner: the classes call moves nothing
+PASS C over the line: the owner's classes call archives (19 rounds)
+PASS C the store comes back down near 80% of the line (279 KB)
+PASS C only answer shards left the store (76 shards)
+PASS C every shard that left is in the archive Sheet word for word
+PASS C each archived round is marked z:1 in its header (19)
+PASS C headers keep every total, card and finish time (only z is added)
+PASS C the oldest finished rounds went first
+PASS C the next visit moves nothing more
+PASS C control "the classes call never archives" fails the safeguard gate (5 checks fail)
+PASS C control "shards deleted without a Sheet row" fails the safeguard gate (1 checks fail)
+PASS C control "newest rounds first" fails the safeguard gate (1 checks fail)
 PASS B boot with no class is the staff door
 PASS B unknown class refused (unknown-class)
 PASS B non-c2ken account refused (domain)

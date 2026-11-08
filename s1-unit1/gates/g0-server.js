@@ -8,6 +8,9 @@
  *   v4 (DECISIONS §17): the pupil page lists every answered question in words; the tracker's percentage base (ax) is the
  *      marks of the questions answered so far; a record written before v4 still loads; Delete class refuses anyone but
  *      the class's maker or the owner, and removes that class only (controls: the other class's records are untouched).
+ *   C (8 Nov 2026) the store safeguard: over 350 KB the owner's classes call moves finished rounds' shards, oldest first, to
+ *      the archive Sheet word for word and marks them z:1; under the line, a non-owner, or a second visit moves nothing.
+ *      Three controls (no archive call, no Sheet rows, newest first) must each fail it.
  * The bank and judge are read from the private DESIGN folder at run time; nothing private is written into this repo.
  * Output: gates/out/g0-server.txt. Exit 1 on any failure. */
 'use strict';
@@ -75,6 +78,82 @@ ok(tripFail === 0, 'A pack->unpack->judge == judge on ' + trips + ' answers acro
   ok(cleaned.picks.length === 1 && cleaned.picks[0] === v.options[0], 'A cleaning drops duplicate and unknown picks (' + q.id + ')');
 }
 ok(!('keys' in ctx.viewFor_('x@c2ken.net', 1, allQ[0].q)) && allQ.every(({ q }) => !/"(keys|accept|dis|pairs|key)":/.test(JSON.stringify(ctx.viewFor_('x@c2ken.net', 1, q)))), 'A no view carries keys, accept lists, distractor lists or pair keys');
+
+// ---------- C: the store safeguard (8 Nov 2026) ----------
+// The owner's 'classes' call moves the answer shards of finished rounds, oldest first, to the archive Sheet once the store
+// passes ARCHIVE_AT, and marks those rounds z:1. Runs the real Code.gs in its own vm with an in-memory store. It must pass on
+// the real build, and each control (a copy of the build with one fault put in) must fail.
+function storeGate(code, tag) {
+  const BOSS = 'dgartland021@c2ken.net';
+  const out = []; let bad = 0;
+  const say = (cond, msg) => { out.push((cond ? 'PASS ' : 'FAIL ') + 'C' + tag + ' ' + msg); if (!cond) bad++; };
+  const script = {}, users = {}, sheets = []; let me = BOSS;
+  const store = (get) => ({ getProperty: (k) => (k in get() ? get()[k] : null), setProperty: (k, v) => { get()[k] = String(v); }, deleteProperty: (k) => { delete get()[k]; },
+    getProperties: () => Object.assign({}, get()), getKeys: () => Object.keys(get()) });
+  const c = vm.createContext({ console: { log() {}, error() {} },
+    PropertiesService: { getScriptProperties: () => store(() => script), getUserProperties: () => store(() => (users[me] = users[me] || {})) },
+    Session: { getActiveUser: () => ({ getEmail: () => me }), getEffectiveUser: () => ({ getEmail: () => me }) },
+    LockService: { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) },
+    Utilities: { DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' },
+      computeDigest: (a, s) => Array.from(require('crypto').createHash('sha256').update(String(s), 'utf8').digest()).map((b) => (b > 127 ? b - 256 : b)) },
+    SpreadsheetApp: { create: (n) => { sheets.push({ name: n, rows: [] }); return book(sheets.length - 1); }, openById: (id) => { if (!sheets[id]) throw new Error('no sheet'); return book(id); } },
+    UrlFetchApp: {}, ScriptApp: {}, HtmlService: {} });
+  function book(id) { const s = sheets[id]; return { getId: () => String(id), getSheets: () => [{ getLastRow: () => s.rows.length, appendRow: (r) => s.rows.push(r),
+    getRange: () => ({ setValues: (rows) => rows.forEach((r) => s.rows.push(r)) }) }] }; }
+  vm.runInContext(code, c, { filename: 'Code.gs' });
+  const call = (who, req) => { me = who; return JSON.parse(JSON.stringify(c.apiStaff(req))); };
+  const bytes = () => Object.keys(script).reduce((n, k) => n + k.length + script[k].length, 0);
+  const AT = vm.runInContext('ARCHIVE_AT', c), DDT = vm.runInContext('TOPICS[DD]', c), SWT = vm.runInContext("TOPICS['software']", c);
+  const made = call(BOSS, { op: 'create', name: '11Z Store' }), slug = made.slug || (made.cls && made.cls.slug) || Object.keys(script).find((k) => /^cls:/.test(k)).slice(4);
+  let n = 0; const fill32 = (len) => { let s = ''; while (s.length < len) s += (n = (n * 1103515245 + 12345) % 2147483648).toString(36); return s.slice(0, len); };
+  // each pupil: a finished Digital Data round 1 (p: header) and a finished Software round 1 (t: header), every stage's shard ~1.5 KB
+  const pupil = (i) => 'store' + i + '@c2ken.net';
+  const seed = (from, to) => { for (let i = from; i <= to; i++) {
+    const e = pupil(i);
+    [[DDT, 'p:' + slug + ':' + e], [SWT, 't:' + slug + ':' + e + ':software']].forEach(([T, hk], j) => {
+      script[hk] = JSON.stringify({ n: 'Pupil ' + i, R: { 1: { g: {}, E: { r: 3, u: [], x: '' }, d: 1000 + i * 10 + j * 500 } } });
+      T.stages.forEach((S) => { script[c.qKey_(slug, e, 1, T, S.n)] = JSON.stringify({ a: fill32(1500) }); });
+    });
+  } };
+  seed(1, 4);
+  const small = JSON.stringify(script), r0 = call(BOSS, { op: 'classes' });
+  say(r0.ok && r0.archived === 0 && JSON.stringify(script) === small && !sheets.length, 'under the line (' + Math.round(bytes() / 1024) + ' KB): the owner\'s visit moves nothing');
+  seed(5, 32);
+  const before = Object.assign({}, script), heads = Object.keys(before).filter((k) => /^[pt]:/.test(k));
+  say(bytes() > AT, 'setup: the store is over the line (' + Math.round(bytes() / 1024) + ' KB of ' + AT / 1024 + ')');
+  const rc = call('maker@c2ken.net', { op: 'check', pass: PASS }), rt = call('maker@c2ken.net', { op: 'create', name: '11Y Other' }), rt2 = call('maker@c2ken.net', { op: 'classes' });
+  say(rc.admitted && rt.ok && rt2.ok && rt2.archived === 0 && Object.keys(before).every((k) => k in script), 'a teacher who is not the owner: the classes call moves nothing');
+  const r = call(BOSS, { op: 'classes' });
+  const gone = Object.keys(before).filter((k) => !(k in script)), sh = sheets.find((s) => s.name === 'OLS Unit 1 Revision — Archive');
+  say(r.ok && r.archived > 0, 'over the line: the owner\'s classes call archives (' + r.archived + ' rounds)');
+  say(bytes() < AT * 0.8 + 16 * 1024, 'the store comes back down near 80% of the line (' + Math.round(bytes() / 1024) + ' KB)');
+  say(gone.length > 0 && gone.every((k) => /^q:/.test(k)), 'only answer shards left the store (' + gone.length + ' shards)');
+  const inSheet = {}; (sh ? sh.rows : []).forEach((w) => { inSheet[w[1]] = w[2]; });
+  say(!!sh && gone.every((k) => inSheet[k] === before[k]), 'every shard that left is in the archive Sheet word for word');
+  const zs = heads.reduce((t, k) => t + Object.keys(JSON.parse(script[k]).R).filter((x) => JSON.parse(script[k]).R[x].z === 1).length, 0);
+  say(zs === r.archived, 'each archived round is marked z:1 in its header (' + zs + ')');
+  const stripZ = (k) => { const h = JSON.parse(script[k]); Object.keys(h.R).forEach((x) => delete h.R[x].z); return JSON.stringify(h); };
+  say(heads.every((k) => stripZ(k) === before[k]), 'headers keep every total, card and finish time (only z is added)');
+  const dOf = (k) => { const b = k.split(':'), T = b.length > 5 ? 500 : 0; return 1000 + Number(b[2].match(/^store(\d+)@/)[1]) * 10 + T; };
+  const keptQ = Object.keys(script).filter((k) => /^q:/.test(k)), movedD = gone.map(dOf), keptD = keptQ.map(dOf);
+  say(movedD.length && Math.max(...movedD) < Math.min(...keptD), 'the oldest finished rounds went first');
+  const r2 = call(BOSS, { op: 'classes' });
+  say(r2.ok && r2.archived === 0, 'the next visit moves nothing more');
+  return { out, bad };
+}
+{
+  const real = fs.readFileSync(path.join(DESIGN, 'deploy', 'Code.gs'), 'utf8'), g = storeGate(real, '');
+  lines.push(...g.out); fails += g.bad;
+  const mutants = [
+    ['the classes call never archives', "var archived = isOwner_(email) ? withLock_(", 'var archived = false ? withLock_('],
+    ['shards deleted without a Sheet row', 'if (rows.length) sheet.getRange(', 'if (false) sheet.getRange('],
+    ['newest rounds first', 'cands.sort(function (a, b) { return a.d - b.d; });', 'cands.sort(function (a, b) { return b.d - a.d; });'],
+  ];
+  mutants.forEach(([name, from, to]) => {
+    const found = real.split(from).length === 2, m = found ? storeGate(real.replace(from, to), '-control') : { bad: 0 };
+    ok(found && m.bad > 0, 'C control "' + name + '" fails the safeguard gate (' + m.bad + ' checks fail)');
+  });
+}
 
 // ---------- B: the API through the harness ----------
 function post(p, body, user) {
