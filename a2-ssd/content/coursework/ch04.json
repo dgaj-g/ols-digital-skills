@@ -449,17 +449,29 @@
         "src": "try:ch04_procedures.sql#search",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Customer_Search",
           "$end",
           "Run the stored procedure",
           "EXEC runs the stored procedure by name. The parameter is named, with an equals sign and the value it should hold. The rows it finds appear under Results, as if you had typed the SELECT yourself."
          ]
         ],
-        "text": "-- Every customer with the letters ar in their first name, last name or\n-- phone number: three rows, in surname order.\nEXEC usp_Customer_Search @SearchText = 'ar';",
+        "text": "USE BikeShop;\n\n-- Every customer with the letters ar in their first name, last name or\n-- phone number: three rows, in surname order.\nEXEC usp_Customer_Search @SearchText = 'ar';",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Run the stored procedure",
           "EXEC runs the stored procedure by name. The parameter is named, with an equals sign and the value it should hold. The rows it finds appear under Results, as if you had typed the SELECT yourself."
          ]
@@ -724,17 +736,29 @@
         "src": "try:ch04_procedures.sql#getbyid",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Customer_GetByID",
           "$end",
           "Run the stored procedure",
           "EXEC runs the stored procedure with the customer number 3. Customer 3 in the sample data is Ciara Quinn."
          ]
         ],
-        "text": "-- Customer 3, Ciara Quinn, on her own: one row.\nEXEC usp_Customer_GetByID @CustomerID = 3;",
+        "text": "USE BikeShop;\n\n-- Customer 3, Ciara Quinn, on her own: one row.\nEXEC usp_Customer_GetByID @CustomerID = 3;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "EXEC runs the stored procedure with the customer number 3. Customer 3 in the sample data is Ciara Quinn."
          ]
@@ -917,6 +941,12 @@
         "src": "try:ch04_procedures.sql#add",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "Two boxes to hold the answers",
@@ -947,35 +977,41 @@
           "The number that came back is handed straight to the fetch from stage 2, so the new row appears under Results."
          ]
         ],
-        "text": "-- Add a new customer, print the number the database gave her, then fetch\n-- her row back by that number.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Eimear', @LastName = 'Hughes', @Phone = '07700 900 123',\n     @Email = 'eimear.hughes@example.com',\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
+        "text": "USE BikeShop;\n\n-- Add a new customer, print the number the database gave her, then fetch\n-- her row back by that number.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Eimear', @LastName = 'Hughes', @Phone = '07700 900 123',\n     @Email = 'eimear.hughes@example.com',\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Two boxes to hold the answers",
           "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
          ],
          [
-          5,
-          8,
+          7,
+          10,
           "Run the stored procedure",
           "EXEC runs the stored procedure with every parameter named, so the order does not matter. The two OUTPUT ones are given a variable to fill, and the word OUTPUT is written again here, in the test that runs the stored procedure."
          ],
          [
-          10,
-          13,
+          12,
+          15,
           "If the message is blank, it worked",
           "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
          ],
          [
-          14,
-          17,
+          16,
+          19,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          19,
-          19,
+          21,
+          21,
           "Fetch the new row by its number",
           "The number that came back is handed straight to the fetch from stage 2, so the new row appears under Results."
          ]
@@ -1206,6 +1242,12 @@
         "src": "try:ch04_procedures.sql#update",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the message",
@@ -1236,35 +1278,41 @@
           "Two quote marks with nothing between them give the search from stage 2 nothing to look for, so it matches every customer and lists the whole table by surname. Only Ben's row should have the new phone number. If every row has it, the WHERE line is missing."
          ]
         ],
-        "text": "-- Change Ben Toner's phone number (customer 12), then list every customer\n-- to check that only his row changed.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Update\n     @CustomerID = 12, @FirstName = 'Ben', @LastName = 'Toner',\n     @Phone = '07388 640 999', @Email = 'ben.toner@example.com',\n     @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated customer number 12.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_Search @SearchText = '';",
+        "text": "USE BikeShop;\n\n-- Change Ben Toner's phone number (customer 12), then list every customer\n-- to check that only his row changed.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Update\n     @CustomerID = 12, @FirstName = 'Ben', @LastName = 'Toner',\n     @Phone = '07388 640 999', @Email = 'ben.toner@example.com',\n     @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated customer number 12.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Customer_Search @SearchText = '';",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the message",
           "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
          ],
          [
-          5,
-          8,
+          7,
+          10,
           "Run the stored procedure",
           "Customer 12 is Ben Toner. His name and email are given again unchanged, and the phone is new. An Update always sends every column, and the screen in chapter 6 will do the same."
          ],
          [
-          10,
-          13,
+          12,
+          15,
           "If the message is blank, it worked",
           "A blank message means the row was changed, and one line says so."
          ],
          [
-          14,
-          17,
+          16,
+          19,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          19,
-          19,
+          21,
+          21,
           "List every customer to check the change",
           "Two quote marks with nothing between them give the search from stage 2 nothing to look for, so it matches every customer and lists the whole table by surname. Only Ben's row should have the new phone number. If every row has it, the WHERE line is missing."
          ]
@@ -1457,6 +1505,12 @@
         "src": "try:ch04_procedures.sql#delete-refused",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the message",
@@ -1481,29 +1535,35 @@
           "The sentence from inside the stored procedure is printed after the word Refused."
          ]
         ],
-        "text": "-- Try to delete Aoife McCann (customer 1). She has bookings on record, so\n-- the stored procedure refuses and hands back its sentence.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Delete @CustomerID = 1, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number 1. The rule is broken: she had bookings.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Try to delete Aoife McCann (customer 1). She has bookings on record, so\n-- the stored procedure refuses and hands back its sentence.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Customer_Delete @CustomerID = 1, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number 1. The rule is broken: she had bookings.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the message",
           "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
          ],
          [
-          5,
-          5,
+          7,
+          7,
           "Run the stored procedure",
           "EXEC runs the stored procedure with customer 1 and a variable for the message to come back in."
          ],
          [
-          7,
-          10,
+          9,
+          12,
           "If the message is blank, the rule is broken",
           "A blank message would mean the row was deleted, and for customer 1 that must never happen. The printed line says so, so that you cannot miss it."
          ],
          [
-          11,
-          14,
+          13,
+          16,
           "Otherwise, print the refusal",
           "The sentence from inside the stored procedure is printed after the word Refused."
          ]
@@ -1589,6 +1649,12 @@
         "src": "try:ch04_procedures.sql#delete-gone",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "Two boxes to hold the answers",
@@ -1625,41 +1691,47 @@
           "The fetch by number finds nothing, so the Results tab shows the headings with no row under them."
          ]
         ],
-        "text": "-- Add a customer who has no bookings, delete them straight away, then\n-- look for them by number: no row comes back.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Niall', @LastName = 'Keenan', @Phone = '07700 900 000',\n     @Email = NULL,\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\nPRINT 'Added customer number ' + CAST(@NewID AS VARCHAR) + '.';\n\nEXEC usp_Customer_Delete @CustomerID = @NewID, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
+        "text": "USE BikeShop;\n\n-- Add a customer who has no bookings, delete them straight away, then\n-- look for them by number: no row comes back.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Customer_Add\n     @FirstName = 'Niall', @LastName = 'Keenan', @Phone = '07700 900 000',\n     @Email = NULL,\n     @NewCustomerID = @NewID OUTPUT, @Message = @Message OUTPUT;\nPRINT 'Added customer number ' + CAST(@NewID AS VARCHAR) + '.';\n\nEXEC usp_Customer_Delete @CustomerID = @NewID, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Deleted customer number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Customer_GetByID @CustomerID = @NewID;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Two boxes to hold the answers",
           "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
          ],
          [
-          5,
-          9,
+          7,
+          11,
           "Add a customer with nothing on record",
           "This is the Add from stage 3, with NULL for the email, which means no email at all. The new number comes back in @NewID, and one line prints it."
          ],
          [
-          11,
-          11,
+          13,
+          13,
           "Delete by that number",
           "The Delete is given the number that the Add handed back a moment ago."
          ],
          [
-          13,
-          16,
+          15,
+          18,
           "If the message is blank, it worked",
           "A blank message means the row was deleted, and one line says so, with the number."
          ],
          [
-          17,
-          20,
+          19,
+          22,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          22,
-          22,
+          24,
+          24,
           "Look for the deleted customer",
           "The fetch by number finds nothing, so the Results tab shows the headings with no row under them."
          ]
@@ -1901,17 +1973,29 @@
         "src": "try:ch04_procedures.sql#bookings",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Appointment_GetForCustomer",
           "$end",
           "Run the stored procedure",
           "EXEC runs the stored procedure with customer 1, who is Aoife McCann. Her bookings come back under Results, newest first."
          ]
         ],
-        "text": "-- Every booking Aoife McCann (customer 1) has, newest first, with the\n-- mechanic and the service as names.\nEXEC usp_Appointment_GetForCustomer @CustomerID = 1;",
+        "text": "USE BikeShop;\n\n-- Every booking Aoife McCann (customer 1) has, newest first, with the\n-- mechanic and the service as names.\nEXEC usp_Appointment_GetForCustomer @CustomerID = 1;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Run the stored procedure",
           "EXEC runs the stored procedure with customer 1, who is Aoife McCann. Her bookings come back under Results, newest first."
          ]
@@ -2126,17 +2210,29 @@
         "src": "try:ch04_procedures.sql#login",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Staff_Login",
           "$end",
           "Run the stored procedure",
           "EXEC runs the stored procedure with the username siobhan and the password canal01, both inside single quotes because they are text."
          ]
         ],
-        "text": "-- Sign in as Siobhán Rooney, the manager: one row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'canal01';",
+        "text": "USE BikeShop;\n\n-- Sign in as Siobhán Rooney, the manager: one row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'canal01';",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "EXEC runs the stored procedure with the username siobhan and the password canal01, both inside single quotes because they are text."
          ]
@@ -2152,17 +2248,29 @@
         "src": "try:ch04_procedures.sql#login-liam",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Staff_Login",
           "$end",
           "Run the stored procedure",
           "Liam's username and password are right, but his IsActive is 0, so the IsActive test in the WHERE line fails and no row comes back."
          ]
         ],
-        "text": "-- Liam Doran left the shop, so IsActive is 0: no row comes back.\nEXEC usp_Staff_Login @Username = 'liam', @Password = 'canal06';",
+        "text": "USE BikeShop;\n\n-- Liam Doran left the shop, so IsActive is 0: no row comes back.\nEXEC usp_Staff_Login @Username = 'liam', @Password = 'canal06';",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "Liam's username and password are right, but his IsActive is 0, so the IsActive test in the WHERE line fails and no row comes back."
          ]
@@ -2178,17 +2286,29 @@
         "src": "try:ch04_procedures.sql#login-wrong",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Staff_Login",
           "$end",
           "Run the stored procedure",
           "This sign-in uses the right username with the wrong password, so the password test in the WHERE line fails and no row comes back."
          ]
         ],
-        "text": "-- The right username with the wrong password: no row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'wrong';",
+        "text": "USE BikeShop;\n\n-- The right username with the wrong password: no row comes back.\nEXEC usp_Staff_Login @Username = 'siobhan', @Password = 'wrong';",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "This sign-in uses the right username with the wrong password, so the password test in the WHERE line fails and no row comes back."
          ]
@@ -2546,6 +2666,12 @@
         "src": "try:ch04_procedures.sql#staff",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Staff_GetMechanics;",
           "EXEC usp_Staff_GetMechanics;",
           "The working mechanics",
@@ -2558,17 +2684,23 @@
           "Two EXECs in one test give two grids under Results, one above the other. Six rows come back in the second."
          ]
         ],
-        "text": "-- The mechanics still working (three rows), then everyone (six rows).\nEXEC usp_Staff_GetMechanics;\nEXEC usp_Staff_GetAll;",
+        "text": "USE BikeShop;\n\n-- The mechanics still working (three rows), then everyone (six rows).\nEXEC usp_Staff_GetMechanics;\nEXEC usp_Staff_GetAll;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "The working mechanics",
           "There are no parameters, so nothing follows the name. Three rows come back."
          ],
          [
-          3,
-          3,
+          5,
+          5,
           "Everyone",
           "Two EXECs in one test give two grids under Results, one above the other. Six rows come back in the second."
          ]
@@ -2583,6 +2715,12 @@
         "title": "A test that adds Eoin Daly, then tries Aoife's username",
         "src": "try:ch04_procedures.sql#staff-add",
         "parts": [
+         [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
          [
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Message VARCHAR(200);",
@@ -2626,47 +2764,53 @@
           "The refusal is printed: That username is already taken."
          ]
         ],
-        "text": "-- Add a new counter worker, then try to add him again with Aoife's\n-- username: the second one is refused.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'eoin', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'aoife', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Add a new counter worker, then try to add him again with Aoife's\n-- username: the second one is refused.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'eoin', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND\n\nEXEC usp_Staff_Add\n     @FirstName = 'Eoin', @LastName = 'Daly', @Role = 'Counter',\n     @Username = 'aoife', @Password = 'canal07',\n     @NewStaffID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added staff number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT 'Refused: ' + @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Two boxes to hold the answers",
           "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
          ],
          [
-          5,
-          8,
+          7,
+          10,
           "Add Eoin Daly at the counter",
           "The first EXEC adds a new counter worker with the username eoin. His new number comes back in @NewID."
          ],
          [
-          10,
-          13,
+          12,
+          15,
           "If the message is blank, it worked",
           "A blank message means he was added, and one line prints his number."
          ],
          [
-          14,
-          17,
+          16,
+          19,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          19,
-          22,
+          21,
+          24,
           "The same person with a taken username",
           "The second EXEC tries Eoin again, this time with the username aoife, which Aoife Byrne already has. The IF EXISTS inside the stored procedure finds her row."
          ],
          [
-          24,
-          27,
+          26,
+          29,
           "If the message is blank, the rule is broken",
           "A blank message here would mean two staff members with the same username, which must never happen."
          ],
          [
-          28,
-          31,
+          30,
+          33,
           "Otherwise, print the refusal",
           "The refusal is printed: That username is already taken."
          ]
@@ -2908,17 +3052,29 @@
         "src": "try:ch04_procedures.sql#services",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_ServiceType_GetAll;",
           "$end",
           "Run the stored procedure",
           "There are no parameters, so nothing follows the name. Seven rows come back."
          ]
         ],
-        "text": "-- Every service the shop offers, shortest first: seven rows.\nEXEC usp_ServiceType_GetAll;",
+        "text": "USE BikeShop;\n\n-- Every service the shop offers, shortest first: seven rows.\nEXEC usp_ServiceType_GetAll;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "There are no parameters, so nothing follows the name. Seven rows come back."
          ]
@@ -3148,6 +3304,12 @@
         "src": "try:ch04_procedures.sql#service-add",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "Two boxes to hold the answers",
@@ -3178,35 +3340,41 @@
           "The stored procedure you typed on the last screen shows the new row among the others."
          ]
         ],
-        "text": "-- Add a new service, print its number, then list every service again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Add\n     @Name = 'Chain replacement', @DurationMinutes = 30, @Price = 18.00,\n     @NewServiceTypeID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New service number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
+        "text": "USE BikeShop;\n\n-- Add a new service, print its number, then list every service again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Add\n     @Name = 'Chain replacement', @DurationMinutes = 30, @Price = 18.00,\n     @NewServiceTypeID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New service number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Two boxes to hold the answers",
           "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
          ],
          [
-          4,
           6,
+          8,
           "Run the stored procedure",
           "The EXEC adds a 30-minute Chain replacement at 18.00. The price is typed as a plain number, with no pound sign and no quotes."
          ],
          [
-          8,
-          11,
+          10,
+          13,
           "If the message is blank, it worked",
           "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
          ],
          [
-          12,
-          15,
+          14,
+          17,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          17,
-          17,
+          19,
+          19,
           "List every service again",
           "The stored procedure you typed on the last screen shows the new row among the others."
          ]
@@ -3340,6 +3508,12 @@
         "src": "try:ch04_procedures.sql#service-update",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the message",
@@ -3370,35 +3544,41 @@
           "Wheel true shows its new price among the others."
          ]
         ],
-        "text": "-- Put the price of Wheel true (service 4) up to 22.00, then list every\n-- service again.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Update\n     @ServiceTypeID = 4, @Name = 'Wheel true', @DurationMinutes = 45,\n     @Price = 22.00, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated service number 4.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
+        "text": "USE BikeShop;\n\n-- Put the price of Wheel true (service 4) up to 22.00, then list every\n-- service again.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_ServiceType_Update\n     @ServiceTypeID = 4, @Name = 'Wheel true', @DurationMinutes = 45,\n     @Price = 22.00, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Updated service number 4.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_ServiceType_GetAll;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the message",
           "DECLARE makes a variable, a named box that holds one value while the script runs. @Message will hold the refusal, if there is one."
          ],
          [
-          5,
           7,
+          9,
           "Run the stored procedure",
           "Service 4 is Wheel true. Its name and minutes are sent again unchanged, and the price is new."
          ],
          [
-          9,
-          12,
+          11,
+          14,
           "If the message is blank, it worked",
           "A blank message means the row was changed, and one line says so."
          ],
          [
-          13,
-          16,
+          15,
+          18,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          18,
-          18,
+          20,
+          20,
           "List every service again",
           "Wheel true shows its new price among the others."
          ]
@@ -3635,17 +3815,29 @@
         "src": "try:ch04_procedures.sql#suppliers",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Supplier_GetAll;",
           "$end",
           "Run the stored procedure",
           "There are no parameters, so nothing follows the name. Three rows come back."
          ]
         ],
-        "text": "-- Every supplier, in name order: three rows.\nEXEC usp_Supplier_GetAll;",
+        "text": "USE BikeShop;\n\n-- Every supplier, in name order: three rows.\nEXEC usp_Supplier_GetAll;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Run the stored procedure",
           "There are no parameters, so nothing follows the name. Three rows come back."
          ]
@@ -3660,6 +3852,12 @@
         "title": "A test that adds Carlingford Cycles and lists every supplier again",
         "src": "try:ch04_procedures.sql#supplier-add",
         "parts": [
+         [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
          [
           "DECLARE @NewID INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Message VARCHAR(200);",
@@ -3691,35 +3889,41 @@
           "Your own Get shows the row that your own Add put in."
          ]
         ],
-        "text": "-- Add a new supplier, print its number, then list every supplier again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Supplier_Add\n     @Name = 'Carlingford Cycles', @Phone = '028 4175 3030',\n     @Email = 'hello@carlingfordcycles.example',\n     @NewSupplierID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New supplier number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Supplier_GetAll;",
+        "text": "USE BikeShop;\n\n-- Add a new supplier, print its number, then list every supplier again.\nDECLARE @NewID INT, @Message VARCHAR(200);\n\nEXEC usp_Supplier_Add\n     @Name = 'Carlingford Cycles', @Phone = '028 4175 3030',\n     @Email = 'hello@carlingfordcycles.example',\n     @NewSupplierID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Added. New supplier number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Supplier_GetAll;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Two boxes to hold the answers",
           "DECLARE makes a variable. A variable is a named box that holds one value while the script runs. @NewID will hold the number the database gives the new row, and @Message the refusal, if there is one."
          ],
          [
-          4,
-          7,
+          6,
+          9,
           "Run the stored procedure",
           "The EXEC adds a new supplier with a name, a phone and an email. The new number comes back in @NewID."
          ],
          [
-          9,
-          12,
+          11,
+          14,
           "If the message is blank, it worked",
           "A blank message means the row was saved. PRINT writes one line in the Messages pane. CAST turns the number into text so that it can be joined onto the sentence with the plus signs."
          ],
          [
-          13,
-          16,
+          15,
+          18,
           "Otherwise, print the refusal",
           "If the stored procedure set @Message, something was refused, and the sentence it wrote is printed as it is."
          ],
          [
-          18,
-          18,
+          20,
+          20,
           "List every supplier again",
           "Your own Get shows the row that your own Add put in."
          ]

@@ -513,6 +513,12 @@
         "src": "try:ch08_stock.sql#sell",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @NewID INT, @Left INT, @Message VARCHAR(200);",
           "DECLARE @NewID INT, @Left INT, @Message VARCHAR(200);",
           "Three boxes to hold the answers",
@@ -537,29 +543,35 @@
           "If @Message holds a sentence, the stored procedure refused, and the sentence is printed as it is."
          ]
         ],
-        "text": "-- Sell 3 of part 5 (the 9-speed chain, 5 in stock) to a walk-in customer.\n-- Run it once: it sells and 2 are left.  Run it again: only 2 in stock.\nDECLARE @NewID INT, @Left INT, @Message VARCHAR(200);\n\nEXEC usp_PartSale_Add\n     @PartID = 5, @CustomerID = NULL, @Quantity = 3, @SoldByStaffID = 2,\n     @NewPartSaleID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Sold. New sale number ' + CAST(@NewID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Sell 3 of part 5 (the 9-speed chain, 5 in stock) to a walk-in customer.\n-- Run it once: it sells and 2 are left.  Run it again: only 2 in stock.\nDECLARE @NewID INT, @Left INT, @Message VARCHAR(200);\n\nEXEC usp_PartSale_Add\n     @PartID = 5, @CustomerID = NULL, @Quantity = 3, @SoldByStaffID = 2,\n     @NewPartSaleID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Sold. New sale number ' + CAST(@NewID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "Three boxes to hold the answers",
           "A variable is a named box that holds one value while the script runs. @NewID will hold the number of the new sale, @Left the number of chains left, and @Message the refusal, if there is one."
          ],
          [
-          5,
           7,
+          9,
           "Run the stored procedure",
           "EXEC runs the stored procedure. Each parameter is named, so the order does not matter. Part 5 is the 9-speed chain, NULL means a walk-in customer, and staff 2 is Pádraig Maguire at the counter."
          ],
          [
-          9,
-          16,
+          11,
+          18,
           "If the message is empty, it worked",
           "An empty message means the sale was saved. PRINT writes one line in the Messages pane with the new number and the count now. The SELECT line above it reads the count from the Part table into @Left."
          ],
          [
-          17,
-          20,
+          19,
+          22,
           "Otherwise, print the refusal",
           "If @Message holds a sentence, the stored procedure refused, and the sentence is printed as it is."
          ]
@@ -899,6 +911,12 @@
         "src": "try:ch08_stock.sql#refund",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @ID INT, @Left INT, @From DATE, @To DATE, @Message VARCHAR(200);",
           "SET @ID = 9;",
           "The sale to refund",
@@ -929,35 +947,41 @@
           "Today, and ten days before it. The sales between the two come back as a table in the Results tab, your test sales at the top because they are newest."
          ]
         ],
-        "text": "-- Refund one sale by its number, then look at the sales of the last ten\n-- days.  Run it once: the stock goes back up.  Run it again: refused.\nDECLARE @ID INT, @Left INT, @From DATE, @To DATE, @Message VARCHAR(200);\n-- put your sale number here\nSET @ID = 9;\n\nEXEC usp_PartSale_Refund @PartSaleID = @ID, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Refunded sale number ' + CAST(@ID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nSET @To = CAST(GETDATE() AS DATE);\nSET @From = DATEADD(DAY, -10, @To);\nEXEC usp_PartSale_GetByDateRange @FromDate = @From, @ToDate = @To;",
+        "text": "USE BikeShop;\n\n-- Refund one sale by its number, then look at the sales of the last ten\n-- days.  Run it once: the stock goes back up.  Run it again: refused.\nDECLARE @ID INT, @Left INT, @From DATE, @To DATE, @Message VARCHAR(200);\n-- put your sale number here\nSET @ID = 9;\n\nEXEC usp_PartSale_Refund @PartSaleID = @ID, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Refunded sale number ' + CAST(@ID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nSET @To = CAST(GETDATE() AS DATE);\nSET @From = DATEADD(DAY, -10, @To);\nEXEC usp_PartSale_GetByDateRange @FromDate = @From, @ToDate = @To;",
         "partLines": [
          [
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           5,
+          7,
           "The sale to refund",
           "Five boxes. @Left will hold the number of chains left. @ID is the sale number, and the SET line is where you put your own number from stage 2."
          ],
          [
-          7,
-          7,
+          9,
+          9,
           "Run the stored procedure",
           "The sale number goes in, and @Message comes back."
          ],
          [
-          9,
-          16,
+          11,
+          18,
           "If the message is empty, it worked",
           "The SELECT line reads the count from the Part table into @Left, and PRINT writes the sale number and that count."
          ],
          [
-          17,
-          20,
+          19,
+          22,
           "Otherwise, print the refusal",
           "The sentence from the stored procedure is printed as it is."
          ],
          [
-          22,
           24,
+          26,
           "Then list the sales",
           "Today, and ten days before it. The sales between the two come back as a table in the Results tab, your test sales at the top because they are newest."
          ]
@@ -1273,6 +1297,12 @@
         "src": "try:ch08_stock.sql#order",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);",
           "SET @Expected",
           "A week from today",
@@ -1297,29 +1327,35 @@
           "The sentence from the stored procedure is printed as it is."
          ]
         ],
-        "text": "-- Order 10 more of part 5 from its supplier, expected in a week.\nDECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);\nSET @Expected = DATEADD(DAY, 7, CAST(GETDATE() AS DATE));\n\nEXEC usp_PartOrder_Place\n     @PartID = 5, @QtyOrdered = 10, @ExpectedOn = @Expected,\n     @PlacedByStaffID = 1,\n     @NewPartOrderID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Ordered. New order number ' + CAST(@NewID AS VARCHAR)\n        + ', expected on ' + CAST(@Expected AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Order 10 more of part 5 from its supplier, expected in a week.\nDECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);\nSET @Expected = DATEADD(DAY, 7, CAST(GETDATE() AS DATE));\n\nEXEC usp_PartOrder_Place\n     @PartID = 5, @QtyOrdered = 10, @ExpectedOn = @Expected,\n     @PlacedByStaffID = 1,\n     @NewPartOrderID = @NewID OUTPUT, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    PRINT 'Ordered. New order number ' + CAST(@NewID AS VARCHAR)\n        + ', expected on ' + CAST(@Expected AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
         "partLines": [
          [
-          2,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          5,
           "A week from today",
           "Three boxes. @Expected is today plus seven days, with the clock part thrown away."
          ],
          [
-          5,
-          8,
+          7,
+          10,
           "Run the stored procedure",
           "The test orders part 5, ten of them, with the expected date, for staff 1, Siobhán Rooney the manager."
          ],
          [
-          10,
-          14,
+          12,
+          16,
           "If the message is empty, it worked",
           "PRINT writes the new order number and the expected date."
          ],
          [
-          15,
-          18,
+          17,
+          20,
           "Otherwise, print the refusal",
           "The sentence from the stored procedure is printed as it is."
          ]
@@ -1334,6 +1370,12 @@
         "title": "A test that receives one order by its number",
         "src": "try:ch08_stock.sql#receive",
         "parts": [
+         [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
          [
           "DECLARE @ID INT, @Left INT, @Message VARCHAR(200);",
           "SET @ID = 5;",
@@ -1359,29 +1401,35 @@
           "The sentence from the stored procedure is printed as it is."
          ]
         ],
-        "text": "-- The delivery arrives: receive one order by its number.\n-- Run it once: the order closes and the stock goes up.  Run it again:\n-- that order is not open.\nDECLARE @ID INT, @Left INT, @Message VARCHAR(200);\n-- put your order number here\nSET @ID = 5;\n\nEXEC usp_PartOrder_Receive\n     @PartOrderID = @ID, @QtyReceived = 10, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Received order number ' + CAST(@ID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- The delivery arrives: receive one order by its number.\n-- Run it once: the order closes and the stock goes up.  Run it again:\n-- that order is not open.\nDECLARE @ID INT, @Left INT, @Message VARCHAR(200);\n-- put your order number here\nSET @ID = 5;\n\nEXEC usp_PartOrder_Receive\n     @PartOrderID = @ID, @QtyReceived = 10, @Message = @Message OUTPUT;\n\nIF @Message = ''\nBEGIN\n    SELECT @Left = QtyInStock FROM Part WHERE PartID = 5;\n    PRINT 'Received order number ' + CAST(@ID AS VARCHAR)\n        + '. Stock of part 5 is now '\n        + CAST(@Left AS VARCHAR)\n        + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
         "partLines": [
          [
-          4,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           6,
+          8,
           "The order to receive",
           "@Left will hold the number of chains left. The SET line is where your own order number goes."
          ],
          [
-          8,
-          9,
+          10,
+          11,
           "Run the stored procedure",
           "The test sends the order number and ten received, which is the whole box."
          ],
          [
-          11,
-          18,
+          13,
+          20,
           "If the message is empty, it worked",
           "The SELECT line reads the count from the Part table into @Left, and PRINT writes the order number and that count."
          ],
          [
-          19,
-          22,
+          21,
+          24,
           "Otherwise, print the refusal",
           "The sentence from the stored procedure is printed as it is."
          ]
@@ -1653,6 +1701,12 @@
         "src": "try:ch08_stock.sql#cancel",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);",
           "SET @Expected",
           "A week from today",
@@ -1683,35 +1737,41 @@
           "The cancelled order is not in the list. Order 3 from the sample data, and your order from the last screen if you did not receive it, are."
          ]
         ],
-        "text": "-- Place an order for 6 of part 5, cancel it, then try to cancel it again.\n-- Then list the orders that are still open.\nDECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);\nSET @Expected = DATEADD(DAY, 7, CAST(GETDATE() AS DATE));\n\nEXEC usp_PartOrder_Place\n     @PartID = 5, @QtyOrdered = 6, @ExpectedOn = @Expected,\n     @PlacedByStaffID = 1,\n     @NewPartOrderID = @NewID OUTPUT, @Message = @Message OUTPUT;\nPRINT 'Placed order number ' + CAST(@NewID AS VARCHAR) + '.';\n\nEXEC usp_PartOrder_Cancel @PartOrderID = @NewID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled order number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_PartOrder_Cancel @PartOrderID = @NewID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The second cancel got through: the rule is broken.';\nEND\nELSE\nBEGIN\n    PRINT 'Second cancel refused: ' + @Message;\nEND\n\nEXEC usp_PartOrder_GetOpen;",
+        "text": "USE BikeShop;\n\n-- Place an order for 6 of part 5, cancel it, then try to cancel it again.\n-- Then list the orders that are still open.\nDECLARE @Expected DATE, @NewID INT, @Message VARCHAR(200);\nSET @Expected = DATEADD(DAY, 7, CAST(GETDATE() AS DATE));\n\nEXEC usp_PartOrder_Place\n     @PartID = 5, @QtyOrdered = 6, @ExpectedOn = @Expected,\n     @PlacedByStaffID = 1,\n     @NewPartOrderID = @NewID OUTPUT, @Message = @Message OUTPUT;\nPRINT 'Placed order number ' + CAST(@NewID AS VARCHAR) + '.';\n\nEXEC usp_PartOrder_Cancel @PartOrderID = @NewID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled order number ' + CAST(@NewID AS VARCHAR) + '.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_PartOrder_Cancel @PartOrderID = @NewID, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The second cancel got through: the rule is broken.';\nEND\nELSE\nBEGIN\n    PRINT 'Second cancel refused: ' + @Message;\nEND\n\nEXEC usp_PartOrder_GetOpen;",
         "partLines": [
          [
-          3,
-          4,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          6,
           "A week from today",
           "The test has the same three boxes as the order test."
          ],
          [
-          6,
-          10,
+          8,
+          12,
           "Place an order for six",
           "A fresh order, so that the test does not depend on your numbers. Its number is printed."
          ],
          [
-          12,
-          20,
+          14,
+          22,
           "Cancel it",
           "The first cancel finds the open row and changes its status."
          ],
          [
-          22,
-          30,
+          24,
+          32,
           "Cancel it again",
           "The second cancel must be refused. If it got through, the test says so in plain words."
          ],
          [
-          32,
-          32,
+          34,
+          34,
           "Then list the open orders",
           "The cancelled order is not in the list. Order 3 from the sample data, and your order from the last screen if you did not receive it, are."
          ]
@@ -2038,6 +2098,12 @@
         "src": "try:ch08_stock.sql#reorder",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "EXEC usp_Part_GetAll;",
           "EXEC usp_Part_GetAll;",
           "Every part",
@@ -2050,17 +2116,23 @@
           "The second table. Each row here is a phone call to make."
          ]
         ],
-        "text": "-- Every part, then only the parts that need reordering.\nEXEC usp_Part_GetAll;\nEXEC usp_Part_GetReorderList;",
+        "text": "USE BikeShop;\n\n-- Every part, then only the parts that need reordering.\nEXEC usp_Part_GetAll;\nEXEC usp_Part_GetReorderList;",
         "partLines": [
          [
-          2,
-          2,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          4,
+          4,
           "Every part",
           "The first table in the Results tab. Look at QtyInStock beside ReorderLevel."
          ],
          [
-          3,
-          3,
+          5,
+          5,
           "Only the parts to order",
           "The second table. Each row here is a phone call to make."
          ]
@@ -4978,6 +5050,12 @@
         "src": "try:ch08_stock.sql#reserve",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -5002,29 +5080,35 @@
           "Bike 1 is in the hire fleet. The same sentence refuses it."
          ]
         ],
-        "text": "-- Reserve bike 12 (the Cannondale, for sale) for customer 1, Aoife McCann.\n-- Then try bike 10, which is already reserved, and bike 1, a hire bike.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Reserve @BikeID = 12, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 12 is reserved for Aoife McCann.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Bike_Reserve @BikeID = 10, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 10: ' + @Message;\n\nEXEC usp_Bike_Reserve @BikeID = 1, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 1: ' + @Message;",
+        "text": "USE BikeShop;\n\n-- Reserve bike 12 (the Cannondale, for sale) for customer 1, Aoife McCann.\n-- Then try bike 10, which is already reserved, and bike 1, a hire bike.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Reserve @BikeID = 12, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 12 is reserved for Aoife McCann.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND\n\nEXEC usp_Bike_Reserve @BikeID = 10, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 10: ' + @Message;\n\nEXEC usp_Bike_Reserve @BikeID = 1, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 1: ' + @Message;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "Only @Message is needed: reserving makes no new row."
          ],
          [
-          5,
-          14,
+          7,
+          16,
           "Reserve bike 12 for Aoife McCann",
           "Bike 12 is the Cannondale for sale, available in the sample data. Customer 1 is Aoife McCann."
          ],
          [
-          16,
           18,
+          20,
           "Try a bike that is already reserved",
           "Bike 10 is reserved for Méabh Cunningham in the sample data. The refusal is printed after the bike number."
          ],
          [
-          20,
           22,
+          24,
           "Try a hire bike",
           "Bike 1 is in the hire fleet. The same sentence refuses it."
          ]
@@ -5040,6 +5124,12 @@
         "src": "try:ch08_stock.sql#unreserve",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -5052,17 +5142,23 @@
           "The first run puts the bike back on sale. The second run finds no Reserved row for bike 12, so it is refused."
          ]
         ],
-        "text": "-- Take the reservation off bike 12.  Run it once: it is for sale again.\n-- Run it again: that bike is not reserved.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Unreserve @BikeID = 12, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 12 is available again.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Take the reservation off bike 12.  Run it once: it is for sale again.\n-- Run it again: that bike is not reserved.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Unreserve @BikeID = 12, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 12 is available again.';\nEND\nELSE\nBEGIN\n    PRINT @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "The same single box."
          ],
          [
-          5,
-          13,
+          7,
+          15,
           "Unreserve bike 12, and print the answer",
           "The first run puts the bike back on sale. The second run finds no Reserved row for bike 12, so it is refused."
          ]
@@ -5263,6 +5359,12 @@
         "src": "try:ch08_stock.sql#sellbike",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -5287,29 +5389,35 @@
           "The one sale that should work. Méabh buys the bike she reserved."
          ]
         ],
-        "text": "-- Three sales: bike 11 was sold ten days ago, bike 10 is reserved for\n-- Méabh Cunningham (customer 9).  Only the third one should work.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Sell @BikeID = 11, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 11 to customer 1: ' + @Message;\n\nEXEC usp_Bike_Sell @BikeID = 10, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 10 to customer 1: ' + @Message;\n\nEXEC usp_Bike_Sell @BikeID = 10, @CustomerID = 9,\n     @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 10 to customer 9: sold to Méabh Cunningham.';\nEND\nELSE\nBEGIN\n    PRINT 'Bike 10 to customer 9: ' + @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Three sales: bike 11 was sold ten days ago, bike 10 is reserved for\n-- Méabh Cunningham (customer 9).  Only the third one should work.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_Sell @BikeID = 11, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 11 to customer 1: ' + @Message;\n\nEXEC usp_Bike_Sell @BikeID = 10, @CustomerID = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Bike 10 to customer 1: ' + @Message;\n\nEXEC usp_Bike_Sell @BikeID = 10, @CustomerID = 9,\n     @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Bike 10 to customer 9: sold to Méabh Cunningham.';\nEND\nELSE\nBEGIN\n    PRINT 'Bike 10 to customer 9: ' + @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "Only @Message is needed."
          ],
          [
-          5,
           7,
+          9,
           "A bike that was sold ten days ago",
           "Bike 11 was sold to Oisín Fegan in the sample data. Selling it to Aoife McCann must be refused."
          ],
          [
-          9,
           11,
+          13,
           "A reserved bike to the wrong customer",
           "Bike 10 is reserved for Méabh Cunningham, customer 9. Aoife cannot buy it."
          ],
          [
-          13,
-          22,
+          15,
+          24,
           "The reserved bike to its own customer",
           "The one sale that should work. Méabh buys the bike she reserved."
          ]
@@ -5647,6 +5755,12 @@
         "src": "try:ch08_stock.sql#repair",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -5671,29 +5785,35 @@
           "It is already in repair, so this one is refused."
          ]
         ],
-        "text": "-- Bike 6 (the Frog 62) is in repair.  Bring it back, send it in again,\n-- then try to send it in a second time.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 0,\n     @Message = @Message OUTPUT;\nPRINT 'Back in service: ' + @Message;\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Into repair: ' + @Message;\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Into repair again: ' + @Message;",
+        "text": "USE BikeShop;\n\n-- Bike 6 (the Frog 62) is in repair.  Bring it back, send it in again,\n-- then try to send it in a second time.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 0,\n     @Message = @Message OUTPUT;\nPRINT 'Back in service: ' + @Message;\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Into repair: ' + @Message;\n\nEXEC usp_Bike_SetRepair @BikeID = 6, @InRepair = 1,\n     @Message = @Message OUTPUT;\nPRINT 'Into repair again: ' + @Message;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "Only @Message is needed."
          ],
          [
-          5,
           7,
+          9,
           "Bring bike 6 back",
           "Bike 6, the Frog 62, is in repair in the sample data. With 0 it comes back, and the message is empty."
          ],
          [
-          9,
           11,
+          13,
           "Send it in again",
           "Now it is available, so with 1 it goes into repair, and the message is empty again."
          ],
          [
-          13,
           15,
+          17,
           "Send it in once more",
           "It is already in repair, so this one is refused."
          ]
@@ -5828,6 +5948,12 @@
         "src": "try:ch08_stock.sql#free",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @From DATE, @To DATE;",
           "EXEC usp_Bike_GetAvailableForHire",
           "One day, four days from now",
@@ -5840,17 +5966,23 @@
           "Nothing is booked then, so every available hire bike is free, bike 1 included."
          ]
         ],
-        "text": "-- Which hire bikes are free for one day, four days from now?  Then the\n-- same question for two days, nine days from now.\nDECLARE @From DATE, @To DATE;\nSET @From = DATEADD(DAY, 4, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 1, @From);\nEXEC usp_Bike_GetAvailableForHire @StartDate = @From, @EndDate = @To;\n\nSET @From = DATEADD(DAY, 9, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 2, @From);\nEXEC usp_Bike_GetAvailableForHire @StartDate = @From, @EndDate = @To;",
+        "text": "USE BikeShop;\n\n-- Which hire bikes are free for one day, four days from now?  Then the\n-- same question for two days, nine days from now.\nDECLARE @From DATE, @To DATE;\nSET @From = DATEADD(DAY, 4, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 1, @From);\nEXEC usp_Bike_GetAvailableForHire @StartDate = @From, @EndDate = @To;\n\nSET @From = DATEADD(DAY, 9, CAST(GETDATE() AS DATE));\nSET @To = DATEADD(DAY, 2, @From);\nEXEC usp_Bike_GetAvailableForHire @StartDate = @From, @EndDate = @To;",
         "partLines": [
          [
-          3,
-          6,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          8,
           "One day, four days from now",
           "Hire 4 in the sample data has bike 1 from three days from now for three days, so bike 1 is busy on this day."
          ],
          [
-          8,
           10,
+          12,
           "Two days, nine days from now",
           "Nothing is booked then, so every available hire bike is free, bike 1 included."
          ]
@@ -7298,6 +7430,12 @@
         "src": "try:ch08_stock.sql#checkout",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -7316,23 +7454,29 @@
           "Hire 1 was returned weeks ago in the sample data."
          ]
         ],
-        "text": "-- Hand bike 1 to Jack O'Hare: hire 4 is booked.  Then try hire 1, which\n-- came back weeks ago.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_CheckOut @HireID = 4, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hire 4 is out.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 4: ' + @Message;\nEND\n\nEXEC usp_Hire_CheckOut @HireID = 1, @Message = @Message OUTPUT;\nPRINT 'Hire 1: ' + @Message;",
+        "text": "USE BikeShop;\n\n-- Hand bike 1 to Jack O'Hare: hire 4 is booked.  Then try hire 1, which\n-- came back weeks ago.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_CheckOut @HireID = 4, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hire 4 is out.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 4: ' + @Message;\nEND\n\nEXEC usp_Hire_CheckOut @HireID = 1, @Message = @Message OUTPUT;\nPRINT 'Hire 1: ' + @Message;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "Only @Message is needed."
          ],
          [
-          5,
-          13,
+          7,
+          15,
           "Hire 4 goes out",
           "Hire 4 is Jack O'Hare's booked hire of bike 1, starting in three days. Handing it over early is allowed: the hire is Booked."
          ],
          [
-          15,
-          16,
+          17,
+          18,
           "Hire 1 cannot",
           "Hire 1 was returned weeks ago in the sample data."
          ]
@@ -7348,6 +7492,12 @@
         "src": "try:ch08_stock.sql#return",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -7360,17 +7510,23 @@
           "The first run brings it back. The second run finds no Out row for hire 4, so it is refused."
          ]
         ],
-        "text": "-- Bike 1 comes back: hire 4 is out.  Run it once: returned.  Run it\n-- again: only a hire that is out can be returned.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_Return @HireID = 4, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hire 4 is returned.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 4: ' + @Message;\nEND",
+        "text": "USE BikeShop;\n\n-- Bike 1 comes back: hire 4 is out.  Run it once: returned.  Run it\n-- again: only a hire that is out can be returned.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_Return @HireID = 4, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Hire 4 is returned.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 4: ' + @Message;\nEND",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "The same single box."
          ],
          [
-          5,
-          13,
+          7,
+          15,
           "Return hire 4, and print the answer",
           "The first run brings it back. The second run finds no Out row for hire 4, so it is refused."
          ]
@@ -7535,6 +7691,12 @@
         "src": "try:ch08_stock.sql#hirecancel",
         "parts": [
          [
+          "USE BikeShop;",
+          "USE BikeShop;",
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
           "DECLARE @Message VARCHAR(200);",
           "DECLARE @Message VARCHAR(200);",
           "One box for the answer",
@@ -7559,29 +7721,35 @@
           "Every hire of bike 1, newest first, in the Results tab. This stored procedure is on the next screen."
          ]
         ],
-        "text": "-- Cancel hire 5, a booked hire of bike 1, then try to cancel it again.\n-- Then look at the whole history of bike 1.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_Cancel @HireID = 5, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled hire number 5.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 5: ' + @Message;\nEND\n\nEXEC usp_Hire_Cancel @HireID = 5, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The second cancel got through: the rule is broken.';\nEND\nELSE\nBEGIN\n    PRINT 'Second cancel refused: ' + @Message;\nEND\n\nEXEC usp_Hire_GetForBike @BikeID = 1;",
+        "text": "USE BikeShop;\n\n-- Cancel hire 5, a booked hire of bike 1, then try to cancel it again.\n-- Then look at the whole history of bike 1.\nDECLARE @Message VARCHAR(200);\n\nEXEC usp_Hire_Cancel @HireID = 5, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'Cancelled hire number 5.';\nEND\nELSE\nBEGIN\n    PRINT 'Hire 5: ' + @Message;\nEND\n\nEXEC usp_Hire_Cancel @HireID = 5, @Message = @Message OUTPUT;\nIF @Message = ''\nBEGIN\n    PRINT 'The second cancel got through: the rule is broken.';\nEND\nELSE\nBEGIN\n    PRINT 'Second cancel refused: ' + @Message;\nEND\n\nEXEC usp_Hire_GetForBike @BikeID = 1;",
         "partLines": [
          [
-          3,
-          3,
+          1,
+          1,
+          "Look at the BikeShop database",
+          "A new window can start in master, the server's own database, and then it cannot find your stored procedures. USE BikeShop makes this window look at your BikeShop database first."
+         ],
+         [
+          5,
+          5,
           "One box for the answer",
           "Only @Message is needed."
          ],
          [
-          5,
-          13,
+          7,
+          15,
           "Cancel hire 5",
           "Hire 5 is Róisín Campbell's booked hire of bike 1, starting in six days."
          ],
          [
-          15,
-          23,
+          17,
+          25,
           "Cancel it again",
           "The second cancel must be refused. If it got through, the test says so in plain words."
          ],
          [
-          25,
-          25,
+          27,
+          27,
           "Then the history of bike 1",
           "Every hire of bike 1, newest first, in the Results tab. This stored procedure is on the next screen."
          ]
