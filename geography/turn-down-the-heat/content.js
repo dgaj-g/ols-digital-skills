@@ -139,11 +139,11 @@ window.TDTH = {
           alt: 'The greenhouse machine with five numbered places. 1 is on the ground. 2 is just above the ground. 3 is high in the sky above the gas layer. 4 is in the gas layer on the left. 5 is at the top of the thermometer.',
           zones: [{ id: 's1', label: '1' }, { id: 's2', label: '2' }, { id: 's3', label: '3' }, { id: 's4', label: '4' }, { id: 's5', label: '5' }],
           items: [
-            { id: 'st1', t: 'Rays from the Sun pass through the air and warm the ground.', zone: 's1', why: 'Number 1 is where sunlight comes in and reaches the ground.' },
-            { id: 'st2', t: 'The warm ground gives off heat back up towards space.', zone: 's2', why: 'Number 2 is where heat leaves the ground.' },
-            { id: 'st3', t: 'Some of the heat escapes into space.', zone: 's3', why: 'Number 3 is where heat gets out past the gases.' },
-            { id: 'st4', t: 'Greenhouse gases trap some of the heat, so the air near the ground warms up.', zone: 's4', why: 'Number 4 is the layer of gas that catches heat and sends it back down.' },
-            { id: 'st5', t: 'The more greenhouse gas there is, the more heat is trapped, and the warmer Earth gets.', zone: 's5', why: 'Number 5 is the thermometer, which rises as more heat is trapped.' }
+            { id: 'st1', t: 'The Sun sends out energy as sunlight. This warms the Earth.', zone: 's1', why: 'Number 1 is where sunlight comes in and reaches the ground.' },
+            { id: 'st2', t: 'Earth gives out some of the energy again as heat, which warms the air.', zone: 's2', why: 'Number 2 is where heat leaves the ground.' },
+            { id: 'st3', t: 'Some of this heat escapes to the outer atmosphere.', zone: 's3', why: 'Number 3 is where heat gets out past the gases.' },
+            { id: 'st4', t: 'But some is trapped by greenhouse gases and does not escape.', zone: 's4', why: 'Number 4 is the layer of gas that catches heat and sends it back down.' },
+            { id: 'st5', t: 'The more of a greenhouse gas there is, the warmer the Earth gets.', zone: 's5', why: 'Number 5 is the thermometer, which rises as more heat is trapped.' }
           ] },
         { id: 'p2-gases', type: 'mcq', title: 'Two main greenhouse gases',
           do: 'Answer the three questions. Choose one answer for each.',

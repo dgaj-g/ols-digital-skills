@@ -559,10 +559,10 @@
       var trayCount = t.items.filter(function (it) { return !data.pos[it.id]; }).length;
       if (!trayCount) { if (!trayEmpty.parentNode) trayChips.appendChild(trayEmpty); } else if (trayEmpty.parentNode) trayEmpty.remove();
       t.zones.forEach(function (z) { zoneEls[z.id].classList.toggle('filled', !!occupant(z.id)); });
-      var ready = allPlaced();
-      checkBtn.disabled = st.done || !ready;
-      hint.textContent = st.done ? '' : !ready ? U.fillFirst : hintMsg;
-      row.hidden = !!st.done;
+      var ready = allPlaced(), fin = st.done || data.dragStars != null;
+      checkBtn.disabled = fin || !ready;
+      hint.textContent = fin ? '' : !ready ? U.fillFirst : hintMsg;
+      row.hidden = !!fin;
     }
     function isRight(it) {
       var z = data.pos[it.id] || null;
@@ -570,7 +570,7 @@
       return z === it.zone || (it.accept || []).indexOf(z) >= 0;
     }
     function check() {
-      if (!allPlaced() || st.done) return;
+      if (!allPlaced() || st.done || data.dragStars != null) return;
       st.checks = (st.checks || 0) + 1;
       if (L === 'order') {
         var out = 0;
