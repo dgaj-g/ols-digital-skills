@@ -281,7 +281,9 @@ function apiBoot(req) {
   // "guide has changed" message needs: when the pupil first opened any guide chapter, and the messages already confirmed
   var W = jget_(sp_(), wKey_(cls, email), {}), cwf = 0;
   Object.keys(W).forEach(function (ch) { if (/^\d\d$/.test(ch) && W[ch] && num_(W[ch].f) && (!cwf || num_(W[ch].f) < cwf)) cwf = num_(W[ch].f); });
-  return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(readClass_(cls)), cw: { f: cwf, N: W.N || {}, W: cwView_(W) } });
+  var ccfg = readClass_(cls);
+  return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(ccfg), cw: { f: cwf, N: W.N || {}, W: cwView_(W) },
+    norm: { rec: nView_(readNorm_(cls, email)), order: nOrder_(ccfg), open: nOpen_(ccfg) } });
 }
 
 function apiName(req) {
@@ -478,6 +480,167 @@ function apiKv(req) {
   return err_('bad-op');
 }
 
+/* ==================== NORMALISATION (NORMALISATION_SPEC §7, v14) ====================
+   One key per pupil, written only here under the script lock: n:<class>:<email> = { P: { partId: {f,b,a,d,s,sb,fl} }, E: { paperId: {l,f,c,t} } }
+   The P entries keep the SQL shape (§7 "P record unchanged in shape"); they live under their own key so the SQL record
+   (worst case 6.8 KB) and the norm record each stay under the 9 KB value limit (DECISIONS 10 Nov 2026).
+   Practice questions are parts in their own right (m1-c, t-q1 ...): one record each, shared by every exam part that sends there.
+   Scripts reuse d:<class>:<email>:<partId> (norm ids never clash with SQL ids); drafts and lesson checks reuse apiKv. */
+var NORM_CAP = 4000;          // characters of one stored norm answer (a structure is under 2 KB)
+var NORM_KINDS = { tables: 1, click: 1, whynot: 1, nonatomic: 1, steps: 1, braces: 1, pick: 1 };
+function nKey_(cls, email) { return 'n:' + cls + ':' + email; }
+function readNorm_(cls, email) { var r = jget_(sp_(), nKey_(cls, email), null) || {}; return { P: r.P || {}, E: r.E || {} }; }
+function writeNorm_(cls, email, rec) { jset_(sp_(), nKey_(cls, email), { P: rec.P, E: rec.E }); }
+function nMeta_(partId) { return A2META.norm.parts[str_(partId)] || null; }
+function nJudgePart_(partId) { return NormPoints.parts[partId] || NormTwins.twins[partId] || null; }
+function nOpen_(c) { return (c && c.nopen) || A2META.norm.order.slice(); }      // every normalisation paper opens unless staff lock it
+function nOrder_(c) {
+  var all = A2META.norm.order, o = ((c && c.norder) || []).filter(function (id) { return all.indexOf(id) !== -1; });
+  all.forEach(function (id) { if (o.indexOf(id) === -1) o.push(id); });
+  return o;
+}
+function nAllowed_(cfg, meta) { return meta.practice ? true : nOpen_(cfg).indexOf(meta.paper) !== -1; }
+function nClean_(kind, input) {
+  if (!input || typeof input !== 'object') return null;
+  var s; try { s = JSON.stringify(input); } catch (e) { return null; }
+  if (!s || s.length > NORM_CAP) return null;
+  var o = JSON.parse(s);
+  if (kind === 'tables') {
+    if (!Array.isArray(o.t)) return null;
+    o = { t: o.t.slice(0, 12).map(function (t) { t = t || {}; return { n: str_(t.n).slice(0, 40), u: t.u ? 1 : 0,
+      f: (Array.isArray(t.f) ? t.f : []).slice(0, 40).map(function (f) { f = Array.isArray(f) ? f : []; return [str_(f[0]).slice(0, 80), f[1] ? 1 : 0, f[2] ? 1 : 0]; }) }; }),
+      x: (Array.isArray(o.x) ? o.x : []).slice(0, 40).map(function (x) { return str_(x).slice(0, 80); }),
+      s: (o.s && typeof o.s === 'object' && !Array.isArray(o.s)) ? o.s : {} };
+  }
+  return o;
+}
+function nEmpty_(kind, o) {
+  if (!o) return true;
+  if (kind === 'tables') return !o.t.some(function (t) { return t.f.length; });
+  if (kind === 'steps') { var c = o.cards || {}; return !Object.keys(c).some(function (k) { return Array.isArray(c[k]) ? c[k].length : !!c[k]; }); }
+  if (kind === 'pick') return !(Array.isArray(o.picked) && o.picked.length);
+  if (kind === 'click' || kind === 'nonatomic') return !str_(o.field);
+  if (kind === 'braces') return !(Array.isArray(o.outer) && o.outer.length === 2);
+  if (kind === 'whynot') return !str_(o.reason) && !(Array.isArray(o.fields) && o.fields.length);
+  return true;
+}
+function nJudge_(jp, input) {
+  try { return NormJudge.judge(jp, input); }
+  catch (e) {
+    console.error('norm judge failed: ' + e);
+    return { total: 0, of: jp.marks, kind: 'error', points: jp.points.map(function (p) { return { label: p.label, of: p.of, awarded: 0, hint: null, note: 'This point could not be checked automatically; your teacher can see your answer.' }; }) };
+  }
+}
+function nLastStruct_(cls, email, partId) {
+  var sc = readScripts_(cls, email, partId), a = sc.a[sc.a.length - 1];
+  if (!a || a[2] == null) return null;
+  try { return { struct: JSON.parse(a[2]), total: a[1] }; } catch (e) { return null; }
+}
+function nView_(rec) { return { P: rec.P, E: rec.E }; }
+
+function apiNorm(req) {
+  req = req || {};
+  var w = who_(req); if (w.error) return err_(w.error);
+  var op = str_(req.op), cfg = readClass_(w.cls) || {};
+  if (op === 'state') return ok_({ rec: nView_(readNorm_(w.cls, w.email)), order: nOrder_(cfg), open: nOpen_(cfg) });
+  if (op === 'eval') return nEval_(w, req);
+  var partId = str_(req.part), meta = nMeta_(partId), jp = nJudgePart_(partId);
+  if (!meta || !jp) return err_('unknown-part');
+  if (!nAllowed_(cfg, meta)) return err_('locked');
+  if (op === 'mark') {
+    var input = nClean_(meta.kind, req.input);
+    if (nEmpty_(meta.kind, input)) return err_('empty');
+    var v = nJudge_(jp, input);
+    var res = withLock_(function () {
+      var rec = readNorm_(w.cls, w.email), p = rec.P[partId] || {}, first = p.f == null;
+      if (first) { p.d = req.door === 1 ? 1 : 0; p.f = v.total; p.b = v.total; p.a = 1; p.m = (v.points || []).map(function (q, i) { return q.awarded < q.of ? i : -1; }).filter(function (i) { return i >= 0; }); } // m: the points missed on the first mark (staff strip, spec §9)
+      else { p.a = num_(p.a) + 1; if (v.total > num_(p.b)) { p.b = v.total; if (p.s) p.sb = 1; } }
+      rec.P[partId] = p; writeNorm_(w.cls, w.email, rec);
+      var sc = readScripts_(w.cls, w.email, partId);
+      sc.a.push([tmin_(), v.total, JSON.stringify(input)]);
+      writeScripts_(w.cls, w.email, partId, sc);
+      return { first: first, part: p };
+    });
+    touch_(w.cls, w.email, 1, 1);
+    return ok_({ verdict: verdictOut_(v), first: res.first, part: res.part });
+  }
+  if (op === 'answer') {   // the examiner's answer, only after a first mark; sets seen
+    touch_(w.cls, w.email, 1, 0);
+    return withLock_(function () {
+      var rec = readNorm_(w.cls, w.email), p = rec.P[partId] || {};
+      if (p.f == null) return err_('no-first');
+      if (!p.s) { p.s = tmin_(); rec.P[partId] = p; writeNorm_(w.cls, w.email, rec); }
+      if (meta.kind === 'tables') return ok_({ struct: NormJudge.modelStruct(jp), part: p });
+      return ok_({ lines: jp.points.map(function (q) { return q.label; }), part: p });
+    });
+  }
+  if (op === 'base') {     // §3.8: the tables this stage starts from
+    if (meta.base !== 'prev' || !meta.prev) return ok_({ kind: 'none' });
+    var pm = nMeta_(meta.prev), pj = nJudgePart_(meta.prev);
+    if (!pm || !pj) return ok_({ kind: 'none' });
+    if (req.use === 'model') {
+      return withLock_(function () {
+        var rec = readNorm_(w.cls, w.email), p = rec.P[meta.prev] || {};
+        // §3.8: allowed with or without an attempt at the previous stage ("Start from the examiner's 1NF"); it counts as seen
+        if (!p.s) { p.s = tmin_(); rec.P[meta.prev] = p; writeNorm_(w.cls, w.email, rec); }
+        return ok_({ kind: 'model', struct: NormJudge.modelStruct(pj), prev: meta.prev, rec: nView_(rec) });
+      });
+    }
+    var rec0 = readNorm_(w.cls, w.email), p0 = rec0.P[meta.prev];
+    if (!p0 || p0.f == null) return ok_({ kind: 'none', prev: meta.prev });
+    var last = nLastStruct_(w.cls, w.email, meta.prev);
+    if (!last) return ok_({ kind: 'none', prev: meta.prev, archived: true });
+    return ok_({ kind: 'mine', struct: last.struct, prevTotal: last.total, prevOf: pm.marks, prev: meta.prev, seen: !!p0.s });
+  }
+  if (op === 'flag') {
+    var beats = ['door', 'ask', 'lesson', 'turn', 'another'], beat = beats.indexOf(req.beat) === -1 ? 'turn' : req.beat;
+    touch_(w.cls, w.email, 1, 0);
+    return withLock_(function () {
+      var rec = readNorm_(w.cls, w.email), p = rec.P[partId] || {};
+      if (req.on) p.fl = { b: beat, m: tmin_() }; else delete p.fl;
+      rec.P[partId] = p; writeNorm_(w.cls, w.email, rec);
+      return ok_({ part: p });
+    });
+  }
+  return err_('bad-op');
+}
+// How did it go? (§8) - once per paper, first submission wins, only after every part has a first mark
+function nEval_(w, req) {
+  var pid = str_(req.paper), paper = A2META.norm.papers[pid];
+  if (!paper) return err_('unknown-paper');
+  var l = {}, keys = Object.keys(req.l || {}).slice(0, 5);
+  keys.forEach(function (k) { var c = num_(req.l[k]); if (/^[A-Z0-9]{3,8}$/.test(k) && c >= 0 && c <= 2) l[k] = c; });
+  var f = num_(req.f);
+  if (!Object.keys(l).length || f < 0 || f > 2) return err_('incomplete');
+  var c = str_(req.c).replace(/[\u0000-\u001f]/g, ' ').slice(0, 60);
+  touch_(w.cls, w.email, 1, 0);
+  return withLock_(function () {
+    var rec = readNorm_(w.cls, w.email);
+    if (rec.E[pid]) return ok_({ already: true, rec: nView_(rec) });
+    var done = paper.parts.every(function (q) { return rec.P[q.id] && rec.P[q.id].f != null; });
+    if (!done) return err_('not-yet');
+    rec.E[pid] = { l: l, f: f, c: c, t: tmin_() };
+    writeNorm_(w.cls, w.email, rec);
+    return ok_({ rec: nView_(rec) });
+  });
+}
+// staff: one pupil's attempts at one normalisation part, re-judged, with the examiner's tables beside them (§9 drawer)
+function nStaffScripts_(cls, pe, partId) {
+  var jp = nJudgePart_(partId), meta = nMeta_(partId);
+  if (!jp || !meta) return err_('unknown-part');
+  var rec = readNorm_(cls, pe), p = rec.P[partId] || {}, sc = readScripts_(cls, pe, partId);
+  var a = sc.a.map(function (x) {
+    if (x[2] == null) return { m: x[0], total: x[1], input: null, verdict: null };
+    var inp = null; try { inp = JSON.parse(x[2]); } catch (e) { inp = null; }
+    return { m: x[0], total: x[1], input: inp, verdict: inp ? verdictOut_(nJudge_(jp, inp)) : null };
+  });
+  var tw = meta.twin ? (rec.P[meta.twin] || null) : null;
+  return ok_({ part: p, a: a, kind: meta.kind, model: meta.kind === 'tables' ? NormJudge.modelStruct(jp) : null,
+    lines: meta.kind === 'tables' ? null : jp.points.map(function (q) { return q.label; }),
+    twin: tw && tw.f != null ? { id: meta.twin, f: tw.f, b: tw.b, of: (nMeta_(meta.twin) || {}).marks } : null,
+    archived: !sp_().getProperty(dKey_(cls, pe, partId)) && p.f != null });
+}
+
 /* ==================== COURSEWORK GUIDE (DESIGN §6.1, §6.7) ==================== */
 // One key per pupil, written only here under the script lock: w:<class>:<email> =
 //   { "<ch>": { k: ticked rows as a hex bitmap over CWMETA[ch], o: times opened, f/l: first/last opened tmin,
@@ -639,12 +802,28 @@ function apiStaff(req) {
     if (!isClassOwner_(name, email) && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
       var store = sp_(), keys = store.getKeys();
-      var pres = ['p:' + name + ':', 'd:' + name + ':', 's:' + name + ':', 'w:' + name + ':'];
+      var pres = ['p:' + name + ':', 'n:' + name + ':', 'd:' + name + ':', 's:' + name + ':', 'w:' + name + ':'];
       keys.forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
       store.deleteProperty('cls:' + name);
       jset_(store, 'classes', classList_().filter(function (n) { return n !== name; }));
       return ok_({});
     });
+  }
+  if (op === 'papers' && req.topic === 'norm') {
+    if (req.set) {
+      if (!canManage_(name, email)) return err_('owner-only');
+      return withLock_(function () {
+        var c = readClass_(name), all = A2META.norm.order;
+        var order = (req.order || []).filter(function (id, i, a) { return all.indexOf(id) !== -1 && a.indexOf(id) === i; });
+        all.forEach(function (id) { if (order.indexOf(id) === -1) order.push(id); });
+        var open = (req.open || []).filter(function (id, i, a) { return all.indexOf(id) !== -1 && a.indexOf(id) === i; });
+        c.norder = order; c.nopen = open;
+        jset_(sp_(), 'cls:' + name, c);
+        return ok_({ order: order, open: open });
+      });
+    }
+    var cn = readClass_(name);
+    return ok_({ order: nOrder_(cn), open: nOpen_(cn), canManage: canManage_(name, email) });
   }
   if (op === 'papers') {
     if (req.set) {
@@ -666,7 +845,8 @@ function apiStaff(req) {
     props = allProps_();
     var pupils = pupilsOf_(props, name).map(function (p) { p.me = p.email === email; return p; });
     var c1 = readClass_(name);
-    return ok_({ pupils: pupils, order: c1.order || A2META.order, open: c1.open || [], now: tmin_() });
+    pupils.forEach(function (p) { var N = {}; try { N = JSON.parse(props[nKey_(name, p.email)] || '{}'); } catch (e) { N = {}; } p.N = { P: N.P || {}, E: N.E || {} }; });
+    return ok_({ pupils: pupils, order: c1.order || A2META.order, open: c1.open || [], norder: nOrder_(c1), nopen: nOpen_(c1), now: tmin_() });
   }
   // the class progress grid (DESIGN §6.7.2): one read of the store, every pupil's coursework record
   if (op === 'coursework') {
@@ -676,6 +856,19 @@ function apiStaff(req) {
       return { email: p.email, n: p.n, seen: p.seen, last: p.last, me: p.email === email, W: cwView_(W) };
     });
     return ok_({ pupils: cwp, now: tmin_() });
+  }
+  if (op === 'nscripts') return nStaffScripts_(name, str_(req.email).toLowerCase(), str_(req.part));
+  if (op === 'nprog') {   // spec §9 progress strip: per part, full marks on first, how many started, the point missed most on first marks
+    var npaper = A2META.norm.papers[str_(req.paper)];
+    if (!npaper) return err_('unknown-paper');
+    props = allProps_();
+    var recs = pupilsOf_(props, name).map(function (pu) { var N = {}; try { N = JSON.parse(props[nKey_(name, pu.email)] || '{}'); } catch (e) { N = {}; } return N.P || {}; });
+    return ok_({ pupils: recs.length, parts: npaper.parts.map(function (q) {
+      var jp = nJudgePart_(q.id), started = 0, full = 0, miss = {};
+      recs.forEach(function (P) { var p = P[q.id]; if (!p || p.f == null) return; started++; if (p.f >= q.marks) full++; (p.m || []).forEach(function (i) { miss[i] = (miss[i] || 0) + 1; }); });
+      var top = -1; Object.keys(miss).forEach(function (i) { if (top < 0 || miss[i] > miss[top]) top = +i; });
+      return { id: q.id, started: started, full: full, miss: top >= 0 && jp && jp.points[top] ? { label: jp.points[top].label, n: miss[top] } : null };
+    }) });
   }
   if (op === 'scripts') {
     var pe = str_(req.email).toLowerCase(), partId = str_(req.part), mp = markPart_(partId);
@@ -709,6 +902,14 @@ function apiStaff(req) {
       if (q.fl && q.fl.m) evs.push({ m: q.fl.m, k: 'f', part: pid, b: q.fl.b });
     });
     Object.keys(ur.E || {}).forEach(function (pid) { var e = ur.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'e', paper: pid }); });
+    var NR = readNorm_(name, ue);
+    Object.keys(NR.P).forEach(function (pid) {
+      var q = NR.P[pid] || {}, sc = decodeScripts_(props[dKey_(name, ue, pid)]);
+      sc.a.forEach(function (a, i) { evs.push({ m: a[0], k: 'a', part: pid, t: a[1], n: i, d: i ? null : (q.d === 1 ? 1 : 0), topic: 'norm' }); });
+      if (num_(q.s) > 1) evs.push({ m: q.s, k: 's', part: pid, topic: 'norm' });
+      if (q.fl && q.fl.m) evs.push({ m: q.fl.m, k: 'f', part: pid, b: q.fl.b, topic: 'norm' });
+    });
+    Object.keys(NR.E).forEach(function (pid) { var e = NR.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'e', paper: pid, topic: 'norm' }); });
     if (ur.j) evs.push({ m: ur.j, k: 'j' });
     ((jget_(sp_(), wKey_(name, ue), {}) || {}).e || []).forEach(function (x) { evs.push({ m: x[0], k: 'cw', c: x[1], x: x[2] }); });
     evs.sort(function (x, y) { return x.m - y.m; });
@@ -716,6 +917,12 @@ function apiStaff(req) {
   }
   if (op === 'ack') {
     var ae = str_(req.email).toLowerCase(), ap = str_(req.part);
+    if (req.topic === 'norm') return withLock_(function () {
+      var nr = readNorm_(name, ae);
+      if (!nr.P[ap]) return err_('unknown-pupil');
+      delete nr.P[ap].fl; writeNorm_(name, ae, nr);
+      return ok_({});
+    });
     return withLock_(function () {
       var r = readPupil_(name, ae);
       if (!r || !r.P[ap]) return err_('unknown-pupil');
@@ -728,14 +935,14 @@ function apiStaff(req) {
     return withLock_(function () {
       var store = sp_();
       store.getKeys().forEach(function (k) {
-        if (k === 'p:' + name + ':' + email || k === 's:' + name + ':' + email || k === wKey_(name, email) || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
+        if (k === 'p:' + name + ':' + email || k === nKey_(name, email) || k === 's:' + name + ':' + email || k === wKey_(name, email) || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
       });
       return ok_({});
     });
   }
   if (op === 'csv') {
     props = allProps_();
-    var head = ['class', 'pupil', 'email', 'paper', 'part', 'door', 'first', 'best', 'proved', 'attempts', 'seen', 'flag', 'eval', 'comment', 'lastSeen'];
+    var head = ['class', 'topic', 'pupil', 'email', 'paper', 'part', 'door', 'first', 'best', 'proved', 'attempts', 'seen', 'flag', 'eval', 'comment', 'lastSeen'];
     var lines = [head.join(',')], c2 = readClass_(name);
     var feels = ['easy', 'just right', 'tricky'], picks = ['I can', 'getting there', 'not yet'];
     pupilsOf_(props, name).forEach(function (pu) {
@@ -747,8 +954,22 @@ function apiStaff(req) {
         paper.parts.forEach(function (q) {
           var p = pu.P[q.id];
           if (!p) return;
-          lines.push([name, pu.n, pu.email, pid, q.id, p.f == null ? '' : (p.d === 1 ? 'write it now' : 'learn it first'),
+          lines.push([name, 'sql', pu.n, pu.email, pid, q.id, p.f == null ? '' : (p.d === 1 ? 'write it now' : 'learn it first'),
             p.f == null ? '' : p.f, p.b == null ? '' : p.b, p.tb == null ? '' : p.tb + '/' + (markTwin_(p.t) || {}).marks, num_(p.a),
+            p.s ? 'yes' : '', p.fl ? p.fl.b : '', evText, ev ? ev.c : '', seen].map(csvCell_).join(','));
+        });
+      });
+      var N = {}; try { N = JSON.parse(props[nKey_(name, pu.email)] || '{}'); } catch (e) { N = {}; }
+      var NP = N.P || {}, NE = N.E || {};
+      nOrder_(c2).forEach(function (pid) {
+        var paper = A2META.norm.papers[pid], ev = NE[pid];
+        var evText = ev ? Object.keys(ev.l).map(function (k) { return k + ' ' + picks[ev.l[k]]; }).join('; ') + '; felt ' + feels[ev.f] : '';
+        paper.parts.forEach(function (q) {
+          var p = NP[q.id];
+          if (!p) return;
+          var tw = q.twin ? NP[q.twin] : null;
+          lines.push([name, 'norm', pu.n, pu.email, pid, q.id, p.f == null ? '' : (p.d === 1 ? 'do it now' : 'learn it first'),
+            p.f == null ? '' : p.f, p.b == null ? '' : p.b, tw && tw.b != null ? tw.b + '/' + (nMeta_(q.twin) || {}).marks : '', num_(p.a),
             p.s ? 'yes' : '', p.fl ? p.fl.b : '', evText, ev ? ev.c : '', seen].map(csvCell_).join(','));
         });
       });
@@ -776,10 +997,16 @@ function archive_(props) {
     try { rec = JSON.parse(props[k]); } catch (e) { return; }
     Object.keys(rec.E || {}).forEach(function (pid) { cands.push({ cls: cls, email: email, pid: pid, t: rec.E[pid].t }); });
   });
+  Object.keys(props).forEach(function (k) {
+    if (k.indexOf('n:') !== 0) return;
+    var bits = k.split(':'), cls = bits[1], email = bits.slice(2).join(':'), rec;
+    try { rec = JSON.parse(props[k]); } catch (e) { return; }
+    Object.keys(rec.E || {}).forEach(function (pid) { cands.push({ cls: cls, email: email, pid: pid, t: rec.E[pid].t }); });
+  });
   cands.sort(function (a, b) { return a.t - b.t; });
   var target = ARCHIVE_AT * 0.7, bytes = storeBytes_(props);
   for (var i = 0; i < cands.length && bytes > target; i++) {
-    var c = cands[i], paper = A2META.papers[c.pid];
+    var c = cands[i], paper = A2META.papers[c.pid] || A2META.norm.papers[c.pid];
     if (!paper) continue;
     paper.parts.forEach(function (q) {
       var k = dKey_(c.cls, c.email, q.id);

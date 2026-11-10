@@ -47,9 +47,11 @@
         if (code === 'not-signed-in') { SYS.expired = true; paintSys(); }
         const e = new Error(code); e.code = code; throw e;
       }
-      if (r.rec) REC = r.rec;
-      if (r.cfg) CFG = r.cfg;
-      if (r.part && req.part) REC.P[req.part] = r.part;
+      if (fn !== 'apiNorm') { // the normalisation record is norm.js's own (v14)
+        if (r.rec) REC = r.rec;
+        if (r.cfg) CFG = r.cfg;
+        if (r.part && req.part) REC.P[req.part] = r.part;
+      }
       return r;
     }, (err) => {
       SYS.offline = true; SYS.retry = () => call(fn, req); paintSys();
@@ -235,10 +237,10 @@
   };
 
   // ---------- page frame ----------
-  function header(crumbs) {
+  function header(crumbs, help) {
     const left = crumbs ? '<span class="crumb">' + crumbs.map((x) => (x.go ? '<a data-go="' + h(x.go) + '" href="' + h(x.go) + '">' + h(x.t) + '</a>' : h(x.t))).join(' › ') + '</span>'
       : '<span class="title">' + h(T('app.title')) + '</span><span class="school">' + h(T('app.school')) + '</span>';
-    return '<header class="bar">' + left + (ME.cls ? '<span class="who">' + h(REC.n || ME.name) + ' · ' + h(ME.cls) + '</span>' : '') + '</header>';
+    return '<header class="bar">' + left + (ME.cls ? '<span class="who">' + h(REC.n || ME.name) + ' · ' + h(ME.cls) + '</span>' : '') + (help ? '<button class="helpbtn" data-help aria-expanded="false">' + h(window.A2CONTENT.norm.text.HELP.button) + '</button>' : '') + '</header>';
   }
   let LESSON = null;
   function frame(crumbs, mainHtml, mainCls) {
@@ -246,6 +248,7 @@
     app.innerHTML = header(crumbs) + '<div id="sys"></div><main' + (mainCls ? ' class="' + mainCls + '"' : '') + '>' + mainHtml + '</main>';
     paintSys();
   }
+  function paint(html) { if (LESSON) { LESSON.destroy(); LESSON = null; } app.innerHTML = html; paintSys(); }
   function guard(text, dots) { app.innerHTML = '<div id="sys"></div><div class="guard"><div class="box"><p>' + h(text) + (dots ? '<span class="dots"></span>' : '') + '</p></div></div>'; paintSys(); }
   const paperTitle = (p) => T('map.paper', { year: p.year, title: p.title });
   const crumbSql = () => ({ t: T('map.crumb'), go: '#sql' });
@@ -266,11 +269,11 @@
   function vHome() {
     const open = CFG.order.filter((id) => isOpen(id)).length, done = C.papers.filter((p) => paperState(p).done).length;
     const started = Object.keys(REC.P).length > 0;
-    frame(null, '<h1>' + h(T('home.hello', { name: REC.n || ME.name })) + '</h1><div class="tiles">' +
+    paint(header(null, true) + '<div id="sys"></div><main><h1>' + h(T('home.hello', { name: REC.n || ME.name })) + '</h1><p class="job">' + h(window.NORM.job()) + '</p><div class="tiles">' +
       '<button class="tile live" data-go="#sql"><h2>' + h(T('home.sql')) + '</h2><p>' + h(T('home.sqlSub')) + '</p><span class="state">' + h(started ? T('home.sqlState', { open, done }) : T('home.notStarted')) + '</span></button>' +
       '<button class="tile live" data-go="#cw"><h2>' + h(T('home.cw')) + '</h2><p>' + h(T('home.cwSub')) + '</p><span class="state">' + h(cwState()) + '</span></button>' +
-      '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.norm')) + '</h2><span class="soon">' + h(T('home.soon')) + '</span></div>' +
-      '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.theory')) + '</h2><p>' + h(T('home.theorySub')) + '</p><span class="soon">' + h(T('home.soon')) + '</span></div></div>');
+      window.NORM.tileHtml() +
+      '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.theory')) + '</h2><p>' + h(T('home.theorySub')) + '</p><span class="soon">' + h(T('home.soon')) + '</span></div></div></main>');
   }
 
   // ---------- coursework guide (DESIGN §6.1, §6.7): cw.js draws it; every pupil act goes to apiCw; the server copy wins on the first open ----------
@@ -752,6 +755,7 @@
     else if (k === 'part') vPart(bits[1], BEATS.concat('door').includes(bits[2]) ? bits[2] : null);
     else if (k === 'eval') vEval(bits[1]);
     else if (k === 'cw') { vCw(); return; }
+    else if (k === 'norm' || k === 'npaper' || k === 'npart' || k === 'neval') window.NORM.route(k, bits);
     else vHome();
     const w = app.querySelector('.work') || app.querySelector('main'); if (w) w.scrollTop = 0;
   }
@@ -824,6 +828,7 @@
     ['keydown', 'pointerdown', 'input', 'wheel', 'scroll', 'touchstart'].forEach((t) => window.addEventListener(t, () => { lastAct = Date.now(); }, { capture: true, passive: true }));
     setInterval(() => { if (!document.hidden) call('apiPing', { act: Date.now() - lastAct < 180000 ? 1 : 0 }).catch(() => {}); }, 60000);
     flushOutbox();
+    window.NORM.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.norm);
     route();
     notice(r.cw);
   }
@@ -843,7 +848,7 @@
       if (s) { if (s.dataset.sys === 'reload') reloadPage(); else if (SYS.retry) { const f = SYS.retry; SYS.retry = null; f().then(() => route(), () => {}); } return; }
       const t = e.target.closest('[data-go]');
       if (t) { e.preventDefault(); go(t.dataset.go); return; }
-      const tab = e.target.closest('.figure .tabs button');
+      const tab = e.target.closest('.figure:not(.norm) .tabs button');
       if (tab) FIG.showPane(tab.dataset.tab);
     });
     document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('li[data-go]')) { e.preventDefault(); go(e.target.dataset.go); } });

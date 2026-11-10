@@ -165,11 +165,26 @@ for (const p of pubPapers) for (const q of p.parts) {
   }
 }
 
+// ---- normalisation (NORMALISATION_SPEC §7, v14): papers with the practice paper inside, the documents, the lessons, the job and Help lines.
+// All public by design: names, starts and the quick-check words are printed on the papers or asked on screen. Mark points, models
+// and the practice answers stay in src/judge (normpoints, normtwins, normjudge), which only build-server.js reads (N15).
+function normPub() {
+  const C = path.join(SRC, '..', 'content');
+  const np = JSON.parse(fs.readFileSync(path.join(C, 'norm-papers.json'), 'utf8'));
+  const docs = {};
+  for (const f of fs.readdirSync(path.join(C, 'norm-docs')).sort()) if (f.endsWith('.html')) docs['norm-docs/' + f] = fs.readFileSync(path.join(C, 'norm-docs', f), 'utf8').trim();
+  // N-B13: a set that starts from a given 1NF and lists no fields of its own gets them from that 1NF, in order, so the tray can show them
+  np.papers.forEach((p) => p.sets.forEach((s) => { if (s.fields) return; const st = s.parts.map((q) => q.start).find(Boolean); if (!st) return; const seen = []; st.t.forEach((t) => t.f.forEach((f) => { if (!seen.includes(f[0])) seen.push(f[0]); })); s.fields = seen; }));
+  const order = np.papers.filter((p) => !p.practice).map((p) => p.id);
+  return { papers: np.papers, theory: np.theory, order, docs, lessons: JSON.parse(fs.readFileSync(path.join(C, 'norm-lessons.json'), 'utf8')),
+    text: JSON.parse(fs.readFileSync(path.join(C, 'norm-text.json'), 'utf8')) };
+}
+
 // ---- build stamp
 let git = 'dev';
 try { git = execFileSync('git', ['-C', ROOT, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim(); } catch (e) { /* not a checkout */ }
 const pub = { papers: pubPapers, twins, sets: setTables, lessons: Object.fromEntries(Object.entries(lessons).filter(([k]) => k !== 'note')), clusters: { clusters: clusters.clusters, lessonFor, order: clusters.order },
-  seeds, strings };
+  seeds, strings, norm: normPub() };
 const hash = require('crypto').createHash('sha256').update(JSON.stringify(pub)).digest('hex').slice(0, 10);
 const BUILD = hash;
 pub.BUILD = BUILD;

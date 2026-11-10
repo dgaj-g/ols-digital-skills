@@ -1,0 +1,188 @@
+/* norm.css — the Normalisation topic (v14), from the passed prototype (norm/prototype/norm.css); the prototype frame size is dropped. */
+/* norm.css — Normalisation additions on top of the platform stylesheet. Same tokens, same register. */
+.figure.norm{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.figure.norm .tabs{flex:none}
+.docbox{flex:1 1 auto;min-height:0;overflow:auto;padding-bottom:10px}
+.fieldsbox{flex:none;max-height:44%;display:flex;flex-direction:column;border-top:2px solid var(--line);background:var(--card)}
+.fieldsbox .fh{flex:none;display:flex;align-items:baseline;gap:10px;padding:8px 12px 4px;font-weight:700;font-size:12px;letter-spacing:.06em;color:var(--navy)}
+.fieldsbox .fh small{font-weight:400;letter-spacing:0;color:var(--mute);font-size:12px}
+.tray{flex:1 1 auto;min-height:0;overflow:auto;padding:4px 12px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 5px;line-height:1}
+.tray .brace{font-size:22px;color:var(--navy);font-weight:400;line-height:20px;padding:0 1px}
+.tray .brace.in{color:#6a7a94}
+.tray .fromcap{flex-basis:100%;font-size:11px;color:var(--mute);margin:2px 0 -2px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid #b9c2cf;background:#fff;border-radius:7px;padding:4px 8px;font-family:var(--mono);font-size:13px;color:var(--ink);cursor:grab;user-select:none;touch-action:none;white-space:nowrap;position:relative}
+.chip .cnt{font-family:var(--sans);font-size:10px;font-weight:700;color:var(--mute);background:var(--tint);border:1px solid var(--line);border-radius:999px;min-width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}
+.work.norm .marks .mleft{align-self:start}.work.norm .marks .mleft h3{margin:0 0 8px}.work.norm .marks .flag{position:static;box-shadow:none}.work.norm{padding-bottom:24px}
+.chip.pk span.nm{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.chip.fk span.nm::after{content:"*";margin-left:1px}
+.chip.part span.nm{color:var(--navy)}
+.chip.on{border-color:var(--navy);box-shadow:0 0 0 2px rgba(26,58,107,.2)}
+.chip.lock{cursor:default;opacity:.85}
+.chip.gold{background:#fff3c4;border-color:var(--gold)}
+.chip.pickable{cursor:pointer}.chip.pickable:hover{border-color:var(--navy)}
+.chip.hit{border-color:var(--ok);background:#e6f4ea}.chip.miss{border-color:var(--bad);background:#fdecea}
+.dragghost{position:fixed;left:0;top:0;z-index:50;pointer-events:none;transition:none;will-change:transform;box-shadow:0 6px 18px rgba(0,0,0,.18);transform:translate3d(-999px,-999px,0)}
+.dragging{opacity:.35}
+.stages{display:flex;gap:18px;font-size:14px;color:var(--mute);margin:-4px 0 14px;flex-wrap:wrap}
+.stages span.now{color:var(--navy);font-weight:700}.stages span.done{color:var(--ok)}
+.tcards{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:12px}
+.tcard{flex:1 1 300px;min-width:260px;max-width:100%;background:var(--card);border:1px solid #b9c2cf;border-radius:10px;overflow:visible;position:relative}
+.tcard .nmrow{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 10px;background:var(--tint);border-bottom:1px solid #b9c2cf;border-radius:10px 10px 0 0}
+.tcard .nmrow input{flex:1;min-width:0;border:1px solid transparent;background:transparent;font:700 13px/1.2 var(--sans);letter-spacing:.04em;color:var(--navy);text-transform:uppercase;padding:4px 6px;border-radius:6px}
+.tcard .nmrow input::placeholder{text-transform:none;font-weight:400;color:#8a94a3;letter-spacing:0}
+.tcard .nmrow input:focus{outline:0;border-color:var(--navy);background:#fff}
+.tcard .nmrow input:read-only{cursor:default}
+.tcard .nmrow .given{font:700 13px/1.2 var(--sans);letter-spacing:.04em;color:var(--navy);padding:4px 6px;flex:1}
+.tcard .nmrow .unchlab{font-weight:400;color:var(--mute);letter-spacing:0;text-transform:none;font-size:12px}
+.unch{border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;padding:3px 9px;color:var(--mute);white-space:nowrap}
+.unch.on{border-color:var(--navy);color:var(--navy);font-weight:700}
+.more{border:0;background:transparent;font-size:18px;line-height:1;padding:0 4px;color:var(--mute);border-radius:6px}.more:hover{background:#e6eaf0;color:var(--ink)}
+.tcard .area{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;min-height:44px;align-content:flex-start}
+.tcard.over,.leftout.over,.fieldsbox.over{box-shadow:0 0 0 3px rgba(26,58,107,.35);border-color:var(--navy)}
+.tcard .quiet{font-size:12px;color:var(--mute);padding:0 10px 8px}
+.tcard .toast{font-size:12px;color:var(--bad);padding:0 10px 8px}
+.tcard.carried .nmrow{background:#eef2f7}
+.cardmenu,.chipmenu{position:absolute;z-index:40;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:6px;min-width:220px}
+.chipmenu button,.cardmenu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:7px;font-size:14px;color:var(--ink)}
+.chipmenu button:hover,.cardmenu button:hover{background:var(--tint)}
+.chipmenu button.state{color:var(--navy);font-weight:600}
+.chipmenu .splitrow{padding:6px 10px 8px;border-top:1px solid var(--line);margin-top:4px}
+.chipmenu .splitrow label{display:block;font-size:13px;margin-bottom:6px}
+.chipmenu .splitrow input{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:7px}
+.chipmenu .splitrow .hint{font-size:12px;color:var(--mute);margin:4px 0 8px}
+.chipmenu .splitrow .row .btn{padding:6px 12px;font-size:14px}
+.chipmenu .danger{color:var(--bad)}
+.addrow{display:flex;gap:12px;align-items:center;margin:0 0 14px}
+.leftout{background:var(--card);border:1px dashed #9aa4b0;border-radius:10px;padding:8px 10px 10px;margin-bottom:14px}
+.leftout .lt{font-weight:700;font-size:13px;letter-spacing:.04em;color:var(--mute)}.leftout .ls{font-size:12px;color:var(--mute);margin-left:8px}
+.leftout .area{display:flex;flex-wrap:wrap;gap:6px;min-height:36px;padding-top:8px;align-content:flex-start}
+.leftout .none{font-size:13px;color:#8a94a3;padding-top:6px}
+.checkbar{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;position:sticky;bottom:0;z-index:5}
+.checkbar .btn{white-space:nowrap;flex:none}.checkbar .why{font-size:15px;color:var(--mute)}.checkbar .why.ready{color:var(--ok);font-weight:600}
+.opencard{border:2px solid var(--navy)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.exampl .tcard{border-color:#d9c27a}.exampl .tcard .nmrow{background:#fff8e1}
+.exampl .cap{font-size:13px;color:var(--mute);margin:0 0 8px}
+.totline{font-size:15px;margin:10px 0 0}.totline b{color:var(--navy)}
+/* theory */
+.stepcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.stepcard{background:var(--card);border:1px solid #b9c2cf;border-radius:10px;min-height:92px}
+.stepcard h4{margin:0;padding:6px 10px;font-size:13px;letter-spacing:.04em;background:var(--tint);border-bottom:1px solid #b9c2cf;color:var(--navy);border-radius:10px 10px 0 0}
+.stepcard .area{padding:8px;min-height:50px}
+.bank{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.stmt{background:#fff;border:1px solid #b9c2cf;border-radius:8px;padding:9px 12px;font-size:14px;cursor:grab;user-select:none;touch-action:none;line-height:1.35}
+.stmt.on{border-color:var(--navy);box-shadow:0 0 0 2px rgba(26,58,107,.2)}
+.stepcard .stmt{cursor:grab}
+.flat{display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center;margin:8px 0 14px}
+.flat .chip{cursor:pointer}
+.flat .chip.a{border-color:var(--navy);background:#e8f0fb}
+.flat .br{font-size:24px;color:var(--navy);line-height:20px;cursor:pointer;padding:0 2px;border-radius:4px}.flat .br.in{color:#6a7a94}.flat .br:hover{background:#fdecea;color:var(--bad)}
+.brtip{margin:0 0 10px;padding:9px 12px;background:#fff3c4;border-left:4px solid var(--gold);border-radius:6px;color:var(--navy);font-weight:700;font-size:15px;line-height:1.35}
+.lnk{background:none;border:0;padding:0;color:var(--navy);text-decoration:underline;cursor:pointer;font:inherit}
+.qcheck .ctx{font-size:13px;color:var(--mute);margin:0 0 6px}
+body.dragsel,body.dragsel *{user-select:none!important;-webkit-user-select:none!important}
+.tcards,.tray,.fieldsbox,.stepcard,.bank,.leftout{user-select:none;-webkit-user-select:none}
+.seg.big button{padding:9px 16px;font-size:15px}
+.doc .clickable [data-f]{cursor:pointer;border-radius:3px}.doc .clickable [data-f]:hover,.doc.clickable [data-f]:hover{outline:2px solid var(--navy);outline-offset:1px}
+.doc [data-f].picked{outline:2px solid var(--navy);outline-offset:1px;background:#e8f0fb}
+/* documents (content/norm-docs) */
+.doc{font:13px/1.35 var(--sans);color:#222;background:#fff;border:1px solid #9aa4b0;margin:10px 12px;padding:10px 12px 12px}
+.doc .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.doc .hd.c{display:block;text-align:center;margin-bottom:8px}
+.doc .brand{font-size:15px;letter-spacing:.02em}.doc .hd .sub{font-weight:700;margin-top:2px}.doc .small{font-size:12px;color:#555}
+.doc p{margin:6px 0}.doc .line{margin:8px 0 6px}.doc .sec{font-weight:700;margin:10px 0 4px;font-size:13px}
+.doc table.kv{border-collapse:collapse;font-size:12px}.doc table.kv th{text-align:left;font-weight:400;color:#333;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap}.doc table.kv td{padding:2px 0;vertical-align:top}
+.doc table.kv.r{margin-left:auto}.doc table.kv.r th{text-align:right}.doc table.kv.tot td{text-align:right;min-width:60px}
+.doc .two{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.doc .two>*{flex:1 1 180px}
+.doc table.grid{border-collapse:collapse;width:100%;font-size:12px;margin:4px 0 8px}
+.doc table.grid th,.doc table.grid td{border:1px solid #9aa4b0;padding:2px 5px;text-align:left;vertical-align:middle}
+.doc table.grid th{background:#eef1f4;font-weight:700}.doc table.grid td.n{text-align:right;white-space:nowrap}
+.doc table.grid.tight{font-size:12px}.doc table.grid.tight th,.doc table.grid.tight td{padding:1px 2px;overflow-wrap:anywhere}.doc table.grid.tight{table-layout:fixed;width:100%}
+/* lesson in the work area */
+.lesson .ex{margin:10px 0 4px}
+.lesson .braces{font-family:var(--mono);font-size:14px;line-height:1.6;background:var(--tint);border:1px solid var(--line);border-radius:8px;padding:8px 12px;white-space:pre-wrap}
+.lesson .braces .g{background:#fff3c4;border-radius:3px;padding:0 2px}
+.qcheck .flatq{margin:6px 0 10px}.qcheck .flatq .chip{cursor:pointer}
+.qcheck .opts{grid-template-columns:1fr}.qcheck .opt{font-family:var(--sans)}
+/* staff */
+.ttabs{display:flex;gap:4px;margin:0 0 12px}.ttabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px}.ttabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.strip{display:flex;gap:2px;margin:4px 0 12px;height:10px}.strip i{flex:1;background:#e3e7ec;border-radius:2px}.strip i.d{background:var(--ok)}.strip i.p{background:var(--gold)}
+.drawer .tcard{flex:1 1 220px;min-width:200px}.drawer .tcard .area{padding:6px 8px}.drawer .chip{font-size:12px;padding:3px 6px}
+.staff td.c.hot{background:#fff8e1}
+@media (max-width:1100px){main.split{grid-template-columns:minmax(380px,38%) 1fr}}
+.tray .grp{display:flex;flex-wrap:wrap;gap:6px 5px;align-items:center;flex-basis:100%}
+.chipmenu,.cardmenu{position:fixed}
+.fieldsbox .cap{margin:0;padding:0 12px 6px;font-size:12px;color:var(--mute)}
+.docbox .cap{margin:10px 12px 0;font-size:12px;color:var(--mute)}
+.docbox .extray{display:flex;flex-wrap:wrap;gap:6px 5px;align-items:center;padding:0 12px 12px}
+.beatline{display:flex;gap:10px;align-items:center;margin:0 0 12px;font-size:14px;color:var(--mute)}
+.askcard .paper{font-size:14px;color:var(--mute);margin:0 0 6px}
+.askcard q{quotes:none;display:block;font-size:17px;font-weight:600;color:var(--ink);margin:0 0 4px}
+.askcard .m{font-size:13px;color:var(--mute)}
+.lesson .steps{margin:0 0 12px}
+.cfcard{border:2px solid var(--gold)}
+.work .sub{margin:0 0 12px;color:var(--mute);font-size:14px}
+.pill.flagged{background:#fdecea;color:var(--bad)}
+
+/* 1024 wraps */
+.fieldsbox .fh{white-space:nowrap}.fieldsbox .fh small{white-space:normal}.c .tg{white-space:nowrap}
+
+/* lesson flow (look point 10): job line, numbered stage strip, nothing greyed out */
+.figure [hidden]{display:none!important}
+.job{margin:0 0 12px;font-size:16px;font-weight:700;color:var(--navy)}
+.lesson .lstrip{margin:0 0 16px;gap:6px}
+.lesson .lstrip li{font-size:12.5px;padding:4px 10px 4px 5px}
+.lesson .lstrip li[data-step]:hover{border-color:var(--navy);color:var(--navy)}
+.lesson .lstrip li.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.lesson .lhead{display:block;margin:0 0 8px;font-size:19px;line-height:1.3}
+.lesson .lhead .lnum{display:block;margin-bottom:3px;text-transform:uppercase}
+.lesson .qcheck{border:0;padding:0;margin:0;background:none}
+.lesson .qcheck .cap{margin:0 0 6px;font-size:13px;color:var(--mute)}
+.lesson .row{margin-top:16px}
+
+/* look point 11: every right field shown after a right click; the one she clicked stands out */
+.chip.hit.mine{box-shadow:0 0 0 2px var(--ok);font-weight:700}
+.lesson .fb .alsoline{margin:6px 0 0;color:var(--ink)}
+.qcheck.settled .chip,.qcheck.settled .opt{pointer-events:none;cursor:default}
+/* Help: button at the right-hand end of the header, panel under it. Not a modal. */
+header.bar .helpbtn{flex:none;white-space:nowrap;background:#fff;color:var(--navy);border:1px solid #fff;border-radius:6px;padding:5px 14px;font-weight:700;font-size:14px}
+header.bar .helpbtn[aria-expanded="true"]{background:var(--gold);border-color:var(--gold)}
+.helppanel{position:fixed;top:60px;right:16px;z-index:60;width:420px;max-width:calc(100vw - 32px);max-height:calc(100vh - 76px);overflow:auto;box-sizing:border-box;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.helppanel ul{margin:0 0 12px;padding-left:20px;font-size:15px;line-height:1.45;color:var(--ink)}
+.helppanel li{margin:0 0 6px}
+.helppanel .row{display:flex;justify-content:flex-end}
+.helppanel .btn{white-space:nowrap;padding:8px 16px}
+
+/* ---- v14 platform additions ---- */
+.nrail span{display:flex;align-items:center;gap:7px}
+.pill.shut{color:var(--ink)}
+.papers li[data-nload]:focus-visible,.stmt.pickable:focus-visible,.chip[role="button"]:focus-visible,.clickf:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+/* a button that waits on the server: label kept, a ring beside it, not greyed out (spec §3) */
+.busy{position:relative;cursor:progress!important}
+.btn.busy:disabled,.flag.busy:disabled,.tile.busy:disabled{opacity:1}
+.busy::after{content:"";display:inline-block;width:12px;height:12px;margin-left:8px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:nspin .7s linear infinite}
+.tile.busy::after,li.busy::after{position:absolute;top:14px;right:14px;margin:0}
+.nring{display:inline-block;width:18px;height:18px;border:3px solid var(--navy);border-right-color:transparent;border-radius:50%;animation:nspin .7s linear infinite}
+@keyframes nspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.busy::after,.nring{animation-duration:2s}}
+/* theory vehicles: pick three, click a field, why not 1NF */
+.bank.picks{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.stmt.pickable{cursor:pointer;user-select:none}
+.stmt.pickable.on{border-color:var(--navy);background:var(--navy-wash-5);box-shadow:0 0 0 2px var(--navy-a25)}
+.stmt.pickable.lock{cursor:default}
+.clickf{cursor:pointer;outline:1px dashed var(--navy-edge-1);outline-offset:-1px}
+.clickf:hover{background:var(--navy-wash-5)}
+.docbox .picked{background:var(--hl-strong)!important;box-shadow:inset 0 0 0 2px var(--gold)}
+.flat .chip[data-cf],.flat .chip[data-wf]{cursor:pointer}
+.nparts{display:block;width:100%;max-width:520px;box-sizing:border-box;margin:6px 0 12px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+.checkbar .why.ready{color:var(--navy);font-weight:700}
+
+/* staff (spec §9) */
+.staff .grid th.on{background:var(--navy);color:#fff}.staff .grid th[data-sp]{cursor:pointer}.staff .grid th small{display:block;font-weight:400;font-size:11px}
+.nstrip .prog p{margin:6px 0 2px;font-size:13.5px}.nstrip .nchip{display:inline-block;font-size:12px;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.evdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok)}
+.nhead{margin:22px 0 8px}.ndrawer .lab{font-weight:700;margin:10px 0 4px;font-size:13px}.ndrawer .twocol{grid-template-columns:1fr 1fr}
+.nrail .skip{opacity:1}.nrail .skip>span{color:var(--mute)}
+/* v14 build (N-B11): Help sits beside the work, never over it. Wide screens give it a column; narrow ones put it above the work. */
+@media (min-width:1200px){body:has(.helppanel) main{margin-right:452px}}
+@media (max-width:1199px){.helppanel{position:static;width:auto;max-width:none;max-height:none;margin:8px 16px 0;box-shadow:none}}
