@@ -820,6 +820,9 @@
          },
          {
           "p": "If red lines say Database 'BikeShop' already exists, BikeShop.sql was run first this lesson. In Object Explorer, right-click BikeShop, click Delete, tick Close existing connections at the bottom and click OK. Then press F5 in BikeShop-saved.sql again."
+         },
+         {
+          "p": "One thing the saved file cannot do: it keeps the dates your bookings had, but the tests always work out tomorrow again. So if your next lesson is on a later day, run BikeShop.sql with nothing selected instead of BikeShop-saved.sql, so the sample data is dated from today. Then run the test from screen 3 of this stage again, and the test from stage 3, screen 2 if you have reached it. Write down the new numbers."
          }
         ]
        }
@@ -1178,6 +1181,10 @@
           [
            "'Only a booking that is still open can be moved.'",
            "The booking number belongs to one that is done or cancelled. Book a fresh one and move that."
+          ],
+          [
+           "'Moved to 13:30: allowed.'",
+           "Your 13:00 booking from stage 2 is not on the test day. The tests always book tomorrow, so a booking made in an earlier lesson is on a different day. Run BikeShop.sql with nothing selected, so the sample data is dated from today. Then click New Query, copy the test from stage 2, screen 3, paste it and press F5. Write down its new number, then run this test again."
           ]
          ]
         }
@@ -1773,7 +1780,13 @@
             "h": 22
            }
           ]
-         }
+         },
+         "wrong": [
+          [
+           "Aoife Byrne is in the list as well",
+           "Your 13:00 booking is not on the test day. The tests always book tomorrow, so a booking made in an earlier lesson, or brought back by BikeShop-saved.sql, is on a different day. Run BikeShop.sql with nothing selected, so the sample data is dated from today. Then click New Query, copy the test from stage 2, screen 3, paste it and press F5. Do the same with the test from stage 3, screen 2. Write down the two new numbers, because stage 7 uses them. Then run this test again."
+          ]
+         ]
         }
        ]
       }
@@ -4318,8 +4331,8 @@
          },
          "wrong": [
           [
-           "Only the two sample bookings, not four",
-           "Your test bookings are not in your database: a new lesson, or running BikeShop.sql with nothing selected, leaves only the sample data. If you saved your database at the end of last lesson, open BikeShop-saved.sql and press F5 with nothing selected. If not, click New Query, copy the test from stage 2, screen 3, paste it and press F5. Do the same with the test from stage 3, screen 2. Write the two new numbers down: stage 7 uses them. Then close the diary, open it again and pick the test day."
+           "Fewer than four bookings, or none",
+           "Some of the bookings are not on the test day. The tests always book tomorrow, so bookings made in an earlier lesson, or brought back by BikeShop-saved.sql, are on a different day or gone. Close the diary. Run BikeShop.sql with nothing selected, so the sample data is dated from today. Then click New Query, copy the test from stage 2, screen 3, paste it and press F5. Do the same with the test from stage 3, screen 2. Write the two new numbers down: stage 7 uses them. Then open the diary again and pick the test day."
           ]
          ]
         },
@@ -4350,7 +4363,13 @@
             "say": "The grey note is under the open list. It says: 2 mechanics are free."
            }
           ]
-         }
+         },
+         "wrong": [
+          [
+           "Aoife Byrne is in the list as well",
+           "Your 13:00 booking is not on the day you picked. Close the form and look at the diary. If it shows fewer than four bookings on the test day, do what step 7.6.9 says for fewer than four bookings. If it shows four, pick the test day in the date picker again, then press New booking again."
+          ]
+         ]
         },
         {
          "id": "7.6.11",
