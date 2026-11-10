@@ -129,28 +129,34 @@
   // ---------- Papers ----------
   function vPapers() {
     pane().innerHTML = '<p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p>';
-    call({ op: 'papers', name: CLS }).then((r) => {
-      let order = r.order.slice(), openL = r.open.slice();
-      const can = r.canManage;
-      const draw = () => {
-        pane().innerHTML = '<p class="note">' + h(T('staff.papersNote')) + '</p><ul class="plist">' + order.map((id, i) => {
-          const p = PAPERS[id], on = openL.includes(id);
-          return '<li data-p="' + id + '"><b>' + h(T('map.paper', { year: p.year, title: p.title })) + '</b><span class="st ' + (on ? 'on' : 'off') + '">' + h(T(on ? 'staff.isOpen' : 'staff.isLocked')) + '</span>' +
-            (can ? '<button class="btn sec" data-toggle>' + h(T(on ? 'staff.lock' : 'staff.open')) + '</button><span class="row" style="gap:4px"><button class="btn ghost" data-up aria-label="' + h(T('staff.up')) + '" title="' + h(T('staff.up')) + '"' + (i ? '' : ' disabled') + '>▲</button>' +
-              '<button class="btn ghost" data-down aria-label="' + h(T('staff.down')) + '" title="' + h(T('staff.down')) + '"' + (i < order.length - 1 ? '' : ' disabled') + '>▼</button></span>' : '<span></span><span></span>') + '</li>';
-        }).join('') + '</ul>' + (can ? '<div class="row"><button class="btn sec" data-all>' + h(T('staff.openAll')) + '</button><button class="btn ghost" data-reset>' + h(T('staff.resetOrder')) + '</button></div>' : '<p class="note">' + h(T('staff.ownerOnly')) + '</p>');
-        if (!can) return;
-        const save = () => call({ op: 'papers', name: CLS, set: true, order, open: openL }).then((x) => { order = x.order; openL = x.open; draw(); }, (e) => { fail(e); draw(); });
-        pane().querySelectorAll('.plist li').forEach((li) => {
-          const id = li.dataset.p, i = order.indexOf(id);
-          li.querySelector('[data-toggle]').addEventListener('click', () => { openL = openL.includes(id) ? openL.filter((x) => x !== id) : openL.concat(id); save(); });
-          li.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { order.splice(i, 1); order.splice(i - 1, 0, id); save(); } });
-          li.querySelector('[data-down]').addEventListener('click', () => { if (i < order.length - 1) { order.splice(i, 1); order.splice(i + 1, 0, id); save(); } });
-        });
-        pane().querySelector('[data-all]').addEventListener('click', () => { openL = order.slice(); save(); });
-        pane().querySelector('[data-reset]').addEventListener('click', () => { order = C.papers.map((p) => p.id); save(); });
+    const N = window.NORM;
+    Promise.all([call({ op: 'papers', name: CLS }), call({ op: 'papers', name: CLS, topic: 'norm' })]).then(([r, rn]) => {
+      pane().innerHTML = '<p class="note">' + h(T('staff.papersNote')) + '</p><div data-list="sql"></div><h3 class="nhead">' + h(T('staff.n.papersHead')) + '</h3><div data-list="norm"></div>';
+      const list = (box, topic, x, titleOf, defaults) => {
+        let order = x.order.slice(), openL = x.open.slice();
+        const can = x.canManage;
+        const draw = () => {
+          box.innerHTML = '<ul class="plist">' + order.map((id, i) => {
+            const on = openL.includes(id);
+            return '<li data-p="' + id + '"><b>' + h(titleOf(id)) + '</b><span class="st ' + (on ? 'on' : 'off') + '">' + h(T(on ? 'staff.isOpen' : 'staff.isLocked')) + '</span>' +
+              (can ? '<button class="btn sec" data-toggle>' + h(T(on ? 'staff.lock' : 'staff.open')) + '</button><span class="row" style="gap:4px"><button class="btn ghost" data-up aria-label="' + h(T('staff.up')) + '" title="' + h(T('staff.up')) + '"' + (i ? '' : ' disabled') + '>▲</button>' +
+                '<button class="btn ghost" data-down aria-label="' + h(T('staff.down')) + '" title="' + h(T('staff.down')) + '"' + (i < order.length - 1 ? '' : ' disabled') + '>▼</button></span>' : '<span></span><span></span>') + '</li>';
+          }).join('') + '</ul>' + (can ? '<div class="row"><button class="btn sec" data-all>' + h(T('staff.openAll')) + '</button><button class="btn ghost" data-reset>' + h(T('staff.resetOrder')) + '</button></div>' : '<p class="note">' + h(T('staff.ownerOnly')) + '</p>');
+          if (!can) return;
+          const save = () => call(Object.assign({ op: 'papers', name: CLS, set: true, order, open: openL }, topic === 'norm' ? { topic } : {})).then((y) => { order = y.order; openL = y.open; draw(); }, (e) => { fail(e); draw(); });
+          box.querySelectorAll('.plist li').forEach((li) => {
+            const id = li.dataset.p, i = order.indexOf(id);
+            li.querySelector('[data-toggle]').addEventListener('click', () => { openL = openL.includes(id) ? openL.filter((z) => z !== id) : openL.concat(id); save(); });
+            li.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { order.splice(i, 1); order.splice(i - 1, 0, id); save(); } });
+            li.querySelector('[data-down]').addEventListener('click', () => { if (i < order.length - 1) { order.splice(i, 1); order.splice(i + 1, 0, id); save(); } });
+          });
+          box.querySelector('[data-all]').addEventListener('click', () => { openL = order.slice(); save(); });
+          box.querySelector('[data-reset]').addEventListener('click', () => { order = defaults(); save(); });
+        };
+        draw();
       };
-      draw();
+      list(pane().querySelector('[data-list="sql"]'), 'sql', r, (id) => T('map.paper', { year: PAPERS[id].year, title: PAPERS[id].title }), () => C.papers.map((p) => p.id));
+      list(pane().querySelector('[data-list="norm"]'), 'norm', rn, (id) => N.title(N.paperOf(id)), () => window.A2CONTENT.norm.order.slice());
     }, (e) => { pane().innerHTML = ''; fail(e); });
   }
 
@@ -170,16 +176,18 @@
   // the Last seen cell's second line (D100): the last session's working time and answers marked
   const lastLine = (s) => (s ? [s[2] ? mins(s[2]) : '', s[3] ? marked(s[3]) : ''].filter(Boolean).join(' · ') : '');
   function vLive() {
+    if (TOPIC === 'norm') return vNLive();
     const load = () => call({ op: 'live', name: CLS }).then((r) => {
       LIVE = r;
       const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
       const order = r.order;
-      pane().innerHTML = '<div class="row" style="margin-bottom:10px"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span></div>' +
+      pane().innerHTML = topicSwitch() + '<div class="row" style="margin-bottom:10px"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span></div>' +
         (r.pupils.length ? '<div class="scroll"><table class="grid"><tr><th>' + h(T('staff.pupil')) + '</th><th>' + h(T('staff.lastSeen')) + '</th>' + order.map((id) => '<th>' + h(PAPERS[id].year) + '</th>').join('') + '</tr>' +
           r.pupils.map((pu) => '<tr' + (pu.me ? ' class="me"' : '') + '><td><button class="who" data-act="' + h(pu.email) + '" title="' + h(T('staff.act.open')) + '">' + h(pu.n || pu.email) + '</button>' + (pu.n && r.pupils.filter((x) => x.n === pu.n).length > 1 ? ' <small class="note">' + h(pu.email.split('@')[0]) + '</small>' : '') + (pu.me ? ' ' + h(T('staff.you')) : '') + '</td><td class="seen">' + h(ago(r.now, pu.seen)) + (lastLine(pu.last) ? '<small>' + h(lastLine(pu.last)) + '</small>' : '') + '</td>' + order.map((id) => paperCell(pu, id)).join('') + '</tr>').join('') + '</table></div>'
           : '<p class="note">' + h(T('staff.nothing')) + '</p>') +
         '<p class="note" style="margin-top:10px">' + h(T('staff.legend')) + '</p>' + (r.pupils.some((pu) => pu.me) ? '<button class="btn ghost" data-clear>' + h(T('staff.clearMine')) + '</button>' : '');
       pane().querySelector('[data-refresh]').addEventListener('click', load);
+      wireTopic();
       pane().querySelectorAll('[data-cell]').forEach((td) => {
         const openIt = () => { const [em, pid] = td.dataset.cell.split('|'); drawer(em, pid); };
         td.addEventListener('click', openIt);
@@ -193,6 +201,123 @@
     timer = setInterval(() => { if (!document.hidden && TAB === 'live' && !app.querySelector('.drawer')) load(); }, 60000);
   }
   const EVV = ['ev.can', 'ev.getting', 'ev.not'], FEEL = ['ev.easy', 'ev.right', 'ev.tricky'];
+
+  // ---------- Live · Normalisation (spec §9) ----------
+  let TOPIC = sel('topic') === 'norm' ? 'norm' : 'sql', NSEL = sel('npaper');
+  const topicSwitch = () => '<div class="ttabs" role="group">' + [['sql', 'staff.n.sql'], ['norm', 'staff.n.norm']].map(([k, s]) => '<button data-topic="' + k + '"' + (k === TOPIC ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + h(T(s)) + '</button>').join('') + '</div>';
+  const wireTopic = () => pane().querySelectorAll('[data-topic]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.topic === TOPIC) return; TOPIC = b.dataset.topic; keep('topic', TOPIC); clearInterval(timer); timer = null; const d = app.querySelector('.drawer'); if (d) d.remove(); vLive(); }));
+  const nParts = (pid) => window.NORM.partsOf(window.NORM.paperOf(pid));
+  function nPaperSum(pu, pid) {
+    let first = 0, best = 0, n = 0, cold = true, seen = false, flag = false; const parts = nParts(pid), P = pu.N.P;
+    parts.forEach((q) => { const r = P[q.id]; if (!r) { cold = false; return; } if (r.fl) flag = true; if (r.f == null) { cold = false; return; } n++; first += r.f; best += r.b != null ? r.b : r.f; if (r.d !== 1) cold = false; if (r.s) seen = true; });
+    return { first, best, n, of: parts.length, cold: cold && n === parts.length, seen, flag };
+  }
+  const nAmber = (ev) => !!ev && (ev.f === 2 || Object.keys(ev.l || {}).some((k) => ev.l[k] === 2));
+  function nCell(pu, pid) {
+    const p = window.NORM.paperOf(pid), s = nPaperSum(pu, pid), ev = pu.N.E[pid];
+    if (!s.n && !s.flag) return '<td class="c empty">—</td>';
+    return '<td class="c" data-ncell="' + h(pu.email) + '|' + pid + '" tabindex="0">' + (s.n ? s.first + '/' + p.marks + (s.best > s.first ? '<small>' + s.best + '</small>' : '') : '·') +
+      (s.n && s.n < s.of ? '<small>' + h(T('staff.cellParts', { n: s.n, of: s.of })) + '</small>' : '') +
+      (s.cold ? '<span class="tg">' + h(T('staff.tagUnaided')) + '</span>' : '') + (s.seen ? '<span class="tg">' + h(T('staff.tagSeen')) + '</span>' : '') +
+      (s.flag ? '<span class="tg red">' + h(T('staff.tagFlag')) + '</span>' : '') + (nAmber(ev) ? '<span class="amber" aria-label="' + h(T('staff.eval')) + '"></span>' : '') + '</td>';
+  }
+  function nRowEnd(pu, order, open) {
+    let first = 0, of = 0, sent = 0, amber = false;
+    order.forEach((pid) => { const s = nPaperSum(pu, pid); if (s.n || open.includes(pid)) { first += s.first; of += window.NORM.paperOf(pid).marks; } const ev = pu.N.E[pid]; if (ev) { sent++; if (nAmber(ev)) amber = true; } });
+    return '<td class="c tot"><b>' + first + '/' + of + '</b>' + (sent ? ' <span class="' + (amber ? 'amber' : 'evdot') + '" title="' + h(T('staff.n.evSent', { n: sent })) + '" aria-label="' + h(T('staff.n.evSent', { n: sent })) + '"></span>' : '') + '</td>';
+  }
+  function nStrip(order, open) {
+    const box = pane().querySelector('[data-nstrip]'); if (!box) return;
+    if (!NSEL || !order.includes(NSEL)) NSEL = open.find((id) => order.includes(id)) || order[0];
+    const p = window.NORM.paperOf(NSEL), pupils = LIVE.pupils;
+    box.innerHTML = '<p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p>';
+    call({ op: 'nprog', name: CLS, paper: NSEL }).then((r) => {
+      const byId = {}; r.parts.forEach((x) => { byId[x.id] = x; });
+      box.innerHTML = '<h3>' + h(window.NORM.title(p)) + '</h3>' + nParts(NSEL).map((q) => {
+        const x = byId[q.id] || { started: 0, full: 0, miss: null }, not = r.pupils - x.started;
+        return '<div class="prog"><p><b>' + h(window.NORM.partName(q)) + '</b> · ' + h(T('staff.n.full', { n: x.full, of: r.pupils })) +
+          (x.miss ? ' · ' + h(T('staff.n.missed', { label: x.miss.label, n: x.miss.n })) : '') + (not > 0 ? ' <span class="nchip">' + h(T('staff.n.notStarted', { n: not })) + '</span>' : '') + '</p>' +
+          '<div class="strip">' + pupils.map((pu) => { const rr = pu.N.P[q.id], f = rr && rr.f != null ? rr.f : null; return '<i class="' + (f == null ? '' : f >= q.marks ? 'd' : 'p') + '" title="' + h((pu.n || pu.email) + ' · ' + (f == null ? T('staff.noAnswer') : f + ' / ' + q.marks)) + '"></i>'; }).join('') + '</div></div>';
+      }).join('');
+    }, (e) => { box.innerHTML = ''; fail(e); });
+  }
+  function vNLive() {
+    const load = () => call({ op: 'live', name: CLS }).then((r) => {
+      LIVE = r;
+      const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      const order = r.norder, open = r.nopen, N = window.NORM;
+      if (!NSEL || !order.includes(NSEL)) NSEL = order.slice().reverse().find((id) => r.pupils.some((pu) => nPaperSum(pu, id).n)) || open.find((id) => order.includes(id)) || order[0];
+      pane().innerHTML = topicSwitch() + '<div class="row" style="margin-bottom:10px"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span></div>' +
+        (r.pupils.length ? '<div class="nstrip" data-nstrip></div><p class="note">' + h(T('staff.n.pickPaper')) + '</p><div class="scroll"><table class="grid"><tr><th>' + h(T('staff.pupil')) + '</th><th>' + h(T('staff.lastSeen')) + '</th>' +
+          order.map((id) => { const p = N.paperOf(id); return '<th class="c' + (id === NSEL ? ' on' : '') + '" data-sp="' + id + '" tabindex="0" title="' + h(N.title(p)) + '">' + h(String(p.year)) + (open.includes(id) ? '' : '<small>' + h(T('staff.isLocked')) + '</small>') + '</th>'; }).join('') + '<th>' + h(T('staff.n.total')) + '</th></tr>' +
+          r.pupils.map((pu) => '<tr' + (pu.me ? ' class="me"' : '') + '><td><button class="who" data-act="' + h(pu.email) + '" title="' + h(T('staff.act.open')) + '">' + h(pu.n || pu.email) + '</button>' + (pu.n && r.pupils.filter((x) => x.n === pu.n).length > 1 ? ' <small class="note">' + h(pu.email.split('@')[0]) + '</small>' : '') + (pu.me ? ' ' + h(T('staff.you')) : '') + '</td><td class="seen">' + h(ago(r.now, pu.seen)) + (lastLine(pu.last) ? '<small>' + h(lastLine(pu.last)) + '</small>' : '') + '</td>' +
+            order.map((id) => nCell(pu, id)).join('') + nRowEnd(pu, order, open) + '</tr>').join('') + '</table></div>'
+          : '<p class="note">' + h(T('staff.nothing')) + '</p>') +
+        '<p class="note" style="margin-top:10px">' + h(T('staff.n.legend')) + '</p>';
+      pane().querySelector('[data-refresh]').addEventListener('click', load);
+      wireTopic();
+      pane().querySelectorAll('[data-sp]').forEach((th) => { const pick = () => { NSEL = th.dataset.sp; keep('npaper', NSEL); pane().querySelectorAll('[data-sp]').forEach((x) => x.classList.toggle('on', x === th)); nStrip(order, open); }; th.addEventListener('click', pick); th.addEventListener('keydown', (e) => { if (e.key === 'Enter') pick(); }); });
+      pane().querySelectorAll('[data-ncell]').forEach((td) => {
+        const openIt = () => { const [em, pid] = td.dataset.ncell.split('|'); nDrawer(em, pid); };
+        td.addEventListener('click', openIt);
+        td.addEventListener('keydown', (e) => { if (e.key === 'Enter') openIt(); });
+      });
+      pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
+      if (r.pupils.length) nStrip(order, open);
+    }, fail);
+    load();
+    timer = setInterval(() => { if (!document.hidden && TAB === 'live' && TOPIC === 'norm' && !app.querySelector('.drawer')) load(); }, 60000);
+  }
+  // one part's mark points: ✓ / ✗, the mark, the note where a point was lost
+  const nPoints = (v) => (v ? '<ul class="check">' + v.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']' + (pt.awarded < pt.of && pt.note ? ' · ' + h(pt.note) : '') + '</span></li>').join('') + '</ul>' : '');
+  const nInput = (inp, kind) => {
+    if (!inp) return '';
+    if (kind === 'tables') return '<div class="row" style="flex-wrap:wrap;align-items:flex-start">' + window.NORM.structCards(inp) + '</div>' + ((inp.x || []).length ? '<p class="note">' + h(T('staff.n.leftOut', { names: inp.x.join(', ') })) + '</p>' : '');
+    return '<pre>' + h(typeof inp === 'string' ? inp : JSON.stringify(inp)) + '</pre>';
+  };
+  function nDrawer(email, pid) {
+    const pu = LIVE.pupils.find((x) => x.email === email), N = window.NORM, p = N.paperOf(pid); if (!pu) return;
+    const old = app.querySelector('.drawer'); if (old) old.remove();
+    const ev = pu.N.E[pid], s = nPaperSum(pu, pid), who = pu.n || pu.email;
+    const parts = nParts(pid).map((q) => {
+      const r = pu.N.P[q.id];
+      if (!r || r.f == null) return '<div class="part"><b>' + h(N.partName(q)) + '</b><p class="note">' + h(T('staff.noAnswer')) + '</p>' + (r && r.fl ? '<p><span class="tg red">' + h(T('staff.flagAt', { label: q.label, beat: T('staff.beat.' + (r.fl.b || 'turn')) })) + '</span></p>' : '') + '</div>';
+      return '<div class="part" data-part="' + q.id + '"><b>' + h(N.partName(q)) + '</b>' +
+        '<p>' + h(T(r.d === 1 ? 'staff.n.doorNow' : 'staff.n.doorLearn')) + ' · ' + h(T('staff.firstAnswer', { t: r.f, of: q.marks })) + (r.b > r.f ? ' · ' + h(T('staff.bestAnswer', { t: r.b, of: q.marks })) : '') + ' · ' + h(r.a === 1 ? T('staff.attempts1') : T('staff.attempts', { n: r.a })) + '</p>' +
+        (r.s ? '<p class="note">' + h(T('staff.sawAnswer')) + '</p>' : '') +
+        (r.fl ? '<p><span class="tg red">' + h(T('staff.flagAt', { label: q.label, beat: T('staff.beat.' + (r.fl.b || 'turn')) })) + '</span> <button class="btn sec" data-ack>' + h(T('staff.ack')) + '</button></p>' : '') +
+        '<div data-detail><p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p></div></div>';
+    }).join('');
+    const evHtml = ev ? '<div class="part"><b>' + h(T('staff.eval')) + '</b>' + Object.keys(ev.l || {}).map((k) => '<p>' + h(N.EVAL_LINE[k] || k) + ' · <b>' + h(T(EVV[ev.l[k]])) + '</b></p>').join('') +
+      '<p>' + h(T('staff.feel', { f: T(FEEL[ev.f]) })) + '</p>' + (ev.c ? '<p>' + h(T('staff.comment', { c: ev.c })) + '</p>' : '') + '</div>' : '<div class="part"><b>' + h(T('staff.eval')) + '</b> <span class="note">' + h(T('staff.evalNone')) + '</span></div>';
+    app.insertAdjacentHTML('beforeend', '<aside class="drawer ndrawer" role="dialog" aria-label="' + h(who) + '"><div class="row" style="justify-content:space-between"><h3>' + h(who) + ' · ' + h(N.title(p)) + ' · ' + h(T('staff.n.paperMark', { t: s.first, of: p.marks })) + '</h3>' +
+      '<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div>' + parts + evHtml + '</aside>');
+    const dr = app.querySelector('.drawer');
+    dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
+    dr.querySelectorAll('[data-ack]').forEach((b) => {
+      const part = b.closest('[data-part]').dataset.part;
+      twoPress(b, T('staff.ackConfirm'), (reset) => call({ op: 'ack', topic: 'norm', name: CLS, email, part }).then(() => { delete pu.N.P[part].fl; b.parentElement.remove(); }, (e) => { reset(); fail(e); }));
+    });
+    // each started part: her first and best answers beside the examiner's, each mark point ✓ / ✗ (op nscripts re-judges on the server)
+    dr.querySelectorAll('[data-part]').forEach((el) => {
+      const part = el.dataset.part, q = N.PART[part].part, box = el.querySelector('[data-detail]');
+      call({ op: 'nscripts', name: CLS, email, part }).then((r) => {
+        if (!r.a.length) { box.innerHTML = '<p class="note">' + h(T(r.archived ? 'staff.archived' : 'staff.nothing')) + '</p>'; return; }
+        const first = r.a[0]; let bi = 0; r.a.forEach((x, i) => { if (x.m != null && x.total > r.a[bi].total) bi = i; });
+        const mine = '<p class="lab">' + h(T('staff.firstAnswer', { t: first.total, of: q.marks })) + '</p>' + nInput(first.input, r.kind) + nPoints(first.verdict) +
+          (bi > 0 ? '<p class="lab">' + h(T('staff.bestAnswer', { t: r.a[bi].total, of: q.marks })) + '</p>' + nInput(r.a[bi].input, r.kind) + nPoints(r.a[bi].verdict) : '');
+        const theirs = r.kind === 'tables' && r.model ? '<p class="lab">' + h(T('staff.n.model')) + '</p><div class="row" style="flex-wrap:wrap;align-items:flex-start">' + N.structCards(r.model) + '</div>' : '';
+        box.innerHTML = (theirs ? '<div class="twocol"><div>' + mine + '</div><div class="exampl">' + theirs + '</div></div>' : mine) +
+          (r.twin ? '<p>' + h(T('staff.n.twin', { t: r.twin.f, of: r.twin.of })) + (r.twin.b > r.twin.f ? ' · ' + h(T('staff.aqBest', { t: r.twin.b, of: r.twin.of })) : '') + '</p>' : '') +
+          (r.a.length > 1 ? '<button class="btn ghost" data-all>' + h(T('staff.showAll')) + '</button><div data-scripts></div>' : '');
+        const all = box.querySelector('[data-all]');
+        if (all) all.addEventListener('click', () => {
+          all.nextElementSibling.innerHTML = '<p class="note">' + h(T('staff.allNote')) + '</p>' + r.a.map((a, i) => '<p>' + h(a.verdict && a.verdict.total !== a.total ? T('staff.attemptThen', { n: i + 1, t: a.total, of: q.marks, now: a.verdict.total }) : T('staff.attemptN', { n: i + 1, t: a.total, of: q.marks })) + ' · <span class="note">' + h(dateOf(a.m)) + '</span></p>' + nInput(a.input, r.kind) + nPoints(a.verdict)).join('');
+          all.remove();
+        });
+      }, (e) => { box.innerHTML = ''; fail(e); });
+    });
+  }
   function drawer(email, pid) {
     const pu = LIVE.pupils.find((x) => x.email === email), p = PAPERS[pid]; if (!pu) return;
     const old = app.querySelector('.drawer'); if (old) old.remove();

@@ -51,3 +51,17 @@ Content audit done (SPEC, judge, markpoints, every part). Decisions D6–D8 writ
 - Sit walk 2 (fresh cold reader, live site, foreground tab) CLEAN — report kept privately in Claude Work/A2 SSD Platform/SIT_REPORT.md (it quotes mark-point labels, so it never enters the repo). Walk 1 void (background-tab artefact, D92).
 - F59 fixed; version 2 live (build f309a5fa51-79b672b1), token checked, F59 passed live, owner's test record cleared. Deploy branch deleted.
 - Left for Damien: the pupil smoke test on a real pupil account (C2k may need to trust the project's Google permission).
+
+## 10 Nov 2026 14:15 — Normalisation build opens (branch a2-norm)
+- Window: Opus 5.5 high (his ruling for this build); he said carry on past the usage stops (week 60 % at open).
+- main pulled (f38f04e), branch a2-norm. Design gates at open: g-norm-judge 54 parts / 391 checks / 0 failures; g-norm-content 11 sets / 102 checks / 810 assertions / 0 failures, controls 6/6 — both match the measured state.
+- Nine exam documents (2015-2019, 2022-2025) being re-set by three Sonnet agents; readers follow.
+
+## Checkpoint 15:2x 10 Nov — norm build
+- Doc readers done; agreed fixes applied (2024 noun, 2024 row). N1 0 fail; N2 1578 assertions 0 fail, controls 12/12. DECISIONS.md updated (design folder).
+- Next: server bundle (build-server judgeSrc + META norm + apiBase), Code.gs norm-aware markPart_/judge_/apiAnswer/apiBase/eval regex; pack-content public norm; gates N3–N20; client norm.js.
+
+## Checkpoint 14:26 10 Nov — norm build (after context compaction)
+- DONE: pack-content normPub; build-server META.norm + apiNorm + norm judge files; Code.gs.template norm section (apiNorm state/eval/mark/answer/base/flag; staff nscripts, papers topic:'norm', CSV topic column). SQL/CW gates green (g5 67, g6, t-apicw 10/0, t-v12).
+- NOW: N3–N20 acceptance gate (design folder gates/g-norm-accept.js); then platform/norm.js + norm.css port; app.js routes/tile/call guard; apiBoot norm state; staff.js norm.
+- METER 14:26 · context 92k · 5h 60% · week 61%

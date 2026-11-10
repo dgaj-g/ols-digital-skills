@@ -6,7 +6,7 @@
  *               with the owner email, the staff passcode's salt and hash, the build id and the title filled.
  *               Written to "Claude Work/A2 SSD Platform/deploy/Code.gs" (mode 600). Never committed.
  *   Index.html  PUBLIC. style.css inlined, index.html's body, the boot scriptlet, the transport shim, then
- *               content.js, lessonview.js, tsql2sqlite.js, editor.js, lesson.js, app.js, staff.js inlined, then App.boot().
+ *               content.js, lessonview.js, tsql2sqlite.js, editor.js, lesson.js, cw.js, norm.js, app.js, staff.js inlined, then App.boot().
  *               Written to a2-ssd/server/Index.html. Only the sql.js wasm loads from outside (cdnjs, github.io fallback).
  *
  * Both files are pure ASCII (\uXXXX in JS, &#N; in HTML, CSS's own escape in <style>); Apps Script templating
@@ -55,6 +55,20 @@ C.papers.forEach((p) => { papers[p.id] = { id: p.id, year: p.year, marks: p.mark
 const clusterTwins = {};
 Object.entries(C.clusters.clusters).forEach(([k, v]) => { clusterTwins[k] = v.twins; });
 const META = { papers, order: C.papers.map((p) => p.id), twinOrder: C.clusters.order, clusterTwins };
+// normalisation (v14): exam papers in order, and every part (the practice paper's too) with what the server needs to mark and carry
+const NORM = C.norm;
+if (!NORM || !NORM.papers) { console.error('content.js has no norm block: run tools/pack-content.js'); process.exit(1); }
+META.norm = { order: NORM.order.slice(), papers: {}, parts: {} };
+NORM.papers.forEach((p) => {
+  const parts = [];
+  p.sets.forEach((s) => s.parts.forEach((q) => {
+    if (!q.kind) { console.error('norm part ' + q.id + ' has no kind'); process.exit(1); }
+    META.norm.parts[q.id] = { paper: p.id, marks: q.marks, kind: q.kind, stage: q.stage || 0, base: q.base || 'none', prev: q.prev || null, twin: q.twin || null, practice: p.practice ? 1 : 0 };
+    parts.push({ id: q.id, marks: q.marks, kind: q.kind, twin: q.twin || null });
+  }));
+  if (!p.practice) META.norm.papers[p.id] = { id: p.id, year: p.year, marks: p.marks, parts };
+});
+Object.values(META.norm.parts).forEach((m) => { if (m.twin && !META.norm.parts[m.twin]) { console.error('norm twin ' + m.twin + ' is not a part'); process.exit(1); } });
 // the coursework guide's tickable rows per built chapter (DESIGN §6.7.1: apiCw refuses anything else)
 const CWIX = JSON.parse(need(path.join(A2, 'content', 'coursework', 'index.json')));
 // A pupil's ticks are a bitmap over server/cw-slots.json, which only ever grows: a retired row keeps its slot as null (its old bit
@@ -88,7 +102,7 @@ const STAFF = JSON.parse(fs.readFileSync(STAFF_JSON, 'utf8'));
 
 // ---- the public page first (its hash is part of the build id)
 const index = need(path.join(PLATFORM, 'index.html'));
-const style = need(path.join(PLATFORM, 'style.css')) + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(PLATFORM, 'cw.css'));
+const style = need(path.join(PLATFORM, 'style.css')) + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(PLATFORM, 'cw.css')) + '\n/* ---- norm.css: normalisation ---- */\n' + need(path.join(PLATFORM, 'norm.css'));
 const scripts = [
   ['content.js', path.join(PLATFORM, 'content.js')],
   ['lessonview.js', path.join(PLATFORM, 'lessonview.js')],
@@ -96,11 +110,12 @@ const scripts = [
   ['editor.js', path.join(PLATFORM, 'editor.js')],
   ['lesson.js', path.join(PLATFORM, 'lesson.js')],
   ['cw.js', path.join(PLATFORM, 'cw.js')],
+  ['norm.js', path.join(PLATFORM, 'norm.js')],
   ['app.js', path.join(PLATFORM, 'app.js')],
   ['staff.js', path.join(PLATFORM, 'staff.js')],
 ].map(([n, p]) => [n, need(p)]);
 
-const APIS = ['apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
+const APIS = ['apiNorm', 'apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
 const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {
@@ -113,7 +128,7 @@ const shim = `window.OLS_TRANSPORT = {
 const hashOf = (s) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 10);
 const pageHash = hashOf(style + index + scripts.map((s) => s[1]).join('\n'));
 const tpl = need(path.join(SERVER, 'Code.gs.template'));
-const judgeSrc = ['schema.js', 'judge.js', 'markpoints.js', 'twinpoints.js'].map((f) => {
+const judgeSrc = ['schema.js', 'judge.js', 'markpoints.js', 'twinpoints.js', 'normpoints.js', 'normtwins.js', 'normjudge.js'].map((f) => {
   const s = need(path.join(JUDGE, f));
   const n = (s.match(/typeof self !== 'undefined' \? self : this/g) || []).length;
   if (n !== 1) { console.error(f + ': expected one UMD root, found ' + n); process.exit(1); }
