@@ -6034,7 +6034,7 @@
        "wrong": [
         {
          "q": "The first table has five bikes too",
-         "a": "Your clash test is letting hire 4 through. Check the two date questions: @StartDate < h.EndDate and @EndDate > h.StartDate, and that the status list reads ('Booked', 'Out')."
+         "a": "Two things cause this. If you start your lessons with BikeShop-saved.sql, the sample hires keep the dates they had when you last ran BikeShop.sql with nothing selected. If that was two or more days ago, hire 4 has already ended before the day this test asks about, so five bikes show. Run BikeShop.sql with nothing selected, run this test again, and you see four. If you ran BikeShop.sql today, your clash test is letting hire 4 through. Check that it reads @StartDate < h.EndDate and @EndDate > h.StartDate, and that the status list reads ('Booked', 'Out')."
         }
        ]
       }
