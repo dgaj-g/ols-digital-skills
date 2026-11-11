@@ -2,7 +2,7 @@
  * swapped for the server (build/ARCH.md): apiBoot gives the rounds, apiStage the drawn views of one stage (no keys),
  * apiMark the marks and the mark scheme. Layout, strings and behaviour are the prototype's. */
 var App = (function () {
-  var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
+  var S = S1S.S, X = S1S.X, LL = S1L.S, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
   var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
   // a question's opening words for the flagged list; the server sends the same (qWords_ in Code.gs)
   function qWords(t) { t = String(t || "").replace(/___/g, "…"); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, "") + " …" : t; }
@@ -85,6 +85,8 @@ var App = (function () {
   function guard(line) { CUR = { screen: "guard", line: line }; bare("", el('<div class="guard"><div class="card"><p>' + h(line) + '</p></div></div>')); }
   function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(function () { x.style.display = "none"; }, 1800); }
   function crumbHome() { return '<a id="cHome">' + S.home + '</a>'; }
+  function crumbHub() { return crumbHome() + ' · <a id="cHub">' + h(ME.topic.title) + '</a>'; } // v11: the exam questions sit inside the topic's own page
+  function wireHub() { wire("cHome", home); wire("cHub", function () { Hub.topic(TOPIC); }); }
   function wire(id, fn) { var e = document.getElementById(id); if (e) e.onclick = fn; }
   // ---- name ----
   function nameScreen() { // as A2: Continue waits for a name; a refused name leaves the box for another try
@@ -95,20 +97,19 @@ var App = (function () {
     nm.oninput = function () { b.disabled = !nm.value.trim(); }; nm.onkeydown = function (ev) { if (ev.key === "Enter") send(); }; b.onclick = send; nm.focus();
   }
   // ---- home ----
-  function home() { // one live tile per built topic (v6), each with its own round line; the rest say "Comes later"
+  function home() { // v11: every Unit 1 topic has a tile; an open topic's Open goes to its own page (hub.js): slides, activities, exam questions, "How did this topic go?"
     CUR = { screen: "home" };
-    if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
-    var tiles = TOPICS.map(function (name, i) {
-      var tp = ME.topics.filter(function (t) { return t.spec === "1." + (i + 1); })[0];
-      if (!tp) return '<div class="topic off"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta"></div><div class="foot">' + S.later + '</div></div>';
-      var n = tp.round, r = tp.rounds[n] || { s: {} }, a = 0, m = 0, x = 0, q = 0;
-      Object.keys(r.s).forEach(function (st) { a += r.s[st].a; m += r.s[st].m; x += r.s[st].x; q += r.s[st].n; });
-      var line = S.round + n + (n > 1 ? " open" : "") + " · " + (r.done ? "done · " + m + " of " + x + " marks" : a ? a + " of " + q + " questions done" : "not started");
-      var foot = tp.open ? '<button class="btn sm" data-open="' + h(tp.id) + '">' + S.open + '</button><span>' + h(line) + '</span>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
-      return '<div class="topic' + (tp.open ? '' : ' shut') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta">' + fmt(S.liveMeta, { s: tp.stages.length, q: q, m: x }) + '</div><div class="foot">' + foot + '</div></div>';
+    if (ME.topic && ME.topic.open && SYS.msg === "locked") SYS.msg = "";
+    var LL = S1L.S, tiles = S1L.topics.map(function (lt) {
+      var tp = ME.topics.filter(function (t) { return t.id === lt.id; })[0], c = (ME.cat || []).filter(function (x) { return x.id === lt.id; })[0], open = c ? !!c.open : !!(tp && tp.open), exl = "";
+      if (tp) exl = Hub.examSum(tp).line;
+      var meta = Hub.tileMeta(lt) + (tp ? LL.withExam : "");
+      var lines = open ? '<div class="tlines"><div class="prog">' + h(Hub.tileLine(lt)) + ((ME.checks || {})[lt.id] ? h(LL.tileEval) : '') + '</div>' + (tp ? '<div class="exq">' + h(LL.partExam) + ': <span class="exl">' + h(exl) + '</span></div>' : '') + '</div>' : '';
+      var foot = open ? '<button class="btn sm" data-open="' + h(lt.id) + '">' + S.open + '</button>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
+      return '<div class="topic' + (open ? '' : ' shut') + '"><div class="n">' + h(lt.spec) + '</div><div class="name">' + h(lt.title) + '</div><div class="meta">' + h(meta) + '</div>' + lines + '<div class="foot">' + foot + '</div></div>';
     }).join("");
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
-    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { pick(b.dataset.open); topic(); }; });
+    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { Hub.topic(b.dataset.open); }; });
   }
   // ---- topic front ----
   function topic() {
@@ -122,7 +123,7 @@ var App = (function () {
     }).join("");
     var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' · ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
     var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
-    shell(crumbHome(), body); wire("cHome", home); wire("seeSum", function () { summary(n); });
+    shell(crumbHub() + ' · ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); });
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
         var st = +b.dataset.st; b.disabled = true;
@@ -167,7 +168,7 @@ var App = (function () {
     else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text"' + (v.fml && v.fml[g] ? FML : '') + ' maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
-    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' · <a id="cTopic">' + h(LL.partExam) + '</a>', body, stagebar(st, i, n)); wireHub(); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
     function refresh() { var a = collect(), ok = complete(v, a); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; } // the "Answer every part first." line goes once she has (live look, 14 Oct 2026)
     function collect() {
@@ -257,7 +258,7 @@ var App = (function () {
     CUR = { screen: "stagecard", st: st };
     var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' · ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
-    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' · <a id="cTopic">' + h(LL.partExam) + '</a>', body, stagebar(st, t.q, n)); wireHub(); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -271,7 +272,7 @@ var App = (function () {
     CUR = { screen: "topiccard" };
     var n = roundNo(), rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
-    shell(crumbHome() + ' · <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' · <a id="cTopic">' + h(LL.partExam) + '</a>', body); wireHub(); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
@@ -292,7 +293,7 @@ var App = (function () {
     });
     var tot = TOT(n);
     var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
-    shell(crumbHome(), body); wire("cHome", home); wire("back", home);
+    shell(crumbHub(), body); wireHub(); wire("back", home);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
   // ---- boot ----
@@ -302,6 +303,7 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; pick(TOPIC); r.needName ? nameScreen() : home();
+      Hub.start(); // a score still waiting in this browser from last time is sent now
       if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
         pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
@@ -313,6 +315,6 @@ var App = (function () {
   window.addEventListener("resize", fit);
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
-    pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
+    shell: shell, crumbHome: crumbHome, at: function (c) { CUR = c; }, pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
   return { boot: boot, t: T };
 })();

@@ -1,9 +1,10 @@
 /* staff.js — the staff page at the bare link (no class). Door (passcode, or let in by email), then five tabs:
+ * v11 adds Activities (each pupil's best and first score, goes, slides seen) and Topic checks (what each pupil said, a tally, what they wrote) for all nine topics.
  * Classes (A2's list: copy the link, delete a class; v4), Topics (open or lock each topic for the class; DECISIONS §16), Rounds (open the next round for the class
  * or one pupil), Tracker (v4, DECISIONS §17: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = []; // v6: TP = the topic the Rounds, Tracker and Export tabs show
+  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = S1L.topics[0].id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -36,19 +37,25 @@ var Staff = (function () {
     var pw = document.getElementById("pw"), go = function () { var v = pw.value.trim(); if (!v) return; document.getElementById("enter").disabled = true; check(v); };
     T.wire("enter", go); pw.onkeydown = function (ev) { if (ev.key === "Enter") go(); }; pw.focus();
   }
-  function bar() { return '<div class="tabs">' + X.tabs.map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>'; }).join("") + '</div>'; }
+  // v11: seven tabs. Activities and Topic checks cover all nine topics; Rounds, Tracker and Export cover the topics with exam questions
+  function TABS() { return [{ n: X.tabs[0], f: classes }, { n: X.tabs[1], f: topics }, { n: L.tabActs, f: acts }, { n: L.tabEvals, f: checks }, { n: X.tabs[2], f: rounds }, { n: X.tabs[3], f: tracker }, { n: X.tabs[4], f: exporter }]; }
+  function bar() { return '<div class="tabs">' + TABS().map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + h(t.n) + '</button>'; }).join("") + '</div>'; }
+  function banks() { return BUILT.filter(function (t) { return t.bank; }); }
   function clsPick() { return CLASSES.length > 1 ? '<label for="cp">' + W.cls + '</label><select id="cp">' + CLASSES.map(function (c) { return '<option value="' + h(c.slug) + '"' + (c.slug === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>'; }).join("") + '</select>' : '<b>' + h((CLASSES[0] || {}).name || "") + '</b>'; }
-  function topPick() { return BUILT.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + BUILT.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
+  function ltPick() { return '<label for="lq">' + W.topic + '</label><select id="lq">' + S1L.topics.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === LTP ? ' selected' : '') + '>' + h(t.spec + ' ' + t.title) + '</option>'; }).join("") + '</select>'; }
+  function topPick() { var B = banks(); return B.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + B.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
   function wireCommon(body) {
     body.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { TAB = +b.dataset.tab; armed = false; tabs(); }; });
     var cp = body.querySelector("#cp"); if (cp) cp.onchange = function () { CLS = cp.value; ROUND = 0; armed = false; tabs(); };
     var tq = body.querySelector("#tq"); if (tq) tq.onchange = function () { TP = tq.value; ROUND = 0; armed = false; tabs(); };
+    var lq = body.querySelector("#lq"); if (lq) lq.onchange = function () { LTP = lq.value; armed = false; tabs(); };
   }
   function tabs() {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
-      CLASSES = r.classes; BUILT = r.topics || BUILT; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
+      CLASSES = r.classes; BUILT = r.topics || BUILT; STORE = r.store || 0; if (banks().length && !banks().some(function (t) { return t.id === TP; })) TP = banks()[0].id; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
-      [classes, topics, rounds, tracker, exporter][TAB]();
+      if (TAB >= TABS().length) TAB = 0;
+      TABS()[TAB].f();
     }).catch(fail);
   }
   function link(slug) { return T.boot.base + "?class=" + slug; }
@@ -66,7 +73,7 @@ var Staff = (function () {
       return '<li data-s="' + h(c.slug) + '"><b>' + h(T.fmt(c.pupils === 1 ? W.classLine1 : W.classLine, { name: c.name, n: c.pupils, date: dateOf(c.made) }) + (c.by ? ' · ' + T.fmt(W.by, { who: c.by }) : '')) + '</b>' +
         '<button class="btn sm ghost" data-copy>' + W.copy + '</button>' + (c.mine || OWN ? '<button class="btn sm ghost" data-del>' + W.del + '</button>' : '') + '</li>';
     }).join("") + '</ul>' : '<p class="sub">' + W.none + '</p>';
-    var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
+    var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div>' + (OWN && STORE ? '<p class="hint">' + T.fmt(L.store, { k: Math.max(1, Math.round(STORE / 1024)) }) + '</p>' : '') + '</div>');
     page(body); wireCommon(body);
     body.querySelectorAll("[data-copy]").forEach(function (b) { b.onclick = function () {
       var url = link(b.closest("li").dataset.s), done = function () { T.toast(W.copied); };
@@ -86,13 +93,78 @@ var Staff = (function () {
   function topics() {
     T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
       var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
-      var rows = S1S.TOPICS.map(function (name, i) {
-        var tp = BUILT.filter(function (t) { return t.spec === "1." + (i + 1); })[0], id = tp ? tp.id : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
-        return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
+      var rows = r.topics.map(function (tp) { // v11: all nine topics; each opens its slides, activities, its check and (when it has them) its exam questions
+        var id = tp.id, st = '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + h(id) + '">' + (on[id] ? X.lock : X.openT) + '</button>';
+        return '<div class="trow"><span class="tn">' + h(tp.spec) + '</span><b>' + h(tp.title) + '</b>' + st + '</div>';
       }).join("");
       var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
       page(body); wireCommon(body);
       body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
+    }).catch(fail);
+  }
+  // ---- Activities (v11): one row per pupil, a column per activity with the best score, the first score and the goes, then the slides seen ----
+  function save(x) { // hands the teacher a CSV file (BOM first so Excel reads the accents)
+    var blob = new Blob(["﻿" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function csvBtn(id, op) {
+    T.wire(id, function () { var b = document.getElementById(id); b.disabled = true;
+      T.call("apiStaff", { op: op, cls: CLS, topic: LTP }).then(function (x) { b.disabled = false; save(x); }, function (e) { b.disabled = false; fail(e); }); });
+  }
+  function head(r) { return '<div class="srow">' + clsPick() + ltPick() + '</div>' + (r.open ? '' : '<p class="err lockn">' + h(L.lockedTopic) + '</p>'); }
+  function acts() {
+    T.call("apiStaff", { op: "acts", cls: CLS, topic: LTP }).then(function (r) {
+      var scored = r.acts.filter(function (a) { return a.scored; });
+      var avg = scored.map(function (a) {
+        var ps = r.rows.filter(function (p) { var e = p.a[a.id]; return e && e[3]; }).map(function (p) { return pc(p.a[a.id][2], p.a[a.id][3]); }), m = ps.length ? Math.round(ps.reduce(function (x, y) { return x + y; }, 0) / ps.length) : null;
+        return hbar(a.title, m, ps.length ? m + '% · ' + (ps.length === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: ps.length })) : W.nobody);
+      }).join("");
+      var nSl = r.decks.reduce(function (n, d) { return n + d.n; }, 0);
+      var rows = r.rows.map(function (p) {
+        var cells = r.acts.map(function (a) {
+          var e = p.a[a.id]; if (!e) return '<td class="np">' + L.notPlayed + '</td>';
+          var goes = e[4] === 1 ? L.actGoes1 : T.fmt(L.actGoesN, { n: e[4] });
+          if (!a.scored) return '<td><span class="sc hi">' + h(L.actDone) + '</span><br><small>' + goes + '</small></td>';
+          return '<td>' + score(e[2], e[3]) + '<br><small>' + T.fmt(L.actFirst, { s: e[0], m: e[1] }) + ' · ' + goes + '</small></td>';
+        }).join("");
+        var seenN = r.decks.reduce(function (n, d) { var g = p.s[d.id]; return n + (g ? Math.min(g[1], d.n) : 0); }, 0);
+        var sl = nSl ? '<td>' + (seenN ? '<span class="sc ' + band(pc(seenN, nSl)) + '">' + T.fmt(L.slidesOf, { a: seenN, n: nSl }) + '</span>' : L.notPlayed) + '</td>' : '';
+        return '<tr><td><b>' + h(p.name) + '</b></td><td class="seen">' + seen(p.seen) + '</td>' + cells + sl + '</tr>';
+      }).join("");
+      var table = '<div class="tscroll"><table class="track agrid"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th>' + r.acts.map(function (a) { return '<th>' + h(a.title) + '</th>'; }).join("") + (nSl ? '<th>' + L.slidesCol + '</th>' : '') + '</tr>' + rows + '</table></div>';
+      var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.actsHead) + ' · ' + h(r.className) + ' · ' + h(r.title) + '</h1>' +
+        (r.rows.length && avg ? '<div class="card"><h2>' + h(L.actsAvg) + '</h2>' + avg + '</div>' : '') +
+        '<div class="card">' + (r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
+      page(body); wireCommon(body);
+      if (r.rows.length) csvBtn("acsv", "actsCsv");
+    }).catch(fail);
+  }
+  // ---- Topic checks (v11): what each pupil said about each part, a tally per part, then everything they wrote ----
+  var CK = ["ck1", "ck2", "ck3"]; // 1 I've got it (green), 2 getting there (amber), 3 not yet (red)
+  function ckChip(v) { return '<span class="rchip ' + CK[v - 1] + '">' + h(L.rateShort[v - 1]) + '</span>'; }
+  function when(iso) { var s = seen(iso, true); return s.indexOf(W.today) === 0 || s.indexOf(W.yesterday) === 0 ? s.charAt(0).toLowerCase() + s.slice(1) : s; }
+  function checks() {
+    T.call("apiStaff", { op: "checks", cls: CLS, topic: LTP }).then(function (r) {
+      var sent = r.rows.filter(function (p) { return p.e; });
+      var tally = r.parts.map(function (part, i) {
+        var k = [0, 0, 0]; sent.forEach(function (p) { var v = p.e.r[i]; if (v >= 1 && v <= 3) k[v - 1]++; });
+        var n = k[0] + k[1] + k[2];
+        return '<div class="hb cr"><span class="hl">' + h(part) + '</span><span class="ht stack">' + (n ? k.map(function (c, j) { return c ? '<i class="' + CK[j] + '" style="width:' + (100 * c / n) + '%" title="' + h(L.rateShort[j]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + T.fmt(L.evalsTally, { a: k[0], b: k[1], c: k[2] }) + '</span></div>';
+      }).join("") + '<div class="legend">' + L.rateShort.map(function (t, i) { return '<span><i class="' + CK[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+      var rows = r.rows.map(function (p) {
+        return '<tr><td><b>' + h(p.name) + '</b></td><td class="seen">' + (p.e ? seen(p.e.at) : '<span class="np">' + h(L.notSent) + '</span>') + '</td>' +
+          r.parts.map(function (_, i) { return '<td>' + (p.e ? ckChip(p.e.r[i]) : '<span class="np">' + L.notPlayed + '</span>') + '</td>'; }).join("") + '</tr>';
+      }).join("");
+      var said = sent.filter(function (p) { return p.e.c; });
+      var wrote = '<div class="card said"><h2>' + h(L.comments) + '</h2>' + (said.length ? said.map(function (p) {
+        return '<div class="ev"><b>' + h(p.name) + '</b> <small class="hint">' + T.fmt(L.sentOn, { d: when(p.e.at) }) + '</small><div class="nq">“' + h(p.e.c) + '”</div></div>'; }).join("") : '<p class="hint">' + h(L.noComments) + '</p>') + '</div>';
+      var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.evalsHead) + ' · ' + h(r.className) + ' · ' + h(r.title) + '</h1>' +
+        (r.rows.length ? '<div class="card"><p class="big">' + T.fmt(L.evalsCount, { n: sent.length, p: r.rows.length }) + '</p>' + (sent.length ? tally : '<p class="hint">' + h(L.evalsNone) + '</p>') + '</div>' +
+          '<div class="card"><p class="hint">' + h(L.evalsSub) + '</p><div class="tscroll"><table class="track cgrid"><tr><th>' + W.pupil + '</th><th>' + h(L.sentCol) + '</th>' + r.parts.map(function (t) { return '<th>' + h(t) + '</th>'; }).join("") + '</tr>' + rows + '</table></div><div class="actions"><button class="btn sm ghost" id="ccsv">' + h(L.actsCsv) + '</button></div></div>' + wrote
+        : '<div class="card"><p class="sub" style="margin:0">' + h(L.noPupils) + '</p></div>') + '</div>');
+      page(body); wireCommon(body);
+      if (r.rows.length) csvBtn("ccsv", "checksCsv");
     }).catch(fail);
   }
   // ---- Rounds ----
@@ -215,10 +287,7 @@ var Staff = (function () {
       T.wire("csv", function () {
         var b = document.getElementById("csv"); b.disabled = true;
         T.call("apiStaff", { op: "csv", cls: CLS, topic: TP, round: ROUND }).then(function (x) {
-          b.disabled = false;
-          var blob = new Blob(["﻿" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
-          a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
-          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+          b.disabled = false; save(x);
         }, function () { b.disabled = false; });
       });
     }).catch(fail);

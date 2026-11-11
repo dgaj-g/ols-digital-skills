@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-11-04T20:29:52.535Z
+G2 render coverage + sit on the harness · 2026-11-11T15:32:03.327Z
 PASS class made
 PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
@@ -51,7 +51,7 @@ PASS DATABASES PHONE 390x844 · MARKS# hash matches node
 INFO DATABASES PHONE 390x844 · round 1 · 30 of 123 marks · MARKS# 33056cb1 · 41 sit checks passed
 PASS spreadsheets opened for the class
 PASS SPREADSHEETS the sit played Spreadsheet applications
-PASS SPREADSHEETS · sit run PASS (6 s)
+PASS SPREADSHEETS · sit run PASS (7 s)
 PASS SPREADSHEETS · no console errors or failed requests
 PASS SPREADSHEETS · page marks = judge marks on all 72 questions
 PASS SPREADSHEETS · total line
@@ -59,7 +59,7 @@ PASS SPREADSHEETS · MARKS# hash matches node
 INFO SPREADSHEETS · round 1 · 18 of 110 marks · MARKS# 72bf05b3 · 42 sit checks passed
 PASS SPREADSHEETS every formula item shows the hint line and a monospace box
 PASS SPREADSHEETS every grid figure shows its row-number column
-PASS SPREADSHEETS PHONE 390x844 · sit run PASS (6 s)
+PASS SPREADSHEETS PHONE 390x844 · sit run PASS (7 s)
 PASS SPREADSHEETS PHONE 390x844 · no console errors or failed requests
 PASS SPREADSHEETS PHONE 390x844 · page marks = judge marks on all 72 questions
 PASS SPREADSHEETS PHONE 390x844 · total line

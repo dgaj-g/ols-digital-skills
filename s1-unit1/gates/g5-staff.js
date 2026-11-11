@@ -90,7 +90,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     await page.click('#pw', { clickCount: 3 }); await page.type('#pw', PASS); await page.click('#enter');
     await page.waitForSelector('.tabs', { timeout: 10000 });
     const tabs = await page.evaluate(() => [...document.querySelectorAll('.tabs .tab')].map((b) => b.innerText.trim()).join('|'));
-    check('right passcode opens the five tabs', tabs === 'Classes|Topics|Rounds|Tracker|Export', tabs);
+    check('right passcode opens the seven tabs (v11 adds Activities and Topic checks)', tabs === 'Classes|Topics|Activities|Topic checks|Rounds|Tracker|Export', tabs);
     const tNone = await page.evaluate(() => ({ t: document.getElementById('app').innerText, n: document.querySelectorAll('ul.clist li').length }));
     check('Classes: a passcode teacher who has made no class sees "No classes yet. Add one below." and not the owner\'s 11A DT', tNone.n === 0 && tNone.t.indexOf('No classes yet. Add one below.') !== -1 && tNone.t.indexOf('11A DT') === -1, JSON.stringify(tNone).slice(0, 200));
     const tTrack = await api('apiStaff', { op: 'tracker', cls: CLS }, TEACHER);
@@ -115,7 +115,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const lockedTile = (t) => /Not opened yet/.test(t.text) && /Your teacher opens topics in class\./.test(t.text) && !t.open;
     await clickTab(page, 'Topics'); await page.waitForSelector('.tlist', { timeout: 10000 });
     let tr = await topicRows();
-    check('Topics: nine rows; Digital Data "Open" with a Lock button; Software, Database applications, Spreadsheet applications "Locked" with an Open button (v6, v7); the rest "Comes later"', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && /^1\.2 Software Locked Open$/.test(tr[1]) && /^1\.3 Database applications Locked Open$/.test(tr[2]) && /^1\.4 Spreadsheet applications Locked Open$/.test(tr[3]) && tr.slice(4).every((r) => /Comes later$/.test(r)) && (await page.$$('[data-t]')).length === 4, tr.join(' | ') + ' · buttons ' + (await page.$$eval('[data-t]', (b) => b.map((e) => e.outerHTML).join(' '))));
+    check('Topics: nine rows; Digital Data "Open" with a Lock button; Software, Database applications, Spreadsheet applications and (v11) the other five "Locked" with an Open button', tr.length === 9 && /^1\.1 Digital data Open Lock$/.test(tr[0]) && /^1\.2 Software Locked Open$/.test(tr[1]) && /^1\.3 Database applications Locked Open$/.test(tr[2]) && /^1\.4 Spreadsheet applications Locked Open$/.test(tr[3]) && /^1\.5 Computer hardware Locked Open$/.test(tr[4]) && tr.slice(4).every((r) => /Locked Open$/.test(r)) && (await page.$$('[data-t]')).length === 9, tr.join(' | ') + ' · buttons ' + (await page.$$eval('[data-t]', (b) => b.map((e) => e.outerHTML).join(' '))));
     const tText = await page.evaluate(() => document.getElementById('app').innerText);
     check('Topics: the note "Pupils see locked topics as “Not opened yet”."', tText.indexOf('Pupils see locked topics as “Not opened yet”.') !== -1, tText.slice(0, 300));
     lay = await page.evaluate(LAYOUT); check('Topics: nothing wider than its box', lay.length === 0, lay.join(' | '));
@@ -139,7 +139,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     tr = await topicRows();
     check('Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged', /^1\.2 Software Open Lock$/.test(tr[1]) && /^1\.1 Digital data Open Lock$/.test(tr[0]), tr.slice(0, 2).join(' | '));
     const swTile = await pupilTile();
-    check('pupil home: the Software tile has Open and reads "4 stages · 29 questions · 59 marks"', swTile.swOpen && /4 stages · 29 questions · 59 marks/.test(swTile.sw) && swTile.open, JSON.stringify(swTile));
+    check('pupil home (v11): the Software tile has Open and reads "1 slide set · 6 activities · exam questions" and "Exam questions: Round 1 · not started"', swTile.swOpen && /1 slide set · 6 activities · exam questions/.test(swTile.sw) && /Exam questions: Round 1 · not started/.test(swTile.sw) && swTile.open, JSON.stringify(swTile));
     await clickTab(page, 'Tracker'); await page.waitForSelector('table.track', { timeout: 10000 });
     const h1 = () => page.evaluate(() => (document.querySelector('h1') || {}).innerText || '');
     const pk = await page.evaluate(() => { const q = document.getElementById('tq'); return q ? [...q.options].map((o) => o.value + '=' + o.text).join('|') : null; });
@@ -209,6 +209,42 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const head = csv.replace(/^﻿/, '').split(/\r?\n/)[0];
     check('Export: the CSV has exactly SPEC §3.8 columns, with a BOM', head === COLS && bom === '239,187,191', head + ' · first bytes ' + bom);
     check('Export: one row per pupil per stage (4 pupils x 4 stages)', csv.trim().split(/\r?\n/).length === 1 + 16, csv.trim().split(/\r?\n/).length - 1 + ' rows');
+
+    // ---- v11: Activities and Topic checks (Software is open by now; Aoife plays, reads slides and sends her check)
+    const SWP = require(path.join(ROOT, 'platform', 'lessons.js')).topics.find((t) => t.id === 'software');
+    const lr = await api('apiLessons', { cls: CLS, ops: [{ op: 'finish', id: 'sw1', s: 7, m: 10, u: 'g5a' }, { op: 'finish', id: 'sw1', s: 9, m: 10, u: 'g5b' }, { op: 'slide', deck: 'sw', i: 12, u: 'g5c' }] }, P);
+    const ckR = SWP.parts.map((_, k) => 1 + (k % 3));
+    const cr = await api('apiCheck', { cls: CLS, topic: 'software', r: ckR, c: 'The slides on utilities helped.' }, P);
+    check('v11 records: Aoife plays OS Control Room twice, reads 12 slides, sends her Software check', lr.ok && lr.res.join(',') === 'ok,ok,ok' && cr.ok, JSON.stringify([lr, cr]).slice(0, 200));
+    const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
+    const fitAll = async (what) => { const bad = []; for (const [w, hh] of SIZES) { await page.setViewport({ width: w, height: hh }); await wait(250); const l = await page.evaluate(LAYOUT); if (l.length) bad.push(w + 'x' + hh + ': ' + l.slice(0, 3).join(', ')); } await page.setViewport({ width: 1280, height: 800 }); await wait(200); check(what + ': nothing wider than its box at 1280, 1024, 768 and 390 wide', bad.length === 0, bad.join(' | ')); };
+    await clickTab(page, 'Activities'); await page.waitForSelector('#lq', { timeout: 10000 });
+    await page.select('#lq', 'software'); await page.waitForFunction(() => /Activity scores · 11A DT · Software/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 });
+    const at = await page.evaluate(() => ({ heads: [...document.querySelectorAll('table.agrid tr:first-child th')].map((t) => t.innerText.trim()), rows: [...document.querySelectorAll('table.agrid tr')].slice(1).map((tr) => tr.innerText.replace(/\s+/g, ' ').trim()), avg: [...document.querySelectorAll('.hb')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()), lock: !!document.querySelector('.lockn') }));
+    const aoife = at.rows.find((r) => /^Aoife /.test(r)) || '';
+    check('Activities: one column per Software activity plus Pupil, Last used and Slides seen', at.heads.length === 2 + SWP.acts.length + 1 && at.heads[0] === 'Pupil' && at.heads[at.heads.length - 1] === 'Slides seen' && SWP.acts.every((a) => at.heads.indexOf(a.title) !== -1), at.heads.join(' | '));
+    check('Activities: Aoife shows best 9/10 · 90%, "First go: 7 of 10 · 2 goes", "12 of 41 slides"; the rest "-"', /9\/10/.test(aoife) && /90%/.test(aoife) && /First go: 7 of 10 · 2 goes/.test(aoife) && /12 of 41 slides/.test(aoife) && at.rows.length === 4 && at.rows.filter((r) => r !== aoife).every((r) => !/\d+\/\d+/.test(r)), at.rows.join(' || '));
+    check('Activities: the average card says OS Control Room 90% · 1 pupil; the open topic shows no lock note', at.avg.some((b) => /OS Control Room/.test(b) && /90% · 1 pupil/.test(b)) && !at.lock, at.avg.join(' | '));
+    await page.evaluate(() => { window.__blob = null; }); await page.click('#acsv'); await page.waitForFunction('window.__blob', { timeout: 10000 });
+    const acsv = await page.evaluate(() => window.__blob.text()), abom = await page.evaluate(async () => [...new Uint8Array(await window.__blob.arrayBuffer()).slice(0, 3)].join(','));
+    check('Activities: the CSV has its columns, a BOM, and Aoife\'s 9 of 10 (first 7 of 10, 2 goes)', abom === '239,187,191' && /^class,pupil,email,activity,best score,best out of,best %,first score,first out of,goes,last played/.test(acsv.replace(/^﻿/, '')) && /Aoife,pupil1@c2ken\.net,OS Control Room,9,10,90,7,10,2,/.test(acsv), acsv.slice(0, 300));
+    try { await page.screenshot({ path: path.join(OUT, 'g5-activities.png'), fullPage: true }); } catch (e) {}
+    await fitAll('Activities');
+    await clickTab(page, 'Topic checks'); await page.waitForFunction(() => /How did this topic go\? · 11A DT · Software/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 });
+    const ct = await page.evaluate(() => ({ big: (document.querySelector('.card .big') || {}).innerText || '', tally: [...document.querySelectorAll('.hb.cr')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()), rows: [...document.querySelectorAll('table.cgrid tr')].slice(1).map((tr) => tr.innerText.replace(/\s+/g, ' ').trim()), said: [...document.querySelectorAll('.said .ev')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()) }));
+    const RS = ['Got it', 'Getting there', 'Not yet'], ca = ct.rows.find((r) => /^Aoife /.test(r)) || '';
+    check('Topic checks: "1 of 4 pupils have sent it" and one tally line per Software line', ct.big.trim() === '1 of 4 pupils have sent it' && ct.tally.length === SWP.parts.length && ct.tally.every((t) => /\d got it · \d getting there · \d not yet/.test(t)), ct.big + ' · ' + ct.tally.join(' | '));
+    check('Topic checks: Aoife\'s row has her answers in words; the other three say "Not sent"', ckR.every((v) => ca.indexOf(RS[v - 1]) !== -1) && ct.rows.filter((r) => r !== ca).length === 3 && ct.rows.filter((r) => r !== ca).every((r) => /Not sent/.test(r)), ct.rows.join(' || '));
+    check('Topic checks: "What they wrote" quotes her, with "sent today hh:mm"', ct.said.length === 1 && /^Aoife sent today \d{2}:\d{2} “The slides on utilities helped\.”$/.test(ct.said[0]), ct.said.join(' | '));
+    await page.evaluate(() => { window.__blob = null; }); await page.click('#ccsv'); await page.waitForFunction('window.__blob', { timeout: 10000 });
+    const ccsv = await page.evaluate(() => window.__blob.text());
+    check('Topic checks: the CSV has class, pupil, email, sent, one column per line, what they wrote; "not sent" for the others', /what they wrote\r?\n/.test(ccsv) && /The slides on utilities helped\./.test(ccsv) && (ccsv.match(/not sent/g) || []).length === 3, ccsv.split(/\r?\n/)[0]);
+    try { await page.screenshot({ path: path.join(OUT, 'g5-checks.png'), fullPage: true }); } catch (e) {}
+    await fitAll('Topic checks');
+    await page.select('#lq', 'networks'); await page.waitForFunction(() => /Network technologies/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 });
+    const nl = await page.evaluate(() => ({ lock: (document.querySelector('.lockn') || {}).innerText || '', big: (document.querySelector('.card .big') || {}).innerText || '' }));
+    check('Topic checks: a locked topic says "This topic is locked for this class. Open it on the Topics tab." and nobody has sent it', nl.lock.trim() === 'This topic is locked for this class. Open it on the Topics tab.' && nl.big.trim() === '0 of 4 pupils have sent it', JSON.stringify(nl));
+    await page.select('#lq', 'software'); await wait(400);
     check('no console errors or failed requests', errs.length === 0, errs.slice(0, 5).join(' | '));
     // ---- controls
     await setRec('control@c2ken.net', 'Control', CONTROL_BAD);

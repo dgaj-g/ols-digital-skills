@@ -190,7 +190,8 @@ function apiBoot_(req) {
     return { id: id, title: T.title, spec: T.spec, open: topicOpen_(x.c, T), round: cur, rounds: rounds,
       stages: stagesFor_(T, cur).map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) };
   });
-  return ok_({ email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email), topics: topics });
+  return ok_({ email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email), topics: topics,
+    cat: LIDS.map(function (id) { return { id: id, open: ltOpen_(x.c, id) }; }), lessons: lOut_(lGet_(x.slug, email)), checks: checksOf_(x.slug, email) });
 }
 
 function apiName(req) { return safe_(apiName_)(req); }
@@ -335,6 +336,96 @@ function apiPing_(req) {
   return ok_({});
 }
 
+// ---------- v11: slides, activities and "How did this topic go?" (S1L comes from platform/lessons.js, at the top of Code.gs) ----------
+// L:<class>:<email> = { a: { actId: [firstScore, firstMax, bestScore, bestMax, goes, tmin] }, s: { deckId: [lastSlide, furthestSlide, tmin] },
+//                      p: { topicId: 'd:<deckId>' or 'a:<actId>' (where she was last) }, u: [the last 40 op ids, so a resent op counts once] }
+// E:<class>:<email>:<topic> = { r: [1 got it | 2 getting there | 3 not yet, one per line of the topic's parts], c: what she wrote (500 max), t: tmin }
+var LT = {}, LACT = {}, LDECK = {}, LIDS = [];
+S1L.topics.forEach(function (t) {
+  LIDS.push(t.id); LT[t.id] = t;
+  t.acts.forEach(function (a) { LACT[a.id] = { a: a, t: t.id }; });
+  t.decks.forEach(function (d) { LDECK[d.id] = { d: d, t: t.id }; });
+});
+var CHECK_MAX = 500;
+function ltOpen_(c, id) { return c.op ? c.op.indexOf(id) !== -1 : id === DD; } // the same switch as topicOpen_: one Open/Lock per topic
+function lKey_(slug, email) { return 'L:' + slug + ':' + email; }
+function eKey_(slug, email, tid) { return 'E:' + slug + ':' + email + ':' + tid; }
+function lNorm_(L) { L = L || {}; L.a = L.a || {}; L.s = L.s || {}; L.p = L.p || {}; L.u = L.u || []; return L; }
+function lGet_(slug, email) { return lNorm_(jget_(sp_(), lKey_(slug, email), null)); }
+function lOut_(L) { return { a: L.a, s: L.s, p: L.p }; }
+function checksOf_(slug, email) { var o = {}; LIDS.forEach(function (id) { var E = jget_(sp_(), eKey_(slug, email, id), null); if (E) o[id] = E; }); return o; }
+function better_(s, m, bs, bm) { // a higher share wins; the same share over more marks wins too
+  if (!m) return false; if (!bm) return true;
+  var a = s * bm, b = bs * m; return a > b || (a === b && m > bm);
+}
+function int_(v) { var n = Number(v); return typeof v === 'number' && isFinite(n) && Math.floor(n) === n ? n : NaN; }
+function lOp_(c, L, o) {
+  var op = str_(o.op), now = tmin_();
+  if (op === 'finish') {
+    var A = LACT[str_(o.id)]; if (!A) return 'bad-id';
+    if (!ltOpen_(c, A.t)) return 'locked';
+    var s = int_(o.s), m = int_(o.m);
+    if (!(s >= 0 && m >= 0 && s <= m && m <= 5000)) return 'bad-score';
+    if (A.a.scored && !m) return 'bad-score';
+    if (!A.a.scored) { s = 0; m = 0; }
+    var e = L.a[A.a.id];
+    if (!e) e = L.a[A.a.id] = [s, m, s, m, 0, now];
+    else if (better_(s, m, e[2], e[3])) { e[2] = s; e[3] = m; }
+    e[4] = (e[4] || 0) + 1; e[5] = now;
+    return 'ok';
+  }
+  if (op === 'slide') {
+    var D = LDECK[str_(o.deck)]; if (!D) return 'bad-id';
+    if (!ltOpen_(c, D.t)) return 'locked';
+    var i = int_(o.i); if (!(i >= 1 && i <= D.d.n)) return 'bad-slide';
+    // f: the furthest slide this browser has seen. The page keeps only the newest place in its queue, so a pupil who steps back
+    // before it saves would otherwise lose the furthest slide (G8). Optional, so a page loaded before v11.1 still saves.
+    var f = o.f == null ? i : int_(o.f); if (!(f >= i && f <= D.d.n)) return 'bad-slide';
+    var g = L.s[D.d.id] || [1, 1, now]; g[0] = i; g[1] = Math.max(g[1] || 1, f); g[2] = now; L.s[D.d.id] = g;
+    L.p[D.t] = 'd:' + D.d.id;
+    return 'ok';
+  }
+  if (op === 'at') {
+    var B = LACT[str_(o.id)]; if (!B) return 'bad-id';
+    if (!ltOpen_(c, B.t)) return 'locked';
+    L.p[B.t] = 'a:' + B.a.id;
+    return 'ok';
+  }
+  return 'bad-op';
+}
+function apiLessons(req) { return safe_(apiLessons_)(req); }
+function apiLessons_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var ops = Array.isArray(req.ops) ? req.ops.slice(0, 40) : [];
+  if (!ops.length) return err_('bad-op');
+  return withLock_(function () {
+    var L = lGet_(x.slug, x.email), res = [], changed = false;
+    ops.forEach(function (o) {
+      o = o || {}; var u = str_(o.u).slice(0, 24);
+      if (u && L.u.indexOf(u) !== -1) { res.push('ok'); return; } // sent twice (an answer lost on the way back): counted once
+      var r = lOp_(x.c, L, o); res.push(r);
+      if (r === 'ok') { changed = true; if (u) { L.u.push(u); if (L.u.length > 40) L.u = L.u.slice(-40); } }
+    });
+    if (changed) { try { jset_(sp_(), lKey_(x.slug, x.email), L); } catch (e) { L.u = L.u.slice(-8); jset_(sp_(), lKey_(x.slug, x.email), L); } } // a full store: keep fewer resend ids, never a score
+    sp_().setProperty('s:' + x.slug + ':' + x.email, String(tmin_()));
+    return ok_({ res: res, lessons: lOut_(L) });
+  });
+}
+function apiCheck(req) { return safe_(apiCheck_)(req); }
+function apiCheck_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var t = LT[str_(req.topic)]; if (!t) return err_('bad-topic');
+  if (!ltOpen_(x.c, t.id)) return err_('locked');
+  var r = Array.isArray(req.r) ? req.r : [];
+  if (r.length !== t.parts.length || !r.every(function (v) { return v === 1 || v === 2 || v === 3; })) return err_('no-rating');
+  var E = { r: r.slice(), c: str_(req.c).replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f]/g, '').trim().slice(0, CHECK_MAX), t: tmin_() };
+  withLock_(function () {
+    try { jset_(sp_(), eKey_(x.slug, x.email, t.id), E); }
+    catch (e) { if (!E.c) throw e; E.c = E.c.slice(0, 120); try { jset_(sp_(), eKey_(x.slug, x.email, t.id), E); } catch (e2) { E.c = ''; jset_(sp_(), eKey_(x.slug, x.email, t.id), E); } } // a full store costs her comment its length, never her answers
+  });
+  return ok_({ topic: t.id, e: E });
+}
+
 // ---------- staff ----------
 function passOk_(pass) { var plain = str_(sp_().getProperty('staffPasscode')); var given = str_(pass).trim(); if (!given) return false; if (plain) return given === plain; return sha256hex_(STAFF_SALT + given) === STAFF_HASH; }
 function passMark_() { return sha256hex_(STAFF_SALT + 'ok:' + (str_(sp_().getProperty('staffPasscode')) || STAFF_HASH)); }
@@ -414,7 +505,7 @@ function apiStaff_(req) {
   if (op === 'classes') {
     var archived = isOwner_(email) ? withLock_(function () { return archive_(all); }) : 0;
     if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
-    return ok_({ archived: archived, topics: TOPIC_IDS.map(function (id) { return { id: id, title: TOPICS[id].title, spec: TOPICS[id].spec }; }), classes: classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null) || {}]; })
+    return ok_({ archived: archived, store: isOwner_(email) ? storeSize_(all) : 0, banks: TOPIC_IDS, topics: S1L.topics.map(function (t) { return { id: t.id, title: t.title, spec: t.spec, bank: !!TOPICS[t.id] }; }), classes: classList_().map(function (s) { return [s, jget_(sp_(), 'cls:' + s, null) || {}]; })
       .filter(function (x) { return seesAll_(email) || x[1].o === email; }).map(function (x) {
       var s = x[0], c = x[1];
       return { slug: s, name: c.name || s, made: tminIso_(c.c), pupils: pupilsOf_(s, keys).length, round: (c.r || {})[DD] || 1, open: topicOpen_(c, TOPICS[DD]), mine: c.o === email,
@@ -439,25 +530,67 @@ function apiStaff_(req) {
   if (op === 'delete') {
     if (c.o !== email && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
-      var store = sp_(), pres = ['p:' + slugC + ':', 't:' + slugC + ':', 'q:' + slugC + ':', 's:' + slugC + ':'];
+      var store = sp_(), pres = ['p:' + slugC + ':', 't:' + slugC + ':', 'q:' + slugC + ':', 's:' + slugC + ':', 'L:' + slugC + ':', 'E:' + slugC + ':'];
       store.getKeys().forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
       store.deleteProperty('cls:' + slugC);
       jset_(store, 'classes', classList_().filter(function (x) { return x !== slugC; }));
       return ok_({});
     });
   }
-  if (op === 'topics') return ok_({ className: c.name, topics: TOPIC_IDS.map(function (id) { return { id: id, title: TOPICS[id].title, spec: TOPICS[id].spec, open: topicOpen_(c, TOPICS[id]) }; }) });
-  var T = topicArg_(req); if (!T) return err_('bad-topic');
-  if (op === 'setTopic') {
+  if (op === 'topics') return ok_({ className: c.name, topics: S1L.topics.map(function (t) { return { id: t.id, title: t.title, spec: t.spec, bank: !!TOPICS[t.id], open: ltOpen_(c, t.id) }; }) });
+  if (op === 'setTopic') { // v11: any of the nine topics (slides, activities, its check, and its exam questions when it has them)
+    var LTs = LT[str_(req.topic)]; if (!LTs) return err_('bad-topic');
     return withLock_(function () {
       var cc = jget_(sp_(), 'cls:' + slugC, null), on = req.open === true;
-      cc.op = (cc.op || [DD]).filter(function (t) { return t !== T.id; });
-      if (on) cc.op.push(T.id);
+      cc.op = (cc.op || [DD]).filter(function (t) { return t !== LTs.id; });
+      if (on) cc.op.push(LTs.id);
       jset_(sp_(), 'cls:' + slugC, cc);
-      return ok_({ id: T.id, open: on });
+      return ok_({ id: LTs.id, open: on });
     });
   }
   var pupils = pupilsOf_(slugC, keys);
+  function nameOf_(em) { var hh = jget_(sp_(), pKey_(slugC, em), null) || {}; return hh.n || em.split('@')[0]; }
+  if (op === 'acts' || op === 'actsCsv') { // v11: every pupil's activity scores and slides for one topic
+    var LA = LT[str_(req.topic)]; if (!LA) return err_('bad-topic');
+    var arows = pupils.map(function (em) {
+      var L = lNorm_(all[lKey_(slugC, em)] ? JSON.parse(all[lKey_(slugC, em)]) : null), a = {}, sl = {};
+      LA.acts.forEach(function (A) { if (L.a[A.id]) a[A.id] = L.a[A.id]; });
+      LA.decks.forEach(function (D) { if (L.s[D.id]) sl[D.id] = L.s[D.id]; });
+      return { email: em, name: nameOf_(em), a: a, s: sl, seen: tminIso_(+(all['s:' + slugC + ':' + em] || 0)) };
+    });
+    if (op === 'acts') return ok_({ className: c.name, topic: LA.id, title: LA.title, open: ltOpen_(c, LA.id), acts: LA.acts, decks: LA.decks, rows: arows });
+    var ahead = ['class', 'pupil', 'email', 'activity', 'best score', 'best out of', 'best %', 'first score', 'first out of', 'goes', 'last played'];
+    var alines = [ahead.join(',')];
+    arows.forEach(function (r) {
+      LA.acts.forEach(function (A) {
+        var e = r.a[A.id];
+        alines.push([c.name, r.name, r.email, A.title, e ? (A.scored ? e[2] : 'done') : '', e && A.scored ? e[3] : '', e && A.scored && e[3] ? Math.round(100 * e[2] / e[3]) : '',
+          e && A.scored ? e[0] : '', e && A.scored ? e[1] : '', e ? e[4] : 0, e ? tminIso_(e[5]).slice(0, 16).replace('T', ' ') : ''].map(csvCell_).join(','));
+      });
+      LA.decks.forEach(function (D) {
+        var g = r.s[D.id];
+        alines.push([c.name, r.name, r.email, 'Slides: ' + D.title, g ? g[1] : 0, D.n, g ? Math.round(100 * g[1] / D.n) : 0, '', '', '', g ? tminIso_(g[2]).slice(0, 16).replace('T', ' ') : ''].map(csvCell_).join(','));
+      });
+    });
+    return ok_({ filename: slugC + '-' + LA.id + '-activities.csv', csv: alines.join('\r\n') + '\r\n' });
+  }
+  if (op === 'checks' || op === 'checksCsv') { // v11: "How did this topic go?" for one topic
+    var LC = LT[str_(req.topic)]; if (!LC) return err_('bad-topic');
+    var crows = pupils.map(function (em) {
+      var raw = all[eKey_(slugC, em, LC.id)], E = null; try { E = raw ? JSON.parse(raw) : null; } catch (e) { E = null; }
+      if (E && (!Array.isArray(E.r) || E.r.length !== LC.parts.length)) E = null; // lines changed since she sent it
+      return { email: em, name: nameOf_(em), e: E ? { r: E.r, c: str_(E.c), at: tminIso_(E.t) } : null };
+    });
+    if (op === 'checks') return ok_({ className: c.name, topic: LC.id, title: LC.title, open: ltOpen_(c, LC.id), parts: LC.parts, rate: S1L.rate, rows: crows });
+    var chead = ['class', 'pupil', 'email', 'sent'].concat(LC.parts).concat(['what they wrote']);
+    var clines = [chead.map(csvCell_).join(',')];
+    crows.forEach(function (r) {
+      clines.push([c.name, r.name, r.email, r.e ? r.e.at.slice(0, 16).replace('T', ' ') : 'not sent'].concat(LC.parts.map(function (_, k) { return r.e ? S1L.rate[r.e.r[k] - 1] : ''; }))
+        .concat([r.e ? r.e.c : '']).map(csvCell_).join(','));
+    });
+    return ok_({ filename: slugC + '-' + LC.id + '-topic-check.csv', csv: clines.join('\r\n') + '\r\n' });
+  }
+  var T = topicArg_(req); if (!T) return err_('bad-topic');
   if (op === 'rounds') {
     return ok_({ round: (c.r || {})[T.id] || 1, title: T.title, className: c.name, pupils: pupils.map(function (em) {
       var hdr = jget_(sp_(), pKey_(slugC, em), null) || {};
@@ -522,7 +655,7 @@ function apiStaff_(req) {
   if (op === 'clearMe') {
     return withLock_(function () {
       var pre = ':' + slugC + ':' + email;
-      keys.forEach(function (k) { if (k === 'p' + pre || k === 's' + pre || k.indexOf('q' + pre + ':') === 0 || k.indexOf('t' + pre + ':') === 0) sp_().deleteProperty(k); });
+      keys.forEach(function (k) { if (k === 'p' + pre || k === 's' + pre || k === 'L' + pre || k.indexOf('q' + pre + ':') === 0 || k.indexOf('t' + pre + ':') === 0 || k.indexOf('E' + pre + ':') === 0) sp_().deleteProperty(k); });
       var mine = up_().getProperties(), dp = 'd:' + slugC + ':';
       Object.keys(mine).forEach(function (k) { if (k.indexOf(dp) === 0) up_().deleteProperty(k); });
       return ok_({});

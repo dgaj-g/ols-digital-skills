@@ -236,7 +236,7 @@ async function flows() {
 
   // topic locking (DECISIONS §16): a new class starts locked; staff open and lock it; a class made before locking stays open
   r = await api('apiStaff', { op: 'topics', cls }, OWNER);
-  ok(r.ok && r.topics.map((t) => t.id).join() === [T, 'software', 'databases', 'spreadsheets'].join() && r.topics.every((t) => t.open === false), "B v7 a new class starts with its four topics (Digital Data, Software, Databases, Spreadsheets) all locked (" + (r.topics || []).map((t) => t.id + ':' + t.open).join(' ') + ')');
+  ok(r.ok && r.topics.length === 9 && r.topics[0].id === T && r.topics.filter((t) => t.bank).map((t) => t.id).join() === [T, 'software', 'databases', 'spreadsheets'].join() && r.topics.every((t) => t.open === false), "B v11 a new class starts with all nine topics locked, four of them with exam questions (" + (r.topics || []).map((t) => t.id + ':' + t.open).join(' ') + ')');
   r = await api('apiBoot', { cls }, 'early@c2ken.net');
   ok(r.ok && dd(r).open === false, 'B pupil boot says the topic is locked');
   r = await api('apiStage', { cls, topic: T, round: 1, stage: 1 }, 'early@c2ken.net');
@@ -250,8 +250,8 @@ async function flows() {
   ok(r.ok, 'B locked: typed writing is still saved as a draft');
   r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, 'early@c2ken.net');
   ok(!r.ok && r.error === 'not-staff', 'B a pupil cannot open a topic');
-  r = await api('apiStaff', { op: 'setTopic', cls, topic: 'networks', open: true }, OWNER);
-  ok(!r.ok && r.error === 'bad-topic', 'B a topic not built yet cannot be opened');
+  r = await api('apiStaff', { op: 'setTopic', cls, topic: 'no-such-topic', open: true }, OWNER);
+  ok(!r.ok && r.error === 'bad-topic', 'B a topic that does not exist cannot be opened');
   r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, 'teacher2@c2ken.net');
   ok(!r.ok && r.error === 'unknown-class', 'B control (v5): passcode staff cannot open a topic on a class they did not make');
   r = await api('apiStaff', { op: 'setTopic', cls, topic: T, open: true }, OWNER);

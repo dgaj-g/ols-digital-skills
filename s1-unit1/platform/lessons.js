@@ -1,0 +1,301 @@
+/* lessons.js — v11 (11 Nov 2026): what each Unit 1 topic holds besides its exam questions.
+ * The slide sets and the activities live on GitHub Pages (dgaj-g/s1-digital-technology-gcse, folder s1_platform/ and the
+ * activity folders); this file says which belong to which topic, and the plain lines a pupil rates in "How did this topic go?".
+ * The same object is inlined into the page and put at the top of Code.gs, so the server checks every id against it.
+ * An activity id is never reused for another activity: the scores are kept under it. */
+var S1L = {
+  base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
+  topics: [
+    { id: "digital-data", spec: "1.1", title: "Digital data",
+      decks: [
+        { id: "dd1", title: "Representing data (part 1)", n: 18 },
+        { id: "dd2", title: "Representing data (part 2)", n: 16 },
+        { id: "dd3", title: "Representing images", n: 21 },
+        { id: "dd4", title: "Representing sound", n: 18 },
+        { id: "dd5", title: "Data portability and compression", n: 13 }
+      ],
+      acts: [
+        { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
+        { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
+        { id: "dh3", title: "Pixel Lab", path: "digital_data_revision/activity3.html", scored: true },
+        { id: "dh4", title: "Graphics Showdown", path: "digital_data_revision/activity4.html", scored: true },
+        { id: "dh5", title: "Sound Studio", path: "digital_data_revision/activity5.html", scored: true },
+        { id: "dh6", title: "Format Passport Control", path: "digital_data_revision/activity6.html", scored: true },
+        { id: "ns1", title: "Bit Lab", path: "number_systems/activity1.html", scored: true },
+        { id: "ns2", title: "Hex HQ", path: "number_systems/activity2.html", scored: true },
+        { id: "ns3", title: "Conversion Arcade", path: "number_systems/activity3.html", scored: true },
+        { id: "ns4", title: "Triple Match", path: "number_systems/activity4.html", scored: true }
+      ],
+      parts: [
+        "Data and information, and the units from bit to terabyte",
+        "Data types: integer, real, date/time, character and string",
+        "Pixels, resolution and file size",
+        "Bitmap and vector graphics",
+        "Sound: sample rate, bit depth, bit rate and analogue to digital",
+        "File formats, compression, buffering and streaming"
+      ] },
+    { id: "software", spec: "1.2", title: "Software",
+      decks: [{ id: "sw", title: "Software", n: 41 }],
+      acts: [
+        { id: "sw1", title: "OS Control Room", path: "software_revision/activity1.html", scored: true },
+        { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
+        { id: "sw3", title: "Utility Toolkit", path: "software_revision/activity3.html", scored: true },
+        { id: "sw4", title: "Virus Shield", path: "software_revision/activity4.html", scored: true },
+        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true },
+        { id: "sw6", title: "Software Showdown", path: "06.software_showdown_compat.html", scored: true }
+      ],
+      parts: [
+        "How system software shares out memory, storage and processing time",
+        "Real-time, batch and multi-user processing",
+        "Utilities: defragmenting, task scheduling, backup and restore",
+        "Antivirus software and why updates matter"
+      ] },
+    { id: "databases", spec: "1.3", title: "Database applications",
+      decks: [{ id: "db", title: "Database applications", n: 75 }],
+      acts: [
+        { id: "db1", title: "The Register", path: "databases_revision/activity1.html", scored: true },
+        { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
+        { id: "db3", title: "Query Gates", path: "databases_revision/activity3.html", scored: true },
+        { id: "db4", title: "The Front Office", path: "databases_revision/activity4.html", scored: true },
+        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true },
+        { id: "db6", title: "Database Showdown", path: "06.database_showdown.html", scored: true },
+        { id: "db7", title: "Definitions Match", path: "06.databaseRevisionDefinitions.html", scored: true },
+        { id: "db8", title: "Data Type Quiz", path: "06.DataTypeQuiz.html", scored: true },
+        { id: "db9", title: "Past Paper Quiz", path: "DB_Game_3_PastPapers.html", scored: true },
+        { id: "db10", title: "Database Application Tasks", path: "db_application_tasks.html", scored: true },
+        { id: "db11", title: "Relationships and Criteria", path: "db_relationships_and_criteria.html", scored: true }
+      ],
+      parts: [
+        "Tables, records, fields and key fields",
+        "Queries, forms, reports, macros, relationships and importing data",
+        "Choosing the right data type for a field",
+        "Validation checks: presence, length, type, format and range",
+        "Searching with <, >, =, <=, >=, AND, OR and BETWEEN",
+        "Big data and data analytics"
+      ] },
+    { id: "spreadsheets", spec: "1.4", title: "Spreadsheet applications",
+      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98 }],
+      acts: [
+        { id: "ss1", title: "Cinema Grid", path: "spreadsheets_revision/activity1.html", scored: true },
+        { id: "ss2", title: "Tuck Shop Kitchen", path: "spreadsheets_revision/activity2.html", scored: true },
+        { id: "ss3", title: "Booking Desk", path: "spreadsheets_revision/activity3.html", scored: true },
+        { id: "ss4", title: "Safe Sheet", path: "spreadsheets_revision/activity4.html", scored: true },
+        { id: "ss5", title: "Ski Trip", path: "spreadsheets_revision/activity5.html", scored: true }
+      ],
+      parts: [
+        "Cells, rows, columns and data types",
+        "Writing formulae and copying them",
+        "Relative and absolute cell references",
+        "Functions, IF and VLOOKUP",
+        "Formatting, conditional formatting, validation and templates",
+        "Charts, modelling, print areas and macros"
+      ] },
+    { id: "hardware", spec: "1.5", title: "Computer hardware",
+      decks: [],
+      acts: [
+        { id: "hw1", title: "Silicon: CPU Explorer", path: "computer_hardware/silicon.html", scored: true }
+      ],
+      parts: [
+        "What the CPU does: the ALU, control unit and immediate-access store",
+        "The fetch-execute cycle: PC, MAR, MDR, IAR and ALU",
+        "Clock speed, cache size and number of cores",
+        "Input and output devices: microphone, mouse, digitiser, touch screen, speakers, printers",
+        "Storage: hard disc drive, solid state drive and HD media",
+        "RAM, ROM and cache"
+      ] },
+    { id: "networks", spec: "1.6", title: "Network technologies",
+      decks: [{ id: "net", title: "Network technologies", n: 41 }],
+      acts: [
+        { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
+        { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
+        { id: "nt3", title: "Communication Tech Rocket Race", path: "activity3.html", scored: true },
+        { id: "nt4", title: "Network Technician", path: "activity4.html", scored: true },
+        { id: "nt5", title: "Topology Maze Runner", path: "activity5.html", scored: true }
+      ],
+      parts: [
+        "LANs and WANs",
+        "The World Wide Web, the Internet of Things and intranets",
+        "Wi-Fi, Bluetooth, optical fibre, 4G and 5G",
+        "Network cards, cables, switches and routers",
+        "Bus, star and ring topologies",
+        "Good and bad points of a network for an organisation"
+      ] },
+    { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
+      decks: [{ id: "cyber", title: "Cyberspace, network security and data transfer", n: 23 }],
+      acts: [
+        { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
+        { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
+        { id: "cy3", title: "Cyber Fortress", path: "Cyberspace_Activities/activity3.html", scored: true },
+        { id: "cy4", title: "Mission Control", path: "Cyberspace_Activities/activity4.html", scored: true }
+      ],
+      parts: [
+        "Cybercrime and its threats, such as hacking, phishing and denial of service",
+        "Malware: virus, Trojan horse, worm, key logger and spyware",
+        "Protecting data: encryption, passwords, access levels, backup and firewalls",
+        "Protocols: FTP, HTTP and HTTPS"
+      ] },
+    { id: "cloud", spec: "1.8", title: "Cloud computing",
+      decks: [{ id: "cloud", title: "Cloud computing", n: 7 }],
+      acts: [
+        { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
+        { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
+      ],
+      parts: [
+        "What cloud computing is",
+        "Good and bad points of the cloud for an organisation",
+        "The cloud for gaming, file storage, sharing and working together"
+      ] },
+    { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
+      decks: [
+        { id: "eth", title: "Moral and ethical issues", n: 13 },
+        { id: "leg", title: "Legislation", n: 20 },
+        { id: "emp", title: "Employment, health and safety", n: 21 },
+        { id: "app", title: "Digital applications", n: 34 }
+      ],
+      acts: [
+        { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
+        { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
+        { id: "lg1", title: "Order in the Court!", path: "S1_Legislation_Actvity/activity1.html", scored: true },
+        { id: "lg2", title: "Build the Shield", path: "S1_Legislation_Actvity/activity2.html", scored: true },
+        { id: "lg3", title: "Speed Trial", path: "S1_Legislation_Actvity/activity3.html", scored: true },
+        { id: "ap1", title: "App Review Live", path: "digital_applications_activities/activity1.html", scored: true },
+        { id: "ap2", title: "Crash Test Lab", path: "digital_applications_activities/activity2.html", scored: true },
+        { id: "ap3", title: "Digital Dragons", path: "digital_applications_activities/activity3.html", scored: true },
+        { id: "ap4", title: "Exam Heist", path: "digital_applications_activities/activity4.html", scored: true },
+        { id: "em1", title: "Then and Now", path: "S1_Employment_HealthSafety_Activity/activity1.html", scored: true },
+        { id: "em2", title: "Remote Ready", path: "S1_Employment_HealthSafety_Activity/activity2.html", scored: true },
+        { id: "em3", title: "Safety First!", path: "S1_Employment_HealthSafety_Activity/activity3.html", scored: true }
+      ],
+      parts: [
+        "Moral and ethical issues: internet and social media misuse, tracking, personal data",
+        "The Data Protection Act 1998: its eight principles and who does what",
+        "The Copyright, Designs and Patents Act 1988 and the Computer Misuse Act 1990",
+        "The Consumer Contracts Regulations 2013",
+        "Changes in jobs and work, and the need for new skills",
+        "Health and safety: RSI, back strain and eye strain",
+        "Digital applications: games, simulations, apps, online banking and shopping"
+      ] }
+  ],
+  // the three answers to each line of "How did this topic go?", 1 to 3
+  rate: ["I've got it", "Getting there", "Not yet"],
+  S: {
+    // home tiles
+    tileMeta: "{d} · {a}",
+    decksN: "{n} slide sets", deck1: "1 slide set", noDecks: "No slides",
+    actsN: "{n} activities", act1: "1 activity",
+    withExam: " · exam questions",
+    tileNone: "Not started",
+    tileActs: "{d} of {n} activities done",
+    tileEval: " · topic check sent",
+    // the topic page
+    resume: "Carry on where you left off: {w}",
+    hubJob: "Go through the slides, play the activities, then tell your teacher how the topic went.",
+    help: "Help",
+    helpClose: "Close help",
+    hubHelp: ["Slides: read them at your own speed. The app remembers the last slide you saw.",
+      "Activities: play them here, on this page, so your score is saved. If you play one again, your best score is kept.",
+      "Exam questions: answer real exam questions and see your marks straight away.",
+      "How did this topic go?: tell your teacher which parts you are sure of. You can change your answers later."],
+    partSlides: "Slides",
+    partActs: "Activities",
+    partExam: "Exam questions",
+    partEval: "How did this topic go?",
+    noDecksLine: "There are no slides for this topic here. Your teacher goes through it in class.",
+    slideCount: "{n} slides",
+    deckNot: "Not started",
+    deckAt: "Up to slide {i} of {n}",
+    deckAll: "All {n} slides seen",
+    start: "Start",
+    carry: "Carry on",
+    again: "Look again",
+    actNot: "Not played yet",
+    actBest: "Best: {s} of {m} ({p}%)",
+    actFirst: "First go: {s} of {m}",
+    actDone: "Done",
+    actGoes1: "1 go",
+    actGoesN: "{n} goes",
+    play: "Play",
+    playAgain: "Play again",
+    actsDone: "{d} of {n} done",
+    examLine: "Answer exam questions and get them marked.",
+    exRound: "Round {n}",
+    exRoundOpen: "Round {n} open",
+    exDone: "done · {m} of {x} marks",
+    exPart: "{a} of {q} questions done",
+    exNone: "not started",
+    examMeta: "{s} stages · {q} questions · {m} marks",
+    open: "Open",
+    evalLine: "Tell your teacher which parts of the topic you are sure of.",
+    evalParts: "{n} lines to answer",
+    evalHead: "How did the {t} topic go?",
+    evalNot: "Not done yet",
+    evalSent: "Sent to your teacher on {d}",
+    evalStart: "Start",
+    evalChange: "Change my answers",
+    // the slide viewer
+    slideJob: "Read each slide. Press Next, or use the arrow keys.",
+    slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
+      "The app remembers the last slide you saw, so you can stop and carry on later."],
+    slideOf: "Slide {i} of {n}",
+    prev: "Previous",
+    next: "Next",
+    finish: "Back to the topic",
+    slideFail: "This slide has not loaded. Check your connection, then press Try again.",
+    tryAgain: "Try again",
+    // the activity screen
+    actJob: "Play the activity to the end. Your score is saved when you finish.",
+    actJobDone: "Play the activity to the end, then press I've finished this.",
+    actHelp: ["Play the activity on this page. When you reach the end, your score is sent to your teacher.",
+      "If you play it again, your best score is kept.",
+      "If the activity does not load, press Try again. Open in a full window works too, but a score there is not saved."],
+    actWait: "Your score is saved when you reach the end.",
+    actSaving: "Saving your score...",
+    actSaved: "Saved. Your best: {s} of {m}.",
+    actSavedDone: "Saved as done.",
+    actRetry: "Not saved yet. The app keeps trying, so leave this page open.",
+    actFinished: "I've finished this",
+    fullWindow: "Open in a full window",
+    fullNote: "A score in a full window is not saved.",
+    loadFail: "The activity has not loaded. Check your connection, then press Try again.",
+    back: "Back to the topic",
+    pending: "Some scores are still waiting to save. Leave this page open for a minute.",
+    // "How did this topic go?"
+    evalJob: "For each line, pick how sure you feel. Then send it to your teacher.",
+    evalHelp: ["Pick one answer for every line. Be honest: it helps your teacher know what to go over again.",
+      "The box at the bottom is for anything else you want to tell your teacher. You do not have to write in it.",
+      "You can come back and change your answers later."],
+    evalBox: "Anything you want to tell your teacher? You do not have to write anything.",
+    evalPh: "For example, a part you would like gone over again.",
+    evalSend: "Send to my teacher",
+    evalNeed: "Pick an answer for every line first.",
+    evalLeft: "{n} characters left",
+    evalDoneH: "Sent to your teacher",
+    evalDoneP: "Thank you. Your teacher can see your answers. You can change them any time.",
+    evalDoneJob: "Your answers are with your teacher. Go back to the topic, or change your answers.",
+    // staff
+    tabActs: "Activities",
+    tabEvals: "Topic checks",
+    actsHead: "Activity scores",
+    actsSub: "Each pupil's best score. Under it: their first score and how many goes they had.",
+    actsCsv: "Download as a spreadsheet (CSV)",
+    slidesCol: "Slides seen",
+    slidesOf: "{a} of {n} slides",
+    actsAvg: "Average best score in each activity",
+    notPlayed: "-",
+    noPupils: "No pupils have joined this class yet.",
+    evalsHead: "How did this topic go?",
+    evalsSub: "What each pupil said about each part of the topic. The newest answer counts.",
+    evalsNone: "No pupil has sent this yet.",
+    evalsCount: "{n} of {p} pupils have sent it",
+    evalsTally: "{a} got it · {b} getting there · {c} not yet",
+    comments: "What they wrote",
+    noComments: "Nobody wrote anything.",
+    sentOn: "sent {d}",
+    sentCol: "Sent",
+    notSent: "Not sent",
+    rateShort: ["Got it", "Getting there", "Not yet"],
+    store: "Storage used: {k} KB of about 500 KB.",
+    lockedTopic: "This topic is locked for this class. Open it on the Topics tab."
+  }
+};
+if (typeof module !== "undefined" && module.exports) module.exports = S1L;

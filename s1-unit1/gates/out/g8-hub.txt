@@ -1,0 +1,49 @@
+PASS coverage: all 56 activities exist, load s1_platform/bridge.js and call OLSBridge
+PASS coverage: all 15 slide sets have exactly their n pictures (459 slides)
+INFO topics with no slide set: Computer hardware
+PASS CONTROL a catalogue entry for a missing activity is caught
+PASS CONTROL a slide set one picture short is caught
+PASS home: Software and Ethical, legal and environmental impact have Open; the seven locked topics do not
+PASS topic page: "Software", its job line, the four parts in order, no resume card yet, no "still waiting" line
+PASS topic page: has its job line and a Help button that opens and closes
+PASS topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 6 done"; topic check "Not done yet" / Start
+PASS topic page: nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS slides: "Slide 1 of 41", the picture loads, Back is off on the first slide
+PASS slides: has its job line and a Help button that opens and closes
+PASS slides: Next four times reads "Slide 5 of 41" (bar and line follow); the left arrow key goes back to slide 4
+PASS slides: nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS slides: the server keeps the place (slide 4, furthest 5) and that Software was left on its slides
+PASS after a reload: "Carry on where you left off: Software"; the slides say "Up to slide 4 of 41" / Carry on
+PASS the resume card opens the slides at slide 4
+PASS activity: the frame opens the real activity with ?embed=1 from the slides-and-activities site
+PASS activity: the bridge knows it is inside the app; the page says "Your score is saved when you reach the end."
+PASS activity: has its job line and a Help button that opens and closes
+PASS activity: nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS activity: a score message that does not come from the activity frame is ignored
+PASS activity: a score sent from a different page inside the frame is not given to this activity
+PASS activity: the bridge's 8 of 10 is saved and shown: "Saved. Your best: 8 of 10."
+PASS activity: a worse second go keeps the best (8 of 10) and counts the go
+PASS activity: its own "Back to Software HQ" link goes back to the app's Software page (not the old HQ inside the frame)
+PASS topic page: OS Control Room "Best: 8 of 10 (80%)", "First go: 8 of 10 · 2 goes", Play again; "1 of 6 done"
+PASS after a reload: "Carry on where you left off: OS Control Room"
+PASS offline: the page says "Not saved yet. The app keeps trying, so leave this page open." and the score waits in the browser
+PASS offline, after a reload: Processing Mode Dispatch still shows "Best: 5 of 7 (71%)" and the "still waiting" line shows
+PASS offline: nothing reached the server yet
+PASS back online: the waiting 5 of 7 is saved and the "still waiting" line goes
+PASS activity: a script that sends the frame to the HQ page brings the pupil back to the Software page
+PASS topic check: one line per Software part, each with "I've got it / Getting there / Not yet"; an optional box of 500 characters
+PASS topic check: has its job line and a Help button that opens and closes
+PASS topic check: nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS topic check: will not send with no answers (every line marked) or with one line left (that line marked)
+PASS topic check: sends with every line answered and no comment; "Sent to your teacher"
+PASS topic check sent: has its job line and a Help button that opens and closes
+PASS topic check sent: nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS topic check: "Change my answers" comes back filled in; a comment is kept ("471 characters left" while typing)
+PASS topic page: the check says "Sent to your teacher on …" / Change my answers
+PASS no-score activity: "I've finished this" saves it as done (0 of 0, 1 go) and the button goes off
+PASS topic page (impact): The Grey Zone says Done / Play again; four slide sets listed
+PASS CONTROL a stylesheet that widens the topic page rows is caught by the layout check
+PASS CONTROL with the server's record wiped, the resume check fails (it reads the server, not the browser)
+PASS CONTROL a bridge with no "back" message leaves the pupil on the old HQ inside the frame (the back check fails)
+PASS no console errors or failed requests on the page, its slides or the bridge
+GREEN · 47 pass · 0 fail
