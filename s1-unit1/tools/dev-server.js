@@ -21,7 +21,7 @@ const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude 
 const PORT = Number(process.argv[2] || process.env.PORT || 8767);
 const STORE = process.env.S1U1_STORE || path.join(DESIGN, 'gates', 'dev-store.json');
 const CODE = process.env.S1U1_CODE || path.join(DESIGN, 'deploy', 'Code.gs'); // S1U1_CODE: a gate's control copy
-const INDEX = path.join(ROOT, 'server', 'Index.html');
+const INDEX = process.env.S1U1_INDEX || path.join(ROOT, 'server', 'Index.html'); // S1U1_INDEX: a gate's copy (v13)
 const DEV_NAMES = { 'pupil1@c2ken.net': 'Aoife Byrne', 'pupil2@c2ken.net': 'Ciara Doyle', 'pupil3@c2ken.net': 'Niamh Kelly', 'dgartland021@c2ken.net': 'Damien Gartland', 'teacher2@c2ken.net': 'Sean Murphy', 'hod@c2ken.net': 'Mary Quinn', 'teacher3@c2ken.net': 'Orla Keane' };
 
 let db = { script: {}, user: {}, sheets: {} };

@@ -2,24 +2,17 @@
  * The slide sets and the activities live on GitHub Pages (dgaj-g/s1-digital-technology-gcse, folder s1_platform/ and the
  * activity folders); this file says which belong to which topic, and the plain lines a pupil rates in "How did this topic go?".
  * The same object is inlined into the page and put at the top of Code.gs, so the server checks every id against it.
- * An activity id is never reused for another activity: the scores are kept under it. */
+ * An activity id is never reused for another activity: the scores are kept under it.
+ * v13 (11 Nov 2026), HIS RULING: only the activity sets made with him for the new course are listed (Software HQ, Databases HQ,
+ * Spreadsheets HQ). A new topic's HQ set is added here when he has it made. The older activities were taken off; their ids
+ * are RETIRED and must never be given to a new activity, because pupils' old scores are still kept under them:
+ * dh1-dh6 ns1-ns4 sw6 db6-db11 hw1 nt1-nt5 cy1-cy4 cl1-cl2 et1-et2 lg1-lg3 ap1-ap4 em1-em3. */
 var S1L = {
   base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
   topics: [
     { id: "digital-data", spec: "1.1", title: "Digital data",
       decks: [],
-      acts: [
-        { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
-        { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
-        { id: "dh3", title: "Pixel Lab", path: "digital_data_revision/activity3.html", scored: true },
-        { id: "dh4", title: "Graphics Showdown", path: "digital_data_revision/activity4.html", scored: true },
-        { id: "dh5", title: "Sound Studio", path: "digital_data_revision/activity5.html", scored: true },
-        { id: "dh6", title: "Format Passport Control", path: "digital_data_revision/activity6.html", scored: true },
-        { id: "ns1", title: "Bit Lab", path: "number_systems/activity1.html", scored: true },
-        { id: "ns2", title: "Hex HQ", path: "number_systems/activity2.html", scored: true },
-        { id: "ns3", title: "Conversion Arcade", path: "number_systems/activity3.html", scored: true },
-        { id: "ns4", title: "Triple Match", path: "number_systems/activity4.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Data and information, and the units from bit to terabyte",
         "Data types: integer, real, date/time, character and string",
@@ -35,8 +28,7 @@ var S1L = {
         { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
         { id: "sw3", title: "Utility Toolkit", path: "software_revision/activity3.html", scored: true },
         { id: "sw4", title: "Virus Shield", path: "software_revision/activity4.html", scored: true },
-        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true },
-        { id: "sw6", title: "Software Showdown", path: "06.software_showdown_compat.html", scored: true }
+        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true }
       ],
       parts: [
         "How system software shares out memory, storage and processing time",
@@ -51,13 +43,7 @@ var S1L = {
         { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
         { id: "db3", title: "Query Gates", path: "databases_revision/activity3.html", scored: true },
         { id: "db4", title: "The Front Office", path: "databases_revision/activity4.html", scored: true },
-        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true },
-        { id: "db6", title: "Database Showdown", path: "06.database_showdown.html", scored: true },
-        { id: "db7", title: "Definitions Match", path: "06.databaseRevisionDefinitions.html", scored: true },
-        { id: "db8", title: "Data Type Quiz", path: "06.DataTypeQuiz.html", scored: true },
-        { id: "db9", title: "Past Paper Quiz", path: "DB_Game_3_PastPapers.html", scored: true },
-        { id: "db10", title: "Database Application Tasks", path: "db_application_tasks.html", scored: true },
-        { id: "db11", title: "Relationships and Criteria", path: "db_relationships_and_criteria.html", scored: true }
+        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true }
       ],
       parts: [
         "Tables, records, fields and key fields",
@@ -86,9 +72,7 @@ var S1L = {
       ] },
     { id: "hardware", spec: "1.5", title: "Computer hardware",
       decks: [],
-      acts: [
-        { id: "hw1", title: "Silicon: CPU Explorer", path: "computer_hardware/silicon.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "What the CPU does: the ALU, control unit and immediate-access store",
         "The fetch-execute cycle: PC, MAR, MDR, IAR and ALU",
@@ -99,13 +83,7 @@ var S1L = {
       ] },
     { id: "networks", spec: "1.6", title: "Network technologies",
       decks: [],
-      acts: [
-        { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
-        { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
-        { id: "nt3", title: "Communication Tech Rocket Race", path: "activity3.html", scored: true },
-        { id: "nt4", title: "Network Technician", path: "activity4.html", scored: true },
-        { id: "nt5", title: "Topology Maze Runner", path: "activity5.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "LANs and WANs",
         "The World Wide Web, the Internet of Things and intranets",
@@ -116,12 +94,7 @@ var S1L = {
       ] },
     { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
       decks: [],
-      acts: [
-        { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
-        { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
-        { id: "cy3", title: "Cyber Fortress", path: "Cyberspace_Activities/activity3.html", scored: true },
-        { id: "cy4", title: "Mission Control", path: "Cyberspace_Activities/activity4.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Cybercrime and its threats, such as hacking, phishing and denial of service",
         "Malware: virus, Trojan horse, worm, key logger and spyware",
@@ -130,10 +103,7 @@ var S1L = {
       ] },
     { id: "cloud", spec: "1.8", title: "Cloud computing",
       decks: [],
-      acts: [
-        { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
-        { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "What cloud computing is",
         "Good and bad points of the cloud for an organisation",
@@ -141,20 +111,7 @@ var S1L = {
       ] },
     { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
       decks: [],
-      acts: [
-        { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
-        { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
-        { id: "lg1", title: "Order in the Court!", path: "S1_Legislation_Actvity/activity1.html", scored: true },
-        { id: "lg2", title: "Build the Shield", path: "S1_Legislation_Actvity/activity2.html", scored: true },
-        { id: "lg3", title: "Speed Trial", path: "S1_Legislation_Actvity/activity3.html", scored: true },
-        { id: "ap1", title: "App Review Live", path: "digital_applications_activities/activity1.html", scored: true },
-        { id: "ap2", title: "Crash Test Lab", path: "digital_applications_activities/activity2.html", scored: true },
-        { id: "ap3", title: "Digital Dragons", path: "digital_applications_activities/activity3.html", scored: true },
-        { id: "ap4", title: "Exam Heist", path: "digital_applications_activities/activity4.html", scored: true },
-        { id: "em1", title: "Then and Now", path: "S1_Employment_HealthSafety_Activity/activity1.html", scored: true },
-        { id: "em2", title: "Remote Ready", path: "S1_Employment_HealthSafety_Activity/activity2.html", scored: true },
-        { id: "em3", title: "Safety First!", path: "S1_Employment_HealthSafety_Activity/activity3.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Moral and ethical issues: internet and social media misuse, tracking, personal data",
         "The Data Protection Act 1998: its eight principles and who does what",
@@ -171,14 +128,18 @@ var S1L = {
     // home tiles
     tileMeta: "{d} · {a}",
     decksN: "{n} slide sets", deck1: "1 slide set", noDecks: "No slides",
-    actsN: "{n} activities", act1: "1 activity",
+    actsN: "{n} activities", act1: "1 activity", noActs: "No activities",
     withExam: " · exam questions",
     tileNone: "Not started",
     tileActs: "{d} of {n} activities done",
+    tileSeen: "Slides started",
     tileEval: " · topic check sent",
     // the topic page
     resume: "Carry on where you left off: {w}",
-    hubJob: "Go through the slides, play the activities, then tell your teacher how the topic went.",
+    // the job line names only what this topic has: "Go through the slides, play the activities, answer the exam questions,
+    // then tell your teacher how the topic went." A topic with none of the three: "Tell your teacher how the topic went."
+    jobSlides: "go through the slides", jobActs: "play the activities", jobExam: "answer the exam questions",
+    jobThen: ", then ", jobEnd: "tell your teacher how the topic went",
     help: "Help",
     helpClose: "Close help",
     hubHelp: ["Slides: read them at your own speed. The app remembers the last slide you saw.",
@@ -190,6 +151,7 @@ var S1L = {
     partExam: "Exam questions",
     partEval: "How did this topic go?",
     noDecksLine: "There are no slides for this topic here. Your teacher goes through it in class.",
+    noActsLine: "There are no activities for this topic here yet.",
     slideCount: "{n} slides",
     deckNot: "Not started",
     deckAt: "Up to slide {i} of {n}",
@@ -274,6 +236,7 @@ var S1L = {
     actsAvg: "Average best score in each activity",
     notPlayed: "-",
     noPupils: "No pupils have joined this class yet.",
+    actsNone: "There are no activities or slides for this topic on the platform yet.",
     evalsHead: "How did this topic go?",
     evalsSub: "What each pupil said about each part of the topic. The newest answer counts.",
     evalsNone: "No pupil has sent this yet.",

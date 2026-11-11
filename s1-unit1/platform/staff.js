@@ -4,7 +4,7 @@
  * or one pupil), Tracker (v4, DECISIONS §17: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = S1L.topics[0].id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
+  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = (S1L.topics.filter(function (t) { return t.acts.length; })[0] || S1L.topics[0]).id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -135,9 +135,9 @@ var Staff = (function () {
       var table = '<div class="tscroll"><table class="track agrid"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th>' + r.acts.map(function (a) { return '<th>' + h(a.title) + '</th>'; }).join("") + (nSl ? '<th>' + L.slidesCol + '</th>' : '') + '</tr>' + rows + '</table></div>';
       var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.actsHead) + ' · ' + h(r.className) + ' · ' + h(r.title) + '</h1>' +
         (r.rows.length && avg ? '<div class="card"><h2>' + h(L.actsAvg) + '</h2>' + avg + '</div>' : '') +
-        '<div class="card">' + (r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
+        '<div class="card">' + (!r.acts.length && !r.decks.length ? '<p class="sub" style="margin:0" id="actsNone">' + h(L.actsNone) + '</p>' : r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
       page(body); wireCommon(body);
-      if (r.rows.length) csvBtn("acsv", "actsCsv");
+      if (document.getElementById("acsv")) csvBtn("acsv", "actsCsv");
     }).catch(fail);
   }
   // ---- Topic checks (v11): what each pupil said about each part, a tally per part, then everything they wrote ----
