@@ -284,8 +284,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-02de92140c-e5702448">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-02de92140c-e5702448" };</script>
+<body data-build="s1u1-8946d31888-10b96b67">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-8946d31888-10b96b67" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -335,24 +335,17 @@ var S1S = {
  * The slide sets and the activities live on GitHub Pages (dgaj-g/s1-digital-technology-gcse, folder s1_platform/ and the
  * activity folders); this file says which belong to which topic, and the plain lines a pupil rates in "How did this topic go?".
  * The same object is inlined into the page and put at the top of Code.gs, so the server checks every id against it.
- * An activity id is never reused for another activity: the scores are kept under it. */
+ * An activity id is never reused for another activity: the scores are kept under it.
+ * v13 (11 Nov 2026), HIS RULING: only the activity sets made with him for the new course are listed (Software HQ, Databases HQ,
+ * Spreadsheets HQ). A new topic's HQ set is added here when he has it made. The older activities were taken off; their ids
+ * are RETIRED and must never be given to a new activity, because pupils' old scores are still kept under them:
+ * dh1-dh6 ns1-ns4 sw6 db6-db11 hw1 nt1-nt5 cy1-cy4 cl1-cl2 et1-et2 lg1-lg3 ap1-ap4 em1-em3. */
 var S1L = {
   base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
   topics: [
     { id: "digital-data", spec: "1.1", title: "Digital data",
       decks: [],
-      acts: [
-        { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
-        { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
-        { id: "dh3", title: "Pixel Lab", path: "digital_data_revision/activity3.html", scored: true },
-        { id: "dh4", title: "Graphics Showdown", path: "digital_data_revision/activity4.html", scored: true },
-        { id: "dh5", title: "Sound Studio", path: "digital_data_revision/activity5.html", scored: true },
-        { id: "dh6", title: "Format Passport Control", path: "digital_data_revision/activity6.html", scored: true },
-        { id: "ns1", title: "Bit Lab", path: "number_systems/activity1.html", scored: true },
-        { id: "ns2", title: "Hex HQ", path: "number_systems/activity2.html", scored: true },
-        { id: "ns3", title: "Conversion Arcade", path: "number_systems/activity3.html", scored: true },
-        { id: "ns4", title: "Triple Match", path: "number_systems/activity4.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Data and information, and the units from bit to terabyte",
         "Data types: integer, real, date/time, character and string",
@@ -368,8 +361,7 @@ var S1L = {
         { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
         { id: "sw3", title: "Utility Toolkit", path: "software_revision/activity3.html", scored: true },
         { id: "sw4", title: "Virus Shield", path: "software_revision/activity4.html", scored: true },
-        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true },
-        { id: "sw6", title: "Software Showdown", path: "06.software_showdown_compat.html", scored: true }
+        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true }
       ],
       parts: [
         "How system software shares out memory, storage and processing time",
@@ -384,13 +376,7 @@ var S1L = {
         { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
         { id: "db3", title: "Query Gates", path: "databases_revision/activity3.html", scored: true },
         { id: "db4", title: "The Front Office", path: "databases_revision/activity4.html", scored: true },
-        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true },
-        { id: "db6", title: "Database Showdown", path: "06.database_showdown.html", scored: true },
-        { id: "db7", title: "Definitions Match", path: "06.databaseRevisionDefinitions.html", scored: true },
-        { id: "db8", title: "Data Type Quiz", path: "06.DataTypeQuiz.html", scored: true },
-        { id: "db9", title: "Past Paper Quiz", path: "DB_Game_3_PastPapers.html", scored: true },
-        { id: "db10", title: "Database Application Tasks", path: "db_application_tasks.html", scored: true },
-        { id: "db11", title: "Relationships and Criteria", path: "db_relationships_and_criteria.html", scored: true }
+        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true }
       ],
       parts: [
         "Tables, records, fields and key fields",
@@ -419,9 +405,7 @@ var S1L = {
       ] },
     { id: "hardware", spec: "1.5", title: "Computer hardware",
       decks: [],
-      acts: [
-        { id: "hw1", title: "Silicon: CPU Explorer", path: "computer_hardware/silicon.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "What the CPU does: the ALU, control unit and immediate-access store",
         "The fetch-execute cycle: PC, MAR, MDR, IAR and ALU",
@@ -432,13 +416,7 @@ var S1L = {
       ] },
     { id: "networks", spec: "1.6", title: "Network technologies",
       decks: [],
-      acts: [
-        { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
-        { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
-        { id: "nt3", title: "Communication Tech Rocket Race", path: "activity3.html", scored: true },
-        { id: "nt4", title: "Network Technician", path: "activity4.html", scored: true },
-        { id: "nt5", title: "Topology Maze Runner", path: "activity5.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "LANs and WANs",
         "The World Wide Web, the Internet of Things and intranets",
@@ -449,12 +427,7 @@ var S1L = {
       ] },
     { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
       decks: [],
-      acts: [
-        { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
-        { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
-        { id: "cy3", title: "Cyber Fortress", path: "Cyberspace_Activities/activity3.html", scored: true },
-        { id: "cy4", title: "Mission Control", path: "Cyberspace_Activities/activity4.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Cybercrime and its threats, such as hacking, phishing and denial of service",
         "Malware: virus, Trojan horse, worm, key logger and spyware",
@@ -463,10 +436,7 @@ var S1L = {
       ] },
     { id: "cloud", spec: "1.8", title: "Cloud computing",
       decks: [],
-      acts: [
-        { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
-        { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "What cloud computing is",
         "Good and bad points of the cloud for an organisation",
@@ -474,20 +444,7 @@ var S1L = {
       ] },
     { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
       decks: [],
-      acts: [
-        { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
-        { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
-        { id: "lg1", title: "Order in the Court!", path: "S1_Legislation_Actvity/activity1.html", scored: true },
-        { id: "lg2", title: "Build the Shield", path: "S1_Legislation_Actvity/activity2.html", scored: true },
-        { id: "lg3", title: "Speed Trial", path: "S1_Legislation_Actvity/activity3.html", scored: true },
-        { id: "ap1", title: "App Review Live", path: "digital_applications_activities/activity1.html", scored: true },
-        { id: "ap2", title: "Crash Test Lab", path: "digital_applications_activities/activity2.html", scored: true },
-        { id: "ap3", title: "Digital Dragons", path: "digital_applications_activities/activity3.html", scored: true },
-        { id: "ap4", title: "Exam Heist", path: "digital_applications_activities/activity4.html", scored: true },
-        { id: "em1", title: "Then and Now", path: "S1_Employment_HealthSafety_Activity/activity1.html", scored: true },
-        { id: "em2", title: "Remote Ready", path: "S1_Employment_HealthSafety_Activity/activity2.html", scored: true },
-        { id: "em3", title: "Safety First!", path: "S1_Employment_HealthSafety_Activity/activity3.html", scored: true }
-      ],
+      acts: [],
       parts: [
         "Moral and ethical issues: internet and social media misuse, tracking, personal data",
         "The Data Protection Act 1998: its eight principles and who does what",
@@ -504,14 +461,18 @@ var S1L = {
     // home tiles
     tileMeta: "{d} \u00b7 {a}",
     decksN: "{n} slide sets", deck1: "1 slide set", noDecks: "No slides",
-    actsN: "{n} activities", act1: "1 activity",
+    actsN: "{n} activities", act1: "1 activity", noActs: "No activities",
     withExam: " \u00b7 exam questions",
     tileNone: "Not started",
     tileActs: "{d} of {n} activities done",
+    tileSeen: "Slides started",
     tileEval: " \u00b7 topic check sent",
     // the topic page
     resume: "Carry on where you left off: {w}",
-    hubJob: "Go through the slides, play the activities, then tell your teacher how the topic went.",
+    // the job line names only what this topic has: "Go through the slides, play the activities, answer the exam questions,
+    // then tell your teacher how the topic went." A topic with none of the three: "Tell your teacher how the topic went."
+    jobSlides: "go through the slides", jobActs: "play the activities", jobExam: "answer the exam questions",
+    jobThen: ", then ", jobEnd: "tell your teacher how the topic went",
     help: "Help",
     helpClose: "Close help",
     hubHelp: ["Slides: read them at your own speed. The app remembers the last slide you saw.",
@@ -523,6 +484,7 @@ var S1L = {
     partExam: "Exam questions",
     partEval: "How did this topic go?",
     noDecksLine: "There are no slides for this topic here. Your teacher goes through it in class.",
+    noActsLine: "There are no activities for this topic here yet.",
     slideCount: "{n} slides",
     deckNot: "Not started",
     deckAt: "Up to slide {i} of {n}",
@@ -607,6 +569,7 @@ var S1L = {
     actsAvg: "Average best score in each activity",
     notPlayed: "-",
     noPupils: "No pupils have joined this class yet.",
+    actsNone: "There are no activities or slides for this topic on the platform yet.",
     evalsHead: "How did this topic go?",
     evalsSub: "What each pupil said about each part of the topic. The newest answer counts.",
     evalsNone: "No pupil has sent this yet.",
@@ -1070,10 +1033,16 @@ var Hub = (function () {
     if (!a.scored || !e[3]) return { t: L.actDone, c: "done", s: goes, b: L.playAgain };
     return { t: fmt(L.actBest, { s: e[2], m: e[3], p: Math.round(100 * e[2] / e[3]) }), c: "done", s: fmt(L.actFirst, { s: e[0], m: e[1] }) + " \u00b7 " + goes, b: L.playAgain };
   }
-  function tileLine(t) { var d = t.acts.filter(actDone).length, seen = t.decks.some(function (x) { return LS().s[x.id]; }); return d || seen ? fmt(L.tileActs, { d: d, n: t.acts.length }) : L.tileNone; }
-  function tileMeta(t) { var d = t.decks.length ? (t.decks.length === 1 ? L.deck1 : fmt(L.decksN, { n: t.decks.length })) : L.noDecks, a = t.acts.length === 1 ? L.act1 : fmt(L.actsN, { n: t.acts.length }); return fmt(L.tileMeta, { d: d, a: a }); }
+  function tileLine(t) { var d = t.acts.filter(actDone).length, seen = t.decks.some(function (x) { return LS().s[x.id]; }); if (!t.acts.length) return seen ? L.tileSeen : L.tileNone; return d || seen ? fmt(L.tileActs, { d: d, n: t.acts.length }) : L.tileNone; }
+  function tileMeta(t) { var d = t.decks.length ? (t.decks.length === 1 ? L.deck1 : fmt(L.decksN, { n: t.decks.length })) : L.noDecks, a = !t.acts.length ? L.noActs : t.acts.length === 1 ? L.act1 : fmt(L.actsN, { n: t.acts.length }); return fmt(L.tileMeta, { d: d, a: a }); }
 
   // ---- the topic page ----
+  // v13: the job line names only what the topic has (slides, activities, exam questions), then the topic check
+  function jobLine(t, bank) {
+    var p = [].concat(t.decks.length ? [L.jobSlides] : [], t.acts.length ? [L.jobActs] : [], bank ? [L.jobExam] : []);
+    var s = p.length ? p.join(", ") + L.jobThen + L.jobEnd : L.jobEnd;
+    return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+  }
   function topic(id) {
     var t = LT(id); if (!t || !isOpen(id)) return T.home();
     T.at({ screen: "hub", topic: id }); onQ = function () { if (T.cur().screen === "hub" && T.cur().topic === id) paintPend(); };
@@ -1086,14 +1055,15 @@ var Hub = (function () {
     parts.push('<div class="card hubpart" data-hue="1"><h2>' + h(L.partSlides) + '</h2>' + (t.decks.length ? '<div class="stages">' + t.decks.map(function (d) { var x = deckLine(d); return '<div class="row"><div class="st">' + h(d.title) + '<small>' + h(fmt(L.slideCount, { n: d.n })) + '</small></div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-deck="' + h(d.id) + '" data-i="' + x.i + '">' + h(x.b) + '</button></div>'; }).join("") + '</div>' : '<p class="sub" style="margin:0">' + h(L.noDecksLine) + '</p>') + '</div>');
     // 2 activities
     var nd = t.acts.filter(actDone).length;
-    parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + ' <small class="cnt">' + h(fmt(L.actsDone, { d: nd, n: t.acts.length })) + '</small></h2><div class="stages">' + t.acts.map(function (a) { var x = actLines(a); return '<div class="row"><div class="st">' + h(a.title) + (x.s ? '<small>' + h(x.s) + '</small>' : '') + '</div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-act="' + h(a.id) + '">' + h(x.b) + '</button></div>'; }).join("") + '</div></div>');
+    if (!t.acts.length) parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + '</h2><p class="sub" style="margin:0" id="noActs">' + h(L.noActsLine) + '</p></div>');
+    else parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + ' <small class="cnt">' + h(fmt(L.actsDone, { d: nd, n: t.acts.length })) + '</small></h2><div class="stages">' + t.acts.map(function (a) { var x = actLines(a); return '<div class="row"><div class="st">' + h(a.title) + (x.s ? '<small>' + h(x.s) + '</small>' : '') + '</div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-act="' + h(a.id) + '">' + h(x.b) + '</button></div>'; }).join("") + '</div></div>');
     // 3 exam questions (the topics with a question bank)
     if (bank) { var ex = examSum(bank);
       parts.push('<div class="card hubpart" data-hue="3"><h2>' + h(L.partExam) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.examLine) + '<small>' + h(fmt(L.examMeta, { s: bank.stages.length, q: ex.q, m: ex.x })) + '</small></div><div class="status' + (ex.done ? ' done' : ex.a ? ' now' : '') + '">' + h(ex.line) + '</div><button class="btn sm" id="hubExam">' + h(L.open) + '</button></div></div></div>'); }
     // 4 how did this topic go?
     var E = (me().checks || {})[id];
     parts.push('<div class="card hubpart" data-hue="4"><h2>' + h(L.partEval) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.evalLine) + '<small>' + h(fmt(L.evalParts, { n: t.parts.length })) + '</small></div><div class="status' + (E ? ' done' : '') + '">' + h(E ? fmt(L.evalSent, { d: day(E.t) }) : L.evalNot) + '</div><button class="btn sm' + (E ? ' ghost' : '') + '" id="hubEval">' + h(E ? L.evalChange : L.evalStart) + '</button></div></div></div>');
-    var body = el('<div class="hub" style="max-width:920px"><h1>' + h(t.title) + '</h1>' + job(L.hubJob, L.hubHelp) + '<div class="pend" id="pend" hidden>' + h(L.pending) + '</div>' + resume + parts.join("") + '</div>');
+    var body = el('<div class="hub" style="max-width:920px"><h1>' + h(t.title) + '</h1>' + job(jobLine(t, bank), L.hubHelp) + '<div class="pend" id="pend" hidden>' + h(L.pending) + '</div>' + resume + parts.join("") + '</div>');
     T.shell(T.crumbHome(), body); wire("cHome", T.home); wireHelp(); paintPend();
     body.querySelectorAll("[data-deck]").forEach(function (b) { b.onclick = function () { slides(b.dataset.deck, +b.dataset.i || 1); }; });
     body.querySelectorAll("[data-act]").forEach(function (b) { b.onclick = function () { activity(b.dataset.act); }; });
@@ -1225,7 +1195,7 @@ var Hub = (function () {
  * or one pupil), Tracker (v4, DECISIONS \u00a717: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = S1L.topics[0].id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
+  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = (S1L.topics.filter(function (t) { return t.acts.length; })[0] || S1L.topics[0]).id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -1356,9 +1326,9 @@ var Staff = (function () {
       var table = '<div class="tscroll"><table class="track agrid"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th>' + r.acts.map(function (a) { return '<th>' + h(a.title) + '</th>'; }).join("") + (nSl ? '<th>' + L.slidesCol + '</th>' : '') + '</tr>' + rows + '</table></div>';
       var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.actsHead) + ' \u00b7 ' + h(r.className) + ' \u00b7 ' + h(r.title) + '</h1>' +
         (r.rows.length && avg ? '<div class="card"><h2>' + h(L.actsAvg) + '</h2>' + avg + '</div>' : '') +
-        '<div class="card">' + (r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
+        '<div class="card">' + (!r.acts.length && !r.decks.length ? '<p class="sub" style="margin:0" id="actsNone">' + h(L.actsNone) + '</p>' : r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
       page(body); wireCommon(body);
-      if (r.rows.length) csvBtn("acsv", "actsCsv");
+      if (document.getElementById("acsv")) csvBtn("acsv", "actsCsv");
     }).catch(fail);
   }
   // ---- Topic checks (v11): what each pupil said about each part, a tally per part, then everything they wrote ----

@@ -1,12 +1,21 @@
-PASS coverage: all 56 activities exist, load s1_platform/bridge.js and call OLSBridge
+PASS coverage: all 15 activities exist, load s1_platform/bridge.js and call OLSBridge
 PASS coverage: all 3 slide sets have exactly their n pictures (214 slides)
 INFO topics with no slide set: Digital data, Computer hardware, Network technologies, Cyberspace, network security and data transfer, Cloud computing, Ethical, legal and environmental impact
 PASS CONTROL a catalogue entry for a missing activity is caught
+PASS HQ only (v13): the platform lists 15 activities, exactly the HQ sets of software, databases, spreadsheets, titled as their pages, no retired id, none for any other topic
+PASS CONTROL Database Showdown put back on Database applications is caught
+PASS CONTROL Data Detective put back on Digital data is caught
+PASS CONTROL an HQ set one short (Ski Trip left off Spreadsheet applications) is caught
 PASS CONTROL a slide set one picture short is caught
-PASS home: Software and Ethical, legal and environmental impact have Open; the seven locked topics do not
+PASS home: Digital data, Software and Ethical, legal and environmental impact have Open; the six locked topics do not
+PASS home (v13): the Digital data tile reads "No slides · No activities · exam questions"
+PASS topic page (Digital data, v13): job line "Answer the exam questions, then tell your teacher how the topic went.", the line "There are no activities for this topic here yet.", no activity or slide rows
+PASS topic page (Digital data): has its job line and a Help button that opens and closes
+PASS topic page (Digital data): nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS CONTROL an old activity pushed into the page's own Digital data list fails the Digital data page check
 PASS topic page: "Software", its job line, the four parts in order, no resume card yet, no "still waiting" line
 PASS topic page: has its job line and a Help button that opens and closes
-PASS topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 6 done"; topic check "Not done yet" / Start
+PASS topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 5 done"; topic check "Not done yet" / Start
 PASS topic page: nothing wider than its box at 1280, 1024, 768 and 390 wide
 PASS slides: "Slide 1 of 41", the picture loads, Back is off on the first slide
 PASS slides: has its job line and a Help button that opens and closes
@@ -29,7 +38,7 @@ PASS activity: a score sent from a different page inside the frame is not given 
 PASS activity: the bridge's 8 of 10 is saved and shown: "Saved. Your best: 8 of 10."
 PASS activity: a worse second go keeps the best (8 of 10) and counts the go
 PASS activity: its own "Back to Software HQ" link goes back to the app's Software page (not the old HQ inside the frame)
-PASS topic page: OS Control Room "Best: 8 of 10 (80%)", "First go: 8 of 10 · 2 goes", Play again; "1 of 6 done"
+PASS topic page: OS Control Room "Best: 8 of 10 (80%)", "First go: 8 of 10 · 2 goes", Play again; "1 of 5 done"
 PASS after a reload: "Carry on where you left off: OS Control Room"
 PASS offline: the page says "Not saved yet. The app keeps trying, so leave this page open." and the score waits in the browser
 PASS offline, after a reload: Processing Mode Dispatch still shows "Best: 5 of 7 (71%)" and the "still waiting" line shows
@@ -46,11 +55,11 @@ PASS topic check sent: nothing wider than its box at 1280, 1024, 768 and 390 wid
 PASS topic check: "Change my answers" comes back filled in; a comment is kept ("471 characters left" while typing)
 PASS topic page: the check says "Sent to your teacher on …" / Change my answers
 PASS no-score activity: "I've finished this" saves it as done (0 of 0, 1 go) and the button goes off
-PASS topic page (impact): The Grey Zone says Done / Play again; no slide sets listed, the no-slides line shown
+PASS topic page (impact): the test activity "Gate test: no score" says Done / Play again; no slide sets listed, the no-slides line shown
 PASS CONTROL a stylesheet that widens the topic page rows is caught by the layout check
 PASS CONTROL with the server's record wiped, the resume check fails (it reads the server, not the browser)
 PASS last slide with clicks: Next stays "Next" with the more line until the last click, then reads "Back to the topic" and goes back to the topic
 PASS CONTROL with the click steps taken out of the page, the reveal walk fails
 PASS CONTROL a bridge with no "back" message leaves the pupil on the old HQ inside the frame (the back check fails)
 PASS no console errors or failed requests on the page, its slides or the bridge
-GREEN · 54 pass · 0 fail
+GREEN · 63 pass · 0 fail

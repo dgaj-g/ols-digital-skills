@@ -9,6 +9,8 @@
  *               changed is shown as not sent; Delete class removes the L: and E: records too.
  *   Storage     bytes of a heavy pupil (every activity, every slide set, every check) and a typical one, printed.
  * Controls: eight mutated copies of Code.gs, each must turn its own named check red.
+ * v13: the real catalogue holds only scored HQ activities, so the gate runs a COPY of Code.gs with two gate-only entries
+ *      (gates/test-catalogue.js): zt1 with no score (impact) and zt2 in a locked topic (networks).
  * Output: gates/out/g7-lessons.txt. Exit 1 on any failure. */
 'use strict';
 const fs = require('fs');
@@ -19,7 +21,9 @@ const { spawn } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude Work/S1 Unit 1 Platform';
 const CODE = path.join(DESIGN, 'deploy', 'Code.gs');
-const S1L = require(path.join(ROOT, 'platform', 'lessons.js'));
+const TC = require('./test-catalogue');
+const S1L = TC.addToL(require(path.join(ROOT, 'platform', 'lessons.js')));
+const CAT = path.join(DESIGN, 'gates', 'g7-catalogue.gs'); // Code.gs plus the gate-only test entries
 const OUT = path.join(ROOT, 'gates', 'out', 'g7-lessons.txt');
 const PORT = 8771;
 const STORE = path.join(DESIGN, 'gates', 'g7-store.json');
@@ -82,9 +86,9 @@ async function flows(ok, info) {
   const bad = [[11, 10, 'more than out of'], [1, 5001, 'out of over 5000'], [-1, 10, 'negative'], [2.5, 10, 'not whole'], ['3', 10, 'a string'], [0, 0, 'scored with no marks'], [null, 10, 'missing']];
   r = await L(bad.map((b, k) => ({ op: 'finish', id: 'sw2', s: b[0], m: b[1], u: 'g7b' + k })));
   ok('bad-score', r.ok && r.res.every((x) => x === 'bad-score') && !r.lessons.a.sw2, 'every bad score refused (' + bad.map((b) => b[2]).join(', ') + '): ' + (r.res || []).join(','));
-  r = await L([{ op: 'finish', id: 'et1', s: 5, m: 9, u: 'g7c1' }, { op: 'finish', id: 'et1', s: 0, m: 0, u: 'g7c2' }]);
-  ok('unscored', r.ok && r.res.join(',') === 'ok,ok' && r.lessons.a.et1 && r.lessons.a.et1.slice(0, 5).join(',') === '0,0,0,0,2', 'an unscored activity is kept as done, 0/0, two goes: ' + JSON.stringify(r.lessons && r.lessons.a.et1));
-  r = await L([{ op: 'finish', id: 'zz9', s: 1, m: 2 }, { op: 'jump', id: 'sw1' }, { op: 'finish', id: 'nt1', s: 1, m: 2 }, { op: 'slide', deck: 'sw', i: 0 }, { op: 'slide', deck: 'sw', i: T('software').decks[0].n + 1 }, { op: 'slide', deck: 'sw', i: 1.5 }]);
+  r = await L([{ op: 'finish', id: 'zt1', s: 5, m: 9, u: 'g7c1' }, { op: 'finish', id: 'zt1', s: 0, m: 0, u: 'g7c2' }]);
+  ok('unscored', r.ok && r.res.join(',') === 'ok,ok' && r.lessons.a.zt1 && r.lessons.a.zt1.slice(0, 5).join(',') === '0,0,0,0,2', 'an unscored activity is kept as done, 0/0, two goes: ' + JSON.stringify(r.lessons && r.lessons.a.zt1));
+  r = await L([{ op: 'finish', id: 'zz9', s: 1, m: 2 }, { op: 'jump', id: 'sw1' }, { op: 'finish', id: 'zt2', s: 1, m: 2 }, { op: 'slide', deck: 'sw', i: 0 }, { op: 'slide', deck: 'sw', i: T('software').decks[0].n + 1 }, { op: 'slide', deck: 'sw', i: 1.5 }]);
   ok('refusals', r.ok && r.res.join(',') === 'bad-id,bad-op,locked,bad-slide,bad-slide,bad-slide', 'unknown id, unknown op, a locked topic, slides out of range: ' + (r.res || []).join(','));
 
   r = await L([{ op: 'slide', deck: 'sw', i: 5, u: 'g7d1' }, { op: 'slide', deck: 'sw', i: 3, u: 'g7d2' }]);
@@ -221,9 +225,10 @@ async function main() {
   const info = (s) => lines.push('INFO ' + s);
   const okReal = (name, cond, msg) => { real[name] = !!cond; lines.push((cond ? 'PASS ' : 'FAIL ') + msg); if (!cond) fails++; };
   let log = '';
-  try { log = await harness(null, () => flows(okReal, info)); } catch (e) { okReal('threw', false, 'flows threw: ' + (e && e.stack || e)); }
+  fs.writeFileSync(CAT, TC.addToSource(fs.readFileSync(CODE, 'utf8')));
+  try { log = await harness(CAT, () => flows(okReal, info)); } catch (e) { okReal('threw', false, 'flows threw: ' + (e && e.stack || e)); }
   if (/Error/.test(log)) lines.push('harness log: ' + log.split('\n').filter((l) => /Error/.test(l)).slice(0, 5).join(' | '));
-  const src = fs.readFileSync(CODE, 'utf8');
+  const src = fs.readFileSync(CAT, 'utf8');
   for (const c of CONTROLS) {
     const n = src.split(c.from).length - 1;
     if (n !== 1) { lines.push('FAIL control ' + c.name + ': the line to change is found ' + n + ' times'); fails++; continue; }
@@ -236,6 +241,7 @@ async function main() {
     if (!red) fails++;
     try { fs.unlinkSync(p); } catch (e) {}
   }
+  try { fs.unlinkSync(CAT); } catch (e) {}
   const head = 'G7 lessons ' + (fails ? 'RED' : 'GREEN') + ' · ' + new Date().toISOString() + ' · build ' + fs.readFileSync(path.join(DESIGN, 'deploy', 'BUILD.txt'), 'utf8').trim();
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, [head].concat(lines).join('\n') + '\n');

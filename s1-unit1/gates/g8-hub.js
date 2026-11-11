@@ -13,6 +13,12 @@
  * Help; nothing is wider than its box at 1280, 1024, 768 and 390 wide; no console errors on the page.
  * CONTROLS (must fail): a catalogue entry for a missing activity, a slide set one picture short, a stylesheet that widens the
  * topic page's rows, the resume check after the server's record is wiped, and a bridge that never sends "back".
+ * v13 (11 Nov 2026), HIS RULING: only the HQ activity sets made with him for the new course are on the platform.
+ * HQ-ONLY (no browser): each topic's activities are exactly the activityN.html files of its HQ folder, titled as each page's
+ * <title>, with no retired id; a topic with no HQ folder lists none. CONTROLS: Database Showdown put back, Data Detective put
+ * back, an HQ set one short. The browser part runs a COPY of Code.gs and Index.html with the gate-only test entries from
+ * gates/test-catalogue.js (zt1, no score, in impact). Digital data's page names only what it has and says it has no
+ * activities; CONTROL: an old activity pushed into the page's own Digital data list must fail that check.
  * Run: node s1-unit1/gates/g8-hub.js  (exit 0 = GREEN). Output: gates/out/g8-hub.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), http = require('http'), { spawn, execSync } = require('child_process');
@@ -37,7 +43,26 @@ async function store() { return post('/__store', {}); }
 async function rec() { const s = await store(); const v = (s.script || {})['L:' + CLS + ':' + P]; return v ? parse(v) : null; }
 async function evRec(tid) { const s = await store(); const v = (s.script || {})['E:' + CLS + ':' + P + ':' + tid]; return v ? parse(v) : null; }
 async function until(fn, ms, step) { const end = Date.now() + (ms || 8000); for (;;) { let v; try { v = await fn(); } catch (e) { v = null; } if (v) return v; if (Date.now() > end) return v; await wait(step || 200); } }
-const SW = S1L.topics.find((t) => t.id === 'software'), IM = S1L.topics.find((t) => t.id === 'impact');
+const TC = require('./test-catalogue'), S1T = TC.addToL(JSON.parse(JSON.stringify(S1L))); // S1T: the gate's copy with its test entries
+const SW = S1L.topics.find((t) => t.id === 'software'), IM = S1T.topics.find((t) => t.id === 'impact'), ZT = IM.acts.find((a) => a.id === 'zt1');
+const JOB_SW = 'Go through the slides, play the activities, answer the exam questions, then tell your teacher how the topic went.';
+const JOB_DD = 'Answer the exam questions, then tell your teacher how the topic went.';
+// ---- v13: only the HQ sets made with him for the new course. Add a topic here only when its HQ set has been made with him.
+const HQ = { software: 'software_revision', databases: 'databases_revision', spreadsheets: 'spreadsheets_revision' };
+const RETIRED = 'dh1 dh2 dh3 dh4 dh5 dh6 ns1 ns2 ns3 ns4 sw6 db6 db7 db8 db9 db10 db11 hw1 nt1 nt2 nt3 nt4 nt5 cy1 cy2 cy3 cy4 cl1 cl2 et1 et2 lg1 lg2 lg3 ap1 ap2 ap3 ap4 em1 em2 em3'.split(' ');
+function hqProblems(topics) { const bad = [];
+  topics.forEach((t) => { const dir = HQ[t.id];
+    t.acts.forEach((a) => { if (RETIRED.indexOf(a.id) !== -1) bad.push(a.id + ' is a retired id'); });
+    if (!dir) { if (t.acts.length) bad.push(t.title + ' lists ' + t.acts.length + ' activities but has no HQ set made for the new course'); return; }
+    t.acts.forEach((a) => { if (!new RegExp('^' + dir + '/activity\\d+\\.html$').test(a.path)) return bad.push(a.id + ' is not in ' + dir);
+      let ti = ''; try { ti = ((fs.readFileSync(path.join(REPO, a.path), 'utf8').match(/<title>([^<]*)<\/title>/) || [])[1] || '').split(' \u2014 ')[0].trim(); } catch (e) {}
+      if (ti !== a.title) bad.push(a.id + ' is called "' + a.title + '" but its page says "' + ti + '"'); });
+    let have = []; try { have = fs.readdirSync(path.join(REPO, dir)).filter((f) => /^activity\d+\.html$/.test(f)).sort(); } catch (e) {}
+    const listed = t.acts.map((a) => path.basename(a.path)).sort();
+    if (have.join() !== listed.join()) bad.push(t.title + ' lists ' + listed.join(',') + ' but ' + dir + ' has ' + have.join(',')); });
+  return bad; }
+const swap = (fn) => { const c = JSON.parse(JSON.stringify(S1L.topics)); fn(c); return c; };
+
 const pad2 = (i) => (i < 10 ? '0' : '') + i;
 const MADE_UP = new RegExp('/decks/sw/' + pad2(SW.decks[0].n) + '-\\d+\\.webp'); // the last-slide check gives slide n clicks it has no pictures for
 
@@ -61,6 +86,11 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
   check('coverage: all ' + allDecks.length + ' slide sets have exactly their n pictures (' + allDecks.reduce((t, d) => t + d.n, 0) + ' slides)', dp.length === 0, dp.join(' | '));
   info('topics with no slide set: ' + S1L.topics.filter((t) => !t.decks.length).map((t) => t.title).join(', '));
   check('CONTROL a catalogue entry for a missing activity is caught', actProblems([{ id: 'zz1', path: 'no_such_folder/activity9.html' }]).length === 1);
+  const hq = hqProblems(S1L.topics);
+  check('HQ only (v13): the platform lists ' + allActs.length + ' activities, exactly the HQ sets of ' + Object.keys(HQ).join(', ') + ', titled as their pages, no retired id, none for any other topic', hq.length === 0 && allActs.length === 15, hq.join(' | '));
+  check('CONTROL Database Showdown put back on Database applications is caught', hqProblems(swap((c) => c.find((t) => t.id === 'databases').acts.push({ id: 'db6', title: 'Database Showdown', path: '06.database_showdown.html', scored: true }))).length > 0);
+  check('CONTROL Data Detective put back on Digital data is caught', hqProblems(swap((c) => c.find((t) => t.id === 'digital-data').acts.push({ id: 'dh1', title: 'Data Detective', path: 'digital_data_revision/activity1.html', scored: true }))).length > 0);
+  check('CONTROL an HQ set one short (Ski Trip left off Spreadsheet applications) is caught', hqProblems(swap((c) => c.find((t) => t.id === 'spreadsheets').acts.pop())).length > 0);
   check('CONTROL a slide set one picture short is caught', deckProblems([{ id: SW.decks[0].id, n: SW.decks[0].n + 1 }]).length === 1);
 
   // servers
@@ -68,12 +98,15 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
   const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.json': 'application/json', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.woff2': 'font/woff2' };
   const stat = http.createServer((req, rs) => { const u = decodeURIComponent(new URL(req.url, ACT).pathname); const f = path.normalize(path.join(REPO, u)); if (!f.startsWith(REPO)) { rs.writeHead(403); return rs.end(); }
     fs.readFile(f, (e, b) => { if (e) { rs.writeHead(404); return rs.end('not found'); } rs.writeHead(200, { 'content-type': MIME[path.extname(f).toLowerCase()] || 'application/octet-stream' }); rs.end(b); }); }).listen(SPORT);
-  const srv = spawn('node', [path.join(ROOT, 'tools', 'dev-server.js'), String(PORT)], { env: Object.assign({}, process.env, { S1U1_STORE: STORE }), stdio: ['ignore', 'pipe', 'pipe'] });
+  const CAT = path.join(DESIGN, 'gates', 'g8-catalogue'); // the built files plus the gate-only test entries
+  fs.writeFileSync(CAT + '.gs', TC.addToSource(fs.readFileSync(path.join(DESIGN, 'deploy', 'Code.gs'), 'utf8')));
+  fs.writeFileSync(CAT + '.html', TC.addToSource(fs.readFileSync(path.join(ROOT, 'server', 'Index.html'), 'utf8')));
+  const srv = spawn('node', [path.join(ROOT, 'tools', 'dev-server.js'), String(PORT)], { env: Object.assign({}, process.env, { S1U1_STORE: STORE, S1U1_CODE: CAT + '.gs', S1U1_INDEX: CAT + '.html' }), stdio: ['ignore', 'pipe', 'pipe'] });
   await new Promise((ok, no) => { srv.stdout.on('data', (d) => { if (/dev harness on/.test(d)) ok(); }); setTimeout(() => no(new Error('harness did not start')), 10000); });
   let browser;
   try {
     await api('apiStaff', { op: 'create', name: '11A DT' });
-    for (const id of ['software', 'impact']) await api('apiStaff', { op: 'setTopic', cls: CLS, topic: id, open: true });
+    for (const id of ['digital-data', 'software', 'impact']) await api('apiStaff', { op: 'setTopic', cls: CLS, topic: id, open: true });
     await api('apiName', { cls: CLS, name: 'Aoife' }, P);
     await api('apiBoot', { cls: CLS }, P);
 
@@ -107,13 +140,29 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     // ---- home and the topic page
     await openHome();
     const tiles = await page.evaluate(() => [...document.querySelectorAll('[data-open]')].map((b) => b.dataset.open));
-    check('home: Software and Ethical, legal and environmental impact have Open; the seven locked topics do not', tiles.join(',') === 'software,impact', tiles.join(','));
+    check('home: Digital data, Software and Ethical, legal and environmental impact have Open; the six locked topics do not', tiles.join(',') === 'digital-data,software,impact', tiles.join(','));
+    // ---- v13: Digital data has no activities on the platform (and no slides): its tile and page say so
+    const ddTile = await page.evaluate(() => { const b = document.querySelector('[data-open="digital-data"]'), c = b && b.closest('.topic'); return c ? c.innerText.replace(/\s+/g, ' ') : ''; });
+    check('home (v13): the Digital data tile reads "No slides · No activities · exam questions"', /No slides · No activities · exam questions/.test(ddTile), ddTile);
+    const ddPage = () => page.evaluate(() => ({ job: ((document.querySelector('.job') || {}).innerText || '').replace(/\s+/g, ' ').trim(), none: ((document.getElementById('noActs') || {}).innerText || '').trim(), acts: document.querySelectorAll('[data-act]').length, decks: document.querySelectorAll('[data-deck]').length }));
+    const ddGood = (d) => d.job.indexOf(JOB_DD) === 0 && d.none === L.noActsLine && d.acts === 0 && d.decks === 0;
+    await openTopic('digital-data');
+    const dd = await ddPage();
+    check('topic page (Digital data, v13): job line "' + JOB_DD + '", the line "' + L.noActsLine + '", no activity or slide rows', ddGood(dd), JSON.stringify(dd));
+    await helpOk('topic page (Digital data)');
+    await fitAll('topic page (Digital data)');
+    await page.evaluate(() => S1L.topics.find((t) => t.id === 'digital-data').acts.push({ id: 'db6', title: 'Database Showdown', path: '06.database_showdown.html', scored: true }));
+    await click('#cHome'); await openTopic('digital-data');
+    const ddc = await ddPage();
+    check('CONTROL an old activity pushed into the page\'s own Digital data list fails the Digital data page check', !ddGood(ddc), JSON.stringify(ddc));
+    await page.evaluate(() => S1L.topics.find((t) => t.id === 'digital-data').acts.pop());
+    await click('#cHome');
     await openTopic('software');
     const tp = await page.evaluate(() => ({ h1: document.querySelector('.hub h1').innerText.trim(), job: (document.querySelector('.job') || {}).innerText || '', parts: [...document.querySelectorAll('.hubpart h2')].map((h) => h.innerText.replace(/\s+/g, ' ').trim()), resume: !!document.getElementById('resume'), pend: document.getElementById('pend').hidden }));
-    check('topic page: "Software", its job line, the four parts in order, no resume card yet, no "still waiting" line', tp.h1 === 'Software' && tp.job.indexOf(L.hubJob) === 0 && tp.parts.length === 4 && tp.parts[0] === L.partSlides && tp.parts[1].indexOf(L.partActs) === 0 && tp.parts[2] === L.partExam && tp.parts[3] === L.partEval && !tp.resume && tp.pend, JSON.stringify(tp));
+    check('topic page: "Software", its job line, the four parts in order, no resume card yet, no "still waiting" line', tp.h1 === 'Software' && tp.job.indexOf(JOB_SW) === 0 && tp.parts.length === 4 && tp.parts[0] === L.partSlides && tp.parts[1].indexOf(L.partActs) === 0 && tp.parts[2] === L.partExam && tp.parts[3] === L.partEval && !tp.resume && tp.pend, JSON.stringify(tp));
     await helpOk('topic page');
     const r0 = await row('[data-deck="sw"]'), a0 = await row('[data-act="sw1"]'), e0 = await row('#hubEval');
-    check('topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 6 done"; topic check "Not done yet" / Start', r0 && r0.status === L.deckNot && r0.btn === L.start && a0 && a0.status === L.actNot && a0.btn === L.play && tp.parts[1].indexOf(fmt(L.actsDone, { d: 0, n: SW.acts.length })) !== -1 && e0 && e0.status === L.evalNot && e0.btn === L.evalStart, JSON.stringify([r0, a0, e0]));
+    check('topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 5 done"; topic check "Not done yet" / Start', r0 && r0.status === L.deckNot && r0.btn === L.start && a0 && a0.status === L.actNot && a0.btn === L.play && tp.parts[1].indexOf(fmt(L.actsDone, { d: 0, n: SW.acts.length })) !== -1 && e0 && e0.status === L.evalNot && e0.btn === L.evalStart, JSON.stringify([r0, a0, e0]));
     await fitAll('topic page');
 
     // ---- slides
@@ -199,7 +248,7 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     await f1.evaluate(() => { const a = document.querySelector('a[href="index.html"]'); if (a) a.click(); });
     check('activity: its own "Back to Software HQ" link goes back to the app\'s Software page (not the old HQ inside the frame)', await backTo(), await txt('h1'));
     const a1 = await row('[data-act="sw1"]'), cnt = await txt('.hubpart[data-hue="2"] h2');
-    check('topic page: OS Control Room "Best: 8 of 10 (80%)", "First go: 8 of 10 · 2 goes", Play again; "1 of 6 done"', a1.status === 'Best: 8 of 10 (80%)' && /First go: 8 of 10 · 2 goes/.test(a1.st) && a1.btn === L.playAgain && cnt.indexOf('1 of 6 done') !== -1, JSON.stringify([a1, cnt]));
+    check('topic page: OS Control Room "Best: 8 of 10 (80%)", "First go: 8 of 10 · 2 goes", Play again; "1 of ' + SW.acts.length + ' done"', a1.status === 'Best: 8 of 10 (80%)' && /First go: 8 of 10 · 2 goes/.test(a1.st) && a1.btn === L.playAgain && cnt.indexOf('1 of ' + SW.acts.length + ' done') !== -1, JSON.stringify([a1, cnt]));
     await openHome(); await openTopic('software');
     check('after a reload: "Carry on where you left off: OS Control Room"', !!(await resumeOk('OS Control Room')), await txt('#resume'));
 
@@ -259,13 +308,13 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
 
     // ---- an activity with no score
     await click('#cHome'); await openTopic('impact');
-    await click('[data-act="et1"]'); await page.waitForSelector('#afin');
+    await click('[data-act="zt1"]'); await page.waitForSelector('#afin');
     const fb = await txt('#afin'); await click('#afin');
     const done = await until(async () => ((await txt('#asave')) === L.actSavedDone ? true : null), 8000);
     const g3 = await rec();
-    check('no-score activity: "' + L.actFinished + '" saves it as done (0 of 0, 1 go) and the button goes off', fb === L.actFinished && done && (await page.$eval('#afin', (b) => b.disabled)) && g3.a.et1 && g3.a.et1.slice(0, 5).join(',') === '0,0,0,0,1', JSON.stringify([fb, await txt('#asave'), g3.a.et1]));
+    check('no-score activity: "' + L.actFinished + '" saves it as done (0 of 0, 1 go) and the button goes off', fb === L.actFinished && done && (await page.$eval('#afin', (b) => b.disabled)) && g3.a.zt1 && g3.a.zt1.slice(0, 5).join(',') === '0,0,0,0,1', JSON.stringify([fb, await txt('#asave'), g3.a.zt1]));
     await click('#aback'); await page.waitForSelector('.hub h1');
-    check('topic page (impact): The Grey Zone says Done / Play again; no slide sets listed, the no-slides line shown', ((await row('[data-act="et1"]')) || {}).status === L.actDone && (await page.$$('[data-deck]')).length === 0 && IM.decks.length === 0 && ((await page.evaluate(() => document.body.innerText)) || '').includes(L.noDecksLine));
+    check('topic page (impact): the test activity "' + ZT.title + '" says Done / Play again; no slide sets listed, the no-slides line shown', ((await row('[data-act="zt1"]')) || {}).status === L.actDone && (await page.$$('[data-deck]')).length === 0 && IM.decks.length === 0 && ((await page.evaluate(() => document.body.innerText)) || '').includes(L.noDecksLine));
 
     // ---- controls
     await page.addStyleTag({ content: '.hub .row{min-width:1400px}' });
@@ -300,7 +349,7 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     check('no console errors or failed requests on the page, its slides or the bridge', errs.length === 0, errs.slice(0, 5).join(' | '));
     if (side.length) info('inside the activities (not the app): ' + side.slice(0, 4).join(' | '));
   } catch (e) { check('the gate ran to the end', false, e.stack); }
-  finally { if (browser) await browser.close(); srv.kill(); stat.close(); }
+  finally { if (browser) await browser.close(); srv.kill(); stat.close(); ['.gs', '.html'].forEach((x) => { try { fs.unlinkSync(path.join(DESIGN, 'gates', 'g8-catalogue' + x)); } catch (e) {} }); }
   const head = (res.fail ? 'RED' : 'GREEN') + ' · ' + res.pass + ' pass · ' + res.fail + ' fail';
   fs.writeFileSync(path.join(OUT, 'g8-hub.txt'), log.concat(head).join('\n') + '\n');
   console.log(log.concat(head).join('\n'));

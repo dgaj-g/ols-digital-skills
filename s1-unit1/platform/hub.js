@@ -80,10 +80,16 @@ var Hub = (function () {
     if (!a.scored || !e[3]) return { t: L.actDone, c: "done", s: goes, b: L.playAgain };
     return { t: fmt(L.actBest, { s: e[2], m: e[3], p: Math.round(100 * e[2] / e[3]) }), c: "done", s: fmt(L.actFirst, { s: e[0], m: e[1] }) + " · " + goes, b: L.playAgain };
   }
-  function tileLine(t) { var d = t.acts.filter(actDone).length, seen = t.decks.some(function (x) { return LS().s[x.id]; }); return d || seen ? fmt(L.tileActs, { d: d, n: t.acts.length }) : L.tileNone; }
-  function tileMeta(t) { var d = t.decks.length ? (t.decks.length === 1 ? L.deck1 : fmt(L.decksN, { n: t.decks.length })) : L.noDecks, a = t.acts.length === 1 ? L.act1 : fmt(L.actsN, { n: t.acts.length }); return fmt(L.tileMeta, { d: d, a: a }); }
+  function tileLine(t) { var d = t.acts.filter(actDone).length, seen = t.decks.some(function (x) { return LS().s[x.id]; }); if (!t.acts.length) return seen ? L.tileSeen : L.tileNone; return d || seen ? fmt(L.tileActs, { d: d, n: t.acts.length }) : L.tileNone; }
+  function tileMeta(t) { var d = t.decks.length ? (t.decks.length === 1 ? L.deck1 : fmt(L.decksN, { n: t.decks.length })) : L.noDecks, a = !t.acts.length ? L.noActs : t.acts.length === 1 ? L.act1 : fmt(L.actsN, { n: t.acts.length }); return fmt(L.tileMeta, { d: d, a: a }); }
 
   // ---- the topic page ----
+  // v13: the job line names only what the topic has (slides, activities, exam questions), then the topic check
+  function jobLine(t, bank) {
+    var p = [].concat(t.decks.length ? [L.jobSlides] : [], t.acts.length ? [L.jobActs] : [], bank ? [L.jobExam] : []);
+    var s = p.length ? p.join(", ") + L.jobThen + L.jobEnd : L.jobEnd;
+    return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+  }
   function topic(id) {
     var t = LT(id); if (!t || !isOpen(id)) return T.home();
     T.at({ screen: "hub", topic: id }); onQ = function () { if (T.cur().screen === "hub" && T.cur().topic === id) paintPend(); };
@@ -96,14 +102,15 @@ var Hub = (function () {
     parts.push('<div class="card hubpart" data-hue="1"><h2>' + h(L.partSlides) + '</h2>' + (t.decks.length ? '<div class="stages">' + t.decks.map(function (d) { var x = deckLine(d); return '<div class="row"><div class="st">' + h(d.title) + '<small>' + h(fmt(L.slideCount, { n: d.n })) + '</small></div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-deck="' + h(d.id) + '" data-i="' + x.i + '">' + h(x.b) + '</button></div>'; }).join("") + '</div>' : '<p class="sub" style="margin:0">' + h(L.noDecksLine) + '</p>') + '</div>');
     // 2 activities
     var nd = t.acts.filter(actDone).length;
-    parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + ' <small class="cnt">' + h(fmt(L.actsDone, { d: nd, n: t.acts.length })) + '</small></h2><div class="stages">' + t.acts.map(function (a) { var x = actLines(a); return '<div class="row"><div class="st">' + h(a.title) + (x.s ? '<small>' + h(x.s) + '</small>' : '') + '</div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-act="' + h(a.id) + '">' + h(x.b) + '</button></div>'; }).join("") + '</div></div>');
+    if (!t.acts.length) parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + '</h2><p class="sub" style="margin:0" id="noActs">' + h(L.noActsLine) + '</p></div>');
+    else parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + ' <small class="cnt">' + h(fmt(L.actsDone, { d: nd, n: t.acts.length })) + '</small></h2><div class="stages">' + t.acts.map(function (a) { var x = actLines(a); return '<div class="row"><div class="st">' + h(a.title) + (x.s ? '<small>' + h(x.s) + '</small>' : '') + '</div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-act="' + h(a.id) + '">' + h(x.b) + '</button></div>'; }).join("") + '</div></div>');
     // 3 exam questions (the topics with a question bank)
     if (bank) { var ex = examSum(bank);
       parts.push('<div class="card hubpart" data-hue="3"><h2>' + h(L.partExam) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.examLine) + '<small>' + h(fmt(L.examMeta, { s: bank.stages.length, q: ex.q, m: ex.x })) + '</small></div><div class="status' + (ex.done ? ' done' : ex.a ? ' now' : '') + '">' + h(ex.line) + '</div><button class="btn sm" id="hubExam">' + h(L.open) + '</button></div></div></div>'); }
     // 4 how did this topic go?
     var E = (me().checks || {})[id];
     parts.push('<div class="card hubpart" data-hue="4"><h2>' + h(L.partEval) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.evalLine) + '<small>' + h(fmt(L.evalParts, { n: t.parts.length })) + '</small></div><div class="status' + (E ? ' done' : '') + '">' + h(E ? fmt(L.evalSent, { d: day(E.t) }) : L.evalNot) + '</div><button class="btn sm' + (E ? ' ghost' : '') + '" id="hubEval">' + h(E ? L.evalChange : L.evalStart) + '</button></div></div></div>');
-    var body = el('<div class="hub" style="max-width:920px"><h1>' + h(t.title) + '</h1>' + job(L.hubJob, L.hubHelp) + '<div class="pend" id="pend" hidden>' + h(L.pending) + '</div>' + resume + parts.join("") + '</div>');
+    var body = el('<div class="hub" style="max-width:920px"><h1>' + h(t.title) + '</h1>' + job(jobLine(t, bank), L.hubHelp) + '<div class="pend" id="pend" hidden>' + h(L.pending) + '</div>' + resume + parts.join("") + '</div>');
     T.shell(T.crumbHome(), body); wire("cHome", T.home); wireHelp(); paintPend();
     body.querySelectorAll("[data-deck]").forEach(function (b) { b.onclick = function () { slides(b.dataset.deck, +b.dataset.i || 1); }; });
     body.querySelectorAll("[data-act]").forEach(function (b) { b.onclick = function () { activity(b.dataset.act); }; });
