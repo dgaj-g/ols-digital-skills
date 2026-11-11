@@ -1,17 +1,17 @@
-G7 lessons GREEN · 2026-11-11T15:32:22.525Z · build dd6dc85b0f-5800a9d6
+G7 lessons GREEN · 2026-11-11T21:49:11.695Z · build 02de92140c-e5702448
 PASS owner makes a class (12g7-lessons)
 PASS boot gives a new pupil empty lessons, no checks, and all 9 topics in cat
-PASS cat says which topics are open: digital-data,software,impact
-PASS first finish keeps first 3/10, best 3/10, 1 go: [3,10,3,10,1,453092]
+PASS cat says which topics are open: digital-data,software,databases,impact
+PASS first finish keeps first 3/10, best 3/10, 1 go: [3,10,3,10,1,453469]
 PASS the same op sent twice (u g7a1) counts once: goes 1
 PASS a better go lifts the best and keeps the first: 3,10,8,10,2
 PASS a worse go leaves the best alone, goes still counted: 3,10,8,10,3
 PASS the same share over more marks becomes the best: 3,10,16,20,4
 PASS every bad score refused (more than out of, out of over 5000, negative, not whole, a string, scored with no marks, missing): bad-score,bad-score,bad-score,bad-score,bad-score,bad-score,bad-score
-PASS an unscored activity is kept as done, 0/0, two goes: [0,0,0,0,2,453092]
+PASS an unscored activity is kept as done, 0/0, two goes: [0,0,0,0,2,453469]
 PASS unknown id, unknown op, a locked topic, slides out of range: bad-id,bad-op,locked,bad-slide,bad-slide,bad-slide
-PASS slides keep the last (3) and the furthest (5); resume points at the deck: [3,5,453092] d:sw
-PASS a slide save carries the furthest seen in that browser (f 9) even when she has stepped back to 2: [2,9,453092]
+PASS slides keep the last (3) and the furthest (5); resume points at the deck: [3,5,453469] d:sw
+PASS a slide save carries the furthest seen in that browser (f 9) even when she has stepped back to 2: [2,9,453469]
 PASS a furthest below the slide, 0, past the end or not a number is refused: bad-slide,bad-slide,bad-slide,bad-slide
 PASS opening an activity moves the resume point to it: a:sw2
 PASS a batch keeps the good ops and refuses the bad one: ok,bad-score,ok
@@ -30,17 +30,17 @@ PASS the newest send replaces the last one: 1,2,3,1,2,3,1
 PASS boot gives her own checks back, not anyone else's
 PASS a pupil cannot read the activities tab: not-staff
 PASS acts gives every pupil, this topic's activities only, and her first/best/goes and slides
-PASS activities CSV has its columns, her best 16/20 = 80 %, first 3/10, 4 goes, and slides 5 of 41: l@c2ken.net,OS Control Room,16,20,80,3,10,4,2026-11-11 15:32
+PASS activities CSV has its columns, her best 16/20 = 80 %, first 3/10, 4 goes, and slides 5 of 41: l@c2ken.net,OS Control Room,16,20,80,3,10,4,2026-11-11 21:49
 PASS checks gives each pupil's ratings and comment, and null for a pupil who has not sent one
 PASS topic-check CSV has the lines as columns, the rating words, her comment, and "not sent"
 PASS a check sent before the lines changed shows as not sent
-PASS the owner sees the storage figure (1373 bytes)
+PASS the owner sees the storage figure (1386 bytes)
 PASS the heavy pupil has all 56 activities and every slide set stored
-PASS her activity record fits one Script Property (under 9 KB): 2667 bytes
-INFO storage: heavy pupil (all 56 activities, every slide set, every topic check with 500 characters) 7895 bytes; typical pupil (one topic) 389 bytes
-INFO storage: a class of 25 heavy pupils is about 193 KB; 25 typical pupils about 9 KB
+PASS her activity record fits one Script Property (under 9 KB): 2422 bytes
+INFO storage: heavy pupil (all 56 activities, every slide set, every topic check with 500 characters) 7650 bytes; typical pupil (one topic) 389 bytes
+INFO storage: a class of 25 heavy pupils is about 187 KB; 25 typical pupils about 9 KB
 PASS a full store keeps her answers and cuts her comment to 120 characters: 120 characters kept
-PASS a full store still saves her score (fewer resend ids kept): [3,4,3,4,1,453092]
+PASS a full store still saves her score (fewer resend ids kept): [3,4,3,4,1,453469]
 PASS Delete class removes the activity and topic-check records too: 0 left
 PASS control (the resent-op guard removed) turns "dedupe" red
 PASS control (unscored activities no longer forced to 0/0) turns "unscored" red

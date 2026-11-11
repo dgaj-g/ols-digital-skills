@@ -20,7 +20,7 @@ var Hub = (function () {
   function tmin() { return Math.floor((Date.now() - EPOCH) / 60000); }
   function day(t) { try { return new Date(EPOCH + t * 60000).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }); } catch (e) { return ""; } }
   function pad2(i) { return (i < 10 ? "0" : "") + i; }
-  function slideUrl(d, i) { return BASE + "s1_platform/decks/" + d + "/" + pad2(i) + ".webp"; }
+  function slideUrl(d, i, k) { return BASE + "s1_platform/decks/" + d + "/" + pad2(i) + (k == null ? "" : "-" + k) + ".webp"; } // k: the picture after k clicks
   function actUrl(a, embed) { return BASE + a.path + (embed ? "?embed=1" : ""); }
   function crumb(t, last) { return T.crumbHome() + ' · <a id="cHub">' + h(t.title) + '</a>' + (last ? ' · ' + h(last) : ''); }
   function wireCrumb(t) { wire("cHome", T.home); wire("cHub", function () { topic(t.id); }); }
@@ -120,30 +120,38 @@ var Hub = (function () {
     var D = deckOf(deck); if (!D || !isOpen(D.t.id)) return T.home();
     var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
     T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
-    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
     var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
     T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
-    var img = document.getElementById("simg"), pre = new Image(), tries = 0;
-    function show() {
+    // a slide with click animations shows one picture per click (NN-0 … NN-(c-1)) before the finished slide NN, so an
+    // answer stays hidden until she presses Next, as in the slideshow; s = clicks shown on slide i
+    var img = document.getElementById("simg"), pre = new Image(), tries = 0, s = 0;
+    function clicks(j) { return (d.steps || {})[j] || 0; }
+    function pic(j, k) { return k < clicks(j) ? slideUrl(deck, j, k) : slideUrl(deck, j); }
+    function show(moved) {
       T.cur().i = i; tries = 0;
       document.getElementById("sfail").hidden = true; img.hidden = false;
-      img.src = slideUrl(deck, i); img.alt = fmt(L.slideOf, { i: i, n: d.n }) + ": " + d.title;
+      var more = s < clicks(i);
+      img.src = pic(i, s); img.alt = fmt(L.slideOf, { i: i, n: d.n }) + ": " + d.title;
       document.getElementById("scount").textContent = fmt(L.slideOf, { i: i, n: d.n });
+      document.getElementById("smore").textContent = more ? L.slideMore : "";
       document.getElementById("sbar").innerHTML = '<b>' + h(d.title) + '</b> · ' + h(fmt(L.slideOf, { i: i, n: d.n }));
       document.getElementById("sline").style.width = Math.round(100 * i / d.n) + "%";
-      document.getElementById("sprev").disabled = i <= 1;
-      var nx = document.getElementById("snext"); nx.textContent = i >= d.n ? L.finish : L.next;
-      if (i < d.n) pre.src = slideUrl(deck, i + 1);
-      push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
+      document.getElementById("sprev").disabled = i <= 1 && s === 0;
+      var nx = document.getElementById("snext"); nx.textContent = i >= d.n && !more ? L.finish : L.next;
+      if (more) pre.src = pic(i, s + 1); else if (i < d.n) pre.src = pic(i + 1, 0);
+      if (moved) push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
     }
     img.onload = function () { document.getElementById("sfail").hidden = true; };
     img.onerror = function () { img.hidden = true; document.getElementById("sfail").hidden = false; };
-    wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = slideUrl(deck, i) + "?r=" + tries + Date.now().toString(36); });
-    function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; show(); }
-    wire("sprev", function () { go(i - 1); });
-    wire("snext", function () { go(i + 1); });
-    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n) go(i + 1); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); go(i - 1); } };
-    show();
+    wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = pic(i, s) + "?r=" + tries + Date.now().toString(36); });
+    function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; s = 0; show(true); }
+    function next() { if (s < clicks(i)) { s++; show(false); } else go(i + 1); }
+    function prev() { if (s > 0) { s--; show(false); } else if (i > 1) { i--; s = clicks(i); show(true); } } // back to a slide: as she left it, all shown
+    wire("sprev", prev);
+    wire("snext", next);
+    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
+    show(true);
   }
 
   // ---- an activity, played inside this page so its score comes back ----

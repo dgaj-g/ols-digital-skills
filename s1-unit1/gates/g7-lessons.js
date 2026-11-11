@@ -58,13 +58,13 @@ async function flows(ok, info) {
   const cls = r.slug;
   ok('setup', r.ok && !!cls, 'owner makes a class (' + cls + ')');
   for (const u of [P1, P2, HEAVY, TYP]) await api('apiBoot', { cls }, u);
-  ['digital-data', 'software', 'impact'].forEach(() => {});
-  for (const id of ['digital-data', 'software', 'impact']) await api('apiStaff', { op: 'setTopic', cls, topic: id, open: true }, OWNER);
+  ['digital-data', 'software', 'databases', 'impact'].forEach(() => {});
+  for (const id of ['digital-data', 'software', 'databases', 'impact']) await api('apiStaff', { op: 'setTopic', cls, topic: id, open: true }, OWNER);
 
   r = await api('apiBoot', { cls }, P1);
   ok('boot-shape', r.ok && r.lessons && JSON.stringify(r.lessons) === '{"a":{},"s":{},"p":{}}' && JSON.stringify(r.checks) === '{}' && Array.isArray(r.cat) && r.cat.length === 9,
     'boot gives a new pupil empty lessons, no checks, and all 9 topics in cat');
-  ok('boot-open', r.cat && r.cat.filter((c) => c.open).map((c) => c.id).join(',') === 'digital-data,software,impact', 'cat says which topics are open: ' + (r.cat || []).filter((c) => c.open).map((c) => c.id).join(','));
+  ok('boot-open', r.cat && r.cat.filter((c) => c.open).map((c) => c.id).join(',') === 'digital-data,software,databases,impact', 'cat says which topics are open: ' + (r.cat || []).filter((c) => c.open).map((c) => c.id).join(','));
 
   const L = (ops, user) => api('apiLessons', { cls, ops }, user || P1);
   r = await L([{ op: 'finish', id: 'sw1', s: 3, m: 10, u: 'g7a1' }]);
@@ -89,10 +89,10 @@ async function flows(ok, info) {
 
   r = await L([{ op: 'slide', deck: 'sw', i: 5, u: 'g7d1' }, { op: 'slide', deck: 'sw', i: 3, u: 'g7d2' }]);
   ok('slides', r.ok && r.lessons.s.sw && r.lessons.s.sw.slice(0, 2).join(',') === '3,5' && r.lessons.p.software === 'd:sw', 'slides keep the last (3) and the furthest (5); resume points at the deck: ' + JSON.stringify(r.lessons && r.lessons.s.sw) + ' ' + (r.lessons && r.lessons.p.software));
-  r = await L([{ op: 'slide', deck: 'eth', i: 2, f: 9, u: 'g7z1' }]);
-  ok('slide-f', r.ok && r.res[0] === 'ok' && r.lessons.s.eth && r.lessons.s.eth.slice(0, 2).join(',') === '2,9', 'a slide save carries the furthest seen in that browser (f 9) even when she has stepped back to 2: ' + JSON.stringify(r.lessons && r.lessons.s.eth));
-  r = await L([{ op: 'slide', deck: 'eth', i: 4, f: 3, u: 'g7z2' }, { op: 'slide', deck: 'eth', i: 2, f: 0, u: 'g7z3' }, { op: 'slide', deck: 'eth', i: 2, f: T('impact').decks[0].n + 1, u: 'g7z4' }, { op: 'slide', deck: 'eth', i: 2, f: '9', u: 'g7z5' }]);
-  ok('slide-f-bad', r.ok && r.res.join(',') === 'bad-slide,bad-slide,bad-slide,bad-slide' && r.lessons.s.eth.slice(0, 2).join(',') === '2,9', 'a furthest below the slide, 0, past the end or not a number is refused: ' + (r.res || []).join(','));
+  r = await L([{ op: 'slide', deck: 'db', i: 2, f: 9, u: 'g7z1' }]);
+  ok('slide-f', r.ok && r.res[0] === 'ok' && r.lessons.s.db && r.lessons.s.db.slice(0, 2).join(',') === '2,9', 'a slide save carries the furthest seen in that browser (f 9) even when she has stepped back to 2: ' + JSON.stringify(r.lessons && r.lessons.s.db));
+  r = await L([{ op: 'slide', deck: 'db', i: 4, f: 3, u: 'g7z2' }, { op: 'slide', deck: 'db', i: 2, f: 0, u: 'g7z3' }, { op: 'slide', deck: 'db', i: 2, f: T('databases').decks[0].n + 1, u: 'g7z4' }, { op: 'slide', deck: 'db', i: 2, f: '9', u: 'g7z5' }]);
+  ok('slide-f-bad', r.ok && r.res.join(',') === 'bad-slide,bad-slide,bad-slide,bad-slide' && r.lessons.s.db.slice(0, 2).join(',') === '2,9', 'a furthest below the slide, 0, past the end or not a number is refused: ' + (r.res || []).join(','));
   r = await L([{ op: 'at', id: 'sw2', u: 'g7e1' }]);
   ok('resume', r.ok && r.lessons.p.software === 'a:sw2', 'opening an activity moves the resume point to it: ' + (r.lessons && r.lessons.p.software));
   r = await L([{ op: 'finish', id: 'sw3', s: 4, m: 5, u: 'g7f1' }, { op: 'finish', id: 'sw3', s: 9, m: 5, u: 'g7f2' }, { op: 'finish', id: 'sw4', s: 1, m: 5, u: 'g7f3' }]);

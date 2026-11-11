@@ -7,13 +7,7 @@ var S1L = {
   base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
   topics: [
     { id: "digital-data", spec: "1.1", title: "Digital data",
-      decks: [
-        { id: "dd1", title: "Representing data (part 1)", n: 18 },
-        { id: "dd2", title: "Representing data (part 2)", n: 16 },
-        { id: "dd3", title: "Representing images", n: 21 },
-        { id: "dd4", title: "Representing sound", n: 18 },
-        { id: "dd5", title: "Data portability and compression", n: 13 }
-      ],
+      decks: [],
       acts: [
         { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
         { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
@@ -35,7 +29,7 @@ var S1L = {
         "File formats, compression, buffering and streaming"
       ] },
     { id: "software", spec: "1.2", title: "Software",
-      decks: [{ id: "sw", title: "Software", n: 41 }],
+      decks: [{ id: "sw", title: "Software", n: 41, steps: {"10":3,"16":3,"22":3,"25":2,"30":3,"32":4,"37":3,"38":3} }],
       acts: [
         { id: "sw1", title: "OS Control Room", path: "software_revision/activity1.html", scored: true },
         { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
@@ -51,7 +45,7 @@ var S1L = {
         "Antivirus software and why updates matter"
       ] },
     { id: "databases", spec: "1.3", title: "Database applications",
-      decks: [{ id: "db", title: "Database applications", n: 75 }],
+      decks: [{ id: "db", title: "Database applications", n: 75, steps: {"10":1,"11":1,"12":2,"13":1,"14":1,"15":1,"16":1,"17":1,"18":1,"22":1,"23":2,"24":3,"25":1,"26":2,"27":1,"28":1,"29":1,"30":2,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"47":1,"48":1,"49":1,"50":1,"51":1,"52":1,"53":1,"54":1,"55":1,"60":2,"61":1,"62":1,"63":2,"64":1,"68":1,"69":1,"70":2,"71":1,"72":2} }],
       acts: [
         { id: "db1", title: "The Register", path: "databases_revision/activity1.html", scored: true },
         { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
@@ -74,7 +68,7 @@ var S1L = {
         "Big data and data analytics"
       ] },
     { id: "spreadsheets", spec: "1.4", title: "Spreadsheet applications",
-      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98 }],
+      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98, steps: {"9":1,"10":1,"11":1,"12":1,"13":2,"14":1,"15":1,"21":1,"22":1,"23":2,"24":1,"25":1,"26":1,"27":2,"28":1,"29":1,"30":1,"31":1,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"42":1,"43":1,"50":1,"51":1,"52":1,"53":1,"54":1,"58":1,"59":1,"60":1,"61":1,"62":1,"63":1,"70":1,"71":1,"72":1,"73":1,"74":2,"75":2,"79":1,"80":2,"81":1,"82":1,"83":1,"84":1,"85":1,"86":1,"87":1,"90":1,"91":1,"92":2,"93":1,"94":1} }],
       acts: [
         { id: "ss1", title: "Cinema Grid", path: "spreadsheets_revision/activity1.html", scored: true },
         { id: "ss2", title: "Tuck Shop Kitchen", path: "spreadsheets_revision/activity2.html", scored: true },
@@ -104,7 +98,7 @@ var S1L = {
         "RAM, ROM and cache"
       ] },
     { id: "networks", spec: "1.6", title: "Network technologies",
-      decks: [{ id: "net", title: "Network technologies", n: 41 }],
+      decks: [],
       acts: [
         { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
         { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
@@ -121,7 +115,7 @@ var S1L = {
         "Good and bad points of a network for an organisation"
       ] },
     { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
-      decks: [{ id: "cyber", title: "Cyberspace, network security and data transfer", n: 23 }],
+      decks: [],
       acts: [
         { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
         { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
@@ -135,7 +129,7 @@ var S1L = {
         "Protocols: FTP, HTTP and HTTPS"
       ] },
     { id: "cloud", spec: "1.8", title: "Cloud computing",
-      decks: [{ id: "cloud", title: "Cloud computing", n: 7 }],
+      decks: [],
       acts: [
         { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
         { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
@@ -146,12 +140,7 @@ var S1L = {
         "The cloud for gaming, file storage, sharing and working together"
       ] },
     { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
-      decks: [
-        { id: "eth", title: "Moral and ethical issues", n: 13 },
-        { id: "leg", title: "Legislation", n: 20 },
-        { id: "emp", title: "Employment, health and safety", n: 21 },
-        { id: "app", title: "Digital applications", n: 34 }
-      ],
+      decks: [],
       acts: [
         { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
         { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
@@ -235,8 +224,10 @@ var S1L = {
     // the slide viewer
     slideJob: "Read each slide. Press Next, or use the arrow keys.",
     slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
+      "Some slides show their answer only when you press Next, so you can try the question first.",
       "The app remembers the last slide you saw, so you can stop and carry on later."],
     slideOf: "Slide {i} of {n}",
+    slideMore: "There is more on this slide. Press Next to see it.",
     prev: "Previous",
     next: "Next",
     finish: "Back to the topic",
