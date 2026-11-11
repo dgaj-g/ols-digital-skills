@@ -72,7 +72,7 @@ var Sit = (function () {
   var FX = { n: 0, bad: 0 }, GX = { n: 0, bad: 0 }; // v7: formula and grid checks, counted per question shown
   var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
     TID = "digital-data";
-  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
+  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".exl")) || {}; } // v11: the exam round line sits under the tile's activities line
   function sts() { var a = []; for (var i = 1; i <= K; i++) a.push(i); return a; }
   function answerOne() { // fills the question on screen the way a pupil would, then presses Check (or I don't know)
     var c = cur(), v = c.v, a = SitPolicy.answer(v, email + "|" + n), miss = rendered(v);
@@ -159,7 +159,7 @@ var Sit = (function () {
       T.home(); layout("home");
       ok("home line", (foot().textContent || "") === S.round + "1 · not started", foot().textContent);
       ok("topic " + TID + " is " + me.topic.title, me.topic.id === TID, me.topic.id);
-      $('[data-open="' + TID + '"]').click(); layout("topic");
+      $('[data-open="' + TID + '"]').click(); $("#hubExam").click(); layout("topic"); // v11: Open goes to the topic's page; its Exam questions Open goes on
       return sts().reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
     }).then(function () {
       layout("topic card");

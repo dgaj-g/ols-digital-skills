@@ -63,7 +63,7 @@ if (!fs.existsSync(STAFF_JSON)) {
 const STAFF = JSON.parse(fs.readFileSync(STAFF_JSON, 'utf8'));
 
 // ---- the page (its hash is part of the build id)
-const scriptNames = ['strings.js', 'sitpolicy.js', 'app.js', 'staff.js', 'sit.js'];
+const scriptNames = ['strings.js', 'lessons.js', 'sitpolicy.js', 'app.js', 'hub.js', 'staff.js', 'sit.js']; // v11: lessons.js (the slides and activities) and hub.js (their screens)
 const pageReady = fs.existsSync(path.join(PLATFORM, 'index.html'));
 const index = pageReady ? need(path.join(PLATFORM, 'index.html')) : '';
 // fonts: each url("fonts/<file>.woff2") in style.css becomes a data URI, so the served page loads no outside file
@@ -77,18 +77,20 @@ const pageHash = sha(style + index + scripts.map((s) => s[1]).join('\n')).slice(
 
 // ---- Code.gs
 const bank = need(BANK), bankSw = need(BANK_SW), bankDb = need(BANK_DB), bankSs = need(BANK_SS), judge = need(JUDGE), tpl = need(path.join(SERVER, 'Code.gs.template'));
+const lessons = need(path.join(PLATFORM, 'lessons.js')); // v11: the server checks every slide and activity id against it
+if (!/^var S1L = /m.test(lessons)) { console.error('lessons.js lost var S1L'); process.exit(1); }
 if (!/var BANK_DIGITAL_DATA = /.test(bank)) { console.error('bank file is not BANK_DIGITAL_DATA'); process.exit(1); }
 if (!/var BANK_SOFTWARE = /.test(bankSw)) { console.error('bank file is not BANK_SOFTWARE'); process.exit(1); }
 if (!/var BANK_DATABASES = /.test(bankDb)) { console.error('bank file is not BANK_DATABASES'); process.exit(1); }
 if (!/var BANK_SPREADSHEETS = /.test(bankSs)) { console.error('bank file is not BANK_SPREADSHEETS'); process.exit(1); }
 if (!/root\.Judge = API/.test(judge)) { console.error('judge.js lost its UMD root'); process.exit(1); }
-const BUILD = sha(bank + bankSw + bankDb + bankSs + judge + tpl).slice(0, 10) + '-' + pageHash;
+const BUILD = sha(bank + bankSw + bankDb + bankSs + judge + lessons + tpl).slice(0, 10) + '-' + pageHash;
 const filled = tpl.replace("'@@OWNER_EMAIL@@'", JSON.stringify(OWNER_EMAIL)).replace("'@@STAFF_SALT@@'", JSON.stringify(STAFF.salt))
   .replace("'@@STAFF_HASH@@'", JSON.stringify(STAFF.hash)).replace("'@@BUILD@@'", JSON.stringify(BUILD)).replace("'@@TITLE@@'", JSON.stringify(TITLE)).replace("'@@TEACHERS@@'", JSON.stringify(TEACHERS));
 if (/@@[A-Z_]+@@/.test(filled)) { console.error('Code.gs.template: unfilled placeholder ' + filled.match(/@@[A-Z_]+@@/)[0]); process.exit(1); }
 const code = asciiJs(['/* OLS Unit 1 Revision - Code.gs - build ' + BUILD + ' - PRIVATE: holds the bank and the mark schemes. Never commit. */',
   '/* ---- bank_digital_data.js ---- */\n' + bank.trim(), '/* ---- bank_software.js ---- */\n' + bankSw.trim(), '/* ---- bank_databases.js ---- */\n' + bankDb.trim(),
-  '/* ---- bank_spreadsheets.js ---- */\n' + bankSs.trim(), '/* ---- judge.js ---- */\n' + judge.trim(), filled].join('\n\n'));
+  '/* ---- bank_spreadsheets.js ---- */\n' + bankSs.trim(), '/* ---- judge.js ---- */\n' + judge.trim(), '/* ---- lessons.js ---- */\n' + lessons.trim(), filled].join('\n\n'));
 guardAscii('Code.gs', code);
 fs.writeFileSync(path.join(DEPLOY, 'Code.gs'), code, { mode: 0o600 });
 fs.chmodSync(path.join(DEPLOY, 'Code.gs'), 0o600);

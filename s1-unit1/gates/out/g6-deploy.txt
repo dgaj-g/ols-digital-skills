@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-04T20:34:34.010Z
-PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
+G6 deploy log + token · 2026-11-11T15:27:27.945Z
+FAIL DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree · Index.html body build dd6dc85b0f-7ae04833 ≠ log ad9099a22e-c59479cf | Index.html token not in both body and footer | Code.gs header does not carry ad9099a22e-c59479cf
 INFO newest row: | 4 Nov 2026 20:33 | 10 | ad9099a22e-c59479cf | v10 S1 Unit 1 ad9099a22e-c59479cf | one revision note fixed: the Databases question DB4-N1 (more than / AND / OR
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
-GREEN · 3 pass · 0 fail
+RED · 2 pass · 1 fail

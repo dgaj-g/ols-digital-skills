@@ -233,13 +233,58 @@ table.qs{margin-top:12px}.qs td:first-child{width:38%}.qs .qq{color:var(--mute);
 @keyframes busy{0%,100%{box-shadow:0 0 0 0 rgba(143,45,86,.5);opacity:1}50%{box-shadow:0 0 0 7px rgba(143,45,86,0);opacity:.7}}
 @media (max-width:900px){.charts{grid-template-columns:1fr}}
 @media (max-width:640px){.hb{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.hb .hv{grid-column:1/-1;margin-top:-4px}.clist li b{flex-basis:100%}}
+/* v11: the topic page, slides, activities, "How did this topic go?" and the staff grids */
+[hidden]{display:none!important}
+button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--berry);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.job{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
+.helpbox ul{margin:0 0 8px;padding-left:20px}.helpbox li{margin:4px 0;font-size:14px}
+.pend{font-size:13px;font-weight:700;color:var(--accd);background:#fff4e0;border:1px solid #f3d6a8;border-radius:10px;padding:7px 12px;margin:0 0 12px}
+.resume{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}.resume .btn{white-space:normal;text-align:left}.resume .status{color:var(--mute)}
+.hubpart[data-hue="1"]{--acc:#e88a3a;--acc2:#f2b544;--accd:#9a5200}.hubpart[data-hue="2"]{--acc:#e0574c;--acc2:#f28a6b;--accd:#a8322a}
+.hubpart[data-hue="3"]{--acc:#9a4fc4;--acc2:#d07ab8;--accd:#6c2d8f}.hubpart[data-hue="4"]{--acc:#1f9e8f;--acc2:#6cc3a0;--accd:#0f6e63}
+.hubpart{background:linear-gradient(90deg,var(--acc2),var(--acc)) top/100% 5px no-repeat,var(--card);padding-top:24px}
+.hubpart h2{margin-top:0}.hubpart h2 .cnt{font-size:13px;font-weight:700;color:var(--accd);margin-left:6px;white-space:nowrap}
+.hubpart .stages .row .btn{justify-self:end}
+.tlines{display:grid;gap:3px;font-size:13px;margin:6px 0 0}.tlines .prog{color:var(--ink)}.exq{color:var(--mute)}.exq .exl{color:var(--plum);font-weight:700}
+.slides{max-width:1180px;margin:0 auto}
+.slide,.snav{width:min(100%,max(360px,calc((100vh - 290px)*16/9)));margin-left:auto;margin-right:auto}
+.slide{position:relative;aspect-ratio:16/9;margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--lift)}
+.slide img{display:block;width:100%;height:100%;object-fit:contain}
+.sfail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--card);text-align:center;padding:16px}.sfail p{margin:0}
+.snav{display:flex;align-items:center;justify-content:space-between;gap:10px}.scount{font-size:14px;font-weight:700;color:var(--mute);text-align:center}
+.snav .btn{white-space:normal}
+.actbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 0 10px}.actbar .status{margin-right:auto;font-size:14px}
+.actframe{position:relative;height:calc(100vh - 250px);min-height:440px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--lift);margin-bottom:12px}
+.actframe iframe{display:block;width:100%;height:100%;border:0}
+.afail{position:absolute;left:0;right:0;top:18%;width:min(92%,480px);margin:0 auto;text-align:center}.afail .actions{justify-content:center;align-items:center;flex-wrap:wrap}
+.erows{margin:4px 0 16px}
+.erow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 18px;align-items:center;padding:12px 10px;border-top:1px solid var(--line);border-radius:10px}
+.erow:first-child{border-top:0}.erow .et{font-weight:600;color:var(--ink)}
+.eopts{display:flex;flex-wrap:wrap;gap:6px}
+.erow.miss{background:var(--badbg);box-shadow:0 0 0 2px var(--bad) inset}
+.done-card{background:linear-gradient(90deg,#6cc3a0,#1f9e8f) top/100% 5px no-repeat,var(--card);padding-top:26px}.done-card h2{color:#0f6e63}
+.tabs{flex-wrap:wrap}
+.lockn{margin:-4px 0 12px}
+.np{color:var(--mute)}
+.agrid th,.cgrid th{min-width:110px;vertical-align:bottom}.agrid th:first-child,.cgrid th:first-child{min-width:0}
+.agrid td,.cgrid td{white-space:nowrap}
+.agrid tr>:first-child,.cgrid tr>:first-child{position:sticky;left:0;z-index:1;background:var(--card)}.agrid th:first-child,.cgrid th:first-child{background:var(--tint)}
+.rchip.ck1,.hb i.ck1,.legend i.ck1{background:#bfe3c4;color:#0f4a1f}.rchip.ck2,.hb i.ck2,.legend i.ck2{background:#fde7c8;color:#7a4200}.rchip.ck3,.hb i.ck3,.legend i.ck3{background:#fbe0dc;color:#8d1d16}
+.hb.cr{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr)}.hb.cr .hv{white-space:normal}
+.said .ev small.hint{margin-left:0}.srow select{max-width:100%;min-width:0}
+@media (max-width:640px){
+  .erow{grid-template-columns:minmax(0,1fr);padding:12px 6px}
+  .actframe{height:calc(100vh - 210px);min-height:420px}
+  .slide,.snav{width:100%}
+  .hb.cr{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (prefers-reduced-motion:reduce){.busy{opacity:.55;outline:2px dashed var(--berry);outline-offset:2px}}
 
 </style>
 </head>
-<body data-build="s1u1-ad9099a22e-c59479cf">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-ad9099a22e-c59479cf" };</script>
+<body data-build="s1u1-dd6dc85b0f-5800a9d6">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-dd6dc85b0f-5800a9d6" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -282,6 +327,310 @@ var S1S = {
     newLocked: "A new class starts with its topics locked. Open them on the Topics tab."
   }
 };
+
+</script>
+<script>
+/* lessons.js \u2014 v11 (11 Nov 2026): what each Unit 1 topic holds besides its exam questions.
+ * The slide sets and the activities live on GitHub Pages (dgaj-g/s1-digital-technology-gcse, folder s1_platform/ and the
+ * activity folders); this file says which belong to which topic, and the plain lines a pupil rates in "How did this topic go?".
+ * The same object is inlined into the page and put at the top of Code.gs, so the server checks every id against it.
+ * An activity id is never reused for another activity: the scores are kept under it. */
+var S1L = {
+  base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
+  topics: [
+    { id: "digital-data", spec: "1.1", title: "Digital data",
+      decks: [
+        { id: "dd1", title: "Representing data (part 1)", n: 18 },
+        { id: "dd2", title: "Representing data (part 2)", n: 16 },
+        { id: "dd3", title: "Representing images", n: 21 },
+        { id: "dd4", title: "Representing sound", n: 18 },
+        { id: "dd5", title: "Data portability and compression", n: 13 }
+      ],
+      acts: [
+        { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
+        { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
+        { id: "dh3", title: "Pixel Lab", path: "digital_data_revision/activity3.html", scored: true },
+        { id: "dh4", title: "Graphics Showdown", path: "digital_data_revision/activity4.html", scored: true },
+        { id: "dh5", title: "Sound Studio", path: "digital_data_revision/activity5.html", scored: true },
+        { id: "dh6", title: "Format Passport Control", path: "digital_data_revision/activity6.html", scored: true },
+        { id: "ns1", title: "Bit Lab", path: "number_systems/activity1.html", scored: true },
+        { id: "ns2", title: "Hex HQ", path: "number_systems/activity2.html", scored: true },
+        { id: "ns3", title: "Conversion Arcade", path: "number_systems/activity3.html", scored: true },
+        { id: "ns4", title: "Triple Match", path: "number_systems/activity4.html", scored: true }
+      ],
+      parts: [
+        "Data and information, and the units from bit to terabyte",
+        "Data types: integer, real, date/time, character and string",
+        "Pixels, resolution and file size",
+        "Bitmap and vector graphics",
+        "Sound: sample rate, bit depth, bit rate and analogue to digital",
+        "File formats, compression, buffering and streaming"
+      ] },
+    { id: "software", spec: "1.2", title: "Software",
+      decks: [{ id: "sw", title: "Software", n: 41 }],
+      acts: [
+        { id: "sw1", title: "OS Control Room", path: "software_revision/activity1.html", scored: true },
+        { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
+        { id: "sw3", title: "Utility Toolkit", path: "software_revision/activity3.html", scored: true },
+        { id: "sw4", title: "Virus Shield", path: "software_revision/activity4.html", scored: true },
+        { id: "sw5", title: "Exam Arena", path: "software_revision/activity5.html", scored: true },
+        { id: "sw6", title: "Software Showdown", path: "06.software_showdown_compat.html", scored: true }
+      ],
+      parts: [
+        "How system software shares out memory, storage and processing time",
+        "Real-time, batch and multi-user processing",
+        "Utilities: defragmenting, task scheduling, backup and restore",
+        "Antivirus software and why updates matter"
+      ] },
+    { id: "databases", spec: "1.3", title: "Database applications",
+      decks: [{ id: "db", title: "Database applications", n: 75 }],
+      acts: [
+        { id: "db1", title: "The Register", path: "databases_revision/activity1.html", scored: true },
+        { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
+        { id: "db3", title: "Query Gates", path: "databases_revision/activity3.html", scored: true },
+        { id: "db4", title: "The Front Office", path: "databases_revision/activity4.html", scored: true },
+        { id: "db5", title: "The Festival", path: "databases_revision/activity5.html", scored: true },
+        { id: "db6", title: "Database Showdown", path: "06.database_showdown.html", scored: true },
+        { id: "db7", title: "Definitions Match", path: "06.databaseRevisionDefinitions.html", scored: true },
+        { id: "db8", title: "Data Type Quiz", path: "06.DataTypeQuiz.html", scored: true },
+        { id: "db9", title: "Past Paper Quiz", path: "DB_Game_3_PastPapers.html", scored: true },
+        { id: "db10", title: "Database Application Tasks", path: "db_application_tasks.html", scored: true },
+        { id: "db11", title: "Relationships and Criteria", path: "db_relationships_and_criteria.html", scored: true }
+      ],
+      parts: [
+        "Tables, records, fields and key fields",
+        "Queries, forms, reports, macros, relationships and importing data",
+        "Choosing the right data type for a field",
+        "Validation checks: presence, length, type, format and range",
+        "Searching with <, >, =, <=, >=, AND, OR and BETWEEN",
+        "Big data and data analytics"
+      ] },
+    { id: "spreadsheets", spec: "1.4", title: "Spreadsheet applications",
+      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98 }],
+      acts: [
+        { id: "ss1", title: "Cinema Grid", path: "spreadsheets_revision/activity1.html", scored: true },
+        { id: "ss2", title: "Tuck Shop Kitchen", path: "spreadsheets_revision/activity2.html", scored: true },
+        { id: "ss3", title: "Booking Desk", path: "spreadsheets_revision/activity3.html", scored: true },
+        { id: "ss4", title: "Safe Sheet", path: "spreadsheets_revision/activity4.html", scored: true },
+        { id: "ss5", title: "Ski Trip", path: "spreadsheets_revision/activity5.html", scored: true }
+      ],
+      parts: [
+        "Cells, rows, columns and data types",
+        "Writing formulae and copying them",
+        "Relative and absolute cell references",
+        "Functions, IF and VLOOKUP",
+        "Formatting, conditional formatting, validation and templates",
+        "Charts, modelling, print areas and macros"
+      ] },
+    { id: "hardware", spec: "1.5", title: "Computer hardware",
+      decks: [],
+      acts: [
+        { id: "hw1", title: "Silicon: CPU Explorer", path: "computer_hardware/silicon.html", scored: true }
+      ],
+      parts: [
+        "What the CPU does: the ALU, control unit and immediate-access store",
+        "The fetch-execute cycle: PC, MAR, MDR, IAR and ALU",
+        "Clock speed, cache size and number of cores",
+        "Input and output devices: microphone, mouse, digitiser, touch screen, speakers, printers",
+        "Storage: hard disc drive, solid state drive and HD media",
+        "RAM, ROM and cache"
+      ] },
+    { id: "networks", spec: "1.6", title: "Network technologies",
+      decks: [{ id: "net", title: "Network technologies", n: 41 }],
+      acts: [
+        { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
+        { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
+        { id: "nt3", title: "Communication Tech Rocket Race", path: "activity3.html", scored: true },
+        { id: "nt4", title: "Network Technician", path: "activity4.html", scored: true },
+        { id: "nt5", title: "Topology Maze Runner", path: "activity5.html", scored: true }
+      ],
+      parts: [
+        "LANs and WANs",
+        "The World Wide Web, the Internet of Things and intranets",
+        "Wi-Fi, Bluetooth, optical fibre, 4G and 5G",
+        "Network cards, cables, switches and routers",
+        "Bus, star and ring topologies",
+        "Good and bad points of a network for an organisation"
+      ] },
+    { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
+      decks: [{ id: "cyber", title: "Cyberspace, network security and data transfer", n: 23 }],
+      acts: [
+        { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
+        { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
+        { id: "cy3", title: "Cyber Fortress", path: "Cyberspace_Activities/activity3.html", scored: true },
+        { id: "cy4", title: "Mission Control", path: "Cyberspace_Activities/activity4.html", scored: true }
+      ],
+      parts: [
+        "Cybercrime and its threats, such as hacking, phishing and denial of service",
+        "Malware: virus, Trojan horse, worm, key logger and spyware",
+        "Protecting data: encryption, passwords, access levels, backup and firewalls",
+        "Protocols: FTP, HTTP and HTTPS"
+      ] },
+    { id: "cloud", spec: "1.8", title: "Cloud computing",
+      decks: [{ id: "cloud", title: "Cloud computing", n: 7 }],
+      acts: [
+        { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
+        { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
+      ],
+      parts: [
+        "What cloud computing is",
+        "Good and bad points of the cloud for an organisation",
+        "The cloud for gaming, file storage, sharing and working together"
+      ] },
+    { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
+      decks: [
+        { id: "eth", title: "Moral and ethical issues", n: 13 },
+        { id: "leg", title: "Legislation", n: 20 },
+        { id: "emp", title: "Employment, health and safety", n: 21 },
+        { id: "app", title: "Digital applications", n: 34 }
+      ],
+      acts: [
+        { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
+        { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
+        { id: "lg1", title: "Order in the Court!", path: "S1_Legislation_Actvity/activity1.html", scored: true },
+        { id: "lg2", title: "Build the Shield", path: "S1_Legislation_Actvity/activity2.html", scored: true },
+        { id: "lg3", title: "Speed Trial", path: "S1_Legislation_Actvity/activity3.html", scored: true },
+        { id: "ap1", title: "App Review Live", path: "digital_applications_activities/activity1.html", scored: true },
+        { id: "ap2", title: "Crash Test Lab", path: "digital_applications_activities/activity2.html", scored: true },
+        { id: "ap3", title: "Digital Dragons", path: "digital_applications_activities/activity3.html", scored: true },
+        { id: "ap4", title: "Exam Heist", path: "digital_applications_activities/activity4.html", scored: true },
+        { id: "em1", title: "Then and Now", path: "S1_Employment_HealthSafety_Activity/activity1.html", scored: true },
+        { id: "em2", title: "Remote Ready", path: "S1_Employment_HealthSafety_Activity/activity2.html", scored: true },
+        { id: "em3", title: "Safety First!", path: "S1_Employment_HealthSafety_Activity/activity3.html", scored: true }
+      ],
+      parts: [
+        "Moral and ethical issues: internet and social media misuse, tracking, personal data",
+        "The Data Protection Act 1998: its eight principles and who does what",
+        "The Copyright, Designs and Patents Act 1988 and the Computer Misuse Act 1990",
+        "The Consumer Contracts Regulations 2013",
+        "Changes in jobs and work, and the need for new skills",
+        "Health and safety: RSI, back strain and eye strain",
+        "Digital applications: games, simulations, apps, online banking and shopping"
+      ] }
+  ],
+  // the three answers to each line of "How did this topic go?", 1 to 3
+  rate: ["I've got it", "Getting there", "Not yet"],
+  S: {
+    // home tiles
+    tileMeta: "{d} \u00b7 {a}",
+    decksN: "{n} slide sets", deck1: "1 slide set", noDecks: "No slides",
+    actsN: "{n} activities", act1: "1 activity",
+    withExam: " \u00b7 exam questions",
+    tileNone: "Not started",
+    tileActs: "{d} of {n} activities done",
+    tileEval: " \u00b7 topic check sent",
+    // the topic page
+    resume: "Carry on where you left off: {w}",
+    hubJob: "Go through the slides, play the activities, then tell your teacher how the topic went.",
+    help: "Help",
+    helpClose: "Close help",
+    hubHelp: ["Slides: read them at your own speed. The app remembers the last slide you saw.",
+      "Activities: play them here, on this page, so your score is saved. If you play one again, your best score is kept.",
+      "Exam questions: answer real exam questions and see your marks straight away.",
+      "How did this topic go?: tell your teacher which parts you are sure of. You can change your answers later."],
+    partSlides: "Slides",
+    partActs: "Activities",
+    partExam: "Exam questions",
+    partEval: "How did this topic go?",
+    noDecksLine: "There are no slides for this topic here. Your teacher goes through it in class.",
+    slideCount: "{n} slides",
+    deckNot: "Not started",
+    deckAt: "Up to slide {i} of {n}",
+    deckAll: "All {n} slides seen",
+    start: "Start",
+    carry: "Carry on",
+    again: "Look again",
+    actNot: "Not played yet",
+    actBest: "Best: {s} of {m} ({p}%)",
+    actFirst: "First go: {s} of {m}",
+    actDone: "Done",
+    actGoes1: "1 go",
+    actGoesN: "{n} goes",
+    play: "Play",
+    playAgain: "Play again",
+    actsDone: "{d} of {n} done",
+    examLine: "Answer exam questions and get them marked.",
+    exRound: "Round {n}",
+    exRoundOpen: "Round {n} open",
+    exDone: "done \u00b7 {m} of {x} marks",
+    exPart: "{a} of {q} questions done",
+    exNone: "not started",
+    examMeta: "{s} stages \u00b7 {q} questions \u00b7 {m} marks",
+    open: "Open",
+    evalLine: "Tell your teacher which parts of the topic you are sure of.",
+    evalParts: "{n} lines to answer",
+    evalHead: "How did the {t} topic go?",
+    evalNot: "Not done yet",
+    evalSent: "Sent to your teacher on {d}",
+    evalStart: "Start",
+    evalChange: "Change my answers",
+    // the slide viewer
+    slideJob: "Read each slide. Press Next, or use the arrow keys.",
+    slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
+      "The app remembers the last slide you saw, so you can stop and carry on later."],
+    slideOf: "Slide {i} of {n}",
+    prev: "Previous",
+    next: "Next",
+    finish: "Back to the topic",
+    slideFail: "This slide has not loaded. Check your connection, then press Try again.",
+    tryAgain: "Try again",
+    // the activity screen
+    actJob: "Play the activity to the end. Your score is saved when you finish.",
+    actJobDone: "Play the activity to the end, then press I've finished this.",
+    actHelp: ["Play the activity on this page. When you reach the end, your score is sent to your teacher.",
+      "If you play it again, your best score is kept.",
+      "If the activity does not load, press Try again. Open in a full window works too, but a score there is not saved."],
+    actWait: "Your score is saved when you reach the end.",
+    actSaving: "Saving your score...",
+    actSaved: "Saved. Your best: {s} of {m}.",
+    actSavedDone: "Saved as done.",
+    actRetry: "Not saved yet. The app keeps trying, so leave this page open.",
+    actFinished: "I've finished this",
+    fullWindow: "Open in a full window",
+    fullNote: "A score in a full window is not saved.",
+    loadFail: "The activity has not loaded. Check your connection, then press Try again.",
+    back: "Back to the topic",
+    pending: "Some scores are still waiting to save. Leave this page open for a minute.",
+    // "How did this topic go?"
+    evalJob: "For each line, pick how sure you feel. Then send it to your teacher.",
+    evalHelp: ["Pick one answer for every line. Be honest: it helps your teacher know what to go over again.",
+      "The box at the bottom is for anything else you want to tell your teacher. You do not have to write in it.",
+      "You can come back and change your answers later."],
+    evalBox: "Anything you want to tell your teacher? You do not have to write anything.",
+    evalPh: "For example, a part you would like gone over again.",
+    evalSend: "Send to my teacher",
+    evalNeed: "Pick an answer for every line first.",
+    evalLeft: "{n} characters left",
+    evalDoneH: "Sent to your teacher",
+    evalDoneP: "Thank you. Your teacher can see your answers. You can change them any time.",
+    evalDoneJob: "Your answers are with your teacher. Go back to the topic, or change your answers.",
+    // staff
+    tabActs: "Activities",
+    tabEvals: "Topic checks",
+    actsHead: "Activity scores",
+    actsSub: "Each pupil's best score. Under it: their first score and how many goes they had.",
+    actsCsv: "Download as a spreadsheet (CSV)",
+    slidesCol: "Slides seen",
+    slidesOf: "{a} of {n} slides",
+    actsAvg: "Average best score in each activity",
+    notPlayed: "-",
+    noPupils: "No pupils have joined this class yet.",
+    evalsHead: "How did this topic go?",
+    evalsSub: "What each pupil said about each part of the topic. The newest answer counts.",
+    evalsNone: "No pupil has sent this yet.",
+    evalsCount: "{n} of {p} pupils have sent it",
+    evalsTally: "{a} got it \u00b7 {b} getting there \u00b7 {c} not yet",
+    comments: "What they wrote",
+    noComments: "Nobody wrote anything.",
+    sentOn: "sent {d}",
+    sentCol: "Sent",
+    notSent: "Not sent",
+    rateShort: ["Got it", "Getting there", "Not yet"],
+    store: "Storage used: {k} KB of about 500 KB.",
+    lockedTopic: "This topic is locked for this class. Open it on the Topics tab."
+  }
+};
+if (typeof module !== "undefined" && module.exports) module.exports = S1L;
 
 </script>
 <script>
@@ -328,7 +677,7 @@ var S1S = {
  * swapped for the server (build/ARCH.md): apiBoot gives the rounds, apiStage the drawn views of one stage (no keys),
  * apiMark the marks and the mark scheme. Layout, strings and behaviour are the prototype's. */
 var App = (function () {
-  var S = S1S.S, X = S1S.X, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
+  var S = S1S.S, X = S1S.X, LL = S1L.S, TOPICS = S1S.TOPICS, BOOT = window.S1BOOT || {}, TOPIC = "digital-data";
   var app, ME = null, CACHE = {}, PROM = {}, CUR = { screen: "" }, draftT = null, pingT = null;
   // a question's opening words for the flagged list; the server sends the same (qWords_ in Code.gs)
   function qWords(t) { t = String(t || "").replace(/___/g, "\u2026"); return t.length > 90 ? t.slice(0, 88).replace(/\s+\S*$/, "") + " \u2026" : t; }
@@ -411,6 +760,8 @@ var App = (function () {
   function guard(line) { CUR = { screen: "guard", line: line }; bare("", el('<div class="guard"><div class="card"><p>' + h(line) + '</p></div></div>')); }
   function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(function () { x.style.display = "none"; }, 1800); }
   function crumbHome() { return '<a id="cHome">' + S.home + '</a>'; }
+  function crumbHub() { return crumbHome() + ' \u00b7 <a id="cHub">' + h(ME.topic.title) + '</a>'; } // v11: the exam questions sit inside the topic's own page
+  function wireHub() { wire("cHome", home); wire("cHub", function () { Hub.topic(TOPIC); }); }
   function wire(id, fn) { var e = document.getElementById(id); if (e) e.onclick = fn; }
   // ---- name ----
   function nameScreen() { // as A2: Continue waits for a name; a refused name leaves the box for another try
@@ -421,20 +772,19 @@ var App = (function () {
     nm.oninput = function () { b.disabled = !nm.value.trim(); }; nm.onkeydown = function (ev) { if (ev.key === "Enter") send(); }; b.onclick = send; nm.focus();
   }
   // ---- home ----
-  function home() { // one live tile per built topic (v6), each with its own round line; the rest say "Comes later"
+  function home() { // v11: every Unit 1 topic has a tile; an open topic's Open goes to its own page (hub.js): slides, activities, exam questions, "How did this topic go?"
     CUR = { screen: "home" };
-    if (ME.topic.open && SYS.msg === "locked") SYS.msg = "";
-    var tiles = TOPICS.map(function (name, i) {
-      var tp = ME.topics.filter(function (t) { return t.spec === "1." + (i + 1); })[0];
-      if (!tp) return '<div class="topic off"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta"></div><div class="foot">' + S.later + '</div></div>';
-      var n = tp.round, r = tp.rounds[n] || { s: {} }, a = 0, m = 0, x = 0, q = 0;
-      Object.keys(r.s).forEach(function (st) { a += r.s[st].a; m += r.s[st].m; x += r.s[st].x; q += r.s[st].n; });
-      var line = S.round + n + (n > 1 ? " open" : "") + " \u00b7 " + (r.done ? "done \u00b7 " + m + " of " + x + " marks" : a ? a + " of " + q + " questions done" : "not started");
-      var foot = tp.open ? '<button class="btn sm" data-open="' + h(tp.id) + '">' + S.open + '</button><span>' + h(line) + '</span>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
-      return '<div class="topic' + (tp.open ? '' : ' shut') + '"><div class="n">1.' + (i + 1) + '</div><div class="name">' + h(name) + '</div><div class="meta">' + fmt(S.liveMeta, { s: tp.stages.length, q: q, m: x }) + '</div><div class="foot">' + foot + '</div></div>';
+    if (ME.topic && ME.topic.open && SYS.msg === "locked") SYS.msg = "";
+    var LL = S1L.S, tiles = S1L.topics.map(function (lt) {
+      var tp = ME.topics.filter(function (t) { return t.id === lt.id; })[0], c = (ME.cat || []).filter(function (x) { return x.id === lt.id; })[0], open = c ? !!c.open : !!(tp && tp.open), exl = "";
+      if (tp) exl = Hub.examSum(tp).line;
+      var meta = Hub.tileMeta(lt) + (tp ? LL.withExam : "");
+      var lines = open ? '<div class="tlines"><div class="prog">' + h(Hub.tileLine(lt)) + ((ME.checks || {})[lt.id] ? h(LL.tileEval) : '') + '</div>' + (tp ? '<div class="exq">' + h(LL.partExam) + ': <span class="exl">' + h(exl) + '</span></div>' : '') + '</div>' : '';
+      var foot = open ? '<button class="btn sm" data-open="' + h(lt.id) + '">' + S.open + '</button>' : '<span class="lk">' + h(X.locked) + '</span><span>' + h(X.lockedSub) + '</span>';
+      return '<div class="topic' + (open ? '' : ' shut') + '"><div class="n">' + h(lt.spec) + '</div><div class="name">' + h(lt.title) + '</div><div class="meta">' + h(meta) + '</div>' + lines + '<div class="foot">' + foot + '</div></div>';
     }).join("");
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
-    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { pick(b.dataset.open); topic(); }; });
+    app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { Hub.topic(b.dataset.open); }; });
   }
   // ---- topic front ----
   function topic() {
@@ -448,7 +798,7 @@ var App = (function () {
     }).join("");
     var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' \u00b7 ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
     var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
-    shell(crumbHome(), body); wire("cHome", home); wire("seeSum", function () { summary(n); });
+    shell(crumbHub() + ' \u00b7 ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); });
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
         var st = +b.dataset.st; b.disabled = true;
@@ -493,7 +843,7 @@ var App = (function () {
     else if (v.form === "gaps") { var k = 0; ctl = '<div class="lead">' + (v.pool ? S.gapsPool : S.gapsType) + '</div><p class="gapsent">' + v.text.split("___").map(h).reduce(function (acc, piece, idx) { if (idx === 0) return piece; var g = k++; return acc + (v.pool ? '<select data-k="' + g + '"><option value="">' + S.choose + '</option>' + v.pool.map(function (w) { return '<option>' + h(w) + '</option>'; }).join("") + '</select>' : '<input type="text"' + (v.fml && v.fml[g] ? FML : '') + ' maxlength="30" data-k="' + g + '" placeholder="' + h(v.labels[g] || '') + '">') + '<span class="mk" data-g="' + g + '"></span>' + piece; }, "") + '</p>'; }
     var card = '<div class="card" id="qcard"><div class="qhead"><span class="marks">' + v.marks + (v.marks === 1 ? ' mark' : ' marks') + '</span><span class="src">' + h(src) + '</span></div>' + (v.q ? '<p class="qtext">' + h(v.q) + '</p>' : '') + ctl + '<div class="actions"><button class="btn" id="check" disabled>' + S.check + '</button><span class="help" id="help">' + S.help + '</span></div><div id="after"></div></div>';
     var body = el('<div>' + (v.figure ? '<div class="cols">' + figureHtml(v.figure) + card + '</div>' : '<div style="max-width:860px">' + card + '</div>') + '</div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, i, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' \u00b7 <a id="cTopic">' + h(LL.partExam) + '</a>', body, stagebar(st, i, n)); wireHub(); wire("cTopic", topic);
     var ans = { picks: [], parts: v.parts ? v.parts.map(function () { return { picks: [] }; }) : null, texts: [], map: [], choices: [], fills: [], text: "" };
     function refresh() { var a = collect(), ok = complete(v, a); document.getElementById("check").disabled = sending || !ok; document.getElementById("help").hidden = ok; } // the "Answer every part first." line goes once she has (live look, 14 Oct 2026)
     function collect() {
@@ -583,7 +933,7 @@ var App = (function () {
     CUR = { screen: "stagecard", st: st };
     var n = roundNo(), t = stage(st), D = CACHE[ck(n, st)], rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">Stage ' + st + ' \u00b7 ' + h(t.title) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.tick + '</div><div class="ticks">' + D.stage.outcomes.map(function (o, k) { return '<label><input type="checkbox" data-k="' + k + '"><span>' + h(o) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.added + '</div><input type="text" id="conf" maxlength="100" placeholder="' + S.addPh + '"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveCarry + '</button></div></div></div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body, stagebar(st, t.q, n)); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' \u00b7 <a id="cTopic">' + h(LL.partExam) + '</a>', body, stagebar(st, t.q, n)); wireHub(); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     wire("save", function () {
       var conf = document.getElementById("conf").value.trim(), err = document.getElementById("err"), b = document.getElementById("save"); if (!rating) { err.textContent = S.rateErr; return; }
@@ -597,7 +947,7 @@ var App = (function () {
     CUR = { screen: "topiccard" };
     var n = roundNo(), rating = 0;
     var body = el('<div style="max-width:760px"><div class="card"><h2>' + S.howGo + '</h2><p class="sub">' + fmt(S.wholeTopic, { t: h(ME.topic.title) }) + '</p>' + rateHtml("rate") + '<div class="lead">' + S.unsure + '</div><div class="ticks"><label><input type="checkbox" data-u="0"><span>' + S.fine + '</span></label>' + stNs().map(function (st) { return '<label><input type="checkbox" data-u="' + st + '"><span>' + h(stage(st).title) + '</span></label>'; }).join("") + '</div><div class="lead">' + S.anything + '</div><input type="text" id="note" maxlength="100"><div class="err" id="err"></div><div class="actions"><button class="btn" id="save">' + S.saveSee + '</button></div></div></div>');
-    shell(crumbHome() + ' \u00b7 <a id="cTopic">' + h(ME.topic.title) + '</a>', body); wire("cHome", home); wire("cTopic", topic);
+    shell(crumbHub() + ' \u00b7 <a id="cTopic">' + h(LL.partExam) + '</a>', body); wireHub(); wire("cTopic", topic);
     wireRate(document.getElementById("rate"), function (r) { rating = r; document.getElementById("err").textContent = ""; });
     body.querySelectorAll("input[data-u]").forEach(function (x) { x.onchange = function () { if (x.dataset.u === "0" && x.checked) body.querySelectorAll("input[data-u]").forEach(function (y) { if (y !== x) y.checked = false; }); else if (x.checked) body.querySelector('input[data-u="0"]').checked = false; }; });
     wire("save", function () {
@@ -618,7 +968,7 @@ var App = (function () {
     });
     var tot = TOT(n);
     var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
-    shell(crumbHome(), body); wire("cHome", home); wire("back", home);
+    shell(crumbHub(), body); wireHub(); wire("back", home);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
   // ---- boot ----
@@ -628,6 +978,7 @@ var App = (function () {
     call("apiBoot", {}).then(function (r) {
       if (r.staff) { ME = r; return Staff.start(r, T); }
       ME = r; pick(TOPIC); r.needName ? nameScreen() : home();
+      Hub.start(); // a score still waiting in this browser from last time is sent now
       if (!pingT) { var act = Date.now(), touch = function () { act = Date.now(); }; document.addEventListener("pointerdown", touch, true); document.addEventListener("keydown", touch, true);
         pingT = setInterval(function () { if (document.visibilityState === "visible" && Date.now() - act < 120000) call("apiPing", {}, { quiet: true }).catch(function () {}); }, 60000); } // "last used" = last real use, not a tab left open
       if (BOOT.sit && window.Sit && (r.owner || window.__DEV_USER)) Sit.run(T);
@@ -639,18 +990,242 @@ var App = (function () {
   window.addEventListener("resize", fit);
   var T = { h: h, fmt: fmt, el: el, call: call, bare: bare, wire: wire, toast: toast, boot: BOOT,
     me: function () { return ME; }, cur: function () { return CUR; }, cache: function () { return CACHE; },
-    pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
+    shell: shell, crumbHome: crumbHome, at: function (c) { CUR = c; }, pick: pick, reboot: reboot, loadStage: loadStage, home: home, topic: topic, question: question, summary: summary, stagecard: stagecard, topiccard: topiccard };
   return { boot: boot, t: T };
 })();
 
 </script>
 <script>
+/* hub.js \u2014 v11 (11 Nov 2026): a topic's own page. Every Unit 1 topic now holds its slide sets, its activities, its exam
+ * questions (the topics with a bank) and "How did this topic go?". The page is the parent of each activity: the activity
+ * (on GitHub Pages, s1_platform/bridge.js) posts its score up, this page queues it and saves it with apiLessons, so a lost
+ * connection never loses a score (the AS theory pattern: a queue kept in the browser, tried again every 15 seconds).
+ * The server keeps the first score, the best score and the number of goes; the slide sets keep the last slide seen. */
+var Hub = (function () {
+  var L = S1L.S, T = App.t, h = T.h, fmt = T.fmt, el = T.el, wire = T.wire;
+  var EPOCH = 1767225600000; // tmin_ in Code.gs counts minutes from 1 Jan 2026
+  // the slides and activities come from GitHub Pages; on this computer's dev server ?actbase= may point at a local copy
+  var BASE = S1L.base;
+  try { var mb = /[?&]actbase=([^&#]+)/.exec(location.search); if (mb) { var b0 = decodeURIComponent(mb[1]); if (/^http:\/\/(localhost|127\.0\.0\.1):\d+\/$/.test(b0)) BASE = b0; } } catch (e) {}
+  var ORIGIN = BASE.replace(/^(https?:\/\/[^\/]+).*$/, "$1");
+  function LT(id) { return S1L.topics.filter(function (t) { return t.id === id; })[0]; }
+  function actOf(id) { var o = null; S1L.topics.forEach(function (t) { t.acts.forEach(function (a) { if (a.id === id) o = { t: t, a: a }; }); }); return o; }
+  function deckOf(id) { var o = null; S1L.topics.forEach(function (t) { t.decks.forEach(function (d) { if (d.id === id) o = { t: t, d: d }; }); }); return o; }
+  function me() { return T.me(); }
+  function LS() { var m = me(); if (!m.lessons) m.lessons = { a: {}, s: {}, p: {} }; ["a", "s", "p"].forEach(function (k) { if (!m.lessons[k]) m.lessons[k] = {}; }); return m.lessons; }
+  function isOpen(id) { var c = (me().cat || []).filter(function (x) { return x.id === id; })[0]; return !!(c && c.open); }
+  function bankOf(id) { return (me().topics || []).filter(function (t) { return t.id === id; })[0] || null; }
+  function tmin() { return Math.floor((Date.now() - EPOCH) / 60000); }
+  function day(t) { try { return new Date(EPOCH + t * 60000).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }); } catch (e) { return ""; } }
+  function pad2(i) { return (i < 10 ? "0" : "") + i; }
+  function slideUrl(d, i) { return BASE + "s1_platform/decks/" + d + "/" + pad2(i) + ".webp"; }
+  function actUrl(a, embed) { return BASE + a.path + (embed ? "?embed=1" : ""); }
+  function crumb(t, last) { return T.crumbHome() + ' \u00b7 <a id="cHub">' + h(t.title) + '</a>' + (last ? ' \u00b7 ' + h(last) : ''); }
+  function wireCrumb(t) { wire("cHome", T.home); wire("cHub", function () { topic(t.id); }); }
+  // the exam-question line for one topic's current round, on the home tile and the topic page
+  function examSum(b) { var n = b.round, r = b.rounds[n] || { s: {} }, o = { n: n, a: 0, m: 0, x: 0, q: 0, done: !!r.done };
+    Object.keys(r.s).forEach(function (st) { o.a += r.s[st].a; o.m += r.s[st].m; o.x += r.s[st].x; o.q += r.s[st].n; });
+    o.line = fmt(n > 1 ? L.exRoundOpen : L.exRound, { n: n }) + " \u00b7 " + (o.done ? fmt(L.exDone, { m: o.m, x: o.x }) : o.a ? fmt(L.exPart, { a: o.a, q: o.q }) : L.exNone); return o; }
+  // Help: a link beside the job line opens the lines that say how this screen works
+  function job(line, help) { return '<p class="sub job">' + h(line) + ' <button type="button" class="link hbtn" id="hbtn" aria-expanded="false">' + h(L.help) + '</button></p><div class="card tight helpbox" id="hbox" hidden><ul>' + help.map(function (x) { return '<li>' + h(x) + '</li>'; }).join("") + '</ul><button type="button" class="link" id="hclose">' + h(L.helpClose) + '</button></div>'; }
+  function wireHelp() { var b = document.getElementById("hbtn"), x = document.getElementById("hbox"); if (!b || !x) return; function set(on) { x.hidden = !on; b.setAttribute("aria-expanded", on ? "true" : "false"); } b.onclick = function () { set(x.hidden); }; wire("hclose", function () { set(false); b.focus(); }); }
+
+  // ---- the queue: every slide and score goes through it, so nothing is lost when the connection drops ----
+  var MEM = [], INFL = [], qBusy = false, qT = null, onQ = null;
+  function qKey() { return "s1q:" + (me().email || "") + ":" + (T.boot.cls || ""); }
+  function qLoad() { try { var v = JSON.parse(localStorage.getItem(qKey()) || "null"); if (Array.isArray(v)) return v; } catch (e) {} return MEM.slice(); }
+  function qSave(q) { q = q.slice(-80); MEM = q.slice(); try { localStorage.setItem(qKey(), JSON.stringify(q)); } catch (e) {} }
+  function uid() { return ((Date.now() % 6e7).toString(36) + Math.random().toString(36).slice(2, 7)).slice(0, 10); } // short: the server keeps her last 40 to count a resent score once
+  function applyLocal(o) { // the screen shows a score at once; the server's answer replaces this when it comes back
+    var Ls = LS(), now = tmin();
+    if (o.op === "finish") { var A = actOf(o.id); if (!A) return; var s = o.s, m = o.m, e = Ls.a[o.id];
+      if (!e) e = Ls.a[o.id] = [s, m, s, m, 0, now]; else if (m && (!e[3] || s * e[3] > e[2] * m || (s * e[3] === e[2] * m && m > e[3]))) { e[2] = s; e[3] = m; }
+      e[4] = (e[4] || 0) + 1; e[5] = now; }
+    if (o.op === "slide") { var D = deckOf(o.deck); if (!D) return; var g = Ls.s[o.deck] || [1, 1, now]; g[0] = o.i; g[1] = Math.max(g[1] || 1, o.f || o.i); g[2] = now; Ls.s[o.deck] = g; Ls.p[D.t.id] = "d:" + o.deck; }
+    if (o.op === "at") { var B = actOf(o.id); if (B) Ls.p[B.t.id] = "a:" + o.id; }
+  }
+  function push(o) {
+    o.u = uid(); var q = qLoad();
+    if (o.op === "slide" || o.op === "at") q = q.filter(function (x) { return INFL.indexOf(x.u) !== -1 || !(x.op === o.op && (o.op === "at" || x.deck === o.deck)); }); // only the newest place counts
+    q.push(o); qSave(q); applyLocal(o);
+    clearTimeout(qT); qT = setTimeout(flush, o.op === "finish" ? 0 : 1500);
+    return o.u;
+  }
+  function waiting(u) { return qLoad().some(function (x) { return x.u === u; }); }
+  function flush() {
+    clearTimeout(qT); qT = null;
+    if (qBusy) return; var q = qLoad(); if (!q.length) { if (onQ) onQ(); return; }
+    qBusy = true; var batch = q.slice(0, 40); INFL = batch.map(function (x) { return x.u; });
+    T.call("apiLessons", { ops: batch }, { quiet: true }).then(function (r) {
+      qBusy = false; var sent = INFL; INFL = [];
+      var left = qLoad().filter(function (x) { return sent.indexOf(x.u) === -1; }); qSave(left);
+      me().lessons = r.lessons || me().lessons; left.forEach(applyLocal); // still waiting: keep showing it
+      if (onQ) onQ();
+      if ((r.res || []).indexOf("locked") !== -1) { T.reboot().then(T.home).catch(function () {}); return; } // the teacher locked the topic: home, where the tile says so
+      if (left.length) flush();
+    }, function () { qBusy = false; INFL = []; if (onQ) onQ(true); qT = setTimeout(flush, 15000); });
+  }
+  function start() { qLoad().forEach(applyLocal); if (qLoad().length) flush(); }
+  setInterval(function () { if (!qBusy && !qT && T.me() && qLoad().length) flush(); }, 15000);
+  window.addEventListener("pagehide", function () { if (qLoad().length) flush(); });
+
+  // ---- what she has done (the lines on the topic page and the home tile) ----
+  function deckLine(d) { var g = LS().s[d.id]; if (!g) return { t: L.deckNot, c: "", b: L.start, i: 1 }; if (g[1] >= d.n) return { t: fmt(L.deckAll, { n: d.n }), c: "done", b: L.again, i: 1 }; return { t: fmt(L.deckAt, { i: g[0], n: d.n }), c: "now", b: L.carry, i: g[0] }; }
+  function actDone(a) { var e = LS().a[a.id]; return !!e; }
+  function actLines(a) {
+    var e = LS().a[a.id]; if (!e) return { t: L.actNot, c: "", s: "", b: L.play };
+    var goes = e[4] === 1 ? L.actGoes1 : fmt(L.actGoesN, { n: e[4] });
+    if (!a.scored || !e[3]) return { t: L.actDone, c: "done", s: goes, b: L.playAgain };
+    return { t: fmt(L.actBest, { s: e[2], m: e[3], p: Math.round(100 * e[2] / e[3]) }), c: "done", s: fmt(L.actFirst, { s: e[0], m: e[1] }) + " \u00b7 " + goes, b: L.playAgain };
+  }
+  function tileLine(t) { var d = t.acts.filter(actDone).length, seen = t.decks.some(function (x) { return LS().s[x.id]; }); return d || seen ? fmt(L.tileActs, { d: d, n: t.acts.length }) : L.tileNone; }
+  function tileMeta(t) { var d = t.decks.length ? (t.decks.length === 1 ? L.deck1 : fmt(L.decksN, { n: t.decks.length })) : L.noDecks, a = t.acts.length === 1 ? L.act1 : fmt(L.actsN, { n: t.acts.length }); return fmt(L.tileMeta, { d: d, a: a }); }
+
+  // ---- the topic page ----
+  function topic(id) {
+    var t = LT(id); if (!t || !isOpen(id)) return T.home();
+    T.at({ screen: "hub", topic: id }); onQ = function () { if (T.cur().screen === "hub" && T.cur().topic === id) paintPend(); };
+    var Ls = LS(), bank = bankOf(id), parts = [];
+    // carry on where she left off: the last slide set or activity she opened in this topic
+    var p = String(Ls.p[id] || ""), resume = "";
+    if (p.indexOf("d:") === 0) { var D = deckOf(p.slice(2)); if (D && D.t.id === id) { var dl = deckLine(D.d); resume = '<div class="card tight resume"><button class="btn" id="resume" data-k="' + h(p) + '">' + h(fmt(L.resume, { w: D.d.title })) + '</button><span class="status">' + h(dl.t) + '</span></div>'; } }
+    if (p.indexOf("a:") === 0) { var A = actOf(p.slice(2)); if (A && A.t.id === id) resume = '<div class="card tight resume"><button class="btn" id="resume" data-k="' + h(p) + '">' + h(fmt(L.resume, { w: A.a.title })) + '</button><span class="status">' + h(actLines(A.a).t) + '</span></div>'; }
+    // 1 slides
+    parts.push('<div class="card hubpart" data-hue="1"><h2>' + h(L.partSlides) + '</h2>' + (t.decks.length ? '<div class="stages">' + t.decks.map(function (d) { var x = deckLine(d); return '<div class="row"><div class="st">' + h(d.title) + '<small>' + h(fmt(L.slideCount, { n: d.n })) + '</small></div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-deck="' + h(d.id) + '" data-i="' + x.i + '">' + h(x.b) + '</button></div>'; }).join("") + '</div>' : '<p class="sub" style="margin:0">' + h(L.noDecksLine) + '</p>') + '</div>');
+    // 2 activities
+    var nd = t.acts.filter(actDone).length;
+    parts.push('<div class="card hubpart" data-hue="2"><h2>' + h(L.partActs) + ' <small class="cnt">' + h(fmt(L.actsDone, { d: nd, n: t.acts.length })) + '</small></h2><div class="stages">' + t.acts.map(function (a) { var x = actLines(a); return '<div class="row"><div class="st">' + h(a.title) + (x.s ? '<small>' + h(x.s) + '</small>' : '') + '</div><div class="status ' + x.c + '">' + h(x.t) + '</div><button class="btn sm' + (x.c === "done" ? ' ghost' : '') + '" data-act="' + h(a.id) + '">' + h(x.b) + '</button></div>'; }).join("") + '</div></div>');
+    // 3 exam questions (the topics with a question bank)
+    if (bank) { var ex = examSum(bank);
+      parts.push('<div class="card hubpart" data-hue="3"><h2>' + h(L.partExam) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.examLine) + '<small>' + h(fmt(L.examMeta, { s: bank.stages.length, q: ex.q, m: ex.x })) + '</small></div><div class="status' + (ex.done ? ' done' : ex.a ? ' now' : '') + '">' + h(ex.line) + '</div><button class="btn sm" id="hubExam">' + h(L.open) + '</button></div></div></div>'); }
+    // 4 how did this topic go?
+    var E = (me().checks || {})[id];
+    parts.push('<div class="card hubpart" data-hue="4"><h2>' + h(L.partEval) + '</h2><div class="stages"><div class="row"><div class="st">' + h(L.evalLine) + '<small>' + h(fmt(L.evalParts, { n: t.parts.length })) + '</small></div><div class="status' + (E ? ' done' : '') + '">' + h(E ? fmt(L.evalSent, { d: day(E.t) }) : L.evalNot) + '</div><button class="btn sm' + (E ? ' ghost' : '') + '" id="hubEval">' + h(E ? L.evalChange : L.evalStart) + '</button></div></div></div>');
+    var body = el('<div class="hub" style="max-width:920px"><h1>' + h(t.title) + '</h1>' + job(L.hubJob, L.hubHelp) + '<div class="pend" id="pend" hidden>' + h(L.pending) + '</div>' + resume + parts.join("") + '</div>');
+    T.shell(T.crumbHome(), body); wire("cHome", T.home); wireHelp(); paintPend();
+    body.querySelectorAll("[data-deck]").forEach(function (b) { b.onclick = function () { slides(b.dataset.deck, +b.dataset.i || 1); }; });
+    body.querySelectorAll("[data-act]").forEach(function (b) { b.onclick = function () { activity(b.dataset.act); }; });
+    wire("hubExam", function () { T.pick(id); T.topic(); });
+    wire("hubEval", function () { check(id); });
+    wire("resume", function () { var k = document.getElementById("resume").dataset.k; if (k.indexOf("d:") === 0) { var d = deckOf(k.slice(2)).d; slides(d.id, deckLine(d).i); } else activity(k.slice(2)); });
+  }
+  function paintPend() { var x = document.getElementById("pend"); if (x) x.hidden = !qLoad().length; }
+
+  // ---- a slide set ----
+  var KEY = null;
+  document.addEventListener("keydown", function (ev) { if (KEY && T.cur().screen === "slides" && !ev.altKey && !ev.metaKey && !ev.ctrlKey) KEY(ev); });
+  function slides(deck, i) {
+    var D = deckOf(deck); if (!D || !isOpen(D.t.id)) return T.home();
+    var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
+    T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
+    T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
+    var img = document.getElementById("simg"), pre = new Image(), tries = 0;
+    function show() {
+      T.cur().i = i; tries = 0;
+      document.getElementById("sfail").hidden = true; img.hidden = false;
+      img.src = slideUrl(deck, i); img.alt = fmt(L.slideOf, { i: i, n: d.n }) + ": " + d.title;
+      document.getElementById("scount").textContent = fmt(L.slideOf, { i: i, n: d.n });
+      document.getElementById("sbar").innerHTML = '<b>' + h(d.title) + '</b> \u00b7 ' + h(fmt(L.slideOf, { i: i, n: d.n }));
+      document.getElementById("sline").style.width = Math.round(100 * i / d.n) + "%";
+      document.getElementById("sprev").disabled = i <= 1;
+      var nx = document.getElementById("snext"); nx.textContent = i >= d.n ? L.finish : L.next;
+      if (i < d.n) pre.src = slideUrl(deck, i + 1);
+      push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
+    }
+    img.onload = function () { document.getElementById("sfail").hidden = true; };
+    img.onerror = function () { img.hidden = true; document.getElementById("sfail").hidden = false; };
+    wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = slideUrl(deck, i) + "?r=" + tries + Date.now().toString(36); });
+    function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; show(); }
+    wire("sprev", function () { go(i - 1); });
+    wire("snext", function () { go(i + 1); });
+    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n) go(i + 1); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); go(i - 1); } };
+    show();
+  }
+
+  // ---- an activity, played inside this page so its score comes back ----
+  var MSG = null;
+  window.addEventListener("message", function (e) { if (MSG) MSG(e); });
+  function activity(aid) {
+    var A = actOf(aid); if (!A || !isOpen(A.t.id)) return T.home();
+    var t = A.t, a = A.a, url = actUrl(a, true), waitU = null, readyT = null, ready = false, sentAt = false;
+    T.at({ screen: "activity", act: aid });
+    var body = el('<div class="actscr">' + job(a.scored ? L.actJob : L.actJobDone, L.actHelp) + '<div class="actbar"><span class="status" id="asave" role="status"></span>' + (a.scored ? '' : '<button class="btn sm" id="afin">' + h(L.actFinished) + '</button>') + '<a class="link" id="afull" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><div class="actframe"><iframe id="aframe" title="' + h(a.title) + '" allow="fullscreen; autoplay" src="' + h(url) + '"></iframe><div class="afail card" id="afail" hidden><p>' + h(L.loadFail) + '</p><div class="actions"><button class="btn" id="aretry">' + h(L.tryAgain) + '</button><a class="link" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><p class="help">' + h(L.fullNote) + '</p></div></div><div class="actions"><button class="btn ghost" id="aback">' + h(L.back) + '</button></div></div>');
+    T.shell(crumb(t, a.title), body); wireCrumb(t); wireHelp();
+    var frame = document.getElementById("aframe");
+    function status() {
+      var x = document.getElementById("asave"); if (!x) return;
+      var e = LS().a[aid];
+      if (waitU && waiting(waitU)) { x.className = "status now"; x.textContent = qBusy || !(onQ && onQ.failed) ? L.actSaving : L.actRetry; return; }
+      if (waitU && e) { x.className = "status done"; x.textContent = a.scored && e[3] ? fmt(L.actSaved, { s: e[2], m: e[3] }) : L.actSavedDone; return; }
+      x.className = "status"; x.textContent = L.actWait;
+    }
+    onQ = function (failed) { onQ.failed = !!failed; if (T.cur().screen === "activity" && T.cur().act === aid) status(); };
+    function armLoad() { clearTimeout(readyT); ready = false; readyT = setTimeout(function () { if (!ready && document.getElementById("afail")) document.getElementById("afail").hidden = false; }, 8000); }
+    MSG = function (e) {
+      if (T.cur().screen !== "activity" || T.cur().act !== aid) return;
+      if (e.source !== frame.contentWindow || e.origin !== ORIGIN) return; // only this activity, from GitHub Pages
+      var m = e.data; if (!m || m.t !== "s1act" || m.v !== 1) return;
+      if (m.kind === "back") { topic(t.id); return; } // the activity's own "Back to HQ": the topic page is the HQ here
+      if (!ownPage(m.path)) return; // a different page in the frame never scores this activity
+      if (m.kind === "ready") { ready = true; clearTimeout(readyT); document.getElementById("afail").hidden = true; if (!sentAt) { sentAt = true; push({ op: "at", id: aid }); } return; }
+      if (m.kind === "finish") {
+        if (!a.scored) { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); return status(); }
+        var mx = Math.round(Number(m.max)), sc = Math.round(Number(m.score));
+        if (!(mx > 0) || !isFinite(sc)) return; if (mx > 5000) return; sc = Math.min(Math.max(0, sc), mx);
+        waitU = push({ op: "finish", id: aid, s: sc, m: mx }); status();
+      }
+    };
+    function ownPage(p) { var want = "/" + a.path; try { p = decodeURIComponent(String(p || "")); } catch (x) { return false; } return p.length >= want.length && p.slice(-want.length) === want; }
+    function finBtn() { var b = document.getElementById("afin"); if (b) { b.disabled = true; } }
+    wire("afin", function () { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); status(); });
+    wire("aretry", function () { document.getElementById("afail").hidden = true; armLoad(); frame.src = url + "&r=" + Date.now().toString(36); });
+    wire("aback", function () { topic(t.id); });
+    armLoad(); status();
+  }
+
+  // ---- How did this topic go? ----
+  function check(id) {
+    var t = LT(id); if (!t || !isOpen(id)) return T.home();
+    T.at({ screen: "check", topic: id }); onQ = null;
+    var E = (me().checks || {})[id], r = E ? E.r.slice() : t.parts.map(function () { return 0; }), MAX = 500;
+    var rows = t.parts.map(function (p, k) { return '<div class="erow" data-k="' + k + '"><div class="et">' + h(p) + '</div><div class="eopts" role="radiogroup" aria-label="' + h(p) + '">' + S1L.rate.map(function (w, j) { return '<button type="button" class="tog" role="radio" data-v="' + (j + 1) + '" aria-checked="false">' + h(w) + '</button>'; }).join("") + '</div></div>'; }).join("");
+    var body = el('<div class="evalf" style="max-width:860px">' + job(L.evalJob, L.evalHelp) + '<div class="card"><h2>' + h(fmt(L.evalHead, { t: t.title })) + '</h2><div class="erows">' + rows + '</div><div class="lead">' + h(L.evalBox) + '</div><textarea id="ec" maxlength="' + MAX + '" placeholder="' + h(L.evalPh) + '"></textarea><div class="help" id="eleft"></div><div class="err" id="eerr"></div><div class="actions"><button class="btn" id="esend">' + h(L.evalSend) + '</button><button class="btn ghost" id="eback">' + h(L.back) + '</button></div></div></div>');
+    T.shell(crumb(t, L.partEval), body); wireCrumb(t); wireHelp();
+    var ta = document.getElementById("ec"); ta.value = E ? E.c || "" : "";
+    function left() { document.getElementById("eleft").textContent = fmt(L.evalLeft, { n: MAX - ta.value.length }); }
+    function paint() { body.querySelectorAll(".erow").forEach(function (row) { var k = +row.dataset.k; row.classList.toggle("miss", false); row.querySelectorAll(".tog").forEach(function (b) { var on = +b.dataset.v === r[k]; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false"); }); }); }
+    body.querySelectorAll(".erow").forEach(function (row) { var k = +row.dataset.k; row.querySelectorAll(".tog").forEach(function (b) { b.onclick = function () { r[k] = +b.dataset.v; paint(); if (r.every(Boolean)) document.getElementById("eerr").textContent = ""; }; }); });
+    ta.oninput = left; left(); paint();
+    wire("eback", function () { topic(id); });
+    wire("esend", function () {
+      var b = document.getElementById("esend"), err = document.getElementById("eerr");
+      if (!r.every(Boolean)) { err.textContent = L.evalNeed; body.querySelectorAll(".erow").forEach(function (row) { row.classList.toggle("miss", !r[+row.dataset.k]); }); var first = body.querySelector(".erow.miss"); if (first && first.scrollIntoView) first.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
+      b.disabled = true;
+      T.call("apiCheck", { topic: id, r: r, c: ta.value }, { save: true }).then(function (res) {
+        if (!me().checks) me().checks = {}; me().checks[id] = res.e; checkDone(id);
+      }, function (e) { b.disabled = false; if (e.code === "no-rating") err.textContent = L.evalNeed; });
+    });
+  }
+  function checkDone(id) {
+    var t = LT(id); T.at({ screen: "checkdone", topic: id });
+    var body = el('<div style="max-width:760px">' + job(L.evalDoneJob, L.evalHelp) + '<div class="card done-card"><h2>' + h(L.evalDoneH) + '</h2><p>' + h(L.evalDoneP) + '</p><div class="actions"><button class="btn" id="eback">' + h(L.back) + '</button><button class="btn ghost" id="eagain">' + h(L.evalChange) + '</button></div></div></div>');
+    T.shell(crumb(t, L.partEval), body); wireCrumb(t); wireHelp();
+    wire("eback", function () { topic(id); }); wire("eagain", function () { check(id); });
+  }
+  return { topic: topic, slides: slides, activity: activity, check: check, start: start, flush: flush, tileLine: tileLine, tileMeta: tileMeta, examSum: examSum, queue: qLoad, base: function () { return BASE; } };
+})();
+
+</script>
+<script>
 /* staff.js \u2014 the staff page at the bare link (no class). Door (passcode, or let in by email), then five tabs:
+ * v11 adds Activities (each pupil's best and first score, goes, slides seen) and Topic checks (what each pupil said, a tally, what they wrote) for all nine topics.
  * Classes (A2's list: copy the link, delete a class; v4), Topics (open or lock each topic for the class; DECISIONS \u00a716), Rounds (open the next round for the class
  * or one pupil), Tracker (v4, DECISIONS \u00a717: graphs, a percentage beside every score, the rating in the pupil's own words, every card in "What pupils said",
  * and a pupil page that lists each answered question in words) and Export (CSV). */
 var Staff = (function () {
-  var S = S1S.S, X = S1S.X, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = []; // v6: TP = the topic the Rounds, Tracker and Export tabs show
+  var S = S1S.S, X = S1S.X, L = S1L.S, T, TAB = 0, CLS = "", ROUND = 0, CLASSES = [], armed = false, OWN = false, TP = "digital-data", BUILT = [], STORE = 0, LTP = S1L.topics[0].id; // v6: TP = the topic the Rounds, Tracker and Export tabs show
   var W = { none: "No classes yet. Add one below.", pupils: "Pupils", round: "Round", cls: "Class",
     noPupils: "No pupils have opened the class link yet.", taken: "That class name is taken.", rule: "Use 1 to 30 letters or digits, e.g. 11A DT.",
     copied: "Class link copied.", clearMine: "Clear my own record in this class", clearConfirm: "Clear your own record in {name}? Press again to confirm.",
@@ -683,19 +1258,25 @@ var Staff = (function () {
     var pw = document.getElementById("pw"), go = function () { var v = pw.value.trim(); if (!v) return; document.getElementById("enter").disabled = true; check(v); };
     T.wire("enter", go); pw.onkeydown = function (ev) { if (ev.key === "Enter") go(); }; pw.focus();
   }
-  function bar() { return '<div class="tabs">' + X.tabs.map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>'; }).join("") + '</div>'; }
+  // v11: seven tabs. Activities and Topic checks cover all nine topics; Rounds, Tracker and Export cover the topics with exam questions
+  function TABS() { return [{ n: X.tabs[0], f: classes }, { n: X.tabs[1], f: topics }, { n: L.tabActs, f: acts }, { n: L.tabEvals, f: checks }, { n: X.tabs[2], f: rounds }, { n: X.tabs[3], f: tracker }, { n: X.tabs[4], f: exporter }]; }
+  function bar() { return '<div class="tabs">' + TABS().map(function (t, k) { return '<button class="tab' + (k === TAB ? ' on' : '') + '" data-tab="' + k + '">' + h(t.n) + '</button>'; }).join("") + '</div>'; }
+  function banks() { return BUILT.filter(function (t) { return t.bank; }); }
   function clsPick() { return CLASSES.length > 1 ? '<label for="cp">' + W.cls + '</label><select id="cp">' + CLASSES.map(function (c) { return '<option value="' + h(c.slug) + '"' + (c.slug === CLS ? ' selected' : '') + '>' + h(c.name) + '</option>'; }).join("") + '</select>' : '<b>' + h((CLASSES[0] || {}).name || "") + '</b>'; }
-  function topPick() { return BUILT.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + BUILT.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
+  function ltPick() { return '<label for="lq">' + W.topic + '</label><select id="lq">' + S1L.topics.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === LTP ? ' selected' : '') + '>' + h(t.spec + ' ' + t.title) + '</option>'; }).join("") + '</select>'; }
+  function topPick() { var B = banks(); return B.length > 1 ? '<label for="tq">' + W.topic + '</label><select id="tq">' + B.map(function (t) { return '<option value="' + h(t.id) + '"' + (t.id === TP ? ' selected' : '') + '>' + h(t.title) + '</option>'; }).join("") + '</select>' : ''; }
   function wireCommon(body) {
     body.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { TAB = +b.dataset.tab; armed = false; tabs(); }; });
     var cp = body.querySelector("#cp"); if (cp) cp.onchange = function () { CLS = cp.value; ROUND = 0; armed = false; tabs(); };
     var tq = body.querySelector("#tq"); if (tq) tq.onchange = function () { TP = tq.value; ROUND = 0; armed = false; tabs(); };
+    var lq = body.querySelector("#lq"); if (lq) lq.onchange = function () { LTP = lq.value; armed = false; tabs(); };
   }
   function tabs() {
     return T.call("apiStaff", { op: "classes" }).then(function (r) {
-      CLASSES = r.classes; BUILT = r.topics || BUILT; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
+      CLASSES = r.classes; BUILT = r.topics || BUILT; STORE = r.store || 0; if (banks().length && !banks().some(function (t) { return t.id === TP; })) TP = banks()[0].id; if (!CLASSES.some(function (c) { return c.slug === CLS; })) CLS = CLASSES.length ? (CLASSES.filter(function (c) { return c.mine; })[0] || CLASSES[0]).slug : "";
       if (TAB && !CLS) TAB = 0;
-      [classes, topics, rounds, tracker, exporter][TAB]();
+      if (TAB >= TABS().length) TAB = 0;
+      TABS()[TAB].f();
     }).catch(fail);
   }
   function link(slug) { return T.boot.base + "?class=" + slug; }
@@ -713,7 +1294,7 @@ var Staff = (function () {
       return '<li data-s="' + h(c.slug) + '"><b>' + h(T.fmt(c.pupils === 1 ? W.classLine1 : W.classLine, { name: c.name, n: c.pupils, date: dateOf(c.made) }) + (c.by ? ' \u00b7 ' + T.fmt(W.by, { who: c.by }) : '')) + '</b>' +
         '<button class="btn sm ghost" data-copy>' + W.copy + '</button>' + (c.mine || OWN ? '<button class="btn sm ghost" data-del>' + W.del + '</button>' : '') + '</li>';
     }).join("") + '</ul>' : '<p class="sub">' + W.none + '</p>';
-    var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div></div>');
+    var body = T.el('<div>' + bar() + list + '<div class="card"><h3 class="sh">' + W.add + '</h3><div class="srow"><label for="cn">' + X.className + '</label><input type="text" id="cn" maxlength="30" placeholder="' + X.classPh + '"><button class="btn sm" id="make">' + X.make + '</button></div><div class="err" id="err"></div><p class="hint">' + X.newLocked + '</p></div>' + (OWN && STORE ? '<p class="hint">' + T.fmt(L.store, { k: Math.max(1, Math.round(STORE / 1024)) }) + '</p>' : '') + '</div>');
     page(body); wireCommon(body);
     body.querySelectorAll("[data-copy]").forEach(function (b) { b.onclick = function () {
       var url = link(b.closest("li").dataset.s), done = function () { T.toast(W.copied); };
@@ -733,13 +1314,78 @@ var Staff = (function () {
   function topics() {
     T.call("apiStaff", { op: "topics", cls: CLS }).then(function (r) {
       var on = {}; r.topics.forEach(function (t) { on[t.id] = t.open; });
-      var rows = S1S.TOPICS.map(function (name, i) {
-        var tp = BUILT.filter(function (t) { return t.spec === "1." + (i + 1); })[0], id = tp ? tp.id : "", st = id in on ? '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + id + '">' + (on[id] ? X.lock : X.openT) + '</button>' : '<span class="ts later">' + S.later + '</span><span></span>';
-        return '<div class="trow"><span class="tn">1.' + (i + 1) + '</span><b>' + h(name) + '</b>' + st + '</div>';
+      var rows = r.topics.map(function (tp) { // v11: all nine topics; each opens its slides, activities, its check and (when it has them) its exam questions
+        var id = tp.id, st = '<span class="ts ' + (on[id] ? 'on">' + X.isOpen : 'off">' + X.isLocked) + '</span><button class="btn sm' + (on[id] ? ' ghost' : '') + '" data-t="' + h(id) + '">' + (on[id] ? X.lock : X.openT) + '</button>';
+        return '<div class="trow"><span class="tn">' + h(tp.spec) + '</span><b>' + h(tp.title) + '</b>' + st + '</div>';
       }).join("");
       var body = T.el('<div>' + bar() + '<div class="card"><div class="srow">' + clsPick() + '</div><p class="hint">' + X.topicsNote + '</p><div class="tlist">' + rows + '</div></div></div>');
       page(body); wireCommon(body);
       body.querySelectorAll("[data-t]").forEach(function (b) { b.onclick = function () { b.disabled = true; T.call("apiStaff", { op: "setTopic", cls: CLS, topic: b.dataset.t, open: !on[b.dataset.t] }).then(topics).catch(fail); }; });
+    }).catch(fail);
+  }
+  // ---- Activities (v11): one row per pupil, a column per activity with the best score, the first score and the goes, then the slides seen ----
+  function save(x) { // hands the teacher a CSV file (BOM first so Excel reads the accents)
+    var blob = new Blob(["\ufeff" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function csvBtn(id, op) {
+    T.wire(id, function () { var b = document.getElementById(id); b.disabled = true;
+      T.call("apiStaff", { op: op, cls: CLS, topic: LTP }).then(function (x) { b.disabled = false; save(x); }, function (e) { b.disabled = false; fail(e); }); });
+  }
+  function head(r) { return '<div class="srow">' + clsPick() + ltPick() + '</div>' + (r.open ? '' : '<p class="err lockn">' + h(L.lockedTopic) + '</p>'); }
+  function acts() {
+    T.call("apiStaff", { op: "acts", cls: CLS, topic: LTP }).then(function (r) {
+      var scored = r.acts.filter(function (a) { return a.scored; });
+      var avg = scored.map(function (a) {
+        var ps = r.rows.filter(function (p) { var e = p.a[a.id]; return e && e[3]; }).map(function (p) { return pc(p.a[a.id][2], p.a[a.id][3]); }), m = ps.length ? Math.round(ps.reduce(function (x, y) { return x + y; }, 0) / ps.length) : null;
+        return hbar(a.title, m, ps.length ? m + '% \u00b7 ' + (ps.length === 1 ? W.pupils1 : T.fmt(W.pupilsN, { n: ps.length })) : W.nobody);
+      }).join("");
+      var nSl = r.decks.reduce(function (n, d) { return n + d.n; }, 0);
+      var rows = r.rows.map(function (p) {
+        var cells = r.acts.map(function (a) {
+          var e = p.a[a.id]; if (!e) return '<td class="np">' + L.notPlayed + '</td>';
+          var goes = e[4] === 1 ? L.actGoes1 : T.fmt(L.actGoesN, { n: e[4] });
+          if (!a.scored) return '<td><span class="sc hi">' + h(L.actDone) + '</span><br><small>' + goes + '</small></td>';
+          return '<td>' + score(e[2], e[3]) + '<br><small>' + T.fmt(L.actFirst, { s: e[0], m: e[1] }) + ' \u00b7 ' + goes + '</small></td>';
+        }).join("");
+        var seenN = r.decks.reduce(function (n, d) { var g = p.s[d.id]; return n + (g ? Math.min(g[1], d.n) : 0); }, 0);
+        var sl = nSl ? '<td>' + (seenN ? '<span class="sc ' + band(pc(seenN, nSl)) + '">' + T.fmt(L.slidesOf, { a: seenN, n: nSl }) + '</span>' : L.notPlayed) + '</td>' : '';
+        return '<tr><td><b>' + h(p.name) + '</b></td><td class="seen">' + seen(p.seen) + '</td>' + cells + sl + '</tr>';
+      }).join("");
+      var table = '<div class="tscroll"><table class="track agrid"><tr><th>' + W.pupil + '</th><th>' + W.seen + '</th>' + r.acts.map(function (a) { return '<th>' + h(a.title) + '</th>'; }).join("") + (nSl ? '<th>' + L.slidesCol + '</th>' : '') + '</tr>' + rows + '</table></div>';
+      var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.actsHead) + ' \u00b7 ' + h(r.className) + ' \u00b7 ' + h(r.title) + '</h1>' +
+        (r.rows.length && avg ? '<div class="card"><h2>' + h(L.actsAvg) + '</h2>' + avg + '</div>' : '') +
+        '<div class="card">' + (r.rows.length ? '<p class="hint">' + h(L.actsSub) + '</p>' + table + '<div class="actions"><button class="btn sm ghost" id="acsv">' + h(L.actsCsv) + '</button></div>' : '<p class="sub" style="margin:0">' + h(L.noPupils) + '</p>') + '</div></div>');
+      page(body); wireCommon(body);
+      if (r.rows.length) csvBtn("acsv", "actsCsv");
+    }).catch(fail);
+  }
+  // ---- Topic checks (v11): what each pupil said about each part, a tally per part, then everything they wrote ----
+  var CK = ["ck1", "ck2", "ck3"]; // 1 I've got it (green), 2 getting there (amber), 3 not yet (red)
+  function ckChip(v) { return '<span class="rchip ' + CK[v - 1] + '">' + h(L.rateShort[v - 1]) + '</span>'; }
+  function when(iso) { var s = seen(iso, true); return s.indexOf(W.today) === 0 || s.indexOf(W.yesterday) === 0 ? s.charAt(0).toLowerCase() + s.slice(1) : s; }
+  function checks() {
+    T.call("apiStaff", { op: "checks", cls: CLS, topic: LTP }).then(function (r) {
+      var sent = r.rows.filter(function (p) { return p.e; });
+      var tally = r.parts.map(function (part, i) {
+        var k = [0, 0, 0]; sent.forEach(function (p) { var v = p.e.r[i]; if (v >= 1 && v <= 3) k[v - 1]++; });
+        var n = k[0] + k[1] + k[2];
+        return '<div class="hb cr"><span class="hl">' + h(part) + '</span><span class="ht stack">' + (n ? k.map(function (c, j) { return c ? '<i class="' + CK[j] + '" style="width:' + (100 * c / n) + '%" title="' + h(L.rateShort[j]) + ': ' + c + '">' + c + '</i>' : ''; }).join("") : '') + '</span><span class="hv">' + T.fmt(L.evalsTally, { a: k[0], b: k[1], c: k[2] }) + '</span></div>';
+      }).join("") + '<div class="legend">' + L.rateShort.map(function (t, i) { return '<span><i class="' + CK[i] + '"></i>' + h(t) + '</span>'; }).join("") + '</div>';
+      var rows = r.rows.map(function (p) {
+        return '<tr><td><b>' + h(p.name) + '</b></td><td class="seen">' + (p.e ? seen(p.e.at) : '<span class="np">' + h(L.notSent) + '</span>') + '</td>' +
+          r.parts.map(function (_, i) { return '<td>' + (p.e ? ckChip(p.e.r[i]) : '<span class="np">' + L.notPlayed + '</span>') + '</td>'; }).join("") + '</tr>';
+      }).join("");
+      var said = sent.filter(function (p) { return p.e.c; });
+      var wrote = '<div class="card said"><h2>' + h(L.comments) + '</h2>' + (said.length ? said.map(function (p) {
+        return '<div class="ev"><b>' + h(p.name) + '</b> <small class="hint">' + T.fmt(L.sentOn, { d: when(p.e.at) }) + '</small><div class="nq">\u201c' + h(p.e.c) + '\u201d</div></div>'; }).join("") : '<p class="hint">' + h(L.noComments) + '</p>') + '</div>';
+      var body = T.el('<div>' + bar() + head(r) + '<h1>' + h(L.evalsHead) + ' \u00b7 ' + h(r.className) + ' \u00b7 ' + h(r.title) + '</h1>' +
+        (r.rows.length ? '<div class="card"><p class="big">' + T.fmt(L.evalsCount, { n: sent.length, p: r.rows.length }) + '</p>' + (sent.length ? tally : '<p class="hint">' + h(L.evalsNone) + '</p>') + '</div>' +
+          '<div class="card"><p class="hint">' + h(L.evalsSub) + '</p><div class="tscroll"><table class="track cgrid"><tr><th>' + W.pupil + '</th><th>' + h(L.sentCol) + '</th>' + r.parts.map(function (t) { return '<th>' + h(t) + '</th>'; }).join("") + '</tr>' + rows + '</table></div><div class="actions"><button class="btn sm ghost" id="ccsv">' + h(L.actsCsv) + '</button></div></div>' + wrote
+        : '<div class="card"><p class="sub" style="margin:0">' + h(L.noPupils) + '</p></div>') + '</div>');
+      page(body); wireCommon(body);
+      if (r.rows.length) csvBtn("ccsv", "checksCsv");
     }).catch(fail);
   }
   // ---- Rounds ----
@@ -862,10 +1508,7 @@ var Staff = (function () {
       T.wire("csv", function () {
         var b = document.getElementById("csv"); b.disabled = true;
         T.call("apiStaff", { op: "csv", cls: CLS, topic: TP, round: ROUND }).then(function (x) {
-          b.disabled = false;
-          var blob = new Blob(["\ufeff" + x.csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
-          a.href = URL.createObjectURL(blob); a.download = x.filename; document.body.appendChild(a); a.click();
-          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+          b.disabled = false; save(x);
         }, function () { b.disabled = false; });
       });
     }).catch(fail);
@@ -949,7 +1592,7 @@ var Sit = (function () {
   var FX = { n: 0, bad: 0 }, GX = { n: 0, bad: 0 }; // v7: formula and grid checks, counted per question shown
   var MARKS = {}, FLAGS = [], G = 0, reloaded = false, email, n, K, NQ,
     TID = "digital-data";
-  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".foot span")) || {}; }
+  function foot() { var b = $('[data-open="' + TID + '"]'), t = b && b.closest(".topic"); return (t && t.querySelector(".exl")) || {}; } // v11: the exam round line sits under the tile's activities line
   function sts() { var a = []; for (var i = 1; i <= K; i++) a.push(i); return a; }
   function answerOne() { // fills the question on screen the way a pupil would, then presses Check (or I don't know)
     var c = cur(), v = c.v, a = SitPolicy.answer(v, email + "|" + n), miss = rendered(v);
@@ -1036,7 +1679,7 @@ var Sit = (function () {
       T.home(); layout("home");
       ok("home line", (foot().textContent || "") === S.round + "1 \u00b7 not started", foot().textContent);
       ok("topic " + TID + " is " + me.topic.title, me.topic.id === TID, me.topic.id);
-      $('[data-open="' + TID + '"]').click(); layout("topic");
+      $('[data-open="' + TID + '"]').click(); $("#hubExam").click(); layout("topic"); // v11: Open goes to the topic's page; its Exam questions Open goes on
       return sts().reduce(function (p, st) { return p.then(function () { return playStage(st); }); }, Promise.resolve());
     }).then(function () {
       layout("topic card");

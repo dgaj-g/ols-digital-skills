@@ -20,7 +20,7 @@ const ROOT = path.join(__dirname, '..');
 const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude Work/S1 Unit 1 Platform';
 const PORT = Number(process.argv[2] || process.env.PORT || 8767);
 const STORE = process.env.S1U1_STORE || path.join(DESIGN, 'gates', 'dev-store.json');
-const CODE = path.join(DESIGN, 'deploy', 'Code.gs');
+const CODE = process.env.S1U1_CODE || path.join(DESIGN, 'deploy', 'Code.gs'); // S1U1_CODE: a gate's control copy
 const INDEX = path.join(ROOT, 'server', 'Index.html');
 const DEV_NAMES = { 'pupil1@c2ken.net': 'Aoife Byrne', 'pupil2@c2ken.net': 'Ciara Doyle', 'pupil3@c2ken.net': 'Niamh Kelly', 'dgartland021@c2ken.net': 'Damien Gartland', 'teacher2@c2ken.net': 'Sean Murphy', 'hod@c2ken.net': 'Mary Quinn', 'teacher3@c2ken.net': 'Orla Keane' };
 
@@ -127,7 +127,7 @@ http.createServer((req, res) => {
       res.writeHead(200, { 'content-type': 'application/json' });
       if (u.pathname === '/__reset') { db = { script: {}, user: {}, sheets: {} }; save(); res.end('{"ok":true}'); return; }
       if (u.pathname === '/__store') { res.end(JSON.stringify(db)); return; }
-      if (u.pathname === '/__set') { const j = JSON.parse(body || '{}'); Object.assign(db.script, j.script || {}); Object.entries(j.user || {}).forEach(([k, v]) => { db.user[k] = Object.assign(db.user[k] || {}, v); }); save(); res.end('{"ok":true}'); return; }
+      if (u.pathname === '/__set') { const j = JSON.parse(body || '{}'); Object.entries(j.script || {}).forEach(([k, v]) => { if (v === null) delete db.script[k]; else db.script[k] = v; }); Object.entries(j.user || {}).forEach(([k, v]) => { db.user[k] = Object.assign(db.user[k] || {}, v); }); save(); res.end('{"ok":true}'); return; }
       const fn = u.pathname.replace(/^\/api\//, '');
       if (!/^api[A-Z]\w+$/.test(fn) || typeof sandbox[fn] !== 'function') { res.end(JSON.stringify({ __error: 'unknown ' + fn })); return; }
       current = String(req.headers['x-dev-user'] || 'pupil1@c2ken.net').toLowerCase();

@@ -1,4 +1,4 @@
-G0 server GREEN · 2026-11-08T16:02:34.218Z · build ad9099a22e-c59479cf
+G0 server GREEN · 2026-11-11T15:30:41.941Z · build dd6dc85b0f-5800a9d6
 PASS A pack->unpack->judge == judge on 10080 answers across 252 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
@@ -28,14 +28,14 @@ PASS B owner admitted by email
 PASS B class made: 11A DT -> 11a-dt
 PASS B same class name refused
 PASS B blank class name refused
-PASS B v7 a new class starts with its four topics (Digital Data, Software, Databases, Spreadsheets) all locked (digital-data:false software:false databases:false spreadsheets:false)
+PASS B v11 a new class starts with all nine topics locked, four of them with exam questions (digital-data:false software:false databases:false spreadsheets:false hardware:false networks:false cyberspace:false cloud:false impact:false)
 PASS B pupil boot says the topic is locked
 PASS B locked: a stage will not load (locked)
 PASS B locked: nothing is marked (locked)
 PASS B locked: no stage card is saved (locked)
 PASS B locked: typed writing is still saved as a draft
 PASS B a pupil cannot open a topic
-PASS B a topic not built yet cannot be opened
+PASS B a topic that does not exist cannot be opened
 PASS B control (v5): passcode staff cannot open a topic on a class they did not make
 PASS B the owner opens Digital Data
 PASS B the class list shows it open
