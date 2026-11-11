@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-11T22:30:15.803Z
-FAIL DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree · Index.html body build 8946d31888-10b96b67 ≠ log 02de92140c-e5702448 | Index.html token not in both body and footer | Code.gs header does not carry 02de92140c-e5702448
-INFO newest row: | 11 Nov 2026 22:02 | 12 | 02de92140c-e5702448 | v12 S1 Unit 1 02de92140c-e5702448 | slide click reveals: a slide with click animations now shows its parts one 
+G6 deploy log + token · 2026-11-11T22:38:32.472Z
+PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
+INFO newest row: | 11 Nov 2026 22:37 | 13 | 8946d31888-10b96b67 | v13 S1 Unit 1 8946d31888-10b96b67 | only the activity sets made with him for the new course stay (his ruling): 
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
-RED · 2 pass · 1 fail
+GREEN · 3 pass · 0 fail
