@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-11T15:48:18.003Z
+G6 deploy log + token · 2026-11-11T22:03:03.928Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 11 Nov 2026 15:47 | 11 | dd6dc85b0f-5800a9d6 | v11 S1 Unit 1 dd6dc85b0f-5800a9d6 | slides, activities and a topic check for each topic: every topic page now h
+INFO newest row: | 11 Nov 2026 22:02 | 12 | 02de92140c-e5702448 | v12 S1 Unit 1 02de92140c-e5702448 | slide click reveals: a slide with click animations now shows its parts one 
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail

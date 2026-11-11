@@ -239,12 +239,13 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 .hubpart .stages .row .btn{justify-self:end}
 .tlines{display:grid;gap:3px;font-size:13px;margin:6px 0 0}.tlines .prog{color:var(--ink)}.exq{color:var(--mute)}.exq .exl{color:var(--plum);font-weight:700}
 .slides{max-width:1180px;margin:0 auto}
-.slide,.snav{width:min(100%,max(360px,calc((100vh - 290px)*16/9)));margin-left:auto;margin-right:auto}
+.slide,.snav,.smore{width:min(100%,max(360px,calc((100vh - 316px)*16/9)));margin-left:auto;margin-right:auto}
 .slide{position:relative;aspect-ratio:16/9;margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--lift)}
 .slide img{display:block;width:100%;height:100%;object-fit:contain}
 .sfail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--card);text-align:center;padding:16px}.sfail p{margin:0}
 .snav{display:flex;align-items:center;justify-content:space-between;gap:10px}.scount{font-size:14px;font-weight:700;color:var(--mute);text-align:center}
 .snav .btn{white-space:normal}
+.smore{min-height:1.45em;margin-top:-4px;margin-bottom:8px;font-size:14px;font-weight:700;color:var(--accd);text-align:center}
 .actbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 0 10px}.actbar .status{margin-right:auto;font-size:14px}
 .actframe{position:relative;height:calc(100vh - 250px);min-height:440px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--lift);margin-bottom:12px}
 .actframe iframe{display:block;width:100%;height:100%;border:0}
@@ -267,7 +268,7 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 @media (max-width:640px){
   .erow{grid-template-columns:minmax(0,1fr);padding:12px 6px}
   .actframe{height:calc(100vh - 210px);min-height:420px}
-  .slide,.snav{width:100%}
+  .slide,.snav,.smore{width:100%}
   .hb.cr{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

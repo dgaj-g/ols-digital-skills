@@ -247,12 +247,13 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 .hubpart .stages .row .btn{justify-self:end}
 .tlines{display:grid;gap:3px;font-size:13px;margin:6px 0 0}.tlines .prog{color:var(--ink)}.exq{color:var(--mute)}.exq .exl{color:var(--plum);font-weight:700}
 .slides{max-width:1180px;margin:0 auto}
-.slide,.snav{width:min(100%,max(360px,calc((100vh - 290px)*16/9)));margin-left:auto;margin-right:auto}
+.slide,.snav,.smore{width:min(100%,max(360px,calc((100vh - 316px)*16/9)));margin-left:auto;margin-right:auto}
 .slide{position:relative;aspect-ratio:16/9;margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--lift)}
 .slide img{display:block;width:100%;height:100%;object-fit:contain}
 .sfail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--card);text-align:center;padding:16px}.sfail p{margin:0}
 .snav{display:flex;align-items:center;justify-content:space-between;gap:10px}.scount{font-size:14px;font-weight:700;color:var(--mute);text-align:center}
 .snav .btn{white-space:normal}
+.smore{min-height:1.45em;margin-top:-4px;margin-bottom:8px;font-size:14px;font-weight:700;color:var(--accd);text-align:center}
 .actbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 0 10px}.actbar .status{margin-right:auto;font-size:14px}
 .actframe{position:relative;height:calc(100vh - 250px);min-height:440px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--lift);margin-bottom:12px}
 .actframe iframe{display:block;width:100%;height:100%;border:0}
@@ -275,7 +276,7 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 @media (max-width:640px){
   .erow{grid-template-columns:minmax(0,1fr);padding:12px 6px}
   .actframe{height:calc(100vh - 210px);min-height:420px}
-  .slide,.snav{width:100%}
+  .slide,.snav,.smore{width:100%}
   .hb.cr{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
@@ -283,8 +284,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-dd6dc85b0f-5800a9d6">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-dd6dc85b0f-5800a9d6" };</script>
+<body data-build="s1u1-02de92140c-e5702448">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-02de92140c-e5702448" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -339,13 +340,7 @@ var S1L = {
   base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
   topics: [
     { id: "digital-data", spec: "1.1", title: "Digital data",
-      decks: [
-        { id: "dd1", title: "Representing data (part 1)", n: 18 },
-        { id: "dd2", title: "Representing data (part 2)", n: 16 },
-        { id: "dd3", title: "Representing images", n: 21 },
-        { id: "dd4", title: "Representing sound", n: 18 },
-        { id: "dd5", title: "Data portability and compression", n: 13 }
-      ],
+      decks: [],
       acts: [
         { id: "dh1", title: "Data Detective", path: "digital_data_revision/activity1.html", scored: true },
         { id: "dh2", title: "Type Caster", path: "digital_data_revision/activity2.html", scored: true },
@@ -367,7 +362,7 @@ var S1L = {
         "File formats, compression, buffering and streaming"
       ] },
     { id: "software", spec: "1.2", title: "Software",
-      decks: [{ id: "sw", title: "Software", n: 41 }],
+      decks: [{ id: "sw", title: "Software", n: 41, steps: {"10":3,"16":3,"22":3,"25":2,"30":3,"32":4,"37":3,"38":3} }],
       acts: [
         { id: "sw1", title: "OS Control Room", path: "software_revision/activity1.html", scored: true },
         { id: "sw2", title: "Processing Mode Dispatch", path: "software_revision/activity2.html", scored: true },
@@ -383,7 +378,7 @@ var S1L = {
         "Antivirus software and why updates matter"
       ] },
     { id: "databases", spec: "1.3", title: "Database applications",
-      decks: [{ id: "db", title: "Database applications", n: 75 }],
+      decks: [{ id: "db", title: "Database applications", n: 75, steps: {"10":1,"11":1,"12":2,"13":1,"14":1,"15":1,"16":1,"17":1,"18":1,"22":1,"23":2,"24":3,"25":1,"26":2,"27":1,"28":1,"29":1,"30":2,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"47":1,"48":1,"49":1,"50":1,"51":1,"52":1,"53":1,"54":1,"55":1,"60":2,"61":1,"62":1,"63":2,"64":1,"68":1,"69":1,"70":2,"71":1,"72":2} }],
       acts: [
         { id: "db1", title: "The Register", path: "databases_revision/activity1.html", scored: true },
         { id: "db2", title: "The Door", path: "databases_revision/activity2.html", scored: true },
@@ -406,7 +401,7 @@ var S1L = {
         "Big data and data analytics"
       ] },
     { id: "spreadsheets", spec: "1.4", title: "Spreadsheet applications",
-      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98 }],
+      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98, steps: {"9":1,"10":1,"11":1,"12":1,"13":2,"14":1,"15":1,"21":1,"22":1,"23":2,"24":1,"25":1,"26":1,"27":2,"28":1,"29":1,"30":1,"31":1,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"42":1,"43":1,"50":1,"51":1,"52":1,"53":1,"54":1,"58":1,"59":1,"60":1,"61":1,"62":1,"63":1,"70":1,"71":1,"72":1,"73":1,"74":2,"75":2,"79":1,"80":2,"81":1,"82":1,"83":1,"84":1,"85":1,"86":1,"87":1,"90":1,"91":1,"92":2,"93":1,"94":1} }],
       acts: [
         { id: "ss1", title: "Cinema Grid", path: "spreadsheets_revision/activity1.html", scored: true },
         { id: "ss2", title: "Tuck Shop Kitchen", path: "spreadsheets_revision/activity2.html", scored: true },
@@ -436,7 +431,7 @@ var S1L = {
         "RAM, ROM and cache"
       ] },
     { id: "networks", spec: "1.6", title: "Network technologies",
-      decks: [{ id: "net", title: "Network technologies", n: 41 }],
+      decks: [],
       acts: [
         { id: "nt1", title: "LAN vs WAN Sorting Game", path: "activity1.html", scored: true },
         { id: "nt2", title: "Internet vs WWW vs IoT Challenge", path: "activity2.html", scored: true },
@@ -453,7 +448,7 @@ var S1L = {
         "Good and bad points of a network for an organisation"
       ] },
     { id: "cyberspace", spec: "1.7", title: "Cyberspace, network security and data transfer",
-      decks: [{ id: "cyber", title: "Cyberspace, network security and data transfer", n: 23 }],
+      decks: [],
       acts: [
         { id: "cy1", title: "Inbox Inspector", path: "Cyberspace_Activities/activity1.html", scored: true },
         { id: "cy2", title: "Malware Morgue", path: "Cyberspace_Activities/activity2.html", scored: true },
@@ -467,7 +462,7 @@ var S1L = {
         "Protocols: FTP, HTTP and HTTPS"
       ] },
     { id: "cloud", spec: "1.8", title: "Cloud computing",
-      decks: [{ id: "cloud", title: "Cloud computing", n: 7 }],
+      decks: [],
       acts: [
         { id: "cl1", title: "Cloud Consultant", path: "Cloud_Computing_Activities/activity1.html", scored: true },
         { id: "cl2", title: "Cloud Taboo Challenge", path: "Cloud_Computing_Activities/activity2.html", scored: true }
@@ -478,12 +473,7 @@ var S1L = {
         "The cloud for gaming, file storage, sharing and working together"
       ] },
     { id: "impact", spec: "1.9", title: "Ethical, legal and environmental impact",
-      decks: [
-        { id: "eth", title: "Moral and ethical issues", n: 13 },
-        { id: "leg", title: "Legislation", n: 20 },
-        { id: "emp", title: "Employment, health and safety", n: 21 },
-        { id: "app", title: "Digital applications", n: 34 }
-      ],
+      decks: [],
       acts: [
         { id: "et1", title: "The Grey Zone", path: "S1_Ethics_Activity/activity1.html", scored: false },
         { id: "et2", title: "Exam Showdown", path: "S1_Ethics_Activity/activity2.html", scored: true },
@@ -567,8 +557,10 @@ var S1L = {
     // the slide viewer
     slideJob: "Read each slide. Press Next, or use the arrow keys.",
     slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
+      "Some slides show their answer only when you press Next, so you can try the question first.",
       "The app remembers the last slide you saw, so you can stop and carry on later."],
     slideOf: "Slide {i} of {n}",
+    slideMore: "There is more on this slide. Press Next to see it.",
     prev: "Previous",
     next: "Next",
     finish: "Back to the topic",
@@ -1018,7 +1010,7 @@ var Hub = (function () {
   function tmin() { return Math.floor((Date.now() - EPOCH) / 60000); }
   function day(t) { try { return new Date(EPOCH + t * 60000).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }); } catch (e) { return ""; } }
   function pad2(i) { return (i < 10 ? "0" : "") + i; }
-  function slideUrl(d, i) { return BASE + "s1_platform/decks/" + d + "/" + pad2(i) + ".webp"; }
+  function slideUrl(d, i, k) { return BASE + "s1_platform/decks/" + d + "/" + pad2(i) + (k == null ? "" : "-" + k) + ".webp"; } // k: the picture after k clicks
   function actUrl(a, embed) { return BASE + a.path + (embed ? "?embed=1" : ""); }
   function crumb(t, last) { return T.crumbHome() + ' \u00b7 <a id="cHub">' + h(t.title) + '</a>' + (last ? ' \u00b7 ' + h(last) : ''); }
   function wireCrumb(t) { wire("cHome", T.home); wire("cHub", function () { topic(t.id); }); }
@@ -1118,30 +1110,38 @@ var Hub = (function () {
     var D = deckOf(deck); if (!D || !isOpen(D.t.id)) return T.home();
     var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
     T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
-    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
     var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
     T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
-    var img = document.getElementById("simg"), pre = new Image(), tries = 0;
-    function show() {
+    // a slide with click animations shows one picture per click (NN-0 \u2026 NN-(c-1)) before the finished slide NN, so an
+    // answer stays hidden until she presses Next, as in the slideshow; s = clicks shown on slide i
+    var img = document.getElementById("simg"), pre = new Image(), tries = 0, s = 0;
+    function clicks(j) { return (d.steps || {})[j] || 0; }
+    function pic(j, k) { return k < clicks(j) ? slideUrl(deck, j, k) : slideUrl(deck, j); }
+    function show(moved) {
       T.cur().i = i; tries = 0;
       document.getElementById("sfail").hidden = true; img.hidden = false;
-      img.src = slideUrl(deck, i); img.alt = fmt(L.slideOf, { i: i, n: d.n }) + ": " + d.title;
+      var more = s < clicks(i);
+      img.src = pic(i, s); img.alt = fmt(L.slideOf, { i: i, n: d.n }) + ": " + d.title;
       document.getElementById("scount").textContent = fmt(L.slideOf, { i: i, n: d.n });
+      document.getElementById("smore").textContent = more ? L.slideMore : "";
       document.getElementById("sbar").innerHTML = '<b>' + h(d.title) + '</b> \u00b7 ' + h(fmt(L.slideOf, { i: i, n: d.n }));
       document.getElementById("sline").style.width = Math.round(100 * i / d.n) + "%";
-      document.getElementById("sprev").disabled = i <= 1;
-      var nx = document.getElementById("snext"); nx.textContent = i >= d.n ? L.finish : L.next;
-      if (i < d.n) pre.src = slideUrl(deck, i + 1);
-      push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
+      document.getElementById("sprev").disabled = i <= 1 && s === 0;
+      var nx = document.getElementById("snext"); nx.textContent = i >= d.n && !more ? L.finish : L.next;
+      if (more) pre.src = pic(i, s + 1); else if (i < d.n) pre.src = pic(i + 1, 0);
+      if (moved) push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
     }
     img.onload = function () { document.getElementById("sfail").hidden = true; };
     img.onerror = function () { img.hidden = true; document.getElementById("sfail").hidden = false; };
-    wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = slideUrl(deck, i) + "?r=" + tries + Date.now().toString(36); });
-    function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; show(); }
-    wire("sprev", function () { go(i - 1); });
-    wire("snext", function () { go(i + 1); });
-    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n) go(i + 1); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); go(i - 1); } };
-    show();
+    wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = pic(i, s) + "?r=" + tries + Date.now().toString(36); });
+    function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; s = 0; show(true); }
+    function next() { if (s < clicks(i)) { s++; show(false); } else go(i + 1); }
+    function prev() { if (s > 0) { s--; show(false); } else if (i > 1) { i--; s = clicks(i); show(true); } } // back to a slide: as she left it, all shown
+    wire("sprev", prev);
+    wire("snext", next);
+    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
+    show(true);
   }
 
   // ---- an activity, played inside this page so its score comes back ----

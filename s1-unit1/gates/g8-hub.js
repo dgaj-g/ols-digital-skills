@@ -38,11 +38,13 @@ async function rec() { const s = await store(); const v = (s.script || {})['L:' 
 async function evRec(tid) { const s = await store(); const v = (s.script || {})['E:' + CLS + ':' + P + ':' + tid]; return v ? parse(v) : null; }
 async function until(fn, ms, step) { const end = Date.now() + (ms || 8000); for (;;) { let v; try { v = await fn(); } catch (e) { v = null; } if (v) return v; if (Date.now() > end) return v; await wait(step || 200); } }
 const SW = S1L.topics.find((t) => t.id === 'software'), IM = S1L.topics.find((t) => t.id === 'impact');
+const pad2 = (i) => (i < 10 ? '0' : '') + i;
+const MADE_UP = new RegExp('/decks/sw/' + pad2(SW.decks[0].n) + '-\\d+\\.webp'); // the last-slide check gives slide n clicks it has no pictures for
 
 // ---- coverage, derived from the catalogue ----
 function actProblems(acts) { const bad = []; acts.forEach((a) => { const f = path.join(REPO, a.path); if (!fs.existsSync(f)) return bad.push(a.id + ' missing ' + a.path); const s = fs.readFileSync(f, 'utf8');
   if (!/<script[^>]+src="[^"]*s1_platform\/bridge\.js"/.test(s)) bad.push(a.id + ' has no bridge'); if (!/OLSBridge\.(finish|done)\(/.test(s)) bad.push(a.id + ' never calls OLSBridge'); }); return bad; }
-function deckProblems(decks) { const bad = []; decks.forEach((d) => { const dir = path.join(REPO, 's1_platform', 'decks', d.id); let have = []; try { have = fs.readdirSync(dir).filter((f) => /\.webp$/.test(f)).sort(); } catch (e) {}
+function deckProblems(decks) { const bad = []; decks.forEach((d) => { const dir = path.join(REPO, 's1_platform', 'decks', d.id); let have = []; try { have = fs.readdirSync(dir).filter((f) => /^\d\d\.webp$/.test(f)).sort(); } catch (e) {}
   const want = Array.from({ length: d.n }, (_, k) => (k + 1 < 10 ? '0' : '') + (k + 1) + '.webp'); if (have.join() !== want.join()) bad.push(d.id + ' has ' + have.length + ' of ' + d.n); }); return bad; }
 
 const LAYOUT = `(() => { const bad = []; if (document.documentElement.scrollWidth > innerWidth + 1) bad.push('page scrolls sideways');
@@ -86,7 +88,7 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
       r.continue();
     });
     const mine = (u) => !u || u.indexOf(BASE) === 0 || u.indexOf(ACT + 's1_platform/') === 0;
-    page.on('console', (m) => { if (m.type() !== 'error') return; const u = (m.location() || {}).url || ''; if (cut && /apiLessons|Failed to load resource/.test(m.text() + u)) return; (mine(u) ? errs : side).push('console: ' + m.text() + ' @ ' + u); });
+    page.on('console', (m) => { if (m.type() !== 'error') return; const u = (m.location() || {}).url || ''; if (cut && /apiLessons|Failed to load resource/.test(m.text() + u)) return; if (MADE_UP.test(u)) return; (mine(u) ? errs : side).push('console: ' + m.text() + ' @ ' + u); });
     page.on('pageerror', (e) => errs.push('pageerror: ' + e.message));
     page.on('requestfailed', (r) => { const u = r.url(); if (cut && u.indexOf('/api/apiLessons') !== -1) return; (mine(u) ? errs : side).push('request failed: ' + u); });
     const URL0 = BASE + '/?class=' + CLS + '&as=' + encodeURIComponent(P) + '&actbase=' + encodeURIComponent(ACT);
@@ -135,6 +137,38 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     check('after a reload: "Carry on where you left off: Software"; the slides say "Up to slide 4 of 41" / Carry on', !!rs1 && r1.status === 'Up to slide 4 of 41' && r1.btn === L.carry, JSON.stringify([rs1, r1]));
     await click('#resume'); await page.waitForSelector('#scount');
     check('the resume card opens the slides at slide 4', (await txt('#scount')) === 'Slide 4 of 41');
+
+    // ---- click reveals (v12): a slide with click animations shows its parts one Next at a time, as in the slideshow, so a
+    // past-paper answer stays hidden until she presses Next. CS = the first Software slide with clicks, CC = its clicks.
+    const SWD = SW.decks[0], CS = +Object.keys(SWD.steps || {}).sort((a, b) => a - b)[0], CC = (SWD.steps || {})[CS];
+    const pic = () => page.evaluate(() => ((document.getElementById('simg') || { getAttribute: () => '' }).getAttribute('src') || '').replace(/^.*\/(\d\d(-\d+)?)\.webp.*$/, '$1'));
+    const num = async () => +((((await txt('#scount')) || '').match(/(\d+)/) || [0, 0])[1]);
+    const goSlide = async (n) => { for (let g = 0; g < 200 && (await num()) !== n; g++) await click((await num()) < n ? '#snext' : '#sprev'); };
+    const look = async () => { const p = await pic(); return [p, (await txt('#smore')) === L.slideMore ? 'more' : '', await num(), await txt('#snext')]; };
+    const wantS = (p, fin) => [p, /-/.test(p) ? 'more' : '', +p.slice(0, 2), fin ? L.finish : L.next];
+    const firstPic = (j) => ((SWD.steps || {})[j] ? pad2(j) + '-0' : pad2(j));
+    const FWD = [pad2(CS - 1)].concat(Array.from({ length: CC }, (_, k) => pad2(CS) + '-' + k), [pad2(CS), firstPic(CS + 1)]);
+    const WANT = FWD.concat(FWD.slice(0, -1).reverse(), [pad2(CS) + '-0']).map((p) => wantS(p));
+    async function revealWalk() {
+      await goSlide(CS - 1); const seen = [await look()];
+      for (let k = 0; k < CC + 2; k++) { await click('#snext'); seen.push(await look()); }
+      for (let k = 0; k < CC + 2; k++) { await click('#sprev'); seen.push(await look()); }
+      await page.keyboard.press('ArrowRight'); await wait(250); seen.push(await look());
+      return seen;
+    }
+    check('Software has a slide with clicks to walk (slide ' + CS + ', ' + CC + ' clicks)', CS > 1 && CC > 0);
+    const walk = await revealWalk();
+    check('click reveals: Next shows slide ' + CS + ' one click at a time (' + pad2(CS) + '-0 … ' + pad2(CS) + '-' + (CC - 1) + ', then the finished slide), the more line shows until the last click, Previous walks back through the clicks, the right arrow key starts them again', JSON.stringify(walk) === JSON.stringify(WANT), JSON.stringify(walk.map((w) => w.slice(0, 2).join(':'))));
+    const stImg = await img();
+    await page.screenshot({ path: path.join(OUT, 'g8-click-1280.png') }); await page.setViewport({ width: 390, height: 844 }); await wait(400); await page.screenshot({ path: path.join(OUT, 'g8-click-390.png'), fullPage: true }); await page.setViewport({ width: 1280, height: 800 }); await wait(250);
+    check('click reveals: the first click picture loads, the same size as a finished slide', !!stImg && stImg === s1.img, stImg + ' vs ' + s1.img);
+    await fitAll('slides, a click still to come');
+    await click('#snext');
+    await click('#cHub'); await page.waitForSelector('.hub h1');
+    const gS = await until(async () => { const r = await rec(); return r && r.s && r.s.sw && r.s.sw[0] === CS ? r : null; }, 6000);
+    await openHome(); await openTopic('software'); await click('#resume'); await page.waitForSelector('#scount');
+    const rsS = await look();
+    check('click reveals: the place kept is the slide (' + CS + '), and carrying on opens it at its first click picture with the more line', !!gS && JSON.stringify(rsS) === JSON.stringify(wantS(pad2(CS) + '-0')), JSON.stringify([gS && gS.s.sw, rsS]));
     await click('#cHub'); await page.waitForSelector('.hub h1');
 
     // ---- an activity in its frame
@@ -231,7 +265,7 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     const g3 = await rec();
     check('no-score activity: "' + L.actFinished + '" saves it as done (0 of 0, 1 go) and the button goes off', fb === L.actFinished && done && (await page.$eval('#afin', (b) => b.disabled)) && g3.a.et1 && g3.a.et1.slice(0, 5).join(',') === '0,0,0,0,1', JSON.stringify([fb, await txt('#asave'), g3.a.et1]));
     await click('#aback'); await page.waitForSelector('.hub h1');
-    check('topic page (impact): The Grey Zone says Done / Play again; four slide sets listed', ((await row('[data-act="et1"]')) || {}).status === L.actDone && (await page.$$('[data-deck]')).length === IM.decks.length);
+    check('topic page (impact): The Grey Zone says Done / Play again; no slide sets listed, the no-slides line shown', ((await row('[data-act="et1"]')) || {}).status === L.actDone && (await page.$$('[data-deck]')).length === 0 && IM.decks.length === 0 && ((await page.evaluate(() => document.body.innerText)) || '').includes(L.noDecksLine));
 
     // ---- controls
     await page.addStyleTag({ content: '.hub .row{min-width:1400px}' });
@@ -240,6 +274,22 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     const key = 'L:' + CLS + ':' + P; await post('/__set', { script: { [key]: JSON.stringify({ a: {}, s: {}, p: {} }) } });
     await openHome(); await openTopic('software');
     check('CONTROL with the server\'s record wiped, the resume check fails (it reads the server, not the browser)', !(await resumeOk('OS Control Room')), await txt('#resume'));
+
+    // the last slide: Next reads "Back to the topic" only once its last click is shown. No slide set has clicks on its last
+    // slide yet, so the page's own copy of Software gets two there (the pictures need not load for this).
+    await openHome(); await openTopic('software');
+    await page.evaluate((n) => { const d = S1L.topics.find((t) => t.id === 'software').decks[0]; d.steps = Object.assign({}, d.steps, { [n]: 2 }); document.querySelector('[data-deck="sw"]').dataset.i = String(n); }, SWD.n);
+    await click('[data-deck="sw"]'); await page.waitForSelector('#scount');
+    const z0 = await look(); await click('#snext'); const z1 = await look(); await click('#snext'); const z2 = await look();
+    await click('#snext'); const backT = await until(() => txt('.hub h1'), 6000);
+    const eWant = [wantS(pad2(SWD.n) + '-0'), wantS(pad2(SWD.n) + '-1'), wantS(pad2(SWD.n), true)];
+    check('last slide with clicks: Next stays "' + L.next + '" with the more line until the last click, then reads "' + L.finish + '" and goes back to the topic', JSON.stringify([z0, z1, z2]) === JSON.stringify(eWant) && backT === SW.title, JSON.stringify([z0, z1, z2, backT]));
+    // CONTROL: the same walk with the click steps taken out of the page must fail (slide CS would show its answers at once)
+    await openHome(); await openTopic('software');
+    await page.evaluate(() => S1L.topics.forEach((t) => t.decks.forEach((d) => { delete d.steps; })));
+    await click('[data-deck="sw"]'); await page.waitForSelector('#scount');
+    const cw = await revealWalk();
+    check('CONTROL with the click steps taken out of the page, the reveal walk fails', JSON.stringify(cw) !== JSON.stringify(WANT), JSON.stringify(cw.map((w) => w[0])));
 
     oldBridge = true; await page.setCacheEnabled(false); await openHome(); await openTopic('software');
     await click('[data-act="sw4"]'); const f4 = await frameOf(/software_revision\/activity4\.html/);
