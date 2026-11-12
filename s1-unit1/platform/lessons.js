@@ -196,7 +196,7 @@ var S1L = {
     slideFail: "This slide has not loaded. Check your connection, then press Try again.",
     tryAgain: "Try again",
     // the activity screen
-    actJob: "Play the activity to the end. Your score is saved when you finish.",
+    actJob: "Play the activity to the end.",
     actJobDone: "Play the activity to the end, then press I've finished this.",
     actHelp: ["Play the activity on this page. When you reach the end, your score is sent to your teacher.",
       "If you play it again, your best score is kept.",

@@ -284,8 +284,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-8946d31888-10b96b67">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-8946d31888-10b96b67" };</script>
+<body data-build="s1u1-79e787afde-f6c9899a">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-79e787afde-f6c9899a" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -529,7 +529,7 @@ var S1L = {
     slideFail: "This slide has not loaded. Check your connection, then press Try again.",
     tryAgain: "Try again",
     // the activity screen
-    actJob: "Play the activity to the end. Your score is saved when you finish.",
+    actJob: "Play the activity to the end.",
     actJobDone: "Play the activity to the end, then press I've finished this.",
     actHelp: ["Play the activity on this page. When you reach the end, your score is sent to your teacher.",
       "If you play it again, your best score is kept.",
@@ -1129,7 +1129,7 @@ var Hub = (function () {
       var e = LS().a[aid];
       if (waitU && waiting(waitU)) { x.className = "status now"; x.textContent = qBusy || !(onQ && onQ.failed) ? L.actSaving : L.actRetry; return; }
       if (waitU && e) { x.className = "status done"; x.textContent = a.scored && e[3] ? fmt(L.actSaved, { s: e[2], m: e[3] }) : L.actSavedDone; return; }
-      x.className = "status"; x.textContent = L.actWait;
+      x.className = "status"; x.textContent = a.scored ? L.actWait : ""; // v14: a no-score activity has no score to save
     }
     onQ = function (failed) { onQ.failed = !!failed; if (T.cur().screen === "activity" && T.cur().act === aid) status(); };
     function armLoad() { clearTimeout(readyT); ready = false; readyT = setTimeout(function () { if (!ready && document.getElementById("afail")) document.getElementById("afail").hidden = false; }, 8000); }

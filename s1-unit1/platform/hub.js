@@ -176,7 +176,7 @@ var Hub = (function () {
       var e = LS().a[aid];
       if (waitU && waiting(waitU)) { x.className = "status now"; x.textContent = qBusy || !(onQ && onQ.failed) ? L.actSaving : L.actRetry; return; }
       if (waitU && e) { x.className = "status done"; x.textContent = a.scored && e[3] ? fmt(L.actSaved, { s: e[2], m: e[3] }) : L.actSavedDone; return; }
-      x.className = "status"; x.textContent = L.actWait;
+      x.className = "status"; x.textContent = a.scored ? L.actWait : ""; // v14: a no-score activity has no score to save
     }
     onQ = function (failed) { onQ.failed = !!failed; if (T.cur().screen === "activity" && T.cur().act === aid) status(); };
     function armLoad() { clearTimeout(readyT); ready = false; readyT = setTimeout(function () { if (!ready && document.getElementById("afail")) document.getElementById("afail").hidden = false; }, 8000); }
