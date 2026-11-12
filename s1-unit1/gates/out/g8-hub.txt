@@ -31,6 +31,8 @@ PASS slides, a click still to come: nothing wider than its box at 1280, 1024, 76
 PASS click reveals: the place kept is the slide (10), and carrying on opens it at its first click picture with the more line
 PASS activity: the frame opens the real activity with ?embed=1 from the slides-and-activities site
 PASS activity: the bridge knows it is inside the app; the page says "Your score is saved when you reach the end."
+PASS activity: the score line is said once (job line "Play the activity to the end."; status "Your score is saved when you reach the end.")
+PASS CONTROL the v13 job line ("... Your score is saved when you finish.") repeats the status line and is caught
 PASS activity: has its job line and a Help button that opens and closes
 PASS activity: nothing wider than its box at 1280, 1024, 768 and 390 wide
 PASS activity: a score message that does not come from the activity frame is ignored
@@ -54,6 +56,7 @@ PASS topic check sent: has its job line and a Help button that opens and closes
 PASS topic check sent: nothing wider than its box at 1280, 1024, 768 and 390 wide
 PASS topic check: "Change my answers" comes back filled in; a comment is kept ("471 characters left" while typing)
 PASS topic page: the check says "Sent to your teacher on …" / Change my answers
+PASS no-score activity: the status line says nothing about a score before it is finished
 PASS no-score activity: "I've finished this" saves it as done (0 of 0, 1 go) and the button goes off
 PASS topic page (impact): the test activity "Gate test: no score" says Done / Play again; no slide sets listed, the no-slides line shown
 PASS CONTROL a stylesheet that widens the topic page rows is caught by the layout check
@@ -62,4 +65,4 @@ PASS last slide with clicks: Next stays "Next" with the more line until the last
 PASS CONTROL with the click steps taken out of the page, the reveal walk fails
 PASS CONTROL a bridge with no "back" message leaves the pupil on the old HQ inside the frame (the back check fails)
 PASS no console errors or failed requests on the page, its slides or the bridge
-GREEN · 63 pass · 0 fail
+GREEN · 66 pass · 0 fail

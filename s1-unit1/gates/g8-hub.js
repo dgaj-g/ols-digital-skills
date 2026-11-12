@@ -19,6 +19,8 @@
  * back, an HQ set one short. The browser part runs a COPY of Code.gs and Index.html with the gate-only test entries from
  * gates/test-catalogue.js (zt1, no score, in impact). Digital data's page names only what it has and says it has no
  * activities; CONTROL: an old activity pushed into the page's own Digital data list must fail that check.
+ * v14 (12 Nov 2026): the activity screen says the score line once (the job line no longer repeats the status line);
+ * CONTROL: the v13 job line must fail that check. A no-score activity's status line is blank until it is finished.
  * Run: node s1-unit1/gates/g8-hub.js  (exit 0 = GREEN). Output: gates/out/g8-hub.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), http = require('http'), { spawn, execSync } = require('child_process');
@@ -229,6 +231,10 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     const framed = f1 && (await until(() => f1.evaluate(() => !!(window.OLSBridge && window.OLSBridge.framed)), 10000));
     await wait(400);
     check('activity: the bridge knows it is inside the app; the page says "' + L.actWait + '"', !!framed && (await txt('#asave')) === L.actWait, JSON.stringify([!!framed, await txt('#asave')]));
+    const saidOnce = (jobT, statusT) => ((String(jobT) + ' ' + String(statusT)).match(/\bsaved\b/gi) || []).length === 1;
+    const jobT = await txt('.actscr .job'), st1 = await txt('#asave');
+    check('activity: the score line is said once (job line "' + L.actJob + '"; status "' + L.actWait + '")', saidOnce(jobT, st1), JSON.stringify([jobT, st1]));
+    check('CONTROL the v13 job line ("... Your score is saved when you finish.") repeats the status line and is caught', !saidOnce('Play the activity to the end. Your score is saved when you finish. Help', L.actWait));
     await helpOk('activity');
     await fitAll('activity');
     await page.evaluate(() => window.postMessage({ t: 's1act', v: 1, kind: 'finish', score: 10, max: 10, path: '/x' }, '*')); await wait(1200);
@@ -309,6 +315,8 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     // ---- an activity with no score
     await click('#cHome'); await openTopic('impact');
     await click('[data-act="zt1"]'); await page.waitForSelector('#afin');
+    const st0 = await txt('#asave');
+    check('no-score activity: the status line says nothing about a score before it is finished', st0 === '', JSON.stringify(st0));
     const fb = await txt('#afin'); await click('#afin');
     const done = await until(async () => ((await txt('#asave')) === L.actSavedDone ? true : null), 8000);
     const g3 = await rec();
