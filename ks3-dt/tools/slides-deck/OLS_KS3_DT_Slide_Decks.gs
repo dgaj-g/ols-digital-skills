@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-13 from contentVersion 2026-11-01l.
+ * Built 2026-11-13 from contentVersion 2026-11-13a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -4130,7 +4130,7 @@ var DECKS = {
       "bullets": [
        "Teach a computer to tell two things apart by giving it examples.",
        "Say why a computer gets another person’s drawings wrong.",
-       "Show that a computer can be very sure and still be wrong.",
+       "Show that a computer can be wrong even when it is very sure.",
        "Say when a person should check a computer’s answer."
       ],
       "notes": "SAY: these are the four things you will be able to do by the bell. Do not explain them now. The screens teach them one at a time."
@@ -4151,7 +4151,8 @@ var DECKS = {
        "Then you test it with five new drawings.",
        "If you are stuck, press the green button that says Stuck? Show me."
       ],
-      "notes": "WHERE THE CLASS IS: the warm-up questions are finished and the first drawing screen is open.\n\nSAY: draw quickly. The drawings do not need to be good. Press the yellow button after each one."
+      "notes": "WHERE THE CLASS IS: the warm-up questions are finished and the first drawing screen is open.\n\nSAY: draw quickly. The drawings do not need to be good. Press the yellow button after each one.",
+      "shot": "see-teach"
      },
      {
       "kind": "bullets",
@@ -4164,7 +4165,8 @@ var DECKS = {
        "Then you see how many it got right.",
        "Nobody beside you? Press Nobody is beside me."
       ],
-      "notes": "WHERE THE CLASS IS: pupils have tested their own computers and reached the screen that asks who draws next.\n\nSAY: swap seats with your partner now. Draw on their computer the way you always draw. Do not copy their drawings.\n\nWATCH FOR: a pupil with no partner. That pupil presses Nobody is beside me, and the computer brings drawings from another person."
+      "notes": "WHERE THE CLASS IS: pupils have tested their own computers and reached the screen that asks who draws next.\n\nSAY: swap seats with your partner now. Draw on their computer the way you always draw. Do not copy their drawings.\n\nWATCH FOR: a pupil with no partner. That pupil presses Nobody is beside me, and the computer brings drawings from another person.",
+      "shot": "see-fool"
      },
      {
       "kind": "bullets",
@@ -4177,7 +4179,8 @@ var DECKS = {
        "Read how sure it is.",
        "Then you choose when a person must check its answer."
       ],
-      "notes": "WHERE THE CLASS IS: back in their own seats after the swap.\n\nSAY: your computer only knows suns and fish. Draw a cat and see what happens.\n\nAFTER THIS PART: each pupil names the computer, picks its weak spot and keeps a card about it. The card is used again in Lessons 8 and 9."
+      "notes": "WHERE THE CLASS IS: back in their own seats after the swap.\n\nSAY: your computer only knows suns and fish. Draw a cat and see what happens.\n\nAFTER THIS PART: each pupil names the computer, picks its weak spot and keeps a card about it. The card is used again in Lessons 8 and 9.",
+      "shot": "see-sure"
      }
     ]
    },
@@ -4194,7 +4197,8 @@ var DECKS = {
        "They are optional. You can do them in any order.",
        "You can leave an activity at any time."
       ],
-      "notes": "WHERE THE CLASS IS: the fastest pupils have their cards, about 35 minutes into the lesson. Leave this slide up while the rest of the class finishes Parts 1 to 3.\n\nSAY: when you have your card, choose any extra activity."
+      "notes": "WHERE THE CLASS IS: the fastest pupils have their cards, about 35 minutes into the lesson. Leave this slide up while the rest of the class finishes Parts 1 to 3.\n\nSAY: when you have your card, choose any extra activity.",
+      "shot": "see-more"
      },
      {
       "kind": "bullets",

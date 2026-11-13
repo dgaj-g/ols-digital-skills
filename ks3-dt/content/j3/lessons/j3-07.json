@@ -11,7 +11,7 @@
  "objectives": [
   "Teach a computer to tell two things apart by giving it examples.",
   "Say why a computer gets another person’s drawings wrong.",
-  "Show that a computer can be very sure and still be wrong.",
+  "Show that a computer can be wrong even when it is very sure.",
   "Say when a person should check a computer’s answer."
  ],
  "exit": {
