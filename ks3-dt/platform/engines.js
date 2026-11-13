@@ -11691,4 +11691,58 @@
     }
   };
 
+
+  /* ================= teach it to see (J3 Lesson 7 "Teach It To See") =================
+     The whole hour is one page (assets/see/hour.html) in a frame: her drawings, the learner, the five extras,
+     the end questions and How did it go? all live there, so "Go to the end questions" and "Back to where I was"
+     never leave the page. This engine is the only listener.
+       save  her place and what she taught go into HER lesson draft only (a small save: 28 x 28 numbers a drawing).
+       end   she pressed Finish after How did it go?: the end answers and her three choices are filed as the
+             lesson's exit submission (the server marks them against lesson.exit.items; the first one filed wins).
+             The page stays open, so she can keep drawing until the bell.
+       done  leave the page (not sent by the page today; kept so a later page can).
+     Her place goes back IN on the frame's address after the #, so the page reads it before its first frame. */
+  Engines.see = {
+    mount: function (host, chunk, ctx) {
+      var cfg = chunk.config || {}, s = App.state;
+      var draft = s.draft = s.draft || {};
+      var who = 0, id = String(s.email || s.name || 'me');
+      for (var i = 0; i < id.length; i++) who = (who * 31 + id.charCodeAt(i)) >>> 0;
+      var place = { who: who.toString(36), words: cfg.words || {} };
+      if (draft.see) place.saved = JSON.parse(JSON.stringify(draft.see));
+      var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
+        '<iframe class="rescue-frame see-frame" title="' + esc(chunk.title || 'The lesson') + '" allow="autoplay"></iframe></div>');
+      host.appendChild(wrap);
+      function fit() {
+        if (!wrap.isConnected) { window.removeEventListener('resize', fit); return; }
+        var bar = document.querySelector('#player .player-top');
+        wrap.style.setProperty('--rescue-top', Math.max(0, Math.round(bar ? bar.getBoundingClientRect().bottom : 0)) + 'px');
+      }
+      fit(); window.addEventListener('resize', fit);
+      var frame = wrap.querySelector('iframe');
+      frame.addEventListener('load', function () { var l = wrap.querySelector('.rescue-loading'); if (l) l.remove(); });
+      /* ?speed=N (staff and the dev server only) runs the lesson clock faster, for checking */
+      var speed = +(new URLSearchParams(location.search).get('speed') || 0), q = speed > 1 && (s.staff || /^localhost$|^127\./.test(location.hostname)) ? '?speed=' + speed : '';
+      frame.src = App.asset(cfg.page || 'assets/see/hour.html') + q + '#' + encodeURIComponent(JSON.stringify(place));
+      var filed = false;
+      function onMsg(e) {
+        if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
+        var m = e.data;
+        if (e.source !== frame.contentWindow || !m || m.see !== 1) return;
+        if (m.type === 'save' && m.save && !ctx.review) {
+          draft.see = m.save;
+          ctx.saveEvent({ draft: draft });
+        } else if (m.type === 'end' && !ctx.review && !filed) {
+          filed = true;
+          var felt = [].concat(m.felt || []).slice(0, 3).map(function (v) { v = Number(v); return v >= 0 && v <= 2 ? String(v) : '0'; });
+          App.submitExit({ answers: [].concat(m.answers || []).slice(0, 5).map(Number), selfEval: { conf: felt.join(''), diff: '', comment: '' } }, function () {});
+        } else if (m.type === 'done') {
+          window.removeEventListener('message', onMsg);
+          ctx.next();
+        }
+      }
+      window.addEventListener('message', onMsg);
+    }
+  };
+
 })(window);

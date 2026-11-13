@@ -1,0 +1,88 @@
+{
+ "id": "j3-07",
+ "num": 7,
+ "year": "j3",
+ "title": "Teach It To See",
+ "tagline": "You teach your computer to know your drawings. Then you find out how it goes wrong.",
+ "mode": "taught",
+ "type": "story-hour",
+ "artefact": "card",
+ "durationMin": 60,
+ "objectives": [
+  "Teach a computer to tell two things apart by giving it examples.",
+  "Say why a computer gets another person’s drawings wrong.",
+  "Show that a computer can be wrong even when it is very sure.",
+  "Say when a person should check a computer’s answer."
+ ],
+ "exit": {
+  "items": [
+   {
+    "id": "j3x7-1",
+    "stem": "Nobody told your computer what a sun is. How does it know one?",
+    "options": [
+     "It compares your new drawing with the drawings it was given",
+     "Someone typed in the rules for a sun",
+     "It looks up the word sun on the internet",
+     "It understands what the sun is"
+    ]
+   },
+   {
+    "id": "j3x7-2",
+    "stem": "Your computer knew your drawings but got another person's wrong. Why?",
+    "options": [
+     "It had only learned from the way one person draws",
+     "The other person drew too slowly",
+     "The computer was tired by then",
+     "The other person used a different mouse"
+    ]
+   },
+   {
+    "id": "j3x7-3",
+    "stem": "You drew a cat. Your computer named it, and it was very sure. What does that show?",
+    "options": [
+     "A computer can be very sure and still be wrong",
+     "A cat is a kind of sun or fish",
+     "It knew it was a cat but did not say",
+     "When it is very sure it is always right"
+    ]
+   },
+   {
+    "id": "j3x7-4",
+    "stem": "What made your computer better at another person's drawings?",
+    "options": [
+     "Giving it more examples, drawn by more people",
+     "Drawing the same sun again, more slowly",
+     "Turning the computer off and on again",
+     "Telling it to try harder"
+    ]
+   },
+   {
+    "id": "j3x7-5",
+    "stem": "A hospital uses a computer like yours to read X-rays. When should a person check its answer?",
+    "options": [
+     "When the computer is not very sure of its answer",
+     "Never, because computers do not make mistakes",
+     "Only when the computer is switched off",
+     "Only on the first day it is used"
+    ]
+   }
+  ]
+ },
+ "_provenance": "Teach It To See (J3_L7_SEE_SPEC.md, design complete 13 Nov 2026; the hour is L7_J3_REDESIGN/teach-it-to-see.html ported to assets/see/hour.html). Written by KS3 DT Platform/L7_SEE_BUILD/write_j3_07.js.",
+ "chunks": [
+  {
+   "id": "see",
+   "engine": "see",
+   "title": "Teach It To See",
+   "minutes": 55,
+   "config": {
+    "page": "assets/see/hour.html",
+    "stretch": {
+     "extras": 5,
+     "refusable": true
+    }
+   }
+  }
+ ],
+ "keysEnc": "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"
+}

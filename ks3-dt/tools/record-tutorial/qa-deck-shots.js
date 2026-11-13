@@ -46,6 +46,14 @@ const IMG = path.join(ROOT, 'platform', 'assets', 'img', 'deck');
    So the gate pins what each one MUST say. The pin lives here and not in the
    manifest on purpose: a row that could vouch for itself vouches for nothing. */
 const CHROME_PINS = {
+  /* J3 L7 Teach It To See: the whole hour is one page in a frame, so the chunk holds none of its
+     words. Each picture is pinned to the words that prove which screen it is. */
+  'j3-07': {
+    'see-teach': { must: [/your job now: draw a sun/i, /stuck\? show me/i, /what your computer/i], says: 'Part 1, a sun drawn in the white box' },
+    'see-fool': { must: [/swap seats/i, /your computer said/i], says: 'Part 2, a neighbour\'s drawing and what the computer thinks' },
+    'see-sure': { must: [/a person checks when it is under/i, /keep this line/i], says: 'Part 3, the line under which a person checks' },
+    'see-more': { must: [/choose any activity/i, /the speed round/i, /the bad teacher/i], says: 'the five extra activities' }
+  },
   'j1-01': {
     codename: {
       must: [/your codename/i, /shuffle/i, /keep this name/i],

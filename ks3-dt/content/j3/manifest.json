@@ -113,13 +113,14 @@
   {
    "id": "j3-07",
    "num": 7,
-   "title": "Train Your Model",
-   "tagline": "You find out how a machine learns a pattern from examples you give it.",
+   "title": "Teach It To See",
+   "tagline": "You teach your computer to know your drawings. Then you find out how it goes wrong.",
    "block": "b3",
    "icon": "🧠",
-   "status": "soon",
+   "status": "ready",
    "coverSuitability": "ok",
-   "absenceInferenceEligible": true
+   "absenceInferenceEligible": true,
+   "file": "j3/lessons/j3-07.json"
   },
   {
    "id": "j3-08",

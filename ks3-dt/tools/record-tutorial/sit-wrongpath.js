@@ -83,6 +83,8 @@ if (/^j3-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 5 is Bug 
 if (/^j2-5$/i.test(LESSON)) { console.log('sit-wrongpath.js: J2 Lesson 5 is Loop Machines; walk it with j2l5-walk.js and j2l5-platform.js.'); process.exit(0); }
 /* J2 Lesson 6 is THE HEADLINER (26 Oct 2026): walked by j2l6-walk.js (the hour, with and without fails) and j2l6-platform.js (the lesson around it). */
 if (/^j3-6$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 6 is The Night Desk; walk it with j3l6-walk.js and j3l6-platform.js.'); process.exit(0); }
+/* J3 Lesson 7 is TEACH IT TO SEE (13 Nov 2026): the hour is one page in a frame (assets/see/hour.html), walked by j3l7see-walk.js (the hour, both routes, four screen sizes) and j3l7see-save.js (the lesson around it). */
+if (/^j3-7$/i.test(LESSON)) { console.log('sit-wrongpath.js: J3 Lesson 7 is Teach It To See; walk it with j3l7see-walk.js and j3l7see-save.js.'); process.exit(0); }
 if (/^j2-6$/i.test(LESSON)) { console.log('sit-wrongpath.js: J2 Lesson 6 is The Headliner; walk it with j2l6-walk.js and j2l6-platform.js.'); process.exit(0); }
 const BASE = argOf('--base', 'http://localhost:8121');
 const EXPECT_FAIL = args.includes('--expect-fail');
@@ -105,6 +107,7 @@ const TILE = {
   'j2-5': /Lesson\s*5(?!\d)/i,
   'j2-6': /Lesson\s*6(?!\d)/i,
   'j3-6': /Lesson\s*6(?!\d)/i,
+  'j3-7': /Lesson\s*7(?!\d)/i,
   'j3-4': /Lesson\s*4(?!\d)/i
 };   /* the tile reads "Lesson 5Game Studio" — no space, so \b never fires */
 
@@ -433,6 +436,19 @@ const LANDMARKS = {
     ['the exit check', '.q-opt, .exit-q', 'exit'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close'],
     ['the free headlines with the question box', '#qbox', 'free']
+  ],
+  /* J3 Lesson 7 TEACH IT TO SEE (13 Nov 2026): stood on by j3l7see-save.js */
+  'j3-7': [
+    ['the Do-Now', '.q-opt', '_recap'],
+    ['the Your job now line', '#job', 'see'],
+    ['the green Stuck? Show me button', '#helpBtn', 'see'],
+    ['the parts of the hour, with the part she is in', '#steps .chip.on', 'see'],
+    ['the white drawing box', '#pad', 'see'],
+    ['the help, open, with its pointer on a control', '#help li, .spot', 'see'],
+    ['the welcome back screen', '#veil #veilBtn', 'see'],
+    ['the way to the end questions, on every screen', '#endBtn', 'see'],
+    ['Back to where I was', '[data-act="back"]', 'see'],
+    ['the extras, each one refusable', '[data-arg="third"]', 'see']
   ],
   'j3-5': [
     ['the Do-Now', '.q-opt', '_recap'],

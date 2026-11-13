@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-01 from contentVersion 2026-11-01l.
+ * Built 2026-11-13 from contentVersion 2026-11-13c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -4091,6 +4091,148 @@ var DECKS = {
     ]
    }
   ]
+ },
+ "j3-07": {
+  "id": "j3-07.deck",
+  "lesson": "j3-07",
+  "driveFileId": "1SRGKjmilrd4nV5fpv8jUk873JCcnu3-zmDFFVooiSbU",
+  "year": "j3",
+  "theme": {
+   "id": "control-room",
+   "name": "The Control Room",
+   "ground": "#08090F",
+   "panel": "#14161F",
+   "accent": "#5AA9FF",
+   "accent2": "#FF6EC7",
+   "text": "#FFFFFF",
+   "dim": "#B9C2D6",
+   "display": "IBM Plex Mono",
+   "body": "Inter"
+  },
+  "deckName": "KS3 DT · J3 Lesson 7 — Teach It To See (Teacher Deck)",
+  "sections": [
+   {
+    "id": "opening",
+    "chunk": "see",
+    "slides": [
+     {
+      "kind": "title",
+      "bg": "title",
+      "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
+      "heading": "Teach It To See",
+      "sub": "Today you teach your computer to know your drawings. Then you find out how it goes wrong.",
+      "notes": "WHERE THE CLASS IS: the class is coming in, signing in and opening the class link. The lesson opens on five warm-up questions from earlier lessons. The questions mark themselves. Take the register while the class answers them.\n\nSAY: read the two sentences on the slide aloud. Then check that every pupil is sitting beside a partner."
+     },
+     {
+      "kind": "objectives",
+      "bg": "section",
+      "heading": "What today is about",
+      "bullets": [
+       "Teach a computer to tell two things apart by giving it examples.",
+       "Say why a computer gets another person’s drawings wrong.",
+       "Show that a computer can be wrong even when it is very sure.",
+       "Say when a person should check a computer’s answer."
+      ],
+      "notes": "SAY: these are the four things you will be able to do by the bell. Do not explain them now. The screens teach them one at a time."
+     }
+    ]
+   },
+   {
+    "id": "parts",
+    "chunk": "see",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Part 1 · Teach it",
+      "bullets": [
+       "Draw five suns in the white box. Then draw five fish.",
+       "Your computer learns from your ten drawings.",
+       "Then you test it with five new drawings.",
+       "If you are stuck, press the green button that says Stuck? Show me."
+      ],
+      "notes": "WHERE THE CLASS IS: the warm-up questions are finished and the first drawing screen is open.\n\nSAY: draw quickly. The drawings do not need to be good. Press the yellow button after each one.",
+      "shot": "see-teach"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Part 2 · Fool it · Swap seats",
+      "bullets": [
+       "Your computer has only seen your drawings.",
+       "Swap seats with the person beside you.",
+       "Your partner draws six drawings on your computer.",
+       "Then you see how many it got right.",
+       "Nobody beside you? Press Nobody is beside me."
+      ],
+      "notes": "WHERE THE CLASS IS: pupils have tested their own computers and reached the screen that asks who draws next.\n\nSAY: swap seats with your partner now. Draw on their computer the way you always draw. Do not copy their drawings.\n\nWATCH FOR: a pupil with no partner. That pupil presses Nobody is beside me, and the computer brings drawings from another person.",
+      "shot": "see-fool"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Part 3 · Sure and wrong",
+      "bullets": [
+       "Go back to your own seat.",
+       "Draw a cat. Your computer has never seen one.",
+       "See what your computer calls your cat.",
+       "Read how sure it is.",
+       "Then you choose when a person must check its answer."
+      ],
+      "notes": "WHERE THE CLASS IS: back in their own seats after the swap.\n\nSAY: your computer only knows suns and fish. Draw a cat and see what happens.\n\nAFTER THIS PART: each pupil names the computer, picks its weak spot and keeps a card about it. The card is used again in Lessons 8 and 9.",
+      "shot": "see-sure"
+     }
+    ]
+   },
+   {
+    "id": "more",
+    "chunk": "see",
+    "slides": [
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "More to try",
+      "bullets": [
+       "You have your card. Now there are five extra activities.",
+       "They are optional. You can do them in any order.",
+       "You can leave an activity at any time."
+      ],
+      "notes": "WHERE THE CLASS IS: the fastest pupils have their cards, about 35 minutes into the lesson. Leave this slide up while the rest of the class finishes Parts 1 to 3.\n\nSAY: when you have your card, choose any extra activity.",
+      "shot": "see-more"
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Three questions for the room",
+      "bullets": [
+       "Why did your computer get your partner’s drawings wrong?",
+       "Why did your computer call a cat a sun or a fish?",
+       "When should a person check a computer’s answer?"
+      ],
+      "notes": "WHEN: about fifteen minutes before the bell. Ask the class to stop and look up.\n\nSAY: ask each question on the slide in turn. Take two or three answers to each question. Do not give the answers yourself. The end questions ask about the same ideas."
+     }
+    ]
+   },
+   {
+    "id": "closer",
+    "chunk": "exit",
+    "slides": [
+     {
+      "kind": "closer",
+      "bg": "closer",
+      "heading": "Go to the end questions",
+      "sub": "See you in a fortnight.",
+      "bullets": [
+       "Press Go to the end questions now. The button is at the top of every screen.",
+       "Your drawings are saved. You lose nothing.",
+       "Answer the five questions. Then say how the lesson went.",
+       "Press Finish. You have nothing to hand in."
+      ],
+      "notes": "WHEN: ten minutes before the bell.\n\nSAY: press Go to the end questions now, even if you are in the middle of a drawing. Your drawing is saved."
+     }
+    ]
+   }
+  ]
  }
 };
 var CONSENT = {
@@ -4764,6 +4906,7 @@ function createJ3Lesson3Deck() { return createDeck_('j3-03'); }
 function createJ3Lesson4Deck() { return createDeck_('j3-04'); }
 function createJ3Lesson5Deck() { return createDeck_('j3-05'); }
 function createJ3Lesson6Deck() { return createDeck_('j3-06'); }
+function createJ3Lesson7Deck() { return createDeck_('j3-07'); }
 
 function rebuildLesson1Deck() { return rebuildDeck_('j1-01'); }
 function rebuildLesson2Deck() { return rebuildDeck_('j1-02'); }
@@ -4783,6 +4926,7 @@ function rebuildJ3Lesson3Deck() { return rebuildDeck_('j3-03'); }
 function rebuildJ3Lesson4Deck() { return rebuildDeck_('j3-04'); }
 function rebuildJ3Lesson5Deck() { return rebuildDeck_('j3-05'); }
 function rebuildJ3Lesson6Deck() { return rebuildDeck_('j3-06'); }
+function rebuildJ3Lesson7Deck() { return rebuildDeck_('j3-07'); }
 
 /* ===================== the proofs (DFM 225b, standing) ====================
    A deck is never handed over on the strength of the code that built it. Slide
@@ -4882,6 +5026,7 @@ function exportJ3Lesson3Proofs() { return exportDeckProofs_('j3-03'); }
 function exportJ3Lesson4Proofs() { return exportDeckProofs_('j3-04'); }
 function exportJ3Lesson5Proofs() { return exportDeckProofs_('j3-05'); }
 function exportJ3Lesson6Proofs() { return exportDeckProofs_('j3-06'); }
+function exportJ3Lesson7Proofs() { return exportDeckProofs_('j3-07'); }
 
 /* EVERY PROOF SET IN ONE RUN, and the list is DERIVED from the deck data rather
    than typed. It used to be a hardcoded array of five, which was true on the day
