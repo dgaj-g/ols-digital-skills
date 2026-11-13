@@ -1,20 +1,27 @@
 # J3 L7 Teach It To See — build progress (Version 80)
 
-Updated 13 Nov 2026, 14:05. Worktree ~/Sites/ols-wt-j3l7see, branch j3-l7-see. Build prompt: KS3 DT Platform/J3_L7_SEE_BUILD_PROMPT.md.
+Updated 13 Nov 2026, 14:40. Worktree ~/Sites/ols-wt-j3l7see, branch j3-l7-see. Build prompt: KS3 DT Platform/J3_L7_SEE_BUILD_PROMPT.md.
 
 ## Done
 - Engine wiring (Engines.see), assets/see ported, lesson JSON, recap pool, manifest (status stays "ready": "live" is not a status the platform knows), deck JSON (8 slides, deck id pending).
 - Cold reads: two rounds + author's call; all in the ledger; COLD_READ_VERDICTS_V80_j3-07.md written.
 - Gates written and green: j3l7see-engine.js (G1–G5 with controls). Shared robot pupil: j3l7see-lib.js.
-- Coverage: LANDMARKS['j3-7'] (sit-wrongpath.js), EXPECT['j3-7'] (sit-review.js, still TO MEASURE), stretch flag on the chunk, DFM audit rows 378 and 379.
+- Coverage: LANDMARKS['j3-7'] (sit-wrongpath.js), EXPECT['j3-7'] measured: xp 10, chunks 2, marks 10, badges 0, stretch flag on the chunk, DFM audit rows 378 and 379.
 - Local pack (--offline) GREEN. contentVersion 2026-11-13a.
 
-## Found, being fixed
-- The real lesson frame is the window minus 141 px (measured: 659, 627, 759, 627 px tall at 1280x800, 1366x768, 1440x900, 1024x768). The prototype assumed more. At 1366x768 the buttons under the drawing box fall off the bottom. Fix = hour.html layout only (no strings, no engine). Lib default BAR must become 141.
+## Fixed and gated since 14:05
+- hour.html fits the real frame (window minus 141 px) at all four sizes: fit() + tight/stack/squeeze. Help no longer points at a hidden button. No strings changed.
+- ALL SIX page gates + the platform gate GREEN on the served lesson, each with its control failing:
+  j3l7see-words (3), -job (3), -fit (3), -help (8), -walk (17), -save (45, platform at localhost:8137).
+  Walks: 79 screens (her own drawings) and 81 (the stranger) at 1280x800, 1366x768, 1440x900, 1024x768; 0 errors, never stuck. Page save 6557-6628 of 7600; whole lesson draft 6457 of 8000.
+- Save gate proves welcome-back from the PLATFORM's draft alone (page's own localStorage wiped first), end questions filed once (record [2,10,..]), page stays open.
 
 ## Still to do, in order
-1. Fix hour.html so every screen fits the real frame at all four sizes. Lib BAR 141.
-2. Gates: j3l7see-words.js, -job.js, -help.js, -fit.js, -walk.js, -save.js (save = platform gate, model j3l6-platform.js; it stands on LANDMARKS and measures EXPECT). Each with a failing control.
-3. Sit report J3L7SEE_SIT_REPORT.md. Look at the screenshots.
-4. Deck shots, deck deploy (Chrome rule), online pack, PathB build, Version 80, live smoke at 1366 and 1024.
-5. PR, merge, RESUME_HERE top block, DFM/K rulings + audit rows, done message.
+1. Forced minutes + sit report ks3-dt/J3L7SEE_SIT_REPORT.md. Look at the screenshots at all four sizes.
+2. Deck shots (capture-deck-shots rows + CHROME_PINS j3-07), deck deploy (Chrome rule), `node write_j3_07.js <deckId>` and `node write_j3_07_deck.js <deckId>`, proofs read, qa green.
+3. Merge origin/main if moved; re-run every gate; online pack (bump contentVersion if content changed); build-pathb; Version 80 via hidden window; pair hashes; live smoke at 1366 and 1024.
+4. PR "J3 L7 Teach It To See — Version 80", merge, RESUME_HERE top block, DFM (next 380) / K rulings + audit rows, done message.
+
+## Run the gates
+cd ~/Sites/ols-wt-j3l7see/ks3-dt/tools/record-tutorial; server: python3 -m http.server 8137 from the worktree root.
+NODE_PATH=$(npm root -g) node j3l7see-<words|job|fit|help|walk>.js --url http://localhost:8137/ks3-dt/platform/assets/see/hour.html ; node j3l7see-save.js

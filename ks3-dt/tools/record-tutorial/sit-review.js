@@ -213,7 +213,7 @@ const EXPECT = {
   'j2-5': { xp: 49, chunks: 5, marks: 49, badges: 3 },          // measured by j2l5-walk.js, 26 Oct 2026
   'j2-6': { xp: 22, chunks: 5, marks: 22, badges: 1 },          // measured by j2l6-platform.js, 26 Oct 2026 (Do-Now, sum-writer, five questions, close, free; the hour itself by j2l6-walk.js)
   'j3-6': { xp: 22, chunks: 5, marks: 22, badges: 1 },          // measured by j3l6-platform.js, 26 Oct 2026 (Do-Now, the night desk, five questions, close, free; the hour itself by j3l6-walk.js)
-  'j3-7': { chunks: 2 },          // TO MEASURE by j3l7see-save.js (Do-Now, then the whole hour in one page)
+  'j3-7': { xp: 10, chunks: 2, marks: 10, badges: 0 },          // TO MEASURE by j3l7see-save.js (Do-Now, then the whole hour in one page)
   'j3-5': { xp: 49, chunks: 5, marks: 49, badges: 3 },          // Same Light V2, measured by qa-l5-paired.js, 1 Nov 2026 (both seats 49 XP, three badges)
   'j3-4': { xp: 65, chunks: 12, presses: 45, marks: 14, badges: 3 },
   /* J2 Lesson 4 (14 Sep 2026): IDENTICAL on runs 7 and 8 — the class

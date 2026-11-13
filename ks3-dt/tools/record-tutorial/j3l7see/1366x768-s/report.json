@@ -21,8 +21,8 @@
     "It knows nothing yet.",
     "Today you teach it."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -53,8 +53,8 @@
     "It knows nothing yet.",
     "Today you teach it."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -83,8 +83,8 @@
    "prose": [
     "Your job now: Draw a sun in the white box. This is sun 1 of 5."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -114,8 +114,8 @@
    "prose": [
     "Your job now: Draw a sun in the white box. This is sun 1 of 5."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -145,8 +145,8 @@
    "prose": [
     "Your job now: Draw a fish in the white box. This is fish 1 of 5."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -177,8 +177,8 @@
     "Your job now: Draw a fish in the white box. This is fish 1 of 5.",
     "It is 100 % sure."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -208,8 +208,8 @@
    "prose": [
     "Your job now: Draw a fish. Will it know? This is test 1 of 5."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -240,8 +240,8 @@
     "Your job now: Draw a fish. Will it know? This is test 1 of 5.",
     "It is 93 % sure."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -273,8 +273,8 @@
     "It is 93 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -304,8 +304,8 @@
    "prose": [
     "Your job now: Draw a sun. Will it know? This is test 2 of 5."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -336,8 +336,8 @@
     "Your job now: Draw a sun. Will it know? This is test 2 of 5.",
     "It is 95 % sure."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -369,8 +369,8 @@
     "It is 95 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -403,8 +403,8 @@
     "Nobody told it what a sun is.",
     "It compares your drawing with these."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -436,8 +436,8 @@
     "It has only seen your drawings.",
     "Will it know another person's sun?"
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -468,8 +468,8 @@
     "It is 82 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -501,8 +501,8 @@
     "It is 95 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -535,8 +535,8 @@
     "It only knows the way you draw.",
     "Other people draw a sun differently."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -568,8 +568,8 @@
     "It is 99 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -601,8 +601,8 @@
     "It is 94 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -635,8 +635,8 @@
     "It got better.",
     "It now has drawings from two people."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -666,8 +666,8 @@
    "prose": [
     "Your job now: Draw a cat. It has never seen one."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -698,8 +698,8 @@
     "Your job now: Draw a cat. It has never seen one.",
     "It is 84 % sure."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -732,8 +732,8 @@
     "It has only two answers.",
     "It cannot say: I do not know."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -763,8 +763,8 @@
    "prose": [
     "Your job now: Draw anything but a sun or a fish."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -794,8 +794,8 @@
     "Your job now: Draw anything but a sun or a fish.",
     "It is 71 % sure."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -827,8 +827,8 @@
     "It is wrong again, but less sure.",
     "It still gave an answer."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -858,8 +858,8 @@
     "Your job now: Press a number to choose when a person checks.",
     "Press a number to set the line."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -890,8 +890,8 @@
     "Your job now: Press a number to choose when a person checks.",
     "A person checks 4 of 17 drawings. 2 wrong answers get past with no check."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -921,8 +921,8 @@
    "prose": [
     "Your job now: Name it. Then choose its weak spot."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -952,8 +952,8 @@
    "prose": [
     "Your job now: Name it. Then choose its weak spot."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -983,8 +983,8 @@
    "prose": [
     "Your job now: Name it. Then choose its weak spot."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1016,8 +1016,8 @@
     "The main lesson is done. Well done.",
     "Your card is kept for Lessons 8 and 9."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1046,17 +1046,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -1079,13 +1076,11 @@
    "prose": [
     "Your job now: Draw a star in the white box. This is star 1 of 5."
    ],
-   "scrollH": 782,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1113,13 +1108,11 @@
     "Your job now: Draw a star in the white box. This is star 1 of 5.",
     "It is 82 % sure."
    ],
-   "scrollH": 782,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1146,13 +1139,11 @@
    "prose": [
     "Your job now: Draw a star. Does it know all three? This is test 1 of 6."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1179,13 +1170,11 @@
     "Your job now: Draw a star. Does it know all three? This is test 1 of 6.",
     "It is 66 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1213,8 +1202,8 @@
     "It is 66 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1243,13 +1232,11 @@
    "prose": [
     "Your job now: Draw a sun. Does it know all three? This is test 2 of 6."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1276,13 +1263,11 @@
     "Your job now: Draw a sun. Does it know all three? This is test 2 of 6.",
     "It is 77 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1310,8 +1295,8 @@
     "It is 77 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1340,13 +1325,11 @@
    "prose": [
     "Your job now: Draw a fish. Does it know all three? This is test 3 of 6."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1373,13 +1356,11 @@
     "Your job now: Draw a fish. Does it know all three? This is test 3 of 6.",
     "It is 94 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1407,8 +1388,8 @@
     "It is 94 % sure.",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1439,8 +1420,8 @@
     "It got 6 of 6 right.",
     "With three answers there are more ways to be wrong."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1469,17 +1450,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -1504,8 +1482,8 @@
     "Draw what you are told, fast.",
     "You score when your computer knows it."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1528,20 +1506,18 @@
    "words": 4,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Draw a sun. Fast.",
+   "job": "Your job now: Draw a fish. Fast.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a sun. Fast."
+    "Your job now: Draw a fish. Fast."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1549,7 +1525,7 @@
      "Draw it in the white box, fast.",
      "Press Got it to start the clock again."
     ],
-    "draw": "sun"
+    "draw": "fish"
    }
   },
   {
@@ -1569,8 +1545,8 @@
     "Time. Your computer got 22 right.",
     "Your best is 22 right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1599,17 +1575,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -1633,13 +1606,11 @@
     "Your job now: Draw one picture it calls half sun, half fish.",
     "Get it between 45 % and 55 % sure."
    ],
-   "scrollH": 757,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1665,16 +1636,14 @@
    "here": 1,
    "prose": [
     "Your job now: Draw one picture it calls half sun, half fish.",
-    "It is 88 % sure.",
+    "It is 82 % sure.",
     "Get it between 45 % and 55 % sure."
    ],
-   "scrollH": 757,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Watch this bar",
@@ -1701,17 +1670,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -1737,8 +1703,8 @@
     "Every sun goes in the top box.",
     "Every fish goes in the bottom box."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1767,13 +1733,11 @@
    "prose": [
     "Your job now: Draw a sun inside the dotted box. This is sun 1 of 4."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1799,13 +1763,11 @@
    "prose": [
     "Your job now: Draw a sun inside the dotted box. This is sun 1 of 4."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1831,13 +1793,11 @@
    "prose": [
     "Your job now: Draw a fish inside the dotted box. This is fish 1 of 4."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1864,13 +1824,11 @@
     "Your job now: Draw a fish inside the dotted box. This is fish 1 of 4.",
     "It is 100 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1896,13 +1854,11 @@
    "prose": [
     "Your job now: Now draw a fish inside the dotted box."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -1929,13 +1885,11 @@
     "Your job now: Now draw a fish inside the dotted box.",
     "It is 100 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -1963,8 +1917,8 @@
     "It is 100 % sure.",
     "Wrong. It was a fish."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -1993,13 +1947,11 @@
    "prose": [
     "Your job now: Now draw a sun inside the dotted box."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": true,
     "emptyPad": true,
     "tag": "Draw here",
@@ -2026,13 +1978,11 @@
     "Your job now: Now draw a sun inside the dotted box.",
     "It is 100 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -2060,8 +2010,8 @@
     "It is 100 % sure.",
     "Wrong. It was a sun."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2093,8 +2043,8 @@
     "It learned the wrong clue from your drawings.",
     "Real AI does this too."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2124,17 +2074,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -2159,8 +2106,8 @@
     "First thing",
     "Second thing"
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2189,13 +2136,11 @@
    "prose": [
     "Your job now: Draw: cat. This is drawing 1 of 5."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": true,
     "tag": "Draw here",
@@ -2222,13 +2167,11 @@
    "prose": [
     "Your job now: Draw: cat. This is drawing 1 of 5."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -2255,13 +2198,11 @@
    "prose": [
     "Your job now: Draw: dog. This is drawing 1 of 5."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": true,
     "tag": "Draw here",
@@ -2289,13 +2230,11 @@
     "Your job now: Draw: dog. This is drawing 1 of 5.",
     "It is 100 % sure."
    ],
-   "scrollH": 707,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -2322,8 +2261,8 @@
    "prose": [
     "Your job now: Draw either thing. See if your computer knows which."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2352,15 +2291,13 @@
    "here": 1,
    "prose": [
     "Your job now: Draw either thing. See if your computer knows which.",
-    "It is 98 % sure."
+    "It is 58 % sure."
    ],
-   "scrollH": 753,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help makes the page taller"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Choose one",
@@ -2387,17 +2324,14 @@
    "prose": [
     "Your job now: Choose any activity."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
-    "tag": "Press this",
+    "tag": "Choose one",
     "steps": [
      "Press any activity.",
      "Stop any time: press Go to the end questions."
@@ -2421,8 +2355,8 @@
     "Your job now: Answer five questions about today.",
     "Nobody told your computer what a sun is. How does it know one?"
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2453,8 +2387,8 @@
     "Nobody told your computer what a sun is. How does it know one?",
     "Right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2486,8 +2420,8 @@
     "I can say why it gets some drawings wrong.",
     "I can say when a person should check its answer."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2519,8 +2453,8 @@
     "I can say why it gets some drawings wrong.",
     "I can say when a person should check its answer."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
     "bad": [],
@@ -2552,14 +2486,11 @@
     "Everything you made is saved.",
     "End questions: 5 of 5 right."
    ],
-   "scrollH": 704,
-   "viewH": 704,
+   "scrollH": 627,
+   "viewH": 627,
    "hOver": false,
    "help": {
-    "bad": [
-     "help covers what it points at",
-     "pointer off screen"
-    ],
+    "bad": [],
     "demo": false,
     "emptyPad": false,
     "tag": "Press this",
@@ -2573,6 +2504,7 @@
  ],
  "errs": [],
  "ended": true,
- "secs": 34.842,
- "packSize": 6569
+ "secs": 37.121,
+ "packSize": 6567,
+ "hash": "7ec7ab61d21d"
 }
