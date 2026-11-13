@@ -88,6 +88,25 @@ input[type=text] { font:inherit; font-size:20px; font-weight:800; padding:10px 1
 #helpText li { counter-increment:st; } #helpText li::before { content:counter(st); display:inline-block; width:26px; height:26px; line-height:26px; text-align:center; border-radius:99px; background:var(--green); color:#06231b; margin-right:8px; font-size:16px; font-weight:900; }
 #helpStuck { margin:6px 0 0; color:var(--dim); font-size:15px; font-weight:700; }
 #helpClose { flex:0 0 auto; background:var(--green); color:#06231b; }
+/* ---------- the real lesson frame is short (the window less the platform's two bars): everything fits it, nothing scrolls ---------- */
+canvas#pad { width:100%; height:auto; }
+body.tight .strip { padding:6px 24px; gap:10px; } body.tight .strip h1 { font-size:19px; }
+body.tight .job { padding:5px 24px; }
+body.tight main { padding:12px 24px; gap:24px; }
+body.tight .row { margin-top:10px; } body.tight .warn { margin-top:4px; }
+body.tight .card { padding:12px 16px; margin-bottom:10px; } body.tight .card h2, body.tight .kicker { margin-bottom:6px; }
+body.tight canvas[data-pv] { width:44px; height:44px; } body.tight canvas[data-pv].big { width:96px; height:96px; } body.tight .thumbs { min-height:44px; gap:6px; }
+body.tight .th canvas, body.tight .th img { width:64px; height:64px; }
+body.tight #help { padding:6px 24px; } body.tight #help .kicker { font-size:15px; margin-bottom:3px; } body.tight #helpText { font-size:17px; } body.tight #helpStuck { font-size:13px; margin-top:3px; }
+/* the parts of the hour never wrap: when they do not fit beside the title they take one row of their own */
+body.stack .strip h1 { flex:1; } body.stack .steps { order:9; flex:0 0 100%; flex-wrap:nowrap; }
+/* a screen that is still too tall closes up its own spacing */
+body.squeeze .card { padding:8px 14px; margin-bottom:8px; } body.squeeze .guess { font-size:24px; margin:0; } body.squeeze .bar { height:12px; margin:4px 0 2px; }
+body.squeeze .say { font-size:17px; margin:3px 0; line-height:1.3; } body.squeeze .big { font-size:24px; margin-bottom:4px; } body.squeeze .stem { font-size:21px; margin-bottom:10px; }
+body.squeeze .mcard { padding:12px 20px; } body.squeeze .mcard .nm { font-size:24px; margin-bottom:2px; } body.squeeze .opts { gap:6px; } body.squeeze .opt { padding:8px 16px; font-size:17px; }
+body.squeeze .pick { margin:6px 0; gap:8px; } body.squeeze .pick button { padding:8px 16px; font-size:17px; } body.squeeze input[type=text] { padding:6px 12px; font-size:18px; }
+body.squeeze .row { margin-top:8px; } body.squeeze .thumbs { min-height:36px; } body.squeeze canvas[data-pv] { width:36px; height:36px; } body.squeeze canvas[data-pv].big { width:80px; height:80px; }
+body.squeeze .th canvas, body.squeeze .th img { width:54px; height:54px; } body.squeeze .tile { padding:12px 16px; } body.squeeze .tiles { gap:10px; } body.squeeze .feltrow { margin:6px 0; }
 </style>
 </head>
 <body>
@@ -451,7 +470,7 @@ function render() {
   else { $('stage').innerHTML = CUR.stage; $('btns').innerHTML = ''; $('side').innerHTML = ''; }
   document.querySelectorAll('canvas[data-pv]').forEach(function (c) { paint(c, PV[+c.getAttribute('data-pv')]); });
   $('helpHow').textContent = S.jobLead + CUR.job; $('helpText').innerHTML = [].concat(CUR.help).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join(''); $('helpStuck').textContent = S.helpStuck; $('helpClose').textContent = S.helpBack;
-  redraw(); spot();
+  fit(); redraw(); spot();
 }
 function paint(cv, v) {
   var x = cv.getContext('2d'), im = x.createImageData(28, 28), m = 0, i;
@@ -472,7 +491,7 @@ function target() {
   if (play) return { el: $('live') || pad, tag: S.tagWatch };
   if (CUR.pad && !CUR.pad.lock && !(CUR.padDone ? CUR.padDone() : inkOK())) return { el: pad, tag: S.tagDraw };
   var e = CUR.spot && document.querySelector(CUR.spot); if (e) return { el: e, tag: CUR.spotTag || S.tagChoose };
-  var b = document.querySelector('[data-want]:not([disabled])') || document.querySelector('#btns [data-act]:not([disabled]), #stage [data-act]:not([disabled])');
+  var on = CUR.pad ? $('draw') : $('stage'), b = on.querySelector('[data-want]:not([disabled])') || (CUR.pad ? $('btns') : on).querySelector('[data-act]:not([disabled])');   /* only what is on the screen now: never a hidden button */
   if (!b) return null;
   var g = b.closest('.opts, .pick, .tiles'); return g ? { el: g, tag: S.tagChoose } : { el: b, tag: S.tagPress };
 }
@@ -502,10 +521,26 @@ function demo() {
     redraw(); setTimeout(step, 20);
   })();
 }
+/* ---------- fit: the drawing box takes the room the frame really has, and open help moves the page down, never over it ---------- */
+function fit() {
+  var b = document.body, bar = $('job').parentNode, h = $('help'), m = $('draw'), k, room, over = function () { return document.documentElement.scrollHeight > innerHeight; };
+  b.classList.toggle('tight', innerHeight < 720); b.classList.remove('stack', 'squeeze'); b.style.paddingTop = ''; h.style.minHeight = ''; pad.style.width = '';
+  if ($('steps').offsetHeight > 40) b.classList.add('stack');
+  if (helpOpen) { k = bar.getBoundingClientRect().bottom + scrollY; h.style.minHeight = k + 'px'; b.style.paddingTop = Math.max(0, Math.ceil(h.getBoundingClientRect().height - k)) + 'px'; }
+  var size = function () {
+    if (!CUR || !CUR.pad) return;
+    pad.style.width = '';
+    room = innerHeight - (pad.getBoundingClientRect().top + scrollY) - (pad.parentNode.getBoundingClientRect().bottom - pad.getBoundingClientRect().bottom) - parseFloat(getComputedStyle(m).paddingBottom);
+    pad.style.width = Math.max(260, Math.min(428, Math.floor(room))) + 'px';
+  };
+  size(); if (over()) { b.classList.add('squeeze'); size(); }
+}
+window.addEventListener('resize', function () { fit(); spot(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(); spot(); });
 function help(on) {
   helpOpen = on; demoTok++; ghost = null; demoOn = 0; poke();
   $('help').style.display = on ? 'flex' : 'none';
-  if (on) { $('help').style.minHeight = $('job').parentNode.getBoundingClientRect().bottom + 'px'; demo(); }
+  fit(); if (on) demo();
   redraw(); spot();
 }
 function poke() { idleAt = Date.now(); if (nudge) { nudge = 0; $('helpBtn').classList.remove('nudge'); spot(); } }

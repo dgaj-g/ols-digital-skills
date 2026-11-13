@@ -12,7 +12,7 @@ const SEE = path.resolve(__dirname, '../../platform/assets/see');
 const People = require(path.join(SEE, 'see/people.js')).SeePeople;
 const A = process.argv, argOf = (n, d) => { const i = A.indexOf(n); return i === -1 ? d : A[i + 1]; };
 const PAGE = argOf('--url', 'file://' + path.join(SEE, 'hour.html'));
-const BAR = +argOf('--bar', 64);
+const BAR = +argOf('--bar', 141);   // measured in the platform: its header 81 px + the lesson's top bar 60 px
 const SIZES = [[1280, 800], [1366, 768], [1440, 900], [1024, 768]];
 const OUTDIR = path.join(__dirname, 'j3l7see');
 const url = flags => PAGE + (PAGE.indexOf('?') > 0 ? '&' : '?') + 'f=' + flags;
@@ -27,10 +27,11 @@ async function click(p, sel) {
   const e = h.asElement(); if (!e) return false; await e.click(); return true;
 }
 async function draw(p, strokes) {
-  const box = await (await p.$('#pad')).boundingBox();
+  // the drawing box shrinks to fit a short frame, so the robot draws at the size the box really is
+  const box = await (await p.$('#pad')).boundingBox(), k = (box.width - 8) / 420, X = v => box.x + 4 + (v - 4) * k, Y = v => box.y + 4 + (v - 4) * k;
   for (const s of strokes) {
-    await p.mouse.move(box.x + s[0][0], box.y + s[0][1]); await p.mouse.down();
-    for (const q of s.slice(1)) await p.mouse.move(box.x + q[0], box.y + q[1]);
+    await p.mouse.move(X(s[0][0]), Y(s[0][1])); await p.mouse.down();
+    for (const q of s.slice(1)) await p.mouse.move(X(q[0]), Y(q[1]));
     await p.mouse.up();
   }
 }
