@@ -1,0 +1,49 @@
+{
+ "lesson": "j3-07",
+ "shots": {
+  "see-teach": {
+   "name": "see-teach",
+   "kind": "app",
+   "chunkId": "see",
+   "selector": "#chunk-host iframe.see-frame",
+   "screen": "t-teach",
+   "textSnippet": "Your job now: Draw a sun in the white box. This is sun 4 of 5.",
+   "cardText": "Teach It To See Do now 1 · Teach it 2 · Fool it 3 · Sure and wrong 4 · Your card More to try End questions 60 minutes left Pause Your job now: Draw a sun in the white box. This is sun 4 of 5. Stuck? Show me Keep this sun Rub it out WHAT YOUR COMPUTER THINKS It thinks: sun It is 100 % sure. YOUR SUNS: 3 YOUR FISH: 0",
+   "chunkHash": "d69826a82150",
+   "contentVersion": "2026-11-13a"
+  },
+  "see-fool": {
+   "name": "see-fool",
+   "kind": "app",
+   "chunkId": "see",
+   "selector": "#chunk-host iframe.see-frame",
+   "screen": "f-1",
+   "textSnippet": "Your job now: Swap seats. The person beside you draws a sun. This is drawing 1 of 6.",
+   "cardText": "Teach It To See Do now 1 · Teach it 2 · Fool it 3 · Sure and wrong 4 · Your card More to try End questions 60 minutes left Pause Your job now: Swap seats. The person beside you draws a sun. This is drawing 1 of 6. Stuck? Show me Next drawing WHAT YOUR COMPUTER THINKS Your computer said sun. It is 94 % sure. Right.",
+   "chunkHash": "d69826a82150",
+   "contentVersion": "2026-11-13a"
+  },
+  "see-sure": {
+   "name": "see-sure",
+   "kind": "app",
+   "chunkId": "see",
+   "selector": "#chunk-host iframe.see-frame",
+   "screen": "s-line",
+   "textSnippet": "Your job now: Press a number to choose when a person checks.",
+   "cardText": "Teach It To See Do now 1 · Teach it 2 · Fool it 3 · Sure and wrong 4 · Your card More to try End questions 60 minutes left Pause Your job now: Press a number to choose when a person checks. Stuck? Show me A person checks when it is under: 60 % 70 % 80 % 90 % 95 % 70 % ✓ 78 % ✗ 80 % ✓ 83 % ✓ 83 % ✗ 94 % ✓ 95 % ✓ 96 % ✓ 96 % ✓ 97 % ✓ 97 % ✓ 97 % ✓ 97 % ✓ 98 % ✓ 98 % ✓ 98 % ✓ 98 % ✓ A person checks this one Wrong, and nobody checks Press a number to set the line. Keep this line",
+   "chunkHash": "d69826a82150",
+   "contentVersion": "2026-11-13a"
+  },
+  "see-more": {
+   "name": "see-more",
+   "kind": "app",
+   "chunkId": "see",
+   "selector": "#chunk-host iframe.see-frame",
+   "screen": "x-menu",
+   "textSnippet": "Your job now: Choose any activity.",
+   "cardText": "Teach It To See Do now 1 · Teach it 2 · Fool it 3 · Sure and wrong 4 · Your card More to try End questions 60 minutes left Pause Go to the end questions Your job now: Choose any activity. Stuck? Show me A third thing Teach it a star. Does it still know a sun? About 4 minutes The speed round Ninety seconds. How many can it get right? About 3 minutes Half and half Draw one picture it cannot decide on. About 4 minutes The bad teacher Teach a new one badly, on purpose. See what it learns. About 6 minutes · Harder Your own two things You choose what it learns. About 6 minutes",
+   "chunkHash": "d69826a82150",
+   "contentVersion": "2026-11-13a"
+  }
+ }
+}
