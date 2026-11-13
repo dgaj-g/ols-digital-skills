@@ -258,6 +258,15 @@ const THEMES = {
     text: '#FFFFFF', dim: '#B9C2D6',
     motif: 'desk'
   },
+  /* J3 LESSON 7 — TEACH IT TO SEE. The deck carries the J3 control-room theme
+     the .gs knows, the same as Lesson 6: a separate entry only so the art sits
+     under this lesson's own path. */
+  'j3-07': {
+    name: 'The Control Room',
+    ground: '#08090F', panel: '#14161F', accent: '#5AA9FF', accent2: '#FF6EC7',
+    text: '#FFFFFF', dim: '#B9C2D6',
+    motif: 'desk'
+  },
   'j3-05': {
     name: 'Two Lights',
     ground: '#0B1424', panel: '#16223A', accent: '#FFC94A', accent2: '#5FC8E8',
