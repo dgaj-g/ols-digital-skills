@@ -60,6 +60,8 @@ if (/^6$/.test(NUM)) { console.log('sit-review.js: J1 Lesson 6 is The Operation;
 if (/^j2-5$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 5 is The Search; walk it with j2l5-walk.js (it asserts EXPECT[\'j2-5\']).'); process.exit(0); }
 /* J2 Lesson 6 is THE HEADLINER (26 Oct 2026): the hour is walked by j2l6-walk.js, the lesson around it by j2l6-platform.js. */
 if (/^j3-6$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 6 is The Night Desk; walk it with j3l6-walk.js and j3l6-platform.js.'); process.exit(0); }
+/* J3 Lesson 7 is TEACH IT TO SEE (13 Nov 2026): the hour is walked by j3l7see-walk.js, the lesson around it by j3l7see-save.js. */
+if (/^j3-7$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 7 is Teach It To See; walk it with j3l7see-walk.js and j3l7see-save.js.'); process.exit(0); }
 if (/^j2-6$/i.test(NUM)) { console.log('sit-review.js: J2 Lesson 6 is The Headliner; walk it with j2l6-walk.js and j2l6-platform.js.'); process.exit(0); }
 if (/^j3-5$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 5 is Same Light; walk it with l5v2-walk.js and qa-l5-paired.js (it asserts the lesson record).'); process.exit(0); }
 if (/^j3-4$/i.test(NUM)) { console.log('sit-review.js: J3 Lesson 4 is The Rescue now; walk it with probes/rescue/hour-walk.js and probes/rescue/qa-rescue-platform.js.'); process.exit(0); }
@@ -211,6 +213,7 @@ const EXPECT = {
   'j2-5': { xp: 49, chunks: 5, marks: 49, badges: 3 },          // measured by j2l5-walk.js, 26 Oct 2026
   'j2-6': { xp: 22, chunks: 5, marks: 22, badges: 1 },          // measured by j2l6-platform.js, 26 Oct 2026 (Do-Now, sum-writer, five questions, close, free; the hour itself by j2l6-walk.js)
   'j3-6': { xp: 22, chunks: 5, marks: 22, badges: 1 },          // measured by j3l6-platform.js, 26 Oct 2026 (Do-Now, the night desk, five questions, close, free; the hour itself by j3l6-walk.js)
+  'j3-7': { chunks: 2 },          // TO MEASURE by j3l7see-save.js (Do-Now, then the whole hour in one page)
   'j3-5': { xp: 49, chunks: 5, marks: 49, badges: 3 },          // Same Light V2, measured by qa-l5-paired.js, 1 Nov 2026 (both seats 49 XP, three badges)
   'j3-4': { xp: 65, chunks: 12, presses: 45, marks: 14, badges: 3 },
   /* J2 Lesson 4 (14 Sep 2026): IDENTICAL on runs 7 and 8 — the class
