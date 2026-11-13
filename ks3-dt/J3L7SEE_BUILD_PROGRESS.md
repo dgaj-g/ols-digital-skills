@@ -25,3 +25,10 @@ Updated 13 Nov 2026, 14:40. Worktree ~/Sites/ols-wt-j3l7see, branch j3-l7-see. B
 ## Run the gates
 cd ~/Sites/ols-wt-j3l7see/ks3-dt/tools/record-tutorial; server: python3 -m http.server 8137 from the worktree root.
 NODE_PATH=$(npm root -g) node j3l7see-<words|job|fit|help|walk>.js --url http://localhost:8137/ks3-dt/platform/assets/see/hour.html ; node j3l7see-save.js
+
+## 15:25 checkpoint
+- Teacher deck CREATED: id 1SRGKjmilrd4nV5fpv8jUk873JCcnu3-zmDFFVooiSbU (8 slides). Ids written into lesson + brief. Branch HEAD 5ebf2ec0 pushed.
+- Deck pictures + backgrounds live on Pages via PR 118 and PR 119 (already merged to main).
+- contentVersion 2026-11-13c; offline pack green.
+- Slide Decks script project holds a temporary first line (aaRunExportJ3Lesson7Proofs) — replace with the exact repo .gs at the end.
+- REMAINING: read 8 proofs; restore exact .gs; re-run all gates; online pack; build-pathb; Version 80 deploy; live smoke 1366 + 1024; PR + merge; RESUME_HERE block; DFM 380+ rulings with audit rows; done message.
