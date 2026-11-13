@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teach It To See · J3 Lesson 7 · prototype</title>
+<style>
+@font-face { font-family: Nunito; src: url(see/Nunito.ttf); font-weight: 200 900; }
+:root { --ground:#0B1A1F; --panel:#112730; --panel2:#183540; --amber:#F2B544; --green:#3DD6A3; --chalk:#F4F1EA; --dim:#A7B4B8; --red:#FF5C5C; }
+* { box-sizing: border-box; }
+html, body { margin:0; background:var(--ground); color:var(--chalk); font-family:Nunito, system-ui, sans-serif; }
+.strip { display:flex; align-items:center; gap:12px; padding:10px 24px; background:#07131a; flex-wrap:wrap; }
+.strip h1 { font-size:21px; margin:0 8px 0 0; font-weight:900; }
+.steps { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+.chip { padding:4px 11px; border-radius:99px; background:var(--panel2); color:var(--dim); font-size:14px; font-weight:700; white-space:nowrap; }
+.chip.on { background:var(--amber); color:#111; }
+.chip.done { color:var(--green); }
+button { font:inherit; font-weight:800; border:0; border-radius:12px; padding:12px 22px; cursor:pointer; background:var(--amber); color:#111; font-size:18px; line-height:1.25; }
+button.ghost { background:transparent; color:var(--chalk); border:2px solid var(--dim); }
+button.sm { padding:7px 14px; font-size:16px; }
+button.end { background:transparent; color:var(--amber); border:2px solid var(--amber); }
+button:disabled { opacity:.35; cursor:default; }
+button:focus-visible, input:focus-visible { outline:3px solid #fff; outline-offset:2px; }
+.job { background:#22332f; border-left:6px solid var(--amber); padding:8px 24px; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+#helpBtn { background:var(--green); color:#06231b; font-size:18px; padding:10px 20px; white-space:nowrap; flex:0 0 auto; }
+#helpBtn.nudge { animation:nudge .7s ease-in-out infinite alternate; }
+@keyframes nudge { to { transform:scale(1.09); box-shadow:0 0 0 10px rgba(61,214,163,.28); } }
+.spot { outline:4px solid var(--green) !important; outline-offset:5px; border-radius:14px; animation:spot .8s ease-in-out infinite alternate; }
+@keyframes spot { to { outline-offset:10px; } }
+.mins { color:var(--dim); font-weight:800; font-size:15px; white-space:nowrap; }
+#veil { position:fixed; inset:0; z-index:20; background:rgba(7,19,26,.94); display:flex; align-items:center; justify-content:center; padding:24px; }
+#veil[hidden] { display:none; }
+#veil .card { max-width:520px; text-align:center; }
+#veil .say { font-size:22px; font-weight:800; margin:0 0 18px; }
+#tag { position:fixed; z-index:6; display:none; background:var(--green); color:#06231b; font-weight:900; font-size:16px; padding:3px 13px; border-radius:99px; pointer-events:none; white-space:nowrap; }
+@media (prefers-reduced-motion: reduce) { .spot, #helpBtn.nudge { animation:none; } }
+main { display:flex; gap:32px; padding:22px 24px; max-width:1180px; margin:0 auto; flex-wrap:wrap; }
+main[hidden] { display:none; }
+.pad { flex:0 0 auto; width:428px; }
+canvas#pad { background:#fbfaf6; border-radius:16px; border:4px solid var(--amber); touch-action:none; cursor:crosshair; display:block; }
+canvas#pad.lock { cursor:default; border-color:var(--dim); }
+.row { display:flex; gap:12px; margin-top:14px; flex-wrap:wrap; align-items:center; }
+.warn { color:var(--amber); font-weight:800; font-size:17px; margin:10px 0 0; min-height:1.3em; }
+.side { flex:1; min-width:320px; }
+.card { background:var(--panel); border-radius:16px; padding:18px 20px; margin-bottom:16px; }
+.card h2, .kicker { margin:0 0 10px; font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); font-weight:800; }
+.thumbs { display:flex; gap:8px; flex-wrap:wrap; min-height:56px; }
+canvas[data-pv] { width:56px; height:56px; border-radius:8px; background:#fbfaf6; image-rendering:pixelated; display:block; }
+canvas[data-pv].big { width:112px; height:112px; border-radius:12px; margin-bottom:6px; }
+.guess { font-size:32px; font-weight:900; margin:2px 0; }
+.bar { height:16px; background:var(--panel2); border-radius:99px; overflow:hidden; margin:6px 0 4px; }
+.bar i { display:block; height:100%; }
+.ghosts { display:flex; gap:24px; flex-wrap:wrap; }
+.ghosts figure { margin:0; text-align:center; font-weight:700; color:var(--dim); }
+.say { font-size:19px; line-height:1.4; margin:6px 0; }
+.big { font-size:30px; font-weight:900; margin:0 0 8px; }
+.verdict.ok { color:var(--green); font-weight:900; } .verdict.no { color:var(--red); font-weight:900; }
+#stage { display:block; max-width:920px; }
+#stage[hidden] { display:none; }
+.stem { font-size:24px; line-height:1.35; margin:0 0 16px; font-weight:800; }
+.stem code { background:var(--panel2); padding:1px 6px; border-radius:6px; }
+.opts { display:grid; gap:10px; }
+.opt { text-align:left; background:var(--panel); color:var(--chalk); border:2px solid var(--panel2); font-weight:700; font-size:19px; }
+.opt.good { border-color:var(--green); background:#12382f; opacity:1; } .opt.bad { border-color:var(--red); background:#3a1c20; opacity:1; } .opt.off { opacity:.45; }
+.th canvas, .th img { width:76px; height:76px; }
+.th { position:relative; display:inline-block; text-align:center; font-size:13px; font-weight:800; color:var(--dim); border:3px solid transparent; border-radius:11px; padding:2px; }
+.th b { display:block; margin-top:2px; } .th i { position:absolute; top:-6px; right:-6px; font-style:normal; width:22px; height:22px; line-height:22px; border-radius:99px; color:#111; background:var(--green); font-size:14px; }
+.th.x i { background:var(--red); color:#fff; }
+.th.chk { opacity:.4; border-color:var(--dim); border-style:dashed; } .th.bad { border-color:var(--red); }
+.pick { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
+.pick button { background:var(--panel2); color:var(--chalk); } .pick button.on { background:var(--amber); color:#111; }
+.lab { font-size:19px; font-weight:800; }
+.legend { color:var(--dim); font-size:15px; font-weight:700; display:flex; gap:20px; flex-wrap:wrap; margin-top:8px; }
+.legend span::before { content:''; display:inline-block; width:14px; height:14px; border-radius:4px; margin-right:6px; vertical-align:-2px; border:2px dashed var(--dim); } .legend span.b::before { border:2px solid var(--red); }
+.mcard { background:var(--chalk); color:#14242b; border-radius:16px; padding:22px 26px; max-width:560px; }
+.mcard h2 { color:#8a5a00; } .mcard .say { margin:8px 0; } .mcard .nm { font-size:30px; font-weight:900; margin:0 0 6px; }
+input[type=text] { font:inherit; font-size:20px; font-weight:800; padding:10px 14px; border-radius:10px; border:2px solid var(--dim); background:#fff; color:#111; width:220px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px; }
+.tile { text-align:left; background:var(--panel); color:var(--chalk); border:2px solid var(--panel2); padding:18px; font-weight:700; }
+.tile:hover { border-color:var(--amber); }
+.tile strong { display:block; font-size:22px; font-weight:900; color:var(--amber); margin-bottom:4px; } .tile small { display:block; color:var(--dim); font-size:14px; margin-top:8px; font-weight:800; }
+.tile .tag { color:var(--green); } .tile .hard { color:var(--red); }
+.clock { font-size:24px; font-weight:900; color:var(--amber); }
+.feltrow { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0; } .feltrow p { flex:1; min-width:280px; margin:0; }
+#help { position:fixed; top:0; left:0; right:0; background:#0e3b31; border-bottom:4px solid var(--green); display:none; align-items:center; justify-content:space-between; gap:20px; padding:10px 24px; z-index:5; }
+#help .kicker { color:var(--chalk); margin:0 0 6px; font-size:17px; font-weight:800; text-transform:none; letter-spacing:0; }
+#helpText { margin:0; padding:0; list-style:none; display:flex; gap:8px 26px; flex-wrap:wrap; counter-reset:st; font-size:19px; font-weight:800; }
+#helpText li { counter-increment:st; } #helpText li::before { content:counter(st); display:inline-block; width:26px; height:26px; line-height:26px; text-align:center; border-radius:99px; background:var(--green); color:#06231b; margin-right:8px; font-size:16px; font-weight:900; }
+#helpStuck { margin:6px 0 0; color:var(--dim); font-size:15px; font-weight:700; }
+#helpClose { flex:0 0 auto; background:var(--green); color:#06231b; }
+</style>
+</head>
+<body>
+<div class="strip">
+  <h1 id="title"></h1>
+  <div class="steps" id="steps"></div>
+  <span class="mins" id="mins"></span>
+  <button class="sm ghost" id="pauseBtn"></button>
+  <button class="sm end" id="endBtn" hidden></button>
+</div>
+<div class="job"><span id="job"></span><button id="helpBtn"></button></div>
+<main id="draw">
+  <div class="pad">
+    <canvas id="pad" width="420" height="420"></canvas>
+    <div class="row" id="btns"></div>
+    <p class="warn" id="warn"></p>
+  </div>
+  <div class="side" id="side"></div>
+</main>
+<main id="stage" hidden></main>
+<div id="help"><div><div class="kicker" id="helpHow"></div><ol id="helpText"></ol><p id="helpStuck"></p></div><button id="helpClose"></button></div>
+<div id="tag"></div>
+<div id="veil" hidden><div class="card"><p class="say" id="veilSay"></p><button id="veilBtn" data-want="1"></button></div></div>
+<script src="see/engine.js"></script>
+<script src="see/people.js"></script>
+<script src="see/strings.js"></script>
+<script src="see/store.js"></script>
+<script src="see/sound.js"></script>
+<script>
+var S = SeeStrings, E = SeeEngine, P = SeePeople, Store = SeeStore;
+/* The platform puts her place after the # as JSON. Test flags (new, fast, late, idle) come after the # or in ?f= . */
+var PLACE = null, QS = new URLSearchParams(location.search), FLAG = QS.get('f') || '';
+try { var H0 = decodeURIComponent(location.hash.slice(1)); if (H0.charAt(0) === '{') PLACE = JSON.parse(H0); else FLAG += H0; } catch (e) {}
+var FRAMED = !!PLACE && window.parent !== window, SPEED = Math.max(1, +(QS.get('speed') || 1));
+var W = Object.assign({ minsLeft: '{m} minutes left', pause: 'Pause', paused: 'The lesson is paused.', carryOn: 'Carry on', welcome: 'Welcome back. Everything you made is still here.' }, PLACE && PLACE.words || {});
+var KEY = 'see-j3l7-' + (PLACE && PLACE.who || 'me');
+function post(type, extra) { if (FRAMED) try { window.parent.postMessage(Object.assign({ see: 1, type: type }, extra || {}), '*'); } catch (e) {} }
+var FAST = /fast/.test(FLAG), T1 = [1, 0, 0, 1, 0], F1 = [0, 1, 0, 1, 0, 1], F2 = [0, 1, 1, 0], T3 = [2, 0, 1, 2, 0, 1];
+var STR1 = [['sun', 'a'], ['fish', 'a'], ['sun', 'b'], ['fish', 'b'], ['sun', 'c'], ['fish', 'c']], STR2 = [['sun', 'a'], ['fish', 'a'], ['fish', 'b'], ['sun', 'c']];
+var TOP = [20, 20, 190, 190], BOT = [210, 210, 190, 190], LINES = [60, 70, 80, 90, 95];
+function two() { return [{ n: 'sun', pl: 'suns', a: 'a sun', ex: [] }, { n: 'fish', pl: 'fish', a: 'a fish', ex: [] }]; }
+function fresh() { return { rev: 0, scr: 'about', shown: 0, cls: two(), t1: [], f1: [], f2: [], odd: [], who: null, line: 0, name: '', gap: -1, kept: 0, x: {}, dn: { i: 0, pick: -1, right: 0 }, eq: { i: 0, pick: -1, right: 0 }, felt: [-1, -1, -1], fin: 0, ret: null, retShown: 0, t0: Date.now() }; }
+var st = null, WELCOME = false, PAUSED = false, LIMIT = 7600, lastPack = 0;
+try { if (!/new/.test(FLAG)) st = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+/* the platform's copy wins when it is newer (another computer, or this one was cleared) */
+if (PLACE && PLACE.saved && (!st || (PLACE.saved.rev || 0) > (st.rev || 0))) { try { st = unpack(PLACE.saved); } catch (e) {} }
+if (st && st.scr === 'donow') st.scr = 'about';
+if (st && st.scr !== 'about') WELCOME = true;
+if (!st) st = fresh();
+/* The platform keeps a small save. Every kept drawing goes in once, as the 28 x 28 numbers the learner uses.
+   Extras keep only "done" and the best score. If it is still too big, the oldest test pictures go first, then the oldest examples. */
+function pack(limit) {
+  var pics = [], seen = {}, o = JSON.parse(JSON.stringify(st, function (k, v) { return k === 'retS' || k === 'dn' || k === 'ord' ? undefined : v; }));
+  function pic(s) { if (!s) return -1; var t = s.r || Store.enc(vecOf(s), 4); if (seen[t] == null) { seen[t] = pics.length; pics.push(t); } return seen[t]; }
+  o.cls = st.cls.map(function (c) { return c.ex.map(pic); });
+  ['t1', 'f1', 'f2', 'odd'].forEach(function (k) { o[k] = st[k].map(function (t) { return [t.w, t.g, t.pc, pic(t.s)]; }); });
+  o.x = {}; Object.keys(st.x).forEach(function (k) { var x = st.x[k]; if (x && (x.done || x.best)) o.x[k] = { done: x.done ? 1 : 0, best: x.best || 0 }; });
+  if (/^x-/.test(o.scr)) { o.scr = 'x-menu'; o.shown = 0; }
+  if (o.ret && /^x-/.test(o.ret)) { o.ret = 'x-menu'; o.retShown = 0; }
+  o.pics = pics; o.v = 1;
+  var lim = limit || LIMIT, used = {}, drop = 0, big;
+  function size() { return JSON.stringify(o).length; }
+  o.cls.forEach(function (a) { a.forEach(function (i) { used[i] = 1; }); });
+  while (size() > lim && drop < pics.length) { if (!used[drop]) pics[drop] = ''; drop++; }
+  while (size() > lim) { big = o.cls[0].length >= o.cls[1].length ? 0 : 1; if (o.cls[big].length <= 3) break; pics[o.cls[big].shift()] = ''; }
+  return o;
+}
+function unpack(o) {
+  var s = fresh(), two0 = two(), objs = (o.pics || []).map(function (t) { return t ? { r: t } : null; });
+  Object.keys(o).forEach(function (k) { if (k !== 'pics' && k !== 'v') s[k] = o[k]; });
+  s.cls = two0.map(function (c, i) { c.ex = (o.cls[i] || []).map(function (n) { return objs[n]; }).filter(Boolean); return c; });
+  ['t1', 'f1', 'f2', 'odd'].forEach(function (k) { s[k] = (o[k] || []).map(function (a) { return { w: a[0], g: a[1], pc: a[2], s: objs[a[3]] || { r: '4' } }; }); });
+  s.x = o.x || {}; s.dn = { i: 0, pick: -1, right: 0 };
+  return s;
+}
+var saveT = null;
+function sendSave() { saveT = null; if (!FRAMED) return; var p = pack(); lastPack = JSON.stringify(p).length; post('save', { save: p }); }
+function save() { st.rev = (st.rev || 0) + 1; try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} if (FRAMED && !saveT) saveT = setTimeout(sendSave, 1500); }
+document.addEventListener('visibilitychange', function () { if (document.hidden && saveT) { clearTimeout(saveT); sendSave(); } });
+function elapsedMin() { return (Date.now() - st.t0) * SPEED / 60000; }
+
+var pad = document.getElementById('pad'), ctx = pad.getContext('2d');
+var strokes = [], cur = null, CUR = {}, PV = [], memo = new WeakMap(), play = 0, helpOpen = false, sp = null, ghost = null, demoOn = 0, demoTok = 0, demoRuns = 0, idleAt = Date.now(), nudge = 0;
+var IDLE = /idle/.test(FLAG) ? 700 : 20000;
+function $(id) { return document.getElementById(id); }
+function f(s, o) { if (Array.isArray(s)) return s.map(function (x) { return f(x, o); }); return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
+function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+function snd(n) { try { window.Sound && Sound[n] && Sound[n](); } catch (e) {} }
+function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function vecOf(s) { if (!s) return new Float32Array(784); var v = memo.get(s); if (!v) { v = s.r != null ? Store.dec(s.r) : E.raster(s); memo.set(s, v); } return v; }
+function sets(m) { return m.map(function (c) { return c.ex.map(vecOf); }); }
+function take() { return strokes.map(function (q) { return q.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }); }); }
+function clear() { strokes = []; }
+function inkOK() { return E.ink(strokes) >= 50; }
+function inZone(z) { if (!z) return true; return strokes.every(function (s) { return s.every(function (p) { return p[0] >= z[0] - 8 && p[1] >= z[1] - 8 && p[0] <= z[0] + z[2] + 8 && p[1] <= z[1] + z[3] + 8; }); }); }
+function now(m) { if (!strokes.length) return null; var r = E.classify(E.raster(strokes), sets(m)); return { c: r.c, pc: Math.round(r.p * 100), ps: r.ps }; }
+function go(scr) { st.scr = scr; st.shown = 0; clear(); }
+
+/* ---------- the pad ---------- */
+function redraw() {
+  ctx.clearRect(0, 0, 420, 420);
+  var z = CUR.pad && CUR.pad.zone;
+  if (z) { ctx.save(); ctx.setLineDash([10, 8]); ctx.lineWidth = 3; ctx.strokeStyle = '#c98a12'; ctx.strokeRect(z[0], z[1], z[2], z[3]); ctx.restore(); }
+  ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#14242b';
+  if (ghost) { ctx.strokeStyle = '#b7c3bf'; ghost.forEach(line); ctx.strokeStyle = '#14242b'; }
+  strokes.forEach(line);
+  function line(s) {
+    ctx.beginPath();
+    s.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+    if (s.length === 1) ctx.lineTo(s[0][0] + .1, s[0][1]);
+    ctx.stroke();
+  }
+}
+function pos(e) { var r = pad.getBoundingClientRect(); return [(e.clientX - r.left) * 420 / r.width, (e.clientY - r.top) * 420 / r.height]; }
+function locked() { return !CUR.pad || CUR.pad.lock || play || demoOn || PAUSED || WELCOME; }
+pad.addEventListener('pointerdown', function (e) { if (locked()) return; if (helpOpen && sp) help(false); try { pad.setPointerCapture(e.pointerId); } catch (x) {} cur = [pos(e)]; strokes.push(cur); redraw(); });
+pad.addEventListener('pointermove', function (e) { if (cur) { cur.push(pos(e)); redraw(); } });
+function up() { if (!cur) return; cur = null; if (CUR.onUp) CUR.onUp(); render(); }
+pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+function animate(dr, done) {
+  var si = 0, pi = 0; strokes = [];
+  if (FAST) { strokes = dr; return setTimeout(done, 30); }
+  (function step() {
+    for (var n = 0; n < 2; n++) {
+      if (si >= dr.length) { return done(); }
+      if (pi === 0) strokes.push([]);
+      strokes[strokes.length - 1].push(dr[si][pi]); pi++;
+      if (pi >= dr[si].length) { si++; pi = 0; paintGuess(); }
+    }
+    redraw(); setTimeout(step, 22);
+  })();
+}
+
+/* ---------- small pieces of screen ---------- */
+function card(h, b) { return '<div class="card"><h2>' + esc(h) + '</h2>' + b + '</div>'; }
+function btn(act, label, dis, want, cls, arg) { return '<button data-act="' + act + '"' + (arg != null ? ' data-arg="' + esc(arg) + '"' : '') + (dis ? ' disabled' : '') + (want ? ' data-want="1"' : '') + ' class="' + (cls || '') + '">' + esc(label) + '</button>'; }
+function pv(v, cls) { PV.push(v); return '<canvas width="28" height="28" data-pv="' + (PV.length - 1) + '" class="' + (cls || '') + '"></canvas>'; }
+function lines(a) { return a.map(function (l) { return '<p class="say">' + esc(l) + '</p>'; }).join(''); }
+function barHtml(pc) { return '<div class="bar"><i style="width:' + pc + '%;background:' + (pc < 75 ? 'var(--amber)' : 'var(--green)') + '"></i></div>'; }
+function guessInner(m) {
+  var r = now(m);
+  if (!r) return '<div class="guess">' + S.drawSomething + '</div>' + barHtml(0) + '<p class="say">&nbsp;</p>';
+  return '<div class="guess">' + esc(f(S.itThinks, { n: m[r.c].n })) + '</div>' + barHtml(r.pc) + '<p class="say">' + f(S.howSure, { pc: r.pc }) + '</p>';
+}
+function guessCard(m) { CUR_M = m; return '<div class="card"><h2>' + S.thinks + '</h2><div id="live">' + guessInner(m) + '</div></div>'; }
+var CUR_M = null;
+function paintGuess() { var el = $('live'); if (el && CUR_M) el.innerHTML = guessInner(CUR_M); }
+function thumbs(m, mine) { return m.map(function (c) { return card(mine && mine.count ? f(mine.count, { n: c.n, c: c.ex.length }) : f(mine ? S.yours : S.has, { pl: c.pl, c: c.ex.length }), '<div class="thumbs">' + c.ex.map(function (s) { return pv(vecOf(s)); }).join('') + '</div>'); }).join(''); }
+function ghosts(m) { return card(S.learned, '<div class="ghosts">' + m.map(function (c) { return c.ex.length ? '<figure>' + pv(E.mean(c.ex.map(vecOf)), 'big') + '<span>' + esc(f(S.idea, { a: c.a || c.n })) + '</span></figure>' : ''; }).join('') + '</div>'); }
+function th(t, cls, label) { var ok = t.w === t.g; return '<span class="th ' + (ok ? '' : 'x ') + (cls || '') + '">' + pv(vecOf(t.s)) + '<b>' + esc(label) + '</b><i>' + (ok ? '✓' : '✗') + '</i></span>'; }
+function right(list) { return list.filter(function (t) { return t.w === t.g; }).length; }
+
+/* ---------- three step shapes used all lesson: collect, test, quiz ---------- */
+function collect(o) {   // o: chip, m, k, need, job, help, keep, zone, mine, next
+  var c = o.m[o.k], ok = inkOK() && inZone(o.zone), known = o.m.filter(function (q) { return q.ex.length; });
+  return { chip: o.chip, job: f(o.job, { a: c.a, n: c.n, i: c.ex.length + 1, of: o.need }), help: f(o.help, { a: c.a, n: c.n, of: o.need }), pad: { zone: o.zone }, draw: o.draw || c.n,
+    warn: strokes.length && !inZone(o.zone) ? S.bad.out : '',
+    btns: btn('keep', o.keep || f(S.keep, { n: c.n }), !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'), side: (known.length ? guessCard(known) : '') + thumbs(o.m, o.mine === undefined ? 1 : o.mine),
+    acts: { keep: function () { c.ex.push(take()); clear(); snd('flip'); if (c.ex.length >= o.need && o.next) o.next(); }, rub: clear } };
+}
+function testStep(o) {  // o: chip, m, want, list, job, help, fin, nextLabel, onNext, after(t) -> html, zone, draw, extra
+  var m = o.m;
+  if (!st.shown) {
+    var ok = inkOK() && inZone(o.zone);
+    return { chip: o.chip, job: o.job, help: o.help, pad: { zone: o.zone }, draw: o.draw, warn: strokes.length && !inZone(o.zone) ? S.bad.out : '',
+      btns: btn('fin', o.fin, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'), side: guessCard(m) + (o.extra || ''),
+      acts: { fin: function () { var r = now(m), t = { w: o.want, g: r.c, pc: r.pc, s: take() }; o.list.push(t); st.shown = 1; snd(t.w === t.g ? 'ding' : 'thud'); }, rub: clear } };
+  }
+  var t = o.list[o.list.length - 1];
+  if (!strokes.length) strokes = t.s;
+  return { chip: o.chip, job: o.job, help: o.help, pad: { zone: o.zone, lock: 1 }, btns: btn('nx', o.nextLabel, 0, 1),
+    side: card(S.thinks, o.after ? o.after(t) : '<div class="guess">' + esc(f(S.said, { g: m[t.g].n })) + '</div>' + barHtml(t.pc) + '<p class="say">' + f(S.howSure, { pc: t.pc }) + '</p><p class="say verdict ' + (t.w === t.g ? 'ok">' + S.right : 'no">' + esc(f(S.wrong, { a: m[t.w].a }))) + '</p>') + (o.extra || ''),
+    acts: { nx: function () { st.shown = 0; clear(); o.onNext(); } } };
+}
+function strangerStep(o) {  // the stranger draws by rule; the result is recorded when the drawing ends
+  if (!st.shown && !play) {
+    play = 1;
+    var dr = P(o.seed)[o.kind](o.style).map(function (s) { return s.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }); });
+    setTimeout(function () { animate(dr, function () { strokes = dr; var r = now(o.m), t = { w: o.want, g: r.c, pc: r.pc, s: dr }; o.list.push(t); st.shown = 1; play = 0; snd(t.w === t.g ? 'ding' : 'thud'); save(); render(); }); }, 50);
+  }
+  if (!st.shown) return { chip: o.chip, job: o.job, help: o.help, pad: { lock: 1 }, btns: btn('nx', o.nextLabel, 1, 0), side: guessCard(o.m), acts: {} };
+  return testStep(o);
+}
+function quiz(items, q, str, chip, doneLabel, done) {
+  var it = items[q.i];
+  if (!q.ord || q.at !== q.i) { q.ord = shuffle([0, 1, 2, 3]); q.at = q.i; }
+  var h = '<div class="kicker">' + f(S.quiz.count, { i: q.i + 1, of: items.length }) + '</div><h2 class="stem">' + esc(it.stem).replace(/`([^`]+)`/g, '<code>$1</code>') + '</h2><div class="opts">' + q.ord.map(function (o) {
+    var cls = q.pick < 0 ? '' : o === 0 ? 'good' : o === q.pick ? 'bad' : 'off';
+    return '<button class="opt ' + cls + '" data-act="pick" data-arg="' + o + '"' + (q.pick >= 0 ? ' disabled' : '') + (o === 0 && q.pick < 0 ? ' data-want="1"' : '') + '>' + esc(it.options[o]) + '</button>';
+  }).join('') + '</div>';
+  if (q.pick >= 0) h += '<p class="say verdict ' + (q.pick === 0 ? 'ok">' + S.quiz.right : 'no">' + S.quiz.wrong) + '</p><div class="row">' + btn('nx', q.i < items.length - 1 ? S.quiz.nextQ : doneLabel, 0, 1) + '</div>';
+  return { chip: chip, job: str.job, help: str.help, stage: h, acts: {
+    pick: function (a) { if (q.pick >= 0) return; q.pick = +a; q.ans = q.ans || []; q.ans[q.i] = q.pick; if (q.pick === 0) { q.right++; snd('ding'); } else snd('thud'); },
+    nx: function () { if (q.i < items.length - 1) { q.i++; q.pick = -1; } else { q.done = 1; done(); } } } };
+}
+function pool() { return st.t1.concat(st.f1, st.f2, st.odd); }
+function oddStep(o) {
+  return testStep({ chip: 3, m: st.cls, want: -1, list: st.odd, job: o.job, help: o.help, fin: o.fin, draw: o.draw, nextLabel: o.nextLabel, onNext: o.onNext,
+    after: function (t) { return '<div class="guess">' + esc(f(S.itThinks, { n: st.cls[t.g].n })) + '</div>' + barHtml(t.pc) + '<p class="say">' + f(S.howSure, { pc: t.pc }) + '</p>' + lines(t.pc >= 75 ? o.lines : o.low); } });
+}
+
+/* ---------- the screens ---------- */
+var X = {};   // extras, filled below
+var SCREENS = {
+  about: function () {
+    var ok = inkOK(), A = S.about;
+    return { chip: 0, job: A.job, help: A.help, pad: {}, draw: 'house', btns: btn('go', A.go, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'),
+      side: card(S.thinks, '<div class="guess">' + (strokes.length ? A.noIdea : S.drawSomething) + '</div>' + barHtml(0) + lines(A.lines)), acts: { go: function () { st.t0 = Date.now(); go('t-teach'); }, rub: clear } };
+  },
+  't-teach': function () { var k = st.cls[0].ex.length < 5 ? 0 : 1; return collect({ chip: 1, m: st.cls, k: k, need: 5, job: S.teach.job, help: S.teach.help, next: function () { if (k === 1) go('t-test'); } }); },
+  't-test': function () {
+    var i = st.t1.length - (st.shown ? 1 : 0), w = T1[i];
+    return testStep({ chip: 1, m: st.cls, want: w, list: st.t1, draw: st.cls[w].n, job: f(S.teach.testJob, { a: st.cls[w].a, i: i + 1, of: 5 }), help: f(S.teach.testHelp, { a: st.cls[w].a }), fin: f(S.finished, { n: st.cls[w].n }),
+      nextLabel: i < 4 ? S.teach.nextTest : S.next, onNext: function () { if (st.t1.length >= 5) go('t-sum'); } });
+  },
+  't-sum': function () { return { chip: 1, job: S.teach.sumJob, help: S.teach.sumHelp, stage: '<p class="big">' + f(S.teach.sum, { r: right(st.t1), of: 5 }) + '</p>' + lines(S.teach.sumLines) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.teach.go, 0, 1) + '</div>', acts: { go: function () { go('f-who'); } } }; },
+  'f-who': function () { return { chip: 2, job: S.fool.whoJob, help: S.fool.whoHelp, spot: '#stage .row', stage: lines(S.fool.whoLines) + '<div class="row">' + btn('n', S.fool.whoN, 0, 0) + btn('s', S.fool.whoS, 0, 1, 'ghost') + '</div>', acts: { n: function () { st.who = 'n'; go('f-1'); }, s: function () { st.who = 's'; go('f-1'); } } }; },
+  'f-1': function () { return foolStep(st.f1, F1, STR1, 100, function () { if (st.f1.length >= 6) go('f-s1'); }); },
+  'f-s1': function () {
+    var r = right(st.f1);
+    return { chip: 2, job: S.fool.s1Job, help: S.fool.s1Help, stage: '<p class="big">' + f(S.fool.s1, { r: r, of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + st.f1.map(function (t) { return th(t, '', st.cls[t.g].n); }).join('') + '</div>' + lines(r < 6 ? S.fool.s1Bad : S.fool.s1Good) + '<div class="row">' + btn('go', S.fool.learn, 0, 1) + '</div>',
+      acts: { go: function () { st.f1.forEach(function (t) { st.cls[t.w].ex.push(t.s); }); go('f-2'); } } };
+  },
+  'f-2': function () { return foolStep(st.f2, F2, STR2, 200, function () { if (st.f2.length >= 4) go('f-s2'); }); },
+  'f-s2': function () {
+    var r1 = right(st.f1), r2 = right(st.f2), upp = r2 / 4 > r1 / 6 || r2 === 4;
+    return { chip: 2, job: S.fool.s2Job, help: S.fool.s2Help, stage: '<p class="big">' + f(S.fool.s2, { r1: r1, of1: 6, r2: r2, of2: 4 }) + '</p>' + lines(upp ? S.fool.s2Up : S.fool.s2Same) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.fool.go, 0, 1) + '</div>', acts: { go: function () { go('s-cat'); } } };
+  },
+  's-cat': function () { return oddStep({ job: S.sure.catJob, help: S.sure.catHelp, fin: S.sure.finCat, draw: 'cat', lines: S.sure.catLines, low: S.sure.catLow, nextLabel: S.sure.nextAny, onNext: function () { go('s-any'); } }); },
+  's-any': function () { return oddStep({ job: S.sure.anyJob, help: S.sure.anyHelp, fin: S.sure.finAny, draw: 'house', lines: S.sure.anyLines, low: S.sure.anyLow, nextLabel: S.sure.toLine, onNext: function () { go('s-line'); } }); },
+  's-line': function () {
+    var p = pool().slice().sort(function (a, b) { return a.pc - b.pc; }), L = st.line, chk = 0, past = 0;
+    p.forEach(function (t) { if (t.pc < L) chk++; else if (t.w !== t.g) past++; });
+    var h = lines(S.sure.lineLines) + '<div class="pick"><span class="lab">' + S.sure.linePick + '</span>' + LINES.map(function (v) { return '<button class="sm ' + (v === L ? 'on' : '') + '" data-act="set" data-arg="' + v + '"' + (v === 80 ? ' data-want="' + (L ? '' : '1') + '"' : '') + '>' + v + ' %</button>'; }).join('') + '</div>';
+    h += '<div class="thumbs" style="margin:12px 0;gap:6px">' + p.map(function (t) { return th(t, L ? (t.pc < L ? 'chk' : t.w !== t.g ? 'bad' : '') : '', t.pc + ' %'); }).join('') + '</div>';
+    h += '<div class="legend"><span>' + S.sure.legendChk + '</span><span class="b">' + S.sure.legendBad + '</span></div>';
+    h += L ? '<p class="big" style="margin-top:14px">' + f(S.sure.lineChecks, { n: chk, of: p.length }) + ' ' + (past === 0 ? S.sure.linePast0 : past === 1 ? S.sure.linePast1 : f(S.sure.linePast, { n: past })) + '</p>' : '<p class="say" style="color:var(--amber);font-weight:800;margin-top:14px">' + S.sure.lineNone + '</p>';
+    h += '<div class="row">' + btn('go', S.sure.lineKeep, !L, L ? 1 : 0) + '</div>';
+    return { chip: 3, job: S.sure.lineJob, help: S.sure.lineHelp, stage: h.replace('data-want=""', ''), acts: { set: function (a) { st.line = +a; snd('tick'); }, go: function () { go('c-card'); } } };
+  },
+  'c-card': function () {
+    var p = pool(), C = S.card, ok = st.name.length > 0 && st.gap >= 0;
+    var h = '<div class="mcard"><h2 class="kicker">' + C.head + '</h2><div class="pick"><span class="lab">' + C.nameLabel + '</span><input type="text" id="nm" maxlength="14" placeholder="' + C.namePh + '" value="' + esc(st.name) + '"></div><div class="pick">' + C.names.map(function (n, i) { return '<button class="sm' + (st.name === n ? ' on' : '') + '" data-act="nm" data-arg="' + n + '"' + (i === 0 && !st.name ? ' data-want="1"' : '') + '>' + n + '</button>'; }).join('') + '</div>' + cardLines() +
+      '<p class="say" style="font-weight:800;margin-top:14px">' + C.gapLabel + '</p><div class="opts">' + C.gaps.map(function (g, i) { return '<button class="opt sm' + (st.gap === i ? ' good' : '') + '" style="color:#14242b;background:#fff" data-act="gap" data-arg="' + i + '"' + (i === 1 && st.name && st.gap < 0 ? ' data-want="1"' : '') + '>' + g + '</button>'; }).join('') + '</div></div><div class="row">' + btn('keep', C.keep, !ok, ok ? 1 : 0) + '</div>';
+    return { chip: 4, job: C.job, help: C.help, stage: h, input: function (el) { st.name = el.value.trim().slice(0, 14); save(); var b = document.querySelector('[data-act=keep]'); if (b) b.disabled = !(st.name && st.gap >= 0); },
+      acts: { nm: function (a) { st.name = a; }, gap: function (a) { st.gap = +a; }, keep: function () { st.kept = 1; snd('fanfare'); go('c-kept'); } } };
+  },
+  'c-kept': function () { return { chip: 4, job: S.card.keptJob, help: S.card.keptHelp, stage: '<p class="big">' + S.card.keptLines[0] + '</p>' + lines(S.card.keptLines.slice(1)) + cardView() + '<div class="row">' + btn('go', S.card.go, 0, 1) + '</div>', acts: { go: function () { go('x-menu'); } } }; },
+  'x-menu': function () {
+    var M = S.menu;
+    return { chip: 5, job: M.job, help: M.help, stage: '<div class="tiles">' + M.tiles.map(function (t, i) { var d = st.x[t.id] && st.x[t.id].done; return '<button class="tile" data-act="open" data-arg="' + t.id + '"><strong>' + t.t + '</strong>' + t.d + '<small>' + f(M.mins, { m: t.m }) + (t.s ? ' · <span class="hard">' + M.stretch + '</span>' : '') + (d ? ' · <span class="tag">' + M.done + '</span>' : '') + '</small></button>'; }).join('') + '</div>',
+      acts: { open: function (id) { X[id].open(); go('x-' + id); } } };
+  },
+  'e-q': function () { return quiz(S.end.qs, st.eq, S.end, 6, S.end.toFelt, function () { go('e-felt'); }); },
+  'e-felt': function () {
+    var all = st.felt.every(function (v) { return v >= 0; });
+    return { chip: 6, job: S.end.feltJob, help: S.end.feltHelp, stage: S.end.felt.map(function (l, i) { return '<div class="feltrow"><p class="say">' + l + '</p><div class="pick" style="margin:0">' + S.end.feltOpts.map(function (o, j) { return '<button class="sm' + (st.felt[i] === j ? ' on' : '') + '" data-act="felt" data-arg="' + i + '-' + j + '"' + (j === 2 && st.felt[i] < 0 && st.felt.indexOf(-1) === i ? ' data-want="1"' : '') + '>' + o + '</button>'; }).join('') + '</div></div>'; }).join('') + '<div class="row">' + btn('go', S.end.finish, !all, all ? 1 : 0) + '</div>',
+      acts: { felt: function (a) { var q = a.split('-'); st.felt[+q[0]] = +q[1]; }, go: function () { if (!st.fin) post('end', { answers: S.end.qs.map(function (_, i) { var a = (st.eq.ans || [])[i]; return a == null ? -1 : a; }), felt: st.felt.slice() }); st.fin = 1; snd('fanfare'); go('e-done'); } } };
+  },
+  'e-done': function () {
+    var back = st.ret && !/^x-/.test(st.ret) ? S.end.backC : S.end.backX;
+    return { chip: 6, job: S.end.doneJob, help: S.end.doneHelp, stage: '<p class="big">' + S.end.doneLines[0] + '</p>' + lines(S.end.doneLines.slice(1)) + '<p class="say">' + f(S.end.score, { r: st.eq.right, of: 5 }) + '</p>' + (st.kept ? cardView() : '') + '<div class="row">' + btn('back', back, 0, 0, 'ghost') + '</div>',
+      acts: { back: goBack } };
+  }
+};
+function foolStep(list, order, str, seed, onNext) {
+  var i = list.length - (st.shown ? 1 : 0), w = order[i], F = S.fool, o = { chip: 2, m: st.cls, want: w, list: list, draw: st.cls[w].n, nextLabel: i < order.length - 1 ? F.nextD : S.next, onNext: onNext };
+  if (st.who === 'n') { o.job = f(F.nJob, { a: st.cls[w].a, i: i + 1, of: order.length }); o.help = F.nHelp; o.fin = f(S.finished, { n: st.cls[w].n }); return testStep(o); }
+  o.job = f(F.sJob, { a: st.cls[w].a, i: i + 1, of: order.length }); o.help = F.sHelp; o.kind = str[i][0]; o.style = str[i][1]; o.seed = seed + i; o.draw = null;
+  return strangerStep(o);
+}
+function cardLines() {
+  var p = pool(), C = S.card;
+  return '<p class="say">' + f(C.taught, { s: st.cls[0].ex.length, f: st.cls[1].ex.length }) + '</p><p class="say">' + f(C.tested, { of: p.length, r: right(p) }) + '</p><p class="say">' + f(C.line, { l: st.line }) + '</p>';
+}
+function cardView() { return '<div class="mcard" style="margin-top:16px"><h2 class="kicker">' + S.card.head + '</h2><p class="nm">' + esc(st.name) + '</p>' + cardLines() + '<p class="say"><b>' + S.card.gapLabel + ':</b> ' + S.card.gaps[st.gap] + '</p></div>'; }
+function backRow(want) { return '<div class="row">' + btn('menu', S.menu.back, 0, want ? 1 : 0, want ? '' : 'ghost') + '</div>'; }
+function toMenu() { if (sp) { clearInterval(sp.t); sp = null; } go('x-menu'); }
+
+/* ---------- the five extras ---------- */
+X.third = { open: function () { st.x.third = { ex: [], tests: [], done: (st.x.third || {}).done }; } };
+SCREENS['x-third'] = function () {
+  var x = st.x.third, m = st.cls.concat([{ n: 'star', pl: 'stars', a: 'a star', ex: x.ex }]), s;
+  if (x.ex.length < 5) { s = collect({ chip: 5, m: m, k: 2, need: 5, job: S.third.job, help: S.third.help, mine: 0 }); s.btns += btn('menu', S.menu.back, 0, 0, 'ghost sm'); }
+  else if (x.tests.length < 6 || st.shown) {
+    var i = x.tests.length - (st.shown ? 1 : 0), w = T3[i];
+    s = testStep({ chip: 5, m: m, want: w, list: x.tests, draw: m[w].n, job: f(S.third.testJob, { a: m[w].a, i: i + 1, of: 6 }), help: S.third.testHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: i < 5 ? S.teach.nextTest : S.next, onNext: function () { if (x.tests.length >= 6) x.done = 1; } });
+  } else s = { chip: 5, job: S.third.sumJob, help: S.third.sumHelp, stage: '<p class="big">' + f(S.third.sum, { r: right(x.tests), of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.tests.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(S.third.sumLines) + '<div style="margin-top:14px">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
+  s.acts.menu = toMenu; return s;
+};
+X.speed = { open: function () { st.x.speed = st.x.speed || { best: 0 }; sp = null; } };
+SCREENS['x-speed'] = function () {
+  var x = st.x.speed, V = S.speed, s;
+  if (!sp) s = { chip: 5, job: V.readyJob, help: V.readyHelp, stage: lines(V.readyLines) + (x.best ? '<p class="say">' + f(V.best, { n: x.best }) + '</p>' : '') + '<div class="row">' + btn('go', S.start, 0, 1) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>', acts: { go: startSpeed } };
+  else if (sp.over) s = { chip: 5, job: V.endJob, help: V.endHelp, stage: '<p class="big">' + f(V.end, { n: sp.n }) + '</p><p class="say">' + f(V.best, { n: x.best }) + '</p><div class="row">' + btn('go', V.again, 0, 0) + btn('menu', S.menu.back, 0, 1, 'ghost') + '</div>', acts: { go: startSpeed } };
+  else s = { chip: 5, job: f(V.job, { a: st.cls[sp.want].a }), help: V.help, pad: {}, padDone: function () { return false; }, draw: st.cls[sp.want].n, btns: btn('skip', V.skip, 0, 0, 'ghost') + btn('rub', S.rub, 0, 0, 'ghost'),
+    side: card(f(V.score, { n: sp.n }), '<div class="clock" id="clock">' + f(V.left, { s: Math.ceil(sp.left) }) + '</div>') + guessCard(st.cls),
+    onUp: function () { var r = now(st.cls); if (r && inkOK() && r.c === sp.want && r.pc >= 60) { sp.n++; snd('ding'); sp.want = Math.random() < .5 ? 0 : 1; clear(); } },
+    acts: { skip: function () { sp.want = 1 - sp.want; clear(); }, rub: clear } };
+  s.acts.menu = toMenu; return s;
+};
+function startSpeed() {
+  sp = { n: 0, left: FAST ? 6 : 90, want: Math.random() < .5 ? 0 : 1, over: 0 }; clear();
+  sp.t = setInterval(function () {
+    if (helpOpen || PAUSED || !sp || sp.over) return;
+    sp.left -= .25; var c = $('clock'); if (c) c.textContent = f(S.speed.left, { s: Math.max(0, Math.ceil(sp.left)) });
+    if (sp.left <= 0) { clearInterval(sp.t); sp.over = 1; cur = null; var x = st.x.speed; x.best = Math.max(x.best, sp.n); x.done = 1; snd('bell'); clear(); save(); render(); }
+  }, 250);
+}
+X.half = { open: function () { st.x.half = st.x.half || { pics: [] }; } };
+SCREENS['x-half'] = function () {
+  var x = st.x.half, r = now(st.cls), ok = r && inkOK() && r.ps[0] >= .45 && r.ps[0] <= .55;
+  return { chip: 5, job: S.half.job, help: S.half.help, pad: {}, draw: 'half', spot: ok ? null : '#live', spotTag: S.tagBar, btns: btn('keep', S.half.keep, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost') + btn('menu', S.menu.back, 0, 0, 'ghost sm'),
+    side: guessCard(st.cls) + card(f(S.half.kept, { n: x.pics.length }), '<p class="say" style="color:var(--amber);font-weight:800">' + S.half.aim + '</p><div class="thumbs">' + x.pics.map(function (s) { return pv(vecOf(s)); }).join('') + '</div>' + (x.pics.length ? lines(S.half.lines) : '')),
+    acts: { keep: function () { x.pics.push(take()); x.done = 1; snd('ding'); clear(); }, rub: clear, menu: toMenu } };
+};
+X.bad = { open: function () { st.x.bad = { cls: two(), tr: [], go: 0, done: (st.x.bad || {}).done }; } };
+SCREENS['x-bad'] = function () {
+  var x = st.x.bad, B = S.bad, m = x.cls, s;
+  if (!x.go) s = { chip: 5, job: B.introJob, help: B.introHelp, stage: lines(B.introLines) + '<div class="row">' + btn('go', S.start, 0, 1) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>', acts: { go: function () { x.go = 1; } } };
+  else if (m[1].ex.length < 4) { var k = m[0].ex.length < 4 ? 0 : 1; s = collect({ chip: 5, m: m, k: k, need: 4, zone: k ? BOT : TOP, job: B.job, help: B.help, mine: 0 }); }
+  else if (x.tr.length < 2 || st.shown) {
+    var i = x.tr.length - (st.shown ? 1 : 0), w = i === 0 ? 1 : 0;
+    s = testStep({ chip: 5, m: m, want: w, list: x.tr, zone: w ? TOP : BOT, draw: m[w].n, job: f(B.trickJob, { a: m[w].a }), help: B.trickHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: S.next, onNext: function () { if (x.tr.length >= 2) x.done = 1; } });
+  } else s = { chip: 5, job: B.endJob, help: B.endHelp, stage: '<div class="thumbs" style="margin:0 0 14px">' + x.tr.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(B.lines) + '<div style="margin-top:14px">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
+  s.acts.menu = toMenu; return s;
+};
+X.own = { open: function () { st.x.own = { a: '', b: '', cls: null, done: (st.x.own || {}).done }; } };
+SCREENS['x-own'] = function () {
+  var x = st.x.own, O = S.own, s;
+  if (!x.cls) {
+    var ok = x.a && x.b && x.a !== x.b;
+    s = { chip: 5, job: O.pickJob, help: O.pickHelp, stage: '<div class="pick">' + O.pairs.map(function (p, i) { return '<button class="sm' + (x.a === p[0] && x.b === p[1] ? ' on' : '') + '" data-act="pair" data-arg="' + i + '"' + (i === 0 && !ok ? ' data-want="1"' : '') + '>' + p[0] + ' and ' + p[1] + '</button>'; }).join('') + '</div><div class="pick"><span class="say">' + O.a + '</span><input type="text" id="oa" maxlength="12" value="' + esc(x.a) + '"><span class="say">' + O.b + '</span><input type="text" id="ob" maxlength="12" value="' + esc(x.b) + '"></div><div class="row">' + btn('go', S.start, !ok, ok ? 1 : 0) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>',
+      input: function () { x.a = $('oa').value.trim(); x.b = $('ob').value.trim(); save(); document.querySelector('[data-act=go]').disabled = !(x.a && x.b && x.a !== x.b); },
+      acts: { pair: function (i) { x.a = O.pairs[i][0]; x.b = O.pairs[i][1]; }, go: function () { x.cls = [{ n: x.a, ex: [] }, { n: x.b, ex: [] }]; } } };
+  } else if (x.cls[1].ex.length < 5) { s = collect({ chip: 5, m: x.cls, k: x.cls[0].ex.length < 5 ? 0 : 1, need: 5, job: O.job, help: O.help, keep: O.keep, mine: O, draw: 'own' }); }
+  else {
+    x.done = 1;
+    s = { chip: 5, job: O.testJob, help: O.testHelp, pad: {}, draw: 'own', spot: '#btns', btns: btn('rub', O.another, !strokes.length, 0) + btn('menu', S.menu.back, 0, 1, 'ghost sm') + (inkOK() ? x.cls.map(function (c, i) { return btn('learn', f(O.was, { n: c.n }), 0, 0, 'ghost sm', i); }).join('') : ''),
+      side: guessCard(x.cls) + ghosts(x.cls), acts: { rub: clear, learn: function (i) { x.cls[+i].ex.push(take()); clear(); snd('flip'); } } };
+  }
+  s.acts.menu = toMenu; return s;
+};
+
+/* ---------- render ---------- */
+function late() { return /late/.test(FLAG) || elapsedMin() > 50; }
+function mins() { $('mins').textContent = f(W.minsLeft, { m: Math.max(0, Math.ceil(60 - elapsedMin())) }); }
+function veil() { var on = WELCOME || PAUSED; $('veil').hidden = !on; if (on) { $('veilSay').textContent = WELCOME ? W.welcome : W.paused; $('veilBtn').textContent = W.carryOn; } }
+function render() {
+  PV = []; CUR_M = null;
+  if (/^x-(speed)$/.test(st.scr) === false && sp) { clearInterval(sp.t); sp = null; }
+  CUR = SCREENS[st.scr]();
+  $('title').textContent = S.title; $('helpBtn').textContent = S.helpBtn; $('endBtn').textContent = S.endBtn; $('pauseBtn').textContent = W.pause; mins(); veil();
+  $('steps').innerHTML = S.chips.map(function (t, i) { return '<span class="chip ' + (i === CUR.chip ? 'on' : i < CUR.chip ? 'done' : '') + '">' + t + '</span>'; }).join('');
+  var inEnd = /^e-(q|felt)$/.test(st.scr) && !!st.ret;
+  $('endBtn').textContent = inEnd ? (/^x-/.test(st.ret) ? S.end.backX : S.end.backC) : S.endBtn;
+  $('endBtn').hidden = !(inEnd || /^x-/.test(st.scr) || (/^[tfsc]-/.test(st.scr) && late()));
+  $('job').textContent = S.jobLead + CUR.job;
+  $('draw').hidden = !CUR.pad; $('stage').hidden = !!CUR.pad;
+  if (CUR.pad) { $('btns').innerHTML = CUR.btns || ''; $('side').innerHTML = CUR.side || ''; $('warn').textContent = CUR.warn || ''; pad.className = CUR.pad.lock ? 'lock' : ''; $('stage').innerHTML = ''; }
+  else { $('stage').innerHTML = CUR.stage; $('btns').innerHTML = ''; $('side').innerHTML = ''; }
+  document.querySelectorAll('canvas[data-pv]').forEach(function (c) { paint(c, PV[+c.getAttribute('data-pv')]); });
+  $('helpHow').textContent = S.jobLead + CUR.job; $('helpText').innerHTML = [].concat(CUR.help).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join(''); $('helpStuck').textContent = S.helpStuck; $('helpClose').textContent = S.helpBack;
+  redraw(); spot();
+}
+function paint(cv, v) {
+  var x = cv.getContext('2d'), im = x.createImageData(28, 28), m = 0, i;
+  for (i = 0; i < v.length; i++) m = Math.max(m, v[i]);
+  for (i = 0; i < v.length; i++) { var g = 251 - Math.round(231 * (m ? v[i] / m : 0)); im.data[i * 4] = g; im.data[i * 4 + 1] = g; im.data[i * 4 + 2] = g; im.data[i * 4 + 3] = 255; }
+  x.putImageData(im, 0, 0);
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!b || b.disabled || play || PAUSED || WELCOME) return;
+  var a = CUR.acts && CUR.acts[b.getAttribute('data-act')]; if (!a) return;
+  var was = st.scr + '|' + st.shown; poke();
+  a(b.getAttribute('data-arg')); save(); if (helpOpen && was !== st.scr + '|' + st.shown) help(false); render();
+});
+document.addEventListener('input', function (e) { if (CUR.input) CUR.input(e.target); });
+/* ---------- Stuck? Show me: point at the next thing, draw an example, say it in two steps ---------- */
+function target() {
+  if (play) return { el: $('live') || pad, tag: S.tagWatch };
+  if (CUR.pad && !CUR.pad.lock && !(CUR.padDone ? CUR.padDone() : inkOK())) return { el: pad, tag: S.tagDraw };
+  var e = CUR.spot && document.querySelector(CUR.spot); if (e) return { el: e, tag: CUR.spotTag || S.tagChoose };
+  var b = document.querySelector('[data-want]:not([disabled])') || document.querySelector('#btns [data-act]:not([disabled]), #stage [data-act]:not([disabled])');
+  if (!b) return null;
+  var g = b.closest('.opts, .pick, .tiles'); return g ? { el: g, tag: S.tagChoose } : { el: b, tag: S.tagPress };
+}
+function spot() {
+  document.querySelectorAll('.spot').forEach(function (e) { e.classList.remove('spot'); });
+  var tg = $('tag'), t; tg.style.display = 'none';
+  if (!(helpOpen || nudge > 1)) return;
+  t = demoOn ? { el: pad, tag: S.tagWatch } : target(); if (!t) return;
+  t.el.classList.add('spot'); var r = t.el.getBoundingClientRect(), floor = helpOpen ? $('help').getBoundingClientRect().bottom + 4 : 0;
+  tg.textContent = t.tag; tg.style.display = 'block'; tg.style.left = Math.max(8, r.left + 10) + 'px'; tg.style.top = Math.max(floor, r.top - 15) + 'px';
+}
+function demo() {
+  var Q = P(7), k = CUR.draw, tok = ++demoTok;
+  if (!CUR.pad || CUR.pad.lock || CUR.noDemo || play || strokes.length || k === 'into' || typeof Q[k] !== 'function') return;
+  var d = Q[k](); if (CUR.pad.zone) d = Q.into(d, CUR.pad.zone);
+  demoRuns++;
+  if (FAST) return;
+  demoOn = 1; ghost = []; var si = 0, pi = 0;
+  (function step() {
+    if (tok !== demoTok) return;
+    for (var n = 0; n < 3; n++) {
+      if (si >= d.length) { return setTimeout(function () { if (tok !== demoTok) return; ghost = null; demoOn = 0; redraw(); spot(); }, 1100); }
+      if (pi === 0) ghost.push([]);
+      ghost[ghost.length - 1].push(d[si][pi]); pi++;
+      if (pi >= d[si].length) { si++; pi = 0; }
+    }
+    redraw(); setTimeout(step, 20);
+  })();
+}
+function help(on) {
+  helpOpen = on; demoTok++; ghost = null; demoOn = 0; poke();
+  $('help').style.display = on ? 'flex' : 'none';
+  if (on) { $('help').style.minHeight = $('job').parentNode.getBoundingClientRect().bottom + 'px'; demo(); }
+  redraw(); spot();
+}
+function poke() { idleAt = Date.now(); if (nudge) { nudge = 0; $('helpBtn').classList.remove('nudge'); spot(); } }
+['pointerdown', 'keydown', 'input'].forEach(function (ev) { document.addEventListener(ev, poke, true); });
+setInterval(function () {
+  if (helpOpen || PAUSED || WELCOME || play || (sp && !sp.over) || st.scr === 'e-done') { idleAt = Date.now(); return; }
+  var idle = Date.now() - idleAt;
+  if (idle > IDLE && !nudge) { nudge = 1; $('helpBtn').classList.add('nudge'); }
+  if (idle > 2 * IDLE && nudge === 1) { nudge = 2; spot(); }
+}, 250);
+$('helpBtn').onclick = function () { help(!helpOpen); }; $('helpClose').onclick = function () { help(false); };
+document.addEventListener('keydown', function (e) { if (e.target.tagName === 'INPUT') return; if (e.key === 'h' || e.key === 'H') help(!helpOpen); if (e.key === 'Escape') help(false); });
+function goBack() { var r = st.ret && !/^x-/.test(st.ret) ? st.ret : (st.kept ? 'x-menu' : 't-teach'), sh = st.retShown; go(r); st.shown = /^x-/.test(r) ? 0 : sh; if (!/^x-/.test(r) && st.retS) strokes = st.retS; st.retS = null; st.ret = null; }
+$('pauseBtn').onclick = function () { if (play || WELCOME) return; if (helpOpen) help(false); PAUSED = true; veil(); };
+$('veilBtn').onclick = function () { WELCOME = false; PAUSED = false; poke(); veil(); };
+setInterval(mins, 15000);
+$('endBtn').onclick = function () {
+  if (play || PAUSED || WELCOME) return;
+  if (/^e-/.test(st.scr)) { goBack(); save(); render(); return; }
+  if (!/^e-/.test(st.scr)) { st.ret = st.scr; st.retShown = st.shown; st.retS = take(); }
+  go(st.fin ? 'e-done' : st.eq.done ? 'e-felt' : 'e-q'); save(); render();
+};
+window.App = { pack: pack, unpack: unpack, packSize: function () { return JSON.stringify(pack()).length; }, veil: function () { return WELCOME ? 'welcome' : PAUSED ? 'paused' : ''; }, flush: function () { if (saveT) clearTimeout(saveT); sendSave(); return lastPack; }, info: function () { return { scr: st.scr, draw: CUR.draw || null, zone: CUR.pad && CUR.pad.zone || null, play: play, shown: st.shown, job: CUR.job, help: CUR.help, pad: !!CUR.pad, helpOpen: helpOpen, demoRuns: demoRuns, demoOn: demoOn, nudge: nudge, spot: (document.querySelector('.spot') || {}).id || (document.querySelector('.spot') || {}).className || null, tag: $('tag').style.display === 'block' ? $('tag').textContent : null }; }, help: help, snap: function () { return JSON.stringify(st) + '|' + JSON.stringify(strokes); }, st: function () { return st; } };
+render();
+</script>
+</body>
+</html>
