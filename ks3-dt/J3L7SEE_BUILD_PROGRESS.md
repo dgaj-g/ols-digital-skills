@@ -32,3 +32,9 @@ NODE_PATH=$(npm root -g) node j3l7see-<words|job|fit|help|walk>.js --url http://
 - contentVersion 2026-11-13c; offline pack green.
 - Slide Decks script project holds a temporary first line (aaRunExportJ3Lesson7Proofs) — replace with the exact repo .gs at the end.
 - REMAINING: read 8 proofs; restore exact .gs; re-run all gates; online pack; build-pathb; Version 80 deploy; live smoke 1366 + 1024; PR + merge; RESUME_HERE block; DFM 380+ rulings with audit rows; done message.
+
+## 14:43 — VERSION 80 DEPLOYED
+- Confirmation read "Version 80 on 13 Nov 2026, 14:42"; Deployment ID unchanged; description "V80 13 Nov 2026: J3 L7 Teach It To See" (house style, no long dash).
+- Pair hashes: PathB_Code.gs ea4a5ee2156bdc6b27edcde67c1a7735 (unchanged) · PathB_Index.html 9b9c1347fe05756dfd9f74d34488073f; editor compared equal to raw at 1aaa4da after a reload.
+- Before deploy: words, job, fit, help, walk, save, engine all PASS; online pack clean at 2026-11-13c; 8 deck proofs read; Slide Decks project = repo .gs (compared equal).
+- REMAINING: PR + merge; Pages live check; live smoke 1366 + 1024; RESUME_HERE; DFM 380+ / K127+ with audit rows; close Chrome tab; done message.
