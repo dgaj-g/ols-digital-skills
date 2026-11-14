@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-12T13:04:54.412Z
+G6 deploy log + token · 2026-11-14T19:23:00.104Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 12 Nov 2026 13:04 | 15 | eeac42aea6-a0145842 | v15 S1 Unit 1 eeac42aea6-a0145842 | the Spreadsheets deck reworked (his word: "get the spreadsheet slide deck i
+INFO newest row: | 14 Nov 2026 19:22 | 16 | eeac42aea6-aae84bc7 | v16 S1 Unit 1 eeac42aea6-aae84bc7 | pupils' activity scores were lost (Lily, S1DG-26-27: "I did the database ac
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
