@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-14T19:23:00.104Z
-PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 14 Nov 2026 19:22 | 16 | eeac42aea6-aae84bc7 | v16 S1 Unit 1 eeac42aea6-aae84bc7 | pupils' activity scores were lost (Lily, S1DG-26-27: "I did the database ac
-PASS CONTROL newest row names another build: fails
+G6 deploy log + token · 2026-11-14T19:39:37.077Z
+FAIL DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree · row 17 description v17 S1 Unit 1 43a8b3f955 full screen saves
+INFO newest row: | 14 Nov 2026 19:38 | 17 | 43a8b3f955-e11212b6 | v17 S1 Unit 1 43a8b3f955 full screen saves | "Open in a full window" opened the activity in a separate tab, out
+FAIL CONTROL newest row names another build: fails · failures 1
 PASS CONTROL seen token from another build: fails
-GREEN · 3 pass · 0 fail
+RED · 1 pass · 2 fail
