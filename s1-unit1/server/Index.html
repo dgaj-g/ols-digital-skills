@@ -257,6 +257,9 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 .actbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 0 10px}.actbar .status{margin-right:auto;font-size:14px}
 .actframe{position:relative;height:calc(100vh - 250px);min-height:440px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--lift);margin-bottom:12px}
 .actframe iframe{display:block;width:100%;height:100%;border:0}
+.actscr.big{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;padding:8px 12px 10px;background:var(--bg);animation:none!important;transform:none}
+.actscr.big>:not(.actbar):not(.actframe){display:none}
+.actscr.big .actbar{margin:0 0 8px}.actscr.big .actframe{flex:1;height:auto;min-height:0;margin:0}
 .afail{position:absolute;left:0;right:0;top:18%;width:min(92%,480px);margin:0 auto;text-align:center}.afail .actions{justify-content:center;align-items:center;flex-wrap:wrap}
 .erows{margin:4px 0 16px}
 .erow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 18px;align-items:center;padding:12px 10px;border-top:1px solid var(--line);border-radius:10px}
@@ -284,8 +287,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-eeac42aea6-aae84bc7">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-eeac42aea6-aae84bc7" };</script>
+<body data-build="s1u1-43a8b3f955-e11212b6">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-43a8b3f955-e11212b6" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -533,15 +536,16 @@ var S1L = {
     actJobDone: "Play the activity to the end, then press I've finished this.",
     actHelp: ["Play the activity on this page. When you reach the end, your score is sent to your teacher.",
       "If you play it again, your best score is kept.",
-      "If the activity does not load, press Try again. Open in a full window works too, but a score there is not saved."],
+      "Press Full screen to make the activity fill your screen. Your score still saves.",
+      "If the activity does not load, press Try again."],
     actWait: "Your score is saved when you reach the end.",
     actSaving: "Saving your score...",
     actSaved: "Saved. Your best: {s} of {m}.",
     actSavedDone: "Saved as done.",
     actRetry: "Not saved yet. The app keeps trying, so leave this page open.",
     actFinished: "I've finished this",
-    fullWindow: "Open in a full window",
-    fullNote: "A score in a full window is not saved.",
+    fullWindow: "Full screen",
+    exitFull: "Exit full screen",
     loadFail: "The activity has not loaded. Check your connection, then press Try again.",
     back: "Back to the topic",
     pending: "Some scores are still waiting to save. Leave this page open for a minute.",
@@ -1046,6 +1050,7 @@ var Hub = (function () {
     return s.charAt(0).toUpperCase() + s.slice(1) + ".";
   }
   function topic(id) {
+    unBig();
     var t = LT(id); if (!t || !isOpen(id)) return T.home();
     T.at({ screen: "hub", topic: id }); onQ = function () { if (T.cur().screen === "hub" && T.cur().topic === id) paintPend(); };
     var Ls = LS(), bank = bankOf(id), parts = [];
@@ -1118,12 +1123,17 @@ var Hub = (function () {
 
   // ---- an activity, played inside this page so its score comes back ----
   var MSG = null;
+  // v17: Full screen keeps the activity INSIDE this page (it fills the window), so its score still comes back. It never opens a separate tab.
+  var BIG = false, wentFS = false;
+  function unBig() { BIG = false; if (wentFS && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {}); wentFS = false; }
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; var b = document.getElementById("afull"); if (b && BIG) b.click(); } }); // Esc leaves full screen: the page follows
   window.addEventListener("message", function (e) { if (MSG) MSG(e); });
   function activity(aid) {
     var A = actOf(aid); if (!A || !isOpen(A.t.id)) return T.home();
     var t = A.t, a = A.a, url = actUrl(a, true), waitU = null, readyT = null, ready = false, sentAt = false;
+    if (T.cur().screen !== "activity") unBig(); // full screen carries over only when the activity's own Next opens the next one
     T.at({ screen: "activity", act: aid });
-    var body = el('<div class="actscr">' + job(a.scored ? L.actJob : L.actJobDone, L.actHelp) + '<div class="actbar"><span class="status" id="asave" role="status"></span>' + (a.scored ? '' : '<button class="btn sm" id="afin">' + h(L.actFinished) + '</button>') + '<a class="link" id="afull" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><div class="actframe"><iframe id="aframe" title="' + h(a.title) + '" allow="fullscreen; autoplay" src="' + h(url) + '"></iframe><div class="afail card" id="afail" hidden><p>' + h(L.loadFail) + '</p><div class="actions"><button class="btn" id="aretry">' + h(L.tryAgain) + '</button><a class="link" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><p class="help">' + h(L.fullNote) + '</p></div></div><div class="actions"><button class="btn ghost" id="aback">' + h(L.back) + '</button></div></div>');
+    var body = el('<div class="actscr">' + job(a.scored ? L.actJob : L.actJobDone, L.actHelp) + '<div class="actbar"><span class="status" id="asave" role="status"></span>' + (a.scored ? '' : '<button class="btn sm" id="afin">' + h(L.actFinished) + '</button>') + '<button class="btn sm ghost" id="afull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="actframe"><iframe id="aframe" title="' + h(a.title) + '" allow="fullscreen; autoplay" src="' + h(url) + '"></iframe><div class="afail card" id="afail" hidden><p>' + h(L.loadFail) + '</p><div class="actions"><button class="btn" id="aretry">' + h(L.tryAgain) + '</button></div></div></div><div class="actions"><button class="btn ghost" id="aback">' + h(L.back) + '</button></div></div>');
     T.shell(crumb(t, a.title), body); wireCrumb(t); wireHelp();
     var frame = document.getElementById("aframe");
     function status() {
@@ -1158,6 +1168,14 @@ var Hub = (function () {
     wire("afin", function () { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); status(); });
     wire("aretry", function () { document.getElementById("afail").hidden = true; armLoad(); frame.src = url + "&r=" + Date.now().toString(36); });
     wire("aback", function () { topic(t.id); });
+    function big(on) {
+      BIG = on; body.classList.toggle("big", on);
+      var b = document.getElementById("afull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
+      if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
+      if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
+    }
+    wire("afull", function () { big(!BIG); });
+    if (BIG) big(true);
     armLoad(); status();
   }
 
