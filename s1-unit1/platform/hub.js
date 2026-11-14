@@ -93,6 +93,7 @@ var Hub = (function () {
     return s.charAt(0).toUpperCase() + s.slice(1) + ".";
   }
   function topic(id) {
+    unBig();
     var t = LT(id); if (!t || !isOpen(id)) return T.home();
     T.at({ screen: "hub", topic: id }); onQ = function () { if (T.cur().screen === "hub" && T.cur().topic === id) paintPend(); };
     var Ls = LS(), bank = bankOf(id), parts = [];
@@ -165,12 +166,17 @@ var Hub = (function () {
 
   // ---- an activity, played inside this page so its score comes back ----
   var MSG = null;
+  // v17: Full screen keeps the activity INSIDE this page (it fills the window), so its score still comes back. It never opens a separate tab.
+  var BIG = false, wentFS = false;
+  function unBig() { BIG = false; if (wentFS && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {}); wentFS = false; }
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; var b = document.getElementById("afull"); if (b && BIG) b.click(); } }); // Esc leaves full screen: the page follows
   window.addEventListener("message", function (e) { if (MSG) MSG(e); });
   function activity(aid) {
     var A = actOf(aid); if (!A || !isOpen(A.t.id)) return T.home();
     var t = A.t, a = A.a, url = actUrl(a, true), waitU = null, readyT = null, ready = false, sentAt = false;
+    if (T.cur().screen !== "activity") unBig(); // full screen carries over only when the activity's own Next opens the next one
     T.at({ screen: "activity", act: aid });
-    var body = el('<div class="actscr">' + job(a.scored ? L.actJob : L.actJobDone, L.actHelp) + '<div class="actbar"><span class="status" id="asave" role="status"></span>' + (a.scored ? '' : '<button class="btn sm" id="afin">' + h(L.actFinished) + '</button>') + '<a class="link" id="afull" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><div class="actframe"><iframe id="aframe" title="' + h(a.title) + '" allow="fullscreen; autoplay" src="' + h(url) + '"></iframe><div class="afail card" id="afail" hidden><p>' + h(L.loadFail) + '</p><div class="actions"><button class="btn" id="aretry">' + h(L.tryAgain) + '</button><a class="link" href="' + h(actUrl(a, false)) + '" target="_blank" rel="noopener">' + h(L.fullWindow) + '</a></div><p class="help">' + h(L.fullNote) + '</p></div></div><div class="actions"><button class="btn ghost" id="aback">' + h(L.back) + '</button></div></div>');
+    var body = el('<div class="actscr">' + job(a.scored ? L.actJob : L.actJobDone, L.actHelp) + '<div class="actbar"><span class="status" id="asave" role="status"></span>' + (a.scored ? '' : '<button class="btn sm" id="afin">' + h(L.actFinished) + '</button>') + '<button class="btn sm ghost" id="afull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="actframe"><iframe id="aframe" title="' + h(a.title) + '" allow="fullscreen; autoplay" src="' + h(url) + '"></iframe><div class="afail card" id="afail" hidden><p>' + h(L.loadFail) + '</p><div class="actions"><button class="btn" id="aretry">' + h(L.tryAgain) + '</button></div></div></div><div class="actions"><button class="btn ghost" id="aback">' + h(L.back) + '</button></div></div>');
     T.shell(crumb(t, a.title), body); wireCrumb(t); wireHelp();
     var frame = document.getElementById("aframe");
     function status() {
@@ -205,6 +211,14 @@ var Hub = (function () {
     wire("afin", function () { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); status(); });
     wire("aretry", function () { document.getElementById("afail").hidden = true; armLoad(); frame.src = url + "&r=" + Date.now().toString(36); });
     wire("aback", function () { topic(t.id); });
+    function big(on) {
+      BIG = on; body.classList.toggle("big", on);
+      var b = document.getElementById("afull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
+      if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
+      if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
+    }
+    wire("afull", function () { big(!BIG); });
+    if (BIG) big(true);
     armLoad(); status();
   }
 

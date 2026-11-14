@@ -1,4 +1,4 @@
-G9 slide click steps — 2026-11-12T12:56:21.131Z
+G9 slide click steps — 2026-11-14T19:35:02.559Z
 GREEN 17 pass, 0 fail
 
 PASS sw: the source deck has 41 shown slides
