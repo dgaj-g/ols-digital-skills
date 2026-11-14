@@ -284,8 +284,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-eeac42aea6-a0145842">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-eeac42aea6-a0145842" };</script>
+<body data-build="s1u1-eeac42aea6-aae84bc7">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-eeac42aea6-aae84bc7" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -964,6 +964,8 @@ var Hub = (function () {
   try { var mb = /[?&]actbase=([^&#]+)/.exec(location.search); if (mb) { var b0 = decodeURIComponent(mb[1]); if (/^http:\/\/(localhost|127\.0\.0\.1):\d+\/$/.test(b0)) BASE = b0; } } catch (e) {}
   var ORIGIN = BASE.replace(/^(https?:\/\/[^\/]+).*$/, "$1");
   function LT(id) { return S1L.topics.filter(function (t) { return t.id === id; })[0]; }
+  function pathIs(p, ap) { var want = "/" + ap; try { p = decodeURIComponent(String(p || "")); } catch (x) { return false; } return p.length >= want.length && p.slice(-want.length) === want; }
+  function actByPath(p) { var o = null; S1L.topics.forEach(function (t) { t.acts.forEach(function (a) { if (!o && a.path && pathIs(p, a.path)) o = { t: t, a: a }; }); }); return o; }
   function actOf(id) { var o = null; S1L.topics.forEach(function (t) { t.acts.forEach(function (a) { if (a.id === id) o = { t: t, a: a }; }); }); return o; }
   function deckOf(id) { var o = null; S1L.topics.forEach(function (t) { t.decks.forEach(function (d) { if (d.id === id) o = { t: t, d: d }; }); }); return o; }
   function me() { return T.me(); }
@@ -1138,7 +1140,11 @@ var Hub = (function () {
       if (e.source !== frame.contentWindow || e.origin !== ORIGIN) return; // only this activity, from GitHub Pages
       var m = e.data; if (!m || m.t !== "s1act" || m.v !== 1) return;
       if (m.kind === "back") { topic(t.id); return; } // the activity's own "Back to HQ": the topic page is the HQ here
-      if (!ownPage(m.path)) return; // a different page in the frame never scores this activity
+      if (!ownPage(m.path)) { // v16: the activity's own "Next" button opened another activity of the set inside this frame
+        var B = actByPath(m.path); if (!B || B.a.id === aid || !isOpen(B.t.id)) return; // not one of ours: it never scores this activity
+        if (m.kind === "ready") activity(B.a.id); // open it properly, so its screen, status and score are its own (it always says ready before it can finish)
+        return;
+      }
       if (m.kind === "ready") { ready = true; clearTimeout(readyT); document.getElementById("afail").hidden = true; if (!sentAt) { sentAt = true; push({ op: "at", id: aid }); } return; }
       if (m.kind === "finish") {
         if (!a.scored) { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); return status(); }
