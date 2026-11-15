@@ -539,7 +539,8 @@ async function flows() {
   r = await api('apiStaff', { op: 'create', name: '11D DT' }, OWNER);
   ok(r.ok && r.slug === c7, 'v7 class made: 11D DT');
   for (const B of [BANK_DB, BANK_SS]) {
-    const id = B.id, nq = B.stages.reduce((t, s) => t + s.questions.length, 0), nx = B.stages.reduce((t, s) => t + s.questions.reduce((a, q) => a + q.marks, 0), 0);
+    const r1 = (q) => (q.from || 1) <= 1; // round 1 only: questions with from:2 join later
+    const id = B.id, nq = B.stages.reduce((t, s) => t + s.questions.filter(r1).length, 0), nx = B.stages.reduce((t, s) => t + s.questions.filter(r1).reduce((a, q) => a + q.marks, 0), 0);
     const pq = B.stages[0].questions.find((q) => q.form === 'pick1');
     await api('apiBoot', { cls: c7 }, A7);
     let x = await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, A7);
@@ -553,7 +554,7 @@ async function flows() {
     ok(r.ok && r.topics.length === 4 && tb.open === true && tb.title === B.title && tb.spec === B.spec && tb.stages.length === 5 && bq === nq && bx === nx,
       'v7 pupil boot: ' + B.title + ' (' + tb.spec + ') open, ' + (tb.stages || []).length + ' stages · ' + bq + ' questions · ' + bx + ' marks');
     x = await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, A7);
-    ok(x.ok && x.views.length === B.stages[0].questions.length && x.order.indexOf(pq.id) !== -1, 'v7 ' + id + ' stage 1 loads (' + (x.views || []).length + ' questions)');
+    ok(x.ok && x.views.length === B.stages[0].questions.filter(r1).length && x.order.indexOf(pq.id) !== -1, 'v7 ' + id + ' stage 1 loads (' + (x.views || []).length + ' questions)');
     const pv = x.views[x.order.indexOf(pq.id)], wrong = pv.options.find((o) => pq.keys.indexOf(o) === -1);
     await api('apiBoot', { cls: c7 }, B7); await api('apiStage', { cls: c7, topic: id, round: 1, stage: 1 }, B7);
     const right = await api('apiMark', { cls: c7, topic: id, round: 1, qid: pq.id, answer: { picks: [pq.keys[0]] } }, A7);
