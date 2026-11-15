@@ -187,7 +187,7 @@ function apiBoot_(req) {
     var T = TOPICS[id], rec = recGet_(x.slug, email, T, hdr) || { R: {} }, cur = curRound_(x.c, hdr, T), rounds = {};
     Object.keys(rec.R).forEach(function (k) { rounds[k] = roundSum_(rec.R[k], stagesFor_(T, +k)); });
     if (!rounds[cur]) rounds[cur] = roundSum_(null, stagesFor_(T, cur));
-    return { id: id, title: T.title, spec: T.spec, open: topicOpen_(x.c, T), round: cur, rounds: rounds,
+    return { id: id, title: T.title, spec: T.spec, open: topicOpen_(x.c, T), round: cur, rounds: rounds, self: !!(hdr.y && hdr.y[id] === cur),
       stages: stagesFor_(T, cur).map(function (S) { return { n: S.n, title: S.title, q: S.ids.length, x: S.x }; }) };
   });
   return ok_({ email: email, name: hdr.n || '', needName: !hdr.n, cls: x.slug, className: x.c.name, owner: isOwner_(email), topics: topics,
@@ -316,6 +316,30 @@ function apiEval_(req) {
     g.e = { r: rating, t: ticks, x: str_(p.stageNote).trim().slice(0, 100) };
     jset_(sp_(), tKey_(x.slug, x.email, T), rec);
     return ok_({ e: eOut_(g.e), allCards: allCards(), done: !!rh.d });
+  });
+}
+
+// v19 (DECISIONS 22.2): a pupil starts her own next round of a topic, once her current round is finished (topic card saved).
+// One open round per pupil per topic: it opens only from her current, finished round; a resent press gets the round it opened.
+// hdr.y[topic] marks the round she started herself. Refused near the store's limit (the archive line is 350 KB, the cap 500 KB).
+var AGAIN_MAX = 430 * 1024;
+function apiAgain(req) { return safe_(apiAgain_)(req); }
+function apiAgain_(req) {
+  var x = pupilCtx_(req); if (x.err) return err_(x.err);
+  var T = topicArg_(req); if (!T) return err_('bad-topic');
+  if (!topicOpen_(x.c, T)) return err_('locked');
+  var round = roundArg_(req); if (!round) return err_('bad-round');
+  return withLock_(function () {
+    var hdr = hdrGet_(x.slug, x.email); if (!hdr) return err_('not-finished');
+    var cur = curRound_(x.c, hdr, T);
+    if (round < cur) return ok_({ round: cur, repeat: true });
+    if (round !== cur || cur >= 99) return err_('bad-round');
+    var rec = recGet_(x.slug, x.email, T, hdr), rh = rec && rec.R[String(cur)];
+    if (!rh || !rh.d) return err_('not-finished');
+    if (storeSize_(sp_().getProperties()) >= AGAIN_MAX) return err_('store-full');
+    hdr.o[T.id] = cur + 1; hdr.y = hdr.y || {}; hdr.y[T.id] = cur + 1;
+    jset_(sp_(), pKey_(x.slug, x.email), hdr);
+    return ok_({ round: cur + 1 });
   });
 }
 

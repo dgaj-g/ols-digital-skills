@@ -17,7 +17,7 @@ const DESIGN = process.env.S1U1_DESIGN || '/Users/damiengartland/Desktop/Claude 
 const REPO = process.env.S1_REPO || '/Users/damiengartland/Sites/s1-wt-platform';
 const puppeteer = require(path.join(execSync('npm root -g').toString().trim(), 'puppeteer'));
 const S1L = require(path.join(ROOT, 'platform', 'lessons.js')), L = S1L.S;
-const PORT = 8787, SPORT = 8788, BASE = 'http://localhost:' + PORT, ACT = 'http://localhost:' + SPORT + '/';
+const PORT = +(process.env.G12_PORT || 8787), SPORT = PORT + 1, BASE = 'http://localhost:' + PORT, ACT = 'http://localhost:' + SPORT + '/';
 const OWNER = 'dgartland021@c2ken.net', P = 'pupil1@c2ken.net', CLS = '11a-dt';
 const decks = [].concat(...S1L.topics.map((t) => t.decks.map((d) => Object.assign({ topic: t.id }, d))));
 const D = decks.slice().sort((a, b) => a.n - b.n)[0], TOP = S1L.topics.find((t) => t.id === D.topic);
