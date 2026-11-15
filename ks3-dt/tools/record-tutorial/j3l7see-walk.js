@@ -35,7 +35,7 @@ async function lateExit(lose) {
   rs.forEach(r => J.must(r.ended && !r.errs.length && !r.report.some(x => /^STUCK/.test(x.tag)) && r.report.length > 50, r.W + 'x' + r.H + ' route ' + r.who + ': reached the finished screen, ' + r.report.length + ' screens, never stuck, no errors' + (r.errs[0] ? ' — ' + r.errs[0] : '')));
   J.must(rs.every(r => r.packSize > 0 && r.packSize < 7600), 'what the page saves is under its 7600 limit at the end of every walk: ' + rs.map(r => r.packSize).join(', '));
   const e = await extras(), names = new Set(e.x.map(r => r[0]));
-  J.must(['x-menu', 'x-third', 'x-speed', 'x-half', 'x-bad', 'x-own'].every(n => names.has(n)) && e.x.length >= 30, 'all five extras walked: ' + e.x.length + ' screens');
+  J.must(['x-menu', 'x-third', 'x-golf', 'x-tricks', 'x-speed', 'x-mind', 'x-half', 'x-messy', 'x-checks', 'x-bad', 'x-own'].every(n => names.has(n)) && e.x.length >= 60, 'all ten extras walked: ' + e.x.length + ' screens');
   J.must(e.x.every(r => r[1]), 'Go to the end questions is on every screen of every extra' + (e.x.every(r => r[1]) ? '' : ' — missing on ' + [...new Set(e.x.filter(r => !r[1]).map(r => r[0]))].join(', ')));
   const a = await lateExit(false);
   J.must(a.there && a.drew && a.endShown, 'late in the hour, the way to the end questions shows in the main lesson, in the middle of a drawing');

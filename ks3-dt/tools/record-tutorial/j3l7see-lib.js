@@ -37,6 +37,21 @@ async function draw(p, strokes) {
 }
 const info = p => p.evaluate(() => App.info());
 
+/* a drawing for the screen in front of her: the page's own example when the screen has one, else a person's drawing in the asked style */
+async function picFor(p, i, sd, ownPick) {
+  if (i.pic) return p.evaluate(s => App.demoPic(s), sd);
+  const P = People(sd); let d = i.draw, s;
+  if (d === 'own') d = ownPick ? ownPick(i.job) : /cat/.test(i.job) ? 'cat' : 'house';
+  s = d === 'half' ? P.sun().concat(P.fish()) : P[d](i.style || undefined);
+  return i.zone ? P.into(s, i.zone) : s;
+}
+/* what a pupil does on an extra before she presses on: marks the wrong drawings in Messy piles; skips a trick card she could not do */
+async function extraStep(p, i) {
+  if (i.scr === 'x-messy' && i.scan) { for (const b of await p.evaluate(() => App.messyBad())) await click(p, '#piles [data-arg="' + b + '"]'); return false; }
+  if (i.scr === 'x-tricks' && i.pad && await p.evaluate(() => { const b = document.querySelector('[data-act=keep]'); return !!b && b.disabled; })) { await click(p, '[data-act=skip]'); return true; }
+  return false;
+}
+const tilesOf = p => p.evaluate(() => SeeStrings.menu.tiles.map(t => t.id));
 /* everything a gate judges about the screen in front of her */
 function measure() {
   const vis = e => e && e.offsetParent !== null, bad = [];
@@ -86,13 +101,8 @@ async function walk(o) {
   const p = await b.newPage(); await p.setViewport({ width: W, height: H - BAR, deviceScaleFactor: 1 });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
   await p.goto(url('new-fast'), { waitUntil: 'load' }); await p.evaluate(() => document.fonts.ready);
-  let seed = 1, n = 0, ended = false, guard = 0; const seen = {}, report = [], tiles = ['third', 'speed', 'half', 'bad', 'own'], t0 = Date.now();
-  function pic(i) {
-    const P = People(seed++); let d = i.draw, s;
-    if (d === 'own') d = /cat/.test(i.job) ? 'cat' : /dog/.test(i.job) ? 'house' : 'cat';
-    if (d === 'half') s = P.sun().concat(P.fish()); else s = P[d]();
-    return i.zone ? P.into(s, i.zone) : s;
-  }
+  let seed = 1, n = 0, ended = false, guard = 0; const seen = {}, report = [], tiles = await tilesOf(p), t0 = Date.now();
+  const own = j => /cat/.test(j) ? 'cat' : /dog/.test(j) ? 'house' : 'cat', pic = i => picFor(p, i, seed++, own);
   async function snap(tag) {
     if (seen[tag]) return; seen[tag] = 1; n++;
     if (o.fault) await p.evaluate(o.fault);
@@ -112,13 +122,14 @@ async function walk(o) {
     }
     if (i.scr === 'x-speed' && i.pad) {
       await snap('x-speed-play');
-      for (let k = 0; k < 60; k++) { const j = await info(p); if (!j.pad || j.scr !== 'x-speed') break; await draw(p, pic(j)); }
+      for (let k = 0; k < 60; k++) { const j = await info(p); if (!j.pad || j.scr !== 'x-speed') break; await draw(p, await pic(j)); }
       continue;
     }
-    if (i.pad && i.draw && !i.shown) { await snap((await p.evaluate(subTag)) + '|empty'); await draw(p, pic(i)); }
+    if (i.pad && i.draw && !i.shown) { await snap((await p.evaluate(subTag)) + '|empty'); await draw(p, await pic(i)); }
     await snap(await p.evaluate(subTag));
     if (i.scr === 'f-who') { await click(p, '[data-act=' + WHO + ']'); continue; }
     if (i.scr === 'e-done') { ended = true; break; }
+    if (await extraStep(p, i)) continue;
     if (!(await click(p, '#draw [data-want], #stage [data-want], #side [data-want]')) && !(await click(p, '[data-want]'))) { if (!(await click(p, '[data-act=menu]'))) { report.push({ tag: 'STUCK ' + i.scr }); break; } }
   }
   const res = { W, H, who: WHO, out, report, errs, ended, secs: (Date.now() - t0) / 1000, packSize: await p.evaluate(() => App.packSize()).catch(() => -1) };
@@ -168,4 +179,4 @@ async function reports(fresh) {
   }
   return all;
 }
-module.exports = { reports, builtHash, walk, fresh, until, click, draw, info, sleep, open, close, judge, measure, helpCheck, People, SIZES, BAR, PAGE, OUTDIR, SEE, url, argOf };
+module.exports = { picFor, extraStep, tilesOf, reports, builtHash, walk, fresh, until, click, draw, info, sleep, open, close, judge, measure, helpCheck, People, SIZES, BAR, PAGE, OUTDIR, SEE, url, argOf };

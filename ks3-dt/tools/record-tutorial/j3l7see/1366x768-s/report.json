@@ -1036,8 +1036,8 @@
    }
   },
   {
-   "tag": "x-menu-5",
-   "name": "33-x-menu-5.png",
+   "tag": "x-menu-10",
+   "name": "33-x-menu-10.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -1437,14 +1437,1402 @@
     "tag": "Press this",
     "steps": [
      "The big line is its score.",
-     "Press Back to the activities."
+     "Press the yellow button to teach it a house."
     ],
     "draw": null
    }
   },
   {
-   "tag": "x-menu-4",
-   "name": "46-x-menu-4.png",
+   "tag": "x-third|0||pad|L||named|gap||Draw a house in the white |empty",
+   "name": "46-x-third_0__pad_L__named_gap__Draw_a_house_in_the_white__empty.png",
+   "bad": [],
+   "out": [],
+   "words": 13,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house in the white box. This is house 1 of 5.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house in the white box. This is house 1 of 5."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a house in the white box.",
+     "Press the yellow button.",
+     "Do this five times."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-third|0||pad|L||named|gap||Draw a house in the white ",
+   "name": "47-x-third_0__pad_L__named_gap__Draw_a_house_in_the_white_.png",
+   "bad": [],
+   "out": [],
+   "words": 17,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house in the white box. This is house 1 of 5.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house in the white box. This is house 1 of 5.",
+    "It is 53 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a house in the white box.",
+     "Press the yellow button.",
+     "Do this five times."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-third|0||pad|L||named|gap||Draw a house. Does it know|empty",
+   "name": "48-x-third_0__pad_L__named_gap__Draw_a_house__Does_it_know_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+    "It answers when you press the yellow button."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw it in the white box.",
+     "Press the yellow button."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-third|0||pad|L||named|gap||Draw a house. Does it know",
+   "name": "49-x-third_0__pad_L__named_gap__Draw_a_house__Does_it_know.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+    "It answers when you press the yellow button."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw it in the white box.",
+     "Press the yellow button."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-third|1||pad|L||named|gap||Draw a house. Does it know",
+   "name": "50-x-third_1__pad_L__named_gap__Draw_a_house__Does_it_know.png",
+   "bad": [],
+   "out": [],
+   "words": 19,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house. Does it know all four? This is test 1 of 8.",
+    "It is 98 % sure.",
+    "Right."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw it in the white box.",
+     "Press the yellow button."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-menu-9",
+   "name": "51-x-menu-9.png",
+   "bad": [],
+   "out": [],
+   "words": 3,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose any activity.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose any activity."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Press any activity.",
+     "Stop any time: press Go to the end questions."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-golf|0||stage|L||named|gap||Read this. Then press Star",
+   "name": "52-x-golf_0__stage_L__named_gap__Read_this__Then_press_Star.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read this. Then press Start.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read this. Then press Start.",
+    "Teach the computer to get every test drawing right.",
+    "Fewer drawings is better. You can go six over the aim."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the two lines.",
+     "Press Start."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a sun. Then press the|empty",
+   "name": "53-x-golf_0__pad_L__named_gap__Draw_a_sun__Then_press_the_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a sun in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a sun. Then press the",
+   "name": "54-x-golf_0__pad_L__named_gap__Draw_a_sun__Then_press_the.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a sun in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a fish. Then press th|empty",
+   "name": "55-x-golf_0__pad_L__named_gap__Draw_a_fish__Then_press_th_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a fish in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a fish. Then press th",
+   "name": "56-x-golf_0__pad_L__named_gap__Draw_a_fish__Then_press_th.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a fish in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-golf|0||stage|L||named|gap||Read your score. Then pres",
+   "name": "57-x-golf_0__stage_L__named_gap__Read_your_score__Then_pres.png",
+   "bad": [],
+   "out": [],
+   "words": 21,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your score. Then press Next hole.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your score. Then press Next hole.",
+    "You used 2 drawings. The aim was 2.",
+    "Right on the aim. Well done."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your score.",
+     "Press Next hole."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Copy a test drawing with a|empty",
+   "name": "58-x-golf_0__pad_L__named_gap__Copy_a_test_drawing_with_a_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+    "It gets 5 of 6 test drawings right. Drawings you used: 2."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Find a test drawing with a red cross.",
+     "Draw one just like it.",
+     "Press the button for what you drew."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Copy a test drawing with a",
+   "name": "59-x-golf_0__pad_L__named_gap__Copy_a_test_drawing_with_a.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+    "It gets 5 of 6 test drawings right. Drawings you used: 2."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Find a test drawing with a red cross.",
+     "Draw one just like it.",
+     "Press the button for what you drew."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a star. Then press th|empty",
+   "name": "60-x-golf_0__pad_L__named_gap__Draw_a_star__Then_press_th_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a star. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a star. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a star in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "star"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a star. Then press th",
+   "name": "61-x-golf_0__pad_L__named_gap__Draw_a_star__Then_press_th.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a star. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a star. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a star in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "star"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a house. Then press t|empty",
+   "name": "62-x-golf_0__pad_L__named_gap__Draw_a_house__Then_press_t_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a house in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a house. Then press t",
+   "name": "63-x-golf_0__pad_L__named_gap__Draw_a_house__Then_press_t.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a house. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a house. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a house in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "house"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a . Then press the bu|empty",
+   "name": "64-x-golf_0__pad_L__named_gap__Draw_a___Then_press_the_bu_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a 1. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a 1. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a 1 in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "one"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a . Then press the bu",
+   "name": "65-x-golf_0__pad_L__named_gap__Draw_a___Then_press_the_bu.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a 1. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a 1. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a 1 in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "one"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a cat. Then press the|empty",
+   "name": "66-x-golf_0__pad_L__named_gap__Draw_a_cat__Then_press_the_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a cat. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a cat. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Draw a cat in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "cat"
+   }
+  },
+  {
+   "tag": "x-golf|0||pad|L||named|gap||Draw a cat. Then press the",
+   "name": "67-x-golf_0__pad_L__named_gap__Draw_a_cat__Then_press_the.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a cat. Then press the button that says what it is.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a cat. Then press the button that says what it is.",
+    "These are the test drawings. Teach it each kind once first."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Draw a cat in the white box.",
+     "Press the button that says what it is."
+    ],
+    "draw": "cat"
+   }
+  },
+  {
+   "tag": "x-golf|0||stage|L||named|gap||Read your total.",
+   "name": "68-x-golf_0__stage_L__named_gap__Read_your_total_.png",
+   "bad": [],
+   "out": [],
+   "words": 24,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your total.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your total.",
+    "Your total: 84 drawings. The aim was 100.",
+    "Your best total: 84 drawings.",
+    "Drawings like the real ones teach it fastest."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your total.",
+     "Press Play again, or go back."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-menu-8",
+   "name": "69-x-menu-8.png",
+   "bad": [],
+   "out": [],
+   "words": 3,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose any activity.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose any activity."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Press any activity.",
+     "Stop any time: press Go to the end questions."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun it is over  % s|empty",
+   "name": "70-x-tricks_0__pad_L__named_gap__Draw_a_sun_it_is_over____s_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 17,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun it is over 90 % sure of.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun it is over 90 % sure of.",
+    "✗ It says sun.",
+    "✗ It is over 90 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun it is over  % s",
+   "name": "71-x-tricks_0__pad_L__named_gap__Draw_a_sun_it_is_over____s.png",
+   "bad": [],
+   "out": [],
+   "words": 19,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun it is over 90 % sure of.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun it is over 90 % sure of.",
+    "✓ It says sun.",
+    "✓ It is over 90 % sure.",
+    "99 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a fish it is over  % |empty",
+   "name": "72-x-tricks_0__pad_L__named_gap__Draw_a_fish_it_is_over_____empty.png",
+   "bad": [],
+   "out": [],
+   "words": 17,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish it is over 90 % sure of.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish it is over 90 % sure of.",
+    "✗ It says fish.",
+    "✗ It is over 90 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a fish it is over  % ",
+   "name": "73-x-tricks_0__pad_L__named_gap__Draw_a_fish_it_is_over____.png",
+   "bad": [],
+   "out": [],
+   "words": 19,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish it is over 90 % sure of.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish it is over 90 % sure of.",
+    "✓ It says fish.",
+    "✗ It is over 90 % sure.",
+    "84 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun without letting|empty",
+   "name": "74-x-tricks_0__pad_L__named_gap__Draw_a_sun_without_letting_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 19,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun without letting go of the mouse button.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun without letting go of the mouse button.",
+    "✗ One line only.",
+    "✗ It says sun, over 70 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun without letting",
+   "name": "75-x-tricks_0__pad_L__named_gap__Draw_a_sun_without_letting.png",
+   "bad": [],
+   "out": [],
+   "words": 21,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun without letting go of the mouse button.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun without letting go of the mouse button.",
+    "✓ One line only.",
+    "✓ It says sun, over 70 % sure.",
+    "91 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a fish in two lines o|empty",
+   "name": "76-x-tricks_0__pad_L__named_gap__Draw_a_fish_in_two_lines_o_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 18,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish in two lines or fewer.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish in two lines or fewer.",
+    "✗ Two lines or fewer.",
+    "✗ It says fish, over 70 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a fish in two lines o",
+   "name": "77-x-tricks_0__pad_L__named_gap__Draw_a_fish_in_two_lines_o.png",
+   "bad": [],
+   "out": [],
+   "words": 20,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a fish in two lines or fewer.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a fish in two lines or fewer.",
+    "✓ Two lines or fewer.",
+    "✓ It says fish, over 70 % sure.",
+    "97 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun out of dots. Cl|empty",
+   "name": "78-x-tricks_0__pad_L__named_gap__Draw_a_sun_out_of_dots__Cl_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun out of dots. Click, click, click.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun out of dots. Click, click, click.",
+    "✗ At least 12 dots.",
+    "✗ No long lines.",
+    "✗ It says sun, over 60 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun out of dots. Cl",
+   "name": "79-x-tricks_0__pad_L__named_gap__Draw_a_sun_out_of_dots__Cl.png",
+   "bad": [],
+   "out": [],
+   "words": 24,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun out of dots. Click, click, click.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun out of dots. Click, click, click.",
+    "✓ At least 12 dots.",
+    "✓ No long lines.",
+    "✓ It says sun, over 60 % sure.",
+    "72 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun that touches al|empty",
+   "name": "80-x-tricks_0__pad_L__named_gap__Draw_a_sun_that_touches_al_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 19,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun that touches all four sides.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun that touches all four sides.",
+    "✗ It touches all four sides.",
+    "✗ It says sun, over 60 % sure."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Draw a sun that touches al",
+   "name": "81-x-tricks_0__pad_L__named_gap__Draw_a_sun_that_touches_al.png",
+   "bad": [],
+   "out": [],
+   "words": 21,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Draw a sun that touches all four sides.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Draw a sun that touches all four sides.",
+    "✓ It touches all four sides.",
+    "✓ It says sun, over 60 % sure.",
+    "61 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a tiny sun i|empty",
+   "name": "82-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_tiny_sun_i_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 21,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a tiny sun in the dotted box.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a tiny sun in the dotted box.",
+    "✗ All inside the box.",
+    "✗ It is under 60 % sure of sun."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a tiny sun i",
+   "name": "83-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_tiny_sun_i.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a tiny sun in the dotted box.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a tiny sun in the dotted box.",
+    "✓ All inside the box.",
+    "✓ It is under 60 % sure of sun.",
+    "76 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "sun"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a fish in th|empty",
+   "name": "84-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_fish_in_th_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 20,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a fish in the dotted box.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a fish in the dotted box.",
+    "✗ All inside the box.",
+    "✗ It is under 60 % sure of fish."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a fish in th",
+   "name": "85-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_fish_in_th.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a fish in the dotted box.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a fish in the dotted box.",
+    "✓ All inside the box.",
+    "✓ It is under 60 % sure of fish.",
+    "88 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a fish swimm|empty",
+   "name": "86-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_fish_swimm_empty.png",
+   "bad": [],
+   "out": [],
+   "words": 20,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a fish swimming straight up.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a fish swimming straight up.",
+    "✗ Taller than it is wide.",
+    "✗ It is under 60 % sure of fish."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": true,
+    "emptyPad": true,
+    "tag": "Draw here",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||pad|L||named|gap||Fool it. Draw a fish swimm",
+   "name": "87-x-tricks_0__pad_L__named_gap__Fool_it__Draw_a_fish_swimm.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Fool it. Draw a fish swimming straight up.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Fool it. Draw a fish swimming straight up.",
+    "✓ Taller than it is wide.",
+    "✓ It is under 60 % sure of fish.",
+    "78 % sure"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the card.",
+     "Draw it in the white box.",
+     "Every line ticked? Press Keep this trick."
+    ],
+    "draw": "fish"
+   }
+  },
+  {
+   "tag": "x-tricks|0||stage|L||named|gap||Read your score.",
+   "name": "88-x-tricks_0__stage_L__named_gap__Read_your_score_.png",
+   "bad": [],
+   "out": [],
+   "words": 24,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your score.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your score.",
+    "You kept 8 of 9 tricks.",
+    "Your best: 8 of 9.",
+    "It only knows drawings like the ones it was given."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your score.",
+     "Press Play again, or go back."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-menu-7",
+   "name": "89-x-menu-7.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -1474,7 +2862,7 @@
   },
   {
    "tag": "x-speed|0||stage|L||named|gap||Press Start. You have nine",
-   "name": "47-x-speed_0__stage_L__named_gap__Press_Start__You_have_nine.png",
+   "name": "90-x-speed_0__stage_L__named_gap__Press_Start__You_have_nine.png",
    "bad": [],
    "out": [],
    "words": 19,
@@ -1507,18 +2895,18 @@
   },
   {
    "tag": "x-speed-play",
-   "name": "48-x-speed-play.png",
+   "name": "91-x-speed-play.png",
    "bad": [],
    "out": [],
    "words": 4,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Draw a fish. Fast.",
+   "job": "Your job now: Draw a sun. Fast.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a fish. Fast."
+    "Your job now: Draw a sun. Fast."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1532,12 +2920,12 @@
      "Draw it in the white box, fast.",
      "Press Got it to start the clock again."
     ],
-    "draw": "fish"
+    "draw": "sun"
    }
   },
   {
    "tag": "x-speed|0||stage|L||named|gap||Read your score. Play agai",
-   "name": "49-x-speed_0__stage_L__named_gap__Read_your_score__Play_agai.png",
+   "name": "92-x-speed_0__stage_L__named_gap__Read_your_score__Play_agai.png",
    "bad": [],
    "out": [],
    "words": 19,
@@ -1549,8 +2937,8 @@
    "here": 1,
    "prose": [
     "Your job now: Read your score. Play again or go back.",
-    "Time. Your computer got 7 right.",
-    "Your best is 27 right."
+    "Time. Your computer got 29 right.",
+    "Your best is 29 right."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1568,8 +2956,138 @@
    }
   },
   {
-   "tag": "x-menu-3",
-   "name": "50-x-menu-3.png",
+   "tag": "x-menu-6",
+   "name": "93-x-menu-6.png",
+   "bad": [],
+   "out": [],
+   "words": 3,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose any activity.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose any activity."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Press any activity.",
+     "Stop any time: press Go to the end questions."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-mind|0||stage|L||named|gap||Guess what it will say. Th",
+   "name": "94-x-mind_0__stage_L__named_gap__Guess_what_it_will_say__Th.png",
+   "bad": [],
+   "out": [],
+   "words": 24,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Guess what it will say. Then press See its answer.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Guess what it will say. Then press See its answer.",
+    "Two guesses. A point for each right one.",
+    "It will say:",
+    "It will be:"
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Choose sun or fish.",
+     "Choose how sure.",
+     "Press See its answer."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-mind|0||stage|L||named|gap||See what it said. Then pre",
+   "name": "95-x-mind_0__stage_L__named_gap__See_what_it_said__Then_pre.png",
+   "bad": [],
+   "out": [],
+   "words": 23,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: See what it said. Then press Next drawing.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: See what it said. Then press Next drawing.",
+    "You said sun, under 60 % sure.",
+    "It said sun, 96 % sure.",
+    "Points: 1 of 2."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read what it said.",
+     "Press Next drawing."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-mind|0||stage|L||named|gap||Read your score.",
+   "name": "96-x-mind_0__stage_L__named_gap__Read_your_score_.png",
+   "bad": [],
+   "out": [],
+   "words": 24,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your score.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your score.",
+    "You scored 20 of 48.",
+    "Your best: 20 of 48.",
+    "Knowing how it works lets you guess what it will do."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your score.",
+     "Press Play again, or go back."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-menu-5",
+   "name": "97-x-menu-5.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -1599,7 +3117,7 @@
   },
   {
    "tag": "x-half|0||pad|L||named|gap||Draw one picture it calls |empty",
-   "name": "51-x-half_0__pad_L__named_gap__Draw_one_picture_it_calls__empty.png",
+   "name": "98-x-half_0__pad_L__named_gap__Draw_one_picture_it_calls__empty.png",
    "bad": [],
    "out": [],
    "words": 16,
@@ -1631,7 +3149,7 @@
   },
   {
    "tag": "x-half|0||pad|L||named|gap||Draw one picture it calls ",
-   "name": "52-x-half_0__pad_L__named_gap__Draw_one_picture_it_calls_.png",
+   "name": "99-x-half_0__pad_L__named_gap__Draw_one_picture_it_calls_.png",
    "bad": [],
    "out": [],
    "words": 20,
@@ -1643,7 +3161,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw one picture it calls half sun, half fish.",
-    "It is 66 % sure.",
+    "It is 86 % sure.",
     "Get it between 45 % and 55 % sure."
    ],
    "scrollH": 627,
@@ -1663,8 +3181,260 @@
    }
   },
   {
+   "tag": "x-menu-4",
+   "name": "100-x-menu-4.png",
+   "bad": [],
+   "out": [],
+   "words": 3,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose any activity.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose any activity."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Press any activity.",
+     "Stop any time: press Go to the end questions."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-messy|0||stage|L||named|gap||Press every drawing in the",
+   "name": "101-x-messy_0__stage_L__named_gap__Press_every_drawing_in_the.png",
+   "bad": [],
+   "out": [],
+   "words": 22,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Press every drawing in the wrong pile. Then press Done.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Press every drawing in the wrong pile. Then press Done.",
+    "Round 1 of 8",
+    "Find one: +1 point. Wrong press: -1 point."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Look at each pile.",
+     "Press any drawing in the wrong pile.",
+     "Press Done."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-messy|0||stage|L||named|gap||See what you found. Then p",
+   "name": "102-x-messy_0__stage_L__named_gap__See_what_you_found__Then_p.png",
+   "bad": [],
+   "out": [],
+   "words": 20,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: See what you found. Then press Next round.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: See what you found. Then press Next round.",
+    "You found 2 of 2. Wrong presses: 0. Points this round: 2."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Look at the rings. Red means you missed it.",
+     "Press Next round."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-messy|0||stage|L||named|gap||Read your score.",
+   "name": "103-x-messy_0__stage_L__named_gap__Read_your_score_.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your score.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your score.",
+    "You scored 43 of 43 points.",
+    "Your best: 43 of 43.",
+    "It learns from every drawing it is given, even wrong ones."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your score.",
+     "Press Play again, or go back."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-menu-3",
+   "name": "104-x-menu-3.png",
+   "bad": [],
+   "out": [],
+   "words": 3,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose any activity.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose any activity."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Press any activity.",
+     "Stop any time: press Go to the end questions."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-checks|0||stage|L||named|gap||Choose when a person check",
+   "name": "105-x-checks_0__stage_L__named_gap__Choose_when_a_person_check.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Choose when a person checks. Keep costs low.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Choose when a person checks. Keep costs low.",
+    "A mistake costs 1 point. A check costs 3. A check means a person fixes any mistake."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Choose one",
+    "steps": [
+     "Read what a mistake costs.",
+     "Read what a check costs.",
+     "Press one choice."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-checks|0||stage|L||named|gap||Read the cost. Then press ",
+   "name": "106-x-checks_0__stage_L__named_gap__Read_the_cost__Then_press_.png",
+   "bad": [],
+   "out": [],
+   "words": 25,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read the cost. Then press Next round.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read the cost. Then press Next round.",
+    "Your cost: 6 points. Cheapest, in green: 6. Checked: 0. Mistakes not caught: 6. That is the cheapest."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read the cost.",
+     "Press Next round."
+    ],
+    "draw": null
+   }
+  },
+  {
+   "tag": "x-checks|0||stage|L||named|gap||Read your score.",
+   "name": "107-x-checks_0__stage_L__named_gap__Read_your_score_.png",
+   "bad": [],
+   "out": [],
+   "words": 21,
+   "long": [],
+   "helpOK": true,
+   "job": "Your job now: Read your score.",
+   "jobOK": true,
+   "chips": 7,
+   "here": 1,
+   "prose": [
+    "Your job now: Read your score.",
+    "You found the cheapest choice in 1 of 4 rounds.",
+    "Costly mistakes need more checks by a person."
+   ],
+   "scrollH": 627,
+   "viewH": 627,
+   "hOver": false,
+   "help": {
+    "bad": [],
+    "demo": false,
+    "emptyPad": false,
+    "tag": "Press this",
+    "steps": [
+     "Read your score.",
+     "Press Play again, or go back."
+    ],
+    "draw": null
+   }
+  },
+  {
    "tag": "x-menu-2",
-   "name": "53-x-menu-2.png",
+   "name": "108-x-menu-2.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -1694,7 +3464,7 @@
   },
   {
    "tag": "x-bad|0||stage|L||named|gap||Read the plan.",
-   "name": "54-x-bad_0__stage_L__named_gap__Read_the_plan_.png",
+   "name": "109-x-bad_0__stage_L__named_gap__Read_the_plan_.png",
    "bad": [],
    "out": [],
    "words": 24,
@@ -1727,7 +3497,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Draw a sun inside the dott|empty",
-   "name": "55-x-bad_0__pad_L__named_gap__Draw_a_sun_inside_the_dott_empty.png",
+   "name": "110-x-bad_0__pad_L__named_gap__Draw_a_sun_inside_the_dott_empty.png",
    "bad": [],
    "out": [],
    "words": 13,
@@ -1757,7 +3527,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Draw a sun inside the dott",
-   "name": "56-x-bad_0__pad_L__named_gap__Draw_a_sun_inside_the_dott.png",
+   "name": "111-x-bad_0__pad_L__named_gap__Draw_a_sun_inside_the_dott.png",
    "bad": [],
    "out": [],
    "words": 13,
@@ -1787,7 +3557,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Draw a fish inside the dot|empty",
-   "name": "57-x-bad_0__pad_L__named_gap__Draw_a_fish_inside_the_dot_empty.png",
+   "name": "112-x-bad_0__pad_L__named_gap__Draw_a_fish_inside_the_dot_empty.png",
    "bad": [],
    "out": [],
    "words": 13,
@@ -1817,7 +3587,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Draw a fish inside the dot",
-   "name": "58-x-bad_0__pad_L__named_gap__Draw_a_fish_inside_the_dot.png",
+   "name": "113-x-bad_0__pad_L__named_gap__Draw_a_fish_inside_the_dot.png",
    "bad": [],
    "out": [],
    "words": 17,
@@ -1848,7 +3618,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Now draw a fish inside the|empty",
-   "name": "59-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the_empty.png",
+   "name": "114-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the_empty.png",
    "bad": [],
    "out": [],
    "words": 16,
@@ -1879,7 +3649,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Now draw a fish inside the",
-   "name": "60-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the.png",
+   "name": "115-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the.png",
    "bad": [],
    "out": [],
    "words": 16,
@@ -1910,7 +3680,7 @@
   },
   {
    "tag": "x-bad|1||pad|L||named|gap||Now draw a fish inside the",
-   "name": "61-x-bad_1__pad_L__named_gap__Now_draw_a_fish_inside_the.png",
+   "name": "116-x-bad_1__pad_L__named_gap__Now_draw_a_fish_inside_the.png",
    "bad": [],
    "out": [],
    "words": 17,
@@ -1942,7 +3712,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Now draw a sun inside the |empty",
-   "name": "62-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the__empty.png",
+   "name": "117-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the__empty.png",
    "bad": [],
    "out": [],
    "words": 16,
@@ -1973,7 +3743,7 @@
   },
   {
    "tag": "x-bad|0||pad|L||named|gap||Now draw a sun inside the ",
-   "name": "63-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the_.png",
+   "name": "118-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the_.png",
    "bad": [],
    "out": [],
    "words": 16,
@@ -2004,7 +3774,7 @@
   },
   {
    "tag": "x-bad|1||pad|L||named|gap||Now draw a sun inside the ",
-   "name": "64-x-bad_1__pad_L__named_gap__Now_draw_a_sun_inside_the_.png",
+   "name": "119-x-bad_1__pad_L__named_gap__Now_draw_a_sun_inside_the_.png",
    "bad": [],
    "out": [],
    "words": 17,
@@ -2036,7 +3806,7 @@
   },
   {
    "tag": "x-bad|0||stage|L||named|gap||Read what went wrong.",
-   "name": "65-x-bad_0__stage_L__named_gap__Read_what_went_wrong_.png",
+   "name": "120-x-bad_0__stage_L__named_gap__Read_what_went_wrong_.png",
    "bad": [],
    "out": [],
    "words": 23,
@@ -2070,7 +3840,7 @@
   },
   {
    "tag": "x-menu-1",
-   "name": "66-x-menu-1.png",
+   "name": "121-x-menu-1.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -2100,7 +3870,7 @@
   },
   {
    "tag": "x-own|0||stage|L||named|gap||Choose the two things your",
-   "name": "67-x-own_0__stage_L__named_gap__Choose_the_two_things_your.png",
+   "name": "122-x-own_0__stage_L__named_gap__Choose_the_two_things_your.png",
    "bad": [],
    "out": [],
    "words": 12,
@@ -2132,7 +3902,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw: cat. This is drawing|empty",
-   "name": "68-x-own_0__pad_L__named_gap__Draw__cat__This_is_drawing_empty.png",
+   "name": "123-x-own_0__pad_L__named_gap__Draw__cat__This_is_drawing_empty.png",
    "bad": [],
    "out": [],
    "words": 8,
@@ -2163,7 +3933,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw: cat. This is drawing",
-   "name": "69-x-own_0__pad_L__named_gap__Draw__cat__This_is_drawing.png",
+   "name": "124-x-own_0__pad_L__named_gap__Draw__cat__This_is_drawing.png",
    "bad": [],
    "out": [],
    "words": 8,
@@ -2194,7 +3964,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw: dog. This is drawing|empty",
-   "name": "70-x-own_0__pad_L__named_gap__Draw__dog__This_is_drawing_empty.png",
+   "name": "125-x-own_0__pad_L__named_gap__Draw__dog__This_is_drawing_empty.png",
    "bad": [],
    "out": [],
    "words": 8,
@@ -2225,7 +3995,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw: dog. This is drawing",
-   "name": "71-x-own_0__pad_L__named_gap__Draw__dog__This_is_drawing.png",
+   "name": "126-x-own_0__pad_L__named_gap__Draw__dog__This_is_drawing.png",
    "bad": [],
    "out": [],
    "words": 12,
@@ -2257,7 +4027,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw either thing. See if |empty",
-   "name": "72-x-own_0__pad_L__named_gap__Draw_either_thing__See_if__empty.png",
+   "name": "127-x-own_0__pad_L__named_gap__Draw_either_thing__See_if__empty.png",
    "bad": [],
    "out": [],
    "words": 9,
@@ -2288,7 +4058,7 @@
   },
   {
    "tag": "x-own|0||pad|L||named|gap||Draw either thing. See if ",
-   "name": "73-x-own_0__pad_L__named_gap__Draw_either_thing__See_if_.png",
+   "name": "128-x-own_0__pad_L__named_gap__Draw_either_thing__See_if_.png",
    "bad": [],
    "out": [],
    "words": 13,
@@ -2300,7 +4070,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw either thing. See if your computer knows which.",
-    "It is 65 % sure."
+    "It is 82 % sure."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -2320,7 +4090,7 @@
   },
   {
    "tag": "x-menu-0",
-   "name": "74-x-menu-0.png",
+   "name": "129-x-menu-0.png",
    "bad": [],
    "out": [],
    "words": 3,
@@ -2350,7 +4120,7 @@
   },
   {
    "tag": "e-q|0||stage|L||named|gap||Answer five questions abou",
-   "name": "75-e-q_0__stage_L__named_gap__Answer_five_questions_abou.png",
+   "name": "130-e-q_0__stage_L__named_gap__Answer_five_questions_abou.png",
    "bad": [],
    "out": [],
    "words": 18,
@@ -2381,7 +4151,7 @@
   },
   {
    "tag": "e-q|0||stage|L|picked|named|gap||Answer five questions abou",
-   "name": "76-e-q_0__stage_L_picked_named_gap__Answer_five_questions_abou.png",
+   "name": "131-e-q_0__stage_L_picked_named_gap__Answer_five_questions_abou.png",
    "bad": [],
    "out": [],
    "words": 19,
@@ -2413,7 +4183,7 @@
   },
   {
    "tag": "e-felt|0||stage|L|picked|named|gap||Say how today went for you",
-   "name": "77-e-felt_0__stage_L_picked_named_gap__Say_how_today_went_for_you.png",
+   "name": "132-e-felt_0__stage_L_picked_named_gap__Say_how_today_went_for_you.png",
    "bad": [],
    "out": [],
    "words": 32,
@@ -2446,7 +4216,7 @@
   },
   {
    "tag": "e-felt|0||stage|L|picked|named|gap|felt|Say how today went for you",
-   "name": "78-e-felt_0__stage_L_picked_named_gap_felt_Say_how_today_went_for_you.png",
+   "name": "133-e-felt_0__stage_L_picked_named_gap_felt_Say_how_today_went_for_you.png",
    "bad": [],
    "out": [],
    "words": 32,
@@ -2479,7 +4249,7 @@
   },
   {
    "tag": "e-done|0||stage|L|picked|named|gap|felt|To draw more, press Back t",
-   "name": "79-e-done_0__stage_L_picked_named_gap_felt_To_draw_more__press_Back_t.png",
+   "name": "134-e-done_0__stage_L_picked_named_gap_felt_To_draw_more__press_Back_t.png",
    "bad": [],
    "out": [],
    "words": 24,
@@ -2513,7 +4283,7 @@
  ],
  "errs": [],
  "ended": true,
- "secs": 37.378,
- "packSize": 6567,
- "hash": "759759c52982"
+ "secs": 70.851,
+ "packSize": 6710,
+ "hash": "d8d3241d92c0"
 }
