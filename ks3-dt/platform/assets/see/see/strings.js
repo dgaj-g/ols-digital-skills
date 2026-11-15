@@ -171,7 +171,7 @@
       lastJob: 'Read your score. Then press See your total.', lastHelp: ['Read your score.', 'Press See your total.'],
       introJob: 'Read this. Then press Start.',
       introHelp: ['Read the two lines.', 'Press Start.'],
-      introLines: ['Teach the computer to get every test drawing right.', 'Fewer drawings is better. You can go six over the aim.'],
+      introLines: ['Teach the computer to get every test drawing right.', 'Try to use no more drawings than the aim.'],
       job: 'Copy a test drawing with a red cross. Say what it is.',
       firstJob: 'Draw {a}. Then press the button that says what it is.',
       help: ['Find a test drawing with a red cross.', 'Draw one just like it.', 'Press the button for what you drew.'],
@@ -251,14 +251,14 @@
     },
     checks: {
       lastJob: 'Read the cost. Then press See your total.', lastHelp: ['Read the cost.', 'Press See your total.'],
-      job: 'Choose when a person checks. Keep costs low.', what: 'A check means a person fixes any mistake.',
+      job: 'Choose when a person checks. Keep costs low.', what: 'A person checks and fixes any mistake.',
       help: ['Read what a mistake costs.', 'Read what a check costs.', 'Press one choice.'],
       jobT: 'Round {i} of {of}: {n}',
       jobs: [
-        { n: 'a drawing game', c: 'A mistake costs 1 point. A check costs 3.', miss: 1, chk: 3 },
-        { n: 'a door lock', c: 'A mistake costs 5 points. A check costs 1.', miss: 5, chk: 1 },
-        { n: 'reading X-rays', c: 'A mistake costs 20 points. A check costs 1.', miss: 20, chk: 1 },
-        { n: 'sorting parcels', c: 'A mistake costs 2 points. A check costs 1.', miss: 2, chk: 1 }
+        { n: 'a drawing game', c: 'A mistake costs 1 point. A check costs 3 points.', miss: 1, chk: 3 },
+        { n: 'a door lock', c: 'A mistake costs 5 points. A check costs 1 point.', miss: 5, chk: 1 },
+        { n: 'reading X-rays', c: 'A mistake costs 20 points. A check costs 1 point.', miss: 20, chk: 1 },
+        { n: 'sorting parcels', c: 'A mistake costs 2 points. A check costs 1 point.', miss: 2, chk: 1 }
       ],
       none: 'No checks', under: 'Check if under {l} % sure',
       cost: 'Your choice cost {k}: {c} and {m}.', cheapest: 'The cheapest, in green, cost {b}.', units: { pt: ['point', 'points'], ck: ['check', 'checks'], ms: ['mistake', 'mistakes'] },
