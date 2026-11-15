@@ -13,7 +13,7 @@ const People = require(path.join(SEE, 'see/people.js')).SeePeople;
 const A = process.argv, argOf = (n, d) => { const i = A.indexOf(n); return i === -1 ? d : A[i + 1]; };
 const PAGE = argOf('--url', 'file://' + path.join(SEE, 'hour.html'));
 const BAR = +argOf('--bar', 141);   // measured in the platform: its header 81 px + the lesson's top bar 60 px
-const SIZES = [[1280, 800], [1366, 768], [1440, 900], [1024, 768]];
+const SIZES = [[1280, 800], [1366, 768], [1440, 900], [1024, 768], [1366, 625]];   // 1366x625: the school PC's real window (a 1366x768 screen less Chrome's own bars), so a 484 px frame
 const OUTDIR = path.join(__dirname, 'j3l7see');
 const url = flags => PAGE + (PAGE.indexOf('?') > 0 ? '&' : '?') + 'f=' + flags;
 const sleep = ms => new Promise(r => setTimeout(r, ms));

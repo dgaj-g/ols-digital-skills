@@ -40,7 +40,7 @@ main[hidden] { display:none; }
 canvas#pad { background:#fbfaf6; border-radius:16px; border:4px solid var(--amber); touch-action:none; cursor:crosshair; display:block; }
 canvas#pad.lock { cursor:default; border-color:var(--dim); }
 .row { display:flex; gap:12px; margin-top:14px; flex-wrap:wrap; align-items:center; }
-.warn { color:var(--amber); font-weight:800; font-size:17px; margin:10px 0 0; min-height:1.3em; }
+.warn { color:var(--amber); font-weight:800; font-size:17px; margin:10px 0 0; min-height:1.3em; } .warn.ok { color:var(--green); font-size:20px; }
 .side { flex:1; min-width:320px; }
 .card { background:var(--panel); border-radius:16px; padding:18px 20px; margin-bottom:16px; }
 .card h2, .kicker { margin:0 0 10px; font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); font-weight:800; }
@@ -50,7 +50,7 @@ canvas[data-pv].big { width:112px; height:112px; border-radius:12px; margin-bott
 .guess { font-size:32px; font-weight:900; margin:2px 0; }
 .bar { height:16px; background:var(--panel2); border-radius:99px; overflow:hidden; margin:6px 0 4px; }
 .bar i { display:block; height:100%; }
-.ghosts { display:flex; gap:24px; flex-wrap:wrap; }
+.ghosts { display:flex; gap:24px; flex-wrap:wrap; } .gwrap { margin-top:14px; } body.short .gwrap { margin-top:6px; } body.short .gwrap .card { padding:6px 14px; }
 .ghosts figure { margin:0; text-align:center; font-weight:700; color:var(--dim); }
 .say { font-size:19px; line-height:1.4; margin:6px 0; }
 .big { font-size:30px; font-weight:900; margin:0 0 8px; }
@@ -69,6 +69,7 @@ canvas[data-pv].big { width:112px; height:112px; border-radius:12px; margin-bott
 .th.chk { opacity:.4; border-color:var(--dim); border-style:dashed; } .th.bad { border-color:var(--red); }
 .pick { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
 .pick button { background:var(--panel2); color:var(--chalk); } .pick button.on { background:var(--amber); color:#111; }
+.mk { display:inline-block; font-weight:800; font-size:16px; padding:5px 12px; border-radius:12px; border:3px solid transparent; background:var(--panel2); color:var(--chalk); } .mk.good { border-color:var(--green); background:#12382f; } .mk.bad { border-color:var(--red); background:#3a1c20; } .mk.off { opacity:.45; }
 .lab { font-size:19px; font-weight:800; }
 .legend { color:var(--dim); font-size:15px; font-weight:700; display:flex; gap:20px; flex-wrap:wrap; margin-top:8px; }
 .legend span::before { content:''; display:inline-block; width:14px; height:14px; border-radius:4px; margin-right:6px; vertical-align:-2px; border:2px dashed var(--dim); } .legend span.b::before { border:2px solid var(--red); }
@@ -105,6 +106,25 @@ body.tight .th canvas, body.tight .th img { width:64px; height:64px; }
 body.tight #help { padding:6px 24px; } body.tight #help .kicker { font-size:15px; margin-bottom:3px; } body.tight #helpText { font-size:17px; } body.tight #helpStuck { font-size:13px; margin-top:3px; }
 /* the parts of the hour never wrap: when they do not fit beside the title they take one row of their own */
 body.stack .strip h1 { flex:1; } body.stack .steps { order:9; flex:0 0 100%; flex-wrap:nowrap; }
+/* a school PC's window leaves the lesson a frame under 560 px high: the bars close up, the buttons stand beside the drawing box, the screens use the width */
+body.short .strip { padding:4px 16px; gap:8px; } body.short .strip h1 { font-size:17px; margin-right:4px; } body.short .chip { padding:3px 9px; font-size:13px; } body.short .mins { font-size:14px; } body.short .strip button.sm { padding:4px 12px; font-size:15px; }
+body.short .job { padding:3px 16px; font-size:18px; } body.short #helpBtn { font-size:17px; padding:8px 18px; min-height:40px; min-width:150px; }
+body.short main { padding:8px 16px; gap:20px; max-width:1280px; }
+body.short .pad { display:grid; grid-template-columns:auto max-content; column-gap:14px; align-items:start; width:auto; }
+body.short canvas#pad { grid-column:1; grid-row:1 / span 2; }
+body.short .pad .row { grid-column:2; grid-row:1; flex-direction:column; align-items:stretch; flex-wrap:nowrap; margin-top:0; gap:8px; }
+body.short .warn { grid-column:2; grid-row:2; margin:6px 0 0; contain:inline-size; font-size:16px; }
+body.short .side { min-width:300px; } body.short .card { padding:8px 14px; margin-bottom:8px; } body.short .card h2, body.short .kicker { margin-bottom:4px; font-size:14px; }
+body.short .guess { font-size:24px; margin:0; } body.short .bar { height:12px; margin:4px 0 2px; }
+body.short #stage { max-width:1240px; } body.short .say { font-size:17px; margin:3px 0; line-height:1.3; } body.short .big { font-size:24px; margin-bottom:4px; } body.short .stem { font-size:20px; margin-bottom:8px; }
+body.short .row { margin-top:8px; } body.short .opts { gap:6px; } body.short .opt { padding:8px 16px; font-size:17px; }
+body.short .mcard { max-width:none; padding:10px 20px; } body.short .mcard .nm { font-size:24px; margin-bottom:2px; } body.short .mcard .opts { grid-template-columns:repeat(3, 1fr); } body.short .pick { margin:5px 0; }
+body.short .tiles { grid-template-columns:repeat(5, 1fr); gap:8px; } body.short .tile { padding:6px 10px; } body.short .tile strong { font-size:17px; } body.short .tile small { margin-top:2px; }
+body.short #help { padding:4px 16px; } body.short #help .kicker { font-size:15px; margin-bottom:2px; } body.short #helpText { font-size:16px; gap:4px 22px; } body.short #helpStuck { font-size:13px; margin-top:2px; }
+body.short canvas[data-pv].big { width:80px; height:80px; } body.short .mrow { display:flex; gap:20px; align-items:flex-start; } body.short .mrow > div { flex:1; }
+body.short #side:has(.thumbs.four) { display:grid; grid-template-columns:1fr 1fr; gap:8px; align-content:start; } body.short #side:has(.thumbs.four) > .card { margin:0; } body.short #side:has(.thumbs.four) > .card:not(:has(.thumbs)) { grid-column:1 / -1; }
+body.short .opts.three { grid-template-columns:repeat(6, 1fr); } body.short .opts.three .opt { padding:7px 10px; font-size:15px; }
+body.short .thumbs.chk { gap:3px; margin-top:6px; } body.short .thumbs.chk .th { padding:1px; } body.short .thumbs.chk .th canvas { width:48px; height:48px; } body.short .thumbs.chk .th b { font-size:12px; }
 /* a screen that is still too tall closes up its own spacing */
 body.squeeze .card { padding:8px 14px; margin-bottom:8px; } body.squeeze .guess { font-size:24px; margin:0; } body.squeeze .bar { height:12px; margin:4px 0 2px; }
 body.squeeze .say { font-size:17px; margin:3px 0; line-height:1.3; } body.squeeze .big { font-size:24px; margin-bottom:4px; } body.squeeze .stem { font-size:21px; margin-bottom:10px; }
@@ -262,6 +282,9 @@ function guessCard(m) { CUR_M = m; return '<div class="card"><h2>' + S.thinks + 
 var CUR_M = null;
 function paintGuess() { var el = $('live'); if (el && CUR_M) el.innerHTML = guessInner(CUR_M); }
 function thumbs(m, mine) { return m.map(function (c) { return card(mine && mine.count ? f(mine.count, { n: c.n, c: c.ex.length }) : f(mine ? S.yours : S.has, { pl: c.pl, c: c.ex.length }), '<div class="thumbs' + (m.length > 3 ? ' four' : '') + '">' + c.ex.map(function (s) { return pv(vecOf(s)); }).join('') + '</div>'); }).join(''); }
+function mRow(names, mine, right) { return '<div class="pick mr">' + names.map(function (t, j) { var c = j === right ? 'good' : j === mine ? 'bad' : 'off'; return '<span class="mk ' + c + '" data-mk="' + c + '">' + esc(t) + (j === right ? ' ✓' : j === mine ? ' ✗' : '') + '</span>'; }).join('') + '</div>'; }
+function pn(n, u) { return n + ' ' + u[n === 1 ? 0 : 1]; }
+function mBand(pc) { return pc < 60 ? 0 : pc <= 90 ? 1 : 2; }
 function ghosts(m) { return card(S.learned, '<div class="ghosts">' + m.map(function (c) { return c.ex.length ? '<figure>' + pv(E.mean(c.ex.map(vecOf)), 'big') + '<span>' + esc(f(S.idea, { a: c.a || c.n })) + '</span></figure>' : ''; }).join('') + '</div>'); }
 function th(t, cls, label) { var ok = t.w === t.g; return '<span class="th ' + (ok ? '' : 'x ') + (cls || '') + '">' + pv(vecOf(t.s)) + '<b>' + esc(label) + '</b><i>' + (ok ? '✓' : '✗') + '</i></span>'; }
 function right(list) { return list.filter(function (t) { return t.w === t.g; }).length; }
@@ -329,7 +352,7 @@ var SCREENS = {
     return testStep({ chip: 1, m: st.cls, want: w, list: st.t1, draw: st.cls[w].n, job: f(S.teach.testJob, { a: st.cls[w].a, i: i + 1, of: 5 }), help: f(S.teach.testHelp, { a: st.cls[w].a }), fin: f(S.finished, { n: st.cls[w].n }),
       nextLabel: i < 4 ? S.teach.nextTest : S.next, onNext: function () { if (st.t1.length >= 5) go('t-sum'); } });
   },
-  't-sum': function () { return { chip: 1, job: S.teach.sumJob, help: S.teach.sumHelp, stage: '<p class="big">' + f(S.teach.sum, { r: right(st.t1), of: 5 }) + '</p>' + lines(S.teach.sumLines) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.teach.go, 0, 1) + '</div>', acts: { go: function () { go('f-who'); } } }; },
+  't-sum': function () { return { chip: 1, job: S.teach.sumJob, help: S.teach.sumHelp, stage: '<p class="big">' + f(S.teach.sum, { r: right(st.t1), of: 5 }) + '</p>' + lines(S.teach.sumLines) + '<div class="gwrap">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.teach.go, 0, 1) + '</div>', acts: { go: function () { go('f-who'); } } }; },
   'f-who': function () { return { chip: 2, job: S.fool.whoJob, help: S.fool.whoHelp, spot: '#stage .row', stage: lines(S.fool.whoLines) + '<div class="row">' + btn('n', S.fool.whoN, 0, 0) + btn('s', S.fool.whoS, 0, 1, 'ghost') + '</div>', acts: { n: function () { st.who = 'n'; go('f-1'); }, s: function () { st.who = 's'; go('f-1'); } } }; },
   'f-1': function () { return foolStep(st.f1, F1, STR1, 100, function () { if (st.f1.length >= 6) go('f-s1'); }); },
   'f-s1': function () {
@@ -340,7 +363,7 @@ var SCREENS = {
   'f-2': function () { return foolStep(st.f2, F2, STR2, 200, function () { if (st.f2.length >= 4) go('f-s2'); }); },
   'f-s2': function () {
     var r1 = right(st.f1), r2 = right(st.f2), upp = r2 / 4 > r1 / 6 || r2 === 4;
-    return { chip: 2, job: S.fool.s2Job, help: S.fool.s2Help, stage: '<p class="big">' + f(S.fool.s2, { p1: Math.round(r1 / 6 * 100), p2: Math.round(r2 / 4 * 100) }) + '</p>' + lines(upp ? S.fool.s2Up : S.fool.s2Same) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.fool.go, 0, 1) + '</div>', acts: { go: function () { go('s-cat'); } } };
+    return { chip: 2, job: S.fool.s2Job, help: S.fool.s2Help, stage: '<p class="big">' + f(S.fool.s2, { p1: Math.round(r1 / 6 * 100), p2: Math.round(r2 / 4 * 100) }) + '</p>' + lines(upp ? S.fool.s2Up : S.fool.s2Same) + '<div class="gwrap">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.fool.go, 0, 1) + '</div>', acts: { go: function () { go('s-cat'); } } };
   },
   's-cat': function () { return oddStep({ job: S.sure.catJob, jobDone: S.sure.catDoneJob, help: S.sure.catHelp, fin: S.sure.finCat, draw: 'cat', lines: S.sure.catLines, low: S.sure.catLow, nextLabel: S.sure.nextAny, onNext: function () { go('s-any'); } }); },
   's-any': function () { return oddStep({ job: S.sure.anyJob, jobDone: S.sure.anyDoneJob, help: S.sure.anyHelp, fin: S.sure.finAny, draw: 'house', lines: S.sure.anyLines, low: S.sure.anyLow, nextLabel: S.sure.toLine, onNext: function () { go('s-line'); } }); },
@@ -406,12 +429,12 @@ SCREENS['x-third'] = function () {
   else if (!x.hs && (x.tests.length < 6 || st.shown)) {
     i = x.tests.length - (st.shown ? 1 : 0); w = T3[i];
     s = testStep({ chip: 5, m: m, want: w, list: x.tests, draw: m[w].n, job: f(S.third.testJob, { a: m[w].a, i: i + 1, of: 6 }), help: S.third.testHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: i < 5 ? S.teach.nextTest : S.next, onNext: function () { if (x.tests.length >= 6) x.done = 1; } });
-  } else if (!x.hs) s = { chip: 5, job: S.third.sumJob, help: S.third.sum1Help, stage: '<p class="big">' + f(S.third.sum, { r: right(x.tests), of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.tests.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(S.third.sumLines) + '<div style="margin-top:14px">' + ghosts(m) + '</div><div class="row">' + btn('house', S.third.house, 0, 1) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>', acts: { house: function () { x.hs = 1; } } };
+  } else if (!x.hs) s = { chip: 5, job: S.third.sumJob, help: S.third.sum1Help, stage: '<p class="big">' + f(S.third.sum, { r: right(x.tests), of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.tests.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(right(x.tests) === x.tests.length ? S.third.sumAll : S.third.sumLines) + '<div class="gwrap">' + ghosts(m) + '</div><div class="row">' + btn('house', S.third.house, 0, 1) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>', acts: { house: function () { x.hs = 1; } } };
   else if (x.hx.length < 5) { s = collect({ chip: 5, m: m4, k: 3, need: 5, job: S.third.hJob, help: S.third.hHelp, mine: 0 }); s.btns += btn('menu', S.menu.back, 0, 0, 'ghost sm'); }
   else if (x.t4.length < 8 || st.shown) {
     i = x.t4.length - (st.shown ? 1 : 0); w = T4[i];
     s = testStep({ chip: 5, m: m4, want: w, list: x.t4, draw: m4[w].n, job: f(S.third.h4Job, { a: m4[w].a, i: i + 1, of: 8 }), help: S.third.testHelp, fin: f(S.finished, { n: m4[w].n }), nextLabel: i < 7 ? S.teach.nextTest : S.next, onNext: function () {} });
-  } else s = { chip: 5, job: S.third.sumJob, help: S.third.sumHelp, stage: '<p class="big">' + f(S.third.sum, { r: right(x.t4), of: 8 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.t4.map(function (t) { return th(t, '', m4[t.g].n); }).join('') + '</div>' + lines(S.third.h4Lines) + '<div style="margin-top:14px">' + ghosts(m4) + '</div>' + backRow(1), acts: {} };
+  } else s = { chip: 5, job: S.third.sumJob, help: S.third.sumHelp, stage: '<p class="big">' + f(S.third.sum, { r: right(x.t4), of: 8 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.t4.map(function (t) { return th(t, '', m4[t.g].n); }).join('') + '</div>' + lines(S.third.h4Lines) + '<div class="gwrap">' + ghosts(m4) + '</div>' + backRow(1), acts: {} };
   return withMenu(s);
 };
 X.speed = { open: function () { st.x.speed = st.x.speed || { best: 0 }; sp = null; } };
@@ -419,9 +442,9 @@ SCREENS['x-speed'] = function () {
   var x = st.x.speed, V = S.speed, s;
   if (!sp) s = { chip: 5, job: V.readyJob, help: V.readyHelp, stage: lines(V.readyLines) + (x.best ? '<p class="say">' + f(V.best, { n: x.best }) + '</p>' : '') + '<div class="row">' + btn('go', S.start, 0, 1) + btn('menu', S.menu.back, 0, 0, 'ghost') + '</div>', acts: { go: startSpeed } };
   else if (sp.over) s = { chip: 5, job: V.endJob, help: V.endHelp, stage: '<p class="big">' + f(V.end, { n: sp.n }) + '</p><p class="say">' + f(V.best, { n: x.best }) + '</p><div class="row">' + btn('go', V.again, 0, 0) + btn('menu', S.menu.back, 0, 1, 'ghost') + '</div>', acts: { go: startSpeed } };
-  else s = { chip: 5, job: f(V.job, { a: st.cls[sp.want].a }), help: V.help, pad: {}, padDone: function () { return false; }, draw: st.cls[sp.want].n, btns: btn('skip', V.skip, 0, 0, 'ghost') + btn('rub', S.rub, 0, 0, 'ghost'),
+  else s = { chip: 5, job: f(V.job, { a: st.cls[sp.want].a }), help: V.help, pad: sp.hit ? { lock: 1 } : {}, padDone: function () { return false; }, draw: st.cls[sp.want].n, btns: btn('skip', V.skip, sp.hit ? 1 : 0, 0, 'ghost') + btn('rub', S.rub, sp.hit ? 1 : 0, 0, 'ghost'), warn: sp.hit ? f(V.hit, { n: sp.hit }) : '', warnOk: !!sp.hit,
     side: card(f(V.score, { n: sp.n }), '<div class="clock" id="clock">' + f(V.left, { s: Math.ceil(sp.left) }) + '</div>') + guessCard(st.cls),
-    onUp: function () { var r = now(st.cls); if (r && inkOK() && r.c === sp.want && r.pc >= 60) { sp.n++; snd('ding'); sp.want = Math.random() < .5 ? 0 : 1; clear(); } },
+    onUp: function () { var r = now(st.cls); if (!sp.hit && r && inkOK() && r.c === sp.want && r.pc >= 60) { var me = sp; sp.n++; sp.hit = st.cls[sp.want].n; snd('ding'); setTimeout(function () { if (sp !== me || sp.over) return; sp.hit = null; sp.want = Math.random() < .5 ? 0 : 1; clear(); render(); }, FAST ? 150 : 900); } },
     acts: { skip: function () { sp.want = 1 - sp.want; clear(); }, rub: clear } };
   return withMenu(s);
 };
@@ -448,7 +471,7 @@ SCREENS['x-bad'] = function () {
   else if (x.tr.length < 2 || st.shown) {
     var i = x.tr.length - (st.shown ? 1 : 0), w = i === 0 ? 1 : 0;
     s = testStep({ chip: 5, m: m, want: w, list: x.tr, zone: w ? TOP : BOT, draw: m[w].n, job: f(B.trickJob, { a: m[w].a }), help: B.trickHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: S.next, onNext: function () { if (x.tr.length >= 2) x.done = 1; } });
-  } else s = { chip: 5, job: B.endJob, help: B.endHelp, stage: '<div class="thumbs" style="margin:0 0 14px">' + x.tr.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(B.lines) + '<div style="margin-top:14px">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
+  } else s = { chip: 5, job: B.endJob, help: B.endHelp, stage: '<div class="thumbs" style="margin:0 0 14px">' + x.tr.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(B.lines) + '<div class="gwrap">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
   return withMenu(s);
 };
 X.own = { open: function () { st.x.own = { a: '', b: '', cls: null, done: (st.x.own || {}).done }; } };
@@ -518,7 +541,7 @@ SCREENS['x-golf'] = function () {
       else { var wr = res.filter(function (t) { return t.w !== t.g; })[0]; if (wr) { tg = wr.w; sty = wr.st; } }
       s = { chip: 5, job: empty ? f(G.firstJob, { a: m[tg].a }) : G.job, help: empty ? f(G.firstHelp, { a: m[tg].a }) : G.help, pad: {}, draw: m[tg].k, drawStyle: sty,
         btns: m.map(function (c, i) { return btn('lab', f(G.lab, { a: c.a }), !inkOK(), i === tg, '', i); }).join('') + btn('rub', S.rub, 0, 0, 'ghost'),
-        side: card(head, '<p class="say">' + (empty ? G.wait : f(G.status, { r: nr, n: res.length, u: x.used })) + '</p><div class="thumbs g">' + (empty ? H.strs.map(function (t) { return '<span class="th">' + pv(vecOf(t.s)) + '</span>'; }) : res.map(function (t) { return th(t, '', m[t.w].n); })).join('') + '</div>'),
+        side: card(head, '<p class="say">' + (empty ? G.wait : f(G.status, { r: nr, n: res.length, u: x.used, c: cap })) + '</p><div class="thumbs g">' + (empty ? H.strs.map(function (t) { return '<span class="th">' + pv(vecOf(t.s)) + '</span>'; }) : res.map(function (t) { return th(t, '', m[t.w].n); })).join('') + '</div>'),
         acts: { rub: clear, lab: function (i) {
           m[+i].ex.push(take()); x.used++; clear(); snd('flip');
           var ok = m.every(function (c) { return c.ex.length; }) && right(golfRes(H, m)) === H.strs.length;
@@ -581,15 +604,15 @@ SCREENS['x-mind'] = function () {
     var it = MIND[x.i], sv = stranger(7000 + x.i, it[0], it[1]), head = f(M.round, { i: x.i + 1, of: of }), more = x.i < of - 1;
     if (!x.sh) {
       var both = x.a >= 0 && x.b >= 0;
-      s = { chip: 5, job: M.job, help: M.help, stage: card(head, pv(vecOf(sv), 'big') +
+      s = { chip: 5, job: M.job, help: M.help, stage: card(head, '<div class="mrow">' + pv(vecOf(sv), 'big') + '<div>' +
         '<p class="say">' + M.rule + '</p><p class="say">' + M.says + '</p><div class="pick">' + st.cls.map(function (c, j) { return '<button class="sm' + (x.a === j ? ' on' : '') + '" data-act="a" data-arg="' + j + '"' + (j === 0 && x.a < 0 ? ' data-want="1"' : '') + '>' + esc(c.n) + '</button>'; }).join('') + '</div>' +
-        '<p class="say">' + M.sure + '</p><div class="pick">' + M.bands.map(function (t, j) { return '<button class="sm' + (x.b === j ? ' on' : '') + '" data-act="b" data-arg="' + j + '"' + (j === 0 && x.b < 0 && x.a >= 0 ? ' data-want="1"' : '') + '>' + esc(t) + '</button>'; }).join('') + '</div>') +
+        '<p class="say">' + M.sure + '</p><div class="pick">' + M.bands.map(function (t, j) { return '<button class="sm' + (x.b === j ? ' on' : '') + '" data-act="b" data-arg="' + j + '"' + (j === 0 && x.b < 0 && x.a >= 0 ? ' data-want="1"' : '') + '>' + esc(t) + '</button>'; }).join('') + '</div></div></div>') +
         '<div class="row">' + btn('show', M.show, !both, both ? 1 : 0) + '</div>',
         acts: { a: function (j) { x.a = +j; }, b: function (j) { x.b = +j; }, show: function () {
-          var r = E.classify(vecOf(sv), sets(st.cls)), pc = Math.round(r.p * 100), band = pc < 60 ? 0 : pc <= 90 ? 1 : 2, p = (x.a === r.c ? 1 : 0) + (x.b === band ? 1 : 0);
+          var r = E.classify(vecOf(sv), sets(st.cls)), pc = Math.round(r.p * 100), band = mBand(pc), p = (x.a === r.c ? 1 : 0) + (x.b === band ? 1 : 0);
           x.last = { c: r.c, pc: pc, p: p, g: x.a, b: x.b }; x.s += p; x.sh = 1; snd(p === 2 ? 'ding' : p ? 'flip' : 'thud');
         } } };
-    } else s = { chip: 5, job: more ? M.seeJob : M.lastJob, help: more ? M.seeHelp : M.lastHelp, stage: card(head, pv(vecOf(sv), 'big') + '<p class="say">' + f(M.you, { n: st.cls[x.last.g].n, b: M.bands[x.last.b] }) + '</p><p class="say">' + f(M.said, { n: st.cls[x.last.c].n, pc: x.last.pc }) + '</p>' + barHtml(x.last.pc) + '<p class="say">' + f(M.got, { p: x.last.p }) + '</p>') +
+    } else s = { chip: 5, job: more ? M.seeJob : M.lastJob, help: more ? M.seeHelp : M.lastHelp, stage: card(head, '<div class="mrow">' + pv(vecOf(sv), 'big') + '<div>' + '<p class="say">' + f(M.said, { n: st.cls[x.last.c].n, pc: x.last.pc }) + '</p>' + barHtml(x.last.pc) + mRow(st.cls.map(function (c) { return c.n; }), x.last.g, x.last.c) + mRow(M.bands, x.last.b, mBand(x.last.pc)) + '<p class="say">' + (x.last.p === 2 ? M.both : M.key) + ' ' + f(M.got, { p: x.last.p }) + '</p></div></div>') +
       '<div class="row">' + btn('nx', lastBtn(more, M.next), 0, 1) + '</div>',
       acts: { nx: function () { x.i++; x.sh = 0; x.a = -1; x.b = -1; if (x.i >= of) { x.best = Math.max(x.best || 0, x.s); x.done = 1; snd('fanfare'); } } } };
   }
@@ -655,7 +678,7 @@ SCREENS['x-checks'] = function () {
       acts: { pick: function (k) { x.pick = +k; x.sh = 1; var hit = costs[x.pick].k === best; if (hit) x.good++; snd(hit ? 'ding' : 'thud'); } } };
     else {
       var me = costs[x.pick];
-      s = { chip: 5, job: more ? C.doneJob : C.lastJob, help: more ? C.doneHelp : C.lastHelp, stage: card(head, strip) + '<p class="say">' + f(C.cost, { k: me.k, b: best }) + ' ' + f(C.seen, { c: me.c, m: me.m }) + (me.k === best ? ' ' + C.bestYes : '') + '</p>' +
+      s = { chip: 5, job: more ? C.doneJob : C.lastJob, help: more ? C.doneHelp : C.lastHelp, stage: card(head, strip) + '<p class="say">' + f(C.cost, { k: pn(me.k, C.units.pt), c: pn(me.c, C.units.ck), m: pn(me.m, C.units.ms) }) + ' ' + (me.k === best ? C.bestYes : f(C.cheapest, { b: pn(best, C.units.pt) })) + '</p>' +
         '<div class="opts three">' + CHK_L.map(function (L, k) { return '<span class="opt' + (costs[k].k === best ? ' good' : k === x.pick ? ' bad' : ' off') + '">' + label(L) + '</span>'; }).join('') + '</div><div class="row">' + btn('nx', lastBtn(more, C.next), 0, 1) + '</div>',
         acts: { nx: function () { x.j++; x.sh = 0; x.pick = -1; if (x.j >= of) { x.best = Math.max(x.best || 0, x.good); x.done = 1; snd('fanfare'); } } } };
     }
@@ -678,7 +701,7 @@ function render() {
   $('endBtn').hidden = !(inEnd || /^x-/.test(st.scr) || (/^[tfsc]-/.test(st.scr) && late()));
   $('job').textContent = S.jobLead + CUR.job;
   $('draw').hidden = !CUR.pad; $('stage').hidden = !!CUR.pad;
-  if (CUR.pad) { $('btns').innerHTML = CUR.btns || ''; $('side').innerHTML = CUR.side || ''; $('warn').textContent = CUR.warn || ''; pad.className = CUR.pad.lock ? 'lock' : ''; $('stage').innerHTML = ''; }
+  if (CUR.pad) { $('btns').innerHTML = CUR.btns || ''; $('side').innerHTML = CUR.side || ''; $('warn').textContent = CUR.warn || ''; $('warn').classList.toggle('ok', !!CUR.warnOk); pad.className = CUR.pad.lock ? 'lock' : ''; $('stage').innerHTML = ''; }
   else { $('stage').innerHTML = CUR.stage; $('btns').innerHTML = ''; $('side').innerHTML = ''; }
   document.querySelectorAll('canvas[data-pv]').forEach(function (c) { paint(c, PV[+c.getAttribute('data-pv')]); });
   $('helpHow').textContent = S.jobLead + CUR.job; $('helpText').innerHTML = [].concat(CUR.help).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join(''); $('helpStuck').textContent = S.helpStuck; $('helpClose').textContent = S.helpBack;
@@ -738,7 +761,7 @@ function demo() {
 /* ---------- fit: the drawing box takes the room the frame really has, and open help moves the page down, never over it ---------- */
 function fit() {
   var b = document.body, bar = $('job').parentNode, h = $('help'), m = $('draw'), k, room, over = function () { return document.documentElement.scrollHeight > innerHeight; };
-  b.classList.toggle('tight', innerHeight < 720); b.classList.remove('stack', 'squeeze'); b.style.paddingTop = ''; h.style.minHeight = ''; pad.style.width = '';
+  b.classList.toggle('tight', innerHeight < 720); b.classList.toggle('short', innerHeight < 560); b.classList.remove('stack', 'squeeze'); b.style.paddingTop = ''; h.style.minHeight = ''; pad.style.width = '';
   if ($('steps').offsetHeight > 40) b.classList.add('stack');
   if (helpOpen) { k = bar.getBoundingClientRect().bottom + scrollY; h.style.minHeight = k + 'px'; b.style.paddingTop = Math.max(0, Math.ceil(h.getBoundingClientRect().height - k)) + 'px'; }
   var size = function () {

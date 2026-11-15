@@ -1415,7 +1415,7 @@
    "name": "45-x-third_0__stage_L__named_gap__Read_its_score_.png",
    "bad": [],
    "out": [],
-   "words": 19,
+   "words": 18,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Read its score.",
@@ -1425,7 +1425,7 @@
    "prose": [
     "Your job now: Read its score.",
     "It got 6 of 6 right.",
-    "With three answers there are more ways to be wrong."
+    "Three answers, and it still got every one right."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1825,13 +1825,13 @@
    "words": 25,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+   "job": "Your job now: Copy a test drawing with a red cross. Say what it is.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Copy a test drawing with a red cross. Then say what it is.",
-    "It gets 5 of 6 test drawings right. Drawings you used: 2."
+    "Your job now: Copy a test drawing with a red cross. Say what it is.",
+    "It gets 5 of 6 test drawings right. Drawings used: 2 of 9."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1857,13 +1857,13 @@
    "words": 25,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Copy a test drawing with a red cross. Then say what it is.",
+   "job": "Your job now: Copy a test drawing with a red cross. Say what it is.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Copy a test drawing with a red cross. Then say what it is.",
-    "It gets 5 of 6 test drawings right. Drawings you used: 2."
+    "Your job now: Copy a test drawing with a red cross. Say what it is.",
+    "It gets 5 of 6 test drawings right. Drawings used: 2 of 9."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -2901,12 +2901,12 @@
    "words": 4,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Draw a sun. Fast.",
+   "job": "Your job now: Draw a fish. Fast.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a sun. Fast."
+    "Your job now: Draw a fish. Fast."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -2920,7 +2920,7 @@
      "Draw it in the white box, fast.",
      "Press Got it to start the clock again."
     ],
-    "draw": "sun"
+    "draw": "fish"
    }
   },
   {
@@ -2937,8 +2937,8 @@
    "here": 1,
    "prose": [
     "Your job now: Read your score. Play again or go back.",
-    "Time. Your computer got 29 right.",
-    "Your best is 29 right."
+    "Time. Your computer got 8 right.",
+    "Your best is 8 right."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -3033,9 +3033,8 @@
    "here": 1,
    "prose": [
     "Your job now: See what it said. Then press Next drawing.",
-    "You said sun, under 60 % sure.",
     "It said sun, 96 % sure.",
-    "Points: 1 of 2."
+    "Red is wrong. Green is right. Points: 1 of 2."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -3374,7 +3373,7 @@
    "name": "106-x-checks_0__stage_L__named_gap__Read_the_cost__Then_press_.png",
    "bad": [],
    "out": [],
-   "words": 25,
+   "words": 21,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Read the cost. Then press Next round.",
@@ -3383,7 +3382,7 @@
    "here": 1,
    "prose": [
     "Your job now: Read the cost. Then press Next round.",
-    "Your cost: 6 points. Cheapest, in green: 6. Checked: 0. Mistakes not caught: 6. That is the cheapest."
+    "Your choice cost 6 points: 0 checks and 6 mistakes. That is the cheapest."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -4283,7 +4282,7 @@
  ],
  "errs": [],
  "ended": true,
- "secs": 70.851,
- "packSize": 6710,
- "hash": "d8d3241d92c0"
+ "secs": 76.811,
+ "packSize": 6709,
+ "hash": "f21c520e75ea"
 }

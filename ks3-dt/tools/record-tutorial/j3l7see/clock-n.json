@@ -51,7 +51,7 @@
    "watch": 0
   },
   "Extra: third": {
-   "read": 598,
+   "read": 597,
    "screens": 50,
    "draws": 24,
    "strokes": 78,
@@ -59,7 +59,7 @@
    "watch": 0
   },
   "Extra: golf": {
-   "read": 1941,
+   "read": 1959,
    "screens": 106,
    "draws": 84,
    "strokes": 334,
@@ -107,7 +107,7 @@
    "watch": 0
   },
   "Extra: checks": {
-   "read": 333,
+   "read": 338,
    "screens": 9,
    "draws": 0,
    "strokes": 0,
@@ -148,7 +148,7 @@
    "4 Your card": 0.6,
    "Extras menu": 1.5,
    "Extra: third": 5.6,
-   "Extra: golf": 17.4,
+   "Extra: golf": 17.5,
    "Extra: tricks": 2.6,
    "Extra: speed": 1.9,
    "Extra: mind": 8.9,
@@ -158,8 +158,8 @@
    "Extra: bad": 2.5,
    "Extra: own": 3.2,
    "End questions": 1.9,
-   "TOTAL_without_do_now": 61.4,
-   "TOTAL_with_do_now": 62.4
+   "TOTAL_without_do_now": 61.5,
+   "TOTAL_with_do_now": 62.5
   },
   "typical": {
    "Draw anything": 0.3,
@@ -169,7 +169,7 @@
    "4 Your card": 0.9,
    "Extras menu": 2.3,
    "Extra: third": 9.4,
-   "Extra: golf": 29.2,
+   "Extra: golf": 29.3,
    "Extra: tricks": 4.3,
    "Extra: speed": 2.1,
    "Extra: mind": 13.6,
@@ -179,8 +179,8 @@
    "Extra: bad": 4.3,
    "Extra: own": 5.4,
    "End questions": 3,
-   "TOTAL_without_do_now": 100.4,
-   "TOTAL_with_do_now": 101.9
+   "TOTAL_without_do_now": 100.6,
+   "TOTAL_with_do_now": 102.1
   },
   "slow": {
    "Draw anything": 0.4,
@@ -190,18 +190,18 @@
    "4 Your card": 1.4,
    "Extras menu": 3.8,
    "Extra: third": 16.1,
-   "Extra: golf": 48.8,
+   "Extra: golf": 49,
    "Extra: tricks": 7.1,
    "Extra: speed": 2.4,
    "Extra: mind": 22.4,
    "Extra: half": 2.6,
    "Extra: messy": 14.9,
-   "Extra: checks": 4.2,
+   "Extra: checks": 4.3,
    "Extra: bad": 7.4,
    "Extra: own": 8.4,
    "End questions": 4.9,
-   "TOTAL_without_do_now": 166.8,
-   "TOTAL_with_do_now": 169.3
+   "TOTAL_without_do_now": 167,
+   "TOTAL_with_do_now": 169.5
   }
  }
 }
