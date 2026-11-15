@@ -1,4 +1,4 @@
-SIT PASS started · s1u1-43a8b3f955-e11212b6
+SIT PASS started · s1u1-df3d3bd8ec-8e92533c
 SIT PASS fresh record · round 1
 SIT PASS home line · Round 1 · not started
 SIT PASS topic databases is Database applications · databases
@@ -39,7 +39,6 @@ SIT PASS round 2 current
 SIT PASS home line round 2 · Round 2 open · not started
 SIT PASS round 2 new order
 SIT PASS no page errors
-SIT PASS every grid figure shows its row-number column · 1 shown, 0 wrong
 MARKS DB1-01:0,DB1-02:4,DB1-03:1,DB1-04:0,DB1-05:0,DB1-06:0,DB1-07:0,DB1-08:0,DB1-09:0,DB1-10:0,DB1-11:0,DB1-12:1,DB1-13:1,DB1-14:0,DB1-15:1,DB1-16:0,DB1-N1:0,DB1-N2:0,DB2-01:0,DB2-02:0,DB2-03:0,DB2-04:0,DB2-05:0,DB2-06:0,DB2-07:0,DB2-08:0,DB2-09:0,DB2-10:0,DB2-N1:0,DB2-N2:1,DB3-01:1,DB3-02:0,DB3-03:0,DB3-04:0,DB3-05:0,DB3-06:1,DB3-07:0,DB3-08:0,DB3-N1:3,DB3-N2:0,DB4-01:0,DB4-02:0,DB4-03:0,DB4-04:0,DB4-05:3,DB4-06:0,DB4-07:2,DB4-08:1,DB4-09:0,DB4-10:0,DB4-11:0,DB4-12:0,DB4-13:0,DB4-N1:2,DB5-01:1,DB5-02:0,DB5-03:1,DB5-04:1,DB5-05:3,DB5-06:1,DB5-N1:1,DB5-N2:0
 MARKS# 33056cb1 · 62 questions · flags 8
 SIT RESULT PASS

@@ -4,7 +4,7 @@
  * stays inside the app. Driven as a pupil at two screen sizes: press Full screen, the activity must fill the window with
  * the save line and Exit button showing, a finish must save, the activity's own Next must keep full screen and save too,
  * and Exit must bring the normal screen back. Nothing on the activity screen may open a separate tab.
- * CONTROL: the v16 page (main's server/Index.html) must fail.
+ * CONTROL: the v16 page (commit 1dfb47b9's server/Index.html) must fail.
  * (Header of G10 kept below for the shared harness.)
  * G10 — an activity's own "Next" button (v16, 14 Nov 2026). Pupils reported "none of them saved": they finished one
  * activity and pressed its "Next: ..." button, which opened the next activity INSIDE the same frame, and the app
@@ -101,7 +101,7 @@ const fills = (o) => !!o && o.big && !!o.fr && o.fr.w >= o.W * 0.95 && o.fr.h >=
     check('no page errors' + sz, !v.errs.length, v.errs.join(' | '));
   }
   const CTL = path.join(DESIGN, 'gates', 'g11-control.html');
-  fs.writeFileSync(CTL, execSync('git -C "' + ROOT + '" show main:s1-unit1/server/Index.html', { maxBuffer: 1 << 26 }));
+  fs.writeFileSync(CTL, execSync('git -C "' + ROOT + '" show 1dfb47b9:s1-unit1/server/Index.html', { maxBuffer: 1 << 26 }));
   const c = await run(CTL, path.join(DESIGN, 'gates', 'g11-control-store.json'), 1280, 800);
   check('CONTROL the v16 page (full window opens a separate tab) is caught', !(Array.isArray(c.tabs) && c.tabs.length === 0 && fills(c.big)), JSON.stringify([c.tabs, c.big]));
   stat.close();

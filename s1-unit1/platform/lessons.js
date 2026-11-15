@@ -187,6 +187,7 @@ var S1L = {
     slideJob: "Read each slide. Press Next, or use the arrow keys.",
     slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
       "Some slides show their answer only when you press Next, so you can try the question first.",
+      "Press Full screen to make the slide fill the screen. Press Exit full screen, or the Esc key, to go back.",
       "The app remembers the last slide you saw, so you can stop and carry on later."],
     slideOf: "Slide {i} of {n}",
     slideMore: "There is more on this slide. Press Next to see it.",

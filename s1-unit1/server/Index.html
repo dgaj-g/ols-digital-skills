@@ -247,7 +247,12 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 .hubpart .stages .row .btn{justify-self:end}
 .tlines{display:grid;gap:3px;font-size:13px;margin:6px 0 0}.tlines .prog{color:var(--ink)}.exq{color:var(--mute)}.exq .exl{color:var(--plum);font-weight:700}
 .slides{max-width:1180px;margin:0 auto}
-.slide,.snav,.smore{width:min(100%,max(360px,calc((100vh - 316px)*16/9)));margin-left:auto;margin-right:auto}
+.slide,.snav,.smore,.sbar2{width:min(100%,max(360px,calc((100vh - 358px)*16/9)));margin-left:auto;margin-right:auto}
+.sbar2{display:flex;justify-content:flex-end;margin-bottom:8px}
+.slides.big{position:fixed;inset:0;z-index:60;max-width:none;margin:0;display:flex;flex-direction:column;justify-content:center;padding:8px 16px 10px;background:var(--bg);animation:none!important;transform:none}
+.slides.big>.job{display:none}
+.slides.big .slide,.slides.big .snav,.slides.big .smore,.slides.big .sbar2{width:min(100%,calc((100vh - 150px)*16/9))}
+.slides.big .slide{margin-bottom:8px}
 .slide{position:relative;aspect-ratio:16/9;margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--lift)}
 .slide img{display:block;width:100%;height:100%;object-fit:contain}
 .sfail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--card);text-align:center;padding:16px}.sfail p{margin:0}
@@ -279,7 +284,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 @media (max-width:640px){
   .erow{grid-template-columns:minmax(0,1fr);padding:12px 6px}
   .actframe{height:calc(100vh - 210px);min-height:420px}
-  .slide,.snav,.smore{width:100%}
+  .slide,.snav,.smore,.sbar2{width:100%}
+  .slides.big .slide,.slides.big .snav,.slides.big .smore,.slides.big .sbar2{width:min(100%,calc((100vh - 150px)*16/9))}
   .hb.cr{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
@@ -287,8 +293,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-43a8b3f955-e11212b6">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-43a8b3f955-e11212b6" };</script>
+<body data-build="s1u1-df3d3bd8ec-8e92533c">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-df3d3bd8ec-8e92533c" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -523,6 +529,7 @@ var S1L = {
     slideJob: "Read each slide. Press Next, or use the arrow keys.",
     slideHelp: ["Press Next or the right arrow key to go on, and Previous or the left arrow key to go back.",
       "Some slides show their answer only when you press Next, so you can try the question first.",
+      "Press Full screen to make the slide fill the screen. Press Exit full screen, or the Esc key, to go back.",
       "The app remembers the last slide you saw, so you can stop and carry on later."],
     slideOf: "Slide {i} of {n}",
     slideMore: "There is more on this slide. Press Next to see it.",
@@ -1085,9 +1092,10 @@ var Hub = (function () {
   document.addEventListener("keydown", function (ev) { if (KEY && T.cur().screen === "slides" && !ev.altKey && !ev.metaKey && !ev.ctrlKey) KEY(ev); });
   function slides(deck, i) {
     var D = deckOf(deck); if (!D || !isOpen(D.t.id)) return T.home();
+    unBig(); // a slide set always opens on the normal screen
     var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
     T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
-    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="sbar2"><button class="btn sm ghost" id="sfull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
     var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
     T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
     // a slide with click animations shows one picture per click (NN-0 \u2026 NN-(c-1)) before the finished slide NN, so an
@@ -1109,24 +1117,32 @@ var Hub = (function () {
       if (more) pre.src = pic(i, s + 1); else if (i < d.n) pre.src = pic(i + 1, 0);
       if (moved) push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
     }
-    img.onload = function () { document.getElementById("sfail").hidden = true; };
-    img.onerror = function () { img.hidden = true; document.getElementById("sfail").hidden = false; };
+    img.onload = function () { var f = document.getElementById("sfail"); if (f) f.hidden = true; }; // v18: a picture can finish loading after she has left the slide set
+    img.onerror = function () { var f = document.getElementById("sfail"); if (!f) return; img.hidden = true; f.hidden = false; };
     wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = pic(i, s) + "?r=" + tries + Date.now().toString(36); });
     function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; s = 0; show(true); }
     function next() { if (s < clicks(i)) { s++; show(false); } else go(i + 1); }
     function prev() { if (s > 0) { s--; show(false); } else if (i > 1) { i--; s = clicks(i); show(true); } } // back to a slide: as she left it, all shown
     wire("sprev", prev);
     wire("snext", next);
-    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
+    SCR = body; wire("sfull", function () { big(!BIG); });
+    KEY = function (ev) { if (ev.key === "Escape" && BIG) { ev.preventDefault(); big(false); return; } if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
     show(true);
   }
 
   // ---- an activity, played inside this page so its score comes back ----
   var MSG = null;
   // v17: Full screen keeps the activity INSIDE this page (it fills the window), so its score still comes back. It never opens a separate tab.
-  var BIG = false, wentFS = false;
+  // v18: slide sets use the same Full screen. SCR is the screen it applies to; its button is #afull (activity) or #sfull (slides).
+  var BIG = false, wentFS = false, SCR = null;
+  function big(on) {
+    BIG = on; if (SCR) SCR.classList.toggle("big", on);
+    var b = SCR && SCR.querySelector("#afull,#sfull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
+    if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
+    if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
+  }
   function unBig() { BIG = false; if (wentFS && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {}); wentFS = false; }
-  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; var b = document.getElementById("afull"); if (b && BIG) b.click(); } }); // Esc leaves full screen: the page follows
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; if (BIG) big(false); } }); // Esc leaves full screen: the page follows
   window.addEventListener("message", function (e) { if (MSG) MSG(e); });
   function activity(aid) {
     var A = actOf(aid); if (!A || !isOpen(A.t.id)) return T.home();
@@ -1168,13 +1184,7 @@ var Hub = (function () {
     wire("afin", function () { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); status(); });
     wire("aretry", function () { document.getElementById("afail").hidden = true; armLoad(); frame.src = url + "&r=" + Date.now().toString(36); });
     wire("aback", function () { topic(t.id); });
-    function big(on) {
-      BIG = on; body.classList.toggle("big", on);
-      var b = document.getElementById("afull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
-      if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
-      if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
-    }
-    wire("afull", function () { big(!BIG); });
+    SCR = body; wire("afull", function () { big(!BIG); });
     if (BIG) big(true);
     armLoad(); status();
   }

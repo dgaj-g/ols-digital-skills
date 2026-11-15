@@ -128,9 +128,10 @@ var Hub = (function () {
   document.addEventListener("keydown", function (ev) { if (KEY && T.cur().screen === "slides" && !ev.altKey && !ev.metaKey && !ev.ctrlKey) KEY(ev); });
   function slides(deck, i) {
     var D = deckOf(deck); if (!D || !isOpen(D.t.id)) return T.home();
+    unBig(); // a slide set always opens on the normal screen
     var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
     T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
-    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="sbar2"><button class="btn sm ghost" id="sfull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
     var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
     T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
     // a slide with click animations shows one picture per click (NN-0 … NN-(c-1)) before the finished slide NN, so an
@@ -152,24 +153,32 @@ var Hub = (function () {
       if (more) pre.src = pic(i, s + 1); else if (i < d.n) pre.src = pic(i + 1, 0);
       if (moved) push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
     }
-    img.onload = function () { document.getElementById("sfail").hidden = true; };
-    img.onerror = function () { img.hidden = true; document.getElementById("sfail").hidden = false; };
+    img.onload = function () { var f = document.getElementById("sfail"); if (f) f.hidden = true; }; // v18: a picture can finish loading after she has left the slide set
+    img.onerror = function () { var f = document.getElementById("sfail"); if (!f) return; img.hidden = true; f.hidden = false; };
     wire("sretry", function () { tries++; document.getElementById("sfail").hidden = true; img.hidden = false; img.src = pic(i, s) + "?r=" + tries + Date.now().toString(36); });
     function go(k) { if (k > d.n) { flush(); return topic(t.id); } if (k < 1) return; i = k; s = 0; show(true); }
     function next() { if (s < clicks(i)) { s++; show(false); } else go(i + 1); }
     function prev() { if (s > 0) { s--; show(false); } else if (i > 1) { i--; s = clicks(i); show(true); } } // back to a slide: as she left it, all shown
     wire("sprev", prev);
     wire("snext", next);
-    KEY = function (ev) { if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
+    SCR = body; wire("sfull", function () { big(!BIG); });
+    KEY = function (ev) { if (ev.key === "Escape" && BIG) { ev.preventDefault(); big(false); return; } if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
     show(true);
   }
 
   // ---- an activity, played inside this page so its score comes back ----
   var MSG = null;
   // v17: Full screen keeps the activity INSIDE this page (it fills the window), so its score still comes back. It never opens a separate tab.
-  var BIG = false, wentFS = false;
+  // v18: slide sets use the same Full screen. SCR is the screen it applies to; its button is #afull (activity) or #sfull (slides).
+  var BIG = false, wentFS = false, SCR = null;
+  function big(on) {
+    BIG = on; if (SCR) SCR.classList.toggle("big", on);
+    var b = SCR && SCR.querySelector("#afull,#sfull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
+    if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
+    if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
+  }
   function unBig() { BIG = false; if (wentFS && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {}); wentFS = false; }
-  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; var b = document.getElementById("afull"); if (b && BIG) b.click(); } }); // Esc leaves full screen: the page follows
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement && wentFS) { wentFS = false; if (BIG) big(false); } }); // Esc leaves full screen: the page follows
   window.addEventListener("message", function (e) { if (MSG) MSG(e); });
   function activity(aid) {
     var A = actOf(aid); if (!A || !isOpen(A.t.id)) return T.home();
@@ -211,13 +220,7 @@ var Hub = (function () {
     wire("afin", function () { waitU = push({ op: "finish", id: aid, s: 0, m: 0 }); finBtn(); status(); });
     wire("aretry", function () { document.getElementById("afail").hidden = true; armLoad(); frame.src = url + "&r=" + Date.now().toString(36); });
     wire("aback", function () { topic(t.id); });
-    function big(on) {
-      BIG = on; body.classList.toggle("big", on);
-      var b = document.getElementById("afull"); if (b) { b.textContent = on ? L.exitFull : L.fullWindow; b.setAttribute("aria-pressed", on ? "true" : "false"); }
-      if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) { try { document.documentElement.requestFullscreen().then(function () { wentFS = true; }, function () {}); } catch (x) {} }
-      if (!on && wentFS && document.fullscreenElement && document.exitFullscreen) { wentFS = false; document.exitFullscreen().catch(function () {}); }
-    }
-    wire("afull", function () { big(!BIG); });
+    SCR = body; wire("afull", function () { big(!BIG); });
     if (BIG) big(true);
     armLoad(); status();
   }
