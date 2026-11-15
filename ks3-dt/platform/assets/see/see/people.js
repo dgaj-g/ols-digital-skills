@@ -38,6 +38,21 @@
         var x = 110 + j(30), y = 190 + j(30), w = 200 + j(30), h = 170 + j(20);
         return [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]], [[x - 15, y], [x + w / 2, y - 110], [x + w + 15, y]], [[x + w * .4, y + h], [x + w * .4, y + h * .5], [x + w * .6, y + h * .5], [x + w * .6, y + h]]];
       },
+      /* numbers for The post office: written tall, in the middle of the pad (x 120 to 300) */
+      one: function (style) { var cx = 210 + j(16), t = 60 + j(16), b = 365 + j(14), s = [[cx + j(10), t], [cx + j(8), b]];
+        if (style === 'a') return [[[cx - 38, t + 40 + j(8)], [cx, t]].concat([s[1]])];
+        if (style === 'b') return [[[cx - 36, t + 36], [cx, t], [cx + j(6), b]], [[cx - 40, b], [cx + 40, b]]];
+        return [s]; },
+      four: function (style) { var cx = 210 + j(14), t = 60 + j(14), b = 365 + j(14), m = 255 + j(14);
+        if (style === 'a') return [[[cx - 50, t + j(8)], [cx - 62 + j(8), m], [cx + 62, m]], [[cx + 25, t + 30 + j(8)], [cx + 25 + j(6), b]]];
+        return [[[cx + 28, b], [cx + 28 + j(6), t], [cx - 70 + j(8), m], [cx + 66, m]]]; },
+      seven: function (style) { var cx = 210 + j(14), t = 65 + j(14), b = 365 + j(14), s = [[[cx - 68, t + j(8)], [cx + 68, t + j(8)], [cx - 18 + j(16), b]]];
+        if (style === 'a') s.push([[cx - 34, 215 + j(10)], [cx + 46, 215 + j(10)]]);
+        return s; },
+      two: function () { var cx = 210 + j(14), t = 65 + j(14), b = 360 + j(14);
+        return [[[cx - 62, t + 50], [cx - 30, t + 6], [cx + 18, t], [cx + 60, t + 36], [cx + 52, t + 110 + j(14)], [cx - 66, b], [cx + 72, b + j(8)]]]; },
+      nine: function () { var cx = 210 + j(14), cy = 135 + j(12), r = 58 + j(8);
+        return [ell(cx, cy, r, r * .95, 0, T, 22), [[cx + r, cy], [cx + r - 8 + j(8), 365 + j(12)]]]; },
       /* shrink a drawing into a box [x, y, w, h] on the pad */
       into: function (strokes, box) { return strokes.map(function (s) { return s.map(function (p) { return [box[0] + box[2] * (.12 + .76 * p[0] / 420), box[1] + box[3] * (.12 + .76 * p[1] / 420)]; }); }); }
     };
