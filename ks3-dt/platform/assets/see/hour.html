@@ -76,7 +76,7 @@ canvas[data-pv].big { width:112px; height:112px; border-radius:12px; margin-bott
 .mcard h2 { color:#8a5a00; } .mcard .say { margin:8px 0; } .mcard .nm { font-size:30px; font-weight:900; margin:0 0 6px; }
 input[type=text] { font:inherit; font-size:20px; font-weight:800; padding:10px 14px; border-radius:10px; border:2px solid var(--dim); background:#fff; color:#111; width:220px; }
 .tiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px; }
-.tile { text-align:left; background:var(--panel); color:var(--chalk); border:2px solid var(--panel2); padding:18px; font-weight:700; }
+.tile { display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; text-align:left; background:var(--panel); color:var(--chalk); border:2px solid var(--panel2); padding:18px; font-weight:700; }
 .tile:hover { border-color:var(--amber); }
 .tile strong { display:block; font-size:22px; font-weight:900; color:var(--amber); margin-bottom:4px; } .tile small { display:block; color:var(--dim); font-size:14px; margin-top:8px; font-weight:800; }
 .tile .tag { color:var(--green); } .tile .hard { color:var(--red); }
@@ -159,7 +159,7 @@ if (!st) st = fresh();
 /* The platform keeps a small save. Every kept drawing goes in once, as the 28 x 28 numbers the learner uses.
    Extras keep only "done" and the best score. If it is still too big, the oldest test pictures go first, then the oldest examples. */
 function pack(limit) {
-  var pics = [], seen = {}, o = JSON.parse(JSON.stringify(st, function (k, v) { return k === 'retS' || k === 'dn' || k === 'ord' ? undefined : v; }));
+  var pics = [], seen = {}, o = JSON.parse(JSON.stringify(st, function (k, v) { return k === 'retS' || k === 'dn' || k === 'ord' || k === 'ink' ? undefined : v; }));
   function pic(s) { if (!s) return -1; var t = s.r || Store.enc(vecOf(s), 4); if (seen[t] == null) { seen[t] = pics.length; pics.push(t); } return seen[t]; }
   o.cls = st.cls.map(function (c) { return c.ex.map(pic); });
   ['t1', 'f1', 'f2', 'odd'].forEach(function (k) { o[k] = st[k].map(function (t) { return [t.w, t.g, t.pc, pic(t.s)]; }); });
@@ -184,12 +184,13 @@ function unpack(o) {
 }
 var saveT = null;
 function sendSave() { saveT = null; if (!FRAMED) return; var p = pack(); lastPack = JSON.stringify(p).length; post('save', { save: p }); }
-function save() { st.rev = (st.rev || 0) + 1; try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} if (FRAMED && !saveT) saveT = setTimeout(sendSave, 1500); }
+function save() { st.rev = (st.rev || 0) + 1; st.ink = strokes.length ? take() : null; try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} if (FRAMED && !saveT) saveT = setTimeout(sendSave, 1500); }
 document.addEventListener('visibilitychange', function () { if (document.hidden && saveT) { clearTimeout(saveT); sendSave(); } });
 function elapsedMin() { return (Date.now() - st.t0) * SPEED / 60000; }
 
 var pad = document.getElementById('pad'), ctx = pad.getContext('2d');
 var strokes = [], cur = null, CUR = {}, PV = [], memo = new WeakMap(), play = 0, helpOpen = false, sp = null, ghost = null, demoOn = 0, demoTok = 0, demoRuns = 0, idleAt = Date.now(), nudge = 0;
+if (st.ink && !/^(e-|x-speed)/.test(st.scr)) strokes = st.ink;
 var IDLE = /idle/.test(FLAG) ? 700 : 20000;
 function $(id) { return document.getElementById(id); }
 function f(s, o) { if (Array.isArray(s)) return s.map(function (x) { return f(x, o); }); return s.replace(/\{(\w+)\}/g, function (_, k) { return o[k]; }); }
@@ -199,7 +200,7 @@ function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floo
 function vecOf(s) { if (!s) return new Float32Array(784); var v = memo.get(s); if (!v) { v = s.r != null ? Store.dec(s.r) : E.raster(s); memo.set(s, v); } return v; }
 function sets(m) { return m.map(function (c) { return c.ex.map(vecOf); }); }
 function take() { return strokes.map(function (q) { return q.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }); }); }
-function clear() { strokes = []; }
+function clear() { strokes = []; st.ink = null; ghost = null; }
 function inkOK() { return E.ink(strokes) >= 50; }
 function inZone(z) { if (!z) return true; return strokes.every(function (s) { return s.every(function (p) { return p[0] >= z[0] - 8 && p[1] >= z[1] - 8 && p[0] <= z[0] + z[2] + 8 && p[1] <= z[1] + z[3] + 8; }); }); }
 function now(m) { if (!strokes.length) return null; var r = E.classify(E.raster(strokes), sets(m)); return { c: r.c, pc: Math.round(r.p * 100), ps: r.ps }; }
@@ -222,9 +223,9 @@ function redraw() {
 }
 function pos(e) { var r = pad.getBoundingClientRect(); return [(e.clientX - r.left) * 420 / r.width, (e.clientY - r.top) * 420 / r.height]; }
 function locked() { return !CUR.pad || CUR.pad.lock || play || demoOn || PAUSED || WELCOME; }
-pad.addEventListener('pointerdown', function (e) { if (locked()) return; if (helpOpen && sp) help(false); try { pad.setPointerCapture(e.pointerId); } catch (x) {} cur = [pos(e)]; strokes.push(cur); redraw(); });
+pad.addEventListener('pointerdown', function (e) { if (locked()) return; if (helpOpen && sp) help(false); ghost = null; try { pad.setPointerCapture(e.pointerId); } catch (x) {} cur = [pos(e)]; strokes.push(cur); redraw(); });
 pad.addEventListener('pointermove', function (e) { if (cur) { cur.push(pos(e)); redraw(); } });
-function up() { if (!cur) return; cur = null; if (CUR.onUp) CUR.onUp(); render(); }
+function up() { if (!cur) return; cur = null; if (CUR.onUp) CUR.onUp(); try { st.ink = strokes.length ? take() : null; localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} render(); }
 pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
 function animate(dr, done) {
   var si = 0, pi = 0; strokes = [];
@@ -251,6 +252,7 @@ function guessInner(m) {
   if (!r) return '<div class="guess">' + S.drawSomething + '</div>' + barHtml(0) + '<p class="say">&nbsp;</p>';
   return '<div class="guess">' + esc(f(S.itThinks, { n: m[r.c].n })) + '</div>' + barHtml(r.pc) + '<p class="say">' + f(S.howSure, { pc: r.pc }) + '</p>';
 }
+function waitCard(t) { return card(S.thinks, '<div class="guess">?</div><p class="say">' + esc(t) + '</p>'); }
 function guessCard(m) { CUR_M = m; return '<div class="card"><h2>' + S.thinks + '</h2><div id="live">' + guessInner(m) + '</div></div>'; }
 var CUR_M = null;
 function paintGuess() { var el = $('live'); if (el && CUR_M) el.innerHTML = guessInner(CUR_M); }
@@ -272,12 +274,12 @@ function testStep(o) {  // o: chip, m, want, list, job, help, fin, nextLabel, on
   if (!st.shown) {
     var ok = inkOK() && inZone(o.zone);
     return { chip: o.chip, job: o.job, help: o.help, pad: { zone: o.zone }, draw: o.draw, warn: strokes.length && !inZone(o.zone) ? S.bad.out : '',
-      btns: btn('fin', o.fin, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'), side: guessCard(m) + (o.extra || ''),
+      btns: btn('fin', o.fin, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'), side: waitCard(o.wait || S.waitPress) + (o.extra || ''),
       acts: { fin: function () { var r = now(m), t = { w: o.want, g: r.c, pc: r.pc, s: take() }; o.list.push(t); st.shown = 1; snd(t.w === t.g ? 'ding' : 'thud'); }, rub: clear } };
   }
   var t = o.list[o.list.length - 1];
   if (!strokes.length) strokes = t.s;
-  return { chip: o.chip, job: o.job, help: o.help, pad: { zone: o.zone, lock: 1 }, btns: btn('nx', o.nextLabel, 0, 1),
+  return { chip: o.chip, job: o.jobDone || o.job, help: o.help, pad: { zone: o.zone, lock: 1 }, btns: btn('nx', o.nextLabel, 0, 1),
     side: card(S.thinks, o.after ? o.after(t) : '<div class="guess">' + esc(f(S.said, { g: m[t.g].n })) + '</div>' + barHtml(t.pc) + '<p class="say">' + f(S.howSure, { pc: t.pc }) + '</p><p class="say verdict ' + (t.w === t.g ? 'ok">' + S.right : 'no">' + esc(f(S.wrong, { a: m[t.w].a }))) + '</p>') + (o.extra || ''),
     acts: { nx: function () { st.shown = 0; clear(); o.onNext(); } } };
 }
@@ -287,7 +289,7 @@ function strangerStep(o) {  // the stranger draws by rule; the result is recorde
     var dr = P(o.seed)[o.kind](o.style).map(function (s) { return s.map(function (p) { return [Math.round(p[0]), Math.round(p[1])]; }); });
     setTimeout(function () { animate(dr, function () { strokes = dr; var r = now(o.m), t = { w: o.want, g: r.c, pc: r.pc, s: dr }; o.list.push(t); st.shown = 1; play = 0; snd(t.w === t.g ? 'ding' : 'thud'); save(); render(); }); }, 50);
   }
-  if (!st.shown) return { chip: o.chip, job: o.job, help: o.help, pad: { lock: 1 }, btns: btn('nx', o.nextLabel, 1, 0), side: guessCard(o.m), acts: {} };
+  if (!st.shown) return { chip: o.chip, job: o.job, help: o.help, pad: { lock: 1 }, btns: btn('nx', o.nextLabel, 1, 0), side: waitCard(o.wait || S.waitDraw) + (o.extra || ''), acts: {} };
   return testStep(o);
 }
 function quiz(items, q, str, chip, doneLabel, done) {
@@ -297,14 +299,14 @@ function quiz(items, q, str, chip, doneLabel, done) {
     var cls = q.pick < 0 ? '' : o === 0 ? 'good' : o === q.pick ? 'bad' : 'off';
     return '<button class="opt ' + cls + '" data-act="pick" data-arg="' + o + '"' + (q.pick >= 0 ? ' disabled' : '') + (o === 0 && q.pick < 0 ? ' data-want="1"' : '') + '>' + esc(it.options[o]) + '</button>';
   }).join('') + '</div>';
-  if (q.pick >= 0) h += '<p class="say verdict ' + (q.pick === 0 ? 'ok">' + S.quiz.right : 'no">' + S.quiz.wrong) + '</p><div class="row">' + btn('nx', q.i < items.length - 1 ? S.quiz.nextQ : doneLabel, 0, 1) + '</div>';
+  if (q.pick >= 0) h += '<p class="say verdict ' + (q.pick === 0 ? 'ok">' + S.quiz.right : 'no">' + S.quiz.wrong) + '</p>' + (q.pick !== 0 && it.explain ? '<p class="say">' + esc(it.explain[q.pick]) + '</p>' : '') + '<div class="row">' + btn('nx', q.i < items.length - 1 ? S.quiz.nextQ : doneLabel, 0, 1) + '</div>';
   return { chip: chip, job: str.job, help: str.help, stage: h, acts: {
     pick: function (a) { if (q.pick >= 0) return; q.pick = +a; q.ans = q.ans || []; q.ans[q.i] = q.pick; if (q.pick === 0) { q.right++; snd('ding'); } else snd('thud'); },
     nx: function () { if (q.i < items.length - 1) { q.i++; q.pick = -1; } else { q.done = 1; done(); } } } };
 }
 function pool() { return st.t1.concat(st.f1, st.f2, st.odd); }
 function oddStep(o) {
-  return testStep({ chip: 3, m: st.cls, want: -1, list: st.odd, job: o.job, help: o.help, fin: o.fin, draw: o.draw, nextLabel: o.nextLabel, onNext: o.onNext,
+  return testStep({ chip: 3, m: st.cls, want: -1, list: st.odd, job: o.job, jobDone: o.jobDone, help: o.help, fin: o.fin, draw: o.draw, nextLabel: o.nextLabel, onNext: o.onNext,
     after: function (t) { return '<div class="guess">' + esc(f(S.itThinks, { n: st.cls[t.g].n })) + '</div>' + barHtml(t.pc) + '<p class="say">' + f(S.howSure, { pc: t.pc }) + '</p>' + lines(t.pc >= 75 ? o.lines : o.low); } });
 }
 
@@ -327,16 +329,16 @@ var SCREENS = {
   'f-1': function () { return foolStep(st.f1, F1, STR1, 100, function () { if (st.f1.length >= 6) go('f-s1'); }); },
   'f-s1': function () {
     var r = right(st.f1);
-    return { chip: 2, job: S.fool.s1Job, help: S.fool.s1Help, stage: '<p class="big">' + f(S.fool.s1, { r: r, of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + st.f1.map(function (t) { return th(t, '', st.cls[t.g].n); }).join('') + '</div>' + lines(r < 6 ? S.fool.s1Bad : S.fool.s1Good) + '<div class="row">' + btn('go', S.fool.learn, 0, 1) + '</div>',
+    return { chip: 2, job: S.fool.s1Job, help: S.fool.s1Help, stage: '<p class="big">' + f(S.fool.s1, { r: r, of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + st.f1.map(function (t) { return th(t, '', st.cls[t.g].n); }).join('') + '</div>' + lines(r < 6 ? f(S.fool.s1Bad, { pl: missedPl() }) : S.fool.s1Good) + '<div class="row">' + btn('go', S.fool.learn, 0, 1) + '</div>',
       acts: { go: function () { st.f1.forEach(function (t) { st.cls[t.w].ex.push(t.s); }); go('f-2'); } } };
   },
   'f-2': function () { return foolStep(st.f2, F2, STR2, 200, function () { if (st.f2.length >= 4) go('f-s2'); }); },
   'f-s2': function () {
     var r1 = right(st.f1), r2 = right(st.f2), upp = r2 / 4 > r1 / 6 || r2 === 4;
-    return { chip: 2, job: S.fool.s2Job, help: S.fool.s2Help, stage: '<p class="big">' + f(S.fool.s2, { r1: r1, of1: 6, r2: r2, of2: 4 }) + '</p>' + lines(upp ? S.fool.s2Up : S.fool.s2Same) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.fool.go, 0, 1) + '</div>', acts: { go: function () { go('s-cat'); } } };
+    return { chip: 2, job: S.fool.s2Job, help: S.fool.s2Help, stage: '<p class="big">' + f(S.fool.s2, { p1: Math.round(r1 / 6 * 100), p2: Math.round(r2 / 4 * 100) }) + '</p>' + lines(upp ? S.fool.s2Up : S.fool.s2Same) + '<div style="margin-top:14px">' + ghosts(st.cls) + '</div><div class="row">' + btn('go', S.fool.go, 0, 1) + '</div>', acts: { go: function () { go('s-cat'); } } };
   },
-  's-cat': function () { return oddStep({ job: S.sure.catJob, help: S.sure.catHelp, fin: S.sure.finCat, draw: 'cat', lines: S.sure.catLines, low: S.sure.catLow, nextLabel: S.sure.nextAny, onNext: function () { go('s-any'); } }); },
-  's-any': function () { return oddStep({ job: S.sure.anyJob, help: S.sure.anyHelp, fin: S.sure.finAny, draw: 'house', lines: S.sure.anyLines, low: S.sure.anyLow, nextLabel: S.sure.toLine, onNext: function () { go('s-line'); } }); },
+  's-cat': function () { return oddStep({ job: S.sure.catJob, jobDone: S.sure.catDoneJob, help: S.sure.catHelp, fin: S.sure.finCat, draw: 'cat', lines: S.sure.catLines, low: S.sure.catLow, nextLabel: S.sure.nextAny, onNext: function () { go('s-any'); } }); },
+  's-any': function () { return oddStep({ job: S.sure.anyJob, jobDone: S.sure.anyDoneJob, help: S.sure.anyHelp, fin: S.sure.finAny, draw: 'house', lines: S.sure.anyLines, low: S.sure.anyLow, nextLabel: S.sure.toLine, onNext: function () { go('s-line'); } }); },
   's-line': function () {
     var p = pool().slice().sort(function (a, b) { return a.pc - b.pc; }), L = st.line, chk = 0, past = 0;
     p.forEach(function (t) { if (t.pc < L) chk++; else if (t.w !== t.g) past++; });
@@ -350,7 +352,7 @@ var SCREENS = {
   'c-card': function () {
     var p = pool(), C = S.card, ok = st.name.length > 0 && st.gap >= 0;
     var h = '<div class="mcard"><h2 class="kicker">' + C.head + '</h2><div class="pick"><span class="lab">' + C.nameLabel + '</span><input type="text" id="nm" maxlength="14" placeholder="' + C.namePh + '" value="' + esc(st.name) + '"></div><div class="pick">' + C.names.map(function (n, i) { return '<button class="sm' + (st.name === n ? ' on' : '') + '" data-act="nm" data-arg="' + n + '"' + (i === 0 && !st.name ? ' data-want="1"' : '') + '>' + n + '</button>'; }).join('') + '</div>' + cardLines() +
-      '<p class="say" style="font-weight:800;margin-top:14px">' + C.gapLabel + '</p><div class="opts">' + C.gaps.map(function (g, i) { return '<button class="opt sm' + (st.gap === i ? ' good' : '') + '" style="color:#14242b;background:#fff" data-act="gap" data-arg="' + i + '"' + (i === 1 && st.name && st.gap < 0 ? ' data-want="1"' : '') + '>' + g + '</button>'; }).join('') + '</div></div><div class="row">' + btn('keep', C.keep, !ok, ok ? 1 : 0) + '</div>';
+      '<p class="say" style="font-weight:800;margin-top:14px">' + C.gapLabel + '</p><div class="opts">' + C.gaps.map(function (g, i) { return '<button class="opt sm' + (st.gap === i ? ' good"' : '" style="color:#14242b;background:#fff"') + ' data-act="gap" data-arg="' + i + '"' + (i === 1 && st.name && st.gap < 0 ? ' data-want="1"' : '') + '>' + g + '</button>'; }).join('') + '</div></div><div class="row">' + btn('keep', C.keep, !ok, ok ? 1 : 0) + '</div>';
     return { chip: 4, job: C.job, help: C.help, stage: h, input: function (el) { st.name = el.value.trim().slice(0, 14); save(); var b = document.querySelector('[data-act=keep]'); if (b) b.disabled = !(st.name && st.gap >= 0); },
       acts: { nm: function (a) { st.name = a; }, gap: function (a) { st.gap = +a; }, keep: function () { st.kept = 1; snd('fanfare'); go('c-kept'); } } };
   },
@@ -367,13 +369,15 @@ var SCREENS = {
       acts: { felt: function (a) { var q = a.split('-'); st.felt[+q[0]] = +q[1]; }, go: function () { if (!st.fin) post('end', { answers: S.end.qs.map(function (_, i) { var a = (st.eq.ans || [])[i]; return a == null ? -1 : a; }), felt: st.felt.slice() }); st.fin = 1; snd('fanfare'); go('e-done'); } } };
   },
   'e-done': function () {
-    var back = st.ret && !/^x-/.test(st.ret) ? S.end.backC : S.end.backX;
-    return { chip: 6, job: S.end.doneJob, help: S.end.doneHelp, stage: '<p class="big">' + S.end.doneLines[0] + '</p>' + lines(S.end.doneLines.slice(1)) + '<p class="say">' + f(S.end.score, { r: st.eq.right, of: 5 }) + '</p>' + (st.kept ? cardView() : '') + '<div class="row">' + btn('back', back, 0, 0, 'ghost') + '</div>',
+    var back = backDest() === 'x-menu' ? S.end.backX : S.end.backC;
+    return { chip: 6, job: f(S.end.doneJob, { b: back }), help: S.end.doneHelp, stage: '<p class="big">' + S.end.doneLines[0] + '</p>' + lines(S.end.doneLines.slice(1)) + '<p class="say">' + f(S.end.score, { r: st.eq.right, of: 5 }) + '</p>' + (st.kept ? cardView() : '') + '<div class="row">' + btn('back', back, 0, 0, 'ghost') + '</div>',
       acts: { back: goBack } };
   }
 };
+function missedPl() { var ks = [0, 1].filter(function (k) { return st.f1.some(function (t) { return t.w === k && t.g !== t.w; }); }); return (ks.length ? ks : [0]).map(function (k) { return st.cls[k].pl; }).join(' and '); }
 function foolStep(list, order, str, seed, onNext) {
   var i = list.length - (st.shown ? 1 : 0), w = order[i], F = S.fool, o = { chip: 2, m: st.cls, want: w, list: list, draw: st.cls[w].n, nextLabel: i < order.length - 1 ? F.nextD : S.next, onNext: onNext };
+  if (list === st.f2 && i === 0) o.wait = F.learned;
   if (st.who === 'n') { o.job = f(F.nJob, { a: st.cls[w].a, i: i + 1, of: order.length }); o.help = F.nHelp; o.fin = f(S.finished, { n: st.cls[w].n }); return testStep(o); }
   o.job = f(F.sJob, { a: st.cls[w].a, i: i + 1, of: order.length }); o.help = F.sHelp; o.kind = str[i][0]; o.style = str[i][1]; o.seed = seed + i; o.draw = null;
   return strangerStep(o);
@@ -384,6 +388,7 @@ function cardLines() {
 }
 function cardView() { return '<div class="mcard" style="margin-top:16px"><h2 class="kicker">' + S.card.head + '</h2><p class="nm">' + esc(st.name) + '</p>' + cardLines() + '<p class="say"><b>' + S.card.gapLabel + ':</b> ' + S.card.gaps[st.gap] + '</p></div>'; }
 function backRow(want) { return '<div class="row">' + btn('menu', S.menu.back, 0, want ? 1 : 0, want ? '' : 'ghost') + '</div>'; }
+function withMenu(s) { var has = /data-act="menu"/; if (s.pad) { if (!has.test(s.btns || '')) s.btns = (s.btns || '') + btn('menu', S.menu.back, 0, 0, 'ghost sm'); } else if (!has.test(s.stage || '')) s.stage = (s.stage || '') + backRow(0); s.acts = s.acts || {}; s.acts.menu = toMenu; return s; }
 function toMenu() { if (sp) { clearInterval(sp.t); sp = null; } go('x-menu'); }
 
 /* ---------- the five extras ---------- */
@@ -395,7 +400,7 @@ SCREENS['x-third'] = function () {
     var i = x.tests.length - (st.shown ? 1 : 0), w = T3[i];
     s = testStep({ chip: 5, m: m, want: w, list: x.tests, draw: m[w].n, job: f(S.third.testJob, { a: m[w].a, i: i + 1, of: 6 }), help: S.third.testHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: i < 5 ? S.teach.nextTest : S.next, onNext: function () { if (x.tests.length >= 6) x.done = 1; } });
   } else s = { chip: 5, job: S.third.sumJob, help: S.third.sumHelp, stage: '<p class="big">' + f(S.third.sum, { r: right(x.tests), of: 6 }) + '</p><div class="thumbs" style="margin:14px 0">' + x.tests.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(S.third.sumLines) + '<div style="margin-top:14px">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
-  s.acts.menu = toMenu; return s;
+  return withMenu(s);
 };
 X.speed = { open: function () { st.x.speed = st.x.speed || { best: 0 }; sp = null; } };
 SCREENS['x-speed'] = function () {
@@ -406,7 +411,7 @@ SCREENS['x-speed'] = function () {
     side: card(f(V.score, { n: sp.n }), '<div class="clock" id="clock">' + f(V.left, { s: Math.ceil(sp.left) }) + '</div>') + guessCard(st.cls),
     onUp: function () { var r = now(st.cls); if (r && inkOK() && r.c === sp.want && r.pc >= 60) { sp.n++; snd('ding'); sp.want = Math.random() < .5 ? 0 : 1; clear(); } },
     acts: { skip: function () { sp.want = 1 - sp.want; clear(); }, rub: clear } };
-  s.acts.menu = toMenu; return s;
+  return withMenu(s);
 };
 function startSpeed() {
   sp = { n: 0, left: FAST ? 6 : 90, want: Math.random() < .5 ? 0 : 1, over: 0 }; clear();
@@ -416,7 +421,7 @@ function startSpeed() {
     if (sp.left <= 0) { clearInterval(sp.t); sp.over = 1; cur = null; var x = st.x.speed; x.best = Math.max(x.best, sp.n); x.done = 1; snd('bell'); clear(); save(); render(); }
   }, 250);
 }
-X.half = { open: function () { st.x.half = st.x.half || { pics: [] }; } };
+X.half = { open: function () { var h = st.x.half || {}; if (!h.pics) h.pics = []; st.x.half = h; } };
 SCREENS['x-half'] = function () {
   var x = st.x.half, r = now(st.cls), ok = r && inkOK() && r.ps[0] >= .45 && r.ps[0] <= .55;
   return { chip: 5, job: S.half.job, help: S.half.help, pad: {}, draw: 'half', spot: ok ? null : '#live', spotTag: S.tagBar, btns: btn('keep', S.half.keep, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost') + btn('menu', S.menu.back, 0, 0, 'ghost sm'),
@@ -432,7 +437,7 @@ SCREENS['x-bad'] = function () {
     var i = x.tr.length - (st.shown ? 1 : 0), w = i === 0 ? 1 : 0;
     s = testStep({ chip: 5, m: m, want: w, list: x.tr, zone: w ? TOP : BOT, draw: m[w].n, job: f(B.trickJob, { a: m[w].a }), help: B.trickHelp, fin: f(S.finished, { n: m[w].n }), nextLabel: S.next, onNext: function () { if (x.tr.length >= 2) x.done = 1; } });
   } else s = { chip: 5, job: B.endJob, help: B.endHelp, stage: '<div class="thumbs" style="margin:0 0 14px">' + x.tr.map(function (t) { return th(t, '', m[t.g].n); }).join('') + '</div>' + lines(B.lines) + '<div style="margin-top:14px">' + ghosts(m) + '</div>' + backRow(1), acts: {} };
-  s.acts.menu = toMenu; return s;
+  return withMenu(s);
 };
 X.own = { open: function () { st.x.own = { a: '', b: '', cls: null, done: (st.x.own || {}).done }; } };
 SCREENS['x-own'] = function () {
@@ -448,7 +453,7 @@ SCREENS['x-own'] = function () {
     s = { chip: 5, job: O.testJob, help: O.testHelp, pad: {}, draw: 'own', spot: '#btns', btns: btn('rub', O.another, !strokes.length, 0) + btn('menu', S.menu.back, 0, 1, 'ghost sm') + (inkOK() ? x.cls.map(function (c, i) { return btn('learn', f(O.was, { n: c.n }), 0, 0, 'ghost sm', i); }).join('') : ''),
       side: guessCard(x.cls) + ghosts(x.cls), acts: { rub: clear, learn: function (i) { x.cls[+i].ex.push(take()); clear(); snd('flip'); } } };
   }
-  s.acts.menu = toMenu; return s;
+  return withMenu(s);
 };
 
 /* ---------- render ---------- */
@@ -462,7 +467,7 @@ function render() {
   $('title').textContent = S.title; $('helpBtn').textContent = S.helpBtn; $('endBtn').textContent = S.endBtn; $('pauseBtn').textContent = W.pause; mins(); veil();
   $('steps').innerHTML = S.chips.map(function (t, i) { return '<span class="chip ' + (i === CUR.chip ? 'on' : i < CUR.chip ? 'done' : '') + '">' + t + '</span>'; }).join('');
   var inEnd = /^e-(q|felt)$/.test(st.scr) && !!st.ret;
-  $('endBtn').textContent = inEnd ? (/^x-/.test(st.ret) ? S.end.backX : S.end.backC) : S.endBtn;
+  $('endBtn').textContent = inEnd ? (backDest() === 'x-menu' ? S.end.backX : S.end.backC) : st.fin ? S.endDone : S.endBtn;
   $('endBtn').hidden = !(inEnd || /^x-/.test(st.scr) || (/^[tfsc]-/.test(st.scr) && late()));
   $('job').textContent = S.jobLead + CUR.job;
   $('draw').hidden = !CUR.pad; $('stage').hidden = !!CUR.pad;
@@ -513,7 +518,7 @@ function demo() {
   (function step() {
     if (tok !== demoTok) return;
     for (var n = 0; n < 3; n++) {
-      if (si >= d.length) { return setTimeout(function () { if (tok !== demoTok) return; ghost = null; demoOn = 0; redraw(); spot(); }, 1100); }
+      if (si >= d.length) { return setTimeout(function () { if (tok !== demoTok) return; demoOn = 0; redraw(); spot(); }, 1100); }
       if (pi === 0) ghost.push([]);
       ghost[ghost.length - 1].push(d[si][pi]); pi++;
       if (pi >= d[si].length) { si++; pi = 0; }
@@ -538,7 +543,7 @@ function fit() {
 window.addEventListener('resize', function () { fit(); spot(); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(); spot(); });
 function help(on) {
-  helpOpen = on; demoTok++; ghost = null; demoOn = 0; poke();
+  helpOpen = on; demoTok++; if (on || demoOn) ghost = null; demoOn = 0; poke();
   $('help').style.display = on ? 'flex' : 'none';
   fit(); if (on) demo();
   redraw(); spot();
@@ -553,7 +558,9 @@ setInterval(function () {
 }, 250);
 $('helpBtn').onclick = function () { help(!helpOpen); }; $('helpClose').onclick = function () { help(false); };
 document.addEventListener('keydown', function (e) { if (e.target.tagName === 'INPUT') return; if (e.key === 'h' || e.key === 'H') help(!helpOpen); if (e.key === 'Escape') help(false); });
-function goBack() { var r = st.ret && !/^x-/.test(st.ret) ? st.ret : (st.kept ? 'x-menu' : 't-teach'), sh = st.retShown; go(r); st.shown = /^x-/.test(r) ? 0 : sh; if (!/^x-/.test(r) && st.retS) strokes = st.retS; st.retS = null; st.ret = null; }
+function xLive(r) { if (r === 'x-menu') return true; var id = r.slice(2), x = st.x[id]; if (!x || !X[id]) return false; return id === 'third' ? !!x.ex : id === 'bad' ? !!x.cls : id === 'own' ? 'a' in x : id === 'half' ? !!x.pics : true; }
+function backDest() { var r = st.ret || (st.kept ? 'x-menu' : 't-teach'); if (/^x-/.test(r) && !xLive(r)) r = 'x-menu'; return r; }
+function goBack() { var r = backDest(), sh = st.retShown, keep = st.retS; go(r); st.shown = r === 'x-menu' || r === 'x-speed' ? 0 : (sh || 0); if (keep && r !== 'x-menu' && r !== 'x-speed') strokes = keep; st.retS = null; st.ret = null; }
 $('pauseBtn').onclick = function () { if (play || WELCOME) return; if (helpOpen) help(false); PAUSED = true; veil(); };
 $('veilBtn').onclick = function () { WELCOME = false; PAUSED = false; poke(); veil(); };
 setInterval(mins, 15000);
@@ -563,7 +570,7 @@ $('endBtn').onclick = function () {
   if (!/^e-/.test(st.scr)) { st.ret = st.scr; st.retShown = st.shown; st.retS = take(); }
   go(st.fin ? 'e-done' : st.eq.done ? 'e-felt' : 'e-q'); save(); render();
 };
-window.App = { pack: pack, unpack: unpack, packSize: function () { return JSON.stringify(pack()).length; }, veil: function () { return WELCOME ? 'welcome' : PAUSED ? 'paused' : ''; }, flush: function () { if (saveT) clearTimeout(saveT); sendSave(); return lastPack; }, info: function () { return { scr: st.scr, draw: CUR.draw || null, zone: CUR.pad && CUR.pad.zone || null, play: play, shown: st.shown, job: CUR.job, help: CUR.help, pad: !!CUR.pad, helpOpen: helpOpen, demoRuns: demoRuns, demoOn: demoOn, nudge: nudge, spot: (document.querySelector('.spot') || {}).id || (document.querySelector('.spot') || {}).className || null, tag: $('tag').style.display === 'block' ? $('tag').textContent : null }; }, help: help, snap: function () { return JSON.stringify(st) + '|' + JSON.stringify(strokes); }, st: function () { return st; } };
+window.App = { pack: pack, unpack: unpack, packSize: function () { return JSON.stringify(pack()).length; }, veil: function () { return WELCOME ? 'welcome' : PAUSED ? 'paused' : ''; }, flush: function () { if (saveT) clearTimeout(saveT); sendSave(); return lastPack; }, info: function () { return { scr: st.scr, draw: CUR.draw || null, zone: CUR.pad && CUR.pad.zone || null, play: play, shown: st.shown, job: CUR.job, help: CUR.help, pad: !!CUR.pad, helpOpen: helpOpen, demoRuns: demoRuns, demoOn: demoOn, ghost: !!ghost, nudge: nudge, spot: (document.querySelector('.spot') || {}).id || (document.querySelector('.spot') || {}).className || null, tag: $('tag').style.display === 'block' ? $('tag').textContent : null }; }, help: help, snap: function () { return JSON.stringify(st) + '|' + JSON.stringify(strokes); }, st: function () { return st; } };
 render();
 </script>
 </body>

@@ -198,7 +198,7 @@
    "name": "07-t-test_0__pad______Draw_a_fish__Will_it_know__empty.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 20,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a fish. Will it know? This is test 1 of 5.",
@@ -206,7 +206,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a fish. Will it know? This is test 1 of 5."
+    "Your job now: Draw a fish. Will it know? This is test 1 of 5.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -218,8 +219,8 @@
     "tag": "Draw here",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": "fish"
    }
@@ -229,7 +230,7 @@
    "name": "08-t-test_0__pad______Draw_a_fish__Will_it_know_.png",
    "bad": [],
    "out": [],
-   "words": 16,
+   "words": 20,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a fish. Will it know? This is test 1 of 5.",
@@ -238,7 +239,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a fish. Will it know? This is test 1 of 5.",
-    "It is 93 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -250,8 +251,8 @@
     "tag": "Press this",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": "fish"
    }
@@ -283,8 +284,8 @@
     "tag": "Press this",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": null
    }
@@ -294,7 +295,7 @@
    "name": "10-t-test_0__pad______Draw_a_sun__Will_it_know___empty.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 20,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a sun. Will it know? This is test 2 of 5.",
@@ -302,7 +303,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a sun. Will it know? This is test 2 of 5."
+    "Your job now: Draw a sun. Will it know? This is test 2 of 5.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -314,8 +316,8 @@
     "tag": "Draw here",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": "sun"
    }
@@ -325,7 +327,7 @@
    "name": "11-t-test_0__pad______Draw_a_sun__Will_it_know__.png",
    "bad": [],
    "out": [],
-   "words": 16,
+   "words": 20,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a sun. Will it know? This is test 2 of 5.",
@@ -334,7 +336,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a sun. Will it know? This is test 2 of 5.",
-    "It is 95 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -346,8 +348,8 @@
     "tag": "Press this",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": "sun"
    }
@@ -379,8 +381,8 @@
     "tag": "Press this",
     "steps": [
      "Draw it in the white box.",
-     "Watch what your computer thinks.",
-     "Press the yellow button."
+     "Press the yellow button.",
+     "Read what your computer thinks."
     ],
     "draw": null
    }
@@ -390,7 +392,7 @@
    "name": "13-t-sum_0__stage______Read_its_score_.png",
    "bad": [],
    "out": [],
-   "words": 23,
+   "words": 24,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Read its score.",
@@ -400,7 +402,7 @@
    "prose": [
     "Your job now: Read its score.",
     "Your computer got 5 of 5 right.",
-    "Nobody told it what a sun is.",
+    "Nobody told it what a sun looks like.",
     "It compares your drawing with these."
    ],
    "scrollH": 627,
@@ -478,7 +480,7 @@
     "tag": "Press this",
     "steps": [
      "Watch the stranger draw.",
-     "See what your computer thinks.",
+     "See what your computer says when the stranger finishes.",
      "Press the yellow button."
     ],
     "draw": null
@@ -511,7 +513,7 @@
     "tag": "Press this",
     "steps": [
      "Watch the stranger draw.",
-     "See what your computer thinks.",
+     "See what your computer says when the stranger finishes.",
      "Press the yellow button."
     ],
     "draw": null
@@ -522,7 +524,7 @@
    "name": "17-f-s1_0__stage______Read_its_score_.png",
    "bad": [],
    "out": [],
-   "words": 22,
+   "words": 21,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Read its score.",
@@ -533,7 +535,7 @@
     "Your job now: Read its score.",
     "It got 4 of 6 right.",
     "It only knows the way you draw.",
-    "Other people draw a sun differently."
+    "Other people draw fish differently."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -578,7 +580,7 @@
     "tag": "Press this",
     "steps": [
      "Watch the stranger draw.",
-     "See what your computer thinks.",
+     "See what your computer says when the stranger finishes.",
      "Press the yellow button."
     ],
     "draw": null
@@ -611,7 +613,7 @@
     "tag": "Press this",
     "steps": [
      "Watch the stranger draw.",
-     "See what your computer thinks.",
+     "See what your computer says when the stranger finishes.",
      "Press the yellow button."
     ],
     "draw": null
@@ -622,7 +624,7 @@
    "name": "20-f-s2_0__stage______Read_the_two_scores_.png",
    "bad": [],
    "out": [],
-   "words": 24,
+   "words": 20,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Read the two scores.",
@@ -631,7 +633,7 @@
    "here": 1,
    "prose": [
     "Your job now: Read the two scores.",
-    "Before: 4 of 6 right. After: 3 of 4 right.",
+    "Before: 67 % right. After: 75 % right.",
     "It got better.",
     "It now has drawings from two people."
    ],
@@ -656,7 +658,7 @@
    "name": "21-s-cat_0__pad______Draw_a_cat__It_has_never_s_empty.png",
    "bad": [],
    "out": [],
-   "words": 8,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a cat. It has never seen one.",
@@ -664,7 +666,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a cat. It has never seen one."
+    "Your job now: Draw a cat. It has never seen one.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -687,7 +690,7 @@
    "name": "22-s-cat_0__pad______Draw_a_cat__It_has_never_s.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a cat. It has never seen one.",
@@ -696,7 +699,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a cat. It has never seen one.",
-    "It is 84 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -715,19 +718,19 @@
    }
   },
   {
-   "tag": "s-cat|1||pad||||||Draw a cat. It has never s",
-   "name": "23-s-cat_1__pad______Draw_a_cat__It_has_never_s.png",
+   "tag": "s-cat|1||pad||||||Read what your computer ca",
+   "name": "23-s-cat_1__pad______Read_what_your_computer_ca.png",
    "bad": [],
    "out": [],
-   "words": 24,
+   "words": 23,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Draw a cat. It has never seen one.",
+   "job": "Your job now: Read what your computer called your cat.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a cat. It has never seen one.",
+    "Your job now: Read what your computer called your cat.",
     "It is 84 % sure.",
     "It has only two answers.",
     "It cannot say: I do not know."
@@ -753,7 +756,7 @@
    "name": "24-s-any_0__pad______Draw_anything_but_a_sun_or_empty.png",
    "bad": [],
    "out": [],
-   "words": 8,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw anything but a sun or a fish.",
@@ -761,7 +764,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw anything but a sun or a fish."
+    "Your job now: Draw anything but a sun or a fish.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -783,7 +787,7 @@
    "name": "25-s-any_0__pad______Draw_anything_but_a_sun_or.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw anything but a sun or a fish.",
@@ -792,7 +796,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw anything but a sun or a fish.",
-    "It is 71 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -810,21 +814,21 @@
    }
   },
   {
-   "tag": "s-any|1||pad||||||Draw anything but a sun or",
-   "name": "26-s-any_1__pad______Draw_anything_but_a_sun_or.png",
+   "tag": "s-any|1||pad||||||Read what your computer ca",
+   "name": "26-s-any_1__pad______Read_what_your_computer_ca.png",
    "bad": [],
    "out": [],
-   "words": 24,
+   "words": 25,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: Draw anything but a sun or a fish.",
+   "job": "Your job now: Read what your computer called your drawing.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw anything but a sun or a fish.",
+    "Your job now: Read what your computer called your drawing.",
     "It is 71 % sure.",
-    "It is wrong again, but less sure.",
+    "It is wrong again. It was not very sure.",
     "It still gave an answer."
    ],
    "scrollH": 627,
@@ -1129,7 +1133,7 @@
    "name": "36-x-third_0__pad_L__named_gap__Draw_a_star__Does_it_know__empty.png",
    "bad": [],
    "out": [],
-   "words": 14,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a star. Does it know all three? This is test 1 of 6.",
@@ -1137,7 +1141,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a star. Does it know all three? This is test 1 of 6."
+    "Your job now: Draw a star. Does it know all three? This is test 1 of 6.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1159,7 +1164,7 @@
    "name": "37-x-third_0__pad_L__named_gap__Draw_a_star__Does_it_know_.png",
    "bad": [],
    "out": [],
-   "words": 18,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a star. Does it know all three? This is test 1 of 6.",
@@ -1168,7 +1173,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a star. Does it know all three? This is test 1 of 6.",
-    "It is 66 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1222,7 +1227,7 @@
    "name": "39-x-third_0__pad_L__named_gap__Draw_a_sun__Does_it_know_a_empty.png",
    "bad": [],
    "out": [],
-   "words": 14,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a sun. Does it know all three? This is test 2 of 6.",
@@ -1230,7 +1235,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a sun. Does it know all three? This is test 2 of 6."
+    "Your job now: Draw a sun. Does it know all three? This is test 2 of 6.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1252,7 +1258,7 @@
    "name": "40-x-third_0__pad_L__named_gap__Draw_a_sun__Does_it_know_a.png",
    "bad": [],
    "out": [],
-   "words": 18,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a sun. Does it know all three? This is test 2 of 6.",
@@ -1261,7 +1267,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a sun. Does it know all three? This is test 2 of 6.",
-    "It is 77 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1315,7 +1321,7 @@
    "name": "42-x-third_0__pad_L__named_gap__Draw_a_fish__Does_it_know__empty.png",
    "bad": [],
    "out": [],
-   "words": 14,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a fish. Does it know all three? This is test 3 of 6.",
@@ -1323,7 +1329,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Draw a fish. Does it know all three? This is test 3 of 6."
+    "Your job now: Draw a fish. Does it know all three? This is test 3 of 6.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1345,7 +1352,7 @@
    "name": "43-x-third_0__pad_L__named_gap__Draw_a_fish__Does_it_know_.png",
    "bad": [],
    "out": [],
-   "words": 18,
+   "words": 22,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Draw a fish. Does it know all three? This is test 3 of 6.",
@@ -1354,7 +1361,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw a fish. Does it know all three? This is test 3 of 6.",
-    "It is 94 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1542,8 +1549,8 @@
    "here": 1,
    "prose": [
     "Your job now: Read your score. Play again or go back.",
-    "Time. Your computer got 22 right.",
-    "Your best is 22 right."
+    "Time. Your computer got 7 right.",
+    "Your best is 27 right."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1636,7 +1643,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw one picture it calls half sun, half fish.",
-    "It is 82 % sure.",
+    "It is 66 % sure.",
     "Get it between 45 % and 55 % sure."
    ],
    "scrollH": 627,
@@ -1844,7 +1851,7 @@
    "name": "59-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the_empty.png",
    "bad": [],
    "out": [],
-   "words": 8,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Now draw a fish inside the dotted box.",
@@ -1852,7 +1859,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Now draw a fish inside the dotted box."
+    "Your job now: Now draw a fish inside the dotted box.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1874,7 +1882,7 @@
    "name": "60-x-bad_0__pad_L__named_gap__Now_draw_a_fish_inside_the.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Now draw a fish inside the dotted box.",
@@ -1883,7 +1891,7 @@
    "here": 1,
    "prose": [
     "Your job now: Now draw a fish inside the dotted box.",
-    "It is 100 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1937,7 +1945,7 @@
    "name": "62-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the__empty.png",
    "bad": [],
    "out": [],
-   "words": 8,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Now draw a sun inside the dotted box.",
@@ -1945,7 +1953,8 @@
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: Now draw a sun inside the dotted box."
+    "Your job now: Now draw a sun inside the dotted box.",
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -1967,7 +1976,7 @@
    "name": "63-x-bad_0__pad_L__named_gap__Now_draw_a_sun_inside_the_.png",
    "bad": [],
    "out": [],
-   "words": 12,
+   "words": 16,
    "long": [],
    "helpOK": true,
    "job": "Your job now: Now draw a sun inside the dotted box.",
@@ -1976,7 +1985,7 @@
    "here": 1,
    "prose": [
     "Your job now: Now draw a sun inside the dotted box.",
-    "It is 100 % sure."
+    "It answers when you press the yellow button."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -2291,7 +2300,7 @@
    "here": 1,
    "prose": [
     "Your job now: Draw either thing. See if your computer knows which.",
-    "It is 58 % sure."
+    "It is 65 % sure."
    ],
    "scrollH": 627,
    "viewH": 627,
@@ -2469,19 +2478,19 @@
    }
   },
   {
-   "tag": "e-done|0||stage|L|picked|named|gap|felt|You have finished. Press t",
-   "name": "79-e-done_0__stage_L_picked_named_gap_felt_You_have_finished__Press_t.png",
+   "tag": "e-done|0||stage|L|picked|named|gap|felt|To draw more, press Back t",
+   "name": "79-e-done_0__stage_L_picked_named_gap_felt_To_draw_more__press_Back_t.png",
    "bad": [],
    "out": [],
-   "words": 25,
+   "words": 24,
    "long": [],
    "helpOK": true,
-   "job": "Your job now: You have finished. Press the button to draw more.",
+   "job": "Your job now: To draw more, press Back to the activities.",
    "jobOK": true,
    "chips": 7,
    "here": 1,
    "prose": [
-    "Your job now: You have finished. Press the button to draw more.",
+    "Your job now: To draw more, press Back to the activities.",
     "You have finished. Well done.",
     "Everything you made is saved.",
     "End questions: 5 of 5 right."
@@ -2504,7 +2513,7 @@
  ],
  "errs": [],
  "ended": true,
- "secs": 37.121,
+ "secs": 37.378,
  "packSize": 6567,
- "hash": "7ec7ab61d21d"
+ "hash": "759759c52982"
 }
