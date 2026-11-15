@@ -111,6 +111,26 @@ var App = (function () {
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
     app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { Hub.topic(b.dataset.open); }; });
   }
+  // ---- v19: her next round (DECISIONS 22.2). Once her round is finished she can start the next herself; until then a line
+  // inside the round card says so. All stages answered but no topic card: a button to that last step (it had no way back).
+  function againCard(n, inside) {
+    if (n !== roundNo()) return '';
+    var R = RS(n), cards = stNs().every(function (st) { return !!R.s[st].e; });
+    if (inside) return R.done || cards ? '' : '<p class="hint" id="againHint">' + S.againHint + '</p>';
+    if (R.done) return '<div class="card" id="againCard"><h2>' + S.againHead + '</h2><p class="sub">' + h(fmt(S.againLine, { n: n + 1, m: n })) + '</p><button class="btn" id="again">' + h(fmt(S.againGo, { n: n + 1 })) + '</button><div class="err" id="againErr"></div></div>';
+    return cards ? '<div class="card" id="lastCard"><p class="sub">' + S.lastLine + '</p><button class="btn" id="last">' + S.lastGo + '</button></div>' : '';
+  }
+  function wireAgain(n) {
+    wire("last", function () { topiccard(); });
+    wire("again", function () {
+      var b = this, err = document.getElementById("againErr"); b.disabled = true; err.textContent = "";
+      call("apiAgain", { round: n }).then(function () { return reboot(); }).then(function () { topic(); }, function (e) {
+        b.disabled = false; var c = e && e.code;
+        if (c === "store-full") err.textContent = S.againFull;
+        else if (c === "not-finished" || c === "bad-round") reboot().then(topic).catch(function () {});
+      });
+    });
+  }
   // ---- topic front ----
   function topic() {
     CUR = { screen: "topic" };
@@ -122,8 +142,8 @@ var App = (function () {
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' · ' + h(stage(st).title) + '<small>' + t.n + ' questions · ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
     var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' · ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
-    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
-    shell(crumbHub() + ' · ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); });
+    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? (ME.topic.self ? S.startedYou : S.openedBy) : '') + '</h2><div class="stages">' + rows + '</div>' + againCard(n, true) + '</div>' + againCard(n, false) + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' · see my marks</span>' : '') + '</div>');
+    shell(crumbHub() + ' · ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); }); wireAgain(n);
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
         var st = +b.dataset.st; b.disabled = true;
@@ -292,8 +312,8 @@ var App = (function () {
       f.forEach(function (x) { var w = h(x.q || x.src), where = '<span class="src">Stage ' + st + (x.src && x.src !== "new" ? ' · ' + h(x.src) : '') + '</span>'; flagged.push('<div class="r fl">' + (R.z ? '<span>' + w + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + w + '</span>') + where + '</div>'); });
     });
     var tot = TOT(n);
-    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
-    shell(crumbHub(), body); wireHub(); wire("back", home);
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' · ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div>' + (n === roundNo() && R.done ? againCard(n, false) : '') + '<button class="btn" id="back">' + S.back + '</button></div>');
+    shell(crumbHub(), body); wireHub(); wire("back", home); wireAgain(n);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
   // ---- boot ----

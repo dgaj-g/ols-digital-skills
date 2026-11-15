@@ -1,4 +1,4 @@
-G2 render coverage + sit on the harness · 2026-11-15T12:16:57.790Z
+G2 render coverage + sit on the harness · 2026-11-15T14:55:15.118Z
 PASS class made
 PASS Digital Data opened for the class (a new class starts locked, DECISIONS §16)
 PASS sit run PASS (7 s)
@@ -37,21 +37,21 @@ PASS CONTROL answer-first line kept on screen after answering: sit reports it
 PASS CONTROL a missed answer drawn in smaller type (same sit): sit reports it
 PASS databases opened for the class
 PASS DATABASES the sit played Database applications
-PASS DATABASES · sit run PASS (6 s)
+PASS DATABASES · sit run PASS (5 s)
 PASS DATABASES · no console errors or failed requests
-PASS DATABASES · page marks = judge marks on all 62 questions
+PASS DATABASES · page marks = judge marks on all 53 questions
 PASS DATABASES · total line
 PASS DATABASES · MARKS# hash matches node
-INFO DATABASES · round 1 · 30 of 123 marks · MARKS# 33056cb1 · 40 sit checks passed
-PASS DATABASES PHONE 390x844 · sit run PASS (6 s)
+INFO DATABASES · round 1 · 24 of 114 marks · MARKS# 2a52f0db · 40 sit checks passed
+PASS DATABASES PHONE 390x844 · sit run PASS (5 s)
 PASS DATABASES PHONE 390x844 · no console errors or failed requests
-PASS DATABASES PHONE 390x844 · page marks = judge marks on all 62 questions
+PASS DATABASES PHONE 390x844 · page marks = judge marks on all 53 questions
 PASS DATABASES PHONE 390x844 · total line
 PASS DATABASES PHONE 390x844 · MARKS# hash matches node
-INFO DATABASES PHONE 390x844 · round 1 · 30 of 123 marks · MARKS# 33056cb1 · 40 sit checks passed
+INFO DATABASES PHONE 390x844 · round 1 · 24 of 114 marks · MARKS# 2a52f0db · 40 sit checks passed
 PASS spreadsheets opened for the class
 PASS SPREADSHEETS the sit played Spreadsheet applications
-PASS SPREADSHEETS · sit run PASS (7 s)
+PASS SPREADSHEETS · sit run PASS (6 s)
 PASS SPREADSHEETS · no console errors or failed requests
 PASS SPREADSHEETS · page marks = judge marks on all 72 questions
 PASS SPREADSHEETS · total line
@@ -59,7 +59,7 @@ PASS SPREADSHEETS · MARKS# hash matches node
 INFO SPREADSHEETS · round 1 · 18 of 110 marks · MARKS# 72bf05b3 · 42 sit checks passed
 PASS SPREADSHEETS every formula item shows the hint line and a monospace box
 PASS SPREADSHEETS every grid figure shows its row-number column
-PASS SPREADSHEETS PHONE 390x844 · sit run PASS (7 s)
+PASS SPREADSHEETS PHONE 390x844 · sit run PASS (6 s)
 PASS SPREADSHEETS PHONE 390x844 · no console errors or failed requests
 PASS SPREADSHEETS PHONE 390x844 · page marks = judge marks on all 72 questions
 PASS SPREADSHEETS PHONE 390x844 · total line

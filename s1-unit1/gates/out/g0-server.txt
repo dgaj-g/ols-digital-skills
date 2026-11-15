@@ -1,5 +1,5 @@
-G0 server GREEN · 2026-11-15T12:15:35.329Z · build df3d3bd8ec-8e92533c
-PASS A pack->unpack->judge == judge on 10360 answers across 259 questions (0 mismatches)
+G0 server GREEN · 2026-11-15T14:47:32.105Z · build 234ab9402c-8d38e3c6
+PASS A pack->unpack->judge == judge on 9720 answers across 243 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys
 PASS C under the line (49 KB): the owner's visit moves nothing
@@ -133,8 +133,8 @@ PASS v6 Digital Data still writes the v5 keys (p: header, q: shards without a to
 PASS v7 class made: 11D DT
 PASS v7 databases locked: stage, mark and stage card all refused to a pupil (locked locked locked)
 PASS v7 the owner opens Database applications
-PASS v7 pupil boot: Database applications (1.3) open, 5 stages · 62 questions · 123 marks
-PASS v7 databases stage 1 loads (18 questions)
+PASS v7 pupil boot: Database applications (1.3) open, 5 stages · 53 questions · 114 marks
+PASS v7 databases stage 1 loads (13 questions)
 PASS v7 databases DB1-10: the right pick scores 1 of 1, a wrong pick scores 0
 PASS v7 spreadsheets locked: stage, mark and stage card all refused to a pupil (locked locked locked)
 PASS v7 the owner opens Spreadsheet applications

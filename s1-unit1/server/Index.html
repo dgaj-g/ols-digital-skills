@@ -293,8 +293,8 @@ button.link{background:none;border:0;padding:0;font:inherit;font-size:14px;color
 
 </style>
 </head>
-<body data-build="s1u1-df3d3bd8ec-8e92533c">
-<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-df3d3bd8ec-8e92533c" };</script>
+<body data-build="s1u1-086dac0549-55b1f012">
+<script>window.S1BOOT = { cls: "<?= classCode ?>", base: "<?= baseUrl ?>", sit: "<?= sit ?>", sb: "<?= showBuild ?>", build: "s1u1-086dac0549-55b1f012" };</script>
 <div class="app" id="app"></div>
 <script>
 /* strings.js \u2014 every pupil and staff string on the page. S is the prototype's S verbatim (SPEC \u00a73); X holds the guard,
@@ -305,6 +305,9 @@ var S1S = {
     liveMeta: "{s} stages \u00b7 {q} questions \u00b7 {m} marks", back: "Back to my topics",
     topicLine: "Answer every question in each stage. You see the mark scheme straight after each answer.",
     earlier: "Earlier rounds", lookback: "Look back", start: "Start", carry: "Carry on", openedBy: " \u00b7 opened by your teacher",
+    startedYou: " \u00b7 started by you", againHint: "Once you finish every stage and say how the topic went, a button appears below to try the whole topic again. Your marks are kept.",
+    againHead: "Want another go?", againLine: "Start round {n} to try every stage again. Your round {m} marks are kept.", againGo: "Start round {n}",
+    againFull: "A new round can't start just now. Your marks are safe. Tell your teacher.", lastLine: "You have answered every stage. One last step: say how the whole topic went.", lastGo: "Do the last step",
     notStarted: "Not started", inProg: "In progress \u00b7 {a} of {b} done", allIn: "All answered \u00b7 one last step", done: "Done \u00b7 {m} of {x} marks",
     stagebar: "Stage {s} of {k} \u00b7 {name} \u00b7 Question {i} of {n}",
     pick1: "Pick one.", pick2: "Pick two.", pick3: "Pick three.", pick4: "Pick four.", only2: "You can only pick two.", only3: "You can only pick three.", only4: "You can only pick four.",
@@ -396,7 +399,7 @@ var S1L = {
         "Big data and data analytics"
       ] },
     { id: "spreadsheets", spec: "1.4", title: "Spreadsheet applications",
-      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98, steps: {"5":3,"6":3,"7":2,"9":1,"10":1,"11":1,"12":1,"13":2,"14":1,"15":1,"16":1,"18":3,"19":5,"20":1,"21":1,"22":1,"23":2,"24":1,"25":1,"26":1,"27":2,"28":1,"29":1,"30":1,"31":1,"32":3,"33":2,"34":1,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"42":1,"43":1,"47":2,"48":3,"49":1,"50":1,"51":1,"52":1,"53":1,"54":1,"55":4,"56":4,"57":1,"58":1,"59":1,"60":1,"61":1,"62":1,"63":1,"67":3,"68":3,"70":1,"71":1,"72":1,"73":1,"74":2,"75":2,"79":1,"80":2,"81":1,"82":1,"83":1,"84":1,"85":1,"86":1,"87":1,"88":4,"89":3,"90":1,"91":1,"92":2,"93":1,"94":1} }],
+      decks: [{ id: "ss", title: "Spreadsheet applications", n: 98, steps: {"2":2,"5":3,"6":3,"7":2,"9":1,"10":1,"11":1,"12":1,"13":2,"14":1,"15":1,"16":1,"18":3,"19":5,"20":1,"21":1,"22":1,"23":2,"24":1,"25":1,"26":1,"27":2,"28":1,"29":1,"30":1,"31":1,"32":3,"33":2,"34":1,"35":1,"36":1,"37":1,"38":1,"39":1,"40":1,"41":1,"42":1,"43":1,"47":2,"48":3,"49":1,"50":1,"51":1,"52":1,"53":1,"54":1,"55":4,"56":4,"57":1,"58":1,"59":1,"60":1,"61":1,"62":1,"63":1,"67":3,"68":3,"70":1,"71":1,"72":1,"73":1,"74":2,"75":2,"79":1,"80":2,"81":1,"82":1,"83":1,"84":1,"85":1,"86":1,"87":1,"88":4,"89":3,"90":1,"91":1,"92":2,"93":1,"94":1} }],
       acts: [
         { id: "ss1", title: "Cinema Grid", path: "spreadsheets_revision/activity1.html", scored: true },
         { id: "ss2", title: "Tuck Shop Kitchen", path: "spreadsheets_revision/activity2.html", scored: true },
@@ -752,6 +755,26 @@ var App = (function () {
     shell("", el('<div><h1>' + S.home + '</h1><div class="tiles">' + tiles + '</div></div>'));
     app.querySelectorAll("[data-open]").forEach(function (b) { b.onclick = function () { Hub.topic(b.dataset.open); }; });
   }
+  // ---- v19: her next round (DECISIONS 22.2). Once her round is finished she can start the next herself; until then a line
+  // inside the round card says so. All stages answered but no topic card: a button to that last step (it had no way back).
+  function againCard(n, inside) {
+    if (n !== roundNo()) return '';
+    var R = RS(n), cards = stNs().every(function (st) { return !!R.s[st].e; });
+    if (inside) return R.done || cards ? '' : '<p class="hint" id="againHint">' + S.againHint + '</p>';
+    if (R.done) return '<div class="card" id="againCard"><h2>' + S.againHead + '</h2><p class="sub">' + h(fmt(S.againLine, { n: n + 1, m: n })) + '</p><button class="btn" id="again">' + h(fmt(S.againGo, { n: n + 1 })) + '</button><div class="err" id="againErr"></div></div>';
+    return cards ? '<div class="card" id="lastCard"><p class="sub">' + S.lastLine + '</p><button class="btn" id="last">' + S.lastGo + '</button></div>' : '';
+  }
+  function wireAgain(n) {
+    wire("last", function () { topiccard(); });
+    wire("again", function () {
+      var b = this, err = document.getElementById("againErr"); b.disabled = true; err.textContent = "";
+      call("apiAgain", { round: n }).then(function () { return reboot(); }).then(function () { topic(); }, function (e) {
+        b.disabled = false; var c = e && e.code;
+        if (c === "store-full") err.textContent = S.againFull;
+        else if (c === "not-finished" || c === "bad-round") reboot().then(topic).catch(function () {});
+      });
+    });
+  }
   // ---- topic front ----
   function topic() {
     CUR = { screen: "topic" };
@@ -763,8 +786,8 @@ var App = (function () {
       return '<div class="row" data-hue="' + st + '"><div class="st">Stage ' + st + ' \u00b7 ' + h(stage(st).title) + '<small>' + t.n + ' questions \u00b7 ' + t.x + ' marks</small></div><div class="status ' + cls + '">' + h(status) + '</div><button class="btn sm' + (s.e ? ' ghost' : '') + '" data-st="' + st + '">' + btn + '</button></div>';
     }).join("");
     var earlier = Object.keys(ME.topic.rounds).filter(function (k) { return +k < n; }).sort(function (x, y) { return x - y; }).map(function (k) { var m = 0; stNs().forEach(function (st) { m += stageTotals(st, +k).m; }); return '<div class="r"><span>' + S.round + k + ' \u00b7 ' + m + ' of ' + TOT(+k) + ' marks</span><span class="link" data-lb="' + k + '">' + S.lookback + '</span></div>'; }).join("");
-    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? S.openedBy : '') + '</h2><div class="stages">' + rows + '</div></div>' + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
-    shell(crumbHub() + ' \u00b7 ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); });
+    var body = el('<div><h1>' + h(ME.topic.title) + '</h1><p class="sub">' + S.topicLine + '</p><div class="card"><h2>' + S.round + n + (n > 1 ? (ME.topic.self ? S.startedYou : S.openedBy) : '') + '</h2><div class="stages">' + rows + '</div>' + againCard(n, true) + '</div>' + againCard(n, false) + (earlier ? '<div class="card tight"><h2>' + S.earlier + '</h2><div class="sumrows">' + earlier + '</div></div>' : '') + (RS(n).done ? '<span class="link" id="seeSum">' + S.round + n + ' \u00b7 see my marks</span>' : '') + '</div>');
+    shell(crumbHub() + ' \u00b7 ' + h(LL.partExam), body); wireHub(); wire("seeSum", function () { summary(n); }); wireAgain(n);
     body.querySelectorAll("button[data-st]").forEach(function (b) {
       b.onclick = function () {
         var st = +b.dataset.st; b.disabled = true;
@@ -933,8 +956,8 @@ var App = (function () {
       f.forEach(function (x) { var w = h(x.q || x.src), where = '<span class="src">Stage ' + st + (x.src && x.src !== "new" ? ' \u00b7 ' + h(x.src) : '') + '</span>'; flagged.push('<div class="r fl">' + (R.z ? '<span>' + w + '</span>' : '<span class="link" data-st="' + st + '" data-id="' + h(x.id) + '">' + w + '</span>') + where + '</div>'); });
     });
     var tot = TOT(n);
-    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div><button class="btn" id="back">' + S.back + '</button></div>');
-    shell(crumbHub(), body); wireHub(); wire("back", home);
+    var body = el('<div style="max-width:760px"><h1>' + S.round + n + ' \u00b7 ' + h(ME.topic.title) + '</h1><div class="card"><h2>' + fmt(S.scored, { m: m, x: tot, p: Math.round(100 * m / tot) }) + '</h2><div class="meter"><i style="--p:' + Math.round(100 * m / tot) + '%"></i></div><div class="sumrows">' + rows + '</div></div><div class="card tight"><h2>' + S.flagged + '</h2>' + (flagged.length ? '<div class="sumrows">' + flagged.join("") + '</div>' : '<p class="sub" style="margin:0">' + S.noFlag + '</p>') + '</div>' + (n === roundNo() && R.done ? againCard(n, false) : '') + '<button class="btn" id="back">' + S.back + '</button></div>');
+    shell(crumbHub(), body); wireHub(); wire("back", home); wireAgain(n);
     body.querySelectorAll("[data-st]").forEach(function (x) { x.onclick = function () { var st = +x.dataset.st, id = x.dataset.id; loadStage(n, st).then(function (D) { lookback(n, st, Math.max(0, D.order.indexOf(id))); }).catch(function () {}); }; });
   }
   // ---- boot ----
