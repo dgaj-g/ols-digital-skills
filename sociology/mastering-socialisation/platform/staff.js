@@ -80,13 +80,14 @@ var Staff = (function(){
     box.innerHTML = '<h2>' + h(S.staffTabParts) + '</h2><p>' + h(S.staffPartsLead) + '</p>';
     clsPick(box, function(slug){
       var old = box.querySelector("#plist"); if (old) old.remove();
-      var list = el('<ul id="plist" class="rowline"></ul>'); box.appendChild(list);
+      var list = el('<ul id="plist"></ul>'); box.appendChild(list);
       api("parts", {slug: slug}).then(function(r){
         var lock = r.lock || [];
         list.innerHTML = "";
         T.PARTS.forEach(function(P){
           var on = lock.indexOf(P.id) >= 0;
-          var li = el('<li><span>' + h("Part " + P.n + ": " + P.t) + '</span> <button class="btn sm ' + (on ? "" : "ghost") + '" aria-pressed="' + on + '">' + h(on ? S.staffLocked : S.staffOpen) + '</button></li>');
+          var nm = "Part " + P.n + ": " + P.t;
+          var li = el('<li data-locked="' + (on ? 1 : 0) + '"><span class="pn">' + h(nm) + '</span><span class="state">' + h(on ? S.staffLocked : S.staffOpen) + '</span><button class="btn sm ' + (on ? "" : "ghost") + '" aria-label="' + h((on ? S.unlock : S.lock) + " " + nm) + '">' + h(on ? S.unlock : S.lock) + '</button></li>');
           li.querySelector("button").onclick = function(){ api("setPart", {slug: slug, part: P.id, locked: on ? 0 : 1}, {save: true, btn: li.querySelector("button")}).then(function(){ T.toast(S.saved); parts(box); }).catch(function(){}); };
           list.appendChild(li);
         });
@@ -114,15 +115,24 @@ var Staff = (function(){
       }).catch(function(){ wrap.innerHTML = '<p class="say">' + h(S.serverErr) + '</p>'; });
     });
   }
+  // the checklist lines the judge found in a written answer, as the pupil saw them
+  function ckl(lines){ return '<ul class="ckl">' + lines.map(function(l){ return '<li><span class="st ' + (l.ok ? "ok" : "no") + '">' + h(l.ok ? S.found : S.missing) + '</span> <b>' + h(l.t) + '</b></li>'; }).join("") + '</ul>'; }
   function pupil(box, slug, p){
     box.innerHTML = '<p><a class="link" id="bk" href="#">' + h(S.staffBackTracker) + '</a></p><h2>' + h(p.n || p.email) + '</h2><p class="small mute">' + h(p.email) + '</p><div id="pp"><p class="say">' + h(S.busy) + '</p></div>';
     box.querySelector("#bk").onclick = function(e){ e.preventDefault(); tabs("tracker"); };
     api("pupil", {slug: slug, email: p.email}).then(function(r){
       var pp = box.querySelector("#pp"), H = r.hdr || {};
       var acts = (r.acts || []).filter(function(a){ return a.best != null; });
-      var html = '<p>' + h(T.fmt(S.pts, {n: H.pts || 0})) + ' · ' + h((H.bd || []).length + " badges") + '</p>';
+      var html = '<p>' + h(T.fmt(S.pts, {n: H.pts || 0})) + ' · ' + h((H.bd || []).length === 1 ? S.staffBadge1 : T.fmt(S.staffBadges, {n: (H.bd || []).length})) + '</p>';
       html += '<h3>' + h(S.staffBuilds) + '</h3>' + (acts.length ? '<table><thead><tr><th>Activity</th><th>Best</th></tr></thead><tbody>' + acts.map(function(a){ return '<tr><td>' + h(T.titleOf(a.act) || a.title || a.act) + '</td><td>' + h(T.fmt(S.staffBestCell, {n: a.best, m: a.max})) + '</td></tr>'; }).join("") + '</tbody></table>' : '<p class="say">' + h(S.staffNoBuilds) + '</p>');
-      html += '<h3>' + h(S.staffWrites) + '</h3>' + ((r.writes || []).length ? (r.writes || []).map(function(w){ return '<div class="card"><p><b>' + h(w.act) + '</b> · ' + h(w.n != null ? w.n + " of the checklist" : "") + (w.tmin ? ' · ' + h(w.tmin + " min") : '') + '</p><p>' + h(w.t || "") + '</p>' + (w.t2 ? '<p>' + h(w.t2) + '</p>' : '') + '</div>'; }).join("") : '<p class="say">' + h(S.staffNoWrites) + '</p>');
+      html += '<h3>' + h(S.staffWrites) + '</h3>' + ((r.writes || []).length ? (r.writes || []).map(function(w){
+        var meta = [];
+        if (w.n != null) meta.push(T.fmt(S.writeResult, {n: w.n, m: w.max || (w.t2 ? 10 : 5)}));
+        if (w.saved && when(w.saved)) meta.push(T.fmt(S.staffSaved, {d: when(w.saved)}));
+        var ck = "";
+        if (w.lines) ck = ckl(w.lines);
+        if (w.paras) ck = w.paras.map(function(p, i){ return '<h4>' + h(w.paras.length > 1 ? (i ? S.para2 : S.para1) : S.questionHead) + '</h4>' + ckl(p.lines || []); }).join("");
+        return '<div class="card wa"><h4>' + h(T.titleOf(w.act) || w.title || w.act) + '</h4>' + (meta.length ? '<p class="small mute">' + h(meta.join(" ")) + '</p>' : '') + '<p>' + h(w.t || "") + '</p>' + (w.t2 ? '<p>' + h(w.t2) + '</p>' : '') + (ck ? '<p class="line">' + h(S.checklistHead) + '</p>' + ck : '') + '</div>'; }).join("") : '<p class="say">' + h(S.staffNoWrites) + '</p>');
       pp.innerHTML = html;
     }).catch(function(){ box.querySelector("#pp").innerHTML = '<p class="say">' + h(S.serverErr) + '</p>'; });
   }
@@ -130,7 +140,8 @@ var Staff = (function(){
     box.innerHTML = '<h2>' + h(S.staffTabExport) + '</h2><p>' + h(S.staffExportLead) + '</p>';
     clsPick(box, function(slug){
       var old = box.querySelector("#ex"); if (old) old.remove();
-      var w = el('<div id="ex" class="row"><button class="btn acc" id="dl">' + h(S.staffCsv) + '</button></div>'); box.appendChild(w);
+      var w = el('<div id="ex" class="row"><button class="btn acc" id="dl">' + h(S.staffCsv) + '</button></div>');
+      var pick = box.querySelector("#cls"); pick = pick && pick.closest("p"); if (pick && pick.parentNode === box) pick.after(w); else box.appendChild(w); // straight under the class picker, every time
       w.querySelector("#dl").onclick = function(){
         api("csv", {slug: slug}, {btn: w.querySelector("#dl")}).then(function(r){
           var blob = new Blob([r.csv || ""], {type: "text/csv"}), a = document.createElement("a");

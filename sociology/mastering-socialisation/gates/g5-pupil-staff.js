@@ -151,8 +151,20 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     if (await count(page, 'select#cls')) { await page.select('select#cls', CLS).catch(() => {}); await wait(700); }
     const p6btn = await page.evaluateHandle(() => [...document.querySelectorAll('#plist li')].find((l) => /^Part 6:/.test(l.innerText.trim())));
     if (await p6btn.evaluate((l) => !!l)) { await p6btn.evaluate((l) => l.querySelector('button').click()); await wait(1000); }
-    const pressed = await page.evaluate(() => { const l = [...document.querySelectorAll('#plist li')].find((x) => /^Part 6:/.test(x.innerText.trim())); return l ? l.querySelector('button').getAttribute('aria-pressed') : null; });
-    sh.check(pressed === 'true', 'T50 Part 6 shows as locked after one press in the Parts tab', 'aria-pressed ' + pressed);
+    const pressed = await page.evaluate(() => { const l = [...document.querySelectorAll('#plist li')].find((x) => /^Part 6:/.test(x.innerText.trim())); return l ? l.getAttribute('data-locked') + '|' + l.querySelector('.state').innerText.trim() + '|' + l.querySelector('button').innerText.trim() : null; });
+    sh.check(pressed === '1|Locked|Unlock', 'T50 Part 6 shows as locked after one press in the Parts tab, and its button now says Unlock', String(pressed));
+    // T64 the Lock parts list: one part to a row, each with its state and a button that names what it does
+    const plRows = () => page.evaluate(() => { const ls = [...document.querySelectorAll('#plist li')]; const tops = ls.map((l) => Math.round(l.getBoundingClientRect().top));
+      return { n: ls.length, shared: tops.length - new Set(tops).size, dots: ls.filter((l) => getComputedStyle(l).listStyleType !== 'none' && getComputedStyle(l).display === 'list-item').length,
+        badBtn: ls.filter((l) => { const b = l.querySelector('button'); const t = b ? b.innerText.trim() : ''; return !(t === 'Lock' || t === 'Unlock'); }).length,
+        noState: ls.filter((l) => !l.querySelector('.state') || !/^(Open to pupils|Locked)$/.test(l.querySelector('.state').innerText.trim())).length }; });
+    const lk = await plRows();
+    sh.check(lk.n === 11 && lk.shared === 0 && lk.dots === 0 && lk.badBtn === 0 && lk.noState === 0, 'T64 Lock parts shows the 11 parts one to a row, each with its state and a Lock or Unlock button', JSON.stringify(lk));
+    const plOldR = await page.evaluate(() => { const u = document.querySelector('#plist'); const keep = u.outerHTML; u.className = 'rowline'; u.removeAttribute('id');
+      u.querySelectorAll('li').forEach((l) => { const b = l.querySelector('button'); b.textContent = l.getAttribute('data-locked') === '1' ? 'Locked' : 'Open'; const s = l.querySelector('.state'); if (s) s.remove(); });
+      const ls = [...u.querySelectorAll('li')]; const tops = ls.map((l) => Math.round(l.getBoundingClientRect().top)); const r = { shared: tops.length - new Set(tops).size, badBtn: ls.filter((l) => !/^(Lock|Unlock)$/.test(l.querySelector('button').innerText.trim())).length };
+      u.outerHTML = keep; return r; });
+    sh.check(plOldR.shared > 0 && plOldR.badBtn > 0, 'CONTROL with the old Lock parts markup put back, the check sees parts sharing a row and the Open/Locked buttons', JSON.stringify(plOldR));
 
     // ================= PUPILS =================
     await api('apiName', { cls: CLS, name: 'Ciara' }, P2); await api('apiName', { cls: CLS, name: 'Niamh' }, P3);
@@ -513,6 +525,10 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     const bs = await page.$$eval('.badge', (a) => a.map((b) => ({ on: b.classList.contains('on'), t: b.innerText })));
     sh.check(bs.length === 6, 'T40 six badges are shown', bs.length + ' shown; page: ' + (await bodyText(page)).slice(0, 120));
     sh.check(bs.filter((b) => b.on).length >= 1 && bs.filter((b) => b.on).every((b) => /\d/.test(b.t)), 'T40 an earned badge is dated');
+    // BK (found live 16 Nov 2026): the date read "Earned on 2026-11-16"
+    const plainDate = (t) => /Earned on \d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/.test(t) && !/\d{4}-\d{2}-\d{2}/.test(t);
+    sh.check(bs.filter((b) => b.on).every((b) => plainDate(b.t)), 'T40 the earned date reads like "16 November 2026"', bs.filter((b) => b.on).map((b) => b.t.replace(/\s+/g, ' ')).join(' | ').slice(0, 120));
+    sh.check(!plainDate('Sanctions\nEarned on 2026-11-16'), 'CONTROL the old "Earned on 2026-11-16" is caught by the date check');
     sh.check(bs.filter((b) => !b.on).every((b) => b.t.length > 40), 'T40 unearned badges show their rule in words');
 
     // T41 board on and off (CONTROL: hidden when off)
@@ -529,6 +545,51 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     await pupil(P1, 'progress'); await waitSel('ul.prog li');
     const prog = await page.$$eval('ul.prog li', (a) => a.map((l) => l.innerText));
     sh.check(prog.length >= 9 && prog.every((l) => /\d+ of \d+ marks/.test(l)), 'T42 one bar per part with "n of m marks" in words', prog.length + ' rows');
+    // BL (found live 16 Nov 2026): each label sat in a 44px column, so "Agents of socialisation: 67 of 73 marks" ran one word a line.
+    const progLines = () => page.$$eval('ul.prog li > span:first-child', (a) => a.map((s) => { const g = document.createRange(); g.selectNodeContents(s); return new Set([...g.getClientRects()].map((r) => Math.round(r.top))).size; }));
+    const pl = await progLines();
+    await page.setViewport({ width: 375, height: 800 }); await wait(150); const plPhone = await progLines(); await page.setViewport({ width: 1280, height: 800 }); await wait(150);
+    sh.check(pl.length >= 9 && Math.max(...pl) === 1 && Math.max(...plPhone) <= 2, 'T42 each part label fits on one line (two at most on a phone)', 'desk worst ' + Math.max(...pl) + ', phone worst ' + Math.max(...plPhone));
+    const oldProg = await page.addStyleTag({ content: '.prog li{grid-template-columns:44px 1fr auto}' });
+    const plOld = await progLines(); await oldProg.evaluate((n) => n.remove());
+    sh.check(Math.max(...plOld) > 2, 'CONTROL with the old 44px label column put back, the check sees labels wrapping', 'worst ' + Math.max(...plOld) + ' lines');
+    // BM (found live 16 Nov 2026): the revision sheet list showed a bullet dot at the start of each row and tiles of different heights
+    await pupil(P1, 's11'); await waitSel('ul.hub a.tile');
+    const sheetList = () => page.$$eval('ul.hub > li', (a) => ({ marks: a.filter((li) => getComputedStyle(li).display === 'list-item' && getComputedStyle(li).listStyleType !== 'none').length, rows: Object.values(a.reduce((o, li) => { const t = li.querySelector('a.tile').getBoundingClientRect(); (o[Math.round(t.top)] = o[Math.round(t.top)] || []).push(Math.round(t.height)); return o; }, {})).filter((r) => Math.max(...r) - Math.min(...r) > 2).length }));
+    const sl = await sheetList();
+    sh.check(sl.marks === 0 && sl.rows === 0, 'T60 the revision sheet list has no bullet dots and the tiles in a row are the same height', JSON.stringify(sl));
+    const oldList = await page.addStyleTag({ content: 'ul.hub{list-style:disc;padding-left:40px}.hub>li{display:list-item}' });
+    const slOld = await sheetList(); await oldList.evaluate((n) => n.remove());
+    sh.check(slOld.marks > 0 && slOld.rows > 0, 'CONTROL with the old list style put back, the check sees the dots and the uneven tiles', JSON.stringify(slOld));
+    // BN (found live 16 Nov 2026): the Print button on a revision sheet sat at the left, touching the sheet title
+    await pupil(P1, 's11/mat'); await waitSel('#pr');
+    const printSpot = () => page.evaluate(() => { const b = document.querySelector('#pr').getBoundingClientRect(), t = document.querySelector('.print-page h1').getBoundingClientRect(), p = document.querySelector('.print-page').getBoundingClientRect();
+      return { rightGap: Math.round(p.right - b.right), overlap: !(b.bottom <= t.top || b.top >= t.bottom || b.right <= t.left || b.left >= t.right), touching: Math.abs(b.bottom - t.top) < 6 }; });
+    const ps = await printSpot();
+    sh.check(ps.rightGap <= 4 && !ps.overlap && !ps.touching, 'T61 the Print button on a revision sheet sits at the right, clear of the title', JSON.stringify(ps));
+    const oldPrint = await page.addStyleTag({ content: '.print-head{display:block}#pr{margin-left:0}.print-head h1{margin:0 0 .4em}' });
+    const psOld = await printSpot(); await oldPrint.evaluate((n) => n.remove());
+    sh.check(psOld.rightGap > 4, 'CONTROL with the button put back at the left, the check sees it', JSON.stringify(psOld));
+    // BO (found live 16 Nov 2026): the mind map showed an empty bullet before each branch list, and its lowest lists ran together as "Teaching,Imitation,Activities"
+    { const leaves = []; const walk = (a) => a.forEach((x) => Array.isArray(x) ? walk(x) : leaves.push(x));
+      JSON.parse(fs.readFileSync(path.join(ROOT, 'content', 'p11', 'mindmap.json'), 'utf8')).sections.forEach((s) => { if (s.list) walk(s.list); });
+      const mapCheck = (sel) => page.evaluate((sel, leaves) => { const own = (li) => [...li.childNodes].filter((n) => n.nodeType === 3 || (n.nodeType === 1 && n.tagName !== 'UL')).map((n) => n.textContent).join('').trim();
+        const lis = [...document.querySelectorAll(sel + ' li')]; const texts = new Set(lis.map(own));
+        return { emptyBullets: lis.filter((li) => !own(li) && getComputedStyle(li).listStyleType !== 'none').length, missing: leaves.filter((t) => !texts.has(t)).length, squashed: lis.filter((li) => /[a-z],[A-Z]/.test(own(li))).length }; }, sel, leaves);
+      await pupil(P1, 's11/mindmap'); await waitSel('.print-page li');
+      const mm = await mapCheck('.print-page');
+      sh.check(leaves.length > 40 && mm.emptyBullets === 0 && mm.missing === 0 && mm.squashed === 0, 'T62 every mind map item has its own bullet, with no empty bullets and no squashed lists', leaves.length + ' items ' + JSON.stringify(mm));
+      await page.evaluate(() => { const d = document.createElement('div'); d.id = 'oldmap'; d.innerHTML = '<ul><li>Family (primary)</li><li><ul><li>Shapes behaviour</li><li>Teaching,Imitation and role models</li></ul></li></ul>'; document.body.appendChild(d); });
+      const mmOld = await mapCheck('#oldmap'); await page.evaluate(() => document.getElementById('oldmap').remove());
+      sh.check(mmOld.emptyBullets > 0 && mmOld.squashed > 0, 'CONTROL the old mind map markup is caught', JSON.stringify({ emptyBullets: mmOld.emptyBullets, squashed: mmOld.squashed })); }
+    // BP (found 16 Nov 2026 walk): the exam checklist showed a bullet dot before each tick box
+    await pupil(P1, 's11/checklist'); await waitSel('.print-page li');
+    const tickDots = () => page.$$eval('.print-page li', (a) => { const box = a.filter((li) => li.textContent.trim().startsWith('\u2610')); return { boxes: box.length, dotted: box.filter((li) => getComputedStyle(li).listStyleType !== 'none').length }; });
+    const td = await tickDots();
+    sh.check(td.boxes >= 15 && td.dotted === 0, 'T63 the exam checklist shows a tick box with no bullet dot beside it', JSON.stringify(td));
+    const oldDots = await page.addStyleTag({ content: '.print-page li.tick{list-style:disc}' });
+    const tdOld = await tickDots(); await oldDots.evaluate((n) => n.remove());
+    sh.check(tdOld.dotted > 0, 'CONTROL with the dots put back, the check sees them', JSON.stringify(tdOld));
 
     // T43 daily: two pupils, same five; first stores dl, second says practice
     await pupil(P1, 'daily'); await waitSel('.q[data-q] .opt');
@@ -617,6 +678,12 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       await link.evaluate((a) => a.click()); await waitSel('#pp'); await page.waitForFunction(() => (document.querySelector('#pp') || {}).innerText && document.querySelector('#pp').innerText.length > 60, { timeout: 6000 }).catch(() => {});
       const pp = await txt(page, '#pp') || '';
       sh.check(/\d+ of \d+/.test(pp) && pp.indexOf('Culture is the shared way') >= 0, 'T52 the pupil page lists her bests and her written answer with its checklist', pp.length + ' chars, bests ' + /\d+ of \d+/.test(pp) + ', write ' + (pp.indexOf('Culture is the shared way') >= 0) + ' ' + pp.slice(0, 160));
+      // T65 each written answer is headed by its question (never a code like w5-01), says how much of the checklist it met and when
+      // it was saved as a date (never a raw minute count), and lists the checklist lines; badges read "1 badge", never "1 badges"
+      const waOk = (s) => !/\bw(5|10)-\d+\b/.test(s) && !/\d{4,} min\b/.test(s) && /The checklist found \d+ of the \d+ things/.test(s) && /Saved \d{1,2} \w{3} \d{4}, \d\d:\d\d\./.test(s) && /\b(Found|Not found)\b/i.test(s) && !/\b1 badges\b/.test(s);
+      const wa = await page.evaluate(() => { const c = document.querySelector('#pp .wa'); return { card: c ? c.innerText : '', lines: c ? c.querySelectorAll('.ckl li').length : 0, all: document.querySelector('#pp').innerText }; });
+      sh.check(wa.lines > 0 && waOk(wa.card + '\n' + wa.all), 'T65 a written answer on the pupil page shows its question, its checklist score and lines, and the date it was saved', 'why: ' + [[/\bw(5|10)-\d+\b/, 'code'], [/\d{4,} min\b/, 'minutes'], [/\b1 badges\b/, '1 badges']].filter((x) => x[0].test(wa.card + '\n' + wa.all)).map((x) => x[1] + ' near "' + ((wa.card + '\n' + wa.all).match(new RegExp('.{0,40}' + x[0].source + '.{0,20}')) || [''])[0] + '"').join('; ') + ' || ' + wa.lines + ' lines; ' + wa.card.slice(0, 140).replace(/\n/g, ' / '));
+      sh.check(!waOk('w5-01 · 3 of the checklist · 459903 min\nCulture is ... Found\n1 badges'), 'CONTROL the old header (w5-01 · 3 of the checklist · 459903 min) fails the same check');
       await tap('#bk'); await wait(700);
       sh.check((await count(page, '#trk')) === 1, 'T52 "Back" returns to the tracker');
     } else sh.fail('T52 a pupil name in the tracker opens her page');
@@ -636,6 +703,17 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       sh.check(!/\r(?!\n)|(?<!\r)\n/.test(body.replace(/"[^"]*"/g, '')), 'T53 rows end CRLF only');
       sh.info('T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–9, last seen, flags), ' + w + ' columns; the acceptance row says one column per act');
     } else sh.fail('T53 Download CSV hands over a file');
+    // T66 the Download CSV button sits straight under the class picker with a clear gap above the next card, also after the class is picked again
+    const exLay = () => page.evaluate(() => { const ex = document.querySelector('#ex'), dl = document.querySelector('#dl'); if (!ex || !dl) return { ok: false, why: 'no button' };
+      const pick = document.querySelector('#cls').closest('p'), nxt = ex.nextElementSibling; const gap = nxt ? Math.round(nxt.getBoundingClientRect().top - dl.getBoundingClientRect().bottom) : 99;
+      return { underPicker: ex.previousElementSibling === pick, gap: gap, before: nxt ? nxt.className + ':' + (nxt.querySelector('h3') || {}).innerText : 'end' }; });
+    const ex1 = await exLay();
+    await page.evaluate(() => { const s = document.querySelector('#cls'); s.dispatchEvent(new Event('change')); }); await wait(500);
+    const ex2 = await exLay();
+    sh.check(ex1.underPicker && ex2.underPicker && ex1.gap >= 10 && ex2.gap >= 10, 'T66 Export: the Download CSV button sits under the class picker, clear of the card below, before and after a class is picked', JSON.stringify([ex1, ex2]));
+    const exOld = await page.evaluate(() => { const ex = document.querySelector('#ex'); ex.style.margin = '0'; const b = ex.parentNode; b.appendChild(ex); const pick = document.querySelector('#cls').closest('p');
+      const r = { underPicker: ex.previousElementSibling === pick }; b.insertBefore(ex, pick.nextSibling); const nxt = ex.nextElementSibling; r.gap = Math.round(nxt.getBoundingClientRect().top - document.querySelector('#dl').getBoundingClientRect().bottom); ex.style.margin = ''; return r; });
+    sh.check(!exOld.underPicker && exOld.gap < 10, 'CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card', JSON.stringify(exOld));
 
     sh.check(errs.length === 0, 'no console or page errors', errs.slice(0, 3).join(' | '));
   } catch (e) { sh.fail('the gate ran to the end', String(e && e.stack || e).split('\n').slice(0, 3).join(' ')); }

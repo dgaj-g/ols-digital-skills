@@ -199,6 +199,18 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
   const sb = strips(eng);
   sh.check(!sb.length && five.length > 0, 'marks strip: every ten-mark model says "' + S.tenMarkStrip + '" and every five-mark model says "' + S.markStrip + '"', sb.length ? 'wrong on ' + sb.join(', ') : ten.length + ' ten-mark + ' + five.length + ' five-mark models');
   sh.check(strips(eng.replace('m.p1 ? S.tenMarkStrip : S.markStrip', 'S.markStrip')).length >= ten.length, 'CONTROL: engine.js with the one five-mark heading for every model is reported');
+// the model answer says it is the teacher's only when it is (found live 16 Nov 2026: Part 6 question 2, written for the site,
+// was headed "Your teacher's model answer"; the deck has no ten-mark model answer at all)
+{
+  const e = fs.readFileSync(path.join(P, 'engine.js'), 'utf8'), tpl = fs.readFileSync(path.join(REPO, 'server/Code.gs.template'), 'utf8');
+  const mp = panelOf(e), M = { d: 'x', i: 'y', e: 'z', t: 'w' };
+  const says = (pn, site) => /Your teacher/.test(pn({ model: M, ao: {}, why_marks: [], siteModel: site }, 'DIET'));
+  sh.check(!!mp && says(mp, false) && !says(mp, true), 'the model answer says "Your teacher\'s" for her answers and not for answers written for the site', mp ? 'site answer: ' + (says(mp, true) ? 'says teacher' : 'ok') : 'modelPanel not found');
+  const both = /scheme: 'DIET', siteModel: !!q\.new \}/.test(tpl) && /scheme: q\.scheme, siteModel: true \}/.test(tpl) && /out\.siteModel = five \? !!q\.new : true;/.test(tpl) && /siteModel: r\.siteModel\}/.test(e);
+  sh.check(both, 'the server says whose model answer it is on the Build tab and the Write tab (ten-mark always the site\'s; five-mark when New)');
+  const oldE = e.replace('h(extra.siteModel ? S.modelNoteSite : S.modelNote)', 'h(S.modelNote)'), om = panelOf(oldE);
+  sh.check(!!om && says(om, true), 'CONTROL: the old panel (always "Your teacher\'s") is reported');
+}
 }
 { // ten-mark scores show back as tried: the page must look a build up under the id the server files it as (found live 16 Nov 2026:
   // the page read d10-06, the server filed d10-6, so every Build cell and status line stayed "Not tried yet")
@@ -258,6 +270,67 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
   const oldWE = all.filter(([w]) => /^p8\/s8 /.test(w)).map(([w, b]) => [w, Object.assign({}, b, { p: (b.p || []).map((x) => x.replace(/The item says «migration has contributed to the range of cultural traditions in the UK»/, 'The item describes «migration bringing traditions to the UK»')) })]);
   sh.check(unquoted(oldWE).length > 0, 'CONTROL: the old Part 8 wording («migration bringing traditions to the UK», not in the item) is reported', unquoted(oldWE).join('; ') || 'not reported');
 }
+// a question list that tags a question "New" also says what New means (found live 16 Nov 2026: Part 6 tagged three
+// questions "New" with no line explaining it)
+{
+  const app = fs.readFileSync(path.join(P, 'app.js'), 'utf8'), C = L.readContent(REPO);
+  const condOf = (src) => { const m = /if \((page\.new[^\n]*?)\) html \+= '<p class="small mute">' \+ h\(S\.newNote\)/.exec(src); return m ? m[1] : null; };
+  const shows = (cond, page) => vm.runInNewContext('(function(page){ return !!(' + cond + '); })')(page);
+  const lists = Object.keys(C).filter((k) => (C[k].qs || []).some((q) => q.new));
+  const cond = condOf(app), miss = cond ? lists.filter((k) => !shows(cond, C[k])) : ['the note line was not found in app.js'];
+  sh.check(lists.length >= 1 && !miss.length, 'every question list with a "New" question also shows the line saying what New means', miss.length ? 'no note on: ' + miss.join(', ') : lists.join(', '));
+  const OLDCOND = "page.new || (page.blocks || []).some(function(b){ return b.new || (b.new_items && b.new_items.length) || (b.new_p && b.new_p.length); })";
+  sh.check(lists.some((k) => !shows(OLDCOND, Object.assign({}, C[k], { blocks: [] }))), 'CONTROL: the old note test (blocks only) misses a New question in a list', 'old test run on ' + lists.join(', '));
+}
+
+// a screen never says the same thing twice, and a Check button never shows a number without its thing (found live 16 Nov 2026: the weekly
+// mock printed its opening sentence twice, once as the page lead and again as the activity intro, and its button read "Answer all 20 to check")
+{
+  const app = fs.readFileSync(path.join(P, 'app.js'), 'utf8'), eng = fs.readFileSync(path.join(P, 'engine.js'), 'utf8'), S = SOCS.S;
+  const twice = (src) => src.split(/\n  function /).flatMap((fn) => { const lead = [...fn.matchAll(/class="lead">' \+ h\(S\.(\w+)\)/g)].map((m) => m[1]);
+    const intro = [...fn.matchAll(/intro: S\.(\w+)/g)].map((m) => m[1]); return lead.filter((k) => intro.includes(k)).map((k) => (/^(\w+)/.exec(fn) || [])[1] + ': ' + k); });
+  const t = twice(app); sh.check(t.length === 0, 'no screen shows its page lead again as the activity intro', t.join('; '));
+  const ot = twice(app.replace('intro: S.weeklyIntro', 'intro: S.weeklyLead'));
+  sh.check(ot.some((s) => /weeklyLead/.test(s)), 'CONTROL: the old weekly mock (lead passed again as intro) is reported', ot.join('; '));
+  const bare = (src) => [...src.matchAll(/checkBar\(root, [^,]+, \{([^\n]*)/g)].filter((m) => /S\.partsFilled/.test(m[1]) && !/waitText: fmt\(S\.checkFill/.test(m[1])).length;
+  sh.check(/parts/.test(S.checkFill || '') && bare(eng) === 0, 'every build Check button names what it counts ("' + S.checkFill + '")');
+  sh.check(bare(eng.replace(/waitText: fmt\(S\.checkFill, \{m: [^}]+\}\), /g, '')) === 2, 'CONTROL: the old build and weekly Check buttons (a bare number) are reported');
+}
+// the weekly mock never says "best so far": the first finished run counts (found live 16 Nov 2026: after a run the card said "Your best so far:
+// 19 of 20 marks", and a better second run would still have shown the first score under that heading)
+{
+  const app = fs.readFileSync(path.join(P, 'app.js'), 'utf8'), eng = fs.readFileSync(path.join(P, 'engine.js'), 'utf8'), S = SOCS.S;
+  const wkFn = (src) => (src.split(/\n  function /).find((fn) => /^weekly\(root/.test(fn)) || '');
+  const wkApp = (src) => (src.split(/\n  function /).find((fn) => /^weekly\(\)/.test(fn)) || '');
+  const says = (e, a) => /resultCard\(r, open, "", fmt\(S\.weeklyDone, \{n: r\.done\}\)\)/.test(wkFn(e)) && /bestText != null \? bestText : fmt\(S\.best/.test(e) && /noHead: true/.test(wkApp(a));
+  sh.check(/counts|done/.test(S.weeklyDone || '') && !/best/i.test(S.weeklyDone || '') && says(eng, app), 'the weekly result card and top line say what counts this week, never "best so far"');
+  sh.check(!says(eng.replace(', fmt(S.weeklyDone, {n: r.done}))', ')'), app) && !says(eng, app.replace(', noHead: true', '')), 'CONTROL: the old weekly card (best so far) and the old top line are each reported');
+}
+// a picked option, before Check, must not look like the wrong or the right state in any part (found live 16 Nov 2026: in Part 10, a red part,
+// the picked option was pink with a dark red letter, almost the same as a wrong answer after checking)
+{
+  const css0 = fs.readFileSync(path.join(P, 'style.css'), 'utf8');
+  const hsl = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const [r, g2, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255), mx = Math.max(r, g2, b), mn = Math.min(r, g2, b), d = mx - mn, l = (mx + mn) / 2;
+    const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1)); let hu = 0;
+    if (d) hu = mx === r ? 60 * (((g2 - b) / d) % 6) : mx === g2 ? 60 * ((b - r) / d + 2) : 60 * ((r - g2) / d + 4); return { h: (hu + 360) % 360, s, l }; };
+  const clashes = (c) => { const x = c.replace(/\/\*[\s\S]*?\*\//g, ''); const vars = (body) => Object.fromEntries([...body.matchAll(/--([\w-]+)\s*:\s*(#[0-9a-f]{3,6})/gi)].map((m) => [m[1], m[2]]));
+    const root = vars((/:root\{([^}]*)\}/.exec(x) || [])[1] || ''); const parts = [['(no part)', {}], ...[...x.matchAll(/\[data-part="([\w-]+)"\]\{([^}]*)\}/g)].map((m) => [m[1], vars(m[2])])];
+    const rule = (sel) => { const m = new RegExp(sel.replace(/[.[\]"=]/g, (ch) => '\\' + ch) + '\\{([^}]*)\\}').exec(x); return m ? m[1] : null; };
+    const pick = rule('.opt[aria-pressed="true"]'), badge = rule('.opt[aria-pressed="true"] .k'); if (!pick || !badge) return ['picked-option rules not found'];
+    const out = []; const near = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b)) < 25;
+    for (const [name, pv] of parts) { const V = Object.assign({}, root, pv); const res = (body, prop) => { const m = new RegExp('(?:^|;)\\s*' + prop + '\\s*:\\s*([^;]+)').exec(body); if (!m) return null;
+        const v = m[1].trim(); const vm = /^var\(--([\w-]+)\)$/.exec(v); return vm ? V[vm[1]] : (/^#[0-9a-f]{3,6}$/i.test(v) ? v : null); };
+      const cols = [res(pick, 'background'), res(badge, 'background')];
+      for (const [tag, ref] of [['wrong', V.bad], ['right', V.ok]]) { const r0 = hsl(ref);
+        if (cols.every((c) => c && hsl(c).s > 0.25 && near(hsl(c).h, r0.h))) out.push(name + ' picked looks ' + tag); } }
+    return out; };
+  const bad = clashes(css0);
+  sh.check(bad.length === 0, 'in every part a picked option (before Check) looks unlike a wrong or a right answer', bad.join('; '));
+  const old = css0.replace(/\.opt\[aria-pressed="true"\]\{[^}]*\}/, '.opt[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--accd)}').replace(/\.opt\[aria-pressed="true"\] \.k\{[^}]*\}/, '.opt[aria-pressed="true"] .k{background:var(--accd);color:#fff;border-color:var(--accd)}');
+  const ob = clashes(old);
+  sh.check(old !== css0 && ob.some((s) => /^p10 picked looks wrong/.test(s)) && ob.some((s) => /^p4 picked looks wrong/.test(s)), 'CONTROL: the old part-coloured picked option is reported in Part 10 and Part 4', ob.join('; '));
+}
 // the phrases she can choose inside an item are marked before she chooses, not only when the mouse is over one (found live 16 Nov 2026)
 {
   const css = fs.readFileSync(path.join(P, 'style.css'), 'utf8');
@@ -272,6 +345,8 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
 // Part 8 find: the answer is the phrase that links the item to the term in its question (found live 16 Nov 2026: the norms item
 // wanted "Parents and carers are important", which links to primary socialisation, not to norms). The answer must share at least as
 // many word stems with the term's glossary definition (first sentence, the term's own words left out) as any other phrase does.
+// A phrase in an item sentence that names the term itself only restates the term, so it is not a link and scores -1 (found 16 Nov 2026:
+// the secondary socialisation item opens "through primary and secondary socialisation"; the link is the media phrase).
 {
   const find = JSON.parse(fs.readFileSync(path.join(DESIGN, 'banks', 'p8', 'ao2-find.json'), 'utf8'));
   const gl = (L.readContent(REPO)['p5/cards'] || {}).terms || [];
@@ -281,7 +356,8 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
     const term = (/meaning of ([a-z ]+) \(/.exec(it.q || '') || [])[1], g = gl.find((t) => String(t.term).toLowerCase() === term);
     if (!g) return 'item ' + (i + 1) + ': no glossary term for "' + (it.q || '') + '"';
     const own = new Set(stems(term)), def = new Set(stems(g.def.split('. ')[0]).filter((x) => !own.has(x)));
-    const sc = it.phrases.map((ph) => stems(ph).filter((x) => !own.has(x) && def.has(x)).length), best = Math.max.apply(null, sc);
+    const naming = String(it.item || '').split(/(?<=[.!?])\s+/).filter((x) => x.toLowerCase().includes(term));
+    const sc = it.phrases.map((ph) => naming.some((x) => x.includes(ph)) ? -1 : stems(ph).filter((x) => !own.has(x) && def.has(x)).length), best = Math.max.apply(null, sc);
     return (it.k || []).every((k) => sc[k] === best) ? '' : term + ': answer «' + it.phrases[it.k[0]] + '» scores ' + sc[it.k[0]] + ', «' + it.phrases[sc.indexOf(best)] + '» scores ' + best;
   }).filter(Boolean);
   const kf = keyFaults(find.items);
@@ -289,6 +365,9 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
   const old = JSON.parse(JSON.stringify(find.items)), ni = old.findIndex((it) => /of norms /.test(it.q));
   if (ni >= 0) old[ni].k = [old[ni].phrases.indexOf('Parents and carers are important')];
   sh.check(ni >= 0 && old[ni].k[0] >= 0 && keyFaults(old).length === 1, 'CONTROL: the old norms answer («Parents and carers are important») is reported', keyFaults(old).join('; ') || 'not caught');
+  const old2 = JSON.parse(JSON.stringify(find.items)), si = old2.findIndex((it) => /of secondary socialisation /.test(it.q));
+  if (si >= 0) old2[si].k = [old2[si].phrases.indexOf('People learn the norms and values')];
+  sh.check(si >= 0 && old2[si].k[0] >= 0 && keyFaults(old2).length === 1, 'CONTROL: an answer in the sentence that names the term (secondary socialisation) is reported', keyFaults(old2).length + ' reported');
 }
 // Part 9: the I (item link) line agrees with the rest of the site, where one item link carries two item details, one AO2 mark each
 // (found live 16 Nov 2026: it told her to "aim for two explained item links", which reads as two separate links)

@@ -35,6 +35,11 @@ banks/p7/ten-q6.json 10 slots 3+2+2+2+1
 banks/p7/ten-q7.json 10 slots 5+5
 story check: step 2 of Friday night holds for every step 1 choice; CONTROL with the old step 2 caught
 example check: 10 test questions, none asks for an example with a definition as its answer; CONTROL with the old Q4 caught
+Part 6 E line fits the right E answers (11 use the item); CONTROL with the old line caught
+five-mark model answers: 23 from her notes, 3 marked New; CONTROL d5-02 unmarked caught
+Part 8 repeat check: no test item is a worked example on the page; CONTROL with the old culture item caught
+five-mark phrases: 12 items accept every phrase that earns the item marks; CONTROL caught
+lone-wording check: 16 quiz banks, no right answer stands out by its wording; CONTROL with the old Part 9 Q1 caught
 content/p1/s1.json 1 blocks
 content/p1/primary.json 4 blocks
 content/p1/secondary.json 4 blocks
@@ -66,5 +71,5 @@ content/p11/mindmap.json 6 sections
 content/p11/quiz.json 3 sections
 content/p11/checklist.json 4 sections
 content/p11/lastminute.json 8 sections
-PASS 70 files read, 0 errors
+PASS 93 files read, 0 errors
 g4: PASS (exit 0)

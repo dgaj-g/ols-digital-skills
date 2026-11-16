@@ -1,6 +1,7 @@
 PASS the gate can find the fix in app.js (so the control can undo it) — found
 PASS the gate can find the heading fix in app.js (so the control can undo it) — found
 PASS the gate can find the next-label fix in app.js (so the control can undo it) — found
+PASS the gate can find the go-on-to-the-next-part fix in app.js (so the control can undo it) — found
 INFO 104 screens reached by clicking from the home page
 PASS every page of p1 can be reached by clicking from the home page — 6 pages
 PASS every page of p2 can be reached by clicking from the home page — 9 pages
@@ -16,18 +17,28 @@ PASS every page of p11 can be reached by clicking from the home page — 8 pages
 PASS every activity can be reached by clicking from the home page — 28 activities
 PASS no screen's "next" button points back at the same screen — none of 104
 PASS every "next" button that opens an activity says that activity's name (the name its heading shows) — 28 buttons
-PASS pressing "next" from the start of p1 passes every page of the part — 26 screens
+PASS the last page of p1 goes on to Part 2 and says so — ends on s1/checklist -> s2 "Go on to Part 2: Culture"
+PASS pressing "next" from the start of p1 passes every page of the part — 10 screens
+PASS the last page of p2 goes on to Part 3 and says so — ends on s2/sorter -> s3 "Go on to Part 3: Agents of socialisation"
 PASS pressing "next" from the start of p2 passes every page of the part — 16 screens
+PASS the last page of p3 goes on to Part 4 and says so — ends on s3/workplace/test -> s4 "Go on to Part 4: Social control and sanctions"
 PASS pressing "next" from the start of p3 passes every page of the part — 19 screens
+PASS the last page of p4 goes on to Part 5 and says so — ends on s4/sorter -> s5 "Go on to Part 5: Key words"
 PASS pressing "next" from the start of p4 passes every page of the part — 2 screens
+PASS the last page of p5 goes on to Part 6 and says so — ends on s5/quiz -> s6 "Go on to Part 6: Five-mark questions"
 PASS pressing "next" from the start of p5 passes every page of the part — 3 screens
-PASS pressing "next" from the start of p6 passes every page of the part — 37 screens
-PASS pressing "next" from the start of p7 passes every page of the part — 10 screens
+PASS the last page of p6 goes on to Part 7 and says so — ends on s6/26 -> s7 "Go on to Part 7: Ten-mark questions"
+PASS pressing "next" from the start of p6 passes every page of the part — 27 screens
+PASS the last page of p7 goes on to Part 8 and says so — ends on s7/7 -> s8 "Go on to Part 8: The Secret to AO2 Marks"
+PASS pressing "next" from the start of p7 passes every page of the part — 8 screens
+PASS the last page of p8 goes on to Part 9 and says so — ends on s8/find -> s9 "Go on to Part 9: What WJEC Examiners Want"
 PASS pressing "next" from the start of p8 passes every page of the part — 2 screens
+PASS the last page of p9 goes on to Part 10 and says so — ends on s9/eye -> hub "Go on to Part 10: Badges, board and challenges"
 PASS pressing "next" from the start of p9 passes every page of the part — 2 screens
 PASS every activity keeps the name on its button as its heading once it has loaded — 28 activities
 PASS CONTROL with the old nextAfter() put back, a quiz's "next" points at itself (the check above can see the bug) — 11 loops, e.g. s1/primary/test
 PASS CONTROL with the server title written over the heading again, the check sees headings that do not match their buttons — 26 changed, e.g. s1/primary/test heading "Primary socialisation mini-test"
 PASS CONTROL with each page's own label put back, the check sees "next" buttons that do not name their activity — 33 found, e.g. s1/primary/test says "Take the primary socialisation mini-test" for "Five questions on primary socialisation"
+PASS CONTROL with the old fallback put back, parts end on Home again (the check above can see the bug) — 4 parts end on Home: p4, p5, p8, p9
 PASS CONTROL with the old nextAfter() put back, the Part 2 "next" chain stops short — never reaches s2/nonmaterial, s2/values, s2/norms, s2/customs, s2/beliefs, s2/traditions, s2/sorter
-g9-reach: 31 PASS, 0 FAIL, 0 SKIP
+g9-reach: 42 PASS, 0 FAIL, 0 SKIP

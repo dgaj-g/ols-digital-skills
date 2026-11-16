@@ -103,6 +103,8 @@ footer.ft{text-align:center;font-size:13px;color:var(--mute);padding:20px 16px 3
 @keyframes spin{to{transform:rotate(360deg)}}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .right{margin-left:auto}
+li.branch,li.tick{list-style:none}
+.print-head{margin:0 0 .4em}.print-head h1{margin:0}
 .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--acc-soft);color:var(--accd)}
 .tag.new{background:#FFE8B3;color:#7A4B00}
 .tag.ao1{background:var(--ao1);color:var(--ao1t);text-transform:none}
@@ -132,6 +134,7 @@ input:focus,textarea:focus,button:focus-visible,[tabindex]:focus-visible{outline
 .tile:nth-child(5){animation-delay:160ms}.tile:nth-child(6){animation-delay:200ms}.tile:nth-child(7){animation-delay:240ms}.tile:nth-child(8){animation-delay:280ms}
 .tile:nth-child(9){animation-delay:320ms}.tile:nth-child(10){animation-delay:360ms}.tile:nth-child(11){animation-delay:400ms}.tile:nth-child(12){animation-delay:440ms}
 .hub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 0}
+ul.hub{list-style:none;padding:0}.hub>li{display:flex}.hub>li>.tile{flex:1}
 .hub .tile .tt{font-size:17px}
 
 /* ---------- learn pages ---------- */
@@ -175,8 +178,9 @@ input:focus,textarea:focus,button:focus-visible,[tabindex]:focus-visible{outline
 .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 12px;min-height:46px;box-shadow:var(--sh-s);transition:transform .1s,background .5s}
 .opt:hover{transform:translate(-1px,-1px)}
 .opt .k{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
-.opt[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--accd)}
-.opt[aria-pressed="true"] .k{background:var(--accd);color:#fff;border-color:var(--accd)}
+/* a picked option is ink, never the part colour: in the red and green parts that colour looked like wrong or right before checking */
+.opt[aria-pressed="true"]{background:#E6E3F0;border-color:var(--ink)}
+.opt[aria-pressed="true"] .k{background:var(--ink);color:#fff;border-color:var(--ink)}
 .opt.right{background:var(--ok-soft);border-color:var(--ok)}
 .opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
 .opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
@@ -319,7 +323,7 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .board tr.me td{background:var(--acc-soft);font-weight:700}
 .board .rk{width:48px;font-family:var(--disp);font-weight:700;font-size:18px}
 .prog{list-style:none;padding:0;margin:0}
-.prog li{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:2px solid var(--line)}
+.prog li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:6px 16px;align-items:center;padding:10px 0;border-bottom:2px solid var(--line)}
 .prog .bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden}
 .prog .bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .7s ease}
 
@@ -334,6 +338,9 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .stf .tw{overflow:auto}
 .stf select{min-height:42px;border:2px solid var(--ink);border-radius:10px;padding:0 10px;background:#fff;font:inherit}
 .stf .rowline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:2px solid var(--line)}
+.stf #plist{list-style:none;padding:0;margin:0}.stf #plist li{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:2px solid var(--line)}.stf #plist .pn{flex:1}.stf #plist .state{font-size:14px;color:var(--mute);white-space:nowrap}.stf #plist li[data-locked="1"] .state{color:var(--bad);font-weight:700}.stf #plist .btn{min-width:6.5em}
+.stf .wa h4{margin:0 0 .2em}.stf .wa .ckl{margin-top:.3em}
+.stf #ex{margin:0 0 18px}
 .stf .arm{background:var(--bad);border-color:var(--bad)}
 .door{max-width:420px;margin:40px auto}
 
@@ -357,7 +364,7 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 /* ---------- widths ---------- */
 @media (min-width:600px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.badges{grid-template-columns:repeat(3,minmax(0,1fr))}.hub{grid-template-columns:repeat(3,minmax(0,1fr))}.mrow{grid-template-columns:1fr 240px}.agents{grid-template-columns:repeat(3,minmax(0,1fr))}.cmp{grid-template-columns:1fr 1fr}}
 @media (min-width:1000px){.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.bins{grid-template-columns:repeat(4,minmax(0,1fr))}.bins.two{grid-template-columns:repeat(2,minmax(0,1fr))}.hub{grid-template-columns:repeat(5,minmax(0,1fr))}.tray{max-height:38vh}}
-@media (max-width:599px){.tiles{grid-template-columns:minmax(0,1fr)}.badges{grid-template-columns:minmax(0,1fr)}.blk table,.tbl{display:block;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}h1{font-size:30px}h2{font-size:22px}.top .brand{font-size:17px}.top .who{font-size:13px;gap:6px}.top .who .pts{display:none}.wrap{padding:14px 16px 60px}.card{padding:14px}.q{padding:14px}.bn .btn{min-width:0;flex:1}.tray{max-height:40vh}}
+@media (max-width:599px){.prog li{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:minmax(0,1fr)}.badges{grid-template-columns:minmax(0,1fr)}.blk table,.tbl{display:block;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}h1{font-size:30px}h2{font-size:22px}.top .brand{font-size:17px}.top .who{font-size:13px;gap:6px}.top .who .pts{display:none}.wrap{padding:14px 16px 60px}.card{padding:14px}.q{padding:14px}.bn .btn{min-width:0;flex:1}.tray{max-height:40vh}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.fc{transition:none}}
 
 /* ---- late additions (app.js / staff.js) ---- */

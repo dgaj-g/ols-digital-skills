@@ -6,6 +6,9 @@ var App = (function(){
   function h(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
   function md(s){ return h(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); } // **Label:** in a content paragraph renders bold; everything else is escaped text
   function fmt(s, o){ return String(s).replace(/\{(\w+)\}/g, function(_, k){ return o[k]; }); }
+  // a server date such as 2026-11-16 said as "16 November 2026" (found live 16 Nov 2026: badges read "Earned on 2026-11-16")
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function dayDate(iso){ var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || "")); return m ? (+m[3]) + " " + MONTHS[+m[2] - 1] + " " + m[1] : String(iso || ""); }
   function el(html){ var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
   function img(f){ return (BOOT.img || "../img/") + f; }
   function emoji(hex){ return img("emoji/" + hex + ".svg"); }
@@ -174,6 +177,18 @@ var App = (function(){
     });
     shell("home", body, {bar: false});
   }
+  // a list item followed by an array: the array is that item's own branch list (the mind map); arrays nest to any depth
+  function listHtml(arr, fresh){
+    var out = '<ul>';
+    for (var i = 0; i < arr.length; i++){
+      var li = arr[i];
+      if (Array.isArray(li)) { out += '<li class="branch">' + listHtml(li, []) + '</li>'; continue; }
+      out += (/^\u2610/.test(li) ? '<li class="tick">' : '<li>') + (fresh.indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li);
+      if (Array.isArray(arr[i + 1])) { out += listHtml(arr[i + 1], []); i++; }
+      out += '</li>';
+    }
+    return out + '</ul>';
+  }
   function blocks(bs){
     return (bs || []).map(function(b){
       var out = '<section class="blk">';
@@ -182,7 +197,7 @@ var App = (function(){
       var q = b.quote ? '<blockquote class="say">' + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + h(b.quote.t) + '</blockquote>' : '', qAt = b.quote && b.quote.who === "Item" ? ((b.p || [])[0] && /^Question:/.test(b.p[0]) ? 1 : 0) : -1;
       (b.p || []).forEach(function(p, i){ if (i === qAt) out += q; out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + md(p) + '</p>'; });
       if (b.quote && (qAt < 0 || qAt >= (b.p || []).length)) out += q;
-      if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
+      if (b.list) out += listHtml(b.list, b.new_items || []);
       if (b.writers) out += '<table class="tbl"><thead><tr><th>Writer</th><th>What they say</th></tr></thead><tbody>' + b.writers.map(function(w){ return '<tr><td><b>' + h(w.name) + '</b></td><td>' + h(w.says) + '</td></tr>'; }).join("") + '</tbody></table>';
       if (b.table) out += '<table class="tbl"><thead><tr>' + b.table.head.map(function(x){ return '<th>' + h(x) + '</th>'; }).join("") + '</tr></thead><tbody>' + b.table.rows.map(function(r){ return '<tr>' + r.map(function(x){ return '<td>' + h(x) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table>';
       if (b.img) out += '<figure class="figure"><img src="' + h(img(b.img.file)) + '" alt="' + h(b.img.alt || "") + '"><figcaption class="cap">' + h(b.img.credit || "") + '</figcaption></figure>';
@@ -217,7 +232,7 @@ var App = (function(){
     if (locked(pid)) return lockedScreen(route, pid);
     var agent = page.agent ? AGENTS.filter(function(a){ return a.id === page.agent; })[0] : null;
     var html = '<h1>' + (agent ? '<img class="ico" src="' + h(emoji(agent.emoji)) + '" alt="" width="40" height="40"> ' : '') + h(page.title) + (page.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h1>' + (page.lead ? '<p class="lead">' + h(page.lead) + '</p>' : '');
-    if (page.new || (page.blocks || []).some(function(b){ return b.new || (b.new_items && b.new_items.length) || (b.new_p && b.new_p.length); })) html += '<p class="small mute">' + h(S.newNote) + '</p>';
+    if (page.new || (page.qs || []).some(function(q){ return q.new; }) || (page.blocks || []).some(function(b){ return b.new || (b.new_items && b.new_items.length) || (b.new_p && b.new_p.length); })) html += '<p class="small mute">' + h(S.newNote) + '</p>';
     var hero = HERO[route]; if (hero) html += '<figure class="hero"><img src="' + h(img(hero.f)) + '" alt="' + h(hero.alt) + '" width="' + hero.w + '" height="' + hero.h + '" loading="lazy"><figcaption class="cap">' + h(hero.cap) + '</figcaption></figure>';
     if (route === "s3") html += '<div class="agents">' + AGENTS.map(function(a){ return '<a class="tile" data-part="' + a.id + '" href="#s3/' + a.id + '"><img src="' + h(emoji(a.emoji)) + '" alt="" width="48" height="48"><span class="tt">' + h(a.t) + '</span></a>'; }).join("") + '</div>';
     html += blocks(page.blocks);
@@ -239,7 +254,7 @@ var App = (function(){
     function count(){ body.querySelector("#ckn").textContent = ck.filter(Boolean).length + " of 12 ticked"; }
     ul.addEventListener("change", function(e){ var c = e.target; if (c.type !== "checkbox") return; ck[+c.dataset.i] = c.checked ? 1 : 0; count(); call("apiTick", {ck: ck}, {save: true, quiet: true}).then(function(r){ if (r.hdr) hdr(r.hdr); }).catch(function(){}); });
     count();
-    shell("s1/checklist", body, {crumb: "Checklist", next: {route: "s2", label: "Go on to Part 2: Culture"}});
+    shell("s1/checklist", body, {crumb: "Checklist", next: {route: "s2", label: fmt(S.goOnPart, {n: 2, t: partInfo("p2").t})}});
   }
   function act(route, opts){
     var t = TESTS[route]; if (!t) return go("home");
@@ -260,6 +275,9 @@ var App = (function(){
     if (at >= 0 && at < keys.length - 1) return {route: keys[at + 1], label: TESTS[keys[at + 1]].t};
     // the last activity on a page goes on to the next page of the part (the page's own "next" leads to its first activity, so following it here would loop back)
     for (var j = pi.n; j < pi.m; j++){ var r = pi.list[j]; if (r.indexOf(pi.base + "/") === 0) continue; var pg = C[contentKey(r)], tt = TESTS[r]; return {route: r, label: (pg && pg.title) || (tt && tt.t) ? fmt(S.nextTo, {t: (pg && pg.title) || tt.t}) : S.next}; }
+    // the last page of a part goes on to the next part, as Parts 1, 6, 7 and 10 do (found live 16 Nov 2026: Parts 2-5, 8 and 9 ended on "Home")
+    var P = partInfo(pi.pid), N = P && PARTS.filter(function(x){ return x.n === P.n + 1; })[0];
+    if (N && !locked(N.id)) return {route: N.route, label: fmt(S.goOnPart, {n: N.n, t: N.t})};
     return {route: "home", label: S.home};
   }
   // ---- Part 5: key words ----
@@ -292,7 +310,7 @@ var App = (function(){
     var body = el('<div><h1>' + h(title) + '</h1>' + (part === "p6" ? '<p class="lead">' + h(S.fiveLead) + '</p>' : '<p class="lead">' + h(q.hasItem === false ? S.tenLeadNoItem : S.tenLead) + '</p>') +
       '<div class="modes" role="tablist"><button class="btn" role="tab" id="mb" aria-pressed="' + (mode !== "write") + '">' + h(S.modeBuild) + '</button><button class="btn" role="tab" id="mw" aria-pressed="' + (mode === "write") + '">' + h(S.modeWrite) + '</button></div>' +
       '<p class="small mute qstat" data-b="' + h(buildAct) + '" data-w="' + h(writeAct) + '">' + h(statText(buildAct, writeAct)) + '</p><div id="act"><p class="say">' + h(S.busy) + '</p></div></div>');
-    var next = n < qs.length ? {route: (part === "p6" ? "s6/" : "s7/") + (n + 1), label: "Question " + (n + 1)} : (part === "p6" ? {route: "s7", label: "Go on to Part 7: Ten-mark questions"} : {route: "s8", label: "Go on to Part 8: The Secret to AO2 Marks"});
+    var next = n < qs.length ? {route: (part === "p6" ? "s6/" : "s7/") + (n + 1), label: "Question " + (n + 1)} : (part === "p6" ? {route: "s7", label: fmt(S.goOnPart, {n: 7, t: partInfo("p7").t})} : {route: "s8", label: fmt(S.goOnPart, {n: 8, t: partInfo("p8").t})});
     shell(route, body, {crumb: title, back: part === "p6" ? "s6" : "s7", next: next});
     wire("mb", function(){ go(base); }); wire("mw", function(){ go(base + "/write"); });
     var a = mode === "write" ? writeAct : buildAct, box = body.querySelector("#act");
@@ -310,11 +328,11 @@ var App = (function(){
   function hub(){
     var tiles = [["daily", S.hubDaily, "1F4C5"], ["weekly", S.hubWeekly, "1F4DD"], ["badges", S.hubBadges, "1F3C5"], ["board", S.hubBoard, "1F4CA"], ["progress", S.hubProgress, "1F4C8"]];
     var body = el('<div><h1>' + h(partInfo("p10").t) + '</h1><p class="lead">Points come from every check. Badges are earned once and kept. The daily five and the weekly mock are the same for everyone in your class.</p><div class="hub">' + tiles.map(function(t){ return '<a class="tile" href="#' + t[0] + '"><img src="' + h(emoji(t[2])) + '" alt="" width="40" height="40"><span class="tt">' + h(t[1]) + '</span></a>'; }).join("") + '</div></div>');
-    shell("hub", body, {crumb: null, next: {route: "s11", label: "Go on to Part 11: Revision sheets"}});
+    shell("hub", body, {crumb: null, next: {route: "s11", label: fmt(S.goOnPart, {n: 11, t: partInfo("p11").t})}});
   }
   function badges(){
     var H = ME.hdr || {}, have = H.bd || [], when = H.bdt || {};
-    var body = el('<div><h1>' + h(S.hubBadges) + '</h1><p class="lead">' + h(S.badgesLead) + '</p><div class="badges">' + BADGES.map(function(b){ var on = have.indexOf(b.id) >= 0; return '<div class="badge ' + (on ? "on" : "off") + '"><span class="ic"><img src="' + h(emoji(b.emoji)) + '" alt="" width="56" height="56"></span><span class="bt">' + h(b.t) + '</span><span class="bl">' + h(on ? fmt(S.badgeOn, {d: when[b.id] || ""}) : fmt(S.badgeOff, {r: b.rule})) + '</span></div>'; }).join("") + '</div></div>');
+    var body = el('<div><h1>' + h(S.hubBadges) + '</h1><p class="lead">' + h(S.badgesLead) + '</p><div class="badges">' + BADGES.map(function(b){ var on = have.indexOf(b.id) >= 0; return '<div class="badge ' + (on ? "on" : "off") + '"><span class="ic"><img src="' + h(emoji(b.emoji)) + '" alt="" width="56" height="56"></span><span class="bt">' + h(b.t) + '</span><span class="bl">' + h(on ? fmt(S.badgeOn, {d: dayDate(when[b.id])}) : fmt(S.badgeOff, {r: b.rule})) + '</span></div>'; }).join("") + '</div></div>');
     shell("badges", body, {crumb: S.hubBadges, back: "hub"});
   }
   function board(){
@@ -349,7 +367,7 @@ var App = (function(){
     shell("weekly", body, {crumb: S.hubWeekly, back: "hub"});
     call("apiWeekly", {}).then(function(r){
       var box = body.querySelector("#act"); box.innerHTML = "";
-      Engine.mount(box, {act: "weekly", form: "weekly", view: r.view, max: r.max || 20, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.weeklyLead}, {reopen: weekly});
+      Engine.mount(box, {act: "weekly", form: "weekly", view: r.view, max: r.max || 20, best: r.done, attempts: r.done != null ? 1 : 0, intro: S.weeklyIntro, noHead: true}, {reopen: weekly});
       if (r.done != null) box.insertBefore(el('<p class="say"><b>' + h(fmt(S.weeklyDone, {n: r.done})) + '</b></p>'), box.firstChild);
     }).catch(function(){});
   }
@@ -361,7 +379,7 @@ var App = (function(){
   }
   function sheet(id){
     var sh = SHEETS.filter(function(s){ return s[0] === id; })[0]; if (!sh) return go("s11");
-    var html = '<div class="print-page"><div class="row right no-print"><button class="btn acc" id="pr">' + h(S.print) + '</button></div><h1>' + h(sh[1]) + '</h1>';
+    var html = '<div class="print-page"><div class="row print-head"><h1>' + h(sh[1]) + '</h1><button class="btn acc right no-print" id="pr">' + h(S.print) + '</button></div>';
     if (id === "cards"){
       var terms = (C["p5/cards"] || {terms: []}).terms;
       html += '<p class="lead">Cut along the lines. The word is on the left and its meaning on the right.</p><table class="tbl"><tbody>' + terms.map(function(t){ return '<tr><td><b>' + h(t.term) + '</b></td><td>' + h(t.def) + (t.exam ? '<br><i>' + h(S.cardsExam) + ' ' + h(t.exam) + '</i>' : '') + '</td></tr>'; }).join("") + '</tbody></table>';

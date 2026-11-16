@@ -79,7 +79,7 @@ function leakList(opt) {
       } else visit(x, where + '.' + k);
     }
   })(banks, 'banks');
-  const fixed = ['var BANKS', 'JudgeFive', 'JudgeTen', 'JudgeCommon', '"k":', '"ph_k"', '"why_marks"', '"whys"', '"lex":', 'STAFF_SALT', 'STAFF_HASH'];
+  const fixed = ['var BANKS', 'JudgeFive', 'JudgeTen', 'JudgeCommon', '"k":', '"ph_k"', '"ph_ok"', '"why_marks"', '"whys"', '"lex":', 'STAFF_SALT', 'STAFF_HASH'];
   const secrets = [staff && staff.salt, staff && staff.hash, pass].filter(Boolean).concat(teachers || []);
   return { guarded, exempt, fixed, secrets };
 }
