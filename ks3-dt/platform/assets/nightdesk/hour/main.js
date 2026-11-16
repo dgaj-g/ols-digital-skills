@@ -55,12 +55,20 @@
     b.value = pre + ins + post; st.q = b.value; b.focus(); b.setSelectionRange(caret, caret); stopDemo(); applyHelp(); }
   function one(s) { return String(s).replace(/\b1 rows\b/g, '1 row').replace(/\b1 days\b/g, '1 day'); }
   function betweenBack(q) { var m = /BETWEEN\s+(-?\d+(?:\.\d+)?)\s+AND\s+(-?\d+(?:\.\d+)?)/i.exec(q || ''); return !!m && Number(m[1]) > Number(m[2]); }
-  function wrongLine(sc, got) { var q = st.q || ''; if (betweenBack(q)) return C.errBetween; if (sc.ch === 'c5') { if (!/\bNOT\b/i.test(q)) return one(S.c5.wrongNot.replace('{got}', got)); if (!/\bAND\b/i.test(q)) return one(S.c5.wrongAnd.replace('{got}', got)); } return one(sc.judge.wrong.replace('{got}', got)); }
+  /* which joining words a rule uses (the AND inside BETWEEN … AND … does not count) */
+  function joins(q) { var s = String(q || '').replace(/BETWEEN\s+\S+\s+AND/gi, 'BETWEEN'); return { and: /\bAND\b/i.test(s), or: /\bOR\b/i.test(s), not: /\bNOT\b/i.test(s) }; }
+  function wrongLine(sc, got) { var q = st.q || '', j = joins(q), w = function (s) { return one(s.replace('{got}', got)); }; if (betweenBack(q)) return C.errBetween; if (sc.ch === 'c5') { if (!j.not) return w(S.c5.wrongNot); if (!j.and) return w(S.c5.wrongAnd); }
+    if (sc.ch === 'c2' && !j.and) return w(j.or ? S.c2.wrongOr : S.c2.wrongOne);
+    if (sc.ch === 'c4' && !j.or) return w(j.and ? S.c4.wrongAnd : S.c4.wrongOne);
+    return w(sc.judge.wrong); }
+  /* c2: phone_hours >= 5 alone finds the same 6 rows, but only because every heavy phone user is a teen */
+  function luckyRule(sc) { return sc.ch === 'c2' && !joins(st.q).and; }
   function errLine(r) { if (r.code === 'syntax' && /\b(OR|AND)\s*(["'“‘]|\d)/i.test(String(st.q || '').replace(/BETWEEN\s+\S+\s+AND/gi, 'BETWEEN'))) return C.errSide; var m = { empty: C.errEmpty, syntax: C.errSyntax, column: C.errColumn, dangling: C.errDangling, value: C.errValue }; return (m[r.code] || C.errSyntax).replace('{word}', r.word || ''); }
   function runQuery() { if (st.review || st.welcome || st.paused) return; var b = document.getElementById('qbox'); if (b) st.q = b.value; var sc = screens[st.i]; st.flash = null;
     if (sc.id === 'free') { lateRun(); render(); save(); if (!st.ok && !st.lt.ruleOk) focusBox(); return; }
     if (sc.task && !st.ok) { var r = J.checkQuery(st.q, D[st.table], cols(), sc.task.ids);
-      if (r.code === 'ok') { st.ok = true; st.rows = Q.run(st.q, D[st.table], cols()); st.line = sc.judge.ok; st.lineKind = 'ok'; st.flash = 'ok'; Snd.ding(); award(sc); }
+      if (r.code === 'ok' && luckyRule(sc)) { st.rows = Q.run(st.q, D[st.table], cols()); st.line = S.c2.luck; st.lineKind = 'no'; Snd.thud(); }
+      else if (r.code === 'ok') { st.ok = true; st.rows = Q.run(st.q, D[st.table], cols()); st.line = sc.judge.ok; st.lineKind = 'ok'; st.flash = 'ok'; Snd.ding(); award(sc); }
       else if (r.code === 'wrong') { st.rows = Q.run(st.q, D[st.table], cols()); st.line = wrongLine(sc, r.got); st.lineKind = 'no'; Snd.thud(); }
       else { st.line = errLine(r); st.lineKind = 'no'; Snd.thud(); } }
     else { try { st.rows = st.q.trim() ? Q.run(st.q, D[st.table], cols()) : null; st.line = null; st.lineKind = ''; }
@@ -144,7 +152,7 @@
       enter: function () { st.filmShown = 0; var self = this, at = 0, all = [S.story.b1, S.story.b2, S.story.b3]; all.forEach(function (b, i) { at += (i === 0 ? 600 : (1.2 + 0.35 * all[i - 1].split(/\s+/).length) * 1000) / SPEED; setTimeout(function () { if (screens[st.i] === self && !st.review && st.filmShown < i + 1) { st.filmShown = i + 1; Snd.buzz(); render(); } }, at); }); },
       want: function () { return st.filmShown < 3 ? { kind: 'click', sel: '[data-act="readall"]' } : { kind: 'click', sel: '[data-act="next"]' }; } },
     { id: 'facts', ch: 'open', render: function () { var f = S.facts; return scene('plain', '<div class="kick">' + esc(f.kicker) + '</div><p class="ask">' + esc(f.intro) + '</p><div class="paper"><p class="headline small">' + esc(f.t1) + '</p><div class="bank">' + D.columns.people.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + '</div></div><div class="paper"><p class="headline small">' + esc(f.t2) + '</p><div class="bank">' + D.columns.days.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + '</div></div><button class="btn big" data-act="next">' + esc(f.button) + '</button>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } },
-    { id: 'tour', ch: 'open', enter: function () { st.table = 'people'; st.q = ''; st.rows = null; st.tourN = 0; }, render: function () { var t = S.tour, stops = [t.s1, t.s2, t.s3], n = st.tourN; return '<div class="two">' + deskHTML({ spot: n + 1, bankLabel: true }) + '<div class="coach"><div class="kick">' + esc(t.kicker) + ' · ' + esc(C.tourStop.replace('{n}', n + 1)) + '</div><p class="ask">' + esc(stops[n]) + '</p><button class="btn" data-act="tour">' + esc(n < 2 ? t.next : t.done) + '</button></div></div>'; }, want: function () { return { kind: 'click', sel: '[data-act="tour"]' }; } },
+    { id: 'tour', ch: 'open', enter: function () { st.table = 'people'; st.q = ''; st.rows = null; st.tourN = 0; }, render: function () { var t = S.tour, stops = [t.s1, t.s2, t.s3], n = st.tourN; return '<div class="two">' + deskHTML({ spot: n + 1, bankLabel: true }) + '<div class="coach"><div class="kick">' + esc(t.kicker) + ' · ' + esc(C.tourStop.replace('{n}', n + 1)) + '</div><p class="ask tourtxt">' + esc(stops[n]) + '</p><button class="btn" data-act="tour">' + esc(n < 2 ? t.next : t.done) + '</button></div></div>'; }, want: function () { return { kind: 'click', sel: '[data-act="tour"]' }; } },
     /* 1 · the question */
     titleScreen('c1-title', 'c1', S.c1, 1), showScreen('c1-show', 'c1', S.c1, 'people'),
     askScreen('c1-ask', 'c1', S.c1, { table: 'people', ids: T.c1, ask: S.c1.ask, hints: [S.c1.h1, S.c1.h2, S.c1.h3], code: S.c1.h3code, bankLabel: true, fail: 'sleep_hours > 8' }),
@@ -211,7 +219,7 @@
       return '<button class="rc' + (here ? ' here' : past ? ' past' : '') + (fin ? ' open' : '') + '" data-chip="' + c + '"' + (canOpen || fin ? '' : ' tabindex="-1" aria-disabled="true"') + '>' + esc(S.rail[c]) + (here ? '<em>' + esc(C.here) + '</em>' : '') + '</button>'; }).join('') + '</span><span class="xp">' + esc(C.xp.replace('{n}', st.xp)) + '</span>'
       + (elapsedMin() >= 40 ? '<span class="meta">' + esc(C.minsLeft.replace('{m}', mins)) + '</span>' : '') + '<span class="tools"><button class="btn tiny" data-act="pause">' + esc(C.pause) + '</button><button class="btn tiny" data-act="sound">' + esc(st.soundOff ? C.soundOff : C.soundOn) + '</button></span></div>' + (rush && sc.ch !== 'close' && sc.ch !== 'late' ? '<p class="note">' + esc(C.outOfTime) + '</p>' : '') + (st.lighterSay ? '<p class="note">' + esc(C.lighter) + '</p>' : ''); }
   function mainHTML(sc) {
-    if (st.welcome) { var w = st.welcome; return '<div class="welcome coach"><p class="ask">' + esc(C.welcomeBack.replace('{where}', S.rail[w.ch] || '')) + '</p><button class="btn big" data-act="carry">' + esc(C.carryOn) + '</button><button class="btn ghost" data-act="again">' + esc(C.startAgain) + '</button></div>'; }
+    if (st.welcome) { var w = st.welcome; return '<div class="welcome coach"><p class="ask">' + esc(C.welcomeBack.replace('{where}', S.rail[(screens[idxOf(w.at)] || w).ch] || '')) + '</p><button class="btn big" data-act="carry">' + esc(C.carryOn) + '</button><button class="btn ghost" data-act="again">' + esc(C.startAgain) + '</button></div>'; }
     if (st.review) { var r = st.review, sn = st.snaps[r.ch] || {}, c = S[r.ch], s = st.stamps[r.ch], view = { table: sn.table || 'people', q: sn.q || '', rows: runRows(sn.q, sn.table || 'people') };
       return '<div class="two">' + deskHTML({ view: view, readonly: true }) + '<div class="coach"><div class="kick">' + esc(S.rail[r.ch]) + '</div>' + paper({ headline: c.headline, byline: c.byline, stamp: s ? s.stamp : null }) + stampedLine(s) + '<button class="btn" data-act="unreview">' + esc(C.back) + '</button></div></div>'; }
     return sc.render(); }
@@ -393,6 +401,8 @@
     if (st.line && st.lineKind === 'no') return { job: SJ.askFix, steps: late ? SH.askRed.slice(0, 2) : SH.askRed, sel: '#qbox', tag: C.tagType };
     if (st.q && st.q.trim()) return { job: SJ.ask, steps: SH.askTyped, sel: '[data-act="run"]', tag: C.tagPress };
     var sh = shapeOf(rule); return { job: SJ.ask, steps: SH.shape[sh] || SH.askEmpty, sel: '#qbox', tag: C.tagType, demo: SH.demo[key + '.' + sh] || SH.demo[key], empty: true }; }
+  /* Count first: the help says what the rule's joining word or sign keeps, never the number */
+  function countSteps(rule) { var W = SH.countWhy, j = joins(rule), k = /\bBETWEEN\b/i.test(rule) ? 'between' : j.not ? 'not' : j.or ? 'or' : j.and ? 'and' : /<=/.test(rule) ? 'le' : /</.test(rule) ? 'lt' : />(?!=)/.test(rule) ? 'gt' : 'other'; return [W.first, W[k], W.last]; }
   function lateGuide() { var f = st.free, x = f.x, P = { steps: SH.ok, tag: C.tagPress };
     if (f.ended) return { job: SJ.end, steps: null };
     if (!x) return { job: SJ.late, steps: SH.late, sel: '.tiles', tag: C.tagChoose };
@@ -401,7 +411,7 @@
       if (r.picked != null) return { job: SJ.picked, steps: SH.ok, sel: '[data-act="race-next"]', tag: C.tagPress };
       return { job: SJ.race, steps: SH.race, sel: '.opts', tag: C.tagChoose }; }
     var n = lateNow(); if (!n) return Object.assign({ job: jf('after', { btn: L.menuBack }), sel: '[data-act="late-menu"]' }, P, { steps: SH.next });
-    if (x === 'count') return st.lt.pick != null ? Object.assign({ job: jf('after', { btn: L.count.next }), sel: '[data-act="late-next"]' }, P) : { job: SJ.count, steps: SH.count, sel: '.opts', tag: C.tagChoose };
+    if (x === 'count') return st.lt.pick != null ? Object.assign({ job: jf('after', { btn: L.count.next }), sel: '[data-act="late-next"]' }, P) : { job: SJ.count, steps: countSteps(n.it.rule), sel: '.opts', tag: C.tagChoose };
     if (st.ok) return Object.assign({ job: jf('afterOk', { btn: L[x].next }), sel: '[data-act="late-next"]' }, P);
     if (x === 'heads' && st.lt.ruleOk) return stampGuide(SJ.stamp);
     if (x === 'fix') return st.line && st.lineKind === 'no' ? { job: SJ.fix, steps: SH.askRed.slice(0, 2), sel: '#qbox', tag: C.tagType } : { job: SJ.fix, steps: SH.fix, sel: '#qbox', tag: C.tagType };

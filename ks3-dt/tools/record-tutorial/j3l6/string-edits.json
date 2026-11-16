@@ -901,8 +901,8 @@
   },
   "c1.judge.ok": {
     "from": "Showing 17 of 60. Seventeen people slept eight hours or more.",
-    "to": "Right: 17 people. A rule like this is a query.",
-    "why": "V85 (16 Nov): the J3 L7 help standard (job line, Stuck? Show me) and the late shift; screens cut to 25 words or fewer",
+    "to": "Right. 17 people. A rule like this is a query.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign); Right: became Right.",
     "last": true
   },
   "c1.judge.wrong": {
@@ -967,8 +967,8 @@
   },
   "c2.judge.ok": {
     "from": "Showing 6 of 60. Six of the 18 teens use their phone that much.",
-    "to": "Right: 6 of the 18 teens use their phone that much.",
-    "why": "V85 (16 Nov): the J3 L7 help standard (job line, Stuck? Show me) and the late shift; screens cut to 25 words or fewer",
+    "to": "Right. 6 of the 18 teens use their phone that much.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign); Right: became Right.",
     "last": true
   },
   "c2.judge.wrong": {
@@ -1022,8 +1022,8 @@
   },
   "c3.judge.ok": {
     "from": "Showing 7 of 92 days. These 7 days are regatta week, 10 to 16 July. That is the week of the harbour boat races.",
-    "to": "Right: 7 days. They are regatta week, the week of the boat races.",
-    "why": "V85 (16 Nov): the J3 L7 help standard (job line, Stuck? Show me) and the late shift; screens cut to 25 words or fewer",
+    "to": "Right. Your rule keeps 7 days. Those days are regatta week, the week of the boat races.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign); Right: became Right.",
     "last": true
   },
   "c3.judge.wrong": {
@@ -3145,6 +3145,96 @@
     "from": "Got it",
     "to": "Got it",
     "why": "V86: unchanged. Guards it from the tour.done swap (Got it -> Next), which matches by words.",
+    "last": true
+  },
+  "c2.luck": {
+    "from": null,
+    "to": "Your rule keeps the right 6 rows, but it never checks for teens. Add AND and a rule on age.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "c2.wrongOr": {
+    "from": null,
+    "to": "Your rule keeps {got} rows, not 6. OR keeps rows where either rule is true. Use AND.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "c2.wrongOne": {
+    "from": null,
+    "to": "Your rule keeps {got} rows, not 6. Add AND and a second rule.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "c4.wrongAnd": {
+    "from": null,
+    "to": "Your rule keeps {got} rows, not 31. AND keeps rows where both rules are true. Use OR.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "c4.wrongOne": {
+    "from": null,
+    "to": "Your rule keeps {got} rows, not 31. Use OR to keep dogs and cats.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.first": {
+    "from": null,
+    "to": "Read the numbers above the rule.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.or": {
+    "from": null,
+    "to": "OR keeps rows in either group.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.and": {
+    "from": null,
+    "to": "AND keeps only rows in both groups.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.not": {
+    "from": null,
+    "to": "NOT drops the rows the rule after it picks out.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.between": {
+    "from": null,
+    "to": "BETWEEN keeps both end numbers too.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.le": {
+    "from": null,
+    "to": "The sign <= keeps the number itself too.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.lt": {
+    "from": null,
+    "to": "The sign < leaves out the number itself.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.gt": {
+    "from": null,
+    "to": "The sign > leaves out the number itself.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.other": {
+    "from": null,
+    "to": "The rule keeps only the rows that fit it.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
+    "last": true
+  },
+  "help.countWhy.last": {
+    "from": null,
+    "to": "Click the number you think is right.",
+    "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
     "last": true
   }
 }

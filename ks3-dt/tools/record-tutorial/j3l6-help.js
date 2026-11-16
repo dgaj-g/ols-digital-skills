@@ -11,7 +11,7 @@
    Then: the rush clock and the rule-race clock hold while help is open and run on after it closes; left alone the
    button pulses first and the ring with its tag comes second, without help opening; one touch clears both.
    CONTROLS (each must FAIL): the button hidden; the ring stripped; the example swapped for the answer; the tag put on the
-   question's words.
+   question's words; the ring made wide enough to sit on the words around it (V87).
    node j3l6-help.js [--url <served hour.html>] [--sizes 1366x625,...] */
 'use strict';
 const fs = require('fs'), path = require('path'), lib = require('./j3l6-lib.js'), J = lib.judge('j3l6-help');
@@ -61,5 +61,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   J.control(faults([c]).some(t => /example is the answer/.test(t)), 'the example swapped for the answer');
   c = await lib.walk({ W: 1366, H: 625, route: 'model', maxStates: 8, fault: "var p = document.querySelector('main p.ask') || document.querySelector('main p'); if (p) { var r = p.getBoundingClientRect(), s = document.getElementById('__tf') || document.head.appendChild(Object.assign(document.createElement('style'), { id: '__tf' })); s.textContent = '#tag{top:' + Math.round(r.top) + 'px!important;left:' + Math.round(r.left + 4) + 'px!important}'; }" });
   J.control(faults([c]).some(t => /the tag covers words/.test(t)), 'the tag put on the question\'s words');
+  c = await lib.walk({ W: 1366, H: 625, route: 'model', maxStates: 8, fault: "var s = document.getElementById('__rf') || document.head.appendChild(Object.assign(document.createElement('style'), { id: '__rf' })); s.textContent = 'body .help-spot{outline-offset:14px!important;animation:none!important}';" });
+  J.control(faults([c]).some(t => /the ring covers words/.test(t)), 'the ring made wide enough to sit on the words around it');
   await J.end();
 })();

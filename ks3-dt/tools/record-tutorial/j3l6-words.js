@@ -31,7 +31,7 @@ const EDITS = {}, BYTEXT = [], PATHED = {}, GONE = [], LAST = {}; Object.entries
   if (/^\[/.test(v.from)) { const f = JSON.parse(v.from), t = JSON.parse(v.to); f.forEach((x, i) => BYTEXT.push([x, t[i]])); } else BYTEXT.push([v.from, v.to]);
 });
 function byText(o) { if (Array.isArray(o) || (o && typeof o === 'object')) Object.keys(o).forEach(k => { if (typeof o[k] === 'string') { const h = BYTEXT.find(e => e[0] === o[k]); if (h) o[k] = h[1]; } else byText(o[k]); }); }
-function setAt(o, p, v) { const k = p.split('.'), last = k.pop(); k.reduce((x, y) => x[y], o)[last] = v; }
+function setAt(o, p, v) { const k = p.split('.'), last = k.pop(); k.reduce((x, y) => x[y] || (x[y] = {}), o)[last] = v; }   // V87: a listed new key may open a new group (help.countWhy)
 function walk(v, p, out) {
   if (typeof v === 'string') out.push([p, v]);
   else if (Array.isArray(v)) v.forEach((x, i) => walk(x, p + '[' + i + ']', out));

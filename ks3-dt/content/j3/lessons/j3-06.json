@@ -164,7 +164,7 @@
       "h3": "Type this, then press Enter.",
       "h3code": "sleep_hours >= 8",
       "judge": {
-       "ok": "Right: 17 people. A rule like this is a query.",
+       "ok": "Right. 17 people. A rule like this is a query.",
        "wrong": "Your rule keeps {got} rows, not 17. Check the sign."
       },
       "compareKicker": "Now compare",
@@ -204,7 +204,7 @@
       "h3": "Type this, then press Enter.",
       "h3code": "age < 20 AND phone_hours >= 5",
       "judge": {
-       "ok": "Right: 6 of the 18 teens use their phone that much.",
+       "ok": "Right. 6 of the 18 teens use their phone that much.",
        "wrong": "Your rule keeps {got} rows, not 6. Check both rules."
       },
       "predict": "Fionn wrote \"most\". Six of 18 is…",
@@ -219,7 +219,10 @@
       "stampOk": "SPIKE. The numbers say no: 6 of 18 is not most.",
       "stampNo": "Six of the 18 teens use their phone five hours or more. Is that most of them?",
       "reasonNo": "Eighteen teens is enough. The problem is the word \"most\".",
-      "doneLine": "You have done two headlines. Four are left."
+      "doneLine": "You have done two headlines. Four are left.",
+      "luck": "Your rule keeps the right 6 rows, but it never checks for teens. Add AND and a rule on age.",
+      "wrongOr": "Your rule keeps {got} rows, not 6. OR keeps rows where either rule is true. Use AND.",
+      "wrongOne": "Your rule keeps {got} rows, not 6. Add AND and a second rule."
      },
      "c3": {
       "title": "One week",
@@ -235,7 +238,7 @@
       "h3": "Type this, then press Enter.",
       "h3code": "day_no BETWEEN 40 AND 46",
       "judge": {
-       "ok": "Right: 7 days. They are regatta week, the week of the boat races.",
+       "ok": "Right. Your rule keeps 7 days. Those days are regatta week, the week of the boat races.",
        "wrong": "Your rule keeps {got} days, not 7. Check both ends."
       },
       "compareKicker": "Now compare",
@@ -284,7 +287,9 @@
       "stampOk": "PRINT. The numbers back it: 31 of 60.",
       "stampNo": "31 of 60 is over half. Is it true?",
       "reasonNo": "This one is true. Why do you print it?",
-      "doneLine": "You have done four headlines. Two are left."
+      "doneLine": "You have done four headlines. Two are left.",
+      "wrongAnd": "Your rule keeps {got} rows, not 31. AND keeps rows where both rules are true. Use OR.",
+      "wrongOne": "Your rule keeps {got} rows, not 31. Use OR to keep dogs and cats."
      },
      "c5": {
       "title": "Leave out",
@@ -645,6 +650,18 @@
        "Think about what the rule keeps.",
        "Click the number you think is right."
       ],
+      "countWhy": {
+       "first": "Read the numbers above the rule.",
+       "or": "OR keeps rows in either group.",
+       "and": "AND keeps only rows in both groups.",
+       "not": "NOT drops the rows the rule after it picks out.",
+       "between": "BETWEEN keeps both end numbers too.",
+       "le": "The sign <= keeps the number itself too.",
+       "lt": "The sign < leaves out the number itself.",
+       "gt": "The sign > leaves out the number itself.",
+       "other": "The rule keeps only the rows that fit it.",
+       "last": "Click the number you think is right."
+      },
       "choose": [
        "Read the question.",
        "Click the answer you think is right."

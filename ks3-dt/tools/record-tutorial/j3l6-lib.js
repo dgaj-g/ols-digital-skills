@@ -68,6 +68,15 @@ function helpCheck() {
       const under = [...document.querySelectorAll('main p, main li, main label, main h1, main h2, main .kick, main .headline, main button, main code, main input, #job')]
         .filter(e => vis(e) && getComputedStyle(e).visibility !== 'hidden' && !e.closest('#help') && lines(e).some(r => Math.min(t.right, r.right) - Math.max(t.left, r.left) > 2 && Math.min(t.bottom, r.bottom) - Math.max(t.top, r.top) > 2));
       if (under.length) bad.push('the tag covers words: ' + under.map(e => (e.textContent || e.placeholder || e.tagName).trim().slice(0, 20)).join(' | ')); }
+    /* V87: the ring, at the widest point of its pulse, never crosses words or controls outside the thing it rings */
+    { const cs = getComputedStyle(sp), kf = [...document.styleSheets].flatMap(x => { try { return [...x.cssRules]; } catch (e) { return []; } }).find(k => k.type === 7 && k.name === cs.animationName);
+      const to = kf ? [...kf.cssRules].filter(k => /100%|to/.test(k.keyText)).map(k => parseFloat(k.style.outlineOffset) || 0) : [], out = (parseFloat(cs.outlineWidth) || 0) + Math.max(parseFloat(cs.outlineOffset) || 0, ...to);
+      const O = { left: r.left - out, right: r.right + out, top: r.top - out, bottom: r.bottom + out };
+      const rl = e => { if (!/^(P|LI|LABEL|H1|H2|DIV|SPAN)$/.test(e.tagName)) return [e.getBoundingClientRect()]; const g = document.createRange(); g.selectNodeContents(e); return [...g.getClientRects()]; };
+      const hit = q => Math.min(O.right, q.right) - Math.max(O.left, q.left) > 2 && Math.min(O.bottom, q.bottom) - Math.max(O.top, q.top) > 1.5 && !(q.left >= r.left - 1 && q.right <= r.right + 1 && q.top >= r.top - 1 && q.bottom <= r.bottom + 1);
+      const ringOn = [...document.querySelectorAll('main p, main li, main label, main h1, main h2, main .kick, main .headline, main button, main code, main input, #job')]
+        .filter(e => vis(e) && getComputedStyle(e).visibility !== 'hidden' && !sp.contains(e) && !e.contains(sp) && !e.closest('#help') && rl(e).some(hit));
+      if (ringOn.length) bad.push('the ring covers words: ' + ringOn.map(e => (e.textContent || e.placeholder || e.tagName).trim().slice(0, 20)).join(' | ')); }
   }
   /* her work: nothing she reads or uses sits under the help box */
   [...document.querySelectorAll('main button, main input, main .tbl, main .paper, main .ask, main p')].filter(e => vis(e) && !e.closest('#help')).forEach(e => { const r = e.getBoundingClientRect();

@@ -2,12 +2,13 @@
   PASS job line and help are right on all 1815 states (help opened 1805 times)
   PASS an example is typed in every empty box: 10 different examples, 210 times
   PASS the real wait is 20 seconds, and 40 for the ring
-  PASS the rush clock holds while help is open, then runs on (179289 / 179289 / 178175 ms left)
-  PASS the rule-race clock holds while help is open, then runs on (89497 / 89497 / 88246)
+  PASS the rush clock holds while help is open, then runs on (179285 / 179285 / 178063 ms left)
+  PASS the rule-race clock holds while help is open, then runs on (89500 / 89500 / 88249)
   PASS left alone, the button pulses first and the ring with its tag comes second, without help opening (true,false,true,true,false)
   PASS one touch clears the pulse and the ring
   PASS CONTROL (it failed, as it must): the Stuck? Show me button hidden
   PASS CONTROL (it failed, as it must): the ring stripped
   PASS CONTROL (it failed, as it must): the example swapped for the answer
   PASS CONTROL (it failed, as it must): the tag put on the question's words
-j3l6-help: ALL 12 CHECKS PASS
+  PASS CONTROL (it failed, as it must): the ring made wide enough to sit on the words around it
+j3l6-help: ALL 13 CHECKS PASS
