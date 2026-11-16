@@ -16,6 +16,8 @@ PASS T49 the second press deletes the class
 PASS T50 Part 6 shows as locked after one press in the Parts tab, and its button now says Unlock
 PASS T64 Lock parts shows the 11 parts one to a row, each with its state and a Lock or Unlock button
 PASS CONTROL with the old Lock parts markup put back, the check sees parts sharing a row and the Open/Locked buttons
+PASS T68 Lock parts says "Working…" while the parts load, then shows the 11 parts
+PASS CONTROL T68 the check fails on the old blank list
 PASS T01 a pupil with no name on record is asked for her first name
 PASS T01 the bar says "Hi Orla" after naming
 PASS T01 the next load goes straight home with "Hi Orla"
@@ -189,6 +191,8 @@ PASS T46 with the server unreachable the offline line and Retry show
 PASS T46 her answers are kept
 PASS T46 Retry marks the answers once the server is back
 PASS T47 a not-signed-in reply shows the expired line
+PASS T67 the Classes tab shows the class's pupil count
+PASS CONTROL T67 the check fails on the old Pupils cell, which always said 0
 PASS T51 a row for each pupil who has used the class
 PASS T51 the row carries points and last seen in words
 PASS T51 a pupil who writes but never builds is flagged
@@ -205,4 +209,4 @@ INFO T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–
 PASS T66 Export: the Download CSV button sits under the class picker, clear of the card below, before and after a class is picked
 PASS CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card
 PASS no console or page errors
-g5-pupil-staff: 202 PASS, 0 FAIL, 2 SKIP
+g5-pupil-staff: 206 PASS, 0 FAIL, 2 SKIP
