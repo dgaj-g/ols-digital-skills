@@ -142,6 +142,8 @@ var App = (function(){
   function wire(id, fn){ var e = document.getElementById(id); if (e) e.onclick = fn; }
   function go(r){ try { sessionStorage.setItem("soc-route", r); } catch (x) {} if (("#" + r) !== location.hash){ try { location.hash = "#" + r; return; } catch (x) {} } route(r); }
   window.addEventListener("hashchange", function(){ var r = location.hash.slice(1); if (r !== CUR) route(r); });
+  // Hash links stay inside the page: Apps Script serves it with <base target="_top">, which would send every #link to the sandbox frame's own address (a blank tab).
+  document.addEventListener("click", function(ev){ if (ev.defaultPrevented || ev.button) return; var a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#"]') : null; if (!a) return; ev.preventDefault(); var r = a.getAttribute("href").slice(1); if (r) go(r); });
 
   // ---- screens ----
   function nameScreen(){
@@ -214,10 +216,13 @@ var App = (function(){
     html += blocks(page.blocks);
     if (page.check) html += '<section class="blk"><h2>' + h(S.learnSay) + '</h2><ul class="cklist">' + page.check.map(function(c){ return '<li><span class="mark ok" aria-hidden="true">✓</span> ' + h(c) + '</li>'; }).join("") + '</ul></section>';
     if (route === "s6") html += fiveList(page); else if (route === "s7") html += tenList(page); else html += testsFor(route);
+    if (route === "s1" || route === "s2") html += pageLinks(partOf(route));
     if (route === "s1") html += '<section class="blk"><div class="row"><a class="btn ghost" href="#s1/checklist">Tick the 12-line checklist for this part</a></div></section>';
     var body = el('<div data-part="' + h(agent ? agent.id : "") + '">' + html + '</div>');
     shell(route, body, {crumb: page.title, next: page.next, colour: agent ? agent.id : null});
   }
+  // a button for each page of the part, so a pupil can go back to any idea without working through the quizzes again
+  function pageLinks(pid){ var list = (PAGES[pid] || []).slice(1).filter(function(r){ var pg = C[contentKey(r)]; return pg && pg.title; }); if (!list.length) return ""; return '<section class="blk"><h2>' + h(S.pagesHead) + '</h2><div class="row">' + list.map(function(r){ return '<a class="btn sm ghost" href="#' + h(r) + '">' + h(C[contentKey(r)].title) + '</a>'; }).join("") + '</div></section>'; }
   function lockedScreen(route, pid){ shell(route, el('<div class="card"><h2>' + h(S.locked) + '</h2><p>' + h(S.lockedSub) + '</p></div>'), {crumb: S.locked, bar: true, back: "home"}); }
   function checklist(){
     var items = (C["p1/checklist"] || {items: []}).items, H = ME.hdr || {}, ck = (H.ck || []).slice(); while (ck.length < 12) ck.push(0);
@@ -246,8 +251,8 @@ var App = (function(){
   function nextAfter(route){
     var pi = pageIndex(route), keys = Object.keys(TESTS).filter(function(k){ return k.indexOf(pi.base + "/") === 0; }), at = keys.indexOf(route);
     if (at >= 0 && at < keys.length - 1) return {route: keys[at + 1], label: TESTS[keys[at + 1]].t};
-    var page = C[contentKey(pi.base)]; if (page && page.next) return page.next;
-    if (pi.n < pi.m) return {route: pi.list[pi.n], label: S.next};
+    // the last activity on a page goes on to the next page of the part (the page's own "next" leads to its first activity, so following it here would loop back)
+    for (var j = pi.n; j < pi.m; j++){ var r = pi.list[j]; if (r.indexOf(pi.base + "/") === 0) continue; var pg = C[contentKey(r)], tt = TESTS[r]; return {route: r, label: (pg && pg.title) || (tt && tt.t) ? fmt(S.nextTo, {t: (pg && pg.title) || tt.t}) : S.next}; }
     return {route: "home", label: S.home};
   }
   // ---- Part 5: key words ----

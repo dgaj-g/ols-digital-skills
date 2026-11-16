@@ -1,0 +1,9 @@
+PASS the pupil home shows the part tiles inside the frame — 11 tiles
+PASS a part tile opens the part and the tab stays on the app — frame hash #s1
+PASS the breadcrumb Home goes home and the tab stays on the app — frame hash #home
+PASS a second tile opens its part — frame hash #s5
+PASS a part page Back link stays in the app — frame hash #home
+PASS the teacher's "Pupil view" link opens the pupil home in the frame — frame hash #home
+PASS after "Pupil view" the teacher sees the part tiles — 11 tiles
+PASS CONTROL with the link handling stopped, a tile click does move the top address (the check above can see the bug) — top now http://localhost:8774/exec?class=frame-class&as=pupil1@c2ken.net#s1
+g8-frame: 8 PASS, 0 FAIL, 0 SKIP

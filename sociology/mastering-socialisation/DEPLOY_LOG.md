@@ -16,3 +16,4 @@ folder is served directly by GitHub Pages except `img/` (photos and OpenMoji ico
 | Version | Date | Build token | What changed |
 |---|---|---|---|
 | 1 | 3 Nov 2026 19:34 | 15131c5bb7-3ad53a5b | first build (PR #107, squash 79cee92). Script ID 1awM41pyLhAxWd58hYEF4D7dhvkhuHOiZzuWJQsBuWmpOMSRmLTnmiThe, deployment AKfycbwcX6a9F3yyoToksv_xwpj7km0o7bBLRk4H4N_arO-x6ZlJw6KG98cJGgcnNXYotpbm. /exec URL in DESIGN/deploy/EXEC_URL.txt. |
+| 2 | 16 Nov 2026 | 5f22c3692d-4aea0e2d | live check fixes: links stay inside the page (g8); after a page's last quiz "next" goes on to the next page, so every page of every part can be reached (g9); "Go straight to a page" buttons on Part 1 and 2 landings; the storage clear-out now runs when any teacher opens the staff page, into that teacher's own Drive, for her own classes; a full store still saves the mark and tells the pupil; Archive card wording corrected. Same deployment, new version. |

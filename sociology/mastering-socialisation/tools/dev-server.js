@@ -70,7 +70,7 @@ function sheetApi(id) {
   const s = db.sheets[id];
   const sheet = { appendRow: (r) => { s.rows.push(r); save(); }, getLastRow: () => s.rows.length,
     getRange: () => ({ setValues: (rows) => { rows.forEach((r) => s.rows.push(r.map((c) => (c instanceof Date ? c.toISOString() : c)))); save(); } }) };
-  return { getId: () => id, getName: () => s.name, getSheets: () => [sheet] };
+  return { getId: () => id, getName: () => s.name, getUrl: () => 'https://docs.google.com/spreadsheets/d/' + id + '/edit', getSheets: () => [sheet] };
 }
 function makeSandbox() {
   return {
@@ -103,7 +103,7 @@ function makeSandbox() {
       formatDate: fmtDate,
     },
     SpreadsheetApp: {
-      create: (name) => { const id = 'sheet-' + Object.keys(db.sheets).length; db.sheets[id] = { name, rows: [] }; save(); return sheetApi(id); },
+      create: (name) => { const id = 'sheet-' + Object.keys(db.sheets).length; db.sheets[id] = { name, rows: [], by: current }; save(); return sheetApi(id); },
       openById: (id) => { if (!db.sheets[id]) throw new Error('no sheet'); return sheetApi(id); },
     },
     HtmlService: {},
@@ -148,6 +148,8 @@ http.createServer((req, res) => {
   const u = new URL(req.url, 'http://localhost');
   try { fresh(); } catch (e) { res.writeHead(500, { 'content-type': 'text/plain' }); res.end('Code.gs failed to load: ' + e.message); log(req, 500, e.message); return; }
   if (req.method === 'GET' && (u.pathname === '/' || u.pathname === '/exec')) { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); res.end(page(u.searchParams)); log(req, 200); return; }
+  // /framed?<same query> wraps the page in an iframe, as Apps Script serves it (the page's <base target="_top"> then aims at this wrapper)
+  if (req.method === 'GET' && u.pathname === '/framed') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); res.end('<!DOCTYPE html><html><body style="margin:0"><iframe id="app" src="/exec' + u.search.replace(/"/g, '') + '" style="border:0;width:100vw;height:100vh"></iframe></body></html>'); log(req, 200); return; }
   if (req.method === 'GET' && u.pathname.indexOf('/img/') === 0) {
     const name = decodeURIComponent(u.pathname.slice(5));
     const f = path.join(IMG, name);

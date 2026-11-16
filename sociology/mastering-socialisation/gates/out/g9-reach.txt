@@ -1,0 +1,27 @@
+PASS the gate can find the fix in app.js (so the control can undo it) — found
+INFO 104 screens reached by clicking from the home page
+PASS every page of p1 can be reached by clicking from the home page — 6 pages
+PASS every page of p2 can be reached by clicking from the home page — 9 pages
+PASS every page of p3 can be reached by clicking from the home page — 8 pages
+PASS every page of p4 can be reached by clicking from the home page — 2 pages
+PASS every page of p5 can be reached by clicking from the home page — 3 pages
+PASS every page of p6 can be reached by clicking from the home page — 27 pages
+PASS every page of p7 can be reached by clicking from the home page — 8 pages
+PASS every page of p8 can be reached by clicking from the home page — 2 pages
+PASS every page of p9 can be reached by clicking from the home page — 2 pages
+PASS every page of p10 can be reached by clicking from the home page — 6 pages
+PASS every page of p11 can be reached by clicking from the home page — 8 pages
+PASS every activity can be reached by clicking from the home page — 28 activities
+PASS no screen's "next" button points back at the same screen — none of 104
+PASS pressing "next" from the start of p1 passes every page of the part — 26 screens
+PASS pressing "next" from the start of p2 passes every page of the part — 16 screens
+PASS pressing "next" from the start of p3 passes every page of the part — 19 screens
+PASS pressing "next" from the start of p4 passes every page of the part — 2 screens
+PASS pressing "next" from the start of p5 passes every page of the part — 3 screens
+PASS pressing "next" from the start of p6 passes every page of the part — 37 screens
+PASS pressing "next" from the start of p7 passes every page of the part — 10 screens
+PASS pressing "next" from the start of p8 passes every page of the part — 2 screens
+PASS pressing "next" from the start of p9 passes every page of the part — 2 screens
+PASS CONTROL with the old nextAfter() put back, a quiz's "next" points at itself (the check above can see the bug) — 11 loops, e.g. s1/primary/test
+PASS CONTROL with the old nextAfter() put back, the Part 2 "next" chain stops short — never reaches s2/nonmaterial, s2/values, s2/norms, s2/customs, s2/beliefs, s2/traditions, s2/sorter
+g9-reach: 25 PASS, 0 FAIL, 0 SKIP

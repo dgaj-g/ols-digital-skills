@@ -1,6 +1,6 @@
 /* Mastering Socialisation — staff side (ported from S1 Unit 1 staff.js). Ops: check, classes, create, delete, lb, parts, setPart, tracker, pupil, csv, clearMe, archive. */
 var Staff = (function(){
-  var T, S, ME, PASS = "", CL = [], CUR = "", ROLE = "";
+  var T, S, ME, PASS = "", CL = [], CUR = "", ROLE = "", ARC = null;
   function h(s){ return T.h(s); }
   function el(html){ return T.el(html); }
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -11,7 +11,7 @@ var Staff = (function(){
   function start(me, t){ T = t; S = t.S; ME = me; check(""); }
   function check(pass){
     PASS = pass;
-    api("check", {}, {quiet: true}).then(function(r){ if (!r.admitted) return door(pass ? S.staffWrong : ""); ROLE = r.role || "teacher"; CL = r.classes || []; tabs("classes"); }).catch(function(e){ if (!e || !e.code) { try { console.error("staff page", e); } catch (x) {} } door(e && e.code === "bad-pass" && pass ? S.staffWrong : ""); });
+    api("check", {}, {quiet: true}).then(function(r){ if (!r.admitted) return door(pass ? S.staffWrong : ""); ROLE = r.role || "teacher"; CL = r.classes || []; ARC = r.archived ? {n: r.archived, url: r.archiveUrl || ""} : null; tabs("classes"); }).catch(function(e){ if (!e || !e.code) { try { console.error("staff page", e); } catch (x) {} } door(e && e.code === "bad-pass" && pass ? S.staffWrong : ""); });
   }
   function door(err){
     var b = el('<div class="door"><div class="card acc"><h2>' + h(S.staffDoor) + '</h2><p>' + h(S.staffDoorSub) + '</p><div class="row"><input id="pw" type="password" autocomplete="current-password" aria-label="Staff passcode"><button class="btn acc" id="in">' + h(S.staffIn) + '</button></div><p class="small mute" id="pwErr">' + h(err || "") + '</p><p><a class="link" href="#home">' + h(S.staffPupilView) + '</a></p></div></div>');
@@ -56,6 +56,8 @@ var Staff = (function(){
   }
   function classes(box){
     box.innerHTML = '<h2>' + h(S.staffTabClasses) + '</h2><p>' + h(S.staffClassesLead) + '</p>';
+    // a staff visit moves the oldest written answers to a Sheet when the store is nearly full; say so, and where they went
+    if (ARC) box.appendChild(el('<p class="say">' + h(T.fmt(ARC.n === 1 ? S.staffArchivedNote1 : S.staffArchivedNote, {n: ARC.n})) + (ARC.url ? ' <a href="' + h(ARC.url) + '" target="_blank" rel="noopener">' + h(S.staffArchivedOpen) + '</a>' : '') + '</p>'));
     var tbl = el('<table><thead><tr><th>Class</th><th>Pupils</th><th>Leaderboard</th><th>Link</th><th></th></tr></thead><tbody></tbody></table>');
     var tb = tbl.querySelector("tbody");
     if (!CL.length) box.appendChild(el('<p class="say">' + h(S.staffNoClass) + '</p>'));
@@ -140,7 +142,7 @@ var Staff = (function(){
     twoPress(me.querySelector("#cm"), S.staffClearSure, function(){ api("clearMe", {}, {save: true}).then(function(){ T.toast(S.staffCleared); T.reboot().catch(function(){}); }).catch(function(){}); });
     if (ROLE === "owner"){
       var ar = el('<div class="card"><h3>' + h(S.staffArchive) + '</h3><p>' + h(S.staffArchiveSub) + '</p><button class="btn ghost" id="arc">' + h(S.staffArchiveGo) + '</button><p class="small mute" id="arcOut"></p></div>'); box.appendChild(ar);
-      twoPress(ar.querySelector("#arc"), S.staffArchiveSure, function(){ api("archive", {}, {save: true, btn: ar.querySelector("#arc")}).then(function(r){ ar.querySelector("#arcOut").textContent = r.url || S.saved; }).catch(function(){}); });
+      twoPress(ar.querySelector("#arc"), S.staffArchiveSure, function(){ api("archive", {}, {save: true, btn: ar.querySelector("#arc")}).then(function(r){ var o = ar.querySelector("#arcOut"); o.innerHTML = h(r.moved ? T.fmt(r.moved === 1 ? S.staffArchiveMoved1 : S.staffArchiveMoved, {n: r.moved}) : T.fmt(S.staffArchiveNone, {k: Math.round((r.size || 0) / 1024), m: Math.round((r.line || 0) * 0.8 / 1024)})) + (r.moved && r.url ? ' <a href="' + h(r.url) + '" target="_blank" rel="noopener">' + h(S.staffArchivedOpen) + '</a>' : ""); }).catch(function(){}); });
     }
   }
   return {start: start};
