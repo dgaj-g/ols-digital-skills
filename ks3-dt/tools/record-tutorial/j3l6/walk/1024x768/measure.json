@@ -2,7 +2,7 @@
  "width": 1024,
  "height": 768,
  "fails": false,
- "minutes": 10.412666666666668,
+ "minutes": 10.576,
  "records": [
   {
    "screen": "donow",
@@ -37,15 +37,18 @@
   {
    "screen": "story",
    "chapter": "open",
-   "words": 6,
-   "proseWords": 6,
+   "words": 34,
+   "proseWords": 34,
    "keys": 0,
    "film": 5,
    "acts": 2,
    "prose": [
-    "10:02 pm · Dee Lavery, editor"
+    "10:02 pm · Dee Lavery, editor",
+    "Fionn, our reporter, went home sick.",
+    "Check his six headlines before midnight.",
+    "PRINT the true ones. SPIKE the rest. SPIKE means you throw the headline in the bin."
    ],
-   "secs": 9.9
+   "secs": 19.7
   },
   {
    "screen": "facts",

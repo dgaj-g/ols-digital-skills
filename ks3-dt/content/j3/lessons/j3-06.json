@@ -109,7 +109,7 @@
       },
       "confirm": "Stamp it",
       "missing": "Pick a stamp and a reason first.",
-      "stamped": "You stamped it {stamp}. Your reason: {reason}"
+      "stamped": "You stamped it {stamp}. Your reason: {reason}."
      },
      "donow": {
       "kicker": "Do now",
@@ -148,7 +148,7 @@
       "s2": "Type a rule in this box. The table keeps only rows that fit.",
       "s3": "This is the count. It shows how many rows are left.",
       "next": "Next",
-      "done": "Got it"
+      "done": "Next"
      },
      "c1": {
       "title": "The question",
@@ -248,7 +248,7 @@
        "He did nothing wrong. 3,000 is the right number."
       ],
       "right": "Right. One good week is not the whole summer.",
-      "wrong": "He took the best week and called it the summer.",
+      "wrong": "He took the best week. All 92 days had only 2,215 visitors a day.",
       "stampAsk": "Now you stamp it.",
       "stampOk": "SPIKE. Fionn used only the best week. Regatta week is not the whole summer.",
       "stampNo": "Can seven days show the whole summer?",
@@ -321,7 +321,7 @@
       "reasonNo": "The four did love it. But four is too few.",
       "doneLine": "You have done five headlines. One is left.",
       "wrongNot": "Your rule keeps {got} rows. Put NOT before area.",
-      "wrongAnd": "Your rule keeps {got} rows. Join the two rules with AND."
+      "wrongAnd": "Your rule keeps {got} rows. Add AND and a rule for the stars."
      },
      "c6": {
       "title": "The rush",
@@ -501,15 +501,16 @@
       "facts": "see where Fionn’s facts come from, then press Show me the desk.",
       "tour": "see how the desk works, then press Next.",
       "title": "read Fionn’s headline, then press Check it.",
-      "show1": "watch Dee’s rule work.",
-      "show": "watch Dee use {kw}.",
+      "show1": "watch Dee’s rule work, then press Got it.",
+      "show": "watch Dee use {kw}, then press Got it.",
       "ask": "write a rule, then press Enter.",
       "askFix": "fix your rule, then press Enter.",
-      "ok": "read the green line, then press the button.",
+      "ok": "read the green line, then press Next.",
+      "stampOk": "read the green line, then press the button under it.",
       "compare": "compare the numbers, then choose an answer.",
       "predict": "choose the right answer.",
       "picked": "read the line, then press Next.",
-      "stampshow": "see how Dee stamps a headline.",
+      "stampshow": "see how Dee stamps a headline, then press Got it.",
       "stamp": "choose a stamp and a reason, then press Stamp it.",
       "ring": "press Start the clock.",
       "printed": "read what happened, then press Next.",
@@ -530,7 +531,8 @@
       "count": "pick how many rows this rule keeps.",
       "end": "you have nothing more to do. The lesson is finished.",
       "donowEnd": "press Start tonight.",
-      "after": "read the line, then press {btn}."
+      "after": "read the line, then press {btn}.",
+      "afterOk": "read the green line, then press {btn}."
      },
      "help": {
       "next": [
@@ -551,7 +553,7 @@
        "Press Enter. Check the count."
       ],
       "askRed": [
-       "Read the red line under your rule.",
+       "Read the red line.",
        "Fix one part, then press Enter.",
        "Press Hint if you need more."
       ],
@@ -559,6 +561,38 @@
        "Press Enter to run your rule.",
        "Then read the line under it."
       ],
+      "shape": {
+       "word": [
+        "Click a column name in the word bank.",
+        "Click =, then type the word in quotes.",
+        "Press Enter. Check the count."
+       ],
+       "and": [
+        "Write the first rule.",
+        "Click AND, then write the second rule.",
+        "Press Enter. Check the count."
+       ],
+       "or": [
+        "Write the first rule.",
+        "Click OR, then write the column name again.",
+        "Finish the second rule. Press Enter."
+       ],
+       "between": [
+        "Click a column name, then click BETWEEN.",
+        "Type the small number. Click AND. Type the big one.",
+        "Press Enter. Check the count."
+       ],
+       "not": [
+        "Click NOT first.",
+        "Then write the rule for the rows to leave out.",
+        "Press Enter. Check the count."
+       ],
+       "notAnd": [
+        "Click NOT. Write the rule for rows to leave out.",
+        "Click AND, then write the second rule.",
+        "Press Enter. Check the count."
+       ]
+      },
       "ok": [
        "Read the green line.",
        "Then press the button under it."
@@ -628,7 +662,11 @@
        "c6a": "rain_mm >= 5",
        "c6b": "rain_mm < 2",
        "people": "age > 30",
-       "days": "rain_mm > 3"
+       "days": "rain_mm > 3",
+       "people.word": "pet = \"dog\"",
+       "people.not": "NOT area = \"Hill\"",
+       "people.and": "area = \"Harbour\" AND pet = \"dog\"",
+       "days.word": "month = \"June\""
       }
      },
      "late": {
@@ -848,8 +886,8 @@
         "days": "day"
        },
        "need": "Use {need} in your rule.",
-       "fewer": "Your rule keeps {got}. You need {n}, so keep fewer.",
-       "more": "Your rule keeps {got}. You need {n}, so keep more.",
+       "fewer": "Your rule keeps {got} rows. You need {n} rows. Change your rule so it keeps fewer rows.",
+       "more": "Your rule keeps {got} rows. You need {n} rows. Change your rule so it keeps more rows.",
        "missing": "Your rule keeps the right number, {n}. But this job needs {need} in your rule.",
        "ok": "Your rule keeps exactly {n} rows. Well done.",
        "next": "Next number",
@@ -1009,6 +1047,25 @@
        "end": "You got {n} of {all} right.",
        "timeUp": "Time is up.",
        "again": "Race again",
+       "signs": {
+        ">": "more than",
+        "<": "less than",
+        ">=": "more than or equal to",
+        "<=": "less than or equal to",
+        "=": "exactly",
+        "<>": "not equal to"
+       },
+       "why": {
+        "sign": "That rule uses {ws}, which means {wm}. The question needs {rs}, which means {rm}.",
+        "col": "That rule looks in the {wc} column. The question needs the {rc} column.",
+        "value": "That rule uses {wv}. The question needs {rv}.",
+        "needAnd": "OR keeps rows where at least one part is true. The question needs both parts true, so use AND.",
+        "needOr": "AND keeps only rows where both parts are true. The question wants rows where either part is true, so use OR.",
+        "noNot": "That rule has no NOT, so it keeps the rows the question leaves out.",
+        "notWrong": "NOT keeps the rows that do not fit the rule. This question wants the rows that do fit it.",
+        "outside": "That rule keeps the rows outside {a} to {b}.",
+        "ends": "BETWEEN keeps the first number and the last number too. The signs > and < leave those two numbers out."
+       },
        "items": [
         [
          {
@@ -1213,7 +1270,7 @@
       "count": {
        "ask": "How many rows does this rule keep?",
        "right": "Right. {why}",
-       "wrong": "It keeps {right}. {why}",
+       "wrong": "It keeps {right} rows. {why}",
        "next": "Next rule",
        "items": [
         {

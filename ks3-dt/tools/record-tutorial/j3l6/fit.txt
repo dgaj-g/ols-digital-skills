@@ -1,5 +1,5 @@
-  PASS all 15 walks reach the end with no page errors
-  PASS all 1015 states fit their frame, nothing outside the window, no words spilling
+  PASS all 20 walks reach the end with no page errors
+  PASS all 1815 states fit their frame, nothing outside the window, no words spilling
   PASS CONTROL (it failed, as it must): a block 300 px tall added to the page
   PASS CONTROL (it failed, as it must): a button with words too long for it
 j3l6-fit: ALL 4 CHECKS PASS

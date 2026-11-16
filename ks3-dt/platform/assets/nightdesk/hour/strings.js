@@ -4,12 +4,12 @@ window.S = {
   lesson: { code: 'J3 · Lesson 6', title: 'The Night Desk', slot: 'Data Newsroom' },
   rail: { late: 'Late shift', donow: 'Do now', open: 'The job', c1: '1 · The question', c2: '2 · Two at once', c3: '3 · One week', c4: '4 · Either one', c5: '5 · Leave out', c6: '6 · The rush', front: 'Front page', close: 'Finish' },
   common: { next: 'Next', partOf: 'Part {n} of 9', minsLeft: '{m} minutes left', pause: 'Pause', paused: 'Paused. Nothing is lost.', resume: 'Carry on', here: 'You are here', xp: '{n} points', hintN: 'Hint {n} of 3', hint: 'Hint', ask: 'Ask the table', clear: 'Clear', showing: 'Showing {n} of {all} {what}', people: 'people', days: 'days', andMore: 'and {n} more rows', bank: 'Word bank: click a word to add it.', boxHint: 'Type a rule, then press Enter' },
-  stamp: { PRINT: 'PRINT', SPIKE: 'SPIKE', why: 'Why?', reasons: { numbers: 'The numbers say no', few: 'Too few people', cherry: 'Only the best bit', cause: 'One did not cause the other', backed: 'The numbers back it' }, confirm: 'Stamp it', missing: 'Pick a stamp and a reason first.', stamped: 'You stamped it {stamp}. Your reason: {reason}' },
+  stamp: { PRINT: 'PRINT', SPIKE: 'SPIKE', why: 'Why?', reasons: { numbers: 'The numbers say no', few: 'Too few people', cherry: 'Only the best bit', cause: 'One did not cause the other', backed: 'The numbers back it' }, confirm: 'Stamp it', missing: 'Pick a stamp and a reason first.', stamped: 'You stamped it {stamp}. Your reason: {reason}.' },
   donow: { kicker: 'Do now', intro: 'Here are five quick questions from earlier lessons. Click an answer to see if it is right.', progress: 'Question {n} of 5', right: 'Right.', wrong: 'Not that one. The green one is right.', finish: 'You have done all five questions. Next is tonight’s job.', button: 'Start tonight' },
   opening: { kicker: 'Tonight', line1: 'You will check if headlines are telling the truth.', line2: 'Posts, adverts and the news are not always true.', button: 'Start' },
   story: { kicker: '10:02 pm · Dee Lavery, editor', from: 'Dee', b1: 'Fionn, our reporter, went home sick.', b2: 'Check his six headlines before midnight.', b3: 'PRINT the true ones. SPIKE the rest. SPIKE means you throw the headline in the bin.', readAll: 'Show all the texts', go: 'Open the desk' },
   facts: { kicker: 'What Fionn collected', intro: 'Fionn’s facts are in two tables. Each table has rows and columns.', t1: 'Table one: 60 people of Rathmore answered a survey.', t2: 'Table two: 92 summer days at the harbour.', button: 'Show me the desk' },
-  tour: { kicker: 'The desk', s1: 'This is the table. Each row is one person.', s2: 'Type a rule in this box. The table keeps only rows that fit.', s3: 'This is the count. It shows how many rows are left.', next: 'Next', done: 'Got it' },
+  tour: { kicker: 'The desk', s1: 'This is the table. Each row is one person.', s2: 'Type a rule in this box. The table keeps only rows that fit.', s3: 'This is the count. It shows how many rows are left.', next: 'Next', done: 'Next' },
   c1: {
     title: 'The question', headline: 'Eight hours of sleep lifts exam scores', byline: 'Fionn · page 3',
     showKicker: 'Dee shows you', show1: 'A rule has a column, a sign and a number.', showDemo: 'age < 20', show2: '< means less than, so this keeps people under 20.',
@@ -32,7 +32,7 @@ window.S = {
     showKicker: 'Dee shows you', show1: 'BETWEEN keeps every number from the first to the second.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'Here: summer days at 20, 21 or 22 degrees.',
     ask: 'Fionn only looked at days 40 to 46. Keep those days.', h1: 'The column is day_no.', h2: 'Write day_no, then BETWEEN, then the first day, then AND, then the last day.', h3: 'Type this, then press Enter.', h3code: 'day_no BETWEEN 40 AND 46',
     judge: { ok: 'Right: 7 days. They are regatta week, the week of the boat races.', wrong: 'Your rule keeps {got} days, not 7. Check both ends.' },
-    compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week and called it the summer.',
+    compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week. All 92 days had only 2,215 visitors a day.',
     stampAsk: 'Now you stamp it.', stampOk: 'SPIKE. Fionn used only the best week. Regatta week is not the whole summer.', stampNo: 'Can seven days show the whole summer?', reasonNo: 'Those seven days are real, but they were the best week of the summer.', doneLine: 'You have done three headlines. Three are left.'
   },
   c4: {
@@ -324,29 +324,37 @@ window.S.recapPool = [
    average, {r:col} rest average, {c:ref} count of another rule, {x:col:ref} average over another rule. */
 (function (S) {
   Object.assign(S.common, { jobLead: 'Your job now:', stuck: 'Stuck? Show me', helpClose: 'Got it', helpKicker: 'How to do it', stillStuck: 'Still stuck? Ask the person beside you. Then put your hand up.', tagPress: 'Press this', tagChoose: 'Choose one', tagType: 'Type here', tagLike: 'Like this', errBetween: 'BETWEEN needs the small number first.', errSide: 'Each side of OR needs its own column name. Write the column again after OR.' });
-  Object.assign(S.c5, { wrongNot: 'Your rule keeps {got} rows. Put NOT before area.', wrongAnd: 'Your rule keeps {got} rows. Join the two rules with AND.' });
+  Object.assign(S.c5, { wrongNot: 'Your rule keeps {got} rows. Put NOT before area.', wrongAnd: 'Your rule keeps {got} rows. Add AND and a rule for the stars.' });
   S.job = {
     choose: 'click the answer you think is right.', opening: 'press Start to begin.', story: 'read Dee’s texts, then press Open the desk.',
     facts: 'see where Fionn’s facts come from, then press Show me the desk.', tour: 'see how the desk works, then press Next.',
-    title: 'read Fionn’s headline, then press Check it.', show1: 'watch Dee’s rule work.', show: 'watch Dee use {kw}.',
-    ask: 'write a rule, then press Enter.', askFix: 'fix your rule, then press Enter.', ok: 'read the green line, then press the button.',
+    title: 'read Fionn’s headline, then press Check it.', show1: 'watch Dee’s rule work, then press Got it.', show: 'watch Dee use {kw}, then press Got it.',
+    ask: 'write a rule, then press Enter.', askFix: 'fix your rule, then press Enter.', ok: 'read the green line, then press Next.', stampOk: 'read the green line, then press the button under it.',
     compare: 'compare the numbers, then choose an answer.', predict: 'choose the right answer.', picked: 'read the line, then press Next.',
-    stampshow: 'see how Dee stamps a headline.', stamp: 'choose a stamp and a reason, then press Stamp it.', ring: 'press Start the clock.',
+    stampshow: 'see how Dee stamps a headline, then press Got it.', stamp: 'choose a stamp and a reason, then press Stamp it.', ring: 'press Start the clock.',
     printed: 'read what happened, then press Next.', letter: 'read Marie’s letter, then press Fix the stamp.',
     front: 'type your name, then press Print my page.', badges: 'see your badges, then press Next.', recap: 'remember these four, then press Next.',
     felt: 'answer each question, then press Send and finish.', welcome: 'press Carry on.', review: 'look back, then press Back.',
     late: 'choose an extra job, or finish the lesson.', heads: 'write the rule, then stamp the headline.', hit: 'make your rule keep exactly {n} rows.',
     fix: 'fix Fionn’s rule, then press Enter.', raceMenu: 'choose a level to start the race.', race: 'pick the right rule before the clock runs out.',
     raceEnd: 'race again, or go back to the menu.', count: 'pick how many rows this rule keeps.', end: 'you have nothing more to do. The lesson is finished.',
-    donowEnd: 'press Start tonight.', after: 'read the line, then press {btn}.'
+    donowEnd: 'press Start tonight.', after: 'read the line, then press {btn}.', afterOk: 'read the green line, then press {btn}.'
   };
   S.help = {
     next: ['Read the screen from the top.', 'Then press the button with the ring.'],
     story: ['Read each text from Dee.', 'Then press Open the desk.'],
     tour: ['Read the line beside the ring.', 'Then press Next.'],
     askEmpty: ['Click a column name in the word bank.', 'Click a sign, then type a number.', 'Press Enter. Check the count.'],
-    askRed: ['Read the red line under your rule.', 'Fix one part, then press Enter.', 'Press Hint if you need more.'],
+    askRed: ['Read the red line.', 'Fix one part, then press Enter.', 'Press Hint if you need more.'],
     askTyped: ['Press Enter to run your rule.', 'Then read the line under it.'],
+    shape: {
+      word: ['Click a column name in the word bank.', 'Click =, then type the word in quotes.', 'Press Enter. Check the count.'],
+      and: ['Write the first rule.', 'Click AND, then write the second rule.', 'Press Enter. Check the count.'],
+      or: ['Write the first rule.', 'Click OR, then write the column name again.', 'Finish the second rule. Press Enter.'],
+      between: ['Click a column name, then click BETWEEN.', 'Type the small number. Click AND. Type the big one.', 'Press Enter. Check the count.'],
+      not: ['Click NOT first.', 'Then write the rule for the rows to leave out.', 'Press Enter. Check the count.'],
+      notAnd: ['Click NOT. Write the rule for rows to leave out.', 'Click AND, then write the second rule.', 'Press Enter. Check the count.']
+    },
     ok: ['Read the green line.', 'Then press the button under it.'],
     predict: ['Look at the numbers on the desk.', 'Choose the answer that fits them.'],
     stampNone: ['Do the numbers back the headline?', 'Yes: press PRINT. No: press SPIKE.'],
@@ -362,7 +370,7 @@ window.S.recapPool = [
     count: ['Think about what the rule keeps.', 'Click the number you think is right.'],
     choose: ['Read the question.', 'Click the answer you think is right.'],
     felt: ['Click one answer in each row.', 'Then press Send and finish.'],
-    demo: { c1: 'cafe_visits >= 8', c2: 'area = "Hill" AND pet = "dog"', c3: 'temp_c BETWEEN 15 AND 17', c4: 'area = "Harbour" OR area = "Old Town"', c5: 'NOT pet = "dog" AND age > 30', c6a: 'rain_mm >= 5', c6b: 'rain_mm < 2', people: 'age > 30', days: 'rain_mm > 3' }
+    demo: { c1: 'cafe_visits >= 8', c2: 'area = "Hill" AND pet = "dog"', c3: 'temp_c BETWEEN 15 AND 17', c4: 'area = "Harbour" OR area = "Old Town"', c5: 'NOT pet = "dog" AND age > 30', c6a: 'rain_mm >= 5', c6b: 'rain_mm < 2', people: 'age > 30', days: 'rain_mm > 3', 'people.word': 'pet = "dog"', 'people.not': 'NOT area = "Hill"', 'people.and': 'area = "Harbour" AND pet = "dog"', 'days.word': 'month = "June"' }
   };
   S.late = {
     kicker: 'The late shift', intro: 'The paper is printed. Fionn left more work. Pick one.', finish: 'Finish the lesson', menuBack: 'Back to the menu', skip: 'Skip this one',
@@ -393,7 +401,7 @@ window.S.recapPool = [
       ]
     },
     hit: {
-      ask: 'Keep exactly {n} {what}.', what: { people: 'people', days: 'days' }, one: { people: 'person', days: 'day' }, need: 'Use {need} in your rule.', fewer: 'Your rule keeps {got}. You need {n}, so keep fewer.', more: 'Your rule keeps {got}. You need {n}, so keep more.',
+      ask: 'Keep exactly {n} {what}.', what: { people: 'people', days: 'days' }, one: { people: 'person', days: 'day' }, need: 'Use {need} in your rule.', fewer: 'Your rule keeps {got} rows. You need {n} rows. Change your rule so it keeps fewer rows.', more: 'Your rule keeps {got} rows. You need {n} rows. Change your rule so it keeps more rows.',
       missing: 'Your rule keeps the right number, {n}. But this job needs {need} in your rule.', ok: 'Your rule keeps exactly {n} rows. Well done.', next: 'Next number',
       items: [
         { t: 'people', n: 9, need: '', tip: 'Try the pet column.', rule: 'pet = "dog"' },
@@ -432,6 +440,11 @@ window.S.recapPool = [
     race: {
       intro: 'Pick the right rule for each question, fast. Each race lasts 90 seconds.', levels: ['Level 1: one rule', 'Level 2: AND and OR', 'Level 3: BETWEEN and NOT'],
       time: '{s} seconds left', qOf: 'Question {n} of {all}', right: 'Right.', wrong: 'That was not the right rule. The rule in green is the right one.', end: 'You got {n} of {all} right.', timeUp: 'Time is up.', again: 'Race again',
+      signs: { '>': 'more than', '<': 'less than', '>=': 'more than or equal to', '<=': 'less than or equal to', '=': 'exactly', '<>': 'not equal to' },
+      why: { sign: 'That rule uses {ws}, which means {wm}. The question needs {rs}, which means {rm}.', col: 'That rule looks in the {wc} column. The question needs the {rc} column.', value: 'That rule uses {wv}. The question needs {rv}.',
+        needAnd: 'OR keeps rows where at least one part is true. The question needs both parts true, so use AND.', needOr: 'AND keeps only rows where both parts are true. The question wants rows where either part is true, so use OR.',
+        noNot: 'That rule has no NOT, so it keeps the rows the question leaves out.', notWrong: 'NOT keeps the rows that do not fit the rule. This question wants the rows that do fit it.',
+        outside: 'That rule keeps the rows outside {a} to {b}.', ends: 'BETWEEN keeps the first number and the last number too. The signs > and < leave those two numbers out.' },
       items: [
         [
           { t: 'people', q: 'People under 20', right: 'age < 20', wrong: ['age > 20', 'age = 20'] },
@@ -466,7 +479,7 @@ window.S.recapPool = [
       ]
     },
     count: {
-      ask: 'How many rows does this rule keep?', right: 'Right. {why}', wrong: 'It keeps {right}. {why}', next: 'Next rule',
+      ask: 'How many rows does this rule keep?', right: 'Right. {why}', wrong: 'It keeps {right} rows. {why}', next: 'Next rule',
       items: [
         { t: 'people', facts: 'The table has 9 dog owners and 22 cat owners.', rule: 'pet = "dog" OR pet = "cat"', opts: [31, 9, 0], why: 'OR keeps both groups: 9 + 22 = 31.' },
         { t: 'people', facts: 'The table has 9 dog owners and 22 cat owners.', rule: 'pet = "dog" AND pet = "cat"', opts: [0, 31, 9], why: 'No one’s pet is a dog and a cat at once.' },
