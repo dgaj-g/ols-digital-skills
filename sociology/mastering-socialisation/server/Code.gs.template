@@ -294,14 +294,26 @@ function pickSlot_(slots, key, part, label, b, why, r) {
   slots.push({ i: slots.length, part: part, label: label, type: 'pick', opts: p.map(function (j) { return b.opts[j]; }) });
   key.push({ t: 'pick', k: p.indexOf(b.k), n: b.opts.length, why: str_(why) });
 }
+// the note under each five-mark part says what that part has to do. Her mark scheme lists five points (three AO1, two AO2)
+// that are not tied to D, I, E and T, so they stay in the "Earning the five marks" list and are not put under the parts
+// (found live 16 Nov 2026: the phrases part was told "AO1: learned and passed between generations")
+var FIVE_WHY_ = {
+  d: 'It says accurately what the term means. That is the job of D: a definition, not an example.',
+  i: 'These are the two places where the item shows the term at work. Your item link explains them; it does not copy them.',
+  i2: 'It explains how the item shows the term, using the item\'s own details. That is the job of I: explain, do not copy.',
+  e: 'It gives an example, from the item or your own, that shows the term happening. That is the job of E.',
+  t: 'It names a theory and says briefly and accurately what that theory argues. That is the job of T.'
+};
 function fiveBuild_(q, r) {
-  var slots = [], key = [], wm = q.why_marks || [];
-  pickSlot_(slots, key, 'd', 'D - Define the term', q.build.d, wm[0], r);
+  var slots = [], key = [];
+  pickSlot_(slots, key, 'd', 'D - Define the term', q.build.d, FIVE_WHY_.d, r);
   slots.push({ i: 1, part: 'i', label: 'Tap the two item phrases that earn the item marks', type: 'tap', item: str_(q.item), phrases: (q.phrases || []).slice(), picks: (q.ph_k || []).length, pickN: (q.ph_k || []).length });
-  key.push({ t: 'tapset', k: (q.ph_k || []).slice().sort(num_), n: (q.phrases || []).length, why: str_(wm[1]) });
-  pickSlot_(slots, key, 'i2', 'I - Item link', q.build.i, wm[2], r);
-  pickSlot_(slots, key, 'e', 'E - Explain with an example', q.build.e, wm[3], r);
-  pickSlot_(slots, key, 't', 'T - Theory link', q.build.t, wm[4], r);
+  // q.ph_ok lists every phrase that earns the item marks, so any two of them are right; q.ph_k is the model answer's pair, shown when a pick
+  // is wrong (found live 16 Nov 2026: d5-03 marked the certificate wrong although its own model answer uses it)
+  key.push({ t: q.ph_ok ? 'tapany' : 'tapset', k: (q.ph_ok || q.ph_k || []).slice().sort(num_), p: (q.ph_k || []).length, show: (q.ph_k || []).slice().sort(num_), n: (q.phrases || []).length, why: FIVE_WHY_.i });
+  pickSlot_(slots, key, 'i2', 'I - Item link', q.build.i, FIVE_WHY_.i2, r);
+  pickSlot_(slots, key, 'e', 'E - Explain with an example', q.build.e, FIVE_WHY_.e, r);
+  pickSlot_(slots, key, 't', 'T - Theory link', q.build.t, FIVE_WHY_.t, r);
   return { view: { q: str_(q.stem), stem: str_(q.stem), term: str_(q.term), item: str_(q.item), marks: 5, slots: slots }, key: key, max: 5 };
 }
 function tenBuild_(T, r) {
@@ -311,7 +323,7 @@ function tenBuild_(T, r) {
     if (s.type === 'tap') {
       p = itemOrder_(T.item, s.phrases);
       o.item = str_(T.item); o.phrases = p.map(function (j) { return s.phrases[j]; }); o.picks = 1; o.pickN = 1;
-      key.push({ t: 'tapany', k: (s.k || []).map(function (j) { return p.indexOf(j); }).sort(num_), n: s.phrases.length, why: why });
+      key.push({ t: 'tapany', k: (s.k || []).map(function (j) { return p.indexOf(j); }).sort(num_), p: 1, n: s.phrases.length, why: why });
     } else if (s.type === 'order') {
       p = mix_(s.steps.length, r);
       o.steps = p.map(function (j) { return s.steps[j]; });
@@ -327,7 +339,7 @@ function tenBuild_(T, r) {
 }
 function buildExtra_(A) {
   var q = A.q;
-  return A.kind === 'five' ? { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: 'DIET' } : { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: q.scheme };
+  return A.kind === 'five' ? { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: 'DIET', siteModel: !!q.new } : { model: q.model, ao: q.ao, why_marks: q.why_marks, scheme: q.scheme, siteModel: true };
 }
 function roundsOf_(B) { var per = B.per_round || B.cards.length; return { per: per, rounds: Math.max(1, Math.ceil(B.cards.length / per)) }; }
 function roundArg_(req, A) { var R = roundsOf_(A.B), r = int_(req.round != null ? req.round : (req.ans && req.ans.round)); return r >= 1 && r <= R.rounds ? r : 1; }
@@ -419,13 +431,19 @@ function picks_(a, n) { // a non-empty set of distinct option indices
   for (var i = 0; i < a.length; i++) { var j = int_(a[i]); if (!(j >= 0 && j < n) || out.indexOf(j) !== -1) return null; out.push(j); }
   return out.sort(num_);
 }
+// a pair that earns the marks, keeping the pupil's own picks that earn them, so a right phrase is never shown as wrong
+function tapRight_(k, s) {
+  var r = s.filter(function (x) { return k.k.indexOf(x) !== -1; }).slice(0, k.p);
+  k.show.forEach(function (x) { if (r.length < k.p && r.indexOf(x) === -1) r.push(x); });
+  return r.sort(num_);
+}
 function one_(k, a) {
   var j, s;
   if (k.t === 'pick') { j = int_(a); if (!(j >= 0 && j < k.n)) return null; return { ok: j === k.k, right: k.k }; }
   if (k.t === 'tapset' || k.t === 'tapany') {
     s = picks_(a, k.n); if (!s) return null;
-    var ok = k.t === 'tapset' ? s.join(',') === k.k.join(',') : s.every(function (x) { return k.k.indexOf(x) !== -1; });
-    return { ok: ok, right: k.k.slice() };
+    var ok = k.t === 'tapset' ? s.join(',') === k.k.join(',') : (!k.p || s.length === k.p) && s.every(function (x) { return k.k.indexOf(x) !== -1; });
+    return { ok: ok, right: k.show ? tapRight_(k, s) : k.k.slice() };
   }
   if (k.t === 'steps') {
     s = seq_(a, k.view, k.steps); if (!s) return null;
@@ -660,7 +678,7 @@ function apiWrite_(req) {
   var out = { n: n, max: five ? 5 : 10, notes: J.notes || [] };
   if (five) out.lines = J.lines; else out.paras = J.paras;
   if (!text.trim() && !text2.trim()) { var H0 = hdrOr_(x.slug, x.email); out.n = 0; out.practice = !!H0.pr[A.id]; out.newPractice = false; out.hdr = hdrOut_(H0); return ok_(out); }
-  out.model = q.model; out.ao = q.ao; out.why_marks = q.why_marks; if (!five) out.scheme = q.scheme;
+  out.model = q.model; out.ao = q.ao; out.why_marks = q.why_marks; out.siteModel = five ? !!q.new : true; if (!five) out.scheme = q.scheme;
   var quoted = false;
   if (!five && str_(q.item) && q.scheme === '5+5') { try { quoted = !!(J.paras[0].lines[2].ok && J.paras[1].lines[2].ok); } catch (e) { quoted = false; } }
   return withLock_(function () {
@@ -731,8 +749,11 @@ function apiBoard_(req) {
     rows.push({ n: str_(o.n) || 'Pupil', pts: pts, bd: (o.bd || []).length, me: k.slice(pre.length) === x.email });
   });
   rows.sort(function (a, b) { return b.pts - a.pts || (a.n < b.n ? -1 : a.n > b.n ? 1 : 0); });
-  var mi = -1; rows.forEach(function (r, i) { if (r.me && mi === -1) mi = i; });
-  return ok_({ lb: 1, rows: rows.slice(0, 10), me: { rank: mi + 1, pts: mi === -1 ? 0 : rows[mi].pts }, total: total });
+  var mi = -1; rows.forEach(function (r, i) { r.rank = i + 1; if (r.me && mi === -1) mi = i; });
+  // total is the number of pupils and sum the class's points (found live 16 Nov 2026: the points were sent as total, so the board said
+  // "You are number 1 of 157 pupils"); a pupil outside the top ten still sees her own row under it, as the lead promises
+  var top = rows.slice(0, 10); if (mi >= 10) top.push(rows[mi]);
+  return ok_({ lb: 1, rows: top, me: { rank: mi + 1, pts: mi === -1 ? 0 : rows[mi].pts }, total: rows.length, sum: total });
 }
 
 // ---------- staff ----------

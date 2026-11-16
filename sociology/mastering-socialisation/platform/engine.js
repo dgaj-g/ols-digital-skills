@@ -140,12 +140,12 @@ var Engine = (function(){
     return api;
   }
   // "+N points" is what this check earned (r.gain), never her running total (found live 16 Nov 2026: a 2-mark check said +46)
-  function resultCard(r, open, extraHtml){
+  function resultCard(r, open, extraHtml, bestText){
     var full = r.score >= r.max;
     var html = '<div class="res' + (full ? " full" : "") + '" role="status">' +
       '<div class="score">' + h(fmt(S.result, {n: r.score, m: r.max})) + '</div>' +
       (full ? '<p class="line">' + h(S.full) + '</p>' : '<p class="line">' + h(S.resultLine) + '</p>') +
-      '<p class="line">' + h(fmt(S.best, {n: r.best, m: r.max})) + (r.gain > 0 ? ' · +' + h(r.gain === 1 ? S.pts1 : fmt(S.pts, {n: r.gain})) : '') + '</p>' +
+      '<p class="line">' + h(bestText != null ? bestText : fmt(S.best, {n: r.best, m: r.max})) + (r.gain > 0 ? ' · +' + h(r.gain === 1 ? S.pts1 : fmt(S.pts, {n: r.gain})) : '') + '</p>' +
       (extraHtml || "") +
       '<div class="row"><button class="btn ghost" id="again">' + h(S.again) + '</button></div></div>';
     return el(html);
@@ -424,7 +424,7 @@ var Engine = (function(){
       html += '<h4>' + h(S.para1) + '</h4>' + para(m.p1, ["point", "evidence", "apply", "explain", "link"], L) + '<h4>' + h(S.para2) + '</h4>' + para(m.p2, ["point", "evidence", "apply", "explain", "link"], L);
     }
     // the underline sentence only when something is underlined: the model answers mostly put the item in their own words
-    html = '<div class="model"><h3>' + h(S.modelHead) + '</h3><p class="small mute">' + h(S.modelNote) + (html.indexOf('<u>') >= 0 ? ' ' + h(S.modelUnder) : '') + '</p>' + html;
+    html = '<div class="model"><h3>' + h(S.modelHead) + '</h3><p class="small mute">' + h(extra.siteModel ? S.modelNoteSite : S.modelNote) + (html.indexOf('<u>') >= 0 ? ' ' + h(S.modelUnder) : '') + '</p>' + html;
     // a ten-mark answer is headed "Earning the ten marks", never the five-mark heading (found live 16 Nov 2026)
     if (extra.why_marks && extra.why_marks.length) html += '<div class="strip"><b>' + h(m.p1 ? S.tenMarkStrip : S.markStrip) + '</b><ul>' + extra.why_marks.map(function(w){ return '<li>' + h(w) + '</li>'; }).join("") + '</ul></div>';
     return html + '</div>';
@@ -484,7 +484,7 @@ var Engine = (function(){
     var v = open.view, isTen = !!v.scheme;
     root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? (v.item ? S.tenBuildIntro : S.tenBuildOne) : S.buildIntro)) + '</p>'));
     var panel = builderPanel(root, v, open);
-    var bar = checkBar(root, panel.need, {countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
+    var bar = checkBar(root, panel.need, {waitText: fmt(S.checkFill, {m: panel.need}), countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, panel.get(), o, btn, function(r){
         bar.done(); panel.show(r.per, null);
         var rc = resultCard(r, open, modelPanel(r.extra, v.scheme)); root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o);
@@ -497,17 +497,17 @@ var Engine = (function(){
   /* ---------- weekly mock: three builds (two five-mark, one ten-mark) checked together ---------- */
   function weekly(root, open, o){
     var builds = (open.view && open.view.builds) || [], panels = [], need = 0;
-    root.appendChild(el('<p class="intro">' + h(open.intro || S.weeklyLead) + '</p>'));
+    root.appendChild(el('<p class="intro">' + h(open.intro || S.weeklyIntro) + '</p>'));
     builds.forEach(function(v, i){
       var sec = el('<section class="wk-part" data-b="' + i + '"><h2>' + h(fmt(S.weeklyPart, {n: i + 1})) + '</h2></section>'); root.appendChild(sec);
       var p = builderPanel(sec, v, open); panels.push(p); need += p.need;
     });
     function filled(){ return panels.reduce(function(t, p){ return t + p.filled(); }, 0); }
-    var bar = checkBar(root, need, {countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
+    var bar = checkBar(root, need, {waitText: fmt(S.checkFill, {m: need}), countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, {builds: panels.map(function(p){ return p.get(); })}, o, btn, function(r){
         bar.done();
         panels.forEach(function(p, i){ p.show((r.per || [])[i], (r.extra && r.extra.builds || [])[i]); });
-        var rc = resultCard(r, open, ""); root.insertBefore(rc, bar.btn.parentNode);
+        var rc = resultCard(r, open, "", fmt(S.weeklyDone, {n: r.done})); root.insertBefore(rc, bar.btn.parentNode); // the first finished run counts, so say what counts, never "best so far"
         var again = q(rc, "#again"); if (again) again.remove();
         rc.scrollIntoView({behavior: "smooth", block: "start"});
       });
@@ -564,7 +564,7 @@ var Engine = (function(){
       else if (hadBefore || r.practice) html += '<p class="line">' + h(S.practiceHad) + '</p>';
       else html += '<p class="line">' + h(isTen ? fmt(S.practiceNo10, {n: r.n, m: r.max}) : fmt(S.practiceNo, {n: r.n})) + '</p>';
       if (r.textLost) html += '<p class="line"><b>' + h(S.textLost) + '</b></p>';
-      html += modelPanel({model: r.model, ao: r.ao, why_marks: r.why_marks, phrases: v.phrases}, v.scheme);
+      html += modelPanel({model: r.model, ao: r.ao, why_marks: r.why_marks, phrases: v.phrases, siteModel: r.siteModel}, v.scheme);
       html += '<p class="line">' + h(S.writeDone) + '</p></div>';
       out.appendChild(el(html));
       bar.btn.disabled = false; bar.btn.textContent = S.writeGo;

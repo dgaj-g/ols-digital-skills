@@ -36,6 +36,7 @@ const FIX2 = /\n {6}\/\/ the heading keeps the name the pupil clicked[^\n]*\n/;
 const OLD2 = '\n      var h1 = body.querySelector("h1"); if (r.title) h1.textContent = r.title;\n';
 const FIX3 = /\n {6}\/\/ a "next" that opens an activity says[^\n]*\n {6}var nx = [^\n]*\n {6}if \(nx\) bar[^\n]*\n/;
 const OLD3 = "\n      if (opt.next) bar.appendChild(el('<a class=\"btn acc\" href=\"#' + h(opt.next.route) + '\">' + h(opt.next.label || S.next) + '</a>'));\n";
+const FIX4 = /\n {4}\/\/ the last page of a part goes on to the next part[^\n]*\n {4}var P = [^\n]*\n {4}if \(N && [^\n]*\n/;
 const OLD = '\n    var page = C[contentKey(pi.base)]; if (page && page.next) return page.next;\n    if (pi.n < pi.m) return {route: pi.list[pi.n], label: S.next};\n';
 
 async function harness(port, deploy, tag) {
@@ -70,8 +71,10 @@ async function opener(browser, url) {
 async function chain(visit, pid) {
   const list = PAGES[pid], seen = [];
   let r = list[0];
-  for (let k = 0; k < 80 && r && r !== 'home' && seen.indexOf(r) < 0; k++) { seen.push(r); const g = await visit(r); r = g.next; }
-  return { seen, missing: list.filter((x) => seen.indexOf(x) < 0) };
+  // the walk stops where "next" leaves the part, so end is the screen the part's last page leads to
+  const own = (x) => (/^s(\d+)/.exec(x || '') || [])[1] === pid.slice(1);
+  for (let k = 0; k < 80 && r && r !== 'home' && own(r) && seen.indexOf(r) < 0; k++) { seen.push(r); const g = await visit(r); r = g.next; }
+  return { seen, end: r, missing: list.filter((x) => seen.indexOf(x) < 0) };
 }
 async function headings(browser, url) {
   // open every activity, wait until it has loaded, then read its heading
@@ -104,7 +107,8 @@ const CHAIN_PARTS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
     fs.rmSync(ctlPlat, { recursive: true, force: true }); fs.cpSync(path.join(ROOT, 'platform'), ctlPlat, { recursive: true }); fs.mkdirSync(ctlDeploy, { recursive: true });
     sh.check(FIX2.test(APP), 'the gate can find the heading fix in app.js (so the control can undo it)', FIX2.test(APP) ? 'found' : 'not found');
     sh.check(FIX3.test(APP), 'the gate can find the next-label fix in app.js (so the control can undo it)', FIX3.test(APP) ? 'found' : 'not found');
-    fs.writeFileSync(path.join(ctlPlat, 'app.js'), APP.replace(FIX, OLD).replace(FIX2, OLD2).replace(FIX3, OLD3));
+    sh.check(FIX4.test(APP), 'the gate can find the go-on-to-the-next-part fix in app.js (so the control can undo it)', FIX4.test(APP) ? 'found' : 'not found');
+    fs.writeFileSync(path.join(ctlPlat, 'app.js'), APP.replace(FIX4, '\n').replace(FIX, OLD).replace(FIX2, OLD2).replace(FIX3, OLD3));
     const b2 = build({ platform: ctlPlat, deploy: ctlDeploy });
     if (b2.code !== 0) { sh.fail('build the control page', b2.out.split('\n').slice(-3).join(' ')); return; }
 
@@ -136,6 +140,9 @@ const CHAIN_PARTS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
     // 3. pressing "next" walks the whole part
     for (const pid of CHAIN_PARTS) {
       const c = await chain(visit, pid);
+      // BD: the part's last page goes on to the next part, never back to Home (found live 16 Nov 2026)
+      const NP = 'p' + (+pid.slice(1) + 1), want = (PAGES[NP] || [])[0];
+      sh.check(c.end === want && (visit.seen[c.seen[c.seen.length - 1]] || {}).nextText.indexOf('Go on to Part ' + NP.slice(1) + ': ') === 0, 'the last page of ' + pid + ' goes on to Part ' + NP.slice(1) + ' and says so', 'ends on ' + c.seen[c.seen.length - 1] + ' -> ' + c.end + ' "' + ((visit.seen[c.seen[c.seen.length - 1]] || {}).nextText || '') + '"');
       sh.check(!c.missing.length, 'pressing "next" from the start of ' + pid + ' passes every page of the part', c.missing.length ? 'stops short; never reaches ' + c.missing.join(', ') + ' (went ' + c.seen.join(' > ') + ')' : c.seen.length + ' screens');
     }
 
@@ -154,6 +161,8 @@ const CHAIN_PARTS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
     for (const r of Object.keys(PAGES).flatMap((p) => PAGES[p])) await cvisit(r);
     const cname = badNext(cvisit.seen);
     sh.check(cname.length > 0, 'CONTROL with each page\'s own label put back, the check sees "next" buttons that do not name their activity', cname.length + ' found, e.g. ' + (cname[0] || 'none'));
+    const cHome = []; for (const pid of ['p2', 'p3', 'p4', 'p5', 'p8', 'p9']) { const cc = await chain(cvisit, pid); if (cc.end === 'home' || !cc.end) cHome.push(pid); }
+    sh.check(cHome.length >= 4, 'CONTROL with the old fallback put back, parts end on Home again (the check above can see the bug)', cHome.length + ' parts end on Home: ' + cHome.join(', '));
     sh.check(c2.missing.length > 0, 'CONTROL with the old nextAfter() put back, the Part 2 "next" chain stops short', 'never reaches ' + (c2.missing.join(', ') || 'nothing missing'));
   } catch (e) { sh.fail('run', e.stack || e.message); }
   finally { try { if (browser) await browser.close(); } catch (e) {} kids.forEach((k) => k.kill()); }

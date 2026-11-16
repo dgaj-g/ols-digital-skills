@@ -14,7 +14,7 @@ const USERS = ['app.js', 'engine.js', 'staff.js'];
 // placeholders that carry words, not numbers (key.placeholder)
 // checkN keeps T09's wording "Answer all 5 to check" (the five on screen are its thing)
 const NUM_OK = new Set(["checkN"]);
-const TEXT = new Set(['hi.name', 'stage.t', 'rightWas.k', 'badgeOn.d', 'badgeOff.r', 'badgeToast.n', 'progressRow.t', 'pupilHead.n', 'nextTo.t']);
+const TEXT = new Set(['hi.name', 'stage.t', 'rightWas.k', 'badgeOn.d', 'badgeOff.r', 'badgeToast.n', 'progressRow.t', 'pupilHead.n', 'nextTo.t', 'goOnPart.t']);
 // toasts allowed to end in "!" (none today; add the key with its reason)
 const BANG_OK = new Set([]);
 

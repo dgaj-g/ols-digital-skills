@@ -1,10 +1,10 @@
-PASS build — build b7044bb679-d90ed94a · ground-truth token soc-b7044bb679-d90ed94a
+PASS build — build 6a76d49831-7a49a322 · ground-truth token soc-6a76d49831-7a49a322
 PASS every key words quiz question names its key word, and each is a flashcard key word — 30 questions
 PASS the gate can find the one-per-key-word draw in Code.gs (so the control can undo it) — found
 PASS no key words quiz asks about the same key word twice (300 pupils' draws) — 0 of 300 draws repeat a key word
 PASS every key words quiz still has 10 questions — 0 of 300 draws are short
 PASS CONTROL with the old draw put back, some quizzes repeat a key word (the check above can see the bug) — 278 of 300 draws repeat
-PASS every Part 8 "find the phrase" item names its five-mark question in the bank — Explain the meaning of culture (5 marks). / Explain the meaning of norms (5 marks). / Explain the meaning of primary socialisation (5 marks). / Explain the meaning of values (5 marks).
+PASS every Part 8 "find the phrase" item names its five-mark question in the bank — Explain the meaning of informal sanctions (5 marks). / Explain the meaning of norms (5 marks). / Explain the meaning of secondary socialisation (5 marks). / Explain the meaning of values (5 marks).
 PASS the gate can find the question in the tap view in Code.gs (so the control can undo it) — found
 PASS the page is sent each Part 8 item with its own question — 0 of 4 items without their question
 PASS CONTROL with the old tap view put back, the items come without their question (the check above can see the bug) — 4 of 4 without
@@ -31,7 +31,7 @@ PASS boot names the pupil from her account — ok name Aoife
 PASS boot with no account name asks for one — ok
 PASS name set — ok
 PASS name persists — Aoife B
-PASS boot shape — today 2026-11-16, week 2026-W47, v b7044bb679-d90ed94a
+PASS boot shape — today 2026-11-16, week 2026-W47, v 6a76d49831-7a49a322
 PASS maxima — 93 acts, parts sum 411 = acts sum 411, daily 5, weekly 20
 PASS every five and ten in the banks is an act — 26 fives, 7 tens
 PASS bad-name refused — 4 acts
@@ -50,6 +50,12 @@ PASS best never decreases — 60 acts
 PASS pts in every reply = the sum of the header — 60 acts
 PASS order mark returns the whys after the check — 1 acts
 PASS builder mark returns the model after the check — 33 acts
+PASS five-mark builder: every part's note is the note for its part — 26 acts
+PASS CONTROL five-mark builder: the old by-position mark-scheme notes are reported — 26 acts
+PASS five-mark phrases: another pair that earns the item marks is right and is the pair shown — 12 acts
+PASS five-mark phrases: a phrase that earns the marks stays green in a wrong pair — 12 acts
+PASS five-mark phrases: a pair outside the phrases that earn the marks is wrong — 12 acts
+PASS CONTROL five-mark phrases: one tap is wrong, even on a phrase that earns marks — 12 acts
 PASS ten-mark builder: every answer's note is the note for its part — 7 acts
 PASS CONTROL ten-mark builder: the old by-position notes are reported on her own scheme — 1 acts
 PASS no bank key text in any open reply — 327 key-only strings checked over 60 acts (199 key sentences are also shown text, not counted)
@@ -83,8 +89,12 @@ PASS unlock it — ok
 PASS setPart refuses an unknown part — error bad-op
 PASS a locked part 10 locks the daily five — error locked
 PASS board on — ok rank 1
-PASS board off — {"lb":0,"ok":true,"v":"b7044bb679-d90ed94a"}
+PASS board off — {"lb":0,"ok":true,"v":"6a76d49831-7a49a322"}
 PASS board toggles back on — ok
+PASS board: twelfth of 12 pupils sees the top ten and her own row ranked 12, total 12 pupils — ok total 12 rows 11
+PASS board: first of 12 sees ten rows, her own ranked 1 — ok
+PASS board: a class with points still counts pupils, not points — total 4 sum 446
+PASS CONTROL: the old board (points as the pupil count; no own row past ten) is reported
 PASS daily: five questions, no key — ok t1s:2,c-cus:0,w-test:4,vquiz:9,ex-eye:4
 PASS daily: the same set twice for the same class
 PASS daily: another class gets a different set — t1i:3,c-mat:0,w-test:0,vquiz:21,ex-eye:4
@@ -99,7 +109,7 @@ PASS weekly: incomplete answer refused — error incomplete
 PASS weekly: all right scores 20 and is stored — ok 20
 PASS weekly: stored once — wk {"2026-W47":20}
 PASS pts = Σb + Σpr + Σdl + Σwk — 436 = 378 + 33 + 5 + 20
-PASS ping writes s: — ok 460046
+PASS ping writes s: — ok 460170
 PASS streak: a check the next day adds one — 1 -> 2
 PASS streak: a missed day starts again at one — n 1
 PASS old dailies and weeklies roll into dlx/wkx and still count — dl 8, dlx 15, wk 5, wkx 40, pts 606
@@ -122,7 +132,7 @@ PASS csv — ok g0-class-mastering-socialisation.csv 31028 chars
 PASS an unknown op gives bad-op — error bad-op
 PASS delete a class and every key under it — ok leftover 0
 PASS clearMe removes the owner's own pupil keys — ok
-PASS archive (owner, forced) — ok moved 0, size 23706
+PASS archive (owner, forced) — ok moved 0, size 23710
 PASS teacher (teachers property): admitted, role teacher — ok role teacher
 PASS a teacher sees only her own classes — ok g0-t2
 PASS a teacher cannot open another teacher's class — error unknown-class
@@ -137,6 +147,6 @@ INFO one pupil who wrote every answer at model length keeps 21.2 KB of written a
 PASS a teacher opening the staff page moves her classes' oldest answers to a Sheet in HER Drive — ok 16 moved, store 318 KB, her Sheets 1
 PASS a teacher's visit never moves answers from another teacher's class — kept
 PASS under the line, a staff visit moves nothing — ok archived 0
-PASS the owner's Archive button, under the line, says how full the store is — ok size 325168 line 409600
+PASS the owner's Archive button, under the line, says how full the store is — ok size 325176 line 409600
 PASS when the store is full, a written answer still gets its mark and practice point, and the pupil is told her words were not kept — ok textLost true n 5 saved mark 5, 501 bytes free
-g0: 137 PASS, 0 FAIL, 1 SKIP
+g0: 147 PASS, 0 FAIL, 1 SKIP

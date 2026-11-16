@@ -13,7 +13,9 @@ PASS T49 a spare class can be made
 PASS CONTROL T49 one press of Delete deletes nothing
 PASS T49 the first press asks "Press again to delete"
 PASS T49 the second press deletes the class
-PASS T50 Part 6 shows as locked after one press in the Parts tab
+PASS T50 Part 6 shows as locked after one press in the Parts tab, and its button now says Unlock
+PASS T64 Lock parts shows the 11 parts one to a row, each with its state and a Lock or Unlock button
+PASS CONTROL with the old Lock parts markup put back, the check sees parts sharing a row and the Open/Locked buttons
 PASS T01 a pupil with no name on record is asked for her first name
 PASS T01 the bar says "Hi Orla" after naming
 PASS T01 the next load goes straight home with "Hi Orla"
@@ -158,10 +160,22 @@ PASS T40 5 of 5 then earns the Sanctions badge
 PASS T40 the badge is kept after a worse score
 PASS T40 six badges are shown
 PASS T40 an earned badge is dated
+PASS T40 the earned date reads like "16 November 2026"
+PASS CONTROL the old "Earned on 2026-11-16" is caught by the date check
 PASS T40 unearned badges show their rule in words
 PASS T41 with the board on: the top ten and her own row
 PASS CONTROL T41 the board hides when the teacher turns it off
 PASS T42 one bar per part with "n of m marks" in words
+PASS T42 each part label fits on one line (two at most on a phone)
+PASS CONTROL with the old 44px label column put back, the check sees labels wrapping
+PASS T60 the revision sheet list has no bullet dots and the tiles in a row are the same height
+PASS CONTROL with the old list style put back, the check sees the dots and the uneven tiles
+PASS T61 the Print button on a revision sheet sits at the right, clear of the title
+PASS CONTROL with the button put back at the left, the check sees it
+PASS T62 every mind map item has its own bullet, with no empty bullets and no squashed lists
+PASS CONTROL the old mind map markup is caught
+PASS T63 the exam checklist shows a tick box with no bullet dot beside it
+PASS CONTROL with the dots put back, the check sees them
 PASS T43 two pupils in the class get the same daily five
 PASS T43 the first run stores dl[date]
 PASS T43 the second run says it is practice ("Today's challenge is done: 1 of 5 marks. Come back…")
@@ -180,11 +194,15 @@ PASS T51 the row carries points and last seen in words
 PASS T51 a pupil who writes but never builds is flagged
 PASS T51 a pupil who builds full marks but never writes is flagged
 PASS T52 the pupil page lists her bests and her written answer with its checklist
+PASS T65 a written answer on the pupil page shows its question, its checklist score and lines, and the date it was saved
+PASS CONTROL the old header (w5-01 · 3 of the checklist · 459903 min) fails the same check
 PASS T52 "Back" returns to the tracker
 PASS T53 the tracker part of the CSV has one row per pupil
 PASS T53 every row has its header's column count
 PASS T53 a second part lists the written answers, one row each
 PASS T53 rows end CRLF only
 INFO T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–9, last seen, flags), 17 columns; the acceptance row says one column per act
+PASS T66 Export: the Download CSV button sits under the class picker, clear of the card below, before and after a class is picked
+PASS CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card
 PASS no console or page errors
-g5-pupil-staff: 184 PASS, 0 FAIL, 2 SKIP
+g5-pupil-staff: 202 PASS, 0 FAIL, 2 SKIP

@@ -52,7 +52,7 @@ function flushTally() {
 }
 
 // ---------- the view must carry no key ----------
-const BANNED = ['k', 'why', 'model', 'whys', 'ph_k', 'lex', 'why_marks'];
+const BANNED = ['k', 'why', 'model', 'whys', 'ph_k', 'ph_ok', 'lex', 'why_marks'];
 function keyHits(o, form) {
   const hits = [];
   (function walk(v, p) {
@@ -73,7 +73,7 @@ const KEYTEXT = [], SHOWN = [];
   if (!v || typeof v !== 'object') return;
   for (const [k, x] of Object.entries(v)) {
     if (['why', 'whys', 'why_marks', 'model'].includes(k)) flat(x).forEach((s) => { if (s.trim().length >= 30) KEYTEXT.push(s.trim()); });
-    else if (!['k', 'ph_k', 'then', 'ao', 'lex'].includes(k)) { if (typeof x === 'string') SHOWN.push(x.trim()); else visit(x); }
+    else if (!['k', 'ph_k', 'ph_ok', 'then', 'ao', 'lex'].includes(k)) { if (typeof x === 'string') SHOWN.push(x.trim()); else visit(x); }
   }
 })(banks);
 const shownText = SHOWN.concat(flat(L.readContent())).join('\u0000');
@@ -344,6 +344,14 @@ async function main() {
         const got = (r.per || []).map((p) => p.why);
         t('ten-mark builder: every answer\'s note is the note for its part', act, r.ok && fits(got), got.map((w, i) => w === want(i) ? '' : 'slot ' + i).filter(Boolean).join(' ') || '');
         if (T.scheme === '3+2+2+2+1') t('CONTROL ten-mark builder: the old by-position notes are reported on her own scheme', act, !fits(T.slots.map((s, i) => T.why_marks[i]))); }
+      // the note under each five-mark part fits that part: D, the phrases, I, E and T each get their own note, never her
+      // mark-scheme list by position (found live 16 Nov 2026). CONTROL: the old by-position notes are reported.
+      if (form === 'builder' && bankOf(act).kind === 'five') { const Q = bankOf(act).q, JOB = [/\bD\b/, /item/, /\bI\b/, /\bE\b/, /\bT\b/];
+        const fits5 = (whys) => whys.length === 5 && whys.every((w, i) => w && JOB[i].test(w) && (Q.why_marks || []).indexOf(w) === -1);
+        const got5 = (r.per || []).map((p) => p.why);
+        t('five-mark builder: every part\'s note is the note for its part', act, r.ok && fits5(got5), got5.map((w, i) => fits5Part(w, i) ? '' : 'part ' + i).filter(Boolean).join(' ') || '');
+        function fits5Part(w, i) { return w && JOB[i].test(w) && (Q.why_marks || []).indexOf(w) === -1; }
+        t('CONTROL five-mark builder: the old by-position mark-scheme notes are reported', act, !fits5((Q.why_marks || []).slice(0, 5))); }
       if (form === 'order') t('order mark returns the whys after the check', act, r.extra && Array.isArray(r.extra.whys));
       // reshuffle: the next attempt's view
       let o1 = await call('apiOpen', { cls: CLS, act, round: o0.round });
@@ -367,6 +375,21 @@ async function main() {
       r = await call('apiMark', { cls: CLS, act, a: o2.a, round: form === 'bins' ? 1 : undefined, ans: wrong(act, form, o2.view) }); keep(r);
       t('best never decreases', act, r.ok && r.score === 0 && r.best === MAXA[act] && r.newBest === false, 'best ' + r.best);
       t('pts in every reply = the sum of the header', act, r.ok && r.pts === ptsOf(r.hdr) && r.hdr.pts === r.pts, r.pts + ' vs ' + ptsOf(r.hdr || {}));
+      // BC (found live 16 Nov 2026): any two phrases that earn the item marks are right; a phrase that earns them stays green in a wrong pair;
+      // CONTROL: a single tap is wrong even when the phrase earns marks (without the count check it scored)
+      if (form === 'builder' && bankOf(act).kind === 'five' && bankOf(act).q.ph_ok) { const Q = bankOf(act).q, ACC = Q.ph_ok, PK = Q.ph_k.slice().sort((x, y) => x - y);
+        const OUT = Q.phrases.map((_, j) => j).filter((j) => ACC.indexOf(j) === -1), EXTRA = ACC.filter((j) => PK.indexOf(j) === -1);
+        const tapWith = async (pick) => { const ox = await call('apiOpen', { cls: CLS, act }); const ans = right(act, ox.form, ox.view), ti = ox.view.slots.findIndex((x) => x.type === 'tap');
+          const vi = (j) => need(ox.view.slots[ti].phrases.indexOf(Q.phrases[j]), 'phrase'); ans[ti] = pick.map(vi).sort((x, y) => x - y);
+          const rx = await call('apiMark', { cls: CLS, act, a: ox.a, ans }); keep(rx); return { p: rx.ok && rx.per[ti], want: (js) => JSON.stringify(js.map(vi).sort((x, y) => x - y)) }; };
+        let z = await tapWith([EXTRA[0], PK[0]]);
+        t('five-mark phrases: another pair that earns the item marks is right and is the pair shown', act, z.p && z.p.ok && JSON.stringify(z.p.k) === z.want([EXTRA[0], PK[0]]), z.p ? JSON.stringify(z.p.k) : 'no reply');
+        z = await tapWith([EXTRA[0], OUT[0]]);
+        t('five-mark phrases: a phrase that earns the marks stays green in a wrong pair', act, z.p && !z.p.ok && JSON.stringify(z.p.k) === z.want([EXTRA[0], PK[0]]), z.p ? JSON.stringify(z.p.k) : 'no reply');
+        z = await tapWith([OUT[0], OUT[1] != null ? OUT[1] : PK[0]]);
+        t('five-mark phrases: a pair outside the phrases that earn the marks is wrong', act, z.p && !z.p.ok, z.p ? 'marked right' : 'no reply');
+        z = await tapWith([PK[0]]);
+        t('CONTROL five-mark phrases: one tap is wrong, even on a phrase that earns marks', act, z.p && !z.p.ok, z.p ? 'marked right' : 'no reply'); }
     } catch (e) { t('answers derived from the banks', act, false, e.message); }
   }
   flushTally();
@@ -499,6 +522,20 @@ async function main() {
   sh.check(r.ok && boff.ok && boff.lb === 0 && !boff.rows && bb.cls.lb === 0, 'board off', JSON.stringify(boff).slice(0, 80));
   r = await staff('lb', { slug: CLS });
   sh.check(r.ok && r.lb === 1, 'board toggles back on', E(r));
+  // the board counts pupils, adds up points, and always shows her own row (found live 16 Nov 2026: "You are number 1 of 157 pupils" with 157 points)
+  {
+    const boardOk = (b, n) => b && b.ok && b.total === n && b.sum === b.rows.reduce((t, x) => t + x.pts, 0) && b.rows.some((x) => x.me && x.rank === b.me.rank) && b.rows.filter((x) => !x.me).length <= 10;
+    const bc = await staff('create', { name: 'G0 Board' }), BC = bc.slug, who = [];
+    for (let i = 1; i <= 12; i++) { const u = 'board' + String(i).padStart(2, '0') + '@c2ken.net'; who.push(u); await call('apiName', { cls: BC, name: i === 12 ? 'Zz Last' : 'Board ' + 'ABCDEFGHIJK'[i - 1] }, u); }
+    const last = await call('apiBoard', { cls: BC }, who[11]), first = await call('apiBoard', { cls: BC }, who[0]);
+    sh.check(bc.ok && boardOk(last, 12) && last.me.rank === 12 && last.rows.length === 11 && last.rows[10].me, 'board: twelfth of 12 pupils sees the top ten and her own row ranked 12, total 12 pupils', E(last) + ' total ' + last.total + ' rows ' + (last.rows || []).length);
+    sh.check(boardOk(first, 12) && first.me.rank === 1 && first.rows.length === 10, 'board: first of 12 sees ten rows, her own ranked 1', E(first));
+    const p1 = await call('apiBoard', { cls: CLS });
+    sh.check(p1.sum > 0 && p1.total < p1.sum, 'board: a class with points still counts pupils, not points', 'total ' + p1.total + ' sum ' + p1.sum);
+    const old = { ok: true, lb: 1, rows: p1.rows.filter((x) => !x.me || p1.me.rank <= 10).slice(0, 10), me: p1.me, total: p1.sum };
+    sh.check(!boardOk(old, p1.rows.length) && !boardOk(Object.assign({}, last, { rows: last.rows.slice(0, 10) }), 12), 'CONTROL: the old board (points as the pupil count; no own row past ten) is reported');
+    await staff('delete', { slug: BC });
+  }
 
   // ---------- daily ----------
   const dA = await call('apiDaily', { cls: CLS }), dB = await call('apiDaily', { cls: CLS });

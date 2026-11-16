@@ -33,6 +33,9 @@ PASS question 6 (no item): its lead line is its own, not "use the item"
 PASS CONTROL: app.js with the one lead for every ten-mark question is reported
 PASS marks strip: every ten-mark model says "Earning the ten marks" and every five-mark model says "Earning the five marks" — 7 ten-mark + 26 five-mark models
 PASS CONTROL: engine.js with the one five-mark heading for every model is reported
+PASS the model answer says "Your teacher's" for her answers and not for answers written for the site — site answer: ok
+PASS the server says whose model answer it is on the Build tab and the Write tab (ten-mark always the site's; five-mark when New)
+PASS CONTROL: the old panel (always "Your teacher's") is reported
 PASS the server files ten-mark builds as d10-<n> and writes as w10-<n> (no leading zero)
 PASS Part 7 list: a built and written ten-mark question shows "Build: 7 of 10 marks" and "Write: checked" — question 2 shows Build: 7 of 10 marks / Write: checked
 PASS the question screen reads its build and write status under d10-<n> and w10-<n>
@@ -41,10 +44,21 @@ PASS every exam item shows before the model answer that uses it — 11 items
 PASS CONTROL: app.js drawing the item after the answer (as before) is reported — 11 reported
 PASS every phrase marked « » in a model answer is copied word for word from its item — 2 blocks with marked phrases
 PASS CONTROL: the old Part 8 wording («migration bringing traditions to the UK», not in the item) is reported — p8/s8 block 2 «migration bringing traditions to the UK»
+PASS every question list with a "New" question also shows the line saying what New means — p6/s6, p7/s7
+PASS CONTROL: the old note test (blocks only) misses a New question in a list — old test run on p6/s6, p7/s7
+PASS no screen shows its page lead again as the activity intro
+PASS CONTROL: the old weekly mock (lead passed again as intro) is reported — weekly: weeklyLead
+PASS every build Check button names what it counts ("Fill all {m} parts first")
+PASS CONTROL: the old build and weekly Check buttons (a bare number) are reported
+PASS the weekly result card and top line say what counts this week, never "best so far"
+PASS CONTROL: the old weekly card (best so far) and the old top line are each reported
+PASS in every part a picked option (before Check) looks unlike a wrong or a right answer
+PASS CONTROL: the old part-coloured picked option is reported in Part 10 and Part 4 — p2 picked looks wrong; peers picked looks wrong; workplace picked looks right; p4 picked looks wrong; p8 picked looks right; p9 picked looks wrong; p10 picked looks wrong
 PASS the choosable phrases in an item carry a visible mark before she chooses one
 PASS CONTROL: style.css without that mark (hover only, as before) is reported
 PASS each Part 8 find answer is the phrase that links its item to the term in the question — 4 items
 PASS CONTROL: the old norms answer («Parents and carers are important») is reported — norms: answer «Parents and carers are important» scores 0, «everyday expectations about behaviour» scores 2
+PASS CONTROL: an answer in the sentence that names the term (secondary socialisation) is reported — 1 reported
 PASS the Part 9 item-link line says one link carries two item details — ok
 PASS CONTROL: the old Part 9 line ("aim for two explained item links") is reported — says "two item links": I, Item link (AO2): the place where you apply the term to the item, using specific words from it. Aim for two explained item links; you do not need to quote the item twice.
 PASS a page title says "New" only when everything on the page is written for the site — p2/customs (all new)
@@ -55,4 +69,4 @@ PASS on all six agent pages the opening of "What this agent is" is not marked Ne
 PASS CONTROL: the same old Religion block is reported by this check too — p3/religion
 PASS dietary laws are always called rules about food, never the food itself — 70 files read
 PASS CONTROL: the old Religion line is reported — ok
-g2-page: 56 PASS, 0 FAIL, 0 SKIP
+g2-page: 70 PASS, 0 FAIL, 0 SKIP
