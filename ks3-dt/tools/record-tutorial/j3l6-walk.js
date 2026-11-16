@@ -1,6 +1,6 @@
 /* J3 L6 THE NIGHT DESK — the walk gate (G1/G4/G6). node j3l6-walk.js [--fails] [--url <hour page>]
-   Walks the hour as the model pupil at three sizes (1280×800, 1440×900, 1024×768): 41 screens (44 with the honest
-   fails), model minutes within 10 % of 10.6 (12.1 with the fails), no page errors, nothing outside the window. Then:
+   Walks the hour as the model pupil at four sizes (1366×484, the school PC's frame, then 1280×800, 1440×900, 1024×768):
+   41 screens (44 with the honest fails), model minutes within 10 % of 10.2 (11.7 with the fails; V85 16 Nov 2026), no page errors, nothing outside the window. Then:
    G4 both rush rules typed at 4 keys a second and the stamp, at speed 1, must NOT time out and must stop the clock.
    G6 the rush clock gives the same timeout at 5 and 60 frames a second, and a 1 s Pause delays it by about 1 s.
    Time model (DFM 305–307): 1.2 s a screen + 0.35 s a word + film + keys / 4 + 0.8 s an action.
@@ -8,8 +8,8 @@
 var puppeteer = require('puppeteer'), fs = require('fs'), path = require('path');
 var A = process.argv, fails = A.indexOf('--fails') > 0, ui = A.indexOf('--url');
 var HOUR = ui > 0 ? A[ui + 1] : 'file://' + path.resolve(__dirname, '../../platform/assets/nightdesk/hour.html');
-var OUT = path.resolve(__dirname, 'j3l6/walk' + (fails ? '-fails' : '')), SIZES = [[1280, 800], [1440, 900], [1024, 768]];
-var TARGET = fails ? 12.1 : 10.6, SCREENS = fails ? 44 : 41, bad = [];
+var OUT = path.resolve(__dirname, 'j3l6/walk' + (fails ? '-fails' : '')), SIZES = [[1366, 484], [1280, 800], [1440, 900], [1024, 768]];
+var TARGET = fails ? 11.7 : 10.2, SCREENS = fails ? 44 : 41, bad = [];
 function url(q) { return HOUR + (HOUR.indexOf('?') > 0 ? '&' : '?') + q + '#' + encodeURIComponent(JSON.stringify({ test: 1 })); }
 function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 async function walk(browser, W, H) {

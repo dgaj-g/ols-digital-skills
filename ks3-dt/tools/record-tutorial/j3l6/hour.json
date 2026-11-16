@@ -1,0 +1,63 @@
+{
+ "minutes": {
+  "fast": {
+   "The job": 1.1,
+   "Part 1": 2.1,
+   "Part 2": 1.9,
+   "Part 3": 2,
+   "Part 4": 1.8,
+   "Part 5": 2,
+   "Part 6": 2,
+   "Front page": 0.7,
+   "End questions": 1.9,
+   "Late shift menu": 3.8,
+   "Extra: heads": 16.6,
+   "Extra: hit": 8.3,
+   "Extra: fix": 7.4,
+   "Extra: race": 5,
+   "Extra: count": 4.6,
+   "Extra: end": 0.1
+  },
+  "typical": {
+   "The job": 1.7,
+   "Part 1": 4.3,
+   "Part 2": 3.7,
+   "Part 3": 4,
+   "Part 4": 3.7,
+   "Part 5": 3.8,
+   "Part 6": 5.4,
+   "Front page": 1.1,
+   "End questions": 2.8,
+   "Late shift menu": 5.6,
+   "Extra: heads": 28.8,
+   "Extra: hit": 16,
+   "Extra: fix": 14.1,
+   "Extra: race": 5,
+   "Extra: count": 6.9,
+   "Extra: end": 0.2
+  },
+  "slow": {
+   "The job": 2.6,
+   "Part 1": 6.8,
+   "Part 2": 5.9,
+   "Part 3": 6.4,
+   "Part 4": 5.9,
+   "Part 5": 6.2,
+   "Part 6": 8.7,
+   "Front page": 1.8,
+   "End questions": 4.5,
+   "Late shift menu": 8.8,
+   "Extra: heads": 51.1,
+   "Extra: hit": 30.4,
+   "Extra: fix": 26.6,
+   "Extra: race": 5,
+   "Extra: count": 10.8,
+   "Extra: end": 0.3
+  }
+ },
+ "counts": {
+  "model": 233,
+  "fails": 277,
+  "late": 488
+ }
+}

@@ -15,8 +15,8 @@
  *       platform's five questions
  *   A13 Pause stops the rush clock; a tab change pauses
  *   A10 the five questions are the design's, options shuffled; How did it go? has the design's three sentences;
- *       the done card says the design's end line and offers Free time and Finish; Free time opens the free headlines
- *       in the frame, and their end finishes the lesson; the six badges are j3-b16…b21 on Lesson 6
+ *       the done card says the design's end line and offers The late shift and Finish; The late shift opens its
+ *       menu of five extras in the frame, and Finish the lesson there finishes the lesson (V85, 16 Nov 2026); the six badges are j3-b16…b21 on Lesson 6
  * Every control must fail on a build without the lesson: run it with --expect-fail against such a build.
  *   node ks3-dt/tools/record-tutorial/j3l6-platform.js [--base http://localhost:8136] [--expect-fail] */
 'use strict';
@@ -283,26 +283,29 @@ async function look(page) {
     must(dn && dn.h === S.close.end, 'A10 the done card says "' + S.close.end + '" (got "' + (dn && dn.h) + '")');
     must(dn && dn.t.indexOf('You got 5 of the 5 questions right.') !== -1, 'A10 the done card gives her score');
     must(dn && dn.t.indexOf('[') === -1, 'A10 no raw data on the done card');
-    must(dn && dn.btns.join('|') === [S.close.freeTitle, 'Finish'].join('|'), 'A10 the done card offers Free time and Finish (' + (dn && dn.btns.join(', ')) + ')');
+    must(dn && dn.btns.join('|') === [S.late.kicker, 'Finish'].join('|'), 'A10 the done card offers ' + S.late.kicker + ' and Finish (' + (dn && dn.btns.join(', ')) + ')');
     await page.screenshot({ path: path.join(OUT, 'a10-done.png'), fullPage: true });
-    await page.evaluate((l) => { const x = Array.from(document.querySelectorAll('.exit-done button')).find(b => b.textContent.trim() === l); if (x) x.click(); }, S.close.freeTitle);
+    await page.evaluate((l) => { const x = Array.from(document.querySelectorAll('.exit-done button')).find(b => b.textContent.trim() === l); if (x) x.click(); }, S.late.kicker);
     await sleep(2500);
-    must(await chunkNow(page) === 'free', 'A10 Free time opens the free headlines');
+    must(await chunkNow(page) === 'free', 'A10 ' + S.late.kicker + ' opens the late shift');
     fr = await frameOf(page);
     if (fr) {
       await hourReady(fr);
       await sleep(800);
-      must(await fr.evaluate(() => Hour.screen()) === 'free', 'A10 the frame opens on the free headlines');
+      must(await fr.evaluate(() => Hour.screen()) === 'free', 'A10 the frame opens on the late shift menu');
+      const tiles = await fr.evaluate(() => Array.from(document.querySelectorAll('[data-x]')).map(b => b.getAttribute('data-x')).join(','));
+      must(tiles === 'heads,hit,fix,race,count', 'A10 the menu offers the five extras (' + tiles + ')');
       await page.screenshot({ path: path.join(OUT, 'a10-free.png') });
       await look(page);
-      /* she reads both free headlines (Show me, Next one) and the end line offers Done */
-      for (let k = 0; k < 6; k++) {
-        const act = await fr.evaluate(() => { for (const a of ['free-done', 'free-next', 'reveal']) { const x = document.querySelector('[data-act="' + a + '"]'); if (x) { x.click(); return a; } } return null; });
-        await sleep(700); if (!act || act === 'free-done') break;
-      }
+      /* she opens More headlines (the free headlines with the question box), goes back to the menu, and presses Finish the lesson */
+      await fr.evaluate(() => document.querySelector('[data-x="heads"]').click()); await sleep(600);
+      await look(page);
+      must(await fr.evaluate(() => !!document.querySelector('[data-act="late-menu"]')), 'A10 an extra has its way back to the menu');
+      await fr.evaluate(() => document.querySelector('[data-act="late-menu"]').click()); await sleep(600);
+      await fr.evaluate(() => { const x = document.querySelector('[data-act="late-finish"]'); if (x) x.click(); });
       await sleep(2500);
     }
-    must(await page.evaluate(() => !!document.querySelector('.badge-pop.show')), 'A10 the free headlines\' end finishes the lesson');
+    must(await page.evaluate(() => !!document.querySelector('.badge-pop.show')), 'A10 Finish the lesson in the late shift finishes the lesson');
     const rec = await page.evaluate(([email, cls]) => { const db = JSON.parse(localStorage.getItem('ks3dt-dev')); const r = db.pupils[cls + ':' + email]; return r && r.L && r.L['6']; }, [EMAIL, CLASS]);
     must(rec && Number(rec[0]) === 2, 'A10 Lesson 6 is recorded as finished');
     must(rec && JSON.stringify(rec).indexOf('bj3-b16=1') !== -1, 'A10 asker is recorded as j3-b16 on Lesson 6');
