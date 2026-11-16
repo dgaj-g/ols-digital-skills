@@ -11,6 +11,7 @@ var STAFF_HASH = '@@STAFF_HASH@@';
 var TEACHERS = '@@TEACHERS@@'; // named teachers (private list, filled at build): straight in with their school account
 var BUILD = '@@BUILD@@';
 var TITLE = '@@TITLE@@';
+var CK_TESTS = '@@CK_TESTS@@'; // the mini-test behind each of the 12 Part 1 checklist lines (from content/p1/checklist.json, filled at build)
 var DOMAIN = 'c2ken.net';
 var TZ = 'Europe/London';
 var ARCHIVE_AT = 400 * 1024;
@@ -70,6 +71,9 @@ function rng_(s) {
 }
 function shuffle_(arr, r) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 // an order puzzle never arrives already solved
+// the key words quiz asks about each key word at most once, so one question can never give away another's answer
+// (found live 16 Nov 2026: "the best definition of values" and "which term means [that definition]" came up in one quiz)
+function oneEach_(order, qs, n) { var used = {}, out = []; order.forEach(function (i) { if (out.length >= n) return; var ws = [].concat(qs[i].t || []); if (ws.some(function (w) { return used[w]; })) return; ws.forEach(function (w) { used[w] = 1; }); out.push(i); }); return out; }
 function mix_(n, r) { var p = shuffle_(range_(n), r); if (n > 1 && p.every(function (v, i) { return v === i; })) p.push(p.shift()); return p; }
 // phrase indices in the order they occur in the item (a phrase not found keeps its place at the end)
 function itemOrder_(item, phrases) {
@@ -280,6 +284,7 @@ function mcqItems_(list, r) {
     var q = it.q, p = shuffle_(range_(q.opts.length), r), v = { i: it.i, q: q.q, opts: p.map(function (j) { return q.opts[j]; }) };
     if (it.act) v.act = it.act;
     if (q.img) v.img = { file: str_(q.img.file), alt: str_(q.img.alt), credit: str_(q.img.credit) };
+    if (q.item) v.item = str_(q.item); if (q.ans) v.ans = str_(q.ans); if (q.ask) v.ask = str_(q.ask); // an item and a pupil's answer sit in their own boxes, not inside the question
     qs.push(v); key.push({ t: 'pick', k: p.indexOf(q.k), n: q.opts.length, why: str_(q.why) });
   });
   return { qs: qs, key: key };
@@ -302,7 +307,7 @@ function fiveBuild_(q, r) {
 function tenBuild_(T, r) {
   var slots = [], key = [], wm = T.why_marks || [];
   T.slots.forEach(function (s, i) {
-    var o = { i: i, para: s.para, part: s.part, label: s.label, type: s.type }, why = str_(wm[i]), p;
+    var o = { i: i, para: s.para, part: s.part, label: s.label, type: s.type }, why = str_(wm[s.wm != null ? s.wm : i]), p; // her own scheme has five notes for ten answers: s.wm names the slot's note (found live 16 Nov 2026)
     if (s.type === 'tap') {
       p = itemOrder_(T.item, s.phrases);
       o.item = str_(T.item); o.phrases = p.map(function (j) { return s.phrases[j]; }); o.picks = 1; o.pickN = 1;
@@ -346,7 +351,7 @@ function build_(A, email, a, round) {
   r = rng_(seed);
   if (f === 'mcq') {
     var idx = range_(B.qs.length);
-    if (A.id === 'vquiz') idx = shuffle_(idx, r).slice(0, A.max);
+    if (A.id === 'vquiz') idx = oneEach_(shuffle_(idx, r), B.qs, A.max);
     var m = mcqItems_(idx.map(function (i) { return { q: B.qs[i], i: i }; }), r);
     return { view: { qs: m.qs }, key: m.key, max: m.key.length };
   }
@@ -383,7 +388,7 @@ function build_(A, email, a, round) {
     var tv = [], tk = [];
     shuffle_(range_(B.items.length), r).forEach(function (i) {
       var it = B.items[i], o = itemOrder_(it.item, it.phrases);
-      tv.push({ i: i, item: it.item, phrases: o.map(function (j) { return it.phrases[j]; }), picks: (it.k || []).length });
+      tv.push({ i: i, q: str_(it.q), item: it.item, phrases: o.map(function (j) { return it.phrases[j]; }), picks: (it.k || []).length }); // q: the question an item belongs to, when the items are about different terms (found live 16 Nov 2026)
       tk.push({ t: 'tapset', k: (it.k || []).map(function (j) { return o.indexOf(j); }).sort(num_), n: it.phrases.length, why: str_(it.why) });
     });
     return { view: { items: tv }, key: tk, max: tk.length };
@@ -593,6 +598,8 @@ function apiMark_(req) {
     }
     out.newBest = S.score > (old || 0);
     H.a[id] = Math.max(H.a[id] || 0, a + 1);
+    // passing a Part 1 mini-test (4 or 5 of 5) ticks its checklist lines, as the Part 1 page says (found live 16 Nov 2026: it never did)
+    if (S.score >= Bv.max - 1) CK_TESTS.forEach(function (t, i) { if (t === id) H.ck[i] = 1; });
     var fresh = settle_(H, true);
     hdrPut_(x.slug, x.email, H);
     out.best = H.b[id]; out.attempts = H.a[id]; out.pts = H.pts; out.gain = H.pts - p0; out.badges = fresh; out.hdr = hdrOut_(H);

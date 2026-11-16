@@ -130,7 +130,9 @@ var App = (function(){
       var bar = el('<div class="bn"></div>');
       var back = opt.back != null ? opt.back : (pi && pi.n > 1 ? pi.list[pi.n - 2] : "home");
       bar.appendChild(el('<a class="btn ghost" href="#' + h(back) + '">' + h(S.back) + '</a>'));
-      if (opt.next) bar.appendChild(el('<a class="btn acc" href="#' + h(opt.next.route) + '">' + h(opt.next.label || S.next) + '</a>'));
+      // a "next" that opens an activity says the activity's own name, the one its heading will show
+      var nx = opt.next && TESTS[opt.next.route] ? {route: opt.next.route, label: fmt(S.nextTo, {t: TESTS[opt.next.route].t})} : opt.next;
+      if (nx) bar.appendChild(el('<a class="btn acc" href="#' + h(nx.route) + '">' + h(nx.label || S.next) + '</a>'));
       main.appendChild(bar);
     }
     window.scrollTo(0, 0);
@@ -176,8 +178,10 @@ var App = (function(){
     return (bs || []).map(function(b){
       var out = '<section class="blk">';
       if (b.h) out += '<h2>' + h(b.h) + (b.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h2>';
-      (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + md(p) + '</p>'; });
-      if (b.quote) out += '<blockquote class="say">' + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + h(b.quote.t) + '</blockquote>';
+      // an exam item is read before the answer that uses it, as on the paper: it goes under the question line, or first when there is none (found live 16 Nov 2026)
+      var q = b.quote ? '<blockquote class="say">' + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + h(b.quote.t) + '</blockquote>' : '', qAt = b.quote && b.quote.who === "Item" ? ((b.p || [])[0] && /^Question:/.test(b.p[0]) ? 1 : 0) : -1;
+      (b.p || []).forEach(function(p, i){ if (i === qAt) out += q; out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + md(p) + '</p>'; });
+      if (b.quote && (qAt < 0 || qAt >= (b.p || []).length)) out += q;
       if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
       if (b.writers) out += '<table class="tbl"><thead><tr><th>Writer</th><th>What they say</th></tr></thead><tbody>' + b.writers.map(function(w){ return '<tr><td><b>' + h(w.name) + '</b></td><td>' + h(w.says) + '</td></tr>'; }).join("") + '</tbody></table>';
       if (b.table) out += '<table class="tbl"><thead><tr>' + b.table.head.map(function(x){ return '<th>' + h(x) + '</th>'; }).join("") + '</tr></thead><tbody>' + b.table.rows.map(function(r){ return '<tr>' + r.map(function(x){ return '<td>' + h(x) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table>';
@@ -229,7 +233,7 @@ var App = (function(){
   function lockedScreen(route, pid){ shell(route, el('<div class="card"><h2>' + h(S.locked) + '</h2><p>' + h(S.lockedSub) + '</p></div>'), {crumb: S.locked, bar: true, back: "home"}); }
   function checklist(){
     var items = (C["p1/checklist"] || {items: []}).items, H = ME.hdr || {}, ck = (H.ck || []).slice(); while (ck.length < 12) ck.push(0);
-    var body = el('<div><h1>Checklist: twelve things you should be able to do</h1><p class="lead">Tick each line when you can do it. Each line has a test beside it. Your ticks are saved.</p><ul class="cklist" id="ck"></ul><p class="small mute" id="ckn"></p></div>');
+    var body = el('<div><h1>Checklist: twelve things you should be able to do</h1><p class="lead">A line ticks itself when you pass its mini-test with 4 or 5 marks out of 5. You can tick a line yourself too. Your ticks are saved.</p><ul class="cklist" id="ck"></ul><p class="small mute" id="ckn"></p></div>');
     var ul = body.querySelector("#ck");
     items.forEach(function(it, i){ ul.appendChild(el('<li><label><input type="checkbox" data-i="' + i + '"' + (ck[i] ? ' checked' : '') + '> <span>' + h(it.t) + '</span></label>' + (it.test ? '<a class="test btn sm ghost" href="#' + h(Object.keys(TESTS).filter(function(k){ return TESTS[k].act === it.test; })[0] || "s1") + '">Test it</a>' : '') + '</li>')); });
     function count(){ body.querySelector("#ckn").textContent = ck.filter(Boolean).length + " of 12 ticked"; }
@@ -248,7 +252,7 @@ var App = (function(){
     call("apiOpen", req).then(function(r){
       r.max = r.max || (ME.max || {})[t.act]; r.intro = r.intro || "";
       Engine.mount(body.querySelector("#act"), r, {reopen: function(round){ act(route, {round: round}); }});
-      var h1 = body.querySelector("h1"); if (r.title) h1.textContent = r.title;
+      // the heading keeps the name the pupil clicked; the server's own title is not put over it
     }).catch(function(e){ if (e.code && e.code !== "locked" && e.code !== "offline") body.querySelector("#act").innerHTML = '<p class="say">' + h(S.serverErr) + '</p>'; });
   }
   function nextAfter(route){
@@ -275,7 +279,7 @@ var App = (function(){
   function tenList(page){
     var H = ME.hdr || {};
     return '<section class="blk"><table class="tbl qtable"><thead><tr><th>No.</th><th>Question</th><th>Build</th><th>Write</th></tr></thead><tbody>' + page.qs.map(function(q){
-      var b = (H.b || {})[q.id], w = (H.w || {})["w10-" + q.n];
+      var b = (H.b || {})["d10-" + q.n], w = (H.w || {})["w10-" + q.n]; // the server files ten-mark builds as d10-<n>, not the bank's d10-0<n> (found live 16 Nov 2026)
       return '<tr><td>' + q.n + '</td><td><a class="link" href="#s7/' + q.n + '">' + h(q.q) + '</a> <span class="pill">' + h(fmt(S.qMarks, {m: q.marks})) + '</span>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 10})) + '</td><td class="st">' + h(w != null ? S.writeDone : S.writeNot) + '</td></tr>';
     }).join("") + '</tbody></table></section>';
   }
@@ -283,9 +287,9 @@ var App = (function(){
     var page = C[part === "p6" ? "p6/s6" : "p7/s7"], qs = page.qs, q = qs[n - 1]; if (!q) return go(part === "p6" ? "s6" : "s7");
     if (locked(part)) return lockedScreen(part === "p6" ? "s6" : "s7", part);
     var base = (part === "p6" ? "s6/" : "s7/") + n, route = base + (mode === "write" ? "/write" : "");
-    var buildAct = q.id, writeAct = part === "p6" ? "w5-" + q.id.slice(3) : "w10-" + n;
+    var buildAct = part === "p6" ? q.id : "d10-" + n, writeAct = part === "p6" ? "w5-" + q.id.slice(3) : "w10-" + n;
     var title = part === "p6" ? "Question " + n + " of " + qs.length + ": " + q.term : "Question " + n + " of " + qs.length;
-    var body = el('<div><h1>' + h(title) + '</h1>' + (part === "p6" ? '<p class="lead">' + h(S.fiveLead) + '</p>' : '<p class="lead">' + h(S.tenLead) + '</p>') +
+    var body = el('<div><h1>' + h(title) + '</h1>' + (part === "p6" ? '<p class="lead">' + h(S.fiveLead) + '</p>' : '<p class="lead">' + h(q.hasItem === false ? S.tenLeadNoItem : S.tenLead) + '</p>') +
       '<div class="modes" role="tablist"><button class="btn" role="tab" id="mb" aria-pressed="' + (mode !== "write") + '">' + h(S.modeBuild) + '</button><button class="btn" role="tab" id="mw" aria-pressed="' + (mode === "write") + '">' + h(S.modeWrite) + '</button></div>' +
       '<p class="small mute qstat" data-b="' + h(buildAct) + '" data-w="' + h(writeAct) + '">' + h(statText(buildAct, writeAct)) + '</p><div id="act"><p class="say">' + h(S.busy) + '</p></div></div>');
     var next = n < qs.length ? {route: (part === "p6" ? "s6/" : "s7/") + (n + 1), label: "Question " + (n + 1)} : (part === "p6" ? {route: "s7", label: "Go on to Part 7: Ten-mark questions"} : {route: "s8", label: "Go on to Part 8: The Secret to AO2 Marks"});

@@ -67,7 +67,6 @@
     "Could you write about manipulation in school?",
     "Could you write about protection from harm in school?"
   ],
-  "new": true,
   "next": {
     "route": "s3/education/spot",
     "label": "Sort the school examples"

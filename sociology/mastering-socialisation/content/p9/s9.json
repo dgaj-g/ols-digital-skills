@@ -16,7 +16,10 @@
         "Copying the item. Writing out the item’s words shows that you can read it; the examiner wants to see you use it.",
         "A list with no sentences. A list of key words explains nothing, so write full sentences."
       ],
-      "new": true
+      "new_items": [
+        0,
+        4
+      ]
     },
     {
       "h": "Eight habits of full-mark answers",
@@ -43,11 +46,13 @@
       ],
       "list": [
         "D, Define the term (AO1): an accurate definition of the term in the question.",
-        "I, Item link (AO2): the place where you apply the term to the item, using specific words from it. Aim for two explained item links; you do not need to quote the item twice.",
+        "I, Item link (AO2): the place where you apply the term to the item, using specific words from it. Pick out two details from the item and say what each one shows about the term; both details can sit in one sentence.",
         "E, Explain with an example (AO1): a relevant example, with a sentence that explains it.",
         "T, Theory link (AO1): a brief, relevant link to a perspective, such as Functionalists or Feminists."
       ],
-      "new": true
+      "new_p": [
+        2
+      ]
     }
   ],
   "next": {

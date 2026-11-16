@@ -65,7 +65,6 @@
     "Could you write about childrearing practices in the family?",
     "Could you write about protection from harm in the family?"
   ],
-  "new": true,
   "next": {
     "route": "s3/family/match",
     "label": "Match the process"

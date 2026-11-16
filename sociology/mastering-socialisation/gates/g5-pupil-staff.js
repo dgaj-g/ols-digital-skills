@@ -20,6 +20,10 @@ const ROUTE = { t1p: 's1/primary/test', 'c-val': 's2/values/quiz', 'r-test': 's3
 const ctx = {}; vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'platform', 'strings.js'), 'utf8') + ';this.__S=SOCS;', ctx);
 const S = ctx.__S.S;
 const fmt = (s, o) => String(s).replace(/\{(\w+)\}/g, (m, k) => (o[k] != null ? o[k] : m));
+
+// AF (16 Nov 2026): a line that says where something shows must match where it is drawn. "beside" = to the right and level; "under" = below.
+const placeBad = (words, a, b) => { if (!a || !b) return "nothing to measure"; if (/\b(beside|next to|alongside)\b/i.test(words) && !(b.l >= a.r - 4 && b.t < a.b && b.b > a.t)) return "says beside, but it is drawn " + (b.t >= a.b - 4 ? "under" : "elsewhere"); if (/\b(under|below)\b/i.test(words) && !(b.t >= a.b - 4)) return "says under, but it is not under"; return ""; };
+let layoutQuizDone = false;
 const sh0 = sheet('g5-pupil-staff');
 const one = (d) => (d == null ? d : String(d).replace(/\s+/g, ' ').slice(0, 160));
 const sh = { check: (ok, w, d) => sh0.check(ok, w, ok ? undefined : one(d)), fail: (w, d) => sh0.fail(w, one(d)), pass: (w) => sh0.pass(w), skip: (w, d) => sh0.skip(w, d), info: (l) => sh0.info(l), finish: () => sh0.finish() };
@@ -211,6 +215,14 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       const marks = await count(page, '.why .mark'), rights = await count(page, '.opt.right');
       sh.check(marks === n && rights === n, id + ' every question shows a tick or cross and its right answer', marks + ' marks, ' + rights + ' right');
       sh.check((await count(page, '.why span')) >= n, id + ' why lines are shown');
+      if (!layoutQuizDone && (await count(page, '.q[data-q] .why.no'))) { layoutQuizDone = true;
+        const lay = await page.evaluate(() => { const R = (e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; };
+          const w = document.querySelector('.q[data-q] .why.no'); return { a: R(w.closest('.q').querySelector('.qt')), b: R(w), said: (document.querySelector('.res') || { innerText: '' }).innerText }; });
+        const bad = placeBad(S.resultLine, lay.a, lay.b);
+        sh.check(!bad && /under/.test(S.resultLine) && lay.said.indexOf(S.resultLine) >= 0, id + ' the result card says where a wrong answer\'s right answer shows, and it shows there (under the question)', bad || ('line shown: ' + (lay.said.indexOf(S.resultLine) >= 0)));
+        const ctl = placeBad('Wrong answers show the right answer beside them.', lay.a, lay.b);
+        sh.check(!!ctl, 'CONTROL the old line "... beside them." is reported against the same layout', ctl || 'not reported');
+      }
       { // the line at the top was drawn before the mark: straight after Check it must show the same best as the result card, never "Not tried yet"
         const head = await page.$eval('.act-head .best', (e) => e.innerText.trim()).catch(() => null);
         const lines = await page.$$eval('.res .line', (a) => a.map((x) => x.innerText.trim())).catch(() => []);
@@ -242,7 +254,15 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     // T10 checklist
     await pupil(P1, 's1/checklist'); await waitSel('input[data-i]');
     const nck = await count(page, 'input[data-i]');
-    for (let i = 0; i < nck; i++) { await tap('input[data-i="' + i + '"]').catch(() => {}); await wait(60); }
+    // AH (found live 16 Nov 2026): the "Test it" buttons had their word riding at the top (an old display:block rule). Every word sits in the middle of its button.
+    const offMid = () => page.$$eval('.cklist a.test', (a) => a.map((b) => { const r = b.getBoundingClientRect(), g = document.createRange(); g.selectNodeContents(b); const t = g.getBoundingClientRect(); return Math.round(Math.abs((t.top + t.bottom) / 2 - (r.top + r.bottom) / 2)); }));
+    const mids = await offMid();
+    sh.check(mids.length === 12 && mids.every((d) => d <= 2), 'T10 each "Test it" button has its word in the middle', mids.length + ' buttons, worst ' + Math.max.apply(null, mids.concat([0])) + 'px off centre');
+    const oldRule = await page.addStyleTag({ content: '.cklist .test{display:block;font-size:14px;color:#6b6b6b;margin-top:4px}' });
+    const cmids = await offMid(); await oldRule.evaluate((n) => n.remove());
+    sh.check(cmids.some((d) => d > 2), 'CONTROL with the old display:block rule put back, the check sees the word off centre', 'worst ' + Math.max.apply(null, cmids.concat([0])) + 'px');
+    // lines a passed mini-test has already ticked stay ticked; tick the rest
+    for (let i = 0; i < nck; i++) { if (!(await page.$eval('input[data-i="' + i + '"]', (x) => x.checked))) { await tap('input[data-i="' + i + '"]').catch(() => {}); await wait(60); } }
     await wait(1200);
     await pupil(P1, 's1/checklist'); await waitSel('input[data-i]');
     const kept = await page.$$eval('input[data-i]', (a) => a.filter((x) => x.checked).length);
@@ -289,13 +309,24 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
 
     // T29 cards
     await pupil(P1, 's5/cards'); await waitSel('.fc');
-    const firstTerms = []; let flips = 0;
+    const firstTerms = []; let flips = 0, cnt2 = {};
     for (let i = 0; i < 40; i++) {
       const fc = await page.$('.fc'); if (!fc) break;
       firstTerms.push(await page.$eval('.fc .term', (e) => e.innerText.trim()).catch(() => ''));
       await tapEl(fc); await wait(80); await tap(i % 3 === 0 ? '#no' : '#yes'); await wait(120); flips++;
+      if (i === 1) cnt2 = { line: await txt(page, '.pilecnt'), pk: await count(page, '#pk li'), pn: await count(page, '#pn li') };
     }
+    // the count line's numbers must be the boxes' numbers: still to sort = 17 - both piles, "I knew it: k", "Not yet: n"
+    const cardsTrue = (c) => { const m = /^(\d+) cards? still to sort · I knew it: (\d+) · Not yet: (\d+)$/.exec((c.line || '').trim());
+      return !!m && +m[1] === 17 - c.pk - c.pn && +m[2] === c.pk && +m[3] === c.pn; };
+    sh.check(cardsTrue(cnt2), 'T29 after one "Not yet" and one "I knew it" the count line matches the two boxes', JSON.stringify(cnt2));
+    sh.check(!cardsTrue({ line: '15 cards left in "Not yet" · I knew it: 1', pk: 1, pn: 1 }), 'CONTROL T29 the old line ("15 cards left in Not yet" beside a Not yet box of one) fails the count check', 'rejected');
     const pk = await count(page, '#pk li'), pn = await count(page, '#pn li');
+    // the finish card tells the truth: "every card is in I knew it" only when the Not yet box is empty
+    const finishTrue = (t, n) => n > 0 ? (t.indexOf(S.cardsNone) < 0 && t.indexOf(n === 1 ? S.cardsRoundOne : S.cardsRound.replace('{n}', n)) >= 0) : t.indexOf(S.cardsNone) >= 0;
+    const fin = (await txt(page, '.fcwrap .card')) || '';
+    sh.check(pn > 0 && finishTrue(fin, pn), 'T29 with cards in Not yet, the finish card says how many and never "every card is in I knew it"', pn + ' in Not yet: ' + fin.slice(0, 120));
+    sh.check(!finishTrue(S.cardsNone + ' ' + S.cardsAgain, pn), 'CONTROL T29 the old finish card ("Every card is in I knew it" with ' + pn + ' in Not yet) fails the same check', 'rejected');
     sh.check(flips === 17 && pk + pn === 17, 'T29 17 cards flip and sort into the two piles', flips + ' flips, ' + pk + '+' + pn);
     const terms = await api('apiOpen', { cls: CLS, act: 'cards' }, P1).catch(() => null);
     await wait(800);
@@ -303,8 +334,42 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     sh.check(Object.keys(pile).length === 17, 'T29 the piles are saved as pile on the pupil record', Object.keys(pile).length + ' saved');
     await pupil(P1, 's5/cards'); await wait(600);
     const again = await bodyText(page);
-    sh.check(again.indexOf(S.cardsNone) >= 0 || (await count(page, '#pk li')) === pk, 'T29 the piles come back on reload');
+    sh.check((await count(page, '#pk li')) === pk && (await count(page, '#pn li')) === pn && finishTrue(again, pn), 'T29 the piles and the finish card come back on reload', pk + '+' + pn);
     sh.info('T29 card order fixed as the list: first five shown were ' + firstTerms.slice(0, 5).join(', '));
+    // the two "start again" buttons work at once and stay worked after a reload (found live 16 Nov 2026: both did nothing, because the page
+    // redrew from the piles it had before the save, and the server was only sent the cards still on a pile, so it never took any off)
+    const notYetTerms = await page.$$eval('#pn li', (a) => a.map((e) => e.innerText.trim()));
+    const cardState = async () => ({ fc: await page.$eval('.fc .term', (e) => e.innerText.trim()).catch(() => null), line: await txt(page, '.pilecnt'), pk: await count(page, '#pk li'), pn: await count(page, '#pn li') });
+    const notYetAgain = (c) => !!c.fc && notYetTerms.indexOf(c.fc) >= 0 && c.pk === pk && c.pn === 0 && cardsTrue(c);
+    if (await page.$('#restart')) {
+      await tap('#restart'); await wait(300);
+      const r1 = await cardState();
+      sh.check(notYetAgain(r1), 'T29 "Try the Not yet cards" brings back just the Not yet cards at once', JSON.stringify(r1));
+      sh.check(!notYetAgain({ fc: null, line: '', pk, pn }), 'CONTROL T29 the old result (the finish card still showing, ' + pn + ' still in Not yet) fails the same check', 'rejected');
+      await wait(900); await pupil(P1, 's5/cards'); await wait(600);
+      const r2 = await cardState();
+      sh.check(notYetAgain(r2), 'T29 after "Try the Not yet cards" a reload still shows just the Not yet cards to sort (the server took them off)', JSON.stringify(r2));
+      for (let i = 0; i < 40 && (await page.$('.fc')); i++) { await tapEl(await page.$('.fc')); await wait(60); await tap('#yes'); await wait(100); }
+      const fin2 = (await txt(page, '.fcwrap .card')) || '';
+      sh.check(finishTrue(fin2, 0) && !(await page.$('#restart')), 'T29 with every card in I knew it, the finish card says so and offers only "Start again"', fin2.slice(0, 120));
+    } else sh.fail('T29 "Try the Not yet cards"', 'no #restart button on the finish card with ' + pn + ' in Not yet');
+    const allAgain = (c) => !!c.fc && c.pk === 0 && c.pn === 0 && /^17 cards still to sort · I knew it: 0 · Not yet: 0$/.test((c.line || '').trim());
+    if (await page.$('#restartAll')) {
+      await tap('#restartAll'); await wait(300);
+      const r3 = await cardState();
+      sh.check(allAgain(r3), 'T29 "Start again" brings back all 17 cards at once with both boxes empty', JSON.stringify(r3));
+      await wait(900); await pupil(P1, 's5/cards'); await wait(600);
+      const r4 = await cardState();
+      sh.check(allAgain(r4), 'T29 after "Start again" a reload still shows all 17 to sort (the server took every card off)', JSON.stringify(r4));
+    } else sh.fail('T29 "Start again"', 'no #restartAll button on the finish card');
+    { // CONTROL: the old page sent the whole pile minus the Not yet cards; the server keeps cards it is not told about, so the reload checks can see the bug
+      const a = notYetTerms[0], b = (firstTerms.filter((x) => x && x !== a)[0]) || 'culture';
+      await api('apiPile', { cls: CLS, pile: { [a]: 0, [b]: 1 } }, P2);
+      await api('apiPile', { cls: CLS, pile: { [b]: 1 } }, P2);
+      const kept = ((await api('apiBoot', { cls: CLS }, P2)).hdr || {}).pile || {};
+      sh.check(kept[a] === 0, 'CONTROL T29 the old restart (sending only the cards left on a pile) leaves the Not yet card on the server, so the reload check fails on it', JSON.stringify(kept));
+      await api('apiPile', { cls: CLS, pile: { [a]: null, [b]: null } }, P2);
+    }
 
     // T30 v-quiz: 10 drawn per pupil, seeded
     const vq1 = await api('apiOpen', { cls: CLS, act: 'vquiz' }, P1), vq1b = await api('apiOpen', { cls: CLS, act: 'vquiz' }, P1), vq2 = await api('apiOpen', { cls: CLS, act: 'vquiz' }, P2);
@@ -357,6 +422,15 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       sh.check(!!phT && val.indexOf(phT) > 0, 'T33 a tapped item phrase drops in at the caret', ph ? 'not inserted' : 'no item phrases');
       await page.type('#w1', ' This means people learn norms and values, for example in the family.');
       await tap('#ck').catch(() => {}); await waitSel('ul.ckl li', 8000);
+      { // AF: the intro says the model answer appears under the checklist; measure it (the old words said "beside yours")
+        const lay = await page.evaluate(() => { const R = (e) => { if (!e) return null; const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; };
+          return { a: R(document.querySelector('.writeout ul.ckl')), b: R(document.querySelector('.writeout .model')), said: (document.querySelector('.intro') || { innerText: '' }).innerText }; });
+        const bad = placeBad(S.writeIntro, lay.a, lay.b);
+        sh.check(!bad && /under it/.test(S.writeIntro) && lay.said.indexOf(S.writeIntro) >= 0, 'T33 the intro says where the model answer shows, and it shows there (under the checklist)', bad || ('intro shown: ' + (lay.said.indexOf(S.writeIntro) >= 0)));
+        ['tenWriteIntro', 'tenWriteOne'].forEach((k) => sh.check(!placeBad(S[k], lay.a, lay.b), k + ' says the model answer shows where it is drawn (same layout)', placeBad(S[k], lay.a, lay.b)));
+        const ctl = placeBad('When you press Check, the examiner\'s checklist shows what it found, then the model answer appears beside yours.', lay.a, lay.b);
+        sh.check(!!ctl, 'CONTROL the old intro "... appears beside yours." is reported against the same layout', ctl || 'not reported');
+      }
       const ckl = await count(page, 'ul.ckl li');
       sh.check(ckl === 5, 'T33 the checklist shows 5 lines', ckl + ' lines');
       { const qs = await page.$eval('.qstat', (e) => e.innerText.trim()).catch(() => null);
@@ -391,6 +465,13 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       sh.check(!(await page.$eval('#ck', (b) => b.disabled)), 'T35 Check comes alive once every slot is filled and each explain order has been moved', await txt(page, '#cnt'));
       await tap('#ck').catch(() => {}); await waitSel('.res .score');
       sh.check(slots.length === 10 && /of 10 marks/.test((await txt(page, '.res .score')) || ''), 'T35 ten slots over two paragraphs, marked out of 10', slots.join(','));
+      { // a ten-mark build must show back as tried: the status line and the Part 7 list (found live 16 Nov 2026: the page looked under d10-01, the server files d10-1)
+        const qs = await page.$eval('.qstat', (e) => e.innerText.trim()).catch(() => null);
+        sh.check(!!qs && qs.indexOf(S.first) !== 0, 'T35 the status line under question 1 shows the new best straight after Check (not "' + S.first + '")', 'status "' + qs + '"');
+        await pupil(P1, 's7'); await waitSel('table.qtable'); await wait(300);
+        const cell = await page.$$eval('table.qtable tbody tr', (r) => r[0] ? r[0].querySelectorAll('td.st')[0].innerText.trim() : null).catch(() => null);
+        sh.check(!!cell && cell !== S.first, 'T35 the Part 7 list shows question 1\'s build best, not "' + S.first + '"', 'saw "' + cell + '"');
+        await pupil(P1, 's7/1'); await waitSel('.slotc[data-s]'); }
     } else sh.fail('T35 #s7/1 shows its build slots');
     await pupil(P1, 's7/1/write'); const w10 = await waitSel('textarea#w2');
     if (w10) {
@@ -405,6 +486,8 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     sh.check(nb.indexOf(S.tenNoItem) >= 0 && nb.indexOf(S.schemeHer) >= 0, 'T37 question 6 says it has no item and gives her scheme line');
     await page.type('#w1', 'Religion teaches values through rules, for example the Ten Commandments set norms.'); await tap('#ck'); await waitSel('ul.ckl li', 8000);
     sh.check((await count(page, 'ul.ckl li')) === 10, 'T37 question 6 write checklist has her ten lines', (await count(page, 'ul.ckl li')) + ' lines');
+    const h6 = await page.$$eval('.writeout h4', (a) => a.filter((e) => e.nextElementSibling && e.nextElementSibling.matches('ul.ckl')).map((e) => e.innerText.trim()));
+    sh.check(h6.length === 2 && h6[0] === S.para1 && h6[1] === S.para2, 'T37 question 6 checklist halves are headed "' + S.para1 + '" and "' + S.para2 + '", as the model is (never "' + S.questionHead + '" twice)', h6.join(' | '));
     sh.skip('T36 practice point once when 6 or more found', 'needs a strong two-paragraph answer; the model is not split per box on the page');
     await pupil(P1, 's7/6'); await waitSel('.slotc[data-s]');
     const t6 = await page.$$eval('.slotc[data-s]', (a) => a.map((c) => c.dataset.type));
@@ -449,7 +532,7 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
 
     // T43 daily: two pupils, same five; first stores dl, second says practice
     await pupil(P1, 'daily'); await waitSel('.q[data-q] .opt');
-    const dq = await page.$$eval('.q[data-q] .qt', (a) => a.map((e) => e.innerText.trim()).sort().join('|'));
+    const dq = await page.$$eval('.q[data-q]', (a) => a.map((e) => e.querySelector('.qt').innerText.trim()).sort().join('|')); // first line only: an item question has its ask line too
     const d2 = await api('apiDaily', { cls: CLS }, P2);
     sh.check(dq && dq === ((d2.view || {}).qs || []).map((q) => q.q || q.t).sort().join('|'), 'T43 two pupils in the class get the same daily five');
     for (let i = 0; i < 5; i++) await tap('.q[data-q="' + i + '"] .opt[data-o="0"]');
@@ -479,6 +562,24 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     await api('apiMark', { cls: CLS, act: 'weekly', ans: { builds: wk.view.builds.map((b) => b.slots.map((s) => (s.type === 'pick' ? 0 : s.type === 'tap' ? [0] : s.steps))) } }, P1);
     const wk2 = JSON.stringify(((await api('apiBoot', { cls: CLS }, P1)).hdr || {}).wk || {});
     sh.check(wk1 !== '{}' && wk1 === wk2, 'T44 wk[week] is stored once', wk1 === '{}' ? 'nothing stored' : 'changed on a second run');
+
+    // item boxes (found live 16 Nov 2026): the Examiner's eye shows the item and the pupil's answer in their own boxes, then the
+    // question to answer; a Part 2 item question shows its item in a box. CONTROL: the same judge run on a copy of question 1 with
+    // its answer box taken out must report it.
+    const boxJudge = () => { window.__boxBad = (q) => { const it = q.querySelector('.item:not(.ans)'), an = q.querySelector('.item.ans'), qts = Array.prototype.map.call(q.querySelectorAll('.qt'), (x) => x.textContent);
+      if (!it) return 'no item box'; if (!an) return 'no pupil answer box'; if (!/A pupil writes/.test((an.querySelector('.ih') || {}).textContent || '')) return 'answer box has no "A pupil writes" heading';
+      if (qts.length < 2) return 'no question under the boxes'; if (qts.some((t) => /Item:|A pupil writes:/.test(t))) return 'item still inside the question'; return ''; }; };
+    await pupil(P1, 's9/eye'); await waitSel('.q[data-q] .opt');
+    await page.evaluate(boxJudge);
+    const eyeBad = await page.evaluate(() => Array.prototype.map.call(document.querySelectorAll('.q[data-q]'), (q, i) => { const b = window.__boxBad(q); return b ? 'q' + (i + 1) + ' ' + b : ''; }).filter(Boolean));
+    const eyeN = await count(page, '.q[data-q]');
+    sh.check(eyeN === 6 && !eyeBad.length, "the Examiner's eye shows each item and pupil's answer in their own boxes, then the question", eyeBad.join('; ') || eyeN + ' questions');
+    const eyeCtl = await page.evaluate(() => { const c = document.querySelector('.q[data-q]').cloneNode(true); const a = c.querySelector('.item.ans'); if (a) a.remove(); return window.__boxBad(c); });
+    sh.check(eyeCtl === 'no pupil answer box', "CONTROL question 1 with its answer box taken out is reported (the check above can see the bug)", eyeCtl || 'not reported');
+    await pupil(P1, 's2/beliefs/quiz'); await waitSel('.q[data-q] .opt');
+    const belief = await page.evaluate(() => { const qs = Array.prototype.slice.call(document.querySelectorAll('.q[data-q]'));
+      return { boxed: qs.filter((q) => q.querySelector('.item:not(.ans)')).length, packed: qs.filter((q) => /Item:/.test(Array.prototype.map.call(q.querySelectorAll('.qt'), (x) => x.textContent).join(' '))).length }; });
+    sh.check(belief.boxed === 1 && belief.packed === 0, 'the Part 2 beliefs quiz shows its item question with the item in a box', belief.boxed + ' boxed, ' + belief.packed + ' packed');
 
     // T46 offline then retry
     await pupil(P1, ROUTE.t1p); await waitSel('.q[data-q] .opt');

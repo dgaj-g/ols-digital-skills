@@ -7,28 +7,33 @@
   "blocks": [
     {
       "h": "What this agent is",
-      "new": true,
       "p": [
         "The workplace is an important agent of adult socialisation, and an important part of our social identity. Your teacher's definition of tertiary socialisation is 'This is adult socialisation and takes place when people need to adapt to new situations such as becoming a parent, changing jobs, coping with illness or death'. Parsons claimed we acquire our culture in three ways: primary, secondary and tertiary socialisation.",
         "Some textbooks call the workplace a secondary agent; your course treats adult socialisation as a third stage, tertiary socialisation.",
-        "As adults we have to learn to adapt to the demands of our profession or work position. This means learning the norms and values of the workplace. When you start a new job, or change jobs, you take on a new set of norms and values, and this is resocialisation.",
+        "As adults we have to learn to adapt to the demands of our profession or work position. This means learning the norms and values of the workplace.",
+        "When you start a new job, or change jobs, you take on a new set of norms and values, and this is resocialisation.",
         "Adults are also part of peer groups, because your teacher's definition of a peer group is that it often refers to our friends but could equally be our colleagues. Peers and adults socialise differently: adults aim for long-term adjustment, which is deferred gratification, while peers are concerned with immediate gratification and the desire to fit in and be included. At work, colleagues are adult peers, and their rules often come from agreements between workers, not from the top down."
+      ],
+      "new_p": [
+        1,
+        3
       ]
     },
     {
       "h": "How it shapes behaviour",
-      "new": true,
       "p": [
         "**Teaching:** The process can be formal, for example training. Formal means deliberate, consciously taught: induction training, health and safety, and training for the job. It can also be informal, for example canteen culture, which is less obvious and learned through casual observation of others. Informal learning is about 'how much you can get away with', observing colleagues and asking for help.",
         "**Imitation and role models:** Observing colleagues is how many people learn what is done in practice. A colleague who is good at the job, or a manager, can act as a role model in the same way that older children and adults do in other agents.",
         "**Activities:** Training for the job guides workers to certain tasks and ways of doing them. McDonaldisation of work is your teacher's example of how tightly the way tasks are done can be shaped.",
         "**Language:** Your teacher's notes give no workplace example for language, so this is a link you can make. Workers learn the words used in their workplace, such as job titles and professional terms.",
         "**Identity:** Work is an important part of our social identity. Standards of professionalism, and belonging to a profession, shape how a person sees themselves."
+      ],
+      "new_p": [
+        3
       ]
     },
     {
       "h": "How it controls behaviour",
-      "new": true,
       "p": [
         "**Social control and sanctions:** Workers learn what is acceptable and unacceptable behaviour in the workplace. Your teacher lists professional codes of conduct and standards of professionalism. In professional occupations there may be formal rules or professional standards of conduct. Informal peer control could be agreements made between workers, for example swapping shifts or agreeing how much work should be done. Sanctions include sacking or ostracising.",
         "**Expectations:** As adults we have to learn to adapt to the demands of our profession or work position. A new worker is expected to follow the written rules and to pick up the unwritten ones.",
@@ -39,6 +44,12 @@
         "Predictability: the job is done in the same way every time.",
         "Calculability: what matters is what can be counted, such as time taken and amount produced.",
         "Efficiency: the quickest way of getting the job done is the one that is used."
+      ],
+      "new_items": [
+        0,
+        1,
+        2,
+        3
       ]
     },
     {

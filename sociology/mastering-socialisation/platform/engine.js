@@ -29,6 +29,10 @@ var Engine = (function(){
     if (!text) return "";
     return '<div class="item"><span class="ih">' + h(S.itemHead) + '</span>' + (phrases ? markPhrases(text, phrases, cls) : h(text)) + '</div>';
   }
+  function ansBox(text){ // a pupil's answer to be judged, in its own box under the item
+    if (!text) return "";
+    return '<div class="item ans"><span class="ih">' + h(S.ansHead) + '</span>' + h(text) + '</div>';
+  }
   function underline(text, phrases){
     var out = h(text);
     (phrases||[]).forEach(function(p){ var hp = h(p); if (out.indexOf(hp) >= 0) out = out.split(hp).join("<u>" + hp + "</u>"); });
@@ -135,12 +139,13 @@ var Engine = (function(){
     btn.addEventListener("click", function(){ if (!btn.disabled && o && o.onCheck) o.onCheck(btn); });
     return api;
   }
+  // "+N points" is what this check earned (r.gain), never her running total (found live 16 Nov 2026: a 2-mark check said +46)
   function resultCard(r, open, extraHtml){
     var full = r.score >= r.max;
     var html = '<div class="res' + (full ? " full" : "") + '" role="status">' +
       '<div class="score">' + h(fmt(S.result, {n: r.score, m: r.max})) + '</div>' +
       (full ? '<p class="line">' + h(S.full) + '</p>' : '<p class="line">' + h(S.resultLine) + '</p>') +
-      '<p class="line">' + h(fmt(S.best, {n: r.best, m: r.max})) + (r.pts > 0 ? ' · +' + h(r.pts === 1 ? S.pts1 : fmt(S.pts, {n: r.pts})) : '') + '</p>' +
+      '<p class="line">' + h(fmt(S.best, {n: r.best, m: r.max})) + (r.gain > 0 ? ' · +' + h(r.gain === 1 ? S.pts1 : fmt(S.pts, {n: r.gain})) : '') + '</p>' +
       (extraHtml || "") +
       '<div class="row"><button class="btn ghost" id="again">' + h(S.again) + '</button></div></div>';
     return el(html);
@@ -167,12 +172,12 @@ var Engine = (function(){
       var qt = it.q || it.t;
       var html = '<div class="q" data-q="' + qi + '"><div class="qn">' + h(fmt(S.qList, {n: qi + 1, m: qs.length})) + '</div>' +
         (it.img ? '<img src="' + h(T.img(it.img.file || it.img)) + '" alt="' + h(it.img.alt || "") + '">' : '') +
-        '<div class="qt">' + h(qt) + '</div><div class="opts" role="group" aria-label="' + h(fmt(S.qList, {n: qi + 1, m: qs.length})) + '">' +
+        '<div class="qt">' + h(qt) + '</div>' + itemBox(it.item) + ansBox(it.ans) + (it.ask ? '<div class="qt">' + h(it.ask) + '</div>' : '') + '<div class="opts" role="group" aria-label="' + h(fmt(S.qList, {n: qi + 1, m: qs.length})) + '">' +
         it.opts.map(function(op, oi){ return '<button class="opt" aria-pressed="false" data-o="' + oi + '"><span class="k">' + letter(oi) + '</span><span>' + h(op) + '</span></button>'; }).join("") +
         '</div>' + (it.img && it.img.credit ? '<p class="small mute" style="margin:8px 0 0">' + h(it.img.credit) + '</p>' : '') + '</div>';
       list.appendChild(el(html));
     });
-    var bar = checkBar(root, qs.length, {countText: function(n, m){ return n + " of " + m + " answered"; }, onCheck: function(btn){
+    var bar = checkBar(root, qs.length, {countText: function(n, m){ return fmt(S.answeredN, {n: n, m: m}); }, onCheck: function(btn){
       var arr = qs.map(function(_, i){ return ans[i]; });
       mark(root, open, arr, o, btn, function(r){
         bar.done();
@@ -209,7 +214,7 @@ var Engine = (function(){
         '<button class="opt" aria-pressed="false" data-o="0"><span class="k">A</span><span>' + h(v.a) + '</span></button>' +
         '<button class="opt" aria-pressed="false" data-o="1"><span class="k">B</span><span>' + h(v.b) + '</span></button></div></div>'));
     });
-    var bar = checkBar(root, v.rows.length, {countText: function(n, m){ return n + " of " + m + " set"; }, onCheck: function(btn){
+    var bar = checkBar(root, v.rows.length, {countText: function(n, m){ return fmt(S.answeredN, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, v.rows.map(function(_, i){ return ans[i]; }), o, btn, function(r){
         bar.done();
         r.per.forEach(function(p, i){
@@ -276,19 +281,19 @@ var Engine = (function(){
       onTap: function(card){ if (done) return; var on = card.getAttribute("aria-pressed") === "true"; qa(root, ".dcard").forEach(function(c){ c.setAttribute("aria-pressed", "false"); }); if (!on){ card.setAttribute("aria-pressed", "true"); sel = card; } else sel = null; },
       onTapTarget: function(tg){ if (done || !sel) return; if (tg.classList.contains("tray")) { q(tray, "#tin").appendChild(sel); sel.setAttribute("aria-pressed", "false"); sel = null; count(); } else place(sel, tg); }
     });
-    var bar = checkBar(root, n, {onCheck: function(btn){
+    var bar = checkBar(root, n, {waitText: fmt(S.checkPlace, {m: n}), onCheck: function(btn){
       var ans = {round: v.round || 1, bin: v.cards.map(function(c){ var e = q(grid, '.dcard[data-i="' + c.i + '"]'); return e ? e.closest(".bin").dataset.bin : null; })};
       mark(root, open, ans, o, btn, function(r){
-        done = true; bar.done();
+        done = true; bar.done(); tray.classList.add("checked"); // nothing left to place, so the tray and its prompt go
         var labels = {}; v.bins.forEach(function(b){ labels[b.id] = b.label; });
         r.per.forEach(function(p){ var e = q(grid, '.dcard[data-i="' + p.i + '"]'); if (!e) return; e.classList.add(p.ok ? "ok" : "no"); e.setAttribute("tabindex", "-1"); if (!p.ok) e.appendChild(el('<span class="fix">' + h(fmt(S.rightWas, {k: labels[p.bin] || p.bin})) + '</span>')); });
         var extra = "";
         if (v.rounds > 1){
           if ((v.round || 1) < v.rounds) extra = '<p><button class="btn acc" id="nr">' + h(fmt(S.roundDone, {n: v.round})) + '</button></p>';
-          else extra = '<p><b>' + h(fmt(S.allRounds, {n: r.best, m: open.max})) + '</b></p>';
+          else extra = '<p><b>' + h(fmt(v.rounds === 2 ? S.bothRounds : S.allRounds, {n: r.best, m: open.max, r: v.rounds})) + '</b></p>';
         }
-        var rc = resultCard({score: r.score, max: v.cards.length, best: v.rounds > 1 ? (r.per.filter(function(p){ return p.ok; }).length) : r.best, pts: r.pts}, open, extra);
-        if (v.rounds > 1) q(rc, ".line:nth-of-type(2)") && (q(rc, ".line:nth-of-type(2)").textContent = fmt(S.best, {n: r.best, m: open.max}) + (r.pts > 0 ? " · +" + fmt(S.pts, {n: r.pts}) : ""));
+        var rc = resultCard({score: r.score, max: v.cards.length, best: v.rounds > 1 ? (r.per.filter(function(p){ return p.ok; }).length) : r.best, gain: r.gain}, open, extra);
+        if (v.rounds > 1) q(rc, ".line:nth-of-type(2)") && (q(rc, ".line:nth-of-type(2)").textContent = fmt(S.best, {n: r.best, m: open.max}) + (r.gain > 0 ? " · +" + (r.gain === 1 ? S.pts1 : fmt(S.pts, {n: r.gain})) : ""));
         root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o);
         var nr = q(rc, "#nr"); if (nr) nr.addEventListener("click", function(){ o.reopen((v.round || 1) + 1); });
         rc.scrollIntoView({behavior: "smooth", block: "start"});
@@ -319,10 +324,10 @@ var Engine = (function(){
       onTap: function(card){ if (done) return; var on = card.getAttribute("aria-pressed") === "true"; qa(root, ".dcard").forEach(function(c){ c.setAttribute("aria-pressed", "false"); }); if (!on){ card.setAttribute("aria-pressed", "true"); sel = card; } else sel = null; },
       onTapTarget: function(tg){ if (done || !sel) return; tg = slotOf(tg); var from = sel.closest(".slot"); if (tg.classList.contains("tray")) toTray(sel); else place(sel, tg); if (from && from !== tg && !q(from, ".dcard")) from.textContent = S.drop; }
     });
-    var bar = checkBar(root, n, {onCheck: function(btn){
+    var bar = checkBar(root, n, {waitText: fmt(S.checkPlace, {m: n}), onCheck: function(btn){
       var ans = v.cards.map(function(c){ var e = q(list, '.mrow[data-i="' + c.i + '"] .slot .dcard'); return e ? e.dataset.chip : null; });
       mark(root, open, ans, o, btn, function(r){
-        done = true; bar.done();
+        done = true; bar.done(); tray.classList.add("checked"); // nothing left to place, so the tray and its prompt go
         r.per.forEach(function(p){ var row = q(list, '.mrow[data-i="' + p.i + '"]'), slot = q(row, ".slot"); slot.classList.add(p.ok ? "ok" : "no"); qa(slot, ".dcard").forEach(function(c){ c.setAttribute("tabindex", "-1"); c.classList.add(p.ok ? "ok" : "no"); }); if (!p.ok) row.appendChild(el('<div class="fix">' + h(fmt(S.rightWas, {k: p.chip})) + '</div>')); });
         var rc = resultCard(r, open); root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o); rc.scrollIntoView({behavior: "smooth", block: "start"});
       });
@@ -342,7 +347,7 @@ var Engine = (function(){
         var on = card.getAttribute("aria-pressed") === "true"; qa(list, ".dcard").forEach(function(c){ c.setAttribute("aria-pressed", "false"); }); if (!on){ card.setAttribute("aria-pressed", "true"); sel = card; } else sel = null; }
     });
     return {list: list, get: function(){ return qa(list, ".dcard").map(function(c){ return c.dataset.t; }); }, lock: function(){ done = true; qa(list, ".dcard").forEach(function(c){ c.setAttribute("tabindex", "-1"); }); },
-      show: function(per, whys){ qa(list, ".dcard").forEach(function(c, i){ var p = per[i]; c.classList.add(p.ok ? "ok" : "no"); if (!p.ok) c.appendChild(el('<span class="fix">' + h("Step " + p.pos) + '</span>')); if (whys && whys[i]) c.appendChild(el('<span class="fix" style="color:var(--mute)">' + h(whys[i]) + '</span>')); }); }};
+      show: function(per, whys){ qa(list, ".dcard").forEach(function(c, i){ var p = per[i]; c.classList.add(p.ok ? "ok" : "no"); if (!p.ok) c.appendChild(el('<span class="fix">' + h("Step " + p.pos) + '</span>')); if (whys && whys[i]) q(c, ".t").appendChild(el('<span class="owhy">' + h(S.whyLabel) + ' ' + h(whys[i]) + '</span>')); }); }};
   }
   function order(root, open, o){
     var v = open.view;
@@ -353,7 +358,7 @@ var Engine = (function(){
         bar.done(); ol.lock();
         var whys = (r.extra && r.extra.whys) || null;
         var byPos = {}; r.per.forEach(function(p){ byPos[p.t] = p; });
-        ol.show(ol.get().map(function(t){ return byPos[t] || {ok: false, pos: "?"}; }), null);
+        var mine = ol.get(); ol.show(mine.map(function(t){ return byPos[t] || {ok: false, pos: "?"}; }), whys ? mine.map(function(t){ var p = byPos[t]; return p && p.pos > 0 ? whys[p.pos - 1] : null; }) : null);
         var rc = resultCard(r, open); root.insertBefore(rc, bar.btn.parentNode); wireAgain(rc, o); rc.scrollIntoView({behavior: "smooth", block: "start"});
       });
     }});
@@ -395,19 +400,33 @@ var Engine = (function(){
   function modelPanel(extra, scheme){
     if (!extra || !extra.model) return "";
     var m = extra.model, ao = extra.ao || {}, html = '';
+    // one line of the model; a list of sentences (the three Explain sentences) reads as sentences, never as "a.,b.,c." (found live 16 Nov 2026)
+    function line(label, a, text){
+      a = a || "AO1";
+      return '<p class="' + a.toLowerCase() + '"><span class="lbl">' + h(label) + ' · ' + h(a) + '</span> ' + underline([].concat(text).join(" "), extra.phrases) + '</p>';
+    }
     function para(obj, keys, labels){
-      return keys.map(function(k){ if (!obj[k]) return ""; var a = (ao[k] || "AO1").toLowerCase(); return '<p class="' + a + '"><span class="lbl">' + h(labels[k] || k) + ' · ' + h(ao[k] || "AO1") + '</span> ' + underline(obj[k], extra.phrases) + '</p>'; }).join("");
+      return keys.map(function(k){ return obj[k] ? line(labels[k] || k, ao[k], obj[k]) : ""; }).join("");
+    }
+    // her own scheme (question 6): each sentence carries a tag naming the part it earns, so its label and colour follow the sentence
+    var TAG = {how: "How it works", example: "Example", research: "Research", shows: "What it shows", conclusion: "Conclusion", open: "Opening", sum: "Sum up", more: "More research", link: "Link back"};
+    var TAG_AO = {how: "AO1", research: "AO1", open: "AO1", more: "AO1", example: "AO2", shows: "AO2", conclusion: "AO2", sum: "AO2", link: "AO2"};
+    function tagged(obj, tags){
+      var said = [obj.point, obj.evidence, obj.apply].concat(obj.explain || []).concat([obj.link]);
+      return said.map(function(s, i){ var t = tags[i] || "", b = t.replace(/\d+$/, ""); return s ? line(TAG[b] || TAG.link, ao[t] || TAG_AO[b] || "AO1", s) : ""; }).join("");
     }
     if (m.d !== undefined){
       html += para(m, ["d", "i", "e", "t"], {d: "Define", i: "Item", e: "Example", t: "Theory"});
+    } else if (m.p1 && m.tags && m.tags.p1 && m.tags.p2){
+      html += '<h4>' + h(S.para1) + '</h4>' + tagged(m.p1, m.tags.p1) + '<h4>' + h(S.para2) + '</h4>' + tagged(m.p2, m.tags.p2);
     } else if (m.p1){
       var L = {point: "Point", evidence: "Evidence", apply: "Apply the item", explain: "Explain", link: "Link back"};
-      if (scheme === "3+2+2+2+1") L = {point: "How it works", evidence: "Example", apply: "Research", explain: "What it shows", link: "Conclusion"};
       html += '<h4>' + h(S.para1) + '</h4>' + para(m.p1, ["point", "evidence", "apply", "explain", "link"], L) + '<h4>' + h(S.para2) + '</h4>' + para(m.p2, ["point", "evidence", "apply", "explain", "link"], L);
     }
     // the underline sentence only when something is underlined: the model answers mostly put the item in their own words
     html = '<div class="model"><h3>' + h(S.modelHead) + '</h3><p class="small mute">' + h(S.modelNote) + (html.indexOf('<u>') >= 0 ? ' ' + h(S.modelUnder) : '') + '</p>' + html;
-    if (extra.why_marks && extra.why_marks.length) html += '<div class="strip"><b>' + h(S.markStrip) + '</b><ul>' + extra.why_marks.map(function(w){ return '<li>' + h(w) + '</li>'; }).join("") + '</ul></div>';
+    // a ten-mark answer is headed "Earning the ten marks", never the five-mark heading (found live 16 Nov 2026)
+    if (extra.why_marks && extra.why_marks.length) html += '<div class="strip"><b>' + h(m.p1 ? S.tenMarkStrip : S.markStrip) + '</b><ul>' + extra.why_marks.map(function(w){ return '<li>' + h(w) + '</li>'; }).join("") + '</ul></div>';
     return html + '</div>';
   }
   function builderPanel(root, v, open){
@@ -539,7 +558,7 @@ var Engine = (function(){
       out.innerHTML = "";
       var html = '<div class="res' + (r.n >= r.max ? " full" : "") + '" role="status"><div class="score">' + h(fmt(S.writeResult, {n: r.n, m: r.max})) + '</div><p class="line">' + h(S.checklistHead) + '</p>';
       if (r.lines) html += ckl(r.lines);
-      if (r.paras) html += r.paras.map(function(p, i){ return '<h4>' + h(two ? (i ? S.para2 : S.para1) : S.questionHead) + '</h4>' + ckl(p.lines); }).join("");
+      if (r.paras) html += r.paras.map(function(p, i){ return '<h4>' + h(r.paras.length > 1 ? (i ? S.para2 : S.para1) : S.questionHead) + '</h4>' + ckl(p.lines); }).join(""); // one box can still be checked in two halves (question 6): head them as the model's paragraphs, never "Question" twice (found live 16 Nov 2026)
       if (r.notes && r.notes.length) html += '<ul class="notes">' + r.notes.map(function(n){ return '<li>' + h(n) + '</li>'; }).join("") + '</ul>';
       if (r.newPractice) html += '<p class="line"><b>' + h(isTen ? fmt(S.practicePt10, {n: r.n, m: r.max}) : fmt(S.practicePt, {n: r.n})) + '</b></p>';
       else if (hadBefore || r.practice) html += '<p class="line">' + h(S.practiceHad) + '</p>';
@@ -554,6 +573,8 @@ var Engine = (function(){
   }
 
   /* ---------- cards (flip; two piles kept on the server) ---------- */
+  // flashcard saves go one at a time, in order, so a slow early reply can never undo a later sort (found live 16 Nov 2026)
+  var pileSeq = 0, pileQ = Promise.resolve();
   function cards(root, open, o){
     var v = open.view, deck = v.terms.slice(), piles = Object.assign({}, (T.hdr() && T.hdr().pile) || {}), known = 0, notYet = 0;
     root.appendChild(el('<p class="intro">' + h(open.intro || S.cardsIntro) + '</p>'));
@@ -564,15 +585,24 @@ var Engine = (function(){
     function addTo(which, term){ if (which === 1){ known++; q(pilesEl, "#pk").appendChild(el('<li>' + h(term) + '</li>')); } else { notYet++; q(pilesEl, "#pn").appendChild(el('<li>' + h(term) + '</li>')); } }
     deck.forEach(function(c){ if (piles[c.term] === 1 || piles[c.term] === 0) addTo(piles[c.term], c.term); });
     var todo = deck.filter(function(c){ return piles[c.term] !== 1 && piles[c.term] !== 0; });
-    var notYetFirst = deck.filter(function(c){ return piles[c.term] === 0; });
-    function save(){ T.call("apiPile", {pile: piles}, {save: true, quiet: true}).then(function(r){ if (r && r.hdr) T.hdr(r.hdr); }).catch(function(){}); }
+    // only the cards that changed are sent; null takes a card off its pile on the server. The page's own copy of the piles changes at once,
+    // so "start again" redraws from the new piles (found live 16 Nov 2026: it redrew from the old ones, and the server never let go of them)
+    function save(diff){
+      var hd = T.hdr(); if (hd) hd.pile = Object.assign({}, piles);
+      var my = ++pileSeq;
+      pileQ = pileQ.then(function(){ return T.call("apiPile", {pile: diff}, {save: true, quiet: true}); }).then(function(r){
+        if (!r) return;
+        if (my === pileSeq) T.marked(r); else if (r.badges && r.badges.length) T.marked({badges: r.badges});
+      }, function(){});
+    }
     function paint(){
       wrap.innerHTML = "";
       if (!todo.length){
-        var againBtn = notYet > 0 ? '<button class="btn acc" id="restart">' + h(S.cardsAgain) + ' (' + h(S.notYet) + ')</button> ' : '';
-        wrap.appendChild(el('<div class="card acc"><p><b>' + h(S.cardsNone) + '</b></p><p>' + againBtn + '<button class="btn ghost" id="restartAll">' + h(S.cardsAgain) + '</button></p></div>'));
-        var rs = q(wrap, "#restart"); if (rs) rs.addEventListener("click", function(){ deck.forEach(function(c){ if (piles[c.term] === 0) delete piles[c.term]; }); save(); o.reopen(); });
-        q(wrap, "#restartAll").addEventListener("click", function(){ piles = {}; save(); o.reopen(); });
+        var againBtn = notYet > 0 ? '<button class="btn acc" id="restart">' + h(S.cardsAgainNot) + '</button> ' : '';
+        // "every card is in I knew it" only when it is true; with cards in Not yet the round line says how many and offers just those
+        wrap.appendChild(el('<div class="card acc"><p><b>' + h(notYet > 1 ? fmt(S.cardsRound, {n: notYet}) : notYet === 1 ? S.cardsRoundOne : S.cardsNone) + '</b></p><p>' + againBtn + '<button class="btn ghost" id="restartAll">' + h(S.cardsAgain) + '</button></p></div>'));
+        var rs = q(wrap, "#restart"); if (rs) rs.addEventListener("click", function(){ var d = {}; deck.forEach(function(c){ if (piles[c.term] === 0){ delete piles[c.term]; d[c.term] = null; } }); save(d); o.reopen(); });
+        q(wrap, "#restartAll").addEventListener("click", function(){ var d = {}; deck.forEach(function(c){ delete piles[c.term]; d[c.term] = null; }); save(d); o.reopen(); });
         ctl.style.display = "none"; cnt.textContent = ""; return;
       }
       var c = todo[0];
@@ -581,9 +611,9 @@ var Engine = (function(){
       function flip(){ fc.classList.toggle("flip"); fc.setAttribute("aria-pressed", fc.classList.contains("flip") ? "true" : "false"); }
       fc.addEventListener("click", flip);
       fc.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); } });
-      cnt.textContent = fmt(S.cardsLeft, {n: todo.length}) + " · " + h(S.knew) + ": " + known;
+      cnt.textContent = (todo.length === 1 ? S.cardsLeftOne : fmt(S.cardsLeft, {n: todo.length})) + " · " + S.knew + ": " + known + " · " + S.notYet + ": " + notYet; // every number matches its box (the old line called the unsorted cards "Not yet")
     }
-    function pile(which){ var c = todo.shift(); if (!c) return; piles[c.term] = which; addTo(which, c.term); paint(); save(); }
+    function pile(which){ var c = todo.shift(); if (!c) return; piles[c.term] = which; addTo(which, c.term); paint(); var d = {}; d[c.term] = which; save(d); }
     q(ctl, "#yes").addEventListener("click", function(){ pile(1); });
     q(ctl, "#no").addEventListener("click", function(){ pile(0); });
     paint();

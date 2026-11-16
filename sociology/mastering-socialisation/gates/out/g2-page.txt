@@ -27,4 +27,32 @@ PASS model panel: the "underlined" sentence shows only when the answer has an un
 PASS CONTROL: strings.js with the sentence always in modelNote is reported
 PASS write screens: the Check button names one answer ("Check my answer"), not "answers"
 PASS CONTROL: engine.js without readyText on the write screen is reported
-g2-page: 28 PASS, 0 FAIL, 0 SKIP
+PASS model answer: every ten-mark model reads as sentences, and question 6 labels each sentence by the part it earns — 7 ten-mark models
+PASS CONTROL: engine.js with the old join and positional labels is reported (comma-joined Explain and wrong question 6 labels) — 24 problems, e.g. ten-q1 p1: Explain reads as "a.,b.,c."
+PASS question 6 (no item): its lead line is its own, not "use the item"
+PASS CONTROL: app.js with the one lead for every ten-mark question is reported
+PASS marks strip: every ten-mark model says "Earning the ten marks" and every five-mark model says "Earning the five marks" — 7 ten-mark + 26 five-mark models
+PASS CONTROL: engine.js with the one five-mark heading for every model is reported
+PASS the server files ten-mark builds as d10-<n> and writes as w10-<n> (no leading zero)
+PASS Part 7 list: a built and written ten-mark question shows "Build: 7 of 10 marks" and "Write: checked" — question 2 shows Build: 7 of 10 marks / Write: checked
+PASS the question screen reads its build and write status under d10-<n> and w10-<n>
+PASS CONTROL: app.js looking builds up under the bank id (d10-02) is reported
+PASS every exam item shows before the model answer that uses it — 11 items
+PASS CONTROL: app.js drawing the item after the answer (as before) is reported — 11 reported
+PASS every phrase marked « » in a model answer is copied word for word from its item — 2 blocks with marked phrases
+PASS CONTROL: the old Part 8 wording («migration bringing traditions to the UK», not in the item) is reported — p8/s8 block 2 «migration bringing traditions to the UK»
+PASS the choosable phrases in an item carry a visible mark before she chooses one
+PASS CONTROL: style.css without that mark (hover only, as before) is reported
+PASS each Part 8 find answer is the phrase that links its item to the term in the question — 4 items
+PASS CONTROL: the old norms answer («Parents and carers are important») is reported — norms: answer «Parents and carers are important» scores 0, «everyday expectations about behaviour» scores 2
+PASS the Part 9 item-link line says one link carries two item details — ok
+PASS CONTROL: the old Part 9 line ("aim for two explained item links") is reported — says "two item links": I, Item link (AO2): the place where you apply the term to the item, using specific words from it. Aim for two explained item links; you do not need to quote the item twice.
+PASS a page title says "New" only when everything on the page is written for the site — p2/customs (all new)
+PASS CONTROL: the Family page with "New" back on its title is reported — p3/family
+PASS no text marked "New" says it comes from your teacher — ok
+PASS CONTROL: Religion "What this agent is" marked New again is reported — p3/religion block 1 paragraph 1; p3/religion block 1 paragraph 2; p3/religion block 1 paragraph 4
+PASS on all six agent pages the opening of "What this agent is" is not marked New — 6 agent pages
+PASS CONTROL: the same old Religion block is reported by this check too — p3/religion
+PASS dietary laws are always called rules about food, never the food itself — 70 files read
+PASS CONTROL: the old Religion line is reported — ok
+g2-page: 56 PASS, 0 FAIL, 0 SKIP
