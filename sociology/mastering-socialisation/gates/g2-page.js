@@ -104,4 +104,51 @@ sh.check(cprobs.some((x) => x.indexOf('p3/religion-examples') >= 0), 'CONTROL: a
   sh.check(bad.length === 0, 'content: every ** bold label closes (' + pairs + ' pairs)', bad.slice(0, 4).join('; '));
   sh.check(/function md\(/.test(app) && /md\(p\)/.test(app) && /<b>\$1<\/b>/.test(app), 'app.js renders **label** paragraphs as <b>, never raw asterisks');
   const ctrl = app.replace('md(p)', 'h(p)'); sh.check(!/md\(p\)/.test(ctrl) && !(/function md\(/.test(ctrl) && /md\(p\)/.test(ctrl)), 'CONTROL: app.js without md(p) is reported'); }
+// a quote's label ("Item", "Your teacher's definition ...") sits on its own line above the passage, never run on after its full stop
+{
+  const app = fs.readFileSync(path.join(P, 'app.js'), 'utf8'), css = fs.readFileSync(path.join(P, 'style.css'), 'utf8');
+  const labelFirst = (a) => /<blockquote class="say">' \+ \(b\.quote\.who \? '<cite>/.test(a);
+  const ownLine = (c) => /\.say cite\{[^}]*display:\s*block/.test(c);
+  const n = fs.readdirSync(path.join(REPO, 'content'), { recursive: true }).filter((f) => /\.json$/.test(f)).reduce((k, f) => k + (fs.readFileSync(path.join(REPO, 'content', f), 'utf8').match(/"who"\s*:/g) || []).length, 0);
+  sh.check(labelFirst(app) && ownLine(css), 'quotes: the label stands on its own line above the passage (' + n + ' labelled quotes)', (labelFirst(app) ? '' : 'label drawn after the passage; ') + (ownLine(css) ? '' : 'no .say cite {display:block}'));
+  const ctl = css.replace(/\.say cite\{[^}]*\}\n?/, '');
+  sh.check(!ownLine(ctl), 'CONTROL: style.css without the .say cite rule is reported (the label would run on after the full stop)');
+}
+// after a mark, the "best" line at the top of an activity is brought into step (it was drawn before the mark; found live 16 Nov 2026)
+{
+  const eng = fs.readFileSync(path.join(P, 'engine.js'), 'utf8');
+  const fixes = (e) => { const m = /function mark\(root, open[\s\S]*?\n  \}/.exec(e); return !!m && /querySelector\("\.act-head \.best"\)/.test(m[0]) && /textContent = fmt\(S\.best/.test(m[0]); };
+  sh.check(fixes(eng), 'engine: mark() brings the top "best" line into step with the result');
+  const ctl = eng.replace(/\n[^\n]*querySelector\("\.act-head \.best"\)[^\n]*\n[^\n]*\n/, '\n');
+  sh.check(!fixes(ctl), 'CONTROL: engine.js without that update is reported (the top would still say "Not tried yet")');
+}
+// after a mark, the status line under a five- or ten-mark question is repainted (it was drawn before the mark; found live 16 Nov 2026)
+{
+  const app = fs.readFileSync(path.join(P, 'app.js'), 'utf8');
+  const fixes = (a) => /class="small mute qstat" data-b="/.test(a) && /function paintStat\(\)\{[^\n]*querySelectorAll\("\.qstat"\)/.test(a) && /function marked\(r\)\{[^\n]*hdr\(r\.hdr\); paintStat\(\);/.test(a);
+  sh.check(fixes(app), 'question status line: marked() repaints every .qstat from the new header');
+  const ctl = app.replace('hdr(r.hdr); paintStat(); }', 'hdr(r.hdr); }');
+  sh.check(!fixes(ctl), 'CONTROL: app.js with marked() not repainting is reported (the line would still say "Not tried yet")');
+}
+// five- and ten-mark question screens: the intro line is the how-to instruction, never the question again (found live 16 Nov 2026)
+{
+  const srv = fs.readFileSync(path.join(__dirname, '..', 'server', 'Code.gs.template'), 'utf8'), eng = fs.readFileSync(path.join(P, 'engine.js'), 'utf8');
+  const blank = (s) => (s.match(/reg_\(\{ id: (d|'w5-' \+ nn|'d10-' \+ n_|'w10-' \+ n_)[^\n]*intro: '' \}\);/g) || []).length;
+  const oneTen = (e) => /isTen \? \(v\.item \? S\.tenBuildIntro : S\.tenBuildOne\)/.test(e);
+  sh.check(blank(srv) === 4 && oneTen(eng), 'question screens: the four question kinds send no intro, so the how-to line shows (and the no-item ten-mark build has its own)', blank(srv) + ' of 4 blank; no-item line ' + oneTen(eng));
+  const ctl = srv.replace("intro: '' });", 'intro: str_(q.stem) });');
+  sh.check(blank(ctl) !== 4, 'CONTROL: the server with the question sent as the intro again is reported');
+  sh.check(/\.item \.ph\{margin:0 -3px\}/.test(fs.readFileSync(path.join(P, 'style.css'), 'utf8')), 'item phrases open no gap before a comma or full stop');
+}
+// the model panel promises underlined item phrases only when it underlines some (most model answers reword the item; found live 16 Nov 2026)
+{
+  const eng = fs.readFileSync(path.join(P, 'engine.js'), 'utf8'), str = fs.readFileSync(path.join(P, 'strings.js'), 'utf8');
+  const honest = (e, t) => !/modelNote:[^\n]*underlined/.test(t) && /modelUnder:/.test(t) && /html\.indexOf\('<u>'\) >= 0 \? ' ' \+ h\(S\.modelUnder\)/.test(e);
+  sh.check(honest(eng, str), 'model panel: the "underlined" sentence shows only when the answer has an underline');
+  const ctl = str.replace(/modelNote: "([^"]*)",/, 'modelNote: "$1 The item phrases it uses are underlined.",');
+  sh.check(!honest(eng, ctl), 'CONTROL: strings.js with the sentence always in modelNote is reported');
+  const btn = (e) => /readyText: S\.writeGo/.test(e) && /\(o && o\.readyText\) \|\| S\.check/.test(e) && /bar\.btn\.textContent = S\.writeGo/.test(e);
+  sh.check(btn(eng), 'write screens: the Check button names one answer ("' + 'Check my answer' + '"), not "answers"');
+  sh.check(!btn(eng.replace('readyText: S.writeGo, ', '')), 'CONTROL: engine.js without readyText on the write screen is reported');
+}
 sh.finish();

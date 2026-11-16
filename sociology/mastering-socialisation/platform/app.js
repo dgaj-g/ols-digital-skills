@@ -56,7 +56,7 @@ var App = (function(){
   function flatMax(r){ if (r && r.max && r.max.acts){ var M = {}; Object.keys(r.max.acts).forEach(function(a){ M[a] = r.max.acts[a]; }); M.parts = r.max.parts || {}; r.max = M; } return r; }
   function reboot(){ return call("apiBoot", {}).then(function(r){ ME = flatMax(r); return r; }); }
   function hdr(v){ if (v){ ME.hdr = v; paintWho(); } return ME ? ME.hdr : null; }
-  function marked(r){ if (r && r.hdr) hdr(r.hdr); (r && r.badges || []).forEach(function(id, i){ var b = badge(id); setTimeout(function(){ toast(fmt(S.badgeToast, {n: b ? b.t : id}), true); }, 1900 * i + 400); }); }
+  function marked(r){ if (r && r.hdr){ hdr(r.hdr); paintStat(); } (r && r.badges || []).forEach(function(id, i){ var b = badge(id); setTimeout(function(){ toast(fmt(S.badgeToast, {n: b ? b.t : id}), true); }, 1900 * i + 400); }); }
   function badge(id){ return BADGES.filter(function(b){ return b.id === id; })[0]; }
 
   // ---- parts, pages, acts ----
@@ -177,7 +177,7 @@ var App = (function(){
       var out = '<section class="blk">';
       if (b.h) out += '<h2>' + h(b.h) + (b.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</h2>';
       (b.p || []).forEach(function(p, i){ out += '<p>' + ((b.new_p || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + md(p) + '</p>'; });
-      if (b.quote) out += '<blockquote class="say">' + h(b.quote.t) + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + '</blockquote>';
+      if (b.quote) out += '<blockquote class="say">' + (b.quote.who ? '<cite>' + h(b.quote.who) + '</cite>' : '') + h(b.quote.t) + '</blockquote>';
       if (b.list) out += '<ul>' + b.list.map(function(li, i){ return '<li>' + (Array.isArray(li) ? '<ul>' + li.map(function(x){ return '<li>' + h(x) + '</li>'; }).join("") + '</ul>' : (((b.new_items || []).indexOf(i) >= 0 ? '<span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span> ' : '') + h(li))) + '</li>'; }).join("") + '</ul>';
       if (b.writers) out += '<table class="tbl"><thead><tr><th>Writer</th><th>What they say</th></tr></thead><tbody>' + b.writers.map(function(w){ return '<tr><td><b>' + h(w.name) + '</b></td><td>' + h(w.says) + '</td></tr>'; }).join("") + '</tbody></table>';
       if (b.table) out += '<table class="tbl"><thead><tr>' + b.table.head.map(function(x){ return '<th>' + h(x) + '</th>'; }).join("") + '</tr></thead><tbody>' + b.table.rows.map(function(r){ return '<tr>' + r.map(function(x){ return '<td>' + h(x) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table>';
@@ -185,6 +185,9 @@ var App = (function(){
       return out + '</section>';
     }).join("");
   }
+  // a question's status line ("Your best so far … · Write: checked") is drawn before the pupil marks; repaint it from the new header after every mark
+  function statText(b, w){ return bestOf(b) + " · " + (((ME.hdr || {}).w || {})[w] != null ? S.writeDone : S.writeNot); }
+  function paintStat(){ Array.prototype.forEach.call(document.querySelectorAll(".qstat"), function(p){ p.textContent = statText(p.getAttribute("data-b"), p.getAttribute("data-w")); }); }
   function bestOf(act){ var H = ME.hdr || {}, b = (H.b || {})[act], m = (ME.max || {})[act]; if (act === "cards") return ""; return b == null ? S.first : fmt(S.best, {n: b, m: m || "?"}); }
   function testsFor(route){
     var keys = Object.keys(TESTS).filter(function(k){ return k.indexOf(route + "/") === 0 && k.slice(route.length + 1).indexOf("/") < 0; });
@@ -266,14 +269,14 @@ var App = (function(){
     var H = ME.hdr || {};
     return '<section class="blk"><p class="diet">' + h(S.dietLabel) + '</p><table class="tbl qtable"><thead><tr><th>No.</th><th>Term</th><th>Build</th><th>Write</th></tr></thead><tbody>' + page.qs.map(function(q){
       var b = (H.b || {})[q.id], w = (H.w || {})["w5-" + q.id.slice(3)];
-      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s6/' + q.n + '">' + h(q.term) + '</a>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 5})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
+      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s6/' + q.n + '">' + h(q.term) + '</a>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 5})) + '</td><td class="st">' + h(w != null ? S.writeDone : S.writeNot) + '</td></tr>';
     }).join("") + '</tbody></table></section>';
   }
   function tenList(page){
     var H = ME.hdr || {};
     return '<section class="blk"><table class="tbl qtable"><thead><tr><th>No.</th><th>Question</th><th>Build</th><th>Write</th></tr></thead><tbody>' + page.qs.map(function(q){
       var b = (H.b || {})[q.id], w = (H.w || {})["w10-" + q.n];
-      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s7/' + q.n + '">' + h(q.q) + '</a> <span class="pill">' + h(fmt(S.qMarks, {m: q.marks})) + '</span>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 10})) + '</td><td class="st">' + h(w ? S.writeDone : S.writeNot) + '</td></tr>';
+      return '<tr><td>' + q.n + '</td><td><a class="link" href="#s7/' + q.n + '">' + h(q.q) + '</a> <span class="pill">' + h(fmt(S.qMarks, {m: q.marks})) + '</span>' + (q.new ? ' <span class="tag new" aria-hidden="true">' + h(S.newTag) + '</span>' : '') + '</td><td class="st">' + h(b == null ? S.first : fmt(S.buildBest, {n: b, m: 10})) + '</td><td class="st">' + h(w != null ? S.writeDone : S.writeNot) + '</td></tr>';
     }).join("") + '</tbody></table></section>';
   }
   function question(part, n, mode, opts){
@@ -284,7 +287,7 @@ var App = (function(){
     var title = part === "p6" ? "Question " + n + " of " + qs.length + ": " + q.term : "Question " + n + " of " + qs.length;
     var body = el('<div><h1>' + h(title) + '</h1>' + (part === "p6" ? '<p class="lead">' + h(S.fiveLead) + '</p>' : '<p class="lead">' + h(S.tenLead) + '</p>') +
       '<div class="modes" role="tablist"><button class="btn" role="tab" id="mb" aria-pressed="' + (mode !== "write") + '">' + h(S.modeBuild) + '</button><button class="btn" role="tab" id="mw" aria-pressed="' + (mode === "write") + '">' + h(S.modeWrite) + '</button></div>' +
-      '<p class="small mute">' + h(bestOf(buildAct)) + ' · ' + h(((ME.hdr || {}).w || {})[writeAct] ? S.writeDone : S.writeNot) + '</p><div id="act"><p class="say">' + h(S.busy) + '</p></div></div>');
+      '<p class="small mute qstat" data-b="' + h(buildAct) + '" data-w="' + h(writeAct) + '">' + h(statText(buildAct, writeAct)) + '</p><div id="act"><p class="say">' + h(S.busy) + '</p></div></div>');
     var next = n < qs.length ? {route: (part === "p6" ? "s6/" : "s7/") + (n + 1), label: "Question " + (n + 1)} : (part === "p6" ? {route: "s7", label: "Go on to Part 7: Ten-mark questions"} : {route: "s8", label: "Go on to Part 8: The Secret to AO2 Marks"});
     shell(route, body, {crumb: title, back: part === "p6" ? "s6" : "s7", next: next});
     wire("mb", function(){ go(base); }); wire("mw", function(){ go(base + "/write"); });

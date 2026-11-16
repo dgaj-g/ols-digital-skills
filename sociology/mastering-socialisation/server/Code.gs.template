@@ -135,8 +135,8 @@ NAMED.forEach(function (id) {
 });
 FIVE.forEach(function (q, i) {
   var nn = pad2_(i + 1), d = 'd5-' + nn;
-  reg_({ id: d, form: 'builder', kind: 'five', part: 'p6', max: 5, q: q, title: str_(q.term), intro: str_(q.stem) });
-  reg_({ id: 'w5-' + nn, form: 'write', kind: 'five', part: 'p6', max: 1, q: q, title: str_(q.term), intro: str_(q.stem) });
+  reg_({ id: d, form: 'builder', kind: 'five', part: 'p6', max: 5, q: q, title: str_(q.term), intro: '' });
+  reg_({ id: 'w5-' + nn, form: 'write', kind: 'five', part: 'p6', max: 1, q: q, title: str_(q.term), intro: '' });
   FIVE_IDS.push(d);
   if (q.id && q.id !== d) ALIAS[str_(q.id)] = d;
   if (['sanctions', 'social control'].indexOf(str_(q.term).trim().toLowerCase()) !== -1) SANCT.push(d);
@@ -144,8 +144,8 @@ FIVE.forEach(function (q, i) {
 for (var n_ = 1; n_ <= 30; n_++) {
   var T_ = BANKS['ten-q' + n_];
   if (!T_ || !T_.slots) continue;
-  reg_({ id: 'd10-' + n_, form: 'builder', kind: 'ten', part: 'p7', max: T_.slots.length, q: T_, title: 'Ten-mark question ' + n_, intro: str_(T_.q) });
-  reg_({ id: 'w10-' + n_, form: 'write', kind: 'ten', part: 'p7', max: 1, q: T_, title: 'Ten-mark question ' + n_, intro: str_(T_.q) });
+  reg_({ id: 'd10-' + n_, form: 'builder', kind: 'ten', part: 'p7', max: T_.slots.length, q: T_, title: 'Ten-mark question ' + n_, intro: '' });
+  reg_({ id: 'w10-' + n_, form: 'write', kind: 'ten', part: 'p7', max: 1, q: T_, title: 'Ten-mark question ' + n_, intro: '' });
   TEN_IDS.push('d10-' + n_);
   if (T_.id && T_.id !== 'd10-' + n_) ALIAS[str_(T_.id)] = 'd10-' + n_;
 }
@@ -292,7 +292,7 @@ function pickSlot_(slots, key, part, label, b, why, r) {
 function fiveBuild_(q, r) {
   var slots = [], key = [], wm = q.why_marks || [];
   pickSlot_(slots, key, 'd', 'D - Define the term', q.build.d, wm[0], r);
-  slots.push({ i: 1, part: 'i', label: 'Tap the phrase in the item that earns the item mark', type: 'tap', item: str_(q.item), phrases: (q.phrases || []).slice(), picks: (q.ph_k || []).length, pickN: (q.ph_k || []).length });
+  slots.push({ i: 1, part: 'i', label: 'Tap the two item phrases that earn the item marks', type: 'tap', item: str_(q.item), phrases: (q.phrases || []).slice(), picks: (q.ph_k || []).length, pickN: (q.ph_k || []).length });
   key.push({ t: 'tapset', k: (q.ph_k || []).slice().sort(num_), n: (q.phrases || []).length, why: str_(wm[1]) });
   pickSlot_(slots, key, 'i2', 'I - Item link', q.build.i, wm[2], r);
   pickSlot_(slots, key, 'e', 'E - Explain with an example', q.build.e, wm[3], r);

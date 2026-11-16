@@ -211,6 +211,12 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       const marks = await count(page, '.why .mark'), rights = await count(page, '.opt.right');
       sh.check(marks === n && rights === n, id + ' every question shows a tick or cross and its right answer', marks + ' marks, ' + rights + ' right');
       sh.check((await count(page, '.why span')) >= n, id + ' why lines are shown');
+      { // the line at the top was drawn before the mark: straight after Check it must show the same best as the result card, never "Not tried yet"
+        const head = await page.$eval('.act-head .best', (e) => e.innerText.trim()).catch(() => null);
+        const lines = await page.$$eval('.res .line', (a) => a.map((x) => x.innerText.trim())).catch(() => []);
+        const bl = (lines.find((x) => x.indexOf(S.best.split('{')[0]) === 0) || '').split(' · ')[0];
+        if (head !== null) sh.check(!!bl && head === bl, id + ' the line at the top shows the new best straight after Check (not "' + S.first + '")', 'top "' + head + '", result "' + bl + '"');
+      }
       if (opts.tag) sh.check((await page.$$eval('.why .tag', (a, L) => a.filter((t) => t.textContent.indexOf(L) === 0).length, S.tagLabel)) === n, id + ' each result shows "' + S.tagLabel + ' <tag>"');
       if (opts.imgs) {
         const im = await page.$$eval('.q[data-q] img', (a) => a.map((i) => ({ alt: i.alt, credit: !!(i.closest('.q').querySelector('p.small.mute')), ok: i.complete && i.naturalWidth > 0 })));
@@ -311,6 +317,9 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     // T32 / T33 five-mark build and write (s6/1)
     await pupil(P1, 's6/1'); const b5 = await waitSel('.slotc[data-s]');
     if (b5) {
+      { // the line under the mode buttons tells the pupil how to do it; the question itself is in the QUESTION box (found live 16 Nov 2026: it showed the question twice)
+        const it = await page.$eval('#act .intro', (e) => e.innerText.trim()).catch(() => null);
+        sh.check(it === S.buildIntro, 'T32 the build shows how to do it above the question, not the question twice', 'saw "' + it + '"'); }
       const slots = await page.$$eval('.slotc[data-s]', (a) => a.map((c) => c.dataset.type));
       for (let i = 0; i < slots.length; i++) {
         if (slots[i] === 'pick') await tap('.slotc[data-s="' + i + '"] .opt[data-o="0"]');
@@ -319,6 +328,13 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       await tap('#ck').catch(() => {}); await waitSel('.res .score');
       const sc5 = await txt(page, '.res .score');
       sh.check(/of 5 marks/.test(sc5 || ''), 'T32 the build is marked out of 5', 'saw ' + sc5);
+      { // the status line under "Build it / Write it" was drawn before the mark: straight after Check it must show the new best (found live 16 Nov 2026)
+        const qs = await page.$eval('.qstat', (e) => e.innerText.trim()).catch(() => null);
+        const lines = await page.$$eval('.res .line', (x) => x.map((y) => y.innerText.trim())).catch(() => []);
+        const bl = (lines.find((x) => x.indexOf(S.best.split('{')[0]) === 0) || '').split(' · ')[0];
+        const sm = /(\d+) of (\d+) marks/.exec(sc5 || ''), want = bl || (sm ? fmt(S.best, { n: sm[1], m: sm[2] }) : '');
+        sh.check(!!qs && !!want && qs.indexOf(want) === 0, 'T32 the status line under the question shows the new best straight after Check (not "' + S.first + '")', 'status "' + qs + '", want "' + want + '"');
+      }
       const strip = await page.$$eval('.strip li', (a) => [a.length, a.filter((l) => /AO[12]/.test(l.innerText)).length]);
       sh.check(strip[0] >= 1 && strip[1] === strip[0], 'T32 the mark strip shows AO1/AO2 on each line', strip[0] + ' lines, ' + strip[1] + ' with AO1/AO2');
       const fixes = await page.$$eval('.slotc .fix, .slotc .right, .slotc .why', (a) => a.length);
@@ -328,6 +344,12 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     } else sh.fail('T32 #s6/1 shows its build slots');
     await pupil(P1, 's6/1/write'); const w5 = await waitSel('textarea#w1');
     if (w5) {
+      { const it = await page.$eval('#act .intro', (e) => e.innerText.trim()).catch(() => null);
+        sh.check(it === S.writeIntro, 'T33 the write screen shows how to do it, not the question twice', 'saw "' + it + '"');
+        const ck = await page.$eval('#ck', (b) => b.innerText.trim()).catch(() => null);
+        sh.check(ck === S.checkWrite, 'T33 before anything is written the button reads "' + S.checkWrite + '"', 'saw "' + ck + '"');
+        const lab = await page.$$eval('#act *', (a, t) => a.filter((e) => !e.children.length && e.textContent.trim() === t).length, S.writeBox);
+        sh.check(lab === 1, 'T33 "' + S.writeBox + '" is shown once above the box', lab + ' times'); }
       await page.type('#w1', 'Culture is the shared way of life of a group. ');
       const ph = await page.$('.ph.ins'); const phT = ph ? await ph.evaluate((e) => e.textContent) : '';
       if (ph) await tapEl(ph); await wait(150);
@@ -337,6 +359,8 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       await tap('#ck').catch(() => {}); await waitSel('ul.ckl li', 8000);
       const ckl = await count(page, 'ul.ckl li');
       sh.check(ckl === 5, 'T33 the checklist shows 5 lines', ckl + ' lines');
+      { const qs = await page.$eval('.qstat', (e) => e.innerText.trim()).catch(() => null);
+        sh.check(!!qs && qs.slice(-S.writeDone.length) === S.writeDone, 'T33 the status line says "' + S.writeDone + '" straight after Check', 'status "' + qs + '"'); }
       sh.check((await count(page, '.writeout')) > 0 && (await count(page, '.writeout .model p.ao1')) > 0 && (await count(page, '.writeout .model p.ao2')) > 0, 'T33 the model answer appears with AO tags', await page.$$eval('.writeout *', (a) => [...new Set(a.map((e) => e.tagName.toLowerCase() + '.' + e.className))].join(' ')));
       sh.skip('T33 item quotes underlined in the model', 'needs a judgement of which words are item quotes; left to the sit and g1');
       await pupil(P1, 's6/1/write'); await waitSel('textarea#w1'); await wait(500);

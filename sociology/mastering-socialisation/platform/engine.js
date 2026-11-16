@@ -118,14 +118,15 @@ var Engine = (function(){
     return S.first;
   }
   function checkBar(root, total, o){
-    var bar = el('<div class="checkbar"><button class="btn big" id="ck" disabled>' + h(fmt(S.checkN, {m: total})) + '</button><span class="cnt" id="cnt"></span></div>');
+    var wait = (o && o.waitText) || fmt(S.checkN, {m: total});
+    var bar = el('<div class="checkbar"><button class="btn big" id="ck" disabled>' + h(wait) + '</button><span class="cnt" id="cnt"></span></div>');
     root.appendChild(bar);
     var btn = q(bar, "#ck"), cnt = q(bar, "#cnt");
     var api = {
       btn: btn,
       set: function(n){
         var ok = n >= total;
-        btn.disabled = !ok; btn.textContent = ok ? S.check : fmt(S.checkN, {m: total});
+        btn.disabled = !ok; btn.textContent = ok ? ((o && o.readyText) || S.check) : wait;
         cnt.textContent = fmt(S.placed, {n: n, m: total});
         if (o && o.countText) cnt.textContent = o.countText(n, total);
       },
@@ -149,6 +150,8 @@ var Engine = (function(){
     if (open.round) req.round = open.round;
     return T.call("apiMark", req, {save: true, btn: btn}).then(function(r){
       T.marked(r);
+      var hd = document.querySelector(".act-head .best"); // the line at the top was drawn before the mark; keep it in step with the result
+      if (hd && r && r.best != null) hd.textContent = fmt(S.best, {n: r.best, m: open.max});
       after(r);
       return r;
     }).catch(function(e){ if (o && o.onErr) o.onErr(e); });
@@ -391,7 +394,7 @@ var Engine = (function(){
   /* ---------- builder (DIET five-mark; PEEL ten-mark) ---------- */
   function modelPanel(extra, scheme){
     if (!extra || !extra.model) return "";
-    var m = extra.model, ao = extra.ao || {}, html = '<div class="model"><h3>' + h(S.modelHead) + '</h3><p class="small mute">' + h(S.modelNote) + '</p>';
+    var m = extra.model, ao = extra.ao || {}, html = '';
     function para(obj, keys, labels){
       return keys.map(function(k){ if (!obj[k]) return ""; var a = (ao[k] || "AO1").toLowerCase(); return '<p class="' + a + '"><span class="lbl">' + h(labels[k] || k) + ' · ' + h(ao[k] || "AO1") + '</span> ' + underline(obj[k], extra.phrases) + '</p>'; }).join("");
     }
@@ -402,6 +405,8 @@ var Engine = (function(){
       if (scheme === "3+2+2+2+1") L = {point: "How it works", evidence: "Example", apply: "Research", explain: "What it shows", link: "Conclusion"};
       html += '<h4>' + h(S.para1) + '</h4>' + para(m.p1, ["point", "evidence", "apply", "explain", "link"], L) + '<h4>' + h(S.para2) + '</h4>' + para(m.p2, ["point", "evidence", "apply", "explain", "link"], L);
     }
+    // the underline sentence only when something is underlined: the model answers mostly put the item in their own words
+    html = '<div class="model"><h3>' + h(S.modelHead) + '</h3><p class="small mute">' + h(S.modelNote) + (html.indexOf('<u>') >= 0 ? ' ' + h(S.modelUnder) : '') + '</p>' + html;
     if (extra.why_marks && extra.why_marks.length) html += '<div class="strip"><b>' + h(S.markStrip) + '</b><ul>' + extra.why_marks.map(function(w){ return '<li>' + h(w) + '</li>'; }).join("") + '</ul></div>';
     return html + '</div>';
   }
@@ -458,7 +463,7 @@ var Engine = (function(){
   }
   function builder(root, open, o){
     var v = open.view, isTen = !!v.scheme;
-    root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? S.tenBuildIntro : S.buildIntro)) + '</p>'));
+    root.appendChild(el('<p class="intro">' + h(open.intro || (isTen ? (v.item ? S.tenBuildIntro : S.tenBuildOne) : S.buildIntro)) + '</p>'));
     var panel = builderPanel(root, v, open);
     var bar = checkBar(root, panel.need, {countText: function(n, m){ return fmt(S.partsFilled, {n: n, m: m}); }, onCheck: function(btn){
       mark(root, open, panel.get(), o, btn, function(r){
@@ -498,7 +503,6 @@ var Engine = (function(){
     var qq = v.q || v.stem; if (qq) root.appendChild(el('<div class="q"><div class="qn">' + h(S.questionHead) + '</div><div class="qt">' + h(qq) + (v.marks ? ' <span class="pill">' + h(fmt(S.qMarks, {m: v.marks})) + '</span>' : '') + '</div></div>'));
     if (v.item) root.appendChild(el(itemBox(v.item, v.phrases, "ins")));
     if (isTen && !v.item) root.appendChild(el('<p class="say">' + h(S.tenNoItem) + ' ' + h(S.schemeHer) + '</p>'));
-    if (v.phrases && v.item) root.appendChild(el('<p class="small mute">' + h(S.writeBox) + '</p>'));
     var boxes = [];
     function box(label, id){
       var w = el('<div class="write"><label for="' + id + '"><b>' + h(label) + '</b></label><textarea id="' + id + '" maxlength="900" rows="7"></textarea><div class="cnt">' + h(fmt(S.writeCount, {n: 0})) + '</div></div>');
@@ -508,7 +512,7 @@ var Engine = (function(){
       boxes.push(ta); return ta;
     }
     var last = null;
-    if (two){ box(S.para1, "w1"); box(S.para2, "w2"); } else box(isTen ? S.questionHead : S.writeBox, "w1");
+    if (two){ box(S.para1, "w1"); box(S.para2, "w2"); } else box(S.writeBox, "w1");
     last = boxes[0];
     root.addEventListener("click", function(e){
       var s = e.target.closest(".ph.ins"); if (!s) return;
@@ -518,7 +522,7 @@ var Engine = (function(){
       ta.value = (before + ins + after).slice(0, 900); ta.focus(); ta.selectionStart = ta.selectionEnd = Math.min((before + ins).length, 900);
       ta.dispatchEvent(new Event("input"));
     });
-    var bar = checkBar(root, boxes.length, {countText: function(){ return ""; }, onCheck: function(btn){
+    var bar = checkBar(root, boxes.length, {waitText: two ? S.checkWrite2 : S.checkWrite, readyText: S.writeGo, countText: function(){ return ""; }, onCheck: function(btn){
       var req = {act: open.act, text: boxes[0].value}; if (two) req.text2 = boxes[1].value;
       var hadBefore = !!((T.hdr() || {}).pr || {})[open.act];
       T.call("apiWrite", req, {save: true, btn: btn}).then(function(r){
@@ -544,7 +548,7 @@ var Engine = (function(){
       html += modelPanel({model: r.model, ao: r.ao, why_marks: r.why_marks, phrases: v.phrases}, v.scheme);
       html += '<p class="line">' + h(S.writeDone) + '</p></div>';
       out.appendChild(el(html));
-      bar.btn.disabled = false; bar.btn.textContent = S.check;
+      bar.btn.disabled = false; bar.btn.textContent = S.writeGo;
       out.scrollIntoView({behavior: "smooth", block: "start"});
     }
   }

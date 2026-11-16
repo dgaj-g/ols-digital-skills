@@ -14,4 +14,17 @@ PASS CONTROL: app.js with s3/religion/examples removed is reported — content p
 PASS content: every ** bold label closes (58 pairs)
 PASS app.js renders **label** paragraphs as <b>, never raw asterisks
 PASS CONTROL: app.js without md(p) is reported
-g2-page: 15 PASS, 0 FAIL, 0 SKIP
+PASS quotes: the label stands on its own line above the passage (12 labelled quotes)
+PASS CONTROL: style.css without the .say cite rule is reported (the label would run on after the full stop)
+PASS engine: mark() brings the top "best" line into step with the result
+PASS CONTROL: engine.js without that update is reported (the top would still say "Not tried yet")
+PASS question status line: marked() repaints every .qstat from the new header
+PASS CONTROL: app.js with marked() not repainting is reported (the line would still say "Not tried yet")
+PASS question screens: the four question kinds send no intro, so the how-to line shows (and the no-item ten-mark build has its own) — 4 of 4 blank; no-item line true
+PASS CONTROL: the server with the question sent as the intro again is reported
+PASS item phrases open no gap before a comma or full stop
+PASS model panel: the "underlined" sentence shows only when the answer has an underline
+PASS CONTROL: strings.js with the sentence always in modelNote is reported
+PASS write screens: the Check button names one answer ("Check my answer"), not "answers"
+PASS CONTROL: engine.js without readyText on the write screen is reported
+g2-page: 28 PASS, 0 FAIL, 0 SKIP

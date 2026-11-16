@@ -142,6 +142,7 @@ input:focus,textarea:focus,button:focus-visible,[tabindex]:focus-visible{outline
 .blk th,.tbl th{background:var(--acc-soft);color:var(--accd)}
 .say{background:var(--acc-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
 .say h3{color:var(--accd)}
+.say cite{display:block;font-style:normal;font-size:13px;font-weight:700;color:var(--accd);margin:0 0 4px}
 .say li{margin:.4em 0;padding-left:4px}
 .say li::marker{content:"✔ ";color:var(--accd)}
 .figure{margin:0 0 18px}
@@ -233,13 +234,14 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 /* ---------- tap phrases, items, builder, write ---------- */
 .item{background:#FFFBEB;border:2px solid var(--ink);border-left:10px solid #F59E0B;border-radius:var(--r);padding:14px 16px;margin:0 0 16px;font-size:17px;line-height:1.7}
 .item .ih{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#92400E;display:block;margin:0 0 4px}
-.ph{cursor:pointer;border-radius:4px;padding:1px 3px;transition:background .15s;border-bottom:2px solid transparent;touch-action:manipulation}
+.ph{cursor:pointer;border-radius:4px;padding:1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background .15s;border-bottom:2px solid transparent;touch-action:manipulation}
 .ph:hover{background:#FDE68A}
 .ph[aria-pressed="true"]{background:#F59E0B;color:#fff}
 .ph.ok{background:var(--ok-soft);border-bottom-color:var(--ok)}
 .ph.no{background:var(--bad-soft);border-bottom-color:var(--bad);text-decoration:line-through}
 .ph.key{border-bottom:3px solid #92400E;text-decoration:underline;text-decoration-color:#92400E}
 .ph.ins{cursor:copy}
+.item .ph{margin:0 -3px}
 .slot{margin:0 0 14px}
 .slotc{background:#fff;border:2px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin:0 0 14px}
 .slotc .sl{display:flex;gap:10px;align-items:center;margin:0 0 10px;flex-wrap:wrap}
