@@ -1,4 +1,5 @@
-/* J3 L6 THE NIGHT DESK · gate (V85): every state of all three routes (model, honest fails, the late shift) fits the
+/* J3 L6 THE NIGHT DESK · gate (V85, V86): every state of all four routes (model, honest fails with a wrong stamp and a
+   wrong reason on every stamp screen, the late shift, the late shift with wrong stamps) fits the
    frame at the five window sizes, the school PC's 1366x625 (a 484 px frame) first:
    1 the page is never taller than the frame and never scrolls sideways;
    2 no button, box, table, job line or Stuck? Show me button sits outside the window;
@@ -13,7 +14,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   if (m.out.length) f.push(k + ': outside the window — ' + m.out.join('; ')); if (m.spill.length) f.push(k + ': words spill out of — ' + m.spill.join('; ')); })); return f; };
 (async () => {
   const rs = [];
-  for (const [W, H] of SIZES) for (const route of ['model', 'fails', 'late']) { const r = await lib.walk({ W, H, route, help: false }); rs.push(r);
+  for (const [W, H] of SIZES) for (const route of ['model', 'stamps', 'late', 'latestamps']) { const r = await lib.walk({ W, H, route, help: false }); rs.push(r);
     console.log('  walked ' + W + 'x' + H + ' (frame ' + (H - lib.BAR) + ') ' + route + ': ' + r.report.length + ' states' + (r.done ? '' : ' — DID NOT FINISH')); }
   const f = faults(rs), states = rs.reduce((a, r) => a + r.report.length, 0);
   J.must(rs.every(r => r.done && !r.errs.length), 'all ' + rs.length + ' walks reach the end with no page errors');

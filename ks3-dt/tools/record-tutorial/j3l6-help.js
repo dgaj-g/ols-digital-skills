@@ -1,15 +1,17 @@
-/* J3 L6 THE NIGHT DESK · gate (V85, the J3 L7 help standard): on every state of all three routes (model, honest
-   fails, the late shift) at the five window sizes —
+/* J3 L6 THE NIGHT DESK · gate (V85, V86, the J3 L7 help standard): on every state of all four routes (model, honest
+   fails with a wrong stamp and a wrong reason on every stamp screen, the late shift, the late shift with wrong stamps)
+   at the five window sizes —
    1 the job line reads "Your job now: …", 3 to 14 words, ending in a full stop;
    2 the green "Stuck? Show me" button is there, at least 150 x 40, inside the window (only the lesson's last
      screen, with nothing left to do, has none);
    3 opening it SHOWS what to do: 1 to 3 steps of 10 words or fewer, a ring and a tag on a real control that is on
-     screen and not under the help, nothing of hers under the help box, the page no taller;
+     screen and not under the help, the tag on no words or controls, nothing of hers under the help box, the page no taller;
    4 every empty rule box gets an example typed in grey, and the example never keeps the rows (or the number) the
      task wants; closing help changes nothing of hers and leaves no ring or example behind.
    Then: the rush clock and the rule-race clock hold while help is open and run on after it closes; left alone the
    button pulses first and the ring with its tag comes second, without help opening; one touch clears both.
-   CONTROLS (each must FAIL): the button hidden; the ring stripped; the example swapped for the answer.
+   CONTROLS (each must FAIL): the button hidden; the ring stripped; the example swapped for the answer; the tag put on the
+   question's words.
    node j3l6-help.js [--url <served hour.html>] [--sizes 1366x625,...] */
 'use strict';
 const fs = require('fs'), path = require('path'), lib = require('./j3l6-lib.js'), J = lib.judge('j3l6-help');
@@ -21,7 +23,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   if (m.help) m.help.bad.forEach(b => f.push(k + ': ' + b)); })); return f; };
 (async () => {
   const rs = [];
-  for (const [W, H] of SIZES) for (const route of ['model', 'fails', 'late']) { const r = await lib.walk({ W, H, route }); rs.push(r);
+  for (const [W, H] of SIZES) for (const route of ['model', 'stamps', 'late', 'latestamps']) { const r = await lib.walk({ W, H, route }); rs.push(r);
     console.log('  walked ' + W + 'x' + H + ' ' + route + ': ' + r.report.length + ' states' + (r.done ? '' : ' — DID NOT FINISH')); }
   const f = faults(rs), states = rs.reduce((a, r) => a + r.report.length, 0), opened = rs.reduce((a, r) => a + r.report.filter(m => m.help).length, 0);
   const demos = new Set(), demoRuns = rs.reduce((a, r) => a + r.report.filter(m => m.help && m.help.demo).map(m => demos.add(m.help.demo.text)).length, 0);
@@ -57,5 +59,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   J.control(faults([c]).some(t => /points at nothing/.test(t)), 'the ring stripped');
   c = await lib.walk({ W: 1366, H: 625, route: 'model', maxStates: 12, fault: "S.help.demo.c1 = 'sleep_hours >= 8'" });
   J.control(faults([c]).some(t => /example is the answer/.test(t)), 'the example swapped for the answer');
+  c = await lib.walk({ W: 1366, H: 625, route: 'model', maxStates: 8, fault: "var p = document.querySelector('main p.ask') || document.querySelector('main p'); if (p) { var r = p.getBoundingClientRect(), s = document.getElementById('__tf') || document.head.appendChild(Object.assign(document.createElement('style'), { id: '__tf' })); s.textContent = '#tag{top:' + Math.round(r.top) + 'px!important;left:' + Math.round(r.left + 4) + 'px!important}'; }" });
+  J.control(faults([c]).some(t => /the tag covers words/.test(t)), 'the tag put on the question\'s words');
   await J.end();
 })();

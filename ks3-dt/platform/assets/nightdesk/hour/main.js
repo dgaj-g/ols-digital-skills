@@ -7,7 +7,7 @@
   'use strict';
   var S = window.S, C = S.common, D = window.NightData, Q = window.Query, J = window.NightJudge, B = window.NightdeskBridge, PL = B.place || {};
   var QS = location.search, arg = function (k) { var m = new RegExp('[?&]' + k + '=([^&]+)').exec(QS); return m ? decodeURIComponent(m[1]) : null; };
-  var FAILS = arg('fails') === '1', SPEED = Number(arg('speed')) || 1, FRAME = Number(arg('frame')) || 100, MIN0 = Number(arg('min')) || 0;
+  var FAILS = arg('fails') === '1', STAMPS = arg('stamps') === '1', SPEED = Number(arg('speed')) || 1, FRAME = Number(arg('frame')) || 100, MIN0 = Number(arg('min')) || 0;
   var FRAMED = B.framed, STAGE = PL.stage || 'hour', SAVED = PL.saved || null, RUSH = 180;
   var started = SAVED && SAVED.started && Date.now() - SAVED.started < 3 * 3600000 ? SAVED.started : Date.now();
   var st = { i: 0, hint: 0, ok: false, line: null, lineKind: '', xp: 0, badges: [], paid: {}, failDone: {}, t0: started - MIN0 * 60000, predicted: null, filmShown: 0, tourN: 0,
@@ -45,7 +45,7 @@
     if (o.tables && !ro) h += '<div class="bank">' + ['people', 'days'].map(function (x) { return '<button class="chip tab' + (t === x ? ' on' : '') + '" data-table="' + x + '">' + esc(x === 'people' ? S.close.people : S.close.days) + '</button>'; }).join('') + '</div>';
     if (!ro) h += '<div class="bank">' + (o.bankLabel ? '<p class="banklab">' + esc(C.bank) + '</p>' : '') + cs.map(function (c) { return '<button class="chip" data-word="' + c + '">' + c + '</button>'; }).join('') + SIGNS.map(function (w) { return '<button class="chip kw" data-word="' + esc(w) + '">' + esc(w) + '</button>'; }).join('') + '<button class="chip kw" data-word="&quot;&quot;" aria-label="quotes">" "</button></div>';
     h += '<p class="count' + (o.spot === 3 ? ' spot' : '') + (st.flash === 'ok' && !ro ? ' flash' : '') + '">' + esc(C.showing.replace('{n}', rows.length).replace('{all}', all.length).replace('{what}', what)) + '</p>';
-    h += '<div class="tbl' + (o.spot === 1 ? ' spot' : '') + '"><table><tr>' + cs.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>' + rows.slice(0, 12).map(function (r) { return '<tr>' + cs.map(function (c) { return '<td class="' + (typeof r[c] === 'number' ? 'num' : '') + '">' + fmtv(r[c]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>' + (rows.length > 12 ? '<div class="more">' + esc(C.andMore.replace('{n}', rows.length - 12)) + '</div>' : '');
+    h += '<div class="tbl' + (o.spot === 1 ? ' spot' : '') + '"><table><tr>' + cs.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>' + rows.map(function (r) { return '<tr>' + cs.map(function (c) { return '<td class="' + (typeof r[c] === 'number' ? 'num' : '') + '">' + fmtv(r[c]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>';
     return h + '</div>'; }
   function focusBox() { var b = document.getElementById('qbox'); if (b && !b.readOnly) { b.focus(); var v = b.value; b.value = ''; b.value = v; } }
   /* a bank word goes in at the cursor with a space; the quotes go in as a pair with the cursor between them */
@@ -81,7 +81,7 @@
     if (o.timed && st.timer && FAILS) h += '<button class="dbg" data-act="debug-timeout">·</button>';
     return h + '</div>'; }
   function scene(cls, inner) { return '<div class="scene ' + cls + '">' + inner + '</div>'; }
-  function msg(kicker, from, lines) { return '<div class="phone"><div class="kick">' + esc(kicker) + '</div><div class="from"><span class="ava">D</span>' + esc(from) + '</div>' + lines.map(function (l) { return '<p class="bubble">' + esc(l) + '</p>'; }).join('') + '</div>'; }
+  function msg(kicker, from, lines, shown) { return '<div class="phone"><div class="kick">' + esc(kicker) + '</div><div class="from"><span class="ava">D</span>' + esc(from) + '</div>' + lines.map(function (l, i) { return '<p class="bubble"' + (shown != null && i >= shown ? ' style="visibility:hidden" aria-hidden="true"' : '') + '>' + esc(l) + '</p>'; }).join('') + '</div>'; }
   function predictHTML(sc, q, options, right) { var opts = sc._opts || (sc._opts = shuffle(options)); var h = '<p class="ask">' + esc(q) + '</p><div class="opts col">' + opts.map(function (o) { return '<button class="btn opt' + (st.predicted ? (o === right ? ' right' : st.predicted === o ? ' wrong' : '') : '') + '" data-opt="' + esc(o) + '"' + (st.predicted ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join('') + '</div>';
     if (st.predicted) h += '<p class="line ' + (st.predicted === right ? 'ok' : 'no') + '">' + esc(st.predicted === right ? sc.predictRight : sc.predictWrong) + '</p><button class="btn" data-act="next">' + esc(C.next) + '</button>'; return h; }
   function stampHTML() { var h = '<div class="stamps">' + ['PRINT', 'SPIKE'].map(function (s) { return '<button class="btn stampbtn ' + s.toLowerCase() + (st.stamp === s ? ' on' : '') + '" data-stamp="' + s + '">' + esc(S.stamp[s]) + '</button>'; }).join('') + '</div>';
@@ -107,7 +107,7 @@
         else { st.rows = Q.run(txt, D[table], cols(table)); st.demo = 1; Snd.ding(); render(); } })(); },
     render: function () { return '<div class="two">' + deskHTML({ readonly: true }) + '<div class="coach"><div class="kick">' + esc(c.showKicker) + '</div><p class="ask">' + esc(c.show1) + '</p><div class="demo"><code>' + esc(c.showDemo) + '</code></div><p class="ask">' + esc(c.show2) + '</p>' + (c.show3 ? '<p class="ask">' + esc(c.show3) + '</p>' : '') + '<button class="btn" data-act="next">' + esc(C.got) + '</button></div></div>'; },
     want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } }; }
-  function askScreen(id, chId, c, o) { return { id: id, ch: chId, task: { ids: o.ids }, judge: o.judge || c.judge, timed: !!o.timed,
+  function askScreen(id, chId, c, o) { return { id: id, ch: chId, rule: o.code, task: { ids: o.ids }, judge: o.judge || c.judge, timed: !!o.timed,
     enter: function () { st.table = o.table; var r = takeRestore(); st.q = r ? r.q : ''; st.rows = runRows(st.q, st.table); if (o.timed) startTimer(); },
     render: function () { return '<div class="two">' + deskHTML({ bankLabel: o.bankLabel, avgs: o.avgs }) + coach(this, { kicker: o.kicker || c.title, card: o.nocard ? null : card(c), lead: o.lead, ask: o.ask, hints: o.hints, code: o.code, nextLabel: o.nextLabel, timed: o.timed }) + '</div>'; },
     want: function () { if (st.ok) return { kind: 'click', sel: '[data-act="next"]' }; if (FAILS && o.fail && !st.failDone[id]) { st.failDone[id] = 1; return { kind: 'type', sel: '#qbox', text: o.fail, enter: true }; } if (st.q && !st.ok) return { kind: 'click', sel: '[data-act="clear"]' }; return { kind: 'type', sel: '#qbox', text: o.code, enter: true }; } }; }
@@ -119,8 +119,10 @@
     enter: function () { st.stamp = null; st.reason = null; st.stampMiss = 0; if (o.table) st.table = o.table; if (o.timed) startTimer(); },
     render: function () { return '<div class="two">' + deskHTML({ avgs: o.avgs, readonly: true }) + coach(this, { kicker: o.kicker || c.title, card: st.ok ? { headline: c.headline, byline: c.byline, stamp: st.stamp } : card(c), after: st.ok ? stampedLine({ stamp: st.stamp, reason: st.reason }) : '', ask: o.ask || c.stampAsk, body: stampHTML(), nextLabel: o.nextLabel, timed: o.timed }) + '</div>'; },
     want: function () { if (st.ok) return { kind: 'click', sel: '[data-act="next"]' }; if (FAILS && o.timeoutFail && !st.failDone[id]) { st.failDone[id] = 1; return { kind: 'click', sel: '[data-act="debug-timeout"]' }; }
-      if (FAILS && o.fail) { var n = st.failDone[id] || 0; if (n < o.fail.length) { st.failDone[id] = n + 1; return { kind: 'click', sel: o.fail[n] }; } }
+      var fl = FAILS && o.fail ? o.fail : null; if (STAMPS) fl = (fl || []).concat(wrongStamps(o.stamp, o.reason));
+      if (fl) { var n = st.failDone[id] || 0; if (n < fl.length) { st.failDone[id] = n + 1; return { kind: 'click', sel: fl[n] }; } }
       if (st.stamp !== o.stamp) return { kind: 'click', sel: '[data-stamp="' + o.stamp + '"]' }; if (st.reason !== o.reason) return { kind: 'click', sel: '[data-reason="' + o.reason + '"]' }; return { kind: 'click', sel: '[data-act="stamp"]' }; } }; }
+  function wrongStamps(s, r) { return ['[data-stamp="' + (s === 'PRINT' ? 'SPIKE' : 'PRINT') + '"]', '[data-reason="' + (r === 'backed' ? 'numbers' : 'backed') + '"]', '[data-act="stamp"]', '[data-stamp="' + s + '"]', '[data-act="stamp"]']; }
   /* the stamp's judge: ok gives the points (10, or 6 after a wrong stamp or reason, 6 on the fix) and the badge (G5) */
   function judgeStamp(sc) { var r = J.checkStamp({ stamp: st.stamp, reason: st.reason }, sc.wantStamp);
     if (r.code === 'ok') { st.ok = true; st.line = sc.lines.ok; st.lineKind = 'ok'; if (sc.ch === 'c6') stopTimer();
@@ -138,7 +140,7 @@
       want: function () { if (!DN[st.donow.n]) return { kind: 'click', sel: '[data-act="next"]' }; return st.donow.picked != null ? { kind: 'click', sel: '[data-act="dn-next"]' } : { kind: 'click', sel: '[data-pick="0"]' }; } },
     { id: 'opening', ch: 'open', render: function () { var o = S.opening; return scene('opening', '<div class="kick">' + esc(o.kicker) + '</div><p class="open">' + esc(o.line1) + '</p><p class="open">' + esc(o.line2) + '</p>' + (o.line3 ? '<p class="open dim">' + esc(o.line3) + '</p>' : '') + '<button class="btn big" data-act="next">' + esc(o.button) + '</button>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } },
     /* §6.1 three bubbles, each 1.2 s + 0.35 s a word after the one before, each with the buzz and a shake */
-    { id: 'story', ch: 'open', film: 5, render: function () { var n = st.filmShown, all = [S.story.b1, S.story.b2, S.story.b3]; return scene('story', msg(S.story.kicker, S.story.from || 'Dee', all.slice(0, n)) + (n < 3 ? '<button class="btn ghost" data-act="readall">' + esc(S.story.readAll) + '</button>' : '<button class="btn big" data-act="next">' + esc(S.story.go) + '</button>')); },
+    { id: 'story', ch: 'open', film: 5, render: function () { var n = st.filmShown, all = [S.story.b1, S.story.b2, S.story.b3]; return scene('story', msg(S.story.kicker, S.story.from || 'Dee', all, n) + (n < 3 ? '<button class="btn ghost" data-act="readall">' + esc(S.story.readAll) + '</button>' : '<button class="btn big" data-act="next">' + esc(S.story.go) + '</button>')); },
       enter: function () { st.filmShown = 0; var self = this, at = 0, all = [S.story.b1, S.story.b2, S.story.b3]; all.forEach(function (b, i) { at += (i === 0 ? 600 : (1.2 + 0.35 * all[i - 1].split(/\s+/).length) * 1000) / SPEED; setTimeout(function () { if (screens[st.i] === self && !st.review && st.filmShown < i + 1) { st.filmShown = i + 1; Snd.buzz(); render(); } }, at); }); },
       want: function () { return st.filmShown < 3 ? { kind: 'click', sel: '[data-act="readall"]' } : { kind: 'click', sel: '[data-act="next"]' }; } },
     { id: 'facts', ch: 'open', render: function () { var f = S.facts; return scene('plain', '<div class="kick">' + esc(f.kicker) + '</div><p class="ask">' + esc(f.intro) + '</p><div class="paper"><p class="headline small">' + esc(f.t1) + '</p><div class="bank">' + D.columns.people.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + '</div></div><div class="paper"><p class="headline small">' + esc(f.t2) + '</p><div class="bank">' + D.columns.days.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + '</div></div><button class="btn big" data-act="next">' + esc(f.button) + '</button>'); }, want: function () { return { kind: 'click', sel: '[data-act="next"]' }; } },
@@ -212,7 +214,7 @@
     if (st.welcome) { var w = st.welcome; return '<div class="welcome coach"><p class="ask">' + esc(C.welcomeBack.replace('{where}', S.rail[w.ch] || '')) + '</p><button class="btn big" data-act="carry">' + esc(C.carryOn) + '</button><button class="btn ghost" data-act="again">' + esc(C.startAgain) + '</button></div>'; }
     if (st.review) { var r = st.review, sn = st.snaps[r.ch] || {}, c = S[r.ch], s = st.stamps[r.ch], view = { table: sn.table || 'people', q: sn.q || '', rows: runRows(sn.q, sn.table || 'people') };
       return '<div class="two">' + deskHTML({ view: view, readonly: true }) + '<div class="coach"><div class="kick">' + esc(S.rail[r.ch]) + '</div>' + paper({ headline: c.headline, byline: c.byline, stamp: s ? s.stamp : null }) + stampedLine(s) + '<button class="btn" data-act="unreview">' + esc(C.back) + '</button></div></div>'; }
-    var p = partOf(sc.ch); return (p ? '<div class="partof">' + esc(p) + '</div>' : '') + sc.render(); }
+    return sc.render(); }
   function render() { var sc = screens[st.i], root = document.getElementById('hour'), ch = st.review ? st.review.ch : sc.ch;
     root.className = 'bg-' + ch + (st.lite >= 1 ? ' lite' : '') + (st.lite >= 2 ? ' lighter' : '');
     root.innerHTML = '<div class="photo"></div><div id="stripbox">' + stripHTML() + '</div>' + jobHTML() + '<main>' + mainHTML(sc) + '</main>' + (st.paused ? '<div class="pauseveil"><p>' + esc(C.paused) + '</p><button class="btn big" data-act="pause">' + esc(C.resume) + '</button></div>' : '') + '<div id="tag" hidden></div>';
@@ -323,7 +325,19 @@
     if (r.end) return scene('plain late', kickLate('race', R.levels[r.lvl - 1]) + (r.timeUp ? '<p class="ask">' + esc(R.timeUp) + '</p>' : '') + '<p class="ask">' + esc(R.end.replace('{n}', r.right).replace('{all}', r.its.length)) + '</p><div class="opts"><button class="btn" data-act="race-again">' + esc(R.again) + '</button><button class="btn ghost" data-act="late-menu">' + esc(L.menuBack) + '</button></div>');
     var it = r.its[r.k], right = it.right, pk = r.picked;
     return scene('plain late', kickLate('race', R.qOf.replace('{n}', r.k + 1).replace('{all}', r.its.length)) + '<p class="timer' + (r.left <= 10000 ? ' last' : '') + '">' + esc(R.time.replace('{s}', Math.max(0, Math.ceil(r.left / 1000)))) + '</p><p class="ask">' + esc(it.q) + '</p><div class="opts col">' + r.opts.map(function (o, j) { return '<button class="btn opt code' + (pk != null ? (o === right ? ' right' : j === pk ? ' wrong' : '') : '') + '" data-ro="' + j + '"' + (pk != null ? ' disabled' : '') + '>' + esc(o) + '</button>'; }).join('') + '</div>'
-      + (pk != null ? '<p class="line ' + (r.opts[pk] === right ? 'ok' : 'no') + '">' + esc(r.opts[pk] === right ? R.right : R.wrong) + '</p><button class="btn" data-act="race-next">' + esc(C.next) + '</button>' : '') + lateBar(false)); }
+      + (pk != null ? '<p class="line ' + (r.opts[pk] === right ? 'ok' : 'no') + '">' + esc(r.opts[pk] === right ? R.right : raceWhy(r.opts[pk], right)) + '</p><button class="btn" data-act="race-next">' + esc(C.next) + '</button>' : '') + lateBar(false)); }
+  /* why a race rule is wrong: the first thing that differs from the right one */
+  function raceWhy(w, r) { var R = L.race, Y = R.why, ws = String(w), rs = String(r), m;
+    if (betweenBack(ws)) return C.errBetween; if (/\bOR\s+"/i.test(ws)) return C.errSide;
+    if (/\bBETWEEN\b/i.test(rs) && !/\bBETWEEN\b/i.test(ws)) { m = rs.match(/BETWEEN\s+([\d.]+)\s+AND\s+([\d.]+)/i); return /\bOR\b/i.test(ws) ? Y.outside.replace('{a}', m ? m[1] : '').replace('{b}', m ? m[2] : '') : Y.ends; }
+    if (ws === rs.replace(/\bAND\b/, 'OR')) return Y.needAnd; if (ws === rs.replace(/\bOR\b/, 'AND')) return Y.needOr;
+    if (/^\s*NOT\b/i.test(rs) && ws === rs.replace(/^\s*NOT\s+/i, '')) return Y.noNot; if (/^\s*NOT\b/i.test(ws) && !/^\s*NOT\b/i.test(rs)) return Y.notWrong;
+    var re = /(\w+)\s*(>=|<=|<>|=|>|<)\s*("[^"]*"|[\d.]+)/g, a = [], b = []; while ((m = re.exec(ws))) a.push(m); re.lastIndex = 0; while ((m = re.exec(rs))) b.push(m);
+    for (var i = 0; i < Math.min(a.length, b.length); i++) { var p = a[i], q = b[i];
+      if (p[1] !== q[1]) return Y.col.replace('{wc}', p[1]).replace('{rc}', q[1]);
+      if (p[2] !== q[2] && R.signs[p[2]] && R.signs[q[2]]) return Y.sign.replace('{ws}', p[2]).replace('{wm}', R.signs[p[2]]).replace('{rs}', q[2]).replace('{rm}', R.signs[q[2]]);
+      if (p[3] !== q[3]) return Y.value.replace('{wv}', p[3]).replace('{rv}', q[3]); }
+    return R.wrong; }
   /* the late judge: the rule first (kept rows, never the words), then the stamp */
   function lateRun() { var n = lateNow(); if (!n || st.ok || (n.x === 'heads' && st.lt.ruleOk)) return; var it = n.it, t = it.t, rows, ok;
     st.table = t; st.line = null; st.lineKind = '';
@@ -365,7 +379,7 @@
     var n = lateNow(); if (!n) return c('[data-act="late-menu"]');
     if (x === 'count') return st.lt.pick != null ? c('[data-act="late-next"]') : c('[data-cnt="0"]');
     if (st.ok) return c('[data-act="late-next"]');
-    if (x === 'heads' && st.lt.ruleOk) { if (st.stamp !== n.it.stamp) return c('[data-stamp="' + n.it.stamp + '"]'); if (st.reason !== n.it.reason) return c('[data-reason="' + n.it.reason + '"]'); return c('[data-act="stamp"]'); }
+    if (x === 'heads' && st.lt.ruleOk) { if (STAMPS) { var wl = wrongStamps(n.it.stamp, n.it.reason), wk = st.lt.wk || 0; if (wk < wl.length) { st.lt.wk = wk + 1; return c(wl[wk]); } } if (st.stamp !== n.it.stamp) return c('[data-stamp="' + n.it.stamp + '"]'); if (st.reason !== n.it.reason) return c('[data-reason="' + n.it.reason + '"]'); return c('[data-act="stamp"]'); }
     if (st.q) return c('[data-act="clear"]');
     return { kind: 'type', sel: '#qbox', text: x === 'fix' ? n.it.fix : n.it.rule, enter: true }; }
   /* ---------- V85 help: the job line on every screen, Stuck? Show me, the ring and its tag, the ghost demo, the idle nudge ---------- */
@@ -373,10 +387,12 @@
   function jobHTML() { return '<div class="job"><span id="job"></span><button class="btn" id="helpBtn" data-act="help">' + esc(C.stuck) + '</button></div><div id="help" hidden><div><p class="kicker">' + esc(C.helpKicker) + '</p><ol id="helpText"></ol><p id="helpStuck">' + esc(C.stillStuck) + '</p></div><button class="btn" data-act="help-close">' + esc(C.helpClose) + '</button></div>'; }
   function stampGuide(job) { if (st.line && st.lineKind === 'no') return { job: job, steps: SH.stampWrong, sel: '.stamps', tag: C.tagChoose }; if (!st.stamp) return { job: job, steps: SH.stampNone, sel: '.stamps', tag: C.tagChoose };
     if (!st.reason) return { job: job, steps: SH.stampReason, sel: '.reasons', tag: C.tagChoose }; return { job: job, steps: SH.stampReady, sel: '[data-act="stamp"]', tag: C.tagPress }; }
-  function askGuide(key, late) { if (st.ok) return { job: SJ.ok, steps: SH.ok, sel: '[data-act="next"]', tag: C.tagPress };
+  function shapeOf(r) { r = String(r || ''); var not = /^\s*NOT\b/i.test(r), and = /\bAND\b/i.test(r.replace(/BETWEEN\s+\S+\s+AND/i, '')), btw = /\bBETWEEN\b/i.test(r), or = /\bOR\b/i.test(r);
+    return not && and ? 'notAnd' : not ? 'not' : btw ? 'between' : or ? 'or' : and ? 'and' : /"/.test(r) ? 'word' : 'num'; }
+  function askGuide(key, late, rule) { if (st.ok) return { job: SJ.ok, steps: SH.ok, sel: '[data-act="next"]', tag: C.tagPress };
     if (st.line && st.lineKind === 'no') return { job: SJ.askFix, steps: late ? SH.askRed.slice(0, 2) : SH.askRed, sel: '#qbox', tag: C.tagType };
     if (st.q && st.q.trim()) return { job: SJ.ask, steps: SH.askTyped, sel: '[data-act="run"]', tag: C.tagPress };
-    return { job: SJ.ask, steps: SH.askEmpty, sel: '#qbox', tag: C.tagType, demo: SH.demo[key] }; }
+    var sh = shapeOf(rule); return { job: SJ.ask, steps: SH.shape[sh] || SH.askEmpty, sel: '#qbox', tag: C.tagType, demo: SH.demo[key + '.' + sh] || SH.demo[key], empty: true }; }
   function lateGuide() { var f = st.free, x = f.x, P = { steps: SH.ok, tag: C.tagPress };
     if (f.ended) return { job: SJ.end, steps: null };
     if (!x) return { job: SJ.late, steps: SH.late, sel: '.tiles', tag: C.tagChoose };
@@ -386,10 +402,10 @@
       return { job: SJ.race, steps: SH.race, sel: '.opts', tag: C.tagChoose }; }
     var n = lateNow(); if (!n) return Object.assign({ job: jf('after', { btn: L.menuBack }), sel: '[data-act="late-menu"]' }, P, { steps: SH.next });
     if (x === 'count') return st.lt.pick != null ? Object.assign({ job: jf('after', { btn: L.count.next }), sel: '[data-act="late-next"]' }, P) : { job: SJ.count, steps: SH.count, sel: '.opts', tag: C.tagChoose };
-    if (st.ok) return Object.assign({ job: jf('after', { btn: L[x].next }), sel: '[data-act="late-next"]' }, P);
-    if (x === 'heads' && st.lt.ruleOk) return stampGuide(SJ.heads);
+    if (st.ok) return Object.assign({ job: jf('afterOk', { btn: L[x].next }), sel: '[data-act="late-next"]' }, P);
+    if (x === 'heads' && st.lt.ruleOk) return stampGuide(SJ.stamp);
     if (x === 'fix') return st.line && st.lineKind === 'no' ? { job: SJ.fix, steps: SH.askRed.slice(0, 2), sel: '#qbox', tag: C.tagType } : { job: SJ.fix, steps: SH.fix, sel: '#qbox', tag: C.tagType };
-    var a = askGuide(n.it.t, true); a.job = x === 'heads' ? SJ.heads : jf('hit', { n: n.it.n }); if (x === 'hit' && a.steps === SH.askEmpty) a.steps = SH.hit; return a; }
+    var a = askGuide(n.it.t, true, x === 'heads' ? n.it.rule : null); a.job = x === 'heads' ? SJ.heads : jf('hit', { n: n.it.n }); if (x === 'hit' && a.empty) a.steps = SH.hit; return a; }
   function guide() { var sc = screens[st.i], id = sc.id, nx = { steps: SH.next, sel: '[data-act="next"]', tag: C.tagPress };
     function g(job, o) { return Object.assign({ job: job }, o || nx); }
     if (st.welcome) return g(SJ.welcome, { steps: SH.next, sel: '[data-act="carry"]', tag: C.tagPress });
@@ -401,8 +417,8 @@
     if (id === 'tour') return g(SJ.tour, { steps: SH.tour, sel: '[data-act="tour"]', tag: C.tagPress });
     if (/-title$/.test(id)) return g(SJ.title);
     if (/-show$/.test(id)) { var kw = { c2: 'AND', c3: 'BETWEEN', c4: 'OR', c5: 'NOT' }[sc.ch]; return g(kw ? jf('show', { kw: kw }) : SJ.show1); }
-    if (sc.task) return askGuide(id === 'c6-ask1' ? 'c6a' : id === 'c6-ask2' ? 'c6b' : sc.ch);
-    if (sc.wantStamp) return st.ok ? g(SJ.ok, { steps: SH.ok, sel: '[data-act="next"]', tag: C.tagPress }) : stampGuide(SJ.stamp);
+    if (sc.task) return askGuide(id === 'c6-ask1' ? 'c6a' : id === 'c6-ask2' ? 'c6b' : sc.ch, false, sc.rule);
+    if (sc.wantStamp) return st.ok ? g(SJ.stampOk, { steps: SH.ok, sel: '[data-act="next"]', tag: C.tagPress }) : stampGuide(SJ.stamp);
     if (sc.right) return st.predicted ? g(SJ.picked) : g(/-compare$/.test(id) ? SJ.compare : SJ.predict, { steps: SH.predict, sel: '.opts', tag: C.tagChoose });
     if (id === 'c1-stampshow') return g(SJ.stampshow);
     if (id === 'c6-ring') return g(SJ.ring); if (id === 'c6-printed') return g(SJ.printed); if (id === 'c6-letter') return g(SJ.letter);
@@ -420,10 +436,20 @@
     document.querySelectorAll('.help-spot').forEach(function (n) { n.classList.remove('help-spot'); });
     var el = (st.helpOn || st.nudged >= 2) && g.sel && !st.paused ? document.querySelector('main ' + g.sel) : null; st.spotEl = el; if (el) el.classList.add('help-spot'); placeTag();
     if (st.helpOn && g.demo && !st.q) startDemo(g.demo); else if (st.demoTxt) stopDemo(); }
+  function wordBoxes(skip) { var out = []; [].forEach.call(document.querySelectorAll('main p, main li, main label, main h1, main h2, main .kick, main .headline, main button, main code, main input, main th, main td, #job, #helpBtn'), function (e) {
+      if (!e.getClientRects().length || e.closest('[hidden]') || e === skip || getComputedStyle(e).visibility === 'hidden') return; var k = /^T[DH]$/.test(e.tagName) ? 0.15 : 1, rs;
+      if (/^(P|LI|LABEL|H1|H2|DIV|SPAN)$/.test(e.tagName)) { var rg = document.createRange(); rg.selectNodeContents(e); rs = rg.getClientRects(); } else rs = [e.getBoundingClientRect()];
+      [].forEach.call(rs, function (r) { if (r.width && r.height) out.push({ l: r.left, t: r.top, r: r.right, b: r.bottom, k: k }); }); }); return out; }
   function placeTag() { var tg = document.getElementById('tag'), el = st.spotEl; if (!tg) return; if (!el || !document.body.contains(el)) { tg.hidden = true; return; }
-    tg.textContent = (st.g && st.g.tag) || C.tagPress; tg.hidden = false; var r = el.getBoundingClientRect(), w = tg.offsetWidth, h = tg.offsetHeight, hp = document.getElementById('help'), minTop = hp && !hp.hidden ? hp.getBoundingClientRect().bottom + 4 : 4, top = r.top - h - 10;
-    if (top < minTop) top = r.bottom + 10; if (top + h > innerHeight - 4) top = Math.max(minTop, r.top + 4);
-    tg.style.top = Math.round(top) + 'px'; tg.style.left = Math.round(Math.max(4, Math.min(innerWidth - w - 4, r.left + r.width / 2 - w / 2))) + 'px'; }
+    tg.textContent = (st.g && st.g.tag) || C.tagPress; tg.hidden = false; var r = el.getBoundingClientRect(), w = tg.offsetWidth, h = tg.offsetHeight, G = 8, hp = document.getElementById('help'), minTop = hp && !hp.hidden ? hp.getBoundingClientRect().bottom + 2 : 4;
+    var cx = r.left + r.width / 2 - w / 2, cy = r.top + r.height / 2 - h / 2, up = r.top - h - G, dn = r.bottom + G;
+    var spots = [[cx, up], [cx, dn], [r.right + G, cy], [r.left - w - G, cy], [r.left, up], [r.right - w, up], [r.left, dn], [r.right - w, dn]], boxes = wordBoxes(), best = null;
+    for (var sx = r.right + G; sx < innerWidth - w; sx += 40) spots.push([sx, cy]); /* then along the row, past the buttons beside it */
+    boxes.push({ l: r.left, t: r.top, r: r.right, b: r.bottom, k: 3 });
+    spots.forEach(function (p) { var x = Math.max(4, Math.min(innerWidth - w - 4, p[0])), y = Math.max(minTop, Math.min(innerHeight - h - 4, p[1])), cost = 0;
+      boxes.forEach(function (q) { var ox = Math.min(x + w, q.r) - Math.max(x, q.l), oy = Math.min(y + h, q.b) - Math.max(y, q.t); if (ox > 0 && oy > 0) cost += ox * oy * q.k; });
+      if (!best || cost < best.c - 0.5) best = { x: x, y: y, c: cost }; });
+    tg.style.top = Math.round(best.y) + 'px'; tg.style.left = Math.round(best.x) + 'px'; }
   function setHelp(on) { if (st.paused) return; st.helpOn = on == null ? !st.helpOn : !!on; st.nudged = 0; st.idleAt = Date.now(); applyHelp();
     if (st.helpOn && st.spotEl) { var r = st.spotEl.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) { st.spotEl.scrollIntoView({ block: 'nearest' }); placeTag(); } } }
   /* the ghost demo: a different rule types itself into the empty box's placeholder, so she sees the shape, never the answer */

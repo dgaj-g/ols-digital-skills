@@ -10,7 +10,7 @@ const argOf = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? proc
 const HOUR = argOf('--url', 'file://' + path.resolve(__dirname, '../../platform/assets/nightdesk/hour.html'));
 const BAR = +argOf('--bar', 141);
 const SIZES = [[1366, 625], [1280, 800], [1366, 768], [1440, 900], [1024, 768]];   // 1366x625 is the school PC's window: a 484 px frame
-const ROUTES = { model: 'x=0', fails: 'fails=1', late: 'late=1' };
+const ROUTES = { model: 'x=0', fails: 'fails=1', late: 'late=1', stamps: 'fails=1&stamps=1', latestamps: 'late=1&stamps=1' };   // stamps: a wrong stamp, then a wrong reason, on every stamp screen
 const OUTDIR = path.resolve(__dirname, 'j3l6');
 let browser = null;
 async function open() { if (!browser) browser = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox', '--allow-file-access-from-files', '--autoplay-policy=no-user-gesture-required'] }); return browser; }
@@ -32,7 +32,8 @@ async function act(p, w) {
   await sleep(60);
 }
 /* in the page: the state's name */
-function stateKey() { const g = Hour.guide() || {}; return Hour.screen() + '|' + (g.job || '') + '|' + (g.sel || ''); }
+function stateKey() { const g = Hour.guide() || {}; const L = Hour.state.line ? (Hour.state.lineKind || 'line') + ':' + String(Hour.state.line).slice(0, 40) : '';
+  return Hour.screen() + '|' + (g.job || '') + '|' + (g.sel || '') + '|' + L; }   // V86: a red or green line is a new state (the wrong stamp's red line was missed)
 /* in the page: does it fit, is the job line right, is the button right */
 function measure() {
   const vis = e => !!e && !e.hidden && !e.closest('[hidden]') && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden';
@@ -61,7 +62,12 @@ function helpCheck() {
     const r = sp.getBoundingClientRect();
     if (r.top < box.bottom - 2) bad.push('help covers what it points at');
     if (r.bottom > innerHeight + 2 || r.top < -2 || r.width < 20) bad.push('pointer off screen');
-    if (!vis(tag) || !tag.textContent.trim()) bad.push('no tag'); else { const t = tag.getBoundingClientRect(); if (t.top < box.bottom - 2 || t.bottom > innerHeight + 1 || t.left < 0 || t.right > innerWidth + 1) bad.push('tag off screen or under the help'); }
+    if (!vis(tag) || !tag.textContent.trim()) bad.push('no tag'); else { const t = tag.getBoundingClientRect(); if (t.top < box.bottom - 2 || t.bottom > innerHeight + 1 || t.left < 0 || t.right > innerWidth + 1) bad.push('tag off screen or under the help');
+      /* the tag never sits on words she must read or a control she must use */
+      const lines = e => { if (!/^(P|LI|LABEL|H1|H2|DIV|SPAN)$/.test(e.tagName)) return [e.getBoundingClientRect()]; const g = document.createRange(); g.selectNodeContents(e); return [...g.getClientRects()]; };
+      const under = [...document.querySelectorAll('main p, main li, main label, main h1, main h2, main .kick, main .headline, main button, main code, main input, #job')]
+        .filter(e => vis(e) && getComputedStyle(e).visibility !== 'hidden' && !e.closest('#help') && lines(e).some(r => Math.min(t.right, r.right) - Math.max(t.left, r.left) > 2 && Math.min(t.bottom, r.bottom) - Math.max(t.top, r.top) > 2));
+      if (under.length) bad.push('the tag covers words: ' + under.map(e => (e.textContent || e.placeholder || e.tagName).trim().slice(0, 20)).join(' | ')); }
   }
   /* her work: nothing she reads or uses sits under the help box */
   [...document.querySelectorAll('main button, main input, main .tbl, main .paper, main .ask, main p')].filter(e => vis(e) && !e.closest('#help')).forEach(e => { const r = e.getBoundingClientRect();

@@ -1,6 +1,6 @@
   PASS the three walks run with no page errors
-  PASS a fast pupil has 61.3 minutes of work (needs 55)
-  PASS a typical pupil has 107.1 minutes of work (needs 65)
-  PASS the main lesson takes a slow pupil 48.8 minutes, with her wrong tries (must be 50 or less)
-  PASS CONTROL (it failed, as it must): without the late shift a fast pupil has only 15.5 minutes
+  PASS a fast pupil has 62.2 minutes of work (needs 55)
+  PASS a typical pupil has 108.5 minutes of work (needs 65)
+  PASS the main lesson takes a slow pupil 49.1 minutes, with her wrong tries (must be 50 or less)
+  PASS CONTROL (it failed, as it must): without the late shift a fast pupil has only 15.6 minutes
 j3l6-hour: ALL 5 CHECKS PASS
