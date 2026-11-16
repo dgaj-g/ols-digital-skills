@@ -1,0 +1,13 @@
+  PASS c2: phone_hours >= 5 alone does not pass; it gets "Your rule keeps the right 6 rows, but it never checks for teens. Add AND and a rule on age."
+  PASS c2: age < 20 AND phone_hours >= 5 passes
+  PASS CONTROL (it failed, as it must): the right two-part c2 rule put through the "refused by luck" check
+  PASS c2 with OR: "Your rule keeps 18 rows, not 6. OR keeps rows where either rule is true. Use AND."
+  PASS c2 with one rule: "Your rule keeps 18 rows, not 6. Add AND and a second rule."
+  PASS c4 with AND: "Your rule keeps 0 rows, not 31. AND keeps rows where both rules are true. Use OR."
+  PASS c4 with one rule: "Your rule keeps 9 rows, not 31. Use OR to keep dogs and cats."
+  PASS c4: pet = "dog" OR pet = "cat" passes
+  PASS no page errors
+  PASS Count first help: 16 of 16 rules each get 3 steps that name the rule's word or sign and never the number
+  PASS CONTROL (it failed, as it must): a Count first step swapped for one that gives the number
+  PASS no page errors in the late shift
+j3l6-rules: ALL 12 CHECKS PASS

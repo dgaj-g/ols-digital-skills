@@ -14,7 +14,7 @@ window.S = {
     title: 'The question', headline: 'Eight hours of sleep lifts exam scores', byline: 'Fionn · page 3',
     showKicker: 'Dee shows you', show1: 'A rule has a column, a sign and a number.', showDemo: 'age < 20', show2: '< means less than, so this keeps people under 20.',
     ask: 'Keep only the people who slept eight hours or more.', h1: 'The column is sleep_hours. Eight or more is >=.', h2: 'Write sleep_hours, then >=, then 8.', h3: 'Type this, then press Enter.', h3code: 'sleep_hours >= 8',
-    judge: { ok: 'Right: 17 people. A rule like this is a query.', wrong: 'Your rule keeps {got} rows, not 17. Check the sign.' },
+    judge: { ok: 'Right. 17 people. A rule like this is a query.', wrong: 'Your rule keeps {got} rows, not 17. Check the sign.' },
     compareKicker: 'Now compare', compare1: 'Those 17 scored 61.0 on average.', compare2: 'The other 43 scored 65.3.', predict: 'Is the headline true?', options: ['No. The people who slept eight hours or more scored lower.', 'Yes. Sleep lifted the scores.'], right: 'Right. The numbers say the opposite.', wrong: 'No. People who slept eight or more hours scored lower than others, not higher.',
     stampShowKicker: 'How Dee stamps', stampShow1: 'Fionn asked only three people.', stampShow2: 'Dee stamped it SPIKE: do not print.', stampShow3: 'Her reason: too few people.',
     stampAsk: 'Your turn now. Stamp the sleep headline.', stampOk: 'SPIKE. Those who slept eight hours or more scored lower, not higher.', stampNo: 'Look at the two averages. Which group scored higher?', reasonNo: 'Seventeen people is enough. The averages say no.', doneLine: 'You have done one headline. Five are left.'
@@ -23,7 +23,7 @@ window.S = {
     title: 'Two at once', headline: 'Most Rathmore teens are on their phones five hours a day', byline: 'Fionn · page 1',
     showKicker: 'Dee shows you', show1: 'AND keeps rows where both rules are true.', showDemo: 'age < 20 AND pet = "dog"', show2: 'Here: teens who have a dog.', show3: 'Words go in quotes. Numbers do not.',
     ask: 'Keep teens who use their phone five hours or more.', h1: 'For teens, use age < 20. For five hours or more, use phone_hours >= 5.', h2: 'Put AND between the two rules.', h3: 'Type this, then press Enter.', h3code: 'age < 20 AND phone_hours >= 5',
-    judge: { ok: 'Right: 6 of the 18 teens use their phone that much.', wrong: 'Your rule keeps {got} rows, not 6. Check both rules.' },
+    judge: { ok: 'Right. 6 of the 18 teens use their phone that much.', wrong: 'Your rule keeps {got} rows, not 6. Check both rules.' },
     predict: 'Fionn wrote "most". Six of 18 is…', options: ['One in three', 'Most of them', 'Half of them'], right: 'Right. Six of eighteen is one in three.', wrong: 'Six of eighteen is one in three. One in three is not most.',
     stampAsk: 'Now you stamp it.', stampOk: 'SPIKE. The numbers say no: 6 of 18 is not most.', stampNo: 'Six of the 18 teens use their phone five hours or more. Is that most of them?', reasonNo: 'Eighteen teens is enough. The problem is the word "most".', doneLine: 'You have done two headlines. Four are left.'
   },
@@ -31,7 +31,7 @@ window.S = {
     title: 'One week', headline: 'Rathmore harbour gets 3,000 visitors a day', byline: 'Fionn · page 2',
     showKicker: 'Dee shows you', show1: 'BETWEEN keeps every number from the first to the second.', showDemo: 'temp_c BETWEEN 20 AND 22', show2: 'Here: summer days at 20, 21 or 22 degrees.',
     ask: 'Fionn only looked at days 40 to 46. Keep those days.', h1: 'The column is day_no.', h2: 'Write day_no, then BETWEEN, then the first day, then AND, then the last day.', h3: 'Type this, then press Enter.', h3code: 'day_no BETWEEN 40 AND 46',
-    judge: { ok: 'Right: 7 days. They are regatta week, the week of the boat races.', wrong: 'Your rule keeps {got} days, not 7. Check both ends.' },
+    judge: { ok: 'Right. Your rule keeps 7 days. Those days are regatta week, the week of the boat races.', wrong: 'Your rule keeps {got} days, not 7. Check both ends.' },
     compareKicker: 'Now compare', compare1: 'Those 7 days had 3,158 visitors a day.', compare2: 'All 92 days had 2,215 visitors a day.', predict: 'What did Fionn do?', options: ['Took the best week and called it the summer.', 'Added the days up wrong.', 'He did nothing wrong. 3,000 is the right number.'], right: 'Right. One good week is not the whole summer.', wrong: 'He took the best week. All 92 days had only 2,215 visitors a day.',
     stampAsk: 'Now you stamp it.', stampOk: 'SPIKE. Fionn used only the best week. Regatta week is not the whole summer.', stampNo: 'Can seven days show the whole summer?', reasonNo: 'Those seven days are real, but they were the best week of the summer.', doneLine: 'You have done three headlines. Three are left.'
   },
@@ -325,6 +325,8 @@ window.S.recapPool = [
 (function (S) {
   Object.assign(S.common, { jobLead: 'Your job now:', stuck: 'Stuck? Show me', helpClose: 'Got it', helpKicker: 'How to do it', stillStuck: 'Still stuck? Ask the person beside you. Then put your hand up.', tagPress: 'Press this', tagChoose: 'Choose one', tagType: 'Type here', tagLike: 'Like this', errBetween: 'BETWEEN needs the small number first.', errSide: 'Each side of OR needs its own column name. Write the column again after OR.' });
   Object.assign(S.c5, { wrongNot: 'Your rule keeps {got} rows. Put NOT before area.', wrongAnd: 'Your rule keeps {got} rows. Add AND and a rule for the stars.' });
+  Object.assign(S.c2, { luck: 'Your rule keeps the right 6 rows, but it never checks for teens. Add AND and a rule on age.', wrongOr: 'Your rule keeps {got} rows, not 6. OR keeps rows where either rule is true. Use AND.', wrongOne: 'Your rule keeps {got} rows, not 6. Add AND and a second rule.' });
+  Object.assign(S.c4, { wrongAnd: 'Your rule keeps {got} rows, not 31. AND keeps rows where both rules are true. Use OR.', wrongOne: 'Your rule keeps {got} rows, not 31. Use OR to keep dogs and cats.' });
   S.job = {
     choose: 'click the answer you think is right.', opening: 'press Start to begin.', story: 'read Dee’s texts, then press Open the desk.',
     facts: 'see where Fionn’s facts come from, then press Show me the desk.', tour: 'see how the desk works, then press Next.',
@@ -368,6 +370,7 @@ window.S.recapPool = [
     raceMenu: ['Press a level to start.', 'Level 1 is the easiest.'],
     race: ['Read the question at the top.', 'Click the rule that answers the question.'],
     count: ['Think about what the rule keeps.', 'Click the number you think is right.'],
+    countWhy: { first: 'Read the numbers above the rule.', or: 'OR keeps rows in either group.', and: 'AND keeps only rows in both groups.', not: 'NOT drops the rows the rule after it picks out.', between: 'BETWEEN keeps both end numbers too.', le: 'The sign <= keeps the number itself too.', lt: 'The sign < leaves out the number itself.', gt: 'The sign > leaves out the number itself.', other: 'The rule keeps only the rows that fit it.', last: 'Click the number you think is right.' },
     choose: ['Read the question.', 'Click the answer you think is right.'],
     felt: ['Click one answer in each row.', 'Then press Send and finish.'],
     demo: { c1: 'cafe_visits >= 8', c2: 'area = "Hill" AND pet = "dog"', c3: 'temp_c BETWEEN 15 AND 17', c4: 'area = "Harbour" OR area = "Old Town"', c5: 'NOT pet = "dog" AND age > 30', c6a: 'rain_mm >= 5', c6b: 'rain_mm < 2', people: 'age > 30', days: 'rain_mm > 3', 'people.word': 'pet = "dog"', 'people.not': 'NOT area = "Hill"', 'people.and': 'area = "Harbour" AND pet = "dog"', 'days.word': 'month = "June"' }
