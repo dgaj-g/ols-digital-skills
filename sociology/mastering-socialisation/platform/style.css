@@ -155,7 +155,7 @@ input:focus,textarea:focus,button:focus-visible,[tabindex]:focus-visible{outline
 .cklist li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:2px solid var(--line)}
 .cklist li:last-child{border-bottom:0}
 .cklist input{width:24px;height:24px;flex:0 0 24px;margin-top:2px;accent-color:var(--acc)}
-.cklist .test{display:block;font-size:14px;color:var(--mute);margin-top:4px}
+.cklist .test{flex:0 0 auto;align-self:center;white-space:nowrap}
 
 /* ---------- activity shell ---------- */
 .act-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 10px}
@@ -206,6 +206,7 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .tray .in{display:flex;flex-wrap:wrap;gap:8px}
 .tray .dcard{flex:1 1 200px;max-width:100%}
 .tray.empty .in::after{content:"All placed. Press Check.";color:var(--mute);font-size:14px}
+.tray.checked{display:none}
 .bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .bin{background:#fff;border:2px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);padding:12px;min-height:150px;transition:background .15s,transform .15s}
 .bin.over{background:var(--acc-soft);transform:scale(1.01)}
@@ -229,19 +230,26 @@ body.dragging-active{user-select:none;-webkit-user-select:none;overscroll-behavi
 .ordlist .dcard .n{flex:0 0 28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
 .ordlist .dcard.ok .n{background:var(--ok)}.ordlist .dcard.no .n{background:var(--bad)}
 .ordlist .dcard .grip{margin-left:auto;color:var(--mute);font-size:18px}
+.ordlist .dcard .t{flex:1 1 auto;min-width:0}
+.ordlist .dcard .owhy{display:block;font-size:13px;color:var(--mute);margin-top:4px}
 .ordlist .ph{height:46px;border:2px dashed var(--accd);border-radius:10px;background:var(--acc-soft)}
 
 /* ---------- tap phrases, items, builder, write ---------- */
 .item{background:#FFFBEB;border:2px solid var(--ink);border-left:10px solid #F59E0B;border-radius:var(--r);padding:14px 16px;margin:0 0 16px;font-size:17px;line-height:1.7}
 .item .ih{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#92400E;display:block;margin:0 0 4px}
+.item.ans{background:#fff;border-left-color:#64748B}
+.item.ans .ih{color:#334155}
 .ph{cursor:pointer;border-radius:4px;padding:1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background .15s;border-bottom:2px solid transparent;touch-action:manipulation}
 .ph:hover{background:#FDE68A}
 .ph[aria-pressed="true"]{background:#F59E0B;color:#fff}
-.ph.ok{background:var(--ok-soft);border-bottom-color:var(--ok)}
-.ph.no{background:var(--bad-soft);border-bottom-color:var(--bad);text-decoration:line-through}
+/* after Check the phrase she tapped keeps dark text on its green or red mark (found live 16 Nov 2026: it stayed white and could not be read) */
+.ph.ok{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ink)}
+.ph.no{background:var(--bad-soft);border-bottom-color:var(--bad);text-decoration:line-through;color:var(--ink)}
 .ph.key{border-bottom:3px solid #92400E;text-decoration:underline;text-decoration-color:#92400E}
 .ph.ins{cursor:copy}
 .item .ph{margin:0 -3px}
+/* the phrases she can choose are marked before she chooses, not only under the mouse (found live 16 Nov 2026) */
+.item .ph:not(.done):not([aria-pressed="true"]){border-bottom:2px dotted #B45309}
 .slot{margin:0 0 14px}
 .slotc{background:#fff;border:2px solid var(--ink);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin:0 0 14px}
 .slotc .sl{display:flex;gap:10px;align-items:center;margin:0 0 10px;flex-wrap:wrap}

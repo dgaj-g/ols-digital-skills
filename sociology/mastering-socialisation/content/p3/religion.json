@@ -7,7 +7,6 @@
   "blocks": [
     {
       "h": "What this agent is",
-      "new": true,
       "p": [
         "Religion can have a profound effect on socialisation. Your teacher's slide mentions a recent TV programme about Amish teenagers beside this point.",
         "Religion is an agent of secondary socialisation. It often provides social norms and values, for example the Ten Commandments, with 'thou shalt not murder' as your teacher's example. Religions oppose things like theft, murder, promiscuity and adultery.",
@@ -17,22 +16,24 @@
     },
     {
       "h": "How it shapes behaviour",
-      "new": true,
       "p": [
         "**Teaching:** The Ten Commandments are a clear example of teaching norms and values. Religious teaching is formal when it is deliberate and consciously taught, as in 'thou shalt not murder'. Your teacher's heading for the slide is 'Religious teachings'.",
         "**Imitation and role models:** Your teacher's slide lists the passing on of a parent's faith. A child who takes part in a parent's faith, copying what the family does, is learning by imitation, in the same way that children copy how their parents talk or their table manners.",
         "**Activities:** Your teacher's slide lists sharing in religious traditions and shows a decorated Christmas tree with presents. It also lists rites of passage and shows a christening. Rites of passage are ceremonies that mark a move to a new stage of life. Both guide people into shared religious activities.",
         "**Language:** Religion has its own words for right and wrong. 'Thou shalt not murder' is the language of the Ten Commandments, and your teacher uses it as her example of a religious norm.",
-        "**Identity:** Many religions have dress codes to follow and dietary laws, which are things that cannot be eaten. Your teacher says these obviously affect an individual's norms and values, so they are a visible part of a person's identity."
+        "**Identity:** Many religions have dress codes to follow and dietary laws, which are rules about things that cannot be eaten. Your teacher says these obviously affect an individual's norms and values, so they are a visible part of a person's identity."
       ]
     },
     {
       "h": "How it controls behaviour",
-      "new": true,
       "p": [
-        "**Social control and sanctions:** Religions oppose things like theft, murder, promiscuity and adultery. Sanctions are 'a process of social control which regulates our behaviour, ensuring conformity to the norms and values of society'. Your teacher's notes do not give religious sanctions, so build your answer from her general ones: a formal sanction is an 'expected reward or punishment' and an informal sanction is 'less obvious'. A possible example for an answer is the disapproval of family or a faith community when a rule is broken.",
+        "**Social control and sanctions:** Religions oppose things like theft, murder, promiscuity and adultery. Sanctions are 'a process of social control which regulates our behaviour, ensuring conformity to the norms and values of society'. Your teacher's notes do not give religious sanctions, so build your answer from her general ones: a formal sanction is an 'expected reward or punishment' and an informal sanction is 'less obvious'.",
+        "A possible example for an answer is the disapproval of family or a faith community when a rule is broken.",
         "**Expectations:** Dress codes and dietary laws set out what a member is expected to wear and eat. Rites of passage, such as a christening, are also steps a faith community expects its members to take.",
         "**Manipulation:** Your teacher's list of the ways we learn includes manipulation, with the examples sanctions, expectations, verbal appellations and canalisation. Dress codes and dietary laws guide members towards some behaviour and away from other behaviour, which fits canalisation."
+      ],
+      "new_p": [
+        1
       ]
     },
     {

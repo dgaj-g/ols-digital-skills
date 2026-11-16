@@ -92,7 +92,10 @@ const pageHash = sha(style + index + scripts.map((s) => s[1]).join('\n') + conte
 // ---- Code.gs
 const banksJson = JSON.stringify(banks);
 const BUILD = sha(banksJson + judgeFiles.map((j) => j[1]).join('\n') + tpl + JSON.stringify(CARD_TERMS)).slice(0, 10) + '-' + pageHash;
-const fill = { OWNER_EMAIL, STAFF_SALT: STAFF.salt, STAFF_HASH: STAFF.hash, BUILD, TITLE, TEACHERS };
+// the mini-test behind each Part 1 checklist line: passing it ticks the line on the server
+const CK_TESTS = ((content['p1/checklist'] || {}).items || []).map((i) => i.test || '');
+if (CK_TESTS.length !== 12 || CK_TESTS.some((t) => !/^t1[psfi]$/.test(t))) fail('content/p1/checklist.json: 12 lines, each with its mini-test (t1p t1s t1f t1i)');
+const fill = { OWNER_EMAIL, STAFF_SALT: STAFF.salt, STAFF_HASH: STAFF.hash, BUILD, TITLE, TEACHERS, CK_TESTS };
 let filled = tpl;
 for (const [k, v] of Object.entries(fill)) {
   const ph = "'@@" + k + "@@'";

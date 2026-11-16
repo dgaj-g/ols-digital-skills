@@ -159,6 +159,82 @@ async function up() {
 function stop() { if (server) { try { server.kill(); } catch (e) { /* gone */ } server = null; } }
 process.on('exit', stop);
 
+// ---------- the key words quiz: one question per key word ----------
+// Found live 16 Nov 2026: one quiz asked "the best definition of values" and later "which term means [that definition]", so one
+// question gave away another's answer. The server now draws at most one question per key word (bank field t). Checked on 300 pupils'
+// draws straight from the built Code.gs. CONTROL (must fail as expected): the same Code.gs with the old draw put back shows repeats.
+// a phrase activity whose items are about different terms shows each item's question, or she cannot tell what the phrase must link to
+// (found live 16 Nov 2026: Part 8 showed four items and no question). CONTROL: the old tap view without q.
+function tapQuestions(code) {
+  const vm = require('vm');
+  const AF = banks['ao2-find'];
+  const views = (src) => { const box = {}; vm.runInNewContext(src + '\n;this.build_ = build_; this.actOf_ = actOf_;', box);
+    return box.build_(box.actOf_('ao2-find'), 'pq@c2ken.net', 0, 0).view.items; };
+  sh.check(AF.items.every((it) => /^Explain the meaning of [a-z ]+ \(5 marks\)\.$/.test(it.q || '')), 'every Part 8 "find the phrase" item names its five-mark question in the bank', AF.items.map((it) => it.q || '(none)').join(' / '));
+  const NEW = "tv.push({ i: i, q: str_(it.q), item:", OLD = "tv.push({ i: i, item:";
+  sh.check(code.indexOf(NEW) >= 0, 'the gate can find the question in the tap view in Code.gs (so the control can undo it)', code.indexOf(NEW) >= 0 ? 'found' : 'not found');
+  try {
+    const miss = (v) => v.filter((x) => !x.q || x.q !== (AF.items[x.i] || {}).q).length;
+    const real = views(code);
+    sh.check(real.length === AF.items.length && miss(real) === 0, 'the page is sent each Part 8 item with its own question', miss(real) + ' of ' + real.length + ' items without their question');
+    const ctl = miss(views(code.replace(NEW, OLD)));
+    sh.check(ctl === AF.items.length, 'CONTROL with the old tap view put back, the items come without their question (the check above can see the bug)', ctl + ' of ' + AF.items.length + ' without');
+  } catch (e) { sh.fail('Part 8 item questions', e.message); }
+}
+
+// an item and a pupil's answer sit in their own boxes, not packed into the question. Found live 16 Nov 2026: Part 9's Examiner's eye
+// and seven Part 2 questions showed the question, the item and a pupil's answer as one long bold paragraph. Banks now carry item,
+// ans and ask; the server sends them; the page draws an Item box and an "A pupil writes" box. CONTROLS: an old packed question is
+// reported by the bank scan, and Code.gs without the new line sends no item, answer or ask.
+function itemBoxes(code) {
+  const vm = require('vm');
+  const PACKED = /\bItem:|A pupil writes:/;
+  const packed = (B) => ((B && B.qs) || []).filter((q) => PACKED.test(q.q || '')).length;
+  const hits = Object.keys(banks).filter((id) => packed(banks[id]) > 0);
+  sh.check(!hits.length, 'no question in any bank packs an item or a pupil\'s answer into the question text', hits.length ? 'packed in: ' + hits.join(', ') : Object.keys(banks).length + ' banks');
+  const OLDQ = 'Question: Explain the meaning of sanctions (5 marks). Item: “People learn what behaviour is expected.” A pupil writes: “Norms are social rules.” Which mistake costs this answer marks?';
+  sh.check(packed({ qs: [{ q: OLDQ }] }) === 1, 'CONTROL an old packed Examiner\'s eye question is reported by the bank scan', 'reported');
+  const EE = banks['ex-eye'], CB = banks['c-bel'];
+  sh.check(EE.qs.every((q) => q.item && q.ans && q.ask), 'every Examiner\'s eye question in the bank has its item, the pupil\'s answer and the question to answer', EE.qs.filter((q) => !(q.item && q.ans && q.ask)).length + ' of ' + EE.qs.length + ' missing a part');
+  const LINE = "if (q.item) v.item = str_(q.item); if (q.ans) v.ans = str_(q.ans); if (q.ask) v.ask = str_(q.ask);";
+  sh.check(code.indexOf(LINE) >= 0, 'the gate can find the item line in Code.gs (so the control can undo it)', code.indexOf(LINE) >= 0 ? 'found' : 'not found');
+  const views = (src, id) => { const box = {}; vm.runInNewContext(src + '\n;this.build_ = build_; this.actOf_ = actOf_;', box);
+    return box.build_(box.actOf_(id), 'ib@c2ken.net', 0, 0).view.qs; };
+  try {
+    const ee = views(code, 'ex-eye'), eeOk = (v) => v.filter((x) => x.item && x.ans && x.ask && !PACKED.test(x.q)).length;
+    sh.check(ee.length > 0 && eeOk(ee) === ee.length, 'the page is sent each Examiner\'s eye question with its item, the pupil\'s answer and the question in their own fields', eeOk(ee) + ' of ' + ee.length);
+    const cbItems = CB.qs.filter((q) => q.item).length, cb = views(code, 'c-bel').filter((x) => x.item).length;
+    sh.check(cbItems > 0 && cb === cbItems, 'the page is sent the Part 2 beliefs item question with its item in its own field', cb + ' of ' + cbItems);
+    const off = code.replace(LINE, '');
+    const ctl = eeOk(views(off, 'ex-eye')), ctl2 = views(off, 'c-bel').filter((x) => x.item).length;
+    sh.check(ctl === 0 && ctl2 === 0, 'CONTROL with the item line taken out, no item, answer or question reaches the page (the checks above can see the bug)', ctl + ' Examiner\'s eye, ' + ctl2 + ' beliefs');
+  } catch (e) { sh.fail('item boxes', e.message); }
+}
+
+function quizDraws(code) {
+  const vm = require('vm');
+  const VQ = banks.vquiz, byText = {}, terms = L.cardTerms(L.readContent(L.DESIGN));
+  VQ.qs.forEach((q, i) => { byText[q.q] = i; });
+  const draws = (src) => {
+    const box = {}; vm.runInNewContext(src + '\n;this.build_ = build_; this.actOf_ = actOf_;', box);
+    const A = box.actOf_('vquiz'), out = [];
+    for (let k = 0; k < 300; k++) out.push(box.build_(A, 'p' + k + '@c2ken.net', k % 3, 0).view.qs.map((v) => byText[v.q]));
+    return out;
+  };
+  const repeats = (ds) => ds.filter((d) => { const seen = {}; return d.some((i) => [].concat(VQ.qs[i].t).some((w) => { if (seen[w]) return true; seen[w] = 1; return false; })); }).length;
+  const OLD = "idx = shuffle_(idx, r).slice(0, A.max);", NEW = "idx = oneEach_(shuffle_(idx, r), B.qs, A.max);";
+  const bad = VQ.qs.map((q, i) => [].concat(q.t || []).filter((w) => terms.indexOf(w) < 0).map((w) => 'q' + i + ' ' + w)).flat();
+  sh.check(VQ.qs.every((q) => [].concat(q.t || []).length) && !bad.length, 'every key words quiz question names its key word, and each is a flashcard key word', bad.length ? bad.join(', ') : VQ.qs.length + ' questions');
+  sh.check(code.indexOf(NEW) >= 0, 'the gate can find the one-per-key-word draw in Code.gs (so the control can undo it)', code.indexOf(NEW) >= 0 ? 'found' : 'not found');
+  try {
+    const real = draws(code), n = repeats(real), short = real.filter((d) => d.length !== Math.min(10, VQ.qs.length) || d.some((i) => i === undefined)).length;
+    sh.check(n === 0, 'no key words quiz asks about the same key word twice (300 pupils\' draws)', n + ' of 300 draws repeat a key word');
+    sh.check(short === 0, 'every key words quiz still has 10 questions', short + ' of 300 draws are short');
+    const ctl = repeats(draws(code.replace(NEW, OLD)));
+    sh.check(ctl > 0, 'CONTROL with the old draw put back, some quizzes repeat a key word (the check above can see the bug)', ctl + ' of 300 draws repeat');
+  } catch (e) { sh.fail('key words quiz draws', e.message); }
+}
+
 async function main() {
   fs.mkdirSync(SCRATCH, { recursive: true });
   // build into a scratch deploy folder so the gate never replaces DESIGN/deploy
@@ -169,6 +245,9 @@ async function main() {
   const lastLine = b.out.trim().split('\n').filter(Boolean).slice(-1)[0] || '';
   sh.check(b.code === 0 && fs.existsSync(path.join(plan.deploy, 'Code.gs')), 'build', b.code === 0 ? lastLine : redact(b.out.trim().split('\n').slice(-3).join(' | ')));
   if (b.code !== 0) return;
+  quizDraws(fs.readFileSync(path.join(plan.deploy, 'Code.gs'), 'utf8'));
+  tapQuestions(fs.readFileSync(path.join(plan.deploy, 'Code.gs'), 'utf8'));
+  itemBoxes(fs.readFileSync(path.join(plan.deploy, 'Code.gs'), 'utf8'));
   if (!PASS) sh.fail('staff passcode', 'DESIGN/STAFF_PASSCODE.txt has no passcode line');
   try { const busy = await fetch(BASE + '/'); sh.fail('port ' + PORT, 'something is already listening (' + busy.status + ')'); return; } catch (e) { /* free */ }
   try { fs.unlinkSync(STORE); } catch (e) { /* none */ }
@@ -257,6 +336,14 @@ async function main() {
       t('per has one entry per item', act, r.ok && Array.isArray(r.per) && r.per.length === perLen(form, v) && r.per.every((p) => p.ok === false), r.per && r.per.length + ' vs ' + perLen(form, v));
       t('attempts increment', act, r.ok && r.attempts === 1, 'attempts ' + r.attempts);
       if (form === 'builder') t('builder mark returns the model after the check', act, r.extra && r.extra.model != null && r.extra.why_marks != null);
+      // the note under each ten-mark answer is the note for that part: positional on the 5+5 questions, the part's band on her own 3+2+2+2+1 (found live 16 Nov 2026)
+      if (form === 'builder' && bankOf(act).kind === 'ten') { const T = bankOf(act).q;
+        const BAND = (part) => { const b = part.replace(/\d+$/, ''), d = +(part.match(/\d+$/) || [1])[0]; return { how: 0, example: 1, research: 1 + d, shows: 1 + d, conclusion: 4 }[b]; };
+        const want = (i) => T.why_marks[T.scheme === '3+2+2+2+1' ? BAND(T.slots[i].part) : i];
+        const fits = (whys) => whys.length === T.slots.length && whys.every((w, i) => w && w === want(i));
+        const got = (r.per || []).map((p) => p.why);
+        t('ten-mark builder: every answer\'s note is the note for its part', act, r.ok && fits(got), got.map((w, i) => w === want(i) ? '' : 'slot ' + i).filter(Boolean).join(' ') || '');
+        if (T.scheme === '3+2+2+2+1') t('CONTROL ten-mark builder: the old by-position notes are reported on her own scheme', act, !fits(T.slots.map((s, i) => T.why_marks[i]))); }
       if (form === 'order') t('order mark returns the whys after the check', act, r.extra && Array.isArray(r.extra.whys));
       // reshuffle: the next attempt's view
       let o1 = await call('apiOpen', { cls: CLS, act, round: o0.round });
@@ -292,12 +379,57 @@ async function main() {
   let o = await call('apiOpen', { cls: CLS, act: 'f-match' });
   r = await call('apiMark', { cls: CLS, act: 'f-match', a: o.a, ans: wrong('f-match', o.form, o.view) }); keep(r);
   sh.check(r.ok && r.hdr.bd.includes('family') && !(r.badges || []).includes('family'), 'family badge never un-fires (after an all-wrong f-match)', 'bd ' + (r.hdr && r.hdr.bd.join(',')));
-  r = await call('apiTick', { cls: CLS, ck: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0] }); keep(r);
-  sh.check(r.ok && !r.hdr.bd.includes('socialisation'), 'socialisation badge waits for all twelve ticks', E(r));
-  r = await call('apiTick', { cls: CLS, ck: Array(12).fill(1) }); keep(r);
-  sh.check(r.ok && (r.badges || []).includes('socialisation'), 'socialisation badge fires on the twelfth tick', 'badges ' + JSON.stringify(r.badges));
+  // AG: passing the four Part 1 mini-tests now ticks all twelve lines, so this pupil earns the badge without ticking by hand
+  sh.check(fired.includes('socialisation'), 'socialisation badge fires once the four Part 1 mini-tests and the quiz are passed (they tick all twelve lines)', 'fired: ' + Array.from(new Set(fired)).join(', '));
+  {
+    // a second pupil unticks a line before her last pass: the badge waits for that line, then fires when she ticks it
+    const PB = 'pupilbadge@c2ken.net';
+    const passB = async (act) => { const ox = await call('apiOpen', { cls: CLS, act }, PB); return call('apiMark', { cls: CLS, act, a: ox.a, ans: right(act, ox.form, ox.view) }, PB); };
+    await call('apiName', { cls: CLS, name: 'Badge Pupil' }, PB);
+    for (const t of ['vquiz', 't1p', 't1s', 't1f']) await passB(t);
+    await call('apiTick', { cls: CLS, ck: [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0] }, PB);
+    r = await passB('t1i');
+    sh.check(r.ok && !r.hdr.bd.includes('socialisation') && r.hdr.ck.join('') === '011111111111', 'socialisation badge waits for all twelve ticks (one line unticked after every test is passed)', E(r) + ', ck ' + (r.hdr && r.hdr.ck.join('')));
+    r = await call('apiTick', { cls: CLS, ck: Array(12).fill(1) }, PB);
+    sh.check(r.ok && (r.badges || []).includes('socialisation'), 'socialisation badge fires on the twelfth tick', 'badges ' + JSON.stringify(r.badges));
+  }
   r = await call('apiTick', { cls: CLS, ck: Array(12).fill(0) });
   sh.check(r.ok && r.hdr.bd.includes('socialisation') && r.hdr.ck.every((x) => x === 0), 'socialisation badge stays when ticks are cleared', 'bd ' + r.hdr.bd.join(','));
+
+  // ---------- AG (found live 16 Nov 2026): the Part 1 page says the checklist ticks itself as mini-tests are passed; it never did ----------
+  // passing a Part 1 mini-test (4 or 5 of 5) ticks its lines; failing ticks nothing; a line she unticks stays unticked.
+  // CONTROL: the same page on a second harness with the auto-tick line taken out must tick nothing on a pass.
+  {
+    const PCK = 'pupilck@c2ken.net', ckOf = (x) => (x && x.hdr && x.hdr.ck) || [];
+    const callAt = async (base, fn, req, as) => (await fetch(base + '/api/' + fn, { method: 'POST', headers: { 'content-type': 'application/json', 'x-dev-user': as }, body: JSON.stringify(req || {}) })).json();
+    const markT = async (base, cls, act, as, good) => { const ox = await callAt(base, 'apiOpen', { cls, act }, as); return callAt(base, 'apiMark', { cls, act, a: ox.a, ans: (good ? right : wrong)(act, ox.form, ox.view) }, as); };
+    const only = (ck, on) => ck.length === 12 && ck.every((x, i) => x === (on.indexOf(i) >= 0 ? 1 : 0));
+    await callAt(BASE, 'apiName', { cls: CLS, name: 'Ciara K' }, PCK);
+    let a = await markT(BASE, CLS, 't1s', PCK, false);
+    sh.check(a.ok && a.score < a.max - 1 && only(ckOf(a), []), 'AG a failed Part 1 mini-test ticks no checklist line', 'score ' + a.score + '/' + a.max + ', ck ' + JSON.stringify(ckOf(a)));
+    a = await markT(BASE, CLS, 't1p', PCK, true);
+    sh.check(a.ok && a.score >= a.max - 1 && only(ckOf(a), [0, 1, 2]), 'AG passing the primary socialisation mini-test ticks its three checklist lines and no others', 'score ' + a.score + '/' + a.max + ', ck ' + JSON.stringify(ckOf(a)));
+    a = await callAt(BASE, 'apiBoot', { cls: CLS }, PCK);
+    sh.check(only(ckOf(a), [0, 1, 2]), 'AG the auto-ticks are saved', 'ck ' + JSON.stringify(ckOf(a)));
+    await callAt(BASE, 'apiTick', { cls: CLS, ck: [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] }, PCK);
+    a = await markT(BASE, CLS, 't1s', PCK, false);
+    sh.check(only(ckOf(a), [0, 2]), 'AG a line she unticks stays unticked when she marks another test', 'ck ' + JSON.stringify(ckOf(a)));
+    const LINE = 'if (S.score >= Bv.max - 1) CK_TESTS.forEach(function (t, i) { if (t === id) H.ck[i] = 1; });';
+    const code = fs.readFileSync(path.join(plan.deploy, 'Code.gs'), 'utf8');
+    sh.check(code.indexOf(LINE) >= 0, 'AG the gate can find the auto-tick line in Code.gs (so the control can undo it)', code.indexOf(LINE) >= 0 ? 'found' : 'not found');
+    const cdir = path.join(SCRATCH, 'g0-control-deploy'), cstore = path.join(SCRATCH, 'g0-control-store.json'), cbase = 'http://localhost:' + (PORT + 1);
+    fs.rmSync(cdir, { recursive: true, force: true }); fs.cpSync(plan.deploy, cdir, { recursive: true }); fs.writeFileSync(path.join(cdir, 'Code.gs'), code.replace(LINE, ''));
+    try { fs.unlinkSync(cstore); } catch (e) { /* none */ }
+    const csrv = spawn(process.execPath, [path.join(L.REPO, 'tools', 'dev-server.js'), String(PORT + 1)], { env: Object.assign({}, process.env, { SOC_STORE: cstore, SOC_DEPLOY: cdir }), stdio: 'ignore' });
+    try {
+      let on = false; for (let k = 0; k < 60 && !on; k++) { try { await fetch(cbase + '/'); on = true; } catch (e) { await new Promise((ok) => setTimeout(ok, 250)); } }
+      const made = await callAt(cbase, 'apiStaff', { op: 'create', name: 'Control Class' }, OWNER);
+      const ccls = ((made.classes || []).map((c) => c.slug).find((s) => /control/.test(s))) || 'control-class';
+      await callAt(cbase, 'apiName', { cls: ccls, name: 'Ciara K' }, PCK);
+      const c = await markT(cbase, ccls, 't1p', PCK, true);
+      sh.check(c.ok && c.score >= c.max - 1 && !only(ckOf(c), [0, 1, 2]), 'CONTROL with the auto-tick line taken out, passing the mini-test ticks nothing (the checks above can see the bug)', 'score ' + c.score + '/' + c.max + ', ck ' + JSON.stringify(ckOf(c)));
+    } catch (e) { sh.fail('AG control', e.message); } finally { csrv.kill(); }
+  }
 
   // ---------- tick and pile persist ----------
   const ck = [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1];

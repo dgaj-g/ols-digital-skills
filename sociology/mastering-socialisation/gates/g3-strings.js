@@ -56,9 +56,9 @@ sh.check(nums.length === 0, 'every number placeholder has its thing', nums.join(
 // full sentence or short label
 const words = (s) => (s.match(/[A-Za-z0-9{][\w'{}’-]*/g) || []).length;
 // a row of labels ("A · B · C", "Label: value") passes when every piece is five words or fewer; a line ending ":" leads in
-// to what follows it. Three lines are held to their wording on purpose: ring (T04 sets it), cardsLeft (T29 sets it),
+// to what follows it. Two lines are held to their wording on purpose: ring (T04 sets it) and
 // clearMe (a staff button that must carry its two-press warning).
-const SHAPE_OK = new Set(["ring", "cardsLeft", "clearMe"]);
+const SHAPE_OK = new Set(["ring", "clearMe"]); // cardsLeft left this list 16 Nov 2026: "{n} cards still to sort" is a short label
 const shape = strs.filter((k) => { const s = S[k].trim(); if (SHAPE_OK.has(k) || /[.?…:]["”)]?$/.test(s)) return false;
   return s.split(/ · |: /).some((piece) => words(piece) > 5); });
 if (SHAPE_OK.size) sh.info("held to their wording: " + [...SHAPE_OK].map((k) => k + " \"" + S[k] + "\"").join(" | "));
@@ -78,4 +78,10 @@ fs.unlinkSync(tmp);
 sh.check(cut !== SRC && cmiss.some((x) => x.indexOf(victim + ' ') === 0), 'CONTROL: strings.js with ' + victim + ' deleted fails', cmiss.join(', ') || 'not caught');
 const cnum = numberProblems('ctl', 'You scored {n}/{m}').length + numberProblems('ctl', 'You scored {n} of {m}.').length;
 sh.check(cnum >= 2, 'CONTROL: "{n}/{m}" and a bare "{n} of {m}" are caught', cnum + ' caught');
+// the Key words part calls them key words on every heading (found live 16 Nov 2026: its quiz was headed "Key terms quiz" under a "Key words quiz" link)
+const termsWord = (t) => !/key terms?\b/i.test(t || '');
+const p5dir = path.join(require('../tools/lib.js').DESIGN, 'banks', 'p5');
+const p5 = fs.existsSync(p5dir) ? fs.readdirSync(p5dir).filter((f) => f.endsWith('.json')).map((f) => [f, (JSON.parse(fs.readFileSync(path.join(p5dir, f), 'utf8')) || {}).title]) : [];
+sh.check(p5.length > 0 && p5.every(([, t]) => termsWord(t)), 'every Part 5 activity heading says key words, never key terms', p5.map(([f, t]) => f + ': ' + t).join(' | ') || 'no Part 5 banks found');
+sh.check(!termsWord('Key terms quiz'), 'CONTROL: the old heading "Key terms quiz" fails the same check', 'rejected');
 sh.finish();

@@ -33,6 +33,8 @@ banks/p7/ten-q4.json 10 slots 5+5
 banks/p7/ten-q5.json 10 slots 5+5
 banks/p7/ten-q6.json 10 slots 3+2+2+2+1
 banks/p7/ten-q7.json 10 slots 5+5
+story check: step 2 of Friday night holds for every step 1 choice; CONTROL with the old step 2 caught
+example check: 10 test questions, none asks for an example with a definition as its answer; CONTROL with the old Q4 caught
 content/p1/s1.json 1 blocks
 content/p1/primary.json 4 blocks
 content/p1/secondary.json 4 blocks
@@ -64,5 +66,5 @@ content/p11/mindmap.json 6 sections
 content/p11/quiz.json 3 sections
 content/p11/checklist.json 4 sections
 content/p11/lastminute.json 8 sections
-PASS 66 files read, 0 errors
+PASS 70 files read, 0 errors
 g4: PASS (exit 0)

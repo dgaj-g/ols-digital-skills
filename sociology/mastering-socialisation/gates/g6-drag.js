@@ -6,10 +6,14 @@
  * inert until every card is placed; a wrong card after Check shows its right bin; at 375 no sideways scroll and the tray is sticky
  * and reachable. CONTROLS (must fail): a drag made only of dispatched events must not move a card, and a drop outside every target
  * must leave the counter unchanged. Answer keys are never printed: a wrong card is reported by count only.
+ * AM: after Check the result card's "+N points" is what that check earned (the header's change), and a try again that earns nothing shows no "+";
+ *   CONTROL builds the page with the old line (the running total shown as "+N") and must see it fail.
+ * AL: after Check every phrase she tapped (f-apply) is readable on its green or red mark (text contrast 4.5 or more); CONTROL puts the old white text back and must see it fail.
+ * AK: after Check the empty tray (and its "All placed. Press Check." prompt) is gone; CONTROL un-marks the tray and must see the prompt.
  * Run: node gates/g6-drag.js  (exit 0 = GREEN). Port: G6_PORT (default 8772). Output: gates/out/g6-drag.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
-const { sheet } = require('./common');
+const { sheet, build, SCRATCH } = require('./common');
 const ROOT = path.join(__dirname, '..');
 const DESIGN = process.env.SOC_DESIGN || '/Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Sociology';
 const puppeteer = require(path.join(execSync('npm root -g').toString().trim(), 'puppeteer'));
@@ -17,7 +21,7 @@ const PORT = +(process.env.G6_PORT || 8772), BASE = 'http://localhost:' + PORT, 
 const STORE = path.join(DESIGN, 'gates', 'g6-store.json');
 const sh = sheet('g6-drag');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-const ROUTES = { 'c-sort': 's2/sorter', 'sc-sort': 's4/sorter', 'f-match': 's3/family/match', 'w-first': 's3/workplace/firstday' };
+const ROUTES = { 'c-sort': 's2/sorter', 'sc-sort': 's4/sorter', 'f-match': 's3/family/match', 'w-first': 's3/workplace/firstday', 'f-apply': 's3/family/apply' };
 
 async function api(fn, body, user) {
   const r = await fetch(BASE + '/api/' + fn, { method: 'POST', headers: { 'content-type': 'application/json', 'x-dev-user': user }, body: JSON.stringify(body || {}) });
@@ -102,14 +106,112 @@ async function emptyPoint(page, targetSel) {
   }, targetSel);
 }
 const placedText = (page) => page.evaluate(() => { const t = document.querySelector('#tc'); return t ? t.textContent : ''; });
+// AT (found live 16 Nov 2026): the waiting Check button must name the same thing the counter counts
+// (the sorter said "Answer all 8 to check" beside "0 of 8 cards placed")
+const sameNoun = (btn, cnt) => { const m = /of \d+ (\w+)/.exec(cnt || ''); return !!m && new RegExp('\\b' + m[1] + '\\b', 'i').test(btn || ''); };
+const waitWordsCheck = (tag, act, btn, cnt) => {
+  sh.check(sameNoun(btn, cnt), tag + ' ' + act + ': the waiting Check button names what the counter counts', '"' + btn + '" / "' + cnt + '"');
+  sh.check(!sameNoun('Answer all 8 to check', cnt), 'CONTROL ' + tag + ' ' + act + ': the old "Answer all 8 to check" fails the same test');
+};
 
-async function open(page, slug, user, act, round) {
-  await page.goto(BASE + '/?as=' + encodeURIComponent(user) + '&class=' + slug + '#' + ROUTES[act], { waitUntil: 'networkidle0' });
+async function open(page, slug, user, act, round, base) {
+  await page.goto((base || BASE) + '/?as=' + encodeURIComponent(user) + '&class=' + slug + '#' + ROUTES[act], { waitUntil: 'networkidle0' });
   await page.waitForSelector('#ck', { timeout: 15000 });
   await wait(250);
 }
 
 // ---- one bins surface (c-sort / sc-sort) --------------------------------------------------------------------------------------
+// AL (found live 16 Nov 2026): after Check the phrase she tapped kept white text on the pale green (or red) mark, so it could not be read.
+async function tapRun(page, inp, tag, net) {
+  const nq = await page.$$eval('.q[data-q]', (q) => q.length);
+  const spot = (sel) => page.evaluate((sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getClientRects()[0]; return { x: r.left + Math.min(r.width / 2, 30), y: r.top + r.height / 2 }; }, sel);
+  for (let i = 0; i < nq; i++) { // tap a different phrase in each item, so some may be right and some wrong
+    const sel = '.q[data-q="' + i + '"] .ph[data-i="' + (i % 2) + '"]';
+    await bring(page, sel); const p = await spot(sel); if (p) await inp.tap(p.x, p.y); await wait(80);
+  }
+  const picked = await page.$$eval('.ph[aria-pressed="true"]', (e) => e.length);
+  sh.check(picked === nq, tag + ' f-apply: one phrase can be tapped in each item', picked + ' of ' + nq);
+  const ckp = await pointOf(page, '#ck', 'centre'); await inp.tap(ckp.x, ckp.y);
+  await page.waitForSelector('.res', { timeout: 15000 }).catch(() => {}); await wait(500);
+  const read = () => page.$$eval('.ph[aria-pressed="true"]', (els) => els.map((e) => {
+    const lum = (c) => { const v = (c.match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map((x) => { x = +x / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+    const cs = getComputedStyle(e), a = lum(cs.color), b = lum(cs.backgroundColor);
+    return { mark: e.classList.contains('ok') ? 'right' : e.classList.contains('no') ? 'wrong' : 'unmarked', ratio: Math.round(((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)) * 10) / 10 };
+  }));
+  const a = await read(), bad = a.filter((x) => x.mark === 'unmarked' || x.ratio < 4.5);
+  sh.check(a.length === nq && !bad.length, tag + ' f-apply: after Check every tapped phrase is marked and its text can be read (contrast 4.5 or more)', a.map((x) => x.mark + ' ' + x.ratio).join(', '));
+  await page.evaluate(() => { const s = document.createElement('style'); s.id = 'al-control'; s.textContent = '.ph[aria-pressed="true"].ok,.ph[aria-pressed="true"].no{color:#fff}'; document.head.appendChild(s); });
+  const c = await read();
+  await page.evaluate(() => { const s = document.getElementById('al-control'); if (s) s.remove(); });
+  sh.check(c.length > 0 && c.every((x) => x.ratio < 4.5), 'CONTROL ' + tag + ' f-apply: with the old white text put back, the check sees phrases that cannot be read', c.map((x) => x.mark + ' ' + x.ratio).join(', '));
+}
+
+// AM (found live 16 Nov 2026): the result card said "+46 points" after a 2-mark check; 46 was her running total, not what the check earned.
+const FAPPLY = JSON.parse(fs.readFileSync(path.join(DESIGN, 'banks', 'p3', 'f-apply.json'), 'utf8')); // used to tap right answers; never printed
+const hdrPts = (page) => page.$eval('#who .pts', (e) => +((e.textContent.match(/\d+/) || ['0'])[0])).catch(() => null);
+const cardPlus = (page) => page.$eval('.res', (e) => { const m = e.textContent.match(/\+\s*(\d+)\s*point/); return m ? +m[1] : null; }).catch(() => 'no card');
+async function tapRight(page, inp) {
+  const qs = await page.$$eval('.q[data-q]', (qs) => qs.map((q) => Array.from(q.querySelectorAll('.ph')).map((x) => x.textContent.trim())));
+  for (let i = 0; i < qs.length; i++) {
+    const it = FAPPLY.items.find((b) => b.phrases.length === qs[i].length && b.phrases.every((p) => qs[i].indexOf(String(p).trim()) >= 0));
+    const j = it ? qs[i].indexOf(String(it.phrases[it.k[0]]).trim()) : 0;
+    await page.evaluate((i, j) => { document.querySelectorAll('[data-am]').forEach((e) => e.removeAttribute('data-am')); const e = document.querySelectorAll('.q[data-q="' + i + '"] .ph')[j]; if (e) e.setAttribute('data-am', '1'); }, i, j);
+    await bring(page, '[data-am="1"]');
+    const p = await page.evaluate(() => { const e = document.querySelector('[data-am="1"]'); if (!e) return null; const r = e.getClientRects()[0]; return { x: r.left + Math.min(r.width / 2, 30), y: r.top + r.height / 2 }; });
+    if (p) await inp.tap(p.x, p.y); await wait(80);
+  }
+  const ckp = await pointOf(page, '#ck', 'centre'); await inp.tap(ckp.x, ckp.y);
+  await page.waitForSelector('.res', { timeout: 15000 }).catch(() => {}); await wait(600);
+}
+async function pointsRun(page, inp, slug, user, base) {
+  await page.goto("about:blank"); // the same address with the same #route would not reload, and the last card would still be on screen
+  await open(page, slug, user, 'f-apply', null, base);
+  const h0 = await hdrPts(page);
+  await tapRight(page, inp);
+  const h1 = await hdrPts(page), p1 = await cardPlus(page);
+  await bring(page, '#again'); const ag = await pointOf(page, '#again', 'centre'); if (ag) await inp.tap(ag.x, ag.y);
+  await page.waitForFunction(() => !document.querySelector('.res') && document.querySelector('#ck'), { timeout: 15000 }).catch(() => {}); await wait(300);
+  await tapRight(page, inp);
+  const h2 = await hdrPts(page), p2 = await cardPlus(page);
+  return {
+    first: { ok: h1 > h0 && p1 === h1 - h0, say: 'header ' + h0 + ' to ' + h1 + ', card says ' + (p1 == null ? 'no +' : '+' + p1) },
+    again: { ok: h2 === h1 && p2 === null, say: 'header ' + h1 + ' to ' + h2 + ', card says ' + (p2 == null ? 'no +' : '+' + p2) },
+  };
+}
+async function pointsControl(browser) {
+  const plat = path.join(SCRATCH, 'g6-control-platform'), dep = path.join(SCRATCH, 'g6-control-deploy'), store = path.join(SCRATCH, 'g6-control-store.json');
+  const NEW = "(r.gain > 0 ? ' · +' + h(r.gain === 1 ? S.pts1 : fmt(S.pts, {n: r.gain})) : '')", OLD = "(r.pts > 0 ? ' · +' + h(r.pts === 1 ? S.pts1 : fmt(S.pts, {n: r.pts})) : '')";
+  const eng = fs.readFileSync(path.join(ROOT, 'platform', 'engine.js'), 'utf8');
+  sh.check(eng.indexOf(NEW) >= 0, 'the gate can find the points fix in engine.js (so the control can undo it)', eng.indexOf(NEW) >= 0 ? 'found' : 'not found');
+  fs.rmSync(plat, { recursive: true, force: true }); fs.cpSync(path.join(ROOT, 'platform'), plat, { recursive: true }); fs.mkdirSync(dep, { recursive: true });
+  fs.writeFileSync(path.join(plat, 'engine.js'), eng.replace(NEW, OLD));
+  const b = build({ platform: plat, deploy: dep }); if (b.code !== 0) { sh.fail('build the control page', b.out.split('\n').slice(-2).join(' ')); return; }
+  try { fs.unlinkSync(store); } catch (e) {}
+  const port = PORT + 1, base = 'http://localhost:' + port;
+  const srv = spawn(process.execPath, [path.join(ROOT, 'tools', 'dev-server.js'), String(port)], { env: Object.assign({}, process.env, { SOC_STORE: store, SOC_DEPLOY: dep }), stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await new Promise((ok, no) => { srv.stdout.on('data', (d) => { if (/dev harness on/.test(d)) ok(); }); setTimeout(() => no(new Error('control harness did not start')), 15000); });
+    const made = await (await fetch(base + '/api/apiStaff', { method: 'POST', headers: { 'content-type': 'application/json', 'x-dev-user': OWNER }, body: JSON.stringify({ op: 'create', name: '12B Control' }) })).json();
+    const page = await browser.newPage(); await page.setViewport({ width: 1280, height: 800 });
+    const r = await pointsRun(page, Input(page, false), made.slug, 'pupil3@c2ken.net', base);
+    sh.check(!(r.first.ok && r.again.ok), 'CONTROL 1280 f-apply: with the old line put back (running total shown as "+N"), the check sees a card that does not match the header', 'first: ' + r.first.say + '; try again: ' + r.again.say);
+    await page.close();
+  } finally { srv.kill(); }
+}
+
+// AK (found live 16 Nov 2026): after Check the empty tray still said "All placed. Press Check." beside a "Checked" button.
+async function trayAfterCheck(page, tag, act) {
+  const read = () => page.evaluate(() => { const t = document.querySelector(".tray"); if (!t) return { shown: false, say: "" };
+    const shown = getComputedStyle(t).display !== "none" && t.getBoundingClientRect().height > 0;
+    return { shown, say: shown ? getComputedStyle(t.querySelector(".in"), "::after").content : "" }; });
+  const a = await read();
+  sh.check(!a.shown, tag + " " + act + ": after Check the empty tray and its \"Press Check\" prompt are gone", a.shown ? "tray still shown, says " + a.say : "gone");
+  // CONTROL: the tray as the old code left it (never marked as checked) must be seen by the same reading
+  await page.evaluate(() => document.querySelectorAll(".tray").forEach((t) => t.classList.remove("checked")));
+  const c = await read();
+  await page.evaluate(() => document.querySelectorAll(".tray").forEach((t) => t.classList.add("checked")));
+  sh.check(c.shown && /Press Check/.test(c.say), "CONTROL " + tag + " " + act + ": with the tray left as the old code left it, the check sees the stale prompt", c.shown ? "shown, says " + c.say : "not shown");
+}
 async function binsRun(page, inp, tag, act, net) {
   const nBins = await page.$$eval('.bins .bin', (b) => b.length);
   const total = () => page.$$eval('.dcard[data-i]', (c) => c.length);
@@ -143,6 +245,7 @@ async function binsRun(page, inp, tag, act, net) {
   }
   // Check stays inert until every card is placed
   const ck = await page.$eval('#ck', (b) => ({ dis: b.disabled, t: b.textContent }));
+  waitWordsCheck(tag, act, ck.t, await placedText(page));
   const markBefore = net.marks;
   const ckp = await pointOf(page, '#ck', 'centre'); await inp.tap(ckp.x, ckp.y); await wait(400);
   const inert = ck.dis && net.marks === markBefore && !(await page.$('.res'));
@@ -168,6 +271,7 @@ async function binsRun(page, inp, tag, act, net) {
     return { no: no.length, good: good.length, res: !!document.querySelector('.res') };
   });
   sh.check(fx.res && fx.no > 0 && fx.good === fx.no, tag + ' ' + act + ': after Check every wrong card names its right bin', fx.good + ' of ' + fx.no + ' wrong cards name another bin; result card ' + fx.res);
+  await trayAfterCheck(page, tag, act);
 }
 
 async function matchRun(page, inp, tag, net) {
@@ -197,6 +301,7 @@ async function matchRun(page, inp, tag, net) {
     sh.check((await placedText(page)) === cBefore && (await inSlots()) === sBefore, 'CONTROL ' + tag + ' f-match: a drop outside every target leaves the counter unchanged', cBefore + ' -> ' + (await placedText(page)));
   }
   const ck = await page.$eval('#ck', (b) => b.disabled); const m0 = net.marks;
+  waitWordsCheck(tag, 'f-match', await page.$eval('#ck', (b) => b.textContent), await placedText(page));
   const ckp = await pointOf(page, '#ck', 'centre'); await inp.tap(ckp.x, ckp.y); await wait(400);
   sh.check(ck && net.marks === m0 && !(await page.$('.res')), tag + ' f-match: Check is inert while examples are empty');
   let guard = 0;
@@ -214,6 +319,7 @@ async function matchRun(page, inp, tag, net) {
   const r = await page.evaluate(() => ({ res: !!document.querySelector('.res'), no: document.querySelectorAll('.matchlist .slot.no').length, fix: document.querySelectorAll('.matchlist .mrow .fix, .matchlist .slot.no .fix').length }));
   sh.check(r.res, tag + ' f-match: Check gives a result card', 'wrong slots ' + r.no);
   if (r.no) sh.check(r.fix >= r.no, tag + ' f-match: every wrong example shows its right way', r.fix + ' fix lines for ' + r.no + ' wrong');
+  await trayAfterCheck(page, tag, 'f-match');
 }
 
 async function orderRun(page, inp, tag, net) {
@@ -245,6 +351,20 @@ async function orderRun(page, inp, tag, net) {
   sh.check(r.res, tag + ' w-first: Check gives a result card');
   if (r.no) sh.check(r.fix === r.no, tag + ' w-first: every step out of place shows its right step number', r.fix + ' of ' + r.no);
   else sh.info(tag + ' w-first: the order happened to be right, so no wrong-step line to check');
+  // AS (found live 16 Nov 2026): after Check the server sends a reason for each step, and the page threw them away, so a pupil
+  // marked wrong never learned why. Every step must now show its own reason: the one for the place where it belongs.
+  const wf = JSON.parse(fs.readFileSync(path.join(DESIGN, 'banks/p3/w-first.json'), 'utf8'));
+  const shown = await page.$$eval('ol.ordlist li.dcard', (l) => l.map((c) => ({ t: c.dataset.t, why: (c.querySelector('.owhy') || {}).textContent || '' })));
+  const wantWhy = (t) => { const i = wf.steps.indexOf(t); return i >= 0 ? wf.whys[i] : null; };
+  const whyOk = (rows, pick) => rows.length === wf.steps.length && rows.every((x, i) => { const w = pick(x, i); return !!w && x.why.indexOf(w) >= 0; });
+  sh.check(whyOk(shown, (x) => wantWhy(x.t)), tag + ' w-first: after Check every step shows the reason for the place where it belongs', shown.filter((x) => x.why).length + ' of ' + shown.length + ' steps show a reason');
+  // CONTROL 1: the old page (no reason on any step) must fail the same check
+  if (whyOk(shown.map((x) => ({ t: x.t, why: '' })), (x) => wantWhy(x.t))) sh.fail(tag + ' CONTROL: a list with no reasons passed the reason check');
+  else sh.check(true, tag + ' CONTROL: a list with no reasons fails the reason check');
+  // CONTROL 2: reasons put on by screen place instead of right place must fail, unless every step is already in its right place
+  if (shown.every((x, i) => wf.steps[i] === x.t)) sh.info(tag + ' CONTROL 2 not run: the order was fully right');
+  else if (whyOk(shown.map((x, i) => ({ t: x.t, why: wf.whys[i] })), (x) => wantWhy(x.t))) sh.fail(tag + ' CONTROL 2: reasons by screen place passed the reason check');
+  else sh.check(true, tag + ' CONTROL 2: reasons put on by screen place fail the reason check');
 }
 
 async function layout375(page, tag, act) {
@@ -323,6 +443,11 @@ async function dispatchControl(page, tag) {
         const all = new Set(r1.concat(r2));
         sh.check(all.size === 16 && r2.every((i) => r1.indexOf(i) < 0), vp.tag + ' sc-sort: round 2 brings new cards, 16 in all over the two rounds', r1.length + ' + ' + r2.length + ' cards, ' + all.size + ' different');
         await binsRun(page, inp, vp.tag, 'sc-sort round 2', net);
+        // AU (found live 16 Nov 2026): after the last round of a two-round sorter the card said "All three rounds done"
+        const roundsOk = (t, n) => { const line = (/[^.]*\brounds done\b[^.]*/.exec(t) || [''])[0]; return n === 2 ? /Both rounds done\b/.test(line) && !/\bthree\b|\b3 rounds\b|All /i.test(line) : new RegExp('All ' + n + ' rounds done\\b').test(line); };
+        const endLine = await page.$eval('.res', (e) => e.textContent).catch(() => '');
+        sh.check(roundsOk(endLine, 2), vp.tag + ' sc-sort: after round 2 of 2 the card says both rounds are done', JSON.stringify((/[^.]*\brounds done\b[^.]*/.exec(endLine) || ['no rounds line'])[0]));
+        sh.check(!roundsOk('All three rounds done. Your best is 15 of 16 marks.', 2), 'CONTROL ' + vp.tag + ' sc-sort: the old "All three rounds done" fails the same test');
       }
       // f-match
       await open(page, slug, vp.user, 'f-match');
@@ -332,9 +457,17 @@ async function dispatchControl(page, tag) {
       await open(page, slug, vp.user, 'w-first');
       if (vp.touch) await layout375(page, vp.tag, 'w-first');
       await orderRun(page, inp, vp.tag, net);
+      // f-apply: tap one phrase per item (AL)
+      await open(page, slug, vp.user, 'f-apply');
+      await tapRun(page, inp, vp.tag, net);
+      // the card's "+N points" is what this check earned (AM)
+      { const r = await pointsRun(page, inp, slug, vp.user);
+        sh.check(r.first.ok, vp.tag + ' f-apply: after a better score the card\'s "+N points" equals what the header went up by', r.first.say);
+        sh.check(r.again.ok, vp.tag + ' f-apply: a try again that earns nothing shows no "+ points" and the header stays put', r.again.say); }
       sh.check(errs.length === 0, vp.tag + ': no console or page errors', errs.slice(0, 3).join(' | '));
       await page.close();
     }
+    await pointsControl(browser);
   } catch (e) {
     sh.fail('the run finished', String(e && e.stack || e).split('\n').slice(0, 3).join(' '));
   } finally {
