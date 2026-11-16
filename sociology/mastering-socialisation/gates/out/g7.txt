@@ -1,15 +1,15 @@
-PASS build — build 3abed2c66f-bee06518 · ground-truth token soc-3abed2c66f-bee06518
+PASS build — build 3abed2c66f-437b347e · ground-truth token soc-3abed2c66f-437b347e
 INFO Index.html 381.8 KB -> /Users/damiengartland/Desktop/Claude Work/Digital Skills Roadmap/0. Digital Skills Web Activities/Sociology/deploy/Index.html
 PASS each of the four scriptlets exactly once — <?= classCode ?> x1, <?= baseUrl ?> x1, <?= sit ?> x1, <?= showBuild ?> x1
 PASS no other <? or ?> (Apps Script templating) — 0 stray
 PASS script blocks balanced (each <script> closed before the next opens) — 7 blocks
-PASS Index.html is pure ASCII — 390922 bytes
+PASS Index.html is pure ASCII — 390937 bytes
 PASS boot block and App.boot() present
 PASS window.CONTENT present and equal to content/ — 35 files, 126.6 KB in the page
 PASS no "k": in the page
 PASS no judge, BANKS, key field or STAFF_ name in the page — 12 fixed strings
 PASS staff secrets exist to check against — salt, hash and passcode read
-PASS no STAFF_ value (salt, hash, passcode) or named teacher in the page — 3 secrets
+PASS no STAFF_ value (salt, hash, passcode) or named teacher in the page — 4 secrets
 PASS no bank key text in the page (leak guard) — 547 bank strings checked
 INFO leak-guard exemptions: 49 bank key strings are word for word in the public content/ and are not counted
 PASS Code.gs is mode 600 — 600

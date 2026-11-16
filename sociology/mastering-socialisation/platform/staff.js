@@ -69,7 +69,7 @@ var Staff = (function(){
       var del = tr.querySelector(".del"); if (del) twoPress(del, S.staffDeleteSure, function(){ api("delete", {slug: c.slug}, {save: true}).then(function(){ CL = CL.filter(function(x){ return x.slug !== c.slug; }); tabs("classes"); T.toast(S.staffDeleted); }).catch(function(){}); });
       tb.appendChild(tr);
     });
-    box.appendChild(tbl);
+    if (CL.length) box.appendChild(tbl);
     var mk = el('<div class="card"><h3>' + h(S.staffNew) + '</h3><div class="row"><input id="cn" maxlength="40" aria-label="Class name" placeholder="' + h(S.staffNewEg) + '"><button class="btn acc" id="mkb">' + h(S.staffCreate) + '</button></div><p class="small mute" id="mkErr"></p></div>');
     box.appendChild(mk);
     var inp = mk.querySelector("#cn"), err = mk.querySelector("#mkErr");

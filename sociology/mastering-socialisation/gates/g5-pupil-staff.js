@@ -120,8 +120,15 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     sh.check(await waitSel('.tabs button[data-t="classes"]'), 'T49 the owner goes straight to the staff tabs on a bare link');
     const rowFor = (name) => page.evaluateHandle((n) => [...document.querySelectorAll('#stf tr, #stf .rowline, #stf li')].find((r) => r.innerText.indexOf(n) >= 0) || null, name);
     const makeClass = async (name) => { await page.$eval('#cn', (e) => { e.value = ''; }); await page.type('#cn', name); await tap('#mkb'); await wait(900); };
+    // T69 with no classes the Classes tab says so and shows no empty table header (found live 16 Nov 2026)
+    await waitSel('#cn');
+    const noClass = { say: String(await txt(page, '#stf') || ''), th: await count(page, '#stf thead') };
+    const emptyOk = (v) => v.say.indexOf(S.staffNoClass) >= 0 && v.th === 0;
+    sh.check(emptyOk(noClass), 'T69 with no classes the Classes tab says "' + S.staffNoClass + '" and shows no empty table header', 'table headers: ' + noClass.th);
+    sh.check(!emptyOk({ say: S.staffNoClass, th: 1 }), 'CONTROL T69 the check fails on the old screen with an empty header');
     await makeClass('12A Sociology');
     let row = await rowFor('12A Sociology');
+    sh.check(await count(page, '#stf thead') === 1, 'T69 once a class exists, the class table and its header show');
     sh.check(!!(await row.evaluate((r) => !!r)), 'T49 "12A Sociology" appears in the class list after Create');
     const cls1 = await api('apiStaff', { op: 'classes' }, OWNER);
     const made = (cls1.classes || cls1.rows || []).find((c) => c.name === '12A Sociology');
