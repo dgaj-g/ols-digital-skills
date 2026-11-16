@@ -621,11 +621,16 @@ async function main() {
   sh.check(r.ok && r.admitted === true, 'the passcode is remembered', E(r));
   r = await staff('tracker', { slug: CLS }, P3);
   sh.check(r.ok === false && r.error === 'unknown-class', 'a passcode user cannot see another teacher\'s class', E(r));
-  r = await staff('check');
+  r = await staff('check'); const chk = r;
   sh.check(r.ok && r.role === 'owner' && r.owner === true && r.classes.some((c) => c.slug === CLS), 'owner check: role owner', E(r) + ' role ' + r.role);
   r = await staff('classes');
   const mine = r.ok && r.classes.find((c) => c.slug === CLS);
   sh.check(r.ok && mine && mine.n >= 2 && r.role === 'owner', 'owner classes (with pupil counts)', E(r) + ' ' + (mine ? CLS + ' n ' + mine.n : ''));
+  // found live 16 Nov 2026: the Classes tab said 0 pupils for every class, because the page builds that tab from 'check', which sent no counts
+  const nOf = (cs) => { const c = (cs || []).find((x) => x.slug === CLS); return c ? c.n : undefined; };
+  const countsOk = (cs, want) => typeof nOf(cs) === 'number' && want >= 2 && nOf(cs) === want;
+  sh.check(chk.ok && countsOk(chk.classes, mine && mine.n), 'owner check carries each class\'s pupil count (the Classes tab is built from it)', 'check n ' + nOf(chk.classes) + ', classes n ' + (mine && mine.n));
+  sh.check(!countsOk((chk.classes || []).map(({ n, ...c }) => c), mine && mine.n), 'CONTROL the count check fails on the old check reply, which had no counts');
   r = await staff('parts', { slug: CLS });
   sh.check(r.ok && r.parts.length === 11 && r.parts[10] === 'p11' && Array.isArray(r.lock), 'parts', E(r) + ' ' + (r.parts || []).join(','));
   r = await staff('tracker', { slug: CLS });

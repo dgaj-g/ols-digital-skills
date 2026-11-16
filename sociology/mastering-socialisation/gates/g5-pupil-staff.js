@@ -165,6 +165,15 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
       const ls = [...u.querySelectorAll('li')]; const tops = ls.map((l) => Math.round(l.getBoundingClientRect().top)); const r = { shared: tops.length - new Set(tops).size, badBtn: ls.filter((l) => !/^(Lock|Unlock)$/.test(l.querySelector('button').innerText.trim())).length };
       u.outerHTML = keep; return r; });
     sh.check(plOldR.shared > 0 && plOldR.badBtn > 0, 'CONTROL with the old Lock parts markup put back, the check sees parts sharing a row and the Open/Locked buttons', JSON.stringify(plOldR));
+    // T68 Lock parts says "Working…" while the parts load, never a blank card (found live 16 Nov 2026)
+    await page.evaluate(() => { const f = window.fetch; window.__fetch0 = f; window.fetch = function (u, o) { const slow = /apiStaff/.test(String(u)) && o && /"op":"parts"/.test(String(o.body || '')); return slow ? new Promise((r) => setTimeout(r, 1500)).then(() => f(u, o)) : f(u, o); }; });
+    await tap('.tabs button[data-t="parts"]'); await wait(300);
+    const plBusy = await page.evaluate(() => { const u = document.querySelector('#plist'); return u ? u.innerText.trim() : null; });
+    await wait(1900); const plAfter = await plRows();
+    await page.evaluate(() => { window.fetch = window.__fetch0; });
+    const busyOk = (t) => t === S.busy;
+    sh.check(busyOk(plBusy) && plAfter.n === 11 && plAfter.noState === 0, 'T68 Lock parts says "' + S.busy + '" while the parts load, then shows the 11 parts', 'while loading: ' + plBusy + ', after: ' + plAfter.n + ' rows');
+    sh.check(!busyOk(''), 'CONTROL T68 the check fails on the old blank list');
 
     // ================= PUPILS =================
     await api('apiName', { cls: CLS, name: 'Ciara' }, P2); await api('apiName', { cls: CLS, name: 'Niamh' }, P3);
@@ -663,6 +672,13 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     // T51 tracker, T52 pupil page, T53 export (owner)
     await api('apiWrite', { cls: CLS, act: 'w5-02', text: 'Socialisation is how people learn the norms and values of their society.', text2: '' }, P3);
     await go(OWNER, '', ''); await waitSel('.tabs');
+    // T67 the Classes tab shows how many pupils are in each class (found live 16 Nov 2026: it said 0 for every class)
+    const nWant = ((await api('apiStaff', { op: 'classes' }, OWNER)).classes || []).find((c) => c.slug === CLS);
+    await waitSel('#stf table');
+    const cellNow = await page.evaluate((s) => { const r = [...document.querySelectorAll('#stf tbody tr')].find((x) => x.innerText.indexOf(s) >= 0); return r && r.cells[1] ? r.cells[1].innerText.trim() : null; }, CLS);
+    const nOk = (cell) => !!nWant && nWant.n >= 2 && cell === String(nWant.n);
+    sh.check(nOk(cellNow), 'T67 the Classes tab shows the class\'s pupil count', 'cell ' + cellNow + ', pupils ' + (nWant && nWant.n));
+    sh.check(!nOk('0'), 'CONTROL T67 the check fails on the old Pupils cell, which always said 0');
     await tap('.tabs button[data-t="tracker"]'); await wait(800);
     if (await count(page, 'select#cls')) { await page.select('select#cls', CLS).catch(() => {}); await wait(900); }
     const trows = await page.$$eval('#trk tr', (a) => a.slice(1).map((r) => r.innerText.replace(/\s+/g, ' ')));

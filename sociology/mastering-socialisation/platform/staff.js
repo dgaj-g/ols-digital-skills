@@ -80,7 +80,7 @@ var Staff = (function(){
     box.innerHTML = '<h2>' + h(S.staffTabParts) + '</h2><p>' + h(S.staffPartsLead) + '</p>';
     clsPick(box, function(slug){
       var old = box.querySelector("#plist"); if (old) old.remove();
-      var list = el('<ul id="plist"></ul>'); box.appendChild(list);
+      var list = el('<ul id="plist"><li class="say">' + h(S.busy) + '</li></ul>'); box.appendChild(list);
       api("parts", {slug: slug}).then(function(r){
         var lock = r.lock || [];
         list.innerHTML = "";

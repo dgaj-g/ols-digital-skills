@@ -824,17 +824,18 @@ function apiStaff_(req) {
   if (!email) return err_('not-signed-in');
   if (!domainOk_(email)) return err_('domain');
   var op = str_(req.op);
+  function classesN() { var k = Object.keys(sp_().getProperties()); return classesOut().map(function (c) { c.n = pupilsOf_(c.slug, k).length; return c; }); }
   function classesOut() { return visible_(email).map(function (x) { return { slug: x[0], name: x[1].name || x[0], o: x[1].o, on: x[1].on || '', lb: x[1].lb === 0 ? 0 : 1, lock: x[1].lock || [], mine: x[1].o === email }; }); }
   if (op === 'check') {
     if (staffIn_(email)) {
       var arc = { n: 0, url: '' };
       if (storeSize_(sp_().getProperties()) >= ARCHIVE_AT) { try { arc = withLock_(function () { return archive_(sp_().getProperties(), false, email); }); } catch (e) { arc = { n: 0, url: '' }; } }
-      return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: isOwner_(email), email: email, classes: classesOut(), archived: arc.n, archiveUrl: arc.url });
+      return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: isOwner_(email), email: email, classes: classesN(), archived: arc.n, archiveUrl: arc.url });
     }
     if (req.pass == null || req.pass === '') return ok_({ admitted: false, staff: false, role: '', owner: false, email: email });
     if (!passOk_(req.pass)) return err_('bad-pass');
     up_().setProperty(STAFF_MARK, passMark_());
-    return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: false, email: email, classes: classesOut() });
+    return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: false, email: email, classes: classesN() });
   }
   if (!staffIn_(email)) return err_('not-staff');
   var all = sp_().getProperties(), keys = Object.keys(all);
