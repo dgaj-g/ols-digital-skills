@@ -3,7 +3,8 @@
  * Its own server on 8772 (G5_PORT overrides) with a fresh store in DESIGN/gates/g5-store.json. A second pupil (and a third, who only
  * learns answers) is driven through the API. Right answers are learned from a first mark's per-item reply and never printed.
  * CONTROLS (each must fail as expected): a wrong passcode shows no tabs; one Delete press deletes nothing; 4 of 5 on a needed build gives no
- * badge; a page source that holds the passcode is caught by the source check; the board hides when the teacher turns it off.
+ * badge; a page source that holds the passcode is caught by the source check; the board hides when the teacher turns it off;
+ * the header left unpainted after "Clear my own test data" fails T70.
  * Run: node gates/g5-pupil-staff.js  (exit 0 = GREEN). Output: gates/out/g5-pupil-staff.txt */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), { spawn, execSync } = require('child_process');
@@ -737,6 +738,18 @@ const count = (page, sel) => page.$$eval(sel, (a) => a.length).catch(() => 0);
     const exOld = await page.evaluate(() => { const ex = document.querySelector('#ex'); ex.style.margin = '0'; const b = ex.parentNode; b.appendChild(ex); const pick = document.querySelector('#cls').closest('p');
       const r = { underPicker: ex.previousElementSibling === pick }; b.insertBefore(ex, pick.nextSibling); const nxt = ex.nextElementSibling; r.gap = Math.round(nxt.getBoundingClientRect().top - document.querySelector('#dl').getBoundingClientRect().bottom); ex.style.margin = ''; return r; });
     sh.check(!exOld.underPicker && exOld.gap < 10, 'CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card', JSON.stringify(exOld));
+
+    // T70 "Clear my own test data" also resets the points in the page header at once, with no refresh (V9: reboot repaints the header)
+    const ow = await full('d5-08', OWNER); const owm = ow.key ? await ow.mark() : null; sh.info('T70 the teacher scored ' + (owm && owm.pts) + ' points in pupil view first');
+    await pupil(OWNER, 'staff'); await waitSel('.tabs');
+    await tap('.tabs button[data-t="csv"]'); await wait(800);
+    const ptsBefore = (await txt(page, '#who .pts')) || '';
+    const zeroPts = (t) => /^0 points$/.test(String(t || '').trim());
+    if (await count(page, '#cm')) { await tap('#cm'); await wait(300); await tap('#cm'); }
+    await page.waitForFunction(() => /^0 points$/.test(((document.querySelector('#who .pts') || {}).innerText || '').trim()), { timeout: 5000 }).catch(() => {});
+    const ptsAfter = (await txt(page, '#who .pts')) || '';
+    sh.check(!zeroPts(ptsBefore) && zeroPts(ptsAfter), 'T70 after "Clear my own test data" the header shows 0 points straight away, with no refresh', 'before "' + ptsBefore + '", after "' + ptsAfter + '"');
+    sh.check(!zeroPts(ptsBefore), 'CONTROL the same check fails on the header left unpainted (the points shown before the clear)', 'before "' + ptsBefore + '"');
 
     sh.check(errs.length === 0, 'no console or page errors', errs.slice(0, 3).join(' | '));
   } catch (e) { sh.fail('the gate ran to the end', String(e && e.stack || e).split('\n').slice(0, 3).join(' ')); }

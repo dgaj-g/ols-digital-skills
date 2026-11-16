@@ -211,5 +211,8 @@ PASS T53 rows end CRLF only
 INFO T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–9, last seen, flags), 17 columns; the acceptance row says one column per act
 PASS T66 Export: the Download CSV button sits under the class picker, clear of the card below, before and after a class is picked
 PASS CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card
+INFO T70 the teacher scored 5 points in pupil view first
+PASS T70 after "Clear my own test data" the header shows 0 points straight away, with no refresh
+PASS CONTROL the same check fails on the header left unpainted (the points shown before the clear)
 PASS no console or page errors
-g5-pupil-staff: 209 PASS, 0 FAIL, 2 SKIP
+g5-pupil-staff: 211 PASS, 0 FAIL, 2 SKIP

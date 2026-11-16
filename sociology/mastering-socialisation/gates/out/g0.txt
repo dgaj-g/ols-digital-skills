@@ -1,4 +1,4 @@
-PASS build — build 3abed2c66f-437b347e · ground-truth token soc-3abed2c66f-437b347e
+PASS build — build 3abed2c66f-a20c83ab · ground-truth token soc-3abed2c66f-a20c83ab
 PASS every key words quiz question names its key word, and each is a flashcard key word — 30 questions
 PASS the gate can find the one-per-key-word draw in Code.gs (so the control can undo it) — found
 PASS no key words quiz asks about the same key word twice (300 pupils' draws) — 0 of 300 draws repeat a key word
@@ -15,7 +15,7 @@ PASS the gate can find the item line in Code.gs (so the control can undo it) —
 PASS the page is sent each Examiner's eye question with its item, the pupil's answer and the question in their own fields — 6 of 6
 PASS the page is sent the Part 2 beliefs item question with its item in its own field — 1 of 1
 PASS CONTROL with the item line taken out, no item, answer or question reaches the page (the checks above can see the bug) — 0 Examiner's eye, 0 beliefs
-PASS dev server — port 8781, store /private/tmp/claude-501/-Users-damiengartland-Desktop-Claude-Work/8507a9c5-7bdf-45d1-b9e6-5c77f9f9a976/scratchpad/gates/g0-store.json
+PASS dev server — port 8781, store /var/folders/5b/5x68x3896pg1t53fb0v0jn9c0000gn/T/soc-gates/g0-store.json
 PASS guard not-signed-in — error not-signed-in
 PASS guard not-signed-in (staff) — error not-signed-in
 PASS guard domain — error domain
@@ -31,7 +31,7 @@ PASS boot names the pupil from her account — ok name Aoife
 PASS boot with no account name asks for one — ok
 PASS name set — ok
 PASS name persists — Aoife B
-PASS boot shape — today 2026-11-16, week 2026-W47, v 3abed2c66f-437b347e
+PASS boot shape — today 2026-11-16, week 2026-W47, v 3abed2c66f-a20c83ab
 PASS maxima — 93 acts, parts sum 411 = acts sum 411, daily 5, weekly 20
 PASS every five and ten in the banks is an act — 26 fives, 7 tens
 PASS bad-name refused — 4 acts
@@ -89,7 +89,7 @@ PASS unlock it — ok
 PASS setPart refuses an unknown part — error bad-op
 PASS a locked part 10 locks the daily five — error locked
 PASS board on — ok rank 1
-PASS board off — {"lb":0,"ok":true,"v":"3abed2c66f-437b347e"}
+PASS board off — {"lb":0,"ok":true,"v":"3abed2c66f-a20c83ab"}
 PASS board toggles back on — ok
 PASS board: twelfth of 12 pupils sees the top ten and her own row ranked 12, total 12 pupils — ok total 12 rows 11
 PASS board: first of 12 sees ten rows, her own ranked 1 — ok
@@ -109,7 +109,7 @@ PASS weekly: incomplete answer refused — error incomplete
 PASS weekly: all right scores 20 and is stored — ok 20
 PASS weekly: stored once — wk {"2026-W47":20}
 PASS pts = Σb + Σpr + Σdl + Σwk — 436 = 378 + 33 + 5 + 20
-PASS ping writes s: — ok 460212
+PASS ping writes s: — ok 460266
 PASS streak: a check the next day adds one — 1 -> 2
 PASS streak: a missed day starts again at one — n 1
 PASS old dailies and weeklies roll into dlx/wkx and still count — dl 8, dlx 15, wk 5, wkx 40, pts 606
@@ -134,7 +134,7 @@ PASS csv — ok g0-class-mastering-socialisation.csv 31028 chars
 PASS an unknown op gives bad-op — error bad-op
 PASS delete a class and every key under it — ok leftover 0
 PASS clearMe removes the owner's own pupil keys — ok
-PASS archive (owner, forced) — ok moved 0, size 23698
+PASS archive (owner, forced) — ok moved 0, size 23706
 PASS teacher (teachers property): admitted, role teacher — ok role teacher
 PASS a teacher sees only her own classes — ok g0-t2
 PASS a teacher cannot open another teacher's class — error unknown-class
@@ -149,6 +149,6 @@ INFO one pupil who wrote every answer at model length keeps 21.2 KB of written a
 PASS a teacher opening the staff page moves her classes' oldest answers to a Sheet in HER Drive — ok 16 moved, store 318 KB, her Sheets 1
 PASS a teacher's visit never moves answers from another teacher's class — kept
 PASS under the line, a staff visit moves nothing — ok archived 0
-PASS the owner's Archive button, under the line, says how full the store is — ok size 325172 line 409600
+PASS the owner's Archive button, under the line, says how full the store is — ok size 325188 line 409600
 PASS when the store is full, a written answer still gets its mark and practice point, and the pupil is told her words were not kept — ok textLost true n 5 saved mark 5, 501 bytes free
 g0: 150 PASS, 0 FAIL, 0 SKIP
