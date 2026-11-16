@@ -57,7 +57,7 @@ var App = (function(){
   }
   // the server sends max as {acts:{act:max}, parts:{p1:20,...}}; the page keeps one flat map with parts alongside
   function flatMax(r){ if (r && r.max && r.max.acts){ var M = {}; Object.keys(r.max.acts).forEach(function(a){ M[a] = r.max.acts[a]; }); M.parts = r.max.parts || {}; r.max = M; } return r; }
-  function reboot(){ return call("apiBoot", {}).then(function(r){ ME = flatMax(r); return r; }); }
+  function reboot(){ return call("apiBoot", {}).then(function(r){ ME = flatMax(r); paintWho(); return r; }); }
   function hdr(v){ if (v){ ME.hdr = v; paintWho(); } return ME ? ME.hdr : null; }
   function marked(r){ if (r && r.hdr){ hdr(r.hdr); paintStat(); } (r && r.badges || []).forEach(function(id, i){ var b = badge(id); setTimeout(function(){ toast(fmt(S.badgeToast, {n: b ? b.t : id}), true); }, 1900 * i + 400); }); }
   function badge(id){ return BADGES.filter(function(b){ return b.id === id; })[0]; }

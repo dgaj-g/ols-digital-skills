@@ -23,3 +23,4 @@ folder is served directly by GitHub Pages except `img/` (photos and OpenMoji ico
 | 6 | 16 Nov 2026 | 3abed2c66f-bee06518 | staff page fixes found in the version 5 live check, each with a gate and a control: the Classes tab shows each class's pupil count (it said 0 for every class); Lock parts says "Working…" while the parts load instead of a blank card |
 | 7 | 16 Nov 2026 | 3abed2c66f-bee06518 | class teacher added to the staff list, so she opens the Staff page with her school account and no passcode (the list lives outside the repo; same build, same link) |
 | 8 | 16 Nov 2026 | 3abed2c66f-437b347e | the Classes tab with no classes shows only "No classes yet", not an empty table header (g5 T69 with a control, proven to fail on version 7) |
+| 9 | 16 Nov 2026 | 3abed2c66f-a20c83ab | "Clear my own test data" now resets the points and streak in the page header straight away, not after a refresh (g5 T70 with a control, proven to fail on version 8) |
