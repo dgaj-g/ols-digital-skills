@@ -5,6 +5,9 @@ PASS T48 the right passcode opens the staff tabs
 PASS T48 the passcode is not in the served page source (staff and pupil links)
 PASS CONTROL T48 the source check catches a page that holds the passcode
 PASS T49 the owner goes straight to the staff tabs on a bare link
+PASS T69 with no classes the Classes tab says "No classes yet. Create one below and copy its link for your pupils." and shows no empty table header
+PASS CONTROL T69 the check fails on the old screen with an empty header
+PASS T69 once a class exists, the class table and its header show
 PASS T49 "12A Sociology" appears in the class list after Create
 PASS T49 the class slug is "12a-sociology"
 PASS T49 Copy class link copies base + "?class=12a-sociology"
@@ -209,4 +212,4 @@ INFO T53 columns follow SPEC §7 (the tracker: points, badges, streak, Part 1–
 PASS T66 Export: the Download CSV button sits under the class picker, clear of the card below, before and after a class is picked
 PASS CONTROL with the old placing and no gap, the check sees the button at the bottom and touching the card
 PASS no console or page errors
-g5-pupil-staff: 206 PASS, 0 FAIL, 2 SKIP
+g5-pupil-staff: 209 PASS, 0 FAIL, 2 SKIP
