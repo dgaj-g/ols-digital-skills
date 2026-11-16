@@ -540,6 +540,7 @@ var Engine = (function(){
       if (r.newPractice) html += '<p class="line"><b>' + h(isTen ? fmt(S.practicePt10, {n: r.n, m: r.max}) : fmt(S.practicePt, {n: r.n})) + '</b></p>';
       else if (hadBefore || r.practice) html += '<p class="line">' + h(S.practiceHad) + '</p>';
       else html += '<p class="line">' + h(isTen ? fmt(S.practiceNo10, {n: r.n, m: r.max}) : fmt(S.practiceNo, {n: r.n})) + '</p>';
+      if (r.textLost) html += '<p class="line"><b>' + h(S.textLost) + '</b></p>';
       html += modelPanel({model: r.model, ao: r.ao, why_marks: r.why_marks, phrases: v.phrases}, v.scheme);
       html += '<p class="line">' + h(S.writeDone) + '</p></div>';
       out.appendChild(el(html));

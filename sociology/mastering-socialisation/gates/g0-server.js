@@ -530,6 +530,44 @@ async function main() {
     'archive: the owner\'s visit moves the oldest writes to the Sheet', np + ' padding keys, store ' + Math.round(size / 1024) + ' KB -> ' + Math.round(after / 1024) + ' KB, ' + r.archived + ' moved, ' + sheetRows + ' Sheet rows, marks kept');
   const sheetName = Object.values(st.sheets || {}).map((s) => s.name)[0] || '';
   sh.check(/Archive/.test(sheetName), 'the archive Sheet is named', sheetName);
+
+  // ---------- a teacher's visit archives too (16 Nov 2026: the page sends 'check', never 'classes', so before this nothing ever archived) ----------
+  st = await store();
+  const wOf = (who) => Object.keys(st.script).filter((k) => k.indexOf('w:' + CLS + ':' + who + ':') === 0).reduce((n, k) => n + k.length + st.script[k].length, 0);
+  sh.info('one pupil who wrote every answer at model length keeps ' + (wOf(P1) / 1024).toFixed(1) + ' KB of written answers; the store holds 500 KB');
+  size = sizeOf(st.script); pad = {}; np = 0;
+  const otherK = 'w:' + CLS + ':old@c2ken.net:w5-01';
+  pad[otherK] = zlib.gzipSync(Buffer.from(JSON.stringify({ t: 'the oldest answer, in a class that is not hers', t2: '', n: 1, tmin: 0 }))).toString('base64');
+  while (size < ARCHIVE_AT + 8 * 1024) {
+    const k = 'w:g0-t2:tpad' + np + '@c2ken.net:w5-01';
+    const v = zlib.gzipSync(Buffer.from(JSON.stringify({ t: crypto.randomBytes(4400).toString('base64'), t2: '', n: 1, tmin: 5 + np }))).toString('base64');
+    pad[k] = v; size += k.length + v.length; np++;
+  }
+  await post('/__set', { script: pad });
+  r = await staff('check', {}, T2);
+  st = await store();
+  const hers = Object.values(st.sheets || {}).filter((x) => x.by === T2), afterT = sizeOf(st.script);
+  sh.check(r.ok && r.admitted && r.archived > 0 && /docs\.google\.com/.test(r.archiveUrl || '') && hers.length === 1 && hers[0].rows.length === r.archived && afterT < ARCHIVE_AT && !!st.script['archiveId:' + T2],
+    'a teacher opening the staff page moves her classes\' oldest answers to a Sheet in HER Drive', E(r) + ' ' + r.archived + ' moved, store ' + Math.round(afterT / 1024) + ' KB, her Sheets ' + hers.length);
+  sh.check(!!st.script[otherK], 'a teacher\'s visit never moves answers from another teacher\'s class', st.script[otherK] ? 'kept' : 'moved');
+  r = await staff('check', {}, T2);
+  sh.check(r.ok && r.archived === 0, 'under the line, a staff visit moves nothing', E(r) + ' archived ' + r.archived);
+  r = await staff('archive');
+  sh.check(r.ok && r.moved === 0 && r.size > 0 && r.line === ARCHIVE_AT, 'the owner\'s Archive button, under the line, says how full the store is', E(r) + ' size ' + r.size + ' line ' + r.line);
+
+  // ---------- a full store still keeps the mark ----------
+  await call('apiBoot', { cls: CLS }, P2);
+  const fb = bankOf('w5-01'), ftext = flat(fb.q.model || {}).join(' ');
+  const fkey = 'w:' + CLS + ':' + P2 + ':w5-01', fneed = fkey.length + zlib.gzipSync(Buffer.from(JSON.stringify({ t: ftext.slice(0, 900), t2: '', n: 5, tmin: 29999999 }))).toString('base64').length;
+  st = await store(); size = sizeOf(st.script); pad = {}; np = 0;
+  const room = 500 * 1024 - (fneed - 80);
+  while (size < room) { const k = 'zz:fill' + np, n = Math.min(9000, room - size - k.length); if (n <= 0) break; pad[k] = 'x'.repeat(n); size += k.length + n; np++; }
+  await post('/__set', { script: pad });
+  r = await call('apiWrite', { cls: CLS, act: 'w5-01', text: ftext }, P2);
+  st = await store();
+  const fh = (await call('apiBoot', { cls: CLS }, P2)).hdr || {};
+  sh.check(r.ok && r.textLost === true && r.n >= 3 && fh.w && fh.w['w5-01'] === r.n && fh.pr && fh.pr['w5-01'] === 1 && !st.script[fkey],
+    'when the store is full, a written answer still gets its mark and practice point, and the pupil is told her words were not kept', E(r) + ' textLost ' + r.textLost + ' n ' + r.n + ' saved mark ' + (fh.w || {})['w5-01'] + ', ' + (fneed - 80) + ' bytes free');
 }
 
 main().then(() => { stop(); sh.finish(); }, (e) => { sh.fail('g0 crashed', (e && e.stack || String(e)).split('\n').slice(0, 3).join(' | ')); stop(); sh.finish(); });

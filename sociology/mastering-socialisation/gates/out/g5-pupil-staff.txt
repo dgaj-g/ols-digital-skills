@@ -129,7 +129,7 @@ PASS CONTROL T41 the board hides when the teacher turns it off
 PASS T42 one bar per part with "n of m marks" in words
 PASS T43 two pupils in the class get the same daily five
 PASS T43 the first run stores dl[date]
-PASS T43 the second run says it is practice ("Today's challenge is done: 0 of 5 marks. Come back…")
+PASS T43 the second run says it is practice ("Today's challenge is done: 1 of 5 marks. Come back…")
 PASS T44 two five-mark builds and one ten-mark build, max 20
 PASS T44 the weekly mock is marked out of 20
 PASS T44 wk[week] is stored once

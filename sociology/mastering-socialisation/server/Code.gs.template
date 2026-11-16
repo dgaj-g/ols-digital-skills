@@ -3,7 +3,7 @@
  * (var CARD_TERMS) above this file and fills the placeholders. Runs as the user accessing the web app (DOMAIN access), so
  * Session.getActiveUser() is the pupil. Records live in Script Properties (API.md "Script Properties"). A pupil's view of
  * an act is rebuilt from its seed on every open and mark and never stored, so no key ever leaves this file.
- * The pupil path never touches a Sheet: the archive runs only on the owner's staff visit. */
+ * The pupil path never touches a Sheet: the archive runs only on a staff visit, into that staff member's own Drive. */
 
 var OWNER_EMAIL = '@@OWNER_EMAIL@@';
 var STAFF_SALT = '@@STAFF_SALT@@';
@@ -658,7 +658,8 @@ function apiWrite_(req) {
   if (!five && str_(q.item) && q.scheme === '5+5') { try { quoted = !!(J.paras[0].lines[2].ok && J.paras[1].lines[2].ok); } catch (e) { quoted = false; } }
   return withLock_(function () {
     var H = hdrOr_(x.slug, x.email), id = A.id, given = false, p0 = H.pts || 0;
-    sp_().setProperty(wKey_(x.slug, x.email, id), zip_({ t: text.slice(0, 900), t2: text2.slice(0, 900), n: n, tmin: tmin_() }));
+    // if the store is full the answer's words cannot be kept, but the mark still is (the header is small)
+    try { sp_().setProperty(wKey_(x.slug, x.email, id), zip_({ t: text.slice(0, 900), t2: text2.slice(0, 900), n: n, tmin: tmin_() })); } catch (e) { out.textLost = true; }
     H.w[id] = Math.max(has_(H.w, id) ? Number(H.w[id]) : 0, n);
     if (!H.pr[id] && n >= (five ? 3 : 6)) { H.pr[id] = 1; given = true; }
     if (quoted) H.wq[id] = 1;
@@ -752,17 +753,20 @@ function trackRow_(slug, email, all) {
 }
 function csvCell_(v) { v = str_(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
 function storeSize_(all) { return Object.keys(all).reduce(function (n, k) { return n + k.length + str_(all[k]).length; }, 0); }
-function archive_(all, force) {
-  // Owner's staff visit only. Moves the oldest written answers (w: keys) to the named Sheet until the store is back under
-  // 80% of the line. The marks and the practice points stay in the header; the pupil's box is empty after that.
-  var size = storeSize_(all); if (!force && size < ARCHIVE_AT) return 0;
+function archive_(all, force, email) {
+  // Runs on a staff visit (any staff member) and from the owner's Archive button. Moves the oldest written answers (w: keys) of
+  // the classes that staff member can see into a Sheet in THEIR OWN Drive, until the store is back under 80% of the line. The
+  // marks and the practice points stay in the header; the pupil's box is empty after that. Without it the store fills (about
+  // 20 KB a pupil who writes every answer) and at 500 KB no pupil's work can be saved.
+  var out = { n: 0, url: '' }, size = storeSize_(all); if (!force && size < ARCHIVE_AT) return out;
+  var mine = {}; visible_(email).forEach(function (x) { mine[x[0]] = 1; });
   var cands = [];
-  Object.keys(all).forEach(function (k) { if (k.indexOf('w:') !== 0) return; var o = unzip_(all[k]); cands.push({ k: k, o: o, tm: o && o.tmin ? o.tmin : 0 }); });
+  Object.keys(all).forEach(function (k) { if (k.indexOf('w:') !== 0 || !mine[k.split(':')[1]]) return; var o = unzip_(all[k]); cands.push({ k: k, o: o, tm: o && o.tmin ? o.tmin : 0 }); });
   cands.sort(function (a, b) { return a.tm - b.tm; });
-  if (!cands.length || size < ARCHIVE_AT * 0.8) return 0;
-  var id = sp_().getProperty('archiveId'), ss;
+  if (!cands.length || size < ARCHIVE_AT * 0.8) return out;
+  var idKey = isOwner_(email) ? 'archiveId' : 'archiveId:' + email, id = sp_().getProperty(idKey), ss;
   try { ss = id ? SpreadsheetApp.openById(id) : null; } catch (e) { ss = null; }
-  if (!ss) { ss = SpreadsheetApp.create(TITLE + ' — Archive'); sp_().setProperty('archiveId', ss.getId()); }
+  if (!ss) { ss = SpreadsheetApp.create(TITLE + ' — Archive'); sp_().setProperty(idKey, ss.getId()); }
   var sheet = ss.getSheets()[0], rows = [], moved = [];
   for (var i = 0; i < cands.length && size >= ARCHIVE_AT * 0.8; i++) {
     var cd = cands[i], bits = cd.k.split(':'), o = cd.o || {};
@@ -771,7 +775,8 @@ function archive_(all, force) {
   }
   if (rows.length) sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
   moved.forEach(function (k) { sp_().deleteProperty(k); });
-  return moved.length;
+  out.n = moved.length; try { out.url = ss.getUrl(); } catch (e) { out.url = ''; }
+  return out;
 }
 function writesOf_(slug, email, all) {
   var out = [];
@@ -793,7 +798,11 @@ function apiStaff_(req) {
   var op = str_(req.op);
   function classesOut() { return visible_(email).map(function (x) { return { slug: x[0], name: x[1].name || x[0], o: x[1].o, on: x[1].on || '', lb: x[1].lb === 0 ? 0 : 1, lock: x[1].lock || [], mine: x[1].o === email }; }); }
   if (op === 'check') {
-    if (staffIn_(email)) return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: isOwner_(email), email: email, classes: classesOut() });
+    if (staffIn_(email)) {
+      var arc = { n: 0, url: '' };
+      if (storeSize_(sp_().getProperties()) >= ARCHIVE_AT) { try { arc = withLock_(function () { return archive_(sp_().getProperties(), false, email); }); } catch (e) { arc = { n: 0, url: '' }; } }
+      return ok_({ admitted: true, staff: true, role: roleOf_(email), owner: isOwner_(email), email: email, classes: classesOut(), archived: arc.n, archiveUrl: arc.url });
+    }
     if (req.pass == null || req.pass === '') return ok_({ admitted: false, staff: false, role: '', owner: false, email: email });
     if (!passOk_(req.pass)) return err_('bad-pass');
     up_().setProperty(STAFF_MARK, passMark_());
@@ -802,14 +811,14 @@ function apiStaff_(req) {
   if (!staffIn_(email)) return err_('not-staff');
   var all = sp_().getProperties(), keys = Object.keys(all);
   if (op === 'classes') {
-    var archived = isOwner_(email) ? withLock_(function () { return archive_(all, false); }) : 0;
-    if (archived) { all = sp_().getProperties(); keys = Object.keys(all); }
-    return ok_({ archived: archived, role: roleOf_(email), classes: classesOut().map(function (c) { c.n = pupilsOf_(c.slug, keys).length; return c; }) });
+    var arc = withLock_(function () { return archive_(all, false, email); });
+    if (arc.n) { all = sp_().getProperties(); keys = Object.keys(all); }
+    return ok_({ archived: arc.n, archiveUrl: arc.url, role: roleOf_(email), classes: classesOut().map(function (c) { c.n = pupilsOf_(c.slug, keys).length; return c; }) });
   }
   if (op === 'archive') {
     if (!isOwner_(email)) return err_('owner-only');
-    var moved = withLock_(function () { return archive_(all, true); });
-    return ok_({ moved: moved, size: storeSize_(sp_().getProperties()) });
+    var arc = withLock_(function () { return archive_(all, true, email); });
+    return ok_({ moved: arc.n, url: arc.url, size: storeSize_(sp_().getProperties()), line: ARCHIVE_AT });
   }
   if (op === 'clearMe') {
     return withLock_(function () {
