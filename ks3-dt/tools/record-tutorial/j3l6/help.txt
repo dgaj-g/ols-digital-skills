@@ -1,0 +1,12 @@
+  PASS all 15 walks reach the end with no page errors
+  PASS job line and help are right on all 1015 states (help opened 1010 times)
+  PASS an example is typed in every empty box: 9 different examples, 140 times
+  PASS the real wait is 20 seconds, and 40 for the ring
+  PASS the rush clock holds while help is open, then runs on (179291 / 179291 / 178067 ms left)
+  PASS the rule-race clock holds while help is open, then runs on (89499 / 89499 / 88249)
+  PASS left alone, the button pulses first and the ring with its tag comes second, without help opening (true,false,true,true,false)
+  PASS one touch clears the pulse and the ring
+  PASS CONTROL (it failed, as it must): the Stuck? Show me button hidden
+  PASS CONTROL (it failed, as it must): the ring stripped
+  PASS CONTROL (it failed, as it must): the example swapped for the answer
+j3l6-help: ALL 11 CHECKS PASS
