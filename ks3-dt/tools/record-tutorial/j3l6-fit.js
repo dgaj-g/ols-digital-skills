@@ -3,15 +3,18 @@
    frame at the five window sizes, the school PC's 1366x625 (a 484 px frame) first:
    1 the page is never taller than the frame and never scrolls sideways;
    2 no button, box, table, job line or Stuck? Show me button sits outside the window;
-   3 the words stay inside every button.
-   CONTROLS (each must FAIL): a block 300 px tall added to the page; a button with words too long for it.
+   3 the words stay inside every button;
+   4 (V88) no stamp sits on a headline's or byline's words.
+   CONTROLS (each must FAIL): a block 300 px tall added to the page; a button with words too long for it; the room kept
+   for the stamp taken away.
    node j3l6-fit.js [--url <served hour.html>] [--sizes 1366x625,...] */
 'use strict';
 const lib = require('./j3l6-lib.js'), J = lib.judge('j3l6-fit');
 const SIZES = lib.argOf('--sizes', '') ? lib.argOf('--sizes').split(',').map(s => s.split('x').map(Number)) : lib.SIZES;
 const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { const k = r.W + 'x' + r.H + ' ' + r.route + ' ' + m.screen;
   if (m.over > 0) f.push(k + ': ' + m.over + ' px taller than the frame'); if (m.side > 0) f.push(k + ': ' + m.side + ' px sideways');
-  if (m.out.length) f.push(k + ': outside the window — ' + m.out.join('; ')); if (m.spill.length) f.push(k + ': words spill out of — ' + m.spill.join('; ')); })); return f; };
+  if (m.out.length) f.push(k + ': outside the window — ' + m.out.join('; ')); if (m.spill.length) f.push(k + ': words spill out of — ' + m.spill.join('; '));
+  if (m.covered && m.covered.length) f.push(k + ': the stamp covers the words — ' + m.covered.join(' ')); })); return f; };
 (async () => {
   const rs = [];
   for (const [W, H] of SIZES) for (const route of ['model', 'stamps', 'late', 'latestamps']) { const r = await lib.walk({ W, H, route, help: false }); rs.push(r);
@@ -23,5 +26,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   J.control(faults([c]).some(t => /taller than the frame/.test(t)), 'a block 300 px tall added to the page');
   c = await lib.walk({ W: 1366, H: 625, route: 'model', help: false, maxStates: 4, fault: "var b = document.querySelector('main button'); if (b) { b.style.width = '60px'; b.style.whiteSpace = 'nowrap'; b.style.overflow = 'hidden'; }" });
   J.control(faults([c]).some(t => /words spill/.test(t)), 'a button with words too long for it');
+  c = await lib.walk({ W: 1366, H: 625, route: 'model', help: false, maxStates: 30, fault: "var s = document.getElementById('__sf') || document.head.appendChild(Object.assign(document.createElement('style'), { id: '__sf' })); s.textContent = 'body .paper.stamped{padding-right:12px!important}';" });
+  J.control(faults([c]).some(t => /the stamp covers/.test(t)), 'the room kept for the stamp taken away (V88)');
   await J.end();
 })();
