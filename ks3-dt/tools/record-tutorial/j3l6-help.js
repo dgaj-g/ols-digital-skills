@@ -6,12 +6,12 @@
      screen, with nothing left to do, has none);
    3 opening it SHOWS what to do: 1 to 3 steps of 10 words or fewer, a ring and a tag on a real control that is on
      screen and not under the help, the tag on no words or controls, nothing of hers under the help box, the page no taller;
-   4 every empty rule box gets an example typed in grey, and the example never keeps the rows (or the number) the
+   4 every empty rule box gets an example typed in grey (and, V88, every other empty box shows a grey "For example:"), and the example never keeps the rows (or the number) the
      task wants; closing help changes nothing of hers and leaves no ring or example behind.
    Then: the rush clock and the rule-race clock hold while help is open and run on after it closes; left alone the
    button pulses first and the ring with its tag comes second, without help opening; one touch clears both.
    CONTROLS (each must FAIL): the button hidden; the ring stripped; the example swapped for the answer; the tag put on the
-   question's words; the ring made wide enough to sit on the words around it (V87).
+   question's words; the ring made wide enough to sit on the words around it (V87); the grey example taken out of the name box (V88).
    node j3l6-help.js [--url <served hour.html>] [--sizes 1366x625,...] */
 'use strict';
 const fs = require('fs'), path = require('path'), lib = require('./j3l6-lib.js'), J = lib.judge('j3l6-help');
@@ -63,5 +63,7 @@ const faults = rs => { const f = []; rs.forEach(r => r.report.forEach(m => { con
   J.control(faults([c]).some(t => /the tag covers words/.test(t)), 'the tag put on the question\'s words');
   c = await lib.walk({ W: 1366, H: 625, route: 'model', maxStates: 8, fault: "var s = document.getElementById('__rf') || document.head.appendChild(Object.assign(document.createElement('style'), { id: '__rf' })); s.textContent = 'body .help-spot{outline-offset:14px!important;animation:none!important}';" });
   J.control(faults([c]).some(t => /the ring covers words/.test(t)), 'the ring made wide enough to sit on the words around it');
+  c = await lib.walk({ W: 1366, H: 625, route: 'model', fault: "var i = document.getElementById('fname'); if (i) i.placeholder = '';" });
+  J.control(faults([c]).some(t => /the empty box fname shows no grey example/.test(t)), 'the grey example taken out of the name box (V88)');
   await J.end();
 })();

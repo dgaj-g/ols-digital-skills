@@ -383,6 +383,7 @@
       "byline": "Night desk: {name}",
       "you": "you",
       "rename": "Type your name for the page",
+      "namePh": "For example: Sam",
       "button": "Print my page",
       "wrongSub": "Not checked · by Fionn",
       "corrected": "corrected after printing"
@@ -494,6 +495,7 @@
        "Hard"
       ],
       "comment": "A note for your teacher",
+      "commentPh": "For example: The NOT rules were hard.",
       "send": "Send and finish",
       "people": "People",
       "days": "Days",

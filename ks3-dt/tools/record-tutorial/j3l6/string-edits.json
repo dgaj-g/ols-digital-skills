@@ -3236,5 +3236,17 @@
     "to": "Click the number you think is right.",
     "why": "V87 (16 Nov): fixes from the live test-pupil walk of V86 (one-part c2 rule refused, AND/OR wrong lines, Count first help names the rule's word or sign)",
     "last": true
+  },
+  "front.namePh": {
+    "from": null,
+    "to": "For example: Sam",
+    "why": "V88 (17 Nov): the live walk of V87 found the front-page name box empty with no grey example (the J3 L7 standard: a grey example in every empty box)",
+    "last": true
+  },
+  "close.commentPh": {
+    "from": null,
+    "to": "For example: The NOT rules were hard.",
+    "why": "V88 (17 Nov): as front.namePh — the note-for-your-teacher box was empty with no grey example",
+    "last": true
   }
 }

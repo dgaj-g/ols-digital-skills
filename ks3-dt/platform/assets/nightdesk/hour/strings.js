@@ -63,7 +63,7 @@ window.S = {
     timeLeft: '{s} seconds left', timeUp: 'It is midnight. Time ran out.', printedKicker: 'Midnight', printedLine: 'The press printed Fionn’s headline on page one.', morningKicker: 'The next morning', letter1: 'Dear Editor, I sell ice cream. My ice cream does not cause sea rescues.', letter2: 'Hot weather causes both the sales and the rescues.', letter3: 'Marie Byrne', letterButton: 'Fix the stamp',
     fixAsk: 'Stamp it again.', fixOk: 'You fixed it. The heat caused the sales and the rescues.', doneLine: 'See the front page'
   },
-  front: { kicker: 'Midnight', masthead: 'The Harbour Post', date: 'Rathmore · Saturday', intro: 'The page you made.', printedSub: 'Survey of 60 people', spikedTitle: 'Spiked headlines', byline: 'Night desk: {name}', you: 'you', rename: 'Type your name for the page', button: 'Print my page', wrongSub: 'Not checked · by Fionn' },
+  front: { kicker: 'Midnight', masthead: 'The Harbour Post', date: 'Rathmore · Saturday', intro: 'The page you made.', printedSub: 'Survey of 60 people', spikedTitle: 'Spiked headlines', byline: 'Night desk: {name}', you: 'you', rename: 'Type your name for the page', namePh: 'For example: Sam', button: 'Print my page', wrongSub: 'Not checked · by Fionn' },
   close: {
     badgesTitle: 'Tonight',
     badges: [{ id: 'asker', name: 'First question', line: 'You wrote your first query.' }, { id: 'both', name: 'Two at once', line: 'You used AND.' }, { id: 'week', name: 'The week', line: 'You used BETWEEN.' }, { id: 'either', name: 'Either one', line: 'You used OR.' }, { id: 'rest', name: 'Leave out', line: 'You used NOT.' }, { id: 'rush', name: 'The rush', line: 'You finished before the press started.' }],
@@ -75,7 +75,7 @@ window.S = {
       { stem: 'day_no BETWEEN 40 AND 46 keeps how many days?', options: ['7', '6', '40'] },
       { stem: 'Hot days have more ice cream sales and more sea rescues. Which sentence explains this best?', options: ['The heat causes both', 'Ice cream causes rescues', 'Rescued swimmers then buy ice cream'] },
       { stem: 'Which rule keeps everyone except Old Town?', options: ['NOT area = "Old Town"', 'area = "Old Town"', 'area = "Old" AND area = "Town"'] }],
-    feltTitle: 'How did it go?', feltIntro: 'Answer honestly.', felt: ['I can write a rule with AND, OR or NOT.', 'I can say what BETWEEN keeps.', 'I can say why a headline gets spiked.'], feltScale: ['Not yet', 'Nearly', 'Yes'], difficulty: 'How hard was today?', difficultyScale: ['Easy', 'About right', 'Hard'], comment: 'A note for your teacher', send: 'Send and finish',
+    feltTitle: 'How did it go?', feltIntro: 'Answer honestly.', felt: ['I can write a rule with AND, OR or NOT.', 'I can say what BETWEEN keeps.', 'I can say why a headline gets spiked.'], feltScale: ['Not yet', 'Nearly', 'Yes'], difficulty: 'How hard was today?', difficultyScale: ['Easy', 'About right', 'Hard'], comment: 'A note for your teacher', commentPh: 'For example: The NOT rules were hard.', send: 'Send and finish',
     people: 'People', days: 'Days',
     end: 'The hour is over. Everything you did is saved.'
   }

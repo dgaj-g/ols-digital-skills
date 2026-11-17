@@ -2,4 +2,5 @@
   PASS all 1815 states fit their frame, nothing outside the window, no words spilling
   PASS CONTROL (it failed, as it must): a block 300 px tall added to the page
   PASS CONTROL (it failed, as it must): a button with words too long for it
-j3l6-fit: ALL 4 CHECKS PASS
+  PASS CONTROL (it failed, as it must): the room kept for the stamp taken away (V88)
+j3l6-fit: ALL 5 CHECKS PASS

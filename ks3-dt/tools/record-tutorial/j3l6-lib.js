@@ -45,7 +45,14 @@ function measure() {
   const hb = document.getElementById('helpBtn'), r = hb ? hb.getBoundingClientRect() : {}, g = Hour.guide() || {}, steps = !!(g.steps && g.steps.length);
   const helpOK = vis(hb) && r.width >= 150 && r.height >= 40 && r.right <= innerWidth && r.bottom <= innerHeight && /^Stuck\? Show me$/.test(hb.textContent.trim());
   const jobOK = vis(jobEl) && job.indexOf(lead) === 0 && n >= 3 && n <= 14 && /[.?!]$/.test(say) && jobEl.getBoundingClientRect().bottom <= innerHeight;
-  return { screen: Hour.screen(), over: de.scrollHeight - innerHeight, side: de.scrollWidth - innerWidth, out, spill, job, jobWords: n, jobOK, helpOK, steps };
+  /* V88: the stamp never sits on the headline's words (in the 484 px frame it hid "five", "day", "dog or", "bus") */
+  const covered = [];
+  document.querySelectorAll('.paper .stampmark').forEach(sm => { if (!vis(sm)) return; const s = sm.getBoundingClientRect();
+    sm.closest('.paper').querySelectorAll('.headline, .byline').forEach(t => { const w = document.createTreeWalker(t, NodeFilter.SHOW_TEXT); let nd;
+      while ((nd = w.nextNode())) { const rg = document.createRange(); const txt = nd.textContent; let i = 0;
+        txt.split(/(\s+)/).forEach(part => { if (part.trim()) { rg.setStart(nd, i); rg.setEnd(nd, i + part.length);
+          if ([].some.call(rg.getClientRects(), q => q.right > s.left + 2 && q.left < s.right - 2 && q.bottom > s.top + 2 && q.top < s.bottom - 2)) covered.push(part); } i += part.length; }); } }); });
+  return { screen: Hour.screen(), over: de.scrollHeight - innerHeight, side: de.scrollWidth - innerWidth, out, spill, covered, job, jobWords: n, jobOK, helpOK, steps };
 }
 /* in the page: open Stuck? Show me, check what it shows, close it, check nothing of hers changed */
 function helpCheck() {
@@ -82,6 +89,8 @@ function helpCheck() {
   [...document.querySelectorAll('main button, main input, main .tbl, main .paper, main .ask, main p')].filter(e => vis(e) && !e.closest('#help')).forEach(e => { const r = e.getBoundingClientRect();
     if (r.width && r.height && r.top < box.bottom - 2 && r.bottom > box.top + 2 && r.left < box.right && r.right > box.left) bad.push('help covers ' + (e.textContent || e.tagName).trim().slice(0, 24)); });
   if (document.documentElement.scrollHeight > innerHeight) bad.push('help makes the page taller');
+  /* V88: every other empty box (her name, the note for her teacher) shows a grey example */
+  document.querySelectorAll('main input:not(#qbox)').forEach(i => { if (vis(i) && !i.readOnly && !i.value.trim() && !/^For example: \S/.test(i.placeholder || '')) bad.push('the empty box ' + i.id + ' shows no grey example'); });
   /* the example typed in the empty box is a different rule: it never finds the rows the task wants */
   let demo = null;
   if (g0.demo) { const qb = document.getElementById('qbox'), st = Hour.state, t = st.table, D = window.NightData, f = st.free || {};
