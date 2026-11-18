@@ -62,19 +62,20 @@
     deckSave({ s, k }); paintDeck();
   }
   function deckJump(s) { deckSave({ s, k: 0 }); paintDeck(); }
+  function capText(p, n) { return 'Slide ' + p.s + ' of ' + NSLIDES + (n > 1 ? ' · ' + p.k + ' of ' + (n - 1) + ' reveals shown' : ''); }
   function deckHtml() {
     const p = deckPos(), n = statesOf(p.s);
     const dots = STATES.map((x) => '<span class="dot' + (x.slide === p.s ? ' on' : '') + '" data-dot="' + x.slide + '" role="button" tabindex="0" aria-label="Slide ' + x.slide + '"></span>').join('');
     return '<section class="card deck"><h2>' + h(IC.topic.deck) + '</h2>'
       + '<img class="slide" src="' + h(slideSrc(p.s, p.k)) + '" alt="Slide ' + p.s + ' of ' + NSLIDES + '">'
-      + '<div class="row deckrow"><button class="btn sec" data-deck-back>Back</button><span class="cap" data-cap>Slide ' + p.s + ' of ' + NSLIDES + ' · click ' + (p.k + 1) + ' of ' + n + '</span><button class="btn" data-deck-next>Next</button></div>'
+      + '<div class="row deckrow"><button class="btn sec" data-deck-back>Back</button><span class="cap" data-cap>' + capText(p, n) + '</span><button class="btn" data-deck-next>Next</button></div>'
       + '<div class="dots">' + dots + '</div></section>';
   }
   function paintDeck() {
     const img = app.querySelector('.deck img.slide'); if (!img) return;
     const p = deckPos(), n = statesOf(p.s);
     img.src = slideSrc(p.s, p.k); img.alt = 'Slide ' + p.s + ' of ' + NSLIDES;
-    const cap = app.querySelector('[data-cap]'); if (cap) cap.textContent = 'Slide ' + p.s + ' of ' + NSLIDES + ' · click ' + (p.k + 1) + ' of ' + n;
+    const cap = app.querySelector('[data-cap]'); if (cap) cap.textContent = capText(p, n);
     app.querySelectorAll('.deck [data-dot]').forEach((d) => d.classList.toggle('on', +d.dataset.dot === p.s));
     // warm the next image
     const nx = new Image(); nx.src = p.k + 1 < n ? slideSrc(p.s, p.k + 1) : slideSrc(p.s >= NSLIDES ? 1 : p.s + 1, 0);
@@ -110,7 +111,7 @@
       + s.lines.map((l) => '<li class="pline" data-line="' + h(l[0]) + '">' + h(l[1]) + '</li>').join('') + '</ul></section>').join('');
   }
   function askCard(q, withTie) {
-    return '<div class="card askcard"><p class="meta">' + h(BY[q.b].short) + ' · ' + h(srcLine(q)) + '</p><q>' + h(q.ask) + '</q>'
+    return '<div class="card askcard"><p class="meta">Question ' + (ORDER.indexOf(q.id) + 1) + ' of ' + ORDER.length + ' · ' + h(BY[q.b].short) + ' · ' + h(srcLine(q)) + '</p><q>' + h(q.ask) + '</q>'
       + (withTie && q.tie ? '<p class="tienote">' + h(q.tie) + '</p>' : '') + '</div>';
   }
   const errLine = () => '<p class="err" data-err></p>';
@@ -143,7 +144,7 @@
     const rooms = '<div class="rooms" role="tablist">'
       + '<button class="room' + (room === 'know' ? ' on' : '') + '" role="tab" aria-selected="' + (room === 'know') + '" data-room="know" data-go="#init">' + h(IC.topic.rooms.know) + '<small>' + pagesDone + ' of 3 pages ticked</small></button>'
       + '<button class="room' + (room === 'apply' ? ' on' : '') + '" role="tab" aria-selected="' + (room === 'apply') + '" data-room="apply" data-go="#init/apply">' + h(IC.topic.rooms.apply) + '<small>' + tried + ' of ' + ORDER.length + ' questions tried</small></button>'
-      + '<button class="room' + (room === 'march' ? ' on' : '') + '" role="tab" aria-selected="' + (room === 'march') + '" data-room="march" data-go="#init/march">' + h(IC.topic.rooms.march) + '<small>' + (CS ? h(CS.org) : 'from March') + '</small></button></div>';
+      + '<button class="room' + (room === 'march' ? ' on' : '') + '" role="tab" aria-selected="' + (room === 'march') + '" data-room="march" data-go="#init/march">' + h(IC.topic.rooms.march) + '<small>' + (CS ? h(CS.org) : 'opens in March') + '</small></button></div>';
     let body = '';
     if (room === 'know') {
       body = deckHtml() + '<h2 class="sect">The examiner’s points, bullet by bullet</h2><ul class="parts bullets">' + BULLETS.map((b, i) => {
@@ -190,7 +191,7 @@
       }
       foot = '<div class="card quick"><h2>Quick check</h2>' + items + (Q.result ? '' : '<div class="row"><button class="btn" data-qcheck' + (ready ? '' : ' disabled') + '>Check my three answers</button>' + (ready ? '' : '<span class="why">Pick one answer for each question first.</span>') + '</div>') + errLine() + res + '</div>';
     }
-    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>' + h(page.title) + '</h1><p class="job">' + h(Q ? JOB.quick : JOB.page) + '</p>' + sectionsHtml(b) + foot + '</main>';
+    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>Bullet ' + b.slice(1) + ' of 3 · ' + h(BY[b].short) + '</h1><p class="spec">In the spec: ' + h(BY[b].spec) + '</p><p class="job">' + h(Q ? JOB.quick : JOB.page) + '</p>' + sectionsHtml(b) + foot + '</main>';
     const start = app.querySelector('[data-quick]'); if (start) start.addEventListener('click', () => { cur.quick = { items: drawQuick(b), picks: [null, null, null], result: null }; render(); app.querySelector('.quick').scrollIntoView(); });
     if (Q) {
       app.querySelectorAll('.quick input[type=radio]').forEach((r) => r.addEventListener('change', () => { Q.picks[+r.name.slice(1)] = +r.value; const btn = app.querySelector('[data-qcheck]'); if (btn && Q.picks.every((x) => x != null)) { btn.disabled = false; const w = btn.parentElement.querySelector('.why'); if (w) w.remove(); } }));
@@ -300,7 +301,7 @@
     const id = cur.id, q = PART[id], p = rec(id);
     const crumbs = C0().concat([{ t: IC.topic.rooms.march, go: '#init/march' }, { t: q.src }]);
     const shell = (inner) => { app.innerHTML = header(crumbs) + '<main class="init icase"><h1>' + h(q.src) + '</h1><p class="job">' + h(JOB.march) + '</p>' + inner + '</main>'; };
-    if (!CS) { shell('<div class="card"><p class="marchempty">' + h(IC.topic.marchEmpty) + '</p><div class="row"><button class="btn" data-go="#init">Back to the rooms</button></div></div>'); return; }
+    if (!CS) { shell('<div class="card"><p class="marchempty">' + h(IC.topic.marchEmpty) + '</p><div class="row"><button class="btn" data-go="#init">Back to the topic</button></div></div>'); return; }
     if (!p.k) { shell(askCard(q, false) + '<div class="card"><p>Write your answer first, in Apply it. Then come back here and tie it to ' + h(CS.org) + '.</p><div class="row"><button class="btn" data-go="#ipart/' + id + '">Open the question</button></div></div>'); return; }
     if (!ST[id]) { shell('<div class="card"><p>Loading your answer<span class="dots"></span></p></div>'); fetchState(id).then(() => { if (cur && cur.id === id && cur.k === 'icase') render(); }, () => fail({})); return; }
     const S = ST[id];
