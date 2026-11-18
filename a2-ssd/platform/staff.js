@@ -177,6 +177,7 @@
   const lastLine = (s) => (s ? [s[2] ? mins(s[2]) : '', s[3] ? marked(s[3]) : ''].filter(Boolean).join(' · ') : '');
   function vLive() {
     if (TOPIC === 'norm') return vNLive();
+    if (TOPIC === 'init') return vILive();
     const load = () => call({ op: 'live', name: CLS }).then((r) => {
       LIVE = r;
       const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
@@ -203,8 +204,8 @@
   const EVV = ['ev.can', 'ev.getting', 'ev.not'], FEEL = ['ev.easy', 'ev.right', 'ev.tricky'];
 
   // ---------- Live · Normalisation (spec §9) ----------
-  let TOPIC = sel('topic') === 'norm' ? 'norm' : 'sql', NSEL = sel('npaper');
-  const topicSwitch = () => '<div class="ttabs" role="group">' + [['sql', 'staff.n.sql'], ['norm', 'staff.n.norm']].map(([k, s]) => '<button data-topic="' + k + '"' + (k === TOPIC ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + h(T(s)) + '</button>').join('') + '</div>';
+  let TOPIC = ['norm', 'init'].includes(sel('topic')) ? sel('topic') : 'sql', NSEL = sel('npaper'), ISUB = sel('isub') === 'icase' ? 'icase' : 'igrid';
+  const topicSwitch = () => '<div class="ttabs" role="group">' + [['sql', 'staff.n.sql'], ['norm', 'staff.n.norm'], ['init', 'Reasons for systems development']].map(([k, s]) => '<button data-topic="' + k + '"' + (k === TOPIC ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + h(k === 'init' ? s : T(s)) + '</button>').join('') + '</div>';
   const wireTopic = () => pane().querySelectorAll('[data-topic]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.topic === TOPIC) return; TOPIC = b.dataset.topic; keep('topic', TOPIC); clearInterval(timer); timer = null; const d = app.querySelector('.drawer'); if (d) d.remove(); vLive(); }));
   const nParts = (pid) => window.NORM.partsOf(window.NORM.paperOf(pid));
   function nPaperSum(pu, pid) {
@@ -267,6 +268,92 @@
     }, fail);
     load();
     timer = setInterval(() => { if (!document.hidden && TAB === 'live' && TOPIC === 'norm' && !app.querySelector('.drawer')) load(); }, 60000);
+  }
+  // ---------- Live · Reasons for systems development (INITIATION_SPEC: staff grid, drawer, case study) ----------
+  // Plain words here, not T() keys: this topic's staff strings are not in the string table (nothing a pupil sees).
+  const IC = () => (window.A2CONTENT && window.A2CONTENT.init) || { parts: [], bullets: [] };
+  const I_LABEL = 'Reasons for systems development';
+  const I_EVAL = { can: 'I can do this', getting: 'Getting there', not: 'Not yet' };
+  const I_BEAT = { door: 'choosing how to start', ask: 'reading the question', lesson: 'the lesson', turn: 'writing the answer', march: 'tying it to the case study', another: 'another question' };
+  const iSub = () => '<div class="ttabs" role="group" aria-label="Reasons view">' + [['igrid', 'Marks'], ['icase', 'Case study (March)']].map(([k, s]) => '<button data-ttab="' + k + '"' + (k === ISUB ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + h(s) + '</button>').join('') + '</div>';
+  const iHead = (q) => h(q.src.replace(/^(Summer|Winter) /, '').replace(', Q', ' Q'));
+  const iCell = (pu, q) => {
+    const r = ((pu.I && pu.I.P) || {})[q.id];
+    const cell = (cls, txt) => '<td class="c' + cls + '" data-icell="' + h(pu.email) + '|' + q.id + '" tabindex="0" title="' + h(q.ask) + '">' + txt + '</td>';
+    if (!r) return cell('', '');
+    if (r.f == null) return cell(r.fl ? ' hot' : '', (r.k ? '…' : '') + (r.fl ? '<span class="tg red">!</span>' : ''));
+    let s = String(r.f) + (r.b > r.f ? '·' + r.b : '');
+    if (r.tb != null) s += ' / ' + r.tb;
+    return cell(r.fl ? ' hot' : '', h(s) + (r.fl ? '<span class="tg red">!</span>' : ''));
+  };
+  const iCaseHtml = (cs) => '<div class="part icase"><b>The case study for March</b>' +
+    '<p class="note">Until this is filled in, every pupil’s March room says the case study is not out yet. On release day put in the organisation’s name, the full case-study text, and the names and terms the examiner will want tied, separated by commas. Pupils then tie each answer they have already written to it, and the grid shows the tied mark after a slash.</p>' +
+    '<p><label for="csorg">Organisation</label><br><input id="csorg" data-cs-org maxlength="60" value="' + h(cs ? cs.org : '') + '" placeholder="The organisation the case study is about" style="width:100%"></p>' +
+    '<p><label for="cstext">Case study text</label><br><textarea id="cstext" data-cs-text rows="12" style="width:100%" placeholder="Paste the whole case study here">' + h(cs ? cs.text : '') + '</textarea></p>' +
+    '<p><label for="csterms">Names and terms to tie, separated by commas</label><br><input id="csterms" data-cs-terms style="width:100%" value="' + h(cs ? (cs.terms || []).join(', ') : '') + '" placeholder="The people, places, systems and problems named in the text"></p>' +
+    '<div class="row"><button class="btn" data-cs-save>' + h(cs ? 'Save the changes' : 'Save the case study') + '</button>' + (cs ? '<button class="btn ghost" data-cs-clear>Take the case study down</button>' : '') +
+    '<span class="note" data-cs-msg>' + h(cs ? 'Saved' + (cs.by ? ' by ' + cs.by : '') + '. Pupils see it now.' : 'Not set yet. Pupils see “The case study is not out yet.”') + '</span></div></div>';
+  function vILive() {
+    const load = () => call({ op: 'live', name: CLS }).then((r) => {
+      LIVE = r;
+      const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      const parts = IC().parts, bullets = IC().bullets;
+      const grid = r.pupils.length ? '<div class="scroll"><table class="grid igrid"><tr><th>' + h(T('staff.pupil')) + '</th><th>' + h(T('staff.lastSeen')) + '</th><th title="Pages ticked in Know it">Pages</th>' +
+          parts.map((q) => '<th class="c" title="' + h(q.ask) + '">' + iHead(q) + '</th>').join('') + '</tr>' +
+          r.pupils.map((pu) => '<tr' + (pu.me ? ' class="me"' : '') + '><td><button class="who" data-act="' + h(pu.email) + '" title="' + h(T('staff.act.open')) + '">' + h(pu.n || pu.email) + '</button>' + (pu.n && r.pupils.filter((x) => x.n === pu.n).length > 1 ? ' <small class="note">' + h(pu.email) + '</small>' : '') + '</td><td>' + h(ago(r.now, pu.seen)) + '</td>' +
+            '<td class="c">' + Object.keys((pu.I && pu.I.G) || {}).length + ' of ' + bullets.length + '</td>' + parts.map((q) => iCell(pu, q)).join('') + '</tr>').join('') + '</table></div>' +
+          '<p class="note" style="margin-top:10px">Each cell is her first mark out of the question’s point marks, then · her best if it went up, and after March / her tied mark out of the full exam marks. … means written but not marked yet. ! means she has asked for you. Click a cell to read her answer beside the examiner’s.</p>'
+        : '<p class="note">' + h(T('staff.nothing')) + '</p>';
+      pane().innerHTML = topicSwitch() + iSub() + '<div class="row" style="margin-bottom:10px"><button class="btn sec" data-refresh>' + h(T('staff.refresh')) + '</button><span class="note">' + h(T('staff.updated', { time: stamp })) + '</span></div>' +
+        (ISUB === 'icase' ? iCaseHtml(r.icase) : grid);
+      pane().querySelector('[data-refresh]').addEventListener('click', load);
+      wireTopic();
+      pane().querySelectorAll('[data-ttab]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.ttab === ISUB) return; ISUB = b.dataset.ttab; keep('isub', ISUB); load(); }));
+      pane().querySelectorAll('[data-icell]').forEach((td) => {
+        const openIt = () => { const [em, pid] = td.dataset.icell.split('|'); iDrawer(em, pid); };
+        td.addEventListener('click', openIt);
+        td.addEventListener('keydown', (e) => { if (e.key === 'Enter') openIt(); });
+      });
+      pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
+      const save = pane().querySelector('[data-cs-save]');
+      if (save) save.addEventListener('click', () => {
+        const org = pane().querySelector('[data-cs-org]').value.trim(), text = pane().querySelector('[data-cs-text]').value.trim(), terms = pane().querySelector('[data-cs-terms]').value.split(',').map((s) => s.trim()).filter(Boolean);
+        const msg = pane().querySelector('[data-cs-msg]');
+        if (!org || !text) { msg.textContent = 'Give the organisation’s name and the case study text first.'; return; }
+        save.disabled = true; save.textContent = 'Saving…';
+        call({ op: 'icase', set: { org, text, terms }, name: CLS }).then(load, (e) => { save.disabled = false; save.textContent = 'Save the case study'; fail(e); });
+      });
+      const clr = pane().querySelector('[data-cs-clear]');
+      if (clr) twoPress(clr, 'Take it down? Pupils’ March room goes back to “not out yet”. Their written answers and marks stay.', (reset) => call({ op: 'icase', set: { org: '', text: '', terms: [] }, name: CLS }).then(load, (e) => { reset(); fail(e); }));
+    }, fail);
+    load();
+    timer = setInterval(() => { if (!document.hidden && TAB === 'live' && TOPIC === 'init' && ISUB === 'igrid' && !app.querySelector('.drawer')) load(); }, 60000);
+  }
+  // one pupil at one question: her words beside the examiner's points (✓ where she ticked) and the model answer (op iscripts: served, never shipped)
+  function iDrawer(email, id) {
+    const pu = LIVE.pupils.find((x) => x.email === email), q = IC().parts.find((x) => x.id === id); if (!pu || !q) return;
+    const old = app.querySelector('.drawer'); if (old) old.remove();
+    const r = ((pu.I && pu.I.P) || {})[id] || {}, who = pu.n || pu.email;
+    const head = r.f == null ? '<p class="note">' + h(r.k ? 'Written, not marked yet.' : T('staff.noAnswer')) + '</p>'
+      : '<p>' + h((r.d === 1 ? 'Wrote it straight away' : 'Learnt it first') + ' · first ' + r.f + ' of ' + q.pm + (r.b > r.f ? ' · best ' + r.b : '') + ' · ' + (r.a === 1 ? '1 attempt' : r.a + ' attempts') + (r.tb != null ? ' · March: ' + r.tb + ' of ' + q.marks : '')) + '</p>' +
+        (r.s ? '<p class="note">' + h(T('staff.sawAnswer')) + '</p>' : '');
+    const flag = r.fl ? '<p><span class="tg red">' + h('Asked for you at ' + (I_BEAT[r.fl.b] || r.fl.b)) + '</span> <button class="btn sec" data-ack>' + h(T('staff.ack')) + '</button></p>' : '';
+    app.insertAdjacentHTML('beforeend', '<aside class="drawer idrawer" role="dialog" aria-label="' + h(who) + '"><div class="row" style="justify-content:space-between"><h3>' + h(who + ' · ' + q.src) + '</h3><button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div>' +
+      '<div class="part" data-part="' + h(id) + '"><b>' + h(q.ask) + '</b> <span class="note">' + h(q.marks + (q.marks === 1 ? ' mark' : ' marks') + (q.tm ? ', ' + q.pm + ' for points now' : '')) + '</span>' + head + flag + '<div data-detail><p class="note">Loading<span class="dots"></span></p></div></div></aside>');
+    const dr = app.querySelector('.drawer');
+    dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
+    const ack = dr.querySelector('[data-ack]');
+    if (ack) twoPress(ack, T('staff.ackConfirm'), (reset) => call({ op: 'ack', topic: 'init', name: CLS, email, part: id }).then(() => { delete pu.I.P[id].fl; ack.parentElement.remove(); }, (e) => { reset(); fail(e); }));
+    const box = dr.querySelector('[data-detail]');
+    call({ op: 'iscripts', name: CLS, email, part: id }).then((rr) => {
+      const ticks = new Set(r.t || []), tt = new Set(r.tt || []);
+      const points = '<ul class="check">' + rr.labels.map((l, i) => '<li class="' + (ticks.has(i) || tt.has(i) ? 'hit' : 'miss') + '">' + h(l.l) + (l.tie ? ' <span class="note">[March]</span>' : '') + (l.auto ? ' <span class="note">[checked by the words]</span>' : '') + '</li>').join('') + '</ul>';
+      const mine = rr.kind === 'match' ? '<p class="note">' + h(r.f == null ? 'Not tried yet.' : 'A matching question, marked by the machine: ' + r.f + ' of ' + q.marks + (r.b > r.f ? ', best ' + r.b : '') + '.') + '</p>'
+        : rr.text ? '<p class="lab">Her answer</p><pre>' + h(rr.text) + '</pre>' : '<p class="note">' + h(T('staff.noAnswer')) + '</p>';
+      const tie = rr.ttext ? '<p class="lab">Her March tie</p><pre>' + h(rr.ttext) + '</pre>' : '';
+      const ev = rr.ev ? '<p class="lab">' + h(T('staff.eval')) + '</p><p>' + h(I_EVAL[rr.ev.v] || rr.ev.v) + (rr.ev.c ? ' · ' + h(rr.ev.c) : '') + '</p>' : '';
+      box.innerHTML = '<div class="twocol"><div>' + mine + tie + (rr.text && rr.kind !== 'match' ? '<p class="lab">The examiner’s points · ✓ = she ticked it</p>' + points : '') + '</div><div class="exampl"><p class="lab">The examiner’s answer</p><p>' + h(rr.model) + '</p></div></div>' + ev;
+    }, (e) => { box.innerHTML = ''; fail(e); });
   }
   // one part's mark points: ✓ / ✗, the mark, the note where a point was lost
   const nPoints = (v) => (v ? '<ul class="check">' + v.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']' + (pt.awarded < pt.of && pt.note ? ' · ' + h(pt.note) : '') + '</span></li>').join('') + '</ul>' : '');

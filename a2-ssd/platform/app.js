@@ -47,7 +47,7 @@
         if (code === 'not-signed-in') { SYS.expired = true; paintSys(); }
         const e = new Error(code); e.code = code; throw e;
       }
-      if (fn !== 'apiNorm') { // the normalisation record is norm.js's own (v14)
+      if (fn !== 'apiNorm' && fn !== 'apiInit') { // the normalisation record is norm.js's own (v14)
         if (r.rec) REC = r.rec;
         if (r.cfg) CFG = r.cfg;
         if (r.part && req.part) REC.P[req.part] = r.part;
@@ -273,7 +273,7 @@
       '<button class="tile live" data-go="#sql"><h2>' + h(T('home.sql')) + '</h2><p>' + h(T('home.sqlSub')) + '</p><span class="state">' + h(started ? T('home.sqlState', { open, done }) : T('home.notStarted')) + '</span></button>' +
       '<button class="tile live" data-go="#cw"><h2>' + h(T('home.cw')) + '</h2><p>' + h(T('home.cwSub')) + '</p><span class="state">' + h(cwState()) + '</span></button>' +
       window.NORM.tileHtml() +
-      '<div class="tile soon" aria-disabled="true"><h2>' + h(T('home.theory')) + '</h2><p>' + h(T('home.theorySub')) + '</p><span class="soon">' + h(T('home.soon')) + '</span></div></div></main>');
+      (window.INIT ? window.INIT.tileHtml() : '') + '</div></main>');
   }
 
   // ---------- coursework guide (DESIGN §6.1, §6.7): cw.js draws it; every pupil act goes to apiCw; the server copy wins on the first open ----------
@@ -756,6 +756,7 @@
     else if (k === 'eval') vEval(bits[1]);
     else if (k === 'cw') { vCw(); return; }
     else if (k === 'norm' || k === 'npaper' || k === 'npart' || k === 'neval') window.NORM.route(k, bits);
+    else if (window.INIT && ['init', 'ipage', 'ipart', 'ieval', 'icase'].includes(k)) window.INIT.route(k, bits);
     else vHome();
     const w = app.querySelector('.work') || app.querySelector('main'); if (w) w.scrollTop = 0;
   }
@@ -829,6 +830,7 @@
     setInterval(() => { if (!document.hidden) call('apiPing', { act: Date.now() - lastAct < 180000 ? 1 : 0 }).catch(() => {}); }, 60000);
     flushOutbox();
     window.NORM.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.norm);
+    if (window.INIT) window.INIT.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.init, r.email);
     route();
     notice(r.cw);
   }

@@ -1,0 +1,107 @@
+/* init.css — Reasons for systems development */
+main.init h1{margin:0 0 .2rem}
+main.init .sub{color:var(--mute);margin:0 0 1rem}
+main.init .sect{font-size:1.05rem;margin:1.4rem 0 .5rem;color:var(--navy)}
+main.init .meta{color:var(--mute);font-size:.9rem;margin:0 0 .4rem}
+main.init .hist{color:var(--mute);font-size:.9rem}
+main.init .lbl{display:block;font-weight:600;margin:.2rem 0}
+main.init .foot{margin-top:1rem}
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:0 0 1rem}
+.rooms .room{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;padding:.7rem .9rem;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.rooms .room small{font-weight:400;color:var(--mute)}
+.rooms .room.on{border-color:var(--navy);background:var(--tint)}
+.rooms .room:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+/* the deck */
+.card.deck{padding:.9rem}
+.card.deck h2{margin:0 0 .5rem}
+.deck img.slide{display:block;width:100%;height:auto;aspect-ratio:16/9;border:1px solid var(--line);border-radius:8px;background:#fff}
+.deck .deckrow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.6rem 0 .4rem;flex-wrap:wrap}
+.deck .cap{color:var(--mute);font-size:.95rem}
+.deck .dots{display:flex;flex-wrap:wrap;gap:4px;margin:.2rem 0 0}
+.deck .dots::after{content:none;animation:none}
+.deck .dot{width:11px;height:11px;border-radius:50%;background:var(--line);cursor:pointer;display:inline-block}
+.deck .dot.on{background:var(--navy);transform:scale(1.25)}
+.deck .dot:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+/* lists */
+.parts.bullets li{grid-template-columns:2rem 1fr auto}
+.parts.bullets .n{font-weight:800;color:var(--navy);font-size:1.2rem}
+.parts.bullets .name small,.parts.qs .name small{display:block;color:var(--mute);font-weight:400}
+.parts.bullets .state.done{color:var(--ok);font-weight:700}
+.parts.qs li{grid-template-columns:110px 1fr 150px auto;align-items:center}
+.parts.qs .src{color:var(--navy);font-weight:700;font-size:.9rem}
+.parts.qs .marks{color:var(--mute);font-size:.9rem}
+.parts.qs .state{font-size:.9rem}
+/* pages */
+.psec h2{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin:0 0 .4rem}
+.psec .yrs{color:var(--mute);font-weight:400;font-size:.85rem}
+.plines{margin:0;padding-left:1.2rem}
+.plines .pline{margin:.25rem 0;line-height:1.45}
+.quick .item{padding:.6rem 0;border-top:1px solid var(--line)}
+.quick .item:first-of-type{border-top:0}
+.quick .q{margin:0 0 .4rem}
+.quick .opts{display:grid;gap:.3rem}
+.quick .opts label{display:flex;gap:.5rem;align-items:flex-start;padding:.35rem .5rem;border-radius:8px;cursor:pointer}
+.quick .opts label:hover{background:var(--tint)}
+.quick .opts input{margin-top:.25rem}
+.qresult .pass{color:var(--ok);font-weight:700;font-size:1.1rem}
+.qresult .miss{color:var(--bad);font-weight:700}
+.qresult .wrong li{margin:.3rem 0}
+/* the question */
+.askcard q{display:block;font-size:1.15rem;font-weight:600;quotes:none;margin:.2rem 0}
+.askcard .tienote{color:var(--mute);font-size:.9rem;margin:.5rem 0 0}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1rem 0}
+.doors .door{display:flex;flex-direction:column;gap:.3rem;align-items:flex-start;padding:1rem;border:2px solid var(--line);border-radius:12px;background:var(--card);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.doors .door b{font-size:1.05rem}
+.doors .door span{color:var(--mute);font-weight:400}
+.doors .door:hover{border-color:var(--navy);background:var(--tint)}
+.write textarea.prose{width:100%;box-sizing:border-box;margin:.3rem 0 .6rem}
+.write.locked textarea.prose{background:var(--grey-50);color:var(--ink)}
+.story .lead{font-weight:600;margin:.6rem 0 .2rem}
+.ticks{list-style:none;padding:0;margin:.4rem 0 .6rem}
+.ticks li{display:flex;justify-content:space-between;gap:.6rem;align-items:center;padding:.4rem .2rem;border-top:1px solid var(--line)}
+.ticks li:first-child{border-top:0}
+.ticks label{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer;flex:1}
+.ticks input{margin-top:.3rem}
+.ticks .tag{display:inline-block;margin-left:.4rem;padding:0 .4rem;border-radius:999px;background:var(--navy-a15);color:var(--navy);font-size:.75rem;font-weight:700;vertical-align:middle}
+.tieticks .gen{font-size:.85rem;color:var(--mute);white-space:nowrap}
+.tieticks .gen.on{color:var(--ok);font-weight:600}
+.card.marks .score{font-size:1.6rem;font-weight:800;color:var(--navy);margin:.2rem 0}
+.card.marks .score small{font-size:.95rem;font-weight:500;color:var(--mute)}
+.card.marks .march{background:var(--tint);border-left:4px solid var(--gold);padding:.5rem .7rem;border-radius:0 8px 8px 0}
+.bands{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:.95rem}
+.bands th,.bands td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+.bands tr.on td{background:var(--tint);font-weight:700}
+.card.exampl .model{white-space:pre-wrap;line-height:1.5}
+.match .mrow{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;align-items:center;padding:.4rem 0;border-top:1px solid var(--line)}
+.match .mrow:first-child{border-top:0}
+.match select{font:inherit;padding:.45rem .5rem;border:1px solid var(--line);border-radius:8px;background:#fff;max-width:100%}
+.card.marks .check li{margin:.3rem 0}
+.why{color:var(--mute);font-size:.9rem;align-self:center}
+.why[hidden]{display:none}
+/* March */
+.card.cs .cstext{white-space:pre-wrap;line-height:1.5}
+.card.mine p{white-space:pre-wrap}
+.tiecard textarea.prose{width:100%;box-sizing:border-box;margin:.3rem 0 .6rem}
+.tiecard .tied{white-space:pre-wrap;background:var(--grey-50);padding:.6rem .8rem;border-radius:8px}
+.tiecard .counter{font-weight:700;color:var(--navy)}
+.tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.tasks .task p{margin:.2rem 0}
+main.init .marchempty{font-size:1.05rem;margin:0}
+/* evaluation */
+main.ev .line{display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem}
+main.ev textarea.comment{width:100%;box-sizing:border-box;display:block;margin:.3rem 0 .1rem}
+@media (max-width:900px){
+  .rooms{grid-template-columns:1fr}
+  .parts.qs li{grid-template-columns:1fr auto}
+  .parts.qs .src{grid-column:1/-1}
+  .parts.qs .name{grid-column:1/-1}
+  .doors{grid-template-columns:1fr}
+  .match .mrow{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .deck .deckrow .cap{order:3;width:100%;text-align:center}
+  .ticks li{flex-direction:column;align-items:flex-start}
+}
+
+/* staff grid: Last seen never wraps (look pass 18 Nov) */
+.staff .igrid td:nth-child(2),.staff .igrid th:nth-child(2){white-space:nowrap}
