@@ -860,7 +860,12 @@
     window.addEventListener('hashchange', route);
     const cls = (window.OLS_BOOT && window.OLS_BOOT.classCode) || '';
     guard(T('guard.signing'), true);
+    // Watchdog: a first google.script.run call can hang on Google's side and never answer (seen live 18 Nov 2026, v15: doGet ran, apiBoot never arrived).
+    // After 20 s a pupil gets the offline bar with Try again (a reload) instead of a dead end; a late answer still boots as normal.
+    let booted = false;
+    const slow = setTimeout(() => { if (!booted) { SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; paintSys(); } }, 20000);
     window.OLS_TRANSPORT.call('apiBoot', { cls }).then((r) => {
+      booted = true; clearTimeout(slow); if (SYS.offline) { SYS.offline = false; SYS.retry = null; }
       if (r && r.v && BUILD && r.v !== BUILD) SYS.stale = true;
       if (!r || r.ok === false) {
         const code = r && r.error;
@@ -869,7 +874,7 @@
       }
       if (r.staff) { window.Staff.boot(app, r); return; }
       if (r.needName) askName(r); else start(r);
-    }, () => { SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
+    }, () => { booted = true; clearTimeout(slow); SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
   }
   window.App = { boot, T, h, NOTICE };
 })();
