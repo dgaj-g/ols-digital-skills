@@ -104,7 +104,7 @@ vm.createContext(sandbox);
 vm.runInContext('(function (g) { var now = Date.now, at = null; Date.now = function () { return at == null ? now() : 1767225600000 + at * 60000; }; g.__clock = function (m) { at = m; }; })(this);', sandbox);
 vm.runInContext(fs.readFileSync(CODE, 'utf8'), sandbox, { filename: 'Code.gs' });
 
-const MIME = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css' };
+const MIME = { '.js': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json', '.css': 'text/css' };
 function page(q) {
   const cls = String(q.get('class') || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
   const as = String(q.get('as') || 'pupil1@c2ken.net');
@@ -120,6 +120,7 @@ function page(q) {
   let html = fs.readFileSync(INDEX, 'utf8').replace('<?= classCode ?>', cls).replace('<?= baseUrl ?>', 'http://localhost:' + PORT + '/');
   html = html.replace(/window\.A2_VENDOR = [^;]*;/, "window.A2_VENDOR = ['/vendor/'];");
   html = html.replace(/window\.A2_CW = [^;]*;/, "window.A2_CW = '/cw/';");
+  html = html.replace(/window\.A2_DECKS = [^;]*;/, "window.A2_DECKS = '/decks/init/';");
   return html.replace('<script>window.OLS_BOOT', shim + '\n<script>window.OLS_BOOT');
 }
 http.createServer((req, res) => {
@@ -128,6 +129,11 @@ http.createServer((req, res) => {
   if (req.method === 'GET' && u.pathname.startsWith('/vendor/')) {
     const f = path.join(VENDOR, path.basename(u.pathname));
     if (fs.existsSync(f)) { res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream', 'access-control-allow-origin': '*' }); res.end(fs.readFileSync(f)); return; }
+  }
+  if (req.method === 'GET' && u.pathname.startsWith('/decks/')) { // the deck slides, as github.io serves them
+    const f = path.join(A2, 'decks', path.normalize(decodeURIComponent(u.pathname.slice(7))).replace(/^(\.\.[/\\])+/, ''));
+    if (f.startsWith(path.join(A2, 'decks')) && fs.existsSync(f) && fs.statSync(f).isFile()) { res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); res.end(fs.readFileSync(f)); return; }
+    res.writeHead(404); res.end(); return;
   }
   if (req.method === 'GET' && u.pathname.startsWith('/cw/')) { // the coursework guide's content, as github.io serves it
     const f = path.join(A2, 'content', 'coursework', path.normalize(decodeURIComponent(u.pathname.slice(4))).replace(/^(\.\.[/\\])+/, ''));

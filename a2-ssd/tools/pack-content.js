@@ -168,6 +168,12 @@ for (const p of pubPapers) for (const q of p.parts) {
 // ---- normalisation (NORMALISATION_SPEC §7, v14): papers with the practice paper inside, the documents, the lessons, the job and Help lines.
 // All public by design: names, starts and the quick-check words are printed on the papers or asked on screen. Mark points, models
 // and the practice answers stay in src/judge (normpoints, normtwins, normjudge), which only build-server.js reads (N15).
+function initPub() {
+  const C = path.join(SRC, '..', 'content');
+  const o = JSON.parse(fs.readFileSync(path.join(C, 'init.json'), 'utf8'));
+  o.deckStates = JSON.parse(fs.readFileSync(path.join(ROOT, 'decks', 'init', 'states.json'), 'utf8'));
+  return o;
+}
 function normPub() {
   const C = path.join(SRC, '..', 'content');
   const np = JSON.parse(fs.readFileSync(path.join(C, 'norm-papers.json'), 'utf8'));
@@ -184,7 +190,7 @@ function normPub() {
 let git = 'dev';
 try { git = execFileSync('git', ['-C', ROOT, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim(); } catch (e) { /* not a checkout */ }
 const pub = { papers: pubPapers, twins, sets: setTables, lessons: Object.fromEntries(Object.entries(lessons).filter(([k]) => k !== 'note')), clusters: { clusters: clusters.clusters, lessonFor, order: clusters.order },
-  seeds, strings, norm: normPub() };
+  seeds, strings, norm: normPub(), init: initPub() };
 const hash = require('crypto').createHash('sha256').update(JSON.stringify(pub)).digest('hex').slice(0, 10);
 const BUILD = hash;
 pub.BUILD = BUILD;

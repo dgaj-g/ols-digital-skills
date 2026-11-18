@@ -283,7 +283,8 @@ function apiBoot(req) {
   Object.keys(W).forEach(function (ch) { if (/^\d\d$/.test(ch) && W[ch] && num_(W[ch].f) && (!cwf || num_(W[ch].f) < cwf)) cwf = num_(W[ch].f); });
   var ccfg = readClass_(cls);
   return ok_({ email: email, cls: cls, name: rec.n, needName: !rec.n, rec: pupilView_(rec), cfg: classView_(ccfg), cw: { f: cwf, N: W.N || {}, W: cwView_(W) },
-    norm: { rec: nView_(readNorm_(cls, email)), order: nOrder_(ccfg), open: nOpen_(ccfg) } });
+    norm: { rec: nView_(readNorm_(cls, email)), order: nOrder_(ccfg), open: nOpen_(ccfg) },
+    init: { rec: iView_(readInit_(cls, email)), cs: readCase_(cls) } });
 }
 
 function apiName(req) {
@@ -624,6 +625,195 @@ function nEval_(w, req) {
     return ok_({ rec: nView_(rec) });
   });
 }
+/* ==================== REASONS FOR SYSTEMS DEVELOPMENT (v15, INITIATION_SPEC) ==================== */
+// One key per pupil: i:<class>:<email> = { P: { <part>: { k: locked tmin, d: door, f: first, b: best, a: attempts, s: seen tmin, t: [tick idx],
+//   fl: flag, tk: tie-locked tmin, ta/tf/tb: March attempts/first/best, tt: [tie tick idx] } }, G: { <bullet>: tmin the page's quick check passed },
+//   E: { <part>: { v, c, t } } }. Her words live in the scripts key d:<class>:<email>:<part> (and <part>-t for the March tie).
+// Point labels, mark schemes and model answers are served from here only, never shipped (D54). The case study is class config
+// (cls:<name>.icase = { org, text, terms }) that staff set in March: until then every March screen says so and nothing is tied.
+var INIT_CAP = 1500;          // characters of one stored answer (InitJudge.CAP)
+function iKey_(cls, email) { return 'i:' + cls + ':' + email; }
+function readInit_(cls, email) { var r = jget_(sp_(), iKey_(cls, email), null) || {}; return { P: r.P || {}, G: r.G || {}, E: r.E || {} }; }
+function writeInit_(cls, email, rec) { jset_(sp_(), iKey_(cls, email), { P: rec.P, G: rec.G, E: rec.E }); }
+function iView_(rec) { rec = rec || {}; return { P: rec.P || {}, G: rec.G || {}, E: rec.E || {} }; }
+function iMeta_(id) { return (A2META.init && A2META.init.parts[str_(id)]) || null; }
+function iPart_(id) { return InitPoints.parts[str_(id)] || null; }
+function readCase_(cls) { var c = readClass_(cls); return (c && c.icase) || null; }
+function iLabels_(jp) { return (jp.points || []).map(function (q) { return { id: q.id, l: q.label, tie: q.tie ? 1 : 0, auto: q.auto ? 1 : 0 }; }); }
+function iText_(cls, email, key) {
+  var sc = readScripts_(cls, email, key);
+  for (var i = 0; i < sc.a.length; i++) { if (sc.a[i][2] != null) { try { return str_(JSON.parse(sc.a[i][2]).t); } catch (e) { return ''; } } }
+  return '';
+}
+function iStore_(cls, email, key, text) { writeScripts_(cls, email, key, { a: [[tmin_(), 0, JSON.stringify({ t: text })]], t: [] }); }
+function iClean_(text) { return InitJudge.clean(str_(text), INIT_CAP); }
+// the pages post tick indexes into the served label list; the judge takes point ids
+function iIdx_(jp, ticks) { return (Array.isArray(ticks) ? ticks : []).map(function (x) { return x | 0; }).filter(function (x, i, a) { return x >= 0 && x < (jp.points || []).length && a.indexOf(x) === i; }); }
+function iIds_(jp, idx) { return idx.map(function (i) { return jp.points[i].id; }); }
+function iTotal_(jp, v) { return jp.kind === 'levels' ? v.mark : (v.total != null ? v.total : v.pts); }
+
+function apiInit(req) {
+  req = req || {};
+  var w = who_(req); if (w.error) return err_(w.error);
+  var op = str_(req.op), cls = w.cls, email = w.email, CS = readCase_(cls);
+  if (op === 'state') {
+    var rec0 = readInit_(cls, email), out = { rec: iView_(rec0), cs: CS };
+    var sid = str_(req.part), sjp = sid ? iPart_(sid) : null;
+    if (sjp) {
+      var sp = rec0.P[sid] || {};
+      out.text = sp.k ? iText_(cls, email, sid) : '';
+      out.labels = sp.k ? iLabels_(sjp) : null;
+      out.ttext = sp.tk ? iText_(cls, email, sid + '-t') : '';
+      out.tie = sp.tk && CS ? InitJudge.ties(out.ttext, CS.terms || []) : null;
+    }
+    return ok_(out);
+  }
+  if (op === 'quick') {    // the page's three-question check; the pass ticks the page for good
+    var b = str_(req.b), items = Array.isArray(req.items) ? req.items : [], picks = Array.isArray(req.picks) ? req.picks : [];
+    var qv;
+    try { qv = InitJudge.quick(b, items.map(function (i, k) { return { i: i | 0, a: picks[k] | 0 }; })); } catch (e) { return err_(str_(e && e.message || e) || 'bad-pick'); }
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email);
+      if (qv.pass && !rec.G[b]) { rec.G[b] = tmin_(); writeInit_(cls, email, rec); }
+      return ok_({ pass: qv.pass, wrong: qv.wrong, rec: iView_(rec) });
+    });
+  }
+  var id = str_(req.part), meta = iMeta_(id), jp = iPart_(id);
+  if (!meta || !jp) return err_('unknown-part');
+  if (op === 'eval') {     // How did it go? once per question, first send wins
+    var vv = str_(req.v), ec = str_(req.c).replace(/[\u0000-\u001f]/g, ' ').slice(0, 60);
+    if (['can', 'getting', 'not'].indexOf(vv) === -1) return err_('bad-pick');
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email);
+      if (rec.E[id]) return ok_({ already: true, rec: iView_(rec) });
+      rec.E[id] = { v: vv, c: ec, t: tmin_() }; writeInit_(cls, email, rec);
+      return ok_({ rec: iView_(rec) });
+    });
+  }
+  if (op === 'check') {    // a match part: machine marked, no lock
+    if (jp.kind !== 'match') return err_('not-match');
+    var choices = (Array.isArray(req.picks) ? req.picks : []).map(function (x) { return x == null || x === '' ? -1 : (x | 0); });
+    var mv = InitJudge.match(id, choices);
+    var mres = withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {}, first = p.f == null;
+      if (first) { p.k = p.k || tmin_(); p.d = req.door === 1 ? 1 : 0; p.f = mv.score; p.b = mv.score; p.a = 1; }
+      else { p.a = num_(p.a) + 1; if (mv.score > num_(p.b)) { p.b = mv.score; if (p.s) p.sb = 1; } }
+      rec.P[id] = p; writeInit_(cls, email, rec);
+      return { first: first, part: p };
+    });
+    touch_(cls, email, 1, 1);
+    return ok_({ verdict: mv, first: mres.first, part: mres.part });
+  }
+  if (op === 'lock') {     // her words go in once; from then on the point list is served and she ticks against it
+    var text = iClean_(req.text);
+    if (!text.replace(/\s+/g, '')) return err_('empty');
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {};
+      if (p.k) return ok_({ part: p, labels: iLabels_(jp), text: iText_(cls, email, id), already: true });
+      p.k = tmin_(); p.d = req.door === 1 ? 1 : 0;
+      iStore_(cls, email, id, text);
+      rec.P[id] = p; writeInit_(cls, email, rec);
+      return ok_({ part: p, labels: iLabels_(jp) });
+    });
+  }
+  if (op === 'mark') {     // her ticks against the examiner's points; first stands, best moves, attempts count
+    var idx = iIdx_(jp, req.ticks), ids = iIds_(jp, idx), own = iText_(cls, email, id);
+    var v = jp.kind === 'levels' ? InitJudge.levels(id, ids, {}) : InitJudge.score(id, ids, { text: own });
+    var total = iTotal_(jp, v);
+    var res = withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {};
+      if (!p.k) return null;
+      var first = p.f == null;
+      if (first) { p.f = total; p.b = total; p.a = 1; }
+      else { p.a = num_(p.a) + 1; if (total > num_(p.b)) { p.b = total; if (p.s) p.sb = 1; } }
+      p.t = idx; rec.P[id] = p; writeInit_(cls, email, rec);
+      return { first: first, part: p };
+    });
+    if (!res) return err_('not-locked');
+    touch_(cls, email, 1, 1);
+    return ok_({ verdict: v, first: res.first, part: res.part });
+  }
+  if (op === 'answer') {   // the examiner's model, only after a first mark; sets seen
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {};
+      if (p.f == null) return err_('no-first');
+      if (!p.s) { p.s = tmin_(); rec.P[id] = p; writeInit_(cls, email, rec); }
+      return ok_({ model: jp.model || '', labels: iLabels_(jp), part: p });
+    });
+  }
+  if (op === 'flag') {
+    var beats = ['door', 'ask', 'lesson', 'turn', 'march', 'another'], beat = beats.indexOf(req.beat) === -1 ? 'turn' : req.beat;
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {};
+      if (req.on) p.fl = { b: beat, m: tmin_() }; else delete p.fl;
+      rec.P[id] = p; writeInit_(cls, email, rec);
+      return ok_({ part: p });
+    });
+  }
+  if (op === 'tielock') {  // March: her case-study tie, written once against her own locked answer
+    if (!CS) return err_('no-case');
+    var ttext = iClean_(req.text);
+    if (!ttext.replace(/\s+/g, '')) return err_('empty');
+    touch_(cls, email, 1, 0);
+    return withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {};
+      if (!p.k) return err_('not-locked');
+      if (!p.tk) { p.tk = tmin_(); iStore_(cls, email, id + '-t', ttext); rec.P[id] = p; writeInit_(cls, email, rec); }
+      else ttext = iText_(cls, email, id + '-t');
+      var tie = InitJudge.ties(ttext, CS.terms || []);
+      return ok_({ n: tie.n, used: tie.used, labels: iLabels_(jp), part: p, ttext: ttext });
+    });
+  }
+  if (op === 'tie') {      // March: the full exam mark, point ticks plus tie ticks, out of the paper's marks
+    if (!CS) return err_('no-case');
+    var r1 = readInit_(cls, email), p1 = r1.P[id] || {};
+    if (!p1.k || !p1.tk) return err_('not-locked');
+    var tt = iIdx_(jp, req.tieTicks), base = iIdx_(jp, req.ticks);
+    var tText = iText_(cls, email, id + '-t'), all = iIds_(jp, base.concat(tt).filter(function (x, i, a) { return a.indexOf(x) === i; }));
+    var tv = jp.kind === 'levels' ? InitJudge.levels(id, all, { march: true, ties: InitJudge.ties(tText, CS.terms || []).n })
+      : InitJudge.score(id, all, { march: true, text: iText_(cls, email, id) + ' ' + tText });
+    var ttotal = iTotal_(jp, tv);
+    var tres = withLock_(function () {
+      var rec = readInit_(cls, email), p = rec.P[id] || {}, first = p.tf == null;
+      if (first) { p.tf = ttotal; p.tb = ttotal; p.ta = 1; } else { p.ta = num_(p.ta) + 1; if (ttotal > num_(p.tb)) p.tb = ttotal; }
+      p.tt = tt; rec.P[id] = p; writeInit_(cls, email, rec);
+      return p;
+    });
+    touch_(cls, email, 1, 1);
+    return ok_({ verdict: tv, part: tres });
+  }
+  return err_('bad-op');
+}
+// staff: one pupil's answer at one Reasons question, with the examiner's points and model beside it (drawer)
+function iStaffScripts_(cls, pe, id) {
+  var jp = iPart_(id), meta = iMeta_(id);
+  if (!jp || !meta) return err_('unknown-part');
+  var rec = readInit_(cls, pe), p = rec.P[id] || {};
+  return ok_({ part: p, text: p.k ? iText_(cls, pe, id) : '', ttext: p.tk ? iText_(cls, pe, id + '-t') : '', labels: iLabels_(jp), model: jp.model || '',
+    kind: jp.kind, marks: meta.marks, pm: meta.pm, ev: rec.E[id] || null });
+}
+// staff: the class's case study for March (one object on the class record)
+function iCase_(name, email, req) {
+  if (req.set) {
+    if (!canManage_(name, email)) return err_('owner-only');
+    return withLock_(function () {
+      var c = readClass_(name) || {}, s = req.set || {};
+      var terms = (Array.isArray(s.terms) ? s.terms : str_(s.terms).split(',')).map(function (t) { return str_(t).trim().slice(0, 40); })
+        .filter(function (t, i, a) { return t && a.indexOf(t) === i; }).slice(0, 30);
+      var org = str_(s.org).trim().slice(0, 60), text = str_(s.text).replace(/[\u0000-\u0008\u000b-\u001f]/g, ' ').slice(0, 4000);
+      if (!org && !text) delete c.icase; else c.icase = { org: org, text: text, terms: terms, m: tmin_(), by: email };
+      jset_(sp_(), 'cls:' + name, c);
+      return ok_({ cs: c.icase || null });
+    });
+  }
+  return ok_({ cs: readCase_(name), canManage: canManage_(name, email) });
+}
+
 // staff: one pupil's attempts at one normalisation part, re-judged, with the examiner's tables beside them (§9 drawer)
 function nStaffScripts_(cls, pe, partId) {
   var jp = nJudgePart_(partId), meta = nMeta_(partId);
@@ -802,7 +992,7 @@ function apiStaff(req) {
     if (!isClassOwner_(name, email) && !isOwner_(email)) return err_('owner-only');
     return withLock_(function () {
       var store = sp_(), keys = store.getKeys();
-      var pres = ['p:' + name + ':', 'n:' + name + ':', 'd:' + name + ':', 's:' + name + ':', 'w:' + name + ':'];
+      var pres = ['p:' + name + ':', 'n:' + name + ':', 'i:' + name + ':', 'd:' + name + ':', 's:' + name + ':', 'w:' + name + ':'];
       keys.forEach(function (k) { if (pres.some(function (p) { return k.indexOf(p) === 0; })) store.deleteProperty(k); });
       store.deleteProperty('cls:' + name);
       jset_(store, 'classes', classList_().filter(function (n) { return n !== name; }));
@@ -845,8 +1035,9 @@ function apiStaff(req) {
     props = allProps_();
     var pupils = pupilsOf_(props, name).map(function (p) { p.me = p.email === email; return p; });
     var c1 = readClass_(name);
-    pupils.forEach(function (p) { var N = {}; try { N = JSON.parse(props[nKey_(name, p.email)] || '{}'); } catch (e) { N = {}; } p.N = { P: N.P || {}, E: N.E || {} }; });
-    return ok_({ pupils: pupils, order: c1.order || A2META.order, open: c1.open || [], norder: nOrder_(c1), nopen: nOpen_(c1), now: tmin_() });
+    pupils.forEach(function (p) { var N = {}; try { N = JSON.parse(props[nKey_(name, p.email)] || '{}'); } catch (e) { N = {}; } p.N = { P: N.P || {}, E: N.E || {} };
+      var I = {}; try { I = JSON.parse(props[iKey_(name, p.email)] || '{}'); } catch (e) { I = {}; } p.I = iView_(I); });
+    return ok_({ pupils: pupils, order: c1.order || A2META.order, open: c1.open || [], norder: nOrder_(c1), nopen: nOpen_(c1), icase: (c1 && c1.icase) || null, now: tmin_() });
   }
   // the class progress grid (DESIGN §6.7.2): one read of the store, every pupil's coursework record
   if (op === 'coursework') {
@@ -858,6 +1049,8 @@ function apiStaff(req) {
     return ok_({ pupils: cwp, now: tmin_() });
   }
   if (op === 'nscripts') return nStaffScripts_(name, str_(req.email).toLowerCase(), str_(req.part));
+  if (op === 'iscripts') return iStaffScripts_(name, str_(req.email).toLowerCase(), str_(req.part));
+  if (op === 'icase') return iCase_(name, email, req);
   if (op === 'nprog') {   // spec §9 progress strip: per part, full marks on first, how many started, the point missed most on first marks
     var npaper = A2META.norm.papers[str_(req.paper)];
     if (!npaper) return err_('unknown-paper');
@@ -917,6 +1110,12 @@ function apiStaff(req) {
   }
   if (op === 'ack') {
     var ae = str_(req.email).toLowerCase(), ap = str_(req.part);
+    if (req.topic === 'init') return withLock_(function () {
+      var ir = readInit_(name, ae);
+      if (!ir.P[ap]) return err_('unknown-pupil');
+      delete ir.P[ap].fl; writeInit_(name, ae, ir);
+      return ok_({});
+    });
     if (req.topic === 'norm') return withLock_(function () {
       var nr = readNorm_(name, ae);
       if (!nr.P[ap]) return err_('unknown-pupil');
@@ -935,7 +1134,7 @@ function apiStaff(req) {
     return withLock_(function () {
       var store = sp_();
       store.getKeys().forEach(function (k) {
-        if (k === 'p:' + name + ':' + email || k === nKey_(name, email) || k === 's:' + name + ':' + email || k === wKey_(name, email) || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
+        if (k === 'p:' + name + ':' + email || k === nKey_(name, email) || k === iKey_(name, email) || k === 's:' + name + ':' + email || k === wKey_(name, email) || k.indexOf('d:' + name + ':' + email + ':') === 0) store.deleteProperty(k);
       });
       return ok_({});
     });
@@ -972,6 +1171,15 @@ function apiStaff(req) {
             p.f == null ? '' : p.f, p.b == null ? '' : p.b, tw && tw.b != null ? tw.b + '/' + (nMeta_(q.twin) || {}).marks : '', num_(p.a),
             p.s ? 'yes' : '', p.fl ? p.fl.b : '', evText, ev ? ev.c : '', seen].map(csvCell_).join(','));
         });
+      });
+      var I2 = {}; try { I2 = JSON.parse(props[iKey_(name, pu.email)] || '{}'); } catch (e) { I2 = {}; }
+      var IP = I2.P || {}, IE = I2.E || {}, iPicks = { can: 'I can', getting: 'getting there', not: 'not yet' };
+      ((A2META.init && A2META.init.order) || []).forEach(function (qid) {
+        var p = IP[qid], im = A2META.init.parts[qid] || {}, ev = IE[qid];
+        if (!p) return;
+        lines.push([name, 'init', pu.n, pu.email, im.b || '', qid, p.f == null ? '' : (p.d === 1 ? 'write it now' : 'learn it first'),
+          p.f == null ? '' : p.f, p.b == null ? '' : p.b, p.tb == null ? '' : p.tb + '/' + im.marks, num_(p.a),
+          p.s ? 'yes' : '', p.fl ? p.fl.b : '', ev ? (iPicks[ev.v] || ev.v) : '', ev ? ev.c : '', seen].map(csvCell_).join(','));
       });
     });
     return ok_({ csv: lines.join('\r\n'), file: name + '.csv' });

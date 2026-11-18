@@ -69,6 +69,11 @@ NORM.papers.forEach((p) => {
   if (!p.practice) META.norm.papers[p.id] = { id: p.id, year: p.year, marks: p.marks, parts };
 });
 Object.values(META.norm.parts).forEach((m) => { if (m.twin && !META.norm.parts[m.twin]) { console.error('norm twin ' + m.twin + ' is not a part'); process.exit(1); } });
+// Reasons for systems development (v15): every question with what the server needs to mark and carry
+const INIT = C.init;
+if (!INIT || !INIT.parts) { console.error('content.js has no init block: run tools/pack-content.js'); process.exit(1); }
+META.init = { order: INIT.parts.map((q) => q.id), parts: {} };
+INIT.parts.forEach((q) => { META.init.parts[q.id] = { kind: q.kind, marks: q.marks, pm: q.pm, tm: q.tm || 0, b: q.b }; });
 // the coursework guide's tickable rows per built chapter (DESIGN §6.7.1: apiCw refuses anything else)
 const CWIX = JSON.parse(need(path.join(A2, 'content', 'coursework', 'index.json')));
 // A pupil's ticks are a bitmap over server/cw-slots.json, which only ever grows: a retired row keeps its slot as null (its old bit
@@ -102,7 +107,7 @@ const STAFF = JSON.parse(fs.readFileSync(STAFF_JSON, 'utf8'));
 
 // ---- the public page first (its hash is part of the build id)
 const index = need(path.join(PLATFORM, 'index.html'));
-const style = need(path.join(PLATFORM, 'style.css')) + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(PLATFORM, 'cw.css')) + '\n/* ---- norm.css: normalisation ---- */\n' + need(path.join(PLATFORM, 'norm.css'));
+const style = need(path.join(PLATFORM, 'style.css')) + '\n/* ---- cw.css: the coursework guide ---- */\n' + need(path.join(PLATFORM, 'cw.css')) + '\n/* ---- norm.css: normalisation ---- */\n' + need(path.join(PLATFORM, 'norm.css')) + '\n/* ---- init.css: reasons for systems development ---- */\n' + need(path.join(PLATFORM, 'init.css'));
 const scripts = [
   ['content.js', path.join(PLATFORM, 'content.js')],
   ['lessonview.js', path.join(PLATFORM, 'lessonview.js')],
@@ -111,11 +116,12 @@ const scripts = [
   ['lesson.js', path.join(PLATFORM, 'lesson.js')],
   ['cw.js', path.join(PLATFORM, 'cw.js')],
   ['norm.js', path.join(PLATFORM, 'norm.js')],
+  ['init.js', path.join(PLATFORM, 'init.js')],
   ['app.js', path.join(PLATFORM, 'app.js')],
   ['staff.js', path.join(PLATFORM, 'staff.js')],
 ].map(([n, p]) => [n, need(p)]);
 
-const APIS = ['apiNorm', 'apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
+const APIS = ['apiInit', 'apiNorm', 'apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
 const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {
@@ -128,7 +134,7 @@ const shim = `window.OLS_TRANSPORT = {
 const hashOf = (s) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 10);
 const pageHash = hashOf(style + index + scripts.map((s) => s[1]).join('\n'));
 const tpl = need(path.join(SERVER, 'Code.gs.template'));
-const judgeSrc = ['schema.js', 'judge.js', 'markpoints.js', 'twinpoints.js', 'normpoints.js', 'normtwins.js', 'normjudge.js'].map((f) => {
+const judgeSrc = ['schema.js', 'judge.js', 'markpoints.js', 'twinpoints.js', 'normpoints.js', 'normtwins.js', 'normjudge.js', 'initpoints.js', 'initquick.js', 'initjudge.js'].map((f) => {
   const s = need(path.join(JUDGE, f));
   const n = (s.match(/typeof self !== 'undefined' \? self : this/g) || []).length;
   if (n !== 1) { console.error(f + ': expected one UMD root, found ' + n); process.exit(1); }
@@ -156,7 +162,7 @@ if (!bodyOpen) { console.error('index.html: no <body>'); process.exit(1); }
 let body = index.slice(index.indexOf(bodyOpen) + bodyOpen.length);
 body = body.slice(0, body.lastIndexOf('</body>') > -1 ? body.lastIndexOf('</body>') : body.length).replace(/<script[\s\S]*?<\/script>/gi, '');
 const boot = '<script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };\n' +
-  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(GH.replace('platform/vendor/', 'content/coursework/')) + ';</script>';
+  'window.A2_VENDOR = ' + JSON.stringify([CDN, GH]) + ';\nwindow.A2_DEPLOY = ' + JSON.stringify('a2ssd-' + BUILD) + ';\nwindow.A2_CW = ' + JSON.stringify(GH.replace('platform/vendor/', 'content/coursework/')) + ';\nwindow.A2_DECKS = ' + JSON.stringify(GH.replace('platform/vendor/', 'decks/init/')) + ';</script>';
 const frags = [boot, '<script>\n' + jsBlock(shim) + '\n</script>']
   .concat(scripts.map(([n, s]) => { const b = jsBlock(s); if (/<\/script/i.test(b)) { console.error(n + ': </script left'); process.exit(1); } return '<script>\n' + b + '\n</script>'; }))
   .concat(["<script>window.addEventListener('DOMContentLoaded', function () { App.boot(); });</script>"]);
