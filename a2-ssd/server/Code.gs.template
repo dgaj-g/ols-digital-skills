@@ -726,10 +726,12 @@ function apiInit(req) {
     var res = withLock_(function () {
       var rec = readInit_(cls, email), p = rec.P[id] || {};
       if (!p.k) return null;
-      var first = p.f == null;
+      var first = p.f == null, now = tmin_();
+      var same = !first && p.lm != null && now - p.lm <= 2 && JSON.stringify(p.t || []) === JSON.stringify(idx);
+      if (same) return { first: false, part: p };   // the same ticks again within two minutes is a retried call (a lost response), not a second attempt (v18)
       if (first) { p.f = total; p.b = total; p.a = 1; }
       else { p.a = num_(p.a) + 1; if (total > num_(p.b)) { p.b = total; if (p.s) p.sb = 1; } }
-      p.t = idx; rec.P[id] = p; writeInit_(cls, email, rec);
+      p.t = idx; p.lm = now; rec.P[id] = p; writeInit_(cls, email, rec);
       return { first: first, part: p };
     });
     if (!res) return err_('not-locked');

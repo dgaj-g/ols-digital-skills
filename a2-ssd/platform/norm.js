@@ -704,5 +704,5 @@
     return '<button class="tile live" data-nload="#norm"><h2>' + h(A.T('home.norm')) + '</h2><p>' + h(A.T('home.normSub')) + '</p><span class="state">' + h(state) + '</span></button>';
   }
   function mount(api, boot) { A = api; if (boot) take(boot, {}); }
-  window.NORM = { mount, route, tileHtml, job: () => T.JOB.home, structCards, partName, title, paperOf, PART, EVAL_LINE, partsOf: (p) => p.sets.flatMap((s) => s.parts) };
+  window.NORM = { mount, route, tileHtml, take, job: () => T.JOB.home, structCards, partName, title, paperOf, PART, EVAL_LINE, partsOf: (p) => p.sets.flatMap((s) => s.parts) };
 })();
