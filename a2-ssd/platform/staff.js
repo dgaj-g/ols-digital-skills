@@ -60,7 +60,10 @@
   function open() {
     if (OWNER) call({ op: 'health' }).catch(() => {}); // the owner's visit keeps the store under its limit (D76)
     TAB = sel('tab') || 'live';
-    loadClasses().then(paint, paint);
+    loadClasses().then(paint, () => {   // a lost or hung call (the transport gives up after 30 s) shows Try again, never an empty class list (v19)
+      frame('<div class="card"><p>' + h(T('sys.offline')) + '</p><button class="btn" data-retry>' + h(T('sys.retry')) + '</button></div>');
+      app.querySelector('[data-retry]').addEventListener('click', open);
+    });
   }
   function loadClasses() {
     return call({ op: 'classes' }).then((r) => {
