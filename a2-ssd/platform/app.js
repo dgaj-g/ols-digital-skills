@@ -47,6 +47,8 @@
         if (code === 'not-signed-in') { SYS.expired = true; paintSys(); }
         const e = new Error(code); e.code = code; throw e;
       }
+      if (fn === 'apiInit' && window.INIT && window.INIT.take) window.INIT.take(r, req);   // so the sys bar's Try again lands in the topic's own record (v18)
+      if (fn === 'apiNorm' && window.NORM && window.NORM.take) window.NORM.take(r, req);
       if (fn !== 'apiNorm' && fn !== 'apiInit') { // the normalisation record is norm.js's own (v14)
         if (r.rec) REC = r.rec;
         if (r.cfg) CFG = r.cfg;

@@ -126,7 +126,10 @@ const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {
       if (${JSON.stringify(APIS)}.indexOf(fn) === -1) { reject(new Error('unknown call ' + fn)); return; }
-      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](req || {});
+      // Watchdog: a call can hang on Google's side and never answer (seen live 18 Nov 2026: apiBoot at v15, an apiInit lock at v17).
+      // After 30 s it fails like a lost connection, so the page shows Try again instead of a button that spins for ever.
+      var t = setTimeout(function () { var e = new Error('timeout'); e.code = 'timeout'; reject(e); }, 30000);
+      google.script.run.withSuccessHandler(function (r) { clearTimeout(t); resolve(r); }).withFailureHandler(function (e) { clearTimeout(t); reject(e); })[fn](req || {});
     });
   }
 };`;

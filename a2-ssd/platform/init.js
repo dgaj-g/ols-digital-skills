@@ -256,6 +256,7 @@
       return;
     }
     // after the lock: her words read-only, the tick list, marks
+    try { localStorage.removeItem(draftKey(id)); } catch (e) { /* fine */ }
     if (!cur.ticks) cur.ticks = (p.t || []).slice();
     const marked = !!cur.verdict;
     const ticks = '<ul class="ticks">' + S.labels.map((l, i) => '<li><label data-tick="' + i + '"><input type="checkbox" value="' + i + '"' + (cur.ticks.includes(i) ? ' checked' : '') + (marked ? ' disabled' : '') + '> <span>' + h(l.l) + (l.tie ? ' <small class="tag">March</small>' : '') + (l.auto ? ' <small class="tag">read from your words</small>' : '') + '</span></label></li>').join('') + '</ul>';
@@ -406,5 +407,5 @@
     return '<button class="tile live" data-go="#init"><h2>' + h(IC.topic.tile) + '</h2><p>' + h(IC.topic.sub) + '</p><span class="state">' + h(state) + '</span></button>';
   }
   function mount(api, boot, email) { A = api; EMAIL = email || ''; if (boot) take(boot, {}); }
-  window.INIT = { mount, route, tileHtml, helpLines: () => HELP[helpKey()] || [] };
+  window.INIT = { mount, route, tileHtml, take, helpLines: () => HELP[helpKey()] || [] };
 })();
