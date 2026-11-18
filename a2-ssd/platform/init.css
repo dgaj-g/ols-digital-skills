@@ -1,5 +1,6 @@
 /* init.css — Reasons for systems development */
 main.init h1{margin:0 0 .2rem}
+main.init .spec{margin:0 0 .3rem;color:var(--mute);font-size:.95rem}
 main.init .sub{color:var(--mute);margin:0 0 1rem}
 main.init .sect{font-size:1.05rem;margin:1.4rem 0 .5rem;color:var(--navy)}
 main.init .meta{color:var(--mute);font-size:.9rem;margin:0 0 .4rem}
