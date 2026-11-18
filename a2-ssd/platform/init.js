@@ -217,7 +217,7 @@
     if (p.k || p.a) doors = '<div class="row"><button class="btn" data-go="#ipart/' + id + '/turn">' + (q.kind === 'match' ? 'See your answer' : 'See your answer and marks') + '</button><button class="btn sec" data-go="#ipart/' + id + '/lesson">The lesson</button></div>';
     else doors = '<div class="doors"><button class="door" data-door="learn"><b>Learn it first</b><span>Read the examiner’s points, then answer.</span></button><button class="door" data-door="write"><b>' + (q.kind === 'match' ? 'Answer it now' : 'Write it now') + '</b><span>' + (q.kind === 'match' ? 'Choose your answers, then check them.' : 'Write as in the exam, then tick your points.') + '</span></button></div>';
     const back = cur.more ? '<p><button class="btn ghost" data-go="#ipart/' + h(cur.more) + '">Back to the question you did</button></p>' : '';
-    app.innerHTML = header(partCrumbs(q, cur.more)) + '<main class="init ipart"><h1>' + h(q.src) + '</h1><p class="job">' + h(cur.more ? JOB.beat4 : JOB.beat1) + '</p>' + askCard(q, true) + doors + back + '</main>';
+    app.innerHTML = header(partCrumbs(q, cur.more)) + '<main class="init ipart"><h1>' + h(q.src) + '</h1><p class="job">' + h(cur.more ? JOB.beat4 : (p.k || p.a) ? JOB.beat1done : JOB.beat1) + '</p>' + askCard(q, true) + doors + back + '</main>';
     app.querySelectorAll('[data-door]').forEach((d) => d.addEventListener('click', () => { DOOR[id] = d.dataset.door === 'write' ? 1 : 0; A.go('#ipart/' + id + (d.dataset.door === 'write' ? '/turn' : '/lesson')); }));
   };
   function vLesson(q) {
