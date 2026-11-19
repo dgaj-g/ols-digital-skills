@@ -404,7 +404,8 @@ function lOp_(c, L, o) {
     var i = int_(o.i); if (!(i >= 1 && i <= D.d.n)) return 'bad-slide';
     // f: the furthest slide this browser has seen. The page keeps only the newest place in its queue, so a pupil who steps back
     // before it saves would otherwise lose the furthest slide (G8). Optional, so a page loaded before v11.1 still saves.
-    var f = o.f == null ? i : int_(o.f); if (!(f >= i && f <= D.d.n)) return 'bad-slide';
+    // v20: f may be below i: a jump ahead with All slides does not count the slides skipped as seen (furthest seen in order)
+    var f = o.f == null ? i : int_(o.f); if (!(f >= 1 && f <= D.d.n)) return 'bad-slide';
     var g = L.s[D.d.id] || [1, 1, now]; g[0] = i; g[1] = Math.max(g[1] || 1, f); g[2] = now; L.s[D.d.id] = g;
     L.p[D.t] = 'd:' + D.d.id;
     return 'ok';

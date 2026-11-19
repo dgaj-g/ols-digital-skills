@@ -131,7 +131,7 @@ var Hub = (function () {
     unBig(); // a slide set always opens on the normal screen
     var t = D.t, d = D.d; i = Math.min(Math.max(1, i || 1), d.n);
     T.at({ screen: "slides", deck: deck, i: i }); onQ = null;
-    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="sbar2"><button class="btn sm ghost" id="sfull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
+    var body = el('<div class="slides">' + job(L.slideJob, L.slideHelp) + '<div class="sbar2"><button class="btn sm ghost" id="sall" aria-expanded="false" aria-controls="spick">' + h(L.slidesAll) + '</button><button class="btn sm ghost" id="sfull" aria-pressed="false">' + h(L.fullWindow) + '</button></div><div class="spick" id="spick" hidden><div class="sphead"><h2>' + h(L.pickHead) + '</h2><button class="btn sm" id="spback"></button></div><div class="sgrid" id="sgrid"></div></div><div class="slide" id="slide"><img id="simg" alt=""><div class="sfail" id="sfail" hidden><p>' + h(L.slideFail) + '</p><button class="btn sm" id="sretry">' + h(L.tryAgain) + '</button></div></div><p class="smore" id="smore" aria-live="polite"></p><div class="snav"><button class="btn ghost" id="sprev">' + h(L.prev) + '</button><span class="scount" id="scount"></span><button class="btn" id="snext">' + h(L.next) + '</button></div></div>');
     var bar = '<div class="stagebar" data-hue="1"><div class="t" id="sbar"></div><div class="line"><i id="sline"></i></div></div>';
     T.shell(crumb(t, d.title), body, bar); wireCrumb(t); wireHelp();
     // a slide with click animations shows one picture per click (NN-0 … NN-(c-1)) before the finished slide NN, so an
@@ -151,7 +151,10 @@ var Hub = (function () {
       document.getElementById("sprev").disabled = i <= 1 && s === 0;
       var nx = document.getElementById("snext"); nx.textContent = i >= d.n && !more ? L.finish : L.next;
       if (more) pre.src = pic(i, s + 1); else if (i < d.n) pre.src = pic(i + 1, 0);
-      if (moved) push({ op: "slide", deck: deck, i: i, f: Math.max(i, (LS().s[deck] || [1, 1])[1] || 1) }); // f: furthest seen, kept even if she steps back before this saves
+      // f: furthest seen, kept even if she steps back before this saves. v20: furthest seen IN ORDER, so a jump ahead with All slides
+      // (or End) does not count the slides she skipped as seen; the server takes f below i from v20
+      var F = (LS().s[deck] || [1, 1])[1] || 1;
+      if (moved) push({ op: "slide", deck: deck, i: i, f: i <= F + 1 ? Math.max(F, i) : F });
     }
     img.onload = function () { var f = document.getElementById("sfail"); if (f) f.hidden = true; }; // v18: a picture can finish loading after she has left the slide set
     img.onerror = function () { var f = document.getElementById("sfail"); if (!f) return; img.hidden = true; f.hidden = false; };
@@ -162,7 +165,29 @@ var Hub = (function () {
     wire("sprev", prev);
     wire("snext", next);
     SCR = body; wire("sfull", function () { big(!BIG); });
-    KEY = function (ev) { if (ev.key === "Escape" && BIG) { ev.preventDefault(); big(false); return; } if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); } };
+    // v20: All slides. Each small picture is the slide as she meets it with Next: a slide with click reveals shows its
+    // before-any-click picture (NN-0), so the grid never shows an answer; a jump opens the slide with nothing revealed yet
+    var PICK = false;
+    function pick(on) {
+      PICK = on; body.classList.toggle("picking", on);
+      var p = document.getElementById("spick"), g = document.getElementById("sgrid"), a = document.getElementById("sall");
+      p.hidden = !on; a.setAttribute("aria-expanded", on ? "true" : "false");
+      if (!on) { a.focus(); return; }
+      document.getElementById("spback").textContent = fmt(L.pickBack, { i: i });
+      var html = "";
+      for (var j = 1; j <= d.n; j++) html += '<button type="button" class="sthumb' + (j === i ? ' cur" aria-current="true' : '') + '" data-k="' + j + '"><img loading="lazy" alt="" src="' + h(slideUrl(deck, j, clicks(j) ? 0 : null)) + '"><span class="sn">' + h(fmt(L.pickOne, { i: j })) + '</span>' + (j === i ? '<em>' + h(L.pickHere) + '</em>' : '') + '</button>';
+      g.innerHTML = html;
+      g.querySelectorAll(".sthumb").forEach(function (b) { b.onclick = function () { var k = +b.dataset.k; pick(false); go(k); }; });
+      var c = g.querySelector(".cur"); if (c) { g.scrollTop = Math.max(0, c.offsetTop - (g.clientHeight - c.offsetHeight) / 2); c.focus({ preventScroll: true }); }
+    }
+    wire("sall", function () { pick(!PICK); });
+    wire("spback", function () { pick(false); });
+    KEY = function (ev) {
+      if (PICK) { if (ev.key === "Escape") { ev.preventDefault(); pick(false); } return; } // while the grid is open the keys belong to it
+      if (ev.key === "Escape" && BIG) { ev.preventDefault(); big(false); return; }
+      if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); if (i < d.n || s < clicks(i)) next(); } else if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); prev(); }
+      else if (ev.key === "Home") { ev.preventDefault(); go(1); } else if (ev.key === "End") { ev.preventDefault(); go(d.n); }
+    };
     show(true);
   }
 
