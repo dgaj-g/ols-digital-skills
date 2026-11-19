@@ -26,6 +26,7 @@
   function call(req) {
     return window.OLS_TRANSPORT.call('apiStaff', req).then((r) => {
       if (!r || r.ok === false) { const e = new Error((r && r.error) || 'error'); e.code = (r && r.error) || 'error'; throw e; }
+      const box = app && app.querySelector('[data-msg]'); if (box) box.hidden = true;   // a call that lands clears any earlier "could not reach" line, so a refresh that works never sits under a stale error (v20)
       return r;
     });
   }
