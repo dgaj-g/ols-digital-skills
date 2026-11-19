@@ -121,7 +121,7 @@ const scripts = [
   ['staff.js', path.join(PLATFORM, 'staff.js')],
 ].map(([n, p]) => [n, need(p)]);
 
-const APIS = ['apiInit', 'apiNorm', 'apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
+const APIS = ['apiInit', 'apiNorm', 'apiBoot', 'apiName', 'apiState', 'apiMark', 'apiAnswer', 'apiTwin', 'apiTwinMark', 'apiFlag', 'apiEval', 'apiAgain', 'apiPing', 'apiKv', 'apiCw', 'apiStaff'];
 const shim = `window.OLS_TRANSPORT = {
   call: function (fn, req) {
     return new Promise(function (resolve, reject) {

@@ -64,13 +64,16 @@
   // ---------- the pupil's own drafts and lesson state: local first, server copy for another machine (D84) ----------
   const kvTimers = {};
   function kvKey(kind, part, twin) { return kind + ':' + ME.cls + ':' + part + (twin ? ':t' : ''); }
+  // a box written while doing a paper again carries that round (r), so answers from an earlier go stay out of the empty boxes
+  function kvRound(key) { const part = key.split(':')[2]; if (PARTS[part]) return roundN(PARTS[part].paper.id); return window.NORM && window.NORM.roundOfPart ? window.NORM.roundOfPart(part) : 0; }
   function kvPut(key, val) {
-    const box = val == null ? null : { v: val, at: Date.now() };
+    const rd = val == null ? 0 : kvRound(key);
+    const box = val == null ? null : rd ? { v: val, at: Date.now(), r: rd } : { v: val, at: Date.now() };
     LS.set('a2kv:' + key, box);
     clearTimeout(kvTimers[key]);
     kvTimers[key] = setTimeout(() => { delete kvTimers[key]; call('apiKv', { op: 'set', key, val: box ? JSON.stringify(box) : '' }).catch(() => {}); }, 1000);
   }
-  function kvLocal(key) { const b = LS.get('a2kv:' + key); return b && b.v !== undefined ? b : null; }
+  function kvLocal(key) { const b = LS.get('a2kv:' + key); return b && b.v !== undefined && (b.r || 0) === kvRound(key) ? b : null; }
   const kvFetched = {};
   function kvSync(keys) { // pull the server copies once per session; a newer copy wins
     const want = keys.filter((k) => !kvFetched[k]);
@@ -81,7 +84,7 @@
         kvFetched[k] = true;
         let srv = null; try { srv = r.vals[k] ? JSON.parse(r.vals[k]) : null; } catch (e) { srv = null; }
         const loc = kvLocal(k);
-        if (srv && (!loc || srv.at > loc.at)) { LS.set('a2kv:' + k, srv); changed = true; }
+        if (srv && (srv.r || 0) === kvRound(k) && (!loc || srv.at > loc.at)) { LS.set('a2kv:' + k, srv); changed = true; }
       });
       return changed;
     }, () => false);
@@ -256,15 +259,23 @@
   const crumbSql = () => ({ t: T('map.crumb'), go: '#sql' });
 
   // ---------- records ----------
-  const P = (id) => REC.P[id] || {};
+  // doing a paper again (R[paper].n): the screens read this go's marks (rf, rb, ra); the first marks (f, b, a) stay for the teacher
+  const RAW = (id) => REC.P[id] || {};
+  const roundN = (pid) => (((REC.R || {})[pid]) || {}).n || 0;
+  const P = (id) => {
+    const raw = RAW(id), hit = PARTS[id];
+    if (!hit || !roundN(hit.paper.id)) return raw;
+    return Object.assign({}, raw, { f: raw.rf, b: raw.rb, a: raw.ra, d: lessonState(id).door === 'cold' ? 1 : 0, of0: raw.f, rm: null });
+  };
   const isOpen = (pid) => (CFG.open || []).indexOf(pid) !== -1;
   const hasAny = (p) => p.parts.some((q) => REC.P[q.id] && (REC.P[q.id].f != null || REC.P[q.id].t));
   const reachable = (p) => isOpen(p.id) || hasAny(p);
   function paperState(p) {
     let first = 0, best = 0, n = 0;
-    p.parts.forEach((q) => { const r = P(q.id); if (r.f != null) { n++; first += r.f; best += r.b != null ? r.b : r.f; } });
-    const allF = n === p.parts.length;
-    return { first, best, n, allF, done: allF && !!REC.E[p.id] };
+    let rn = 0, rt = 0;
+    p.parts.forEach((q) => { const r = RAW(q.id); if (r.f != null) { n++; first += r.f; best += r.b != null ? r.b : r.f; } if (r.rf != null) { rn++; rt += r.rb != null ? r.rb : r.rf; } });
+    const allF = n === p.parts.length, round = roundN(p.id), done = allF && !!REC.E[p.id], doneAgain = !!round && rn === p.parts.length;
+    return { first, best, n, allF, done, round, rn, rt, doneAgain, canAgain: done && (!round || doneAgain) };
   }
 
   // ---------- home ----------
@@ -328,6 +339,7 @@
       const st = paperState(p), can = reachable(p);
       let pill;
       if (!can) pill = '<span class="pill grey">' + h(T('map.locked')) + '</span>';
+      else if (st.round) pill = '<span class="pill ' + (st.doneAgain ? 'done' : 'go') + '">' + h(st.doneAgain ? T('again.mapDone', { t: st.rt, of: p.marks }) : T('again.mapDoing', { n: st.rn, of: p.parts.length })) + '</span>';
       else if (st.done) pill = '<span class="pill done">' + h(st.best > st.first ? T('map.doneBest', { first: st.first, best: st.best, marks: p.marks }) : T('map.done', { first: st.first, marks: p.marks })) + '</span>';
       else if (st.n) pill = '<span class="pill go">' + h(T('map.progress', { n: st.n, of: p.parts.length, first: st.first, marks: p.marks })) + '</span>';
       else pill = '<span class="pill go">' + h(T('map.open')) + '</span>';
@@ -350,18 +362,50 @@
     const parts = p.parts.map((q) => {
       const r = P(q.id), L = lessonState(q.id), lab = label(q);
       let state;
-      if (r.f != null) {
+      if (st.round) state = r.f != null ? T('again.partThis', { t: r.b != null ? r.b : r.f, of: q.marks }) : L.door ? T('paper.inProgress') : T('again.partNot');
+      else if (r.f != null) {
         state = T('paper.first', { first: r.f, marks: q.marks }) + (r.b > r.f ? ' · ' + T('paper.best', { best: r.b, marks: q.marks }) : '');
         if (r.tf != null && r.t && C.twins[r.t]) state += ' · ' + T('paper.another', { t: r.tb != null ? r.tb : r.tf, of: C.twins[r.t].marks });
       } else state = L.door ? T('paper.inProgress') : T('paper.notStarted');
       const btn = r.f != null ? T('paper.review', { label: lab }) : L.door ? T('paper.continue', { label: lab }) : T('paper.start', { label: lab });
       return '<li><b>' + h(lab) + '</b><span>' + h(q.ask) + '</span><span>' + h(marksText(q.marks)) + '</span><span class="state"><span class="note">' + h(state) + '</span><button class="btn sec" data-go="#part/' + q.id + '">' + h(btn) + '</button></span></li>';
     }).join('');
-    const tail = st.done ? '<p><b>' + h(T('paper.done', { first: st.first, best: st.best, marks: p.marks })) + '</b></p>'
+    const againBtn = st.canAgain ? againHtml() : '';
+    const tail = st.round ? (st.doneAgain ? '<p><b>' + h(T('again.doneAgain', { t: st.rt, of: p.marks, f: st.first })) + '</b></p>' : '') + againBtn
+      : st.done ? '<p><b>' + h(T('paper.done', { first: st.first, best: st.best, marks: p.marks })) + '</b></p>' + againBtn
       : st.allF ? '<p>' + h(T('paper.lastThing')) + '</p><button class="btn" data-go="#eval/' + p.id + '">' + h(T('paper.eval')) + '</button>' : '';
-    frame([crumbSql(), { t: paperTitle(p) }], '<h1>' + h(paperTitle(p)) + '</h1><div class="card"><h3>' + h(T('paper.scenario')) + '</h3><p>' + h(p.scenario) + '</p></div>' +
+    frame([crumbSql(), { t: paperTitle(p) }], '<h1>' + h(paperTitle(p)) + '</h1>' + (st.round ? '<p class="sub"><b>' + h(T('again.on')) + '</b></p>' : '') + '<div class="card"><h3>' + h(T('paper.scenario')) + '</h3><p>' + h(p.scenario) + '</p></div>' +
       '<div class="card"><h3>' + h(T('paper.designs')) + '</h3><div class="paperfig">' + designsHtml(p.tables, { assumed: p.assumed, sample: p.sampleRows }) + '</div></div>' +
       '<div class="card"><h3>' + h(T('paper.parts')) + '</h3><ul class="parts">' + parts + '</ul></div>' + tail);
+    wireAgain(app.querySelector('[data-again-box]'), () => call('apiAgain', { paper: pid }), p.parts.map((q) => q.id), () => vPaper(pid));
+  }
+
+  // ---------- start a finished paper again: empty boxes, fresh lessons; the first marks stay on the server for the teacher ----------
+  function againHtml() { return '<div class="again" data-again-box><button class="btn sec" data-again>' + h(T('again.btn')) + '</button></div>'; }
+  function wireAgain(box, run, partIds, done) {
+    if (!box) return;
+    const btn = box.querySelector('[data-again]');
+    btn.addEventListener('click', () => {
+      box.innerHTML = '<div class="confirm">' + h(T('again.confirm')) + ' <button class="btn" data-again-yes>' + h(T('again.yes')) + '</button> <button class="btn ghost" data-again-no>' + h(T('again.no')) + '</button></div>';
+      const yes = box.querySelector('[data-again-yes]'), no = box.querySelector('[data-again-no]');
+      no.addEventListener('click', () => { box.innerHTML = ''; box.appendChild(btn); btn.focus(); });
+      yes.addEventListener('click', () => {
+        yes.disabled = true; no.disabled = true; yes.setAttribute('aria-busy', 'true');
+        const t0 = Date.now(), hold = () => new Promise((res) => setTimeout(res, Math.max(0, 300 - (Date.now() - t0))));
+        run().then((r) => hold().then(() => r)).then(() => {
+          partIds.forEach((id) => {
+            [kvKey('draft', id), kvKey('L', id), kvKey('draft', id, true)].forEach((k) => { if (LS.get('a2kv:' + k)) kvPut(k, null); });
+            LS.set('a2v:' + ME.cls + ':' + id, null); LS.set('a2v:' + ME.cls + ':' + id + ':t', null);
+          });
+          done();
+        }, (e) => hold().then(() => {
+          yes.disabled = false; no.disabled = false; yes.removeAttribute('aria-busy');
+          const old = box.querySelector('.err'); if (old) old.remove();
+          box.insertAdjacentHTML('beforeend', '<p class="err">' + h(T(e && e.code === 'locked' ? 'sys.locked' : 'sys.offline')) + '</p>');
+        }));
+      });
+      yes.focus();
+    });
   }
 
   // ---------- inputs for every answer type ----------
@@ -460,7 +504,7 @@
     }).join('') + '</nav>';
   }
   function skillsFull(part) {
-    return (part.skills || []).length > 0 && part.skills.every((s) => C.papers.some((p) => p.parts.some((q) => (q.skills || []).includes(s) && P(q.id).b === q.marks)));
+    return (part.skills || []).length > 0 && part.skills.every((s) => C.papers.some((p) => p.parts.some((q) => (q.skills || []).includes(s) && RAW(q.id).b === q.marks)));
   }
   function askBlock(part) { return (part.lead ? '<p class="lead">' + h(part.lead) + '</p>' : '') + '<p class="ask"><q>' + h(part.ask) + '</q></p>'; }
 
@@ -572,14 +616,14 @@
       }, () => { box.innerHTML = '<div class="card result"><p class="err">' + h(T('guard.dbFail')) + '</p></div>'; });
     });
     const vkey = 'a2v:' + ME.cls + ':' + id, cached = LS.get(vkey);
-    if (P(id).f != null && cached && cached.verdict) showVerdict(p, part, cached, input);
+    if (P(id).f != null && cached && cached.verdict && (cached.r || 0) === roundN(p.id)) showVerdict(p, part, cached, input);
     const mark = () => {
       conf.innerHTML = ''; sub.disabled = true;
       const vbox = document.getElementById('verdict');
       vbox.innerHTML = '<p class="note">' + h(T('turn.marking')) + '</p>';
       const L = lessonState(id), text = input.get();
       call('apiMark', { part: id, input: text, door: L.door === 'cold' ? 1 : 0, today: today() }).then((r) => {
-        const out = { verdict: r.verdict, first: r.first, expected: r.expected || null, yours: null, err: null, at: Date.now() };
+        const out = { verdict: r.verdict, first: r.first, expected: r.expected || null, yours: null, err: null, at: Date.now(), r: roundN(p.id) };
         const finish = () => { LS.set(vkey, out); showVerdict(p, part, out, input); sub.disabled = false; vbox.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
         if (part.kind === 'select' && r.expected) {
           sqlReady().then(() => { try { out.yours = runSql(p.id, text); } catch (e) { out.err = String((e && e.message) || e).split('\n')[0]; } finish(); }, finish);
@@ -591,7 +635,7 @@
     };
     sub.addEventListener('click', () => {
       if (isEmpty(part, input.get())) return;
-      if (P(id).f == null) {
+      if (P(id).f == null && !roundN(p.id)) {
         conf.innerHTML = '<div class="confirm">' + h(T('turn.confirm')) + ' <button class="btn" data-yes>' + h(T('turn.yes')) + '</button> <button class="btn ghost" data-no>' + h(T('turn.no')) + '</button></div>';
         conf.querySelector('[data-yes]').addEventListener('click', mark);
         conf.querySelector('[data-no]').addEventListener('click', () => { conf.innerHTML = ''; });
@@ -601,8 +645,9 @@
   }
 
   function showVerdict(p, part, out, input) {
-    const id = part.id, r = P(id), v = out.verdict, cold = r.d === 1;
-    const line = (r.a || 1) <= 1 ? T(cold ? 'verdict.firstCold' : 'verdict.first', { t: r.f != null ? r.f : v.total, of: v.of }) + ' ' + T((r.f != null ? r.f : v.total) === v.of ? 'verdict.full' : 'verdict.more')
+    const id = part.id, r = P(id), v = out.verdict, cold = r.d === 1, rn = roundN(p.id);
+    const line = rn ? ((r.a || 1) <= 1 ? T('again.thisTime', { t: r.f != null ? r.f : v.total, of: v.of }) : T('verdict.attempt', { n: r.a, t: v.total, of: v.of, best: r.b })) + ' ' + T('again.firstStays', { f: r.of0, of: v.of })
+      : (r.a || 1) <= 1 ? T(cold ? 'verdict.firstCold' : 'verdict.first', { t: r.f != null ? r.f : v.total, of: v.of }) + ' ' + T((r.f != null ? r.f : v.total) === v.of ? 'verdict.full' : 'verdict.more')
       : T('verdict.attempt', { n: r.a, t: v.total, of: v.of, best: r.b });
     let resCard = '';
     if (part.kind === 'select' && out.expected) {
@@ -831,7 +876,7 @@
     ['keydown', 'pointerdown', 'input', 'wheel', 'scroll', 'touchstart'].forEach((t) => window.addEventListener(t, () => { lastAct = Date.now(); }, { capture: true, passive: true }));
     setInterval(() => { if (!document.hidden) call('apiPing', { act: Date.now() - lastAct < 180000 ? 1 : 0 }).catch(() => {}); }, 60000);
     flushOutbox();
-    window.NORM.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.norm);
+    window.NORM.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T, againHtml, wireAgain }, r.norm);
     if (window.INIT) window.INIT.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.init, r.email);
     route();
     notice(r.cw);

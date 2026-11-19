@@ -21,11 +21,16 @@
   const SEG = { can: 0, getting: 1, not: 2, easy: 0, right: 1, tricky: 2 };
 
   // ---------- state: the server's record, plus the local drafts ----------
-  let NREC = { P: {}, E: {} };
+  let NREC = { P: {}, E: {}, R: {} };
+  // doing a paper again (R[paper].n): the screens read this go's marks (rf, rb, ra); the first marks stay for the teacher
+  const roundOf = (pid) => (((NREC.R || {})[pid]) || {}).n || 0;
+  const roundOfPart = (id) => (PART[id] ? roundOf(PART[id].paper.id) : 0);
   const CACHE = {}, BASE = {}, DOOR = { 1: 'lesson', 0: 'now' };
   function srvInto(R, id) {
     const p = NREC.P[id];
-    if (p) { R.first = p.f == null ? null : p.f; R.best = p.b == null ? null : p.b; R.attempts = p.a || 0; R.seen = p.s || 0; R.flag = p.fl || 0; if (!R.door && p.d != null) R.door = DOOR[p.d] || null; }
+    R.round = roundOfPart(id);
+    if (p && R.round) { R.first = p.rf == null ? null : p.rf; R.best = p.rb == null ? null : p.rb; R.attempts = p.rf == null ? 0 : p.ra || 1; R.orig = p.f; R.seen = p.s || 0; R.flag = p.fl || 0; }
+    else if (p) { R.first = p.f == null ? null : p.f; R.best = p.b == null ? null : p.b; R.attempts = p.a || 0; R.seen = p.s || 0; R.flag = p.fl || 0; if (!R.door && p.d != null) R.door = DOOR[p.d] || null; }
     return R;
   }
   function rec(id) {
@@ -195,16 +200,18 @@
 
   // ---------- views: home, map, paper ----------
   const V = {};
-  function paperState(p) { const parts = p.sets.flatMap((s) => s.parts); let n = 0, first = 0, best = 0, flag = 0; parts.forEach((q) => { const r = S.parts[q.id]; if (r && r.attempts) { n++; first += r.first; best += r.best; } if (r && r.flag) flag = 1; }); return { n, of: parts.length, first, best, marks: p.marks, flag, sent: !!S.evals[p.id] }; }
+  function paperState(p) { const parts = p.sets.flatMap((s) => s.parts); let n = 0, first = 0, best = 0, flag = 0; parts.forEach((q) => { const r = S.parts[q.id]; if (r && r.attempts) { n++; first += r.first; best += r.best; } if (r && r.flag) flag = 1; }); const sent = !!S.evals[p.id], round = roundOf(p.id); let on = 0, ofirst = 0; parts.forEach((q) => { const x = NREC.P[q.id]; if (x && x.f != null) { on++; ofirst += x.f; } }); const done = sent && on === parts.length, doneAgain = !!round && n === parts.length; return { n, of: parts.length, first, best, marks: p.marks, flag, sent, round, ofirst, doneAgain, canAgain: done && (!round || doneAgain) }; }
   V.norm = () => {
-    const rows = ORDER.map((id) => { const p = paperOf(id); const st = paperState(p); const open = OPEN.includes(id); const pill = !open ? '<span class="pill shut">Not opened yet</span>' : st.sent ? '<span class="pill done">Done · ' + st.first + '/' + p.marks + '</span>' : st.n ? '<span class="pill go">' + st.n + ' of ' + st.of + ' parts · ' + st.first + '/' + p.marks + '</span>' : '<span class="pill go">Not started</span>'; return '<li' + (open ? ' data-nload="#npaper/' + id + '" tabindex="0" style="cursor:pointer"' : '') + '><span><b>' + h(title(p)) + '</b></span><span>' + p.marks + ' marks</span><span>' + p.sets.flatMap((s) => s.parts).length + ' parts</span><span>' + pill + '</span></li>'; }).join('');
+    const rows = ORDER.map((id) => { const p = paperOf(id); const st = paperState(p); const open = OPEN.includes(id); const pill = !open ? '<span class="pill shut">Not opened yet</span>' : st.round ? '<span class="pill ' + (st.doneAgain ? 'done' : 'go') + '">' + h(st.doneAgain ? A.T('again.mapDone', { t: st.best, of: p.marks }) : A.T('again.mapDoing', { n: st.n, of: st.of })) + '</span>' : st.sent ? '<span class="pill done">Done · ' + st.first + '/' + p.marks + '</span>' : st.n ? '<span class="pill go">' + st.n + ' of ' + st.of + ' parts · ' + st.first + '/' + p.marks + '</span>' : '<span class="pill go">Not started</span>'; return '<li' + (open ? ' data-nload="#npaper/' + id + '" tabindex="0" style="cursor:pointer"' : '') + '><span><b>' + h(title(p)) + '</b></span><span>' + p.marks + ' marks</span><span>' + p.sets.flatMap((s) => s.parts).length + ' parts</span><span>' + pill + '</span></li>'; }).join('');
     app.innerHTML = header([{ t: 'Normalisation' }]) + '<main><h1>Normalisation</h1><p class="job">' + h(T.JOB.norm) + '</p><ul class="papers">' + rows + '</ul><div class="row" style="margin-top:14px"><button class="btn sec" data-go="#home">Back to the topics</button></div></main>';
   };
   V.npaper = (id) => {
     const p = paperOf(id); if (!p || !OPEN.includes(id)) return V.norm(); const st = paperState(p);
-    const rows = p.sets.flatMap((s) => s.parts).map((q) => { const r = S.parts[q.id]; const pill = r && r.attempts ? '<span class="pill ' + (r.first >= q.marks ? 'done' : 'go') + '">' + r.first + '/' + q.marks + (r.best > r.first ? ' · best ' + r.best : '') + '</span>' : '<span class="pill grey">Not started</span>'; return '<li data-nload="#npart/' + q.id + '" tabindex="0" style="cursor:pointer"><span>' + h(q.label.split(' ')[0]) + '</span><span><b>' + h(q.kind === 'tables' ? STAGE[q.stage] : q.name) + '</b><br><small>' + h(Array.isArray(q.ask) ? q.ask[0] : q.ask) + '</small></span><span>' + q.marks + (q.marks === 1 ? ' mark' : ' marks') + '</span><span>' + pill + (r && r.flag ? ' <span class="pill flagged">Flagged for your teacher</span>' : '') + '</span></li>'; }).join('');
+    const rows = p.sets.flatMap((s) => s.parts).map((q) => { const r = S.parts[q.id]; const pill = st.round ? (r && r.attempts ? '<span class="pill ' + (r.best >= q.marks ? 'done' : 'go') + '">' + h(A.T('again.partThis', { t: r.best, of: q.marks })) + '</span>' : '<span class="pill grey">' + h(A.T('again.partNot')) + '</span>') : r && r.attempts ? '<span class="pill ' + (r.first >= q.marks ? 'done' : 'go') + '">' + r.first + '/' + q.marks + (r.best > r.first ? ' · best ' + r.best : '') + '</span>' : '<span class="pill grey">Not started</span>'; return '<li data-nload="#npart/' + q.id + '" tabindex="0" style="cursor:pointer"><span>' + h(q.label.split(' ')[0]) + '</span><span><b>' + h(q.kind === 'tables' ? STAGE[q.stage] : q.name) + '</b><br><small>' + h(Array.isArray(q.ask) ? q.ask[0] : q.ask) + '</small></span><span>' + q.marks + (q.marks === 1 ? ' mark' : ' marks') + '</span><span>' + pill + (r && r.flag ? ' <span class="pill flagged">Flagged for your teacher</span>' : '') + '</span></li>'; }).join('');
     const ev = st.n === st.of ? '<div class="card"><p><b>Every part is marked.</b> Say how it went, and the paper is done.</p><button class="btn" data-nload="#neval/' + id + '">How did it go?</button></div>' : '<p class="note">When every part is marked, the paper asks how it went.</p>';
-    app.innerHTML = header([{ t: 'Normalisation', go: '#norm' }, { t: title(p) }]) + '<main><h1>' + h(title(p)) + '</h1><p class="job">' + h(T.JOB.npaper) + '</p><p class="sub">' + h(p.sets[0].scenario || p.scenario || '') + '</p><ul class="parts">' + rows + '</ul>' + (st.sent ? '<div class="card"><p><b>Done.</b> You sent how it went. Your marks stay here to look at.</p></div>' : ev) + '</main>';
+    app.innerHTML = header([{ t: 'Normalisation', go: '#norm' }, { t: title(p) }]) + '<main><h1>' + h(title(p)) + '</h1><p class="job">' + h(T.JOB.npaper) + '</p>' + (st.round ? '<p class="sub"><b>' + h(A.T('again.on')) + '</b></p>' : '') + '<p class="sub">' + h(p.sets[0].scenario || p.scenario || '') + '</p><ul class="parts">' + rows + '</ul>' + (st.round ? (st.doneAgain ? '<div class="card"><p><b>' + h(A.T('again.doneAgain', { t: st.best, of: p.marks, f: st.ofirst })) + '</b></p></div>' : '') : st.sent ? '<div class="card"><p><b>Done.</b> You sent how it went. Your marks stay here to look at.</p></div>' : ev) + (st.canAgain ? A.againHtml() : '') + '</main>';
+    const ids = partsOf(id);
+    A.wireAgain(app.querySelector('[data-again-box]'), () => ncall({ op: 'again', paper: id }), ids, () => { ids.forEach((x) => { delete CACHE[x]; delete BASE[x]; delete BASE['_' + x]; }); V.npaper(id); });
   };
 
   // ---------- the part screen ----------
@@ -258,7 +265,7 @@
   function doorHtml(q, R) {
     const has = !!L[clusterOf(q)];
     const ask = '<div class="card askcard"><p class="paper">' + h(cur.paper.year + ' ' + qn(cur.paper) + (q.paperAsk ? ' — ' + q.paperAsk : '')) + '</p><q>' + h(askText(q)) + '</q><p class="m">' + q.marks + (q.marks === 1 ? ' mark' : ' marks') + '</p></div>';
-    if (R.attempts) return ask + '<div class="card"><p>You have marked this part: <b>' + R.first + ' of ' + q.marks + '</b>' + (R.best > R.first ? ', best ' + R.best : '') + '.</p><div class="row"><button class="btn" data-go="#npart/' + cur.id + '/turn">Back to my answer</button>' + (has ? '<button class="btn sec" data-go="#npart/' + cur.id + '/lesson">The lesson</button>' : '') + '</div></div>';
+    if (R.attempts) return ask + '<div class="card"><p>' + (R.round ? h(A.T('again.partThis', { t: R.best, of: q.marks })) + '. ' + h(A.T('again.firstStays', { f: R.orig, of: q.marks })) : 'You have marked this part: <b>' + R.first + ' of ' + q.marks + '</b>' + (R.best > R.first ? ', best ' + R.best : '') + '.') + '</p><div class="row"><button class="btn" data-go="#npart/' + cur.id + '/turn">Back to my answer</button>' + (has ? '<button class="btn sec" data-go="#npart/' + cur.id + '/lesson">The lesson</button>' : '') + '</div></div>';
     const doors = '<div class="doors">' + (has ? '<button class="door sug" data-door="lesson"><b>Learn it first</b><small>A short lesson on a different document, then this question.</small></button>' : '') + '<button class="door' + (has ? '' : ' sug') + '" data-door="now"><b>Do it now</b><small>Straight to the question.</small></button></div>';
     return ask + doors;
   }
@@ -505,7 +512,7 @@
     let ex = '';
     if (R.showing && R.showing.struct) ex = '<div class="card exampl" style="margin-top:12px"><p class="cap">The examiner’s tables. Your own tables stay above, as you left them.</p><div class="tcards">' + structCards(R.showing.struct) + '</div></div>';
     else if (R.showing) ex = '<div class="card exampl" style="margin-top:12px"><p class="cap">The examiner’s answer.</p><ul class="pts">' + R.showing.lines.map((l) => '<li><span class="yes">✓</span><span>' + h(l) + '</span></li>').join('') + '</ul></div>';
-    return '<div class="card marks" style="margin-top:14px"><div class="mleft"><h3>Examiner’s marks</h3><div class="score">' + v.total + ' <small>of ' + v.of + '</small></div>' + (R.attempts > 1 ? '<p class="note">Your first mark stands. This is attempt ' + R.attempts + '.</p>' : '') + '</div><div>' + pointsHtml(v) + btns + flag + '</div></div>' + ex;
+    return '<div class="card marks" style="margin-top:14px"><div class="mleft"><h3>Examiner’s marks</h3><div class="score">' + v.total + ' <small>of ' + v.of + '</small></div>' + (R.round ? '<p class="note">' + h(A.T('again.firstStays', { f: R.orig, of: v.of })) + (R.attempts > 1 ? ' This is attempt ' + R.attempts + ' this time.' : '') + '</p>' : R.attempts > 1 ? '<p class="note">Your first mark stands. This is attempt ' + R.attempts + '.</p>' : '') + '</div><div>' + pointsHtml(v) + btns + flag + '</div></div>' + ex;
   }
   function nextPart(q) { if (cur.beat === 'twin') return null; const all = cur.paper.sets.flatMap((s) => s.parts); const i = all.findIndex((x) => x.id === q.id); return i >= 0 && i < all.length - 1 ? all[i + 1] : null; }
 
@@ -704,5 +711,5 @@
     return '<button class="tile live" data-nload="#norm"><h2>' + h(A.T('home.norm')) + '</h2><p>' + h(A.T('home.normSub')) + '</p><span class="state">' + h(state) + '</span></button>';
   }
   function mount(api, boot) { A = api; if (boot) take(boot, {}); }
-  window.NORM = { mount, route, tileHtml, take, job: () => T.JOB.home, structCards, partName, title, paperOf, PART, EVAL_LINE, partsOf: (p) => p.sets.flatMap((s) => s.parts) };
+  window.NORM = { mount, route, roundOfPart, tileHtml, take, job: () => T.JOB.home, structCards, partName, title, paperOf, PART, EVAL_LINE, partsOf: (p) => p.sets.flatMap((s) => s.parts) };
 })();
