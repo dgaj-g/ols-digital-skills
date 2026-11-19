@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-19T09:18:58.479Z
+G6 deploy log + token · 2026-11-19T21:05:31.721Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 19 Nov 2026 09:17 | 20 | 11f21d2131-6f84db94 | v20 S1 Unit 1 11f21d2131-6f84db94 All slides grid + Home/End | his ask: a quick way back to the first slide, or
+INFO newest row: | 19 Nov 2026 21:04 | 21 | cfbf6c2392-62b8454a | v21 S1 Unit 1 cfbf6c2392-62b8454a Digital data slides + HQ activities | his ask: Digital data had no slide set 
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
