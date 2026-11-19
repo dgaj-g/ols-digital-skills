@@ -96,7 +96,8 @@ async function flows(ok, info) {
   r = await L([{ op: 'slide', deck: 'db', i: 2, f: 9, u: 'g7z1' }]);
   ok('slide-f', r.ok && r.res[0] === 'ok' && r.lessons.s.db && r.lessons.s.db.slice(0, 2).join(',') === '2,9', 'a slide save carries the furthest seen in that browser (f 9) even when she has stepped back to 2: ' + JSON.stringify(r.lessons && r.lessons.s.db));
   r = await L([{ op: 'slide', deck: 'db', i: 4, f: 3, u: 'g7z2' }, { op: 'slide', deck: 'db', i: 2, f: 0, u: 'g7z3' }, { op: 'slide', deck: 'db', i: 2, f: T('databases').decks[0].n + 1, u: 'g7z4' }, { op: 'slide', deck: 'db', i: 2, f: '9', u: 'g7z5' }]);
-  ok('slide-f-bad', r.ok && r.res.join(',') === 'bad-slide,bad-slide,bad-slide,bad-slide' && r.lessons.s.db.slice(0, 2).join(',') === '2,9', 'a furthest below the slide, 0, past the end or not a number is refused: ' + (r.res || []).join(','));
+  // v20: a furthest BELOW the slide is allowed (a jump ahead with All slides); it never lowers the furthest already kept (9)
+  ok('slide-f-bad', r.ok && r.res.join(',') === 'ok,bad-slide,bad-slide,bad-slide' && r.lessons.s.db.slice(0, 2).join(',') === '4,9', 'a furthest below the slide is kept as a jump (v20: slide 4, furthest still 9); 0, past the end or not a number is refused: ' + (r.res || []).join(',') + ' ' + JSON.stringify(r.lessons && r.lessons.s.db));
   r = await L([{ op: 'at', id: 'sw2', u: 'g7e1' }]);
   ok('resume', r.ok && r.lessons.p.software === 'a:sw2', 'opening an activity moves the resume point to it: ' + (r.lessons && r.lessons.p.software));
   r = await L([{ op: 'finish', id: 'sw3', s: 4, m: 5, u: 'g7f1' }, { op: 'finish', id: 'sw3', s: 9, m: 5, u: 'g7f2' }, { op: 'finish', id: 'sw4', s: 1, m: 5, u: 'g7f3' }]);

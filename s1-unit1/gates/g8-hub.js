@@ -17,8 +17,8 @@
  * HQ-ONLY (no browser): each topic's activities are exactly the activityN.html files of its HQ folder, titled as each page's
  * <title>, with no retired id; a topic with no HQ folder lists none. CONTROLS: Database Showdown put back, Data Detective put
  * back, an HQ set one short. The browser part runs a COPY of Code.gs and Index.html with the gate-only test entries from
- * gates/test-catalogue.js (zt1, no score, in impact). Digital data's page names only what it has and says it has no
- * activities; CONTROL: an old activity pushed into the page's own Digital data list must fail that check.
+ * gates/test-catalogue.js (zt1, no score, in impact). v21: Digital data's page lists its slide set and its HQ five; an
+ * emptied topic says it has no activities; CONTROLS: an old activity pushed into either list must fail its check.
  * v14 (12 Nov 2026): the activity screen says the score line once (the job line no longer repeats the status line);
  * CONTROL: the v13 job line must fail that check. A no-score activity's status line is blank until it is finished.
  * Run: node s1-unit1/gates/g8-hub.js  (exit 0 = GREEN). Output: gates/out/g8-hub.txt */
@@ -50,7 +50,7 @@ const SW = S1L.topics.find((t) => t.id === 'software'), IM = S1T.topics.find((t)
 const JOB_SW = 'Go through the slides, play the activities, answer the exam questions, then tell your teacher how the topic went.';
 const JOB_DD = 'Answer the exam questions, then tell your teacher how the topic went.';
 // ---- v13: only the HQ sets made with him for the new course. Add a topic here only when its HQ set has been made with him.
-const HQ = { software: 'software_revision', databases: 'databases_revision', spreadsheets: 'spreadsheets_revision' };
+const HQ = { 'digital-data': 'digital_data_hq', software: 'software_revision', databases: 'databases_revision', spreadsheets: 'spreadsheets_revision' }; // v21: Digital Data HQ added 19 Nov 2026
 const RETIRED = 'dh1 dh2 dh3 dh4 dh5 dh6 ns1 ns2 ns3 ns4 sw6 db6 db7 db8 db9 db10 db11 hw1 nt1 nt2 nt3 nt4 nt5 cy1 cy2 cy3 cy4 cl1 cl2 et1 et2 lg1 lg2 lg3 ap1 ap2 ap3 ap4 em1 em2 em3'.split(' ');
 function hqProblems(topics) { const bad = [];
   topics.forEach((t) => { const dir = HQ[t.id];
@@ -89,7 +89,7 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
   info('topics with no slide set: ' + S1L.topics.filter((t) => !t.decks.length).map((t) => t.title).join(', '));
   check('CONTROL a catalogue entry for a missing activity is caught', actProblems([{ id: 'zz1', path: 'no_such_folder/activity9.html' }]).length === 1);
   const hq = hqProblems(S1L.topics);
-  check('HQ only (v13): the platform lists ' + allActs.length + ' activities, exactly the HQ sets of ' + Object.keys(HQ).join(', ') + ', titled as their pages, no retired id, none for any other topic', hq.length === 0 && allActs.length === 15, hq.join(' | '));
+  check('HQ only (v13): the platform lists ' + allActs.length + ' activities, exactly the HQ sets of ' + Object.keys(HQ).join(', ') + ', titled as their pages, no retired id, none for any other topic', hq.length === 0 && allActs.length === 20, hq.join(' | '));
   check('CONTROL Database Showdown put back on Database applications is caught', hqProblems(swap((c) => c.find((t) => t.id === 'databases').acts.push({ id: 'db6', title: 'Database Showdown', path: '06.database_showdown.html', scored: true }))).length > 0);
   check('CONTROL Data Detective put back on Digital data is caught', hqProblems(swap((c) => c.find((t) => t.id === 'digital-data').acts.push({ id: 'dh1', title: 'Data Detective', path: 'digital_data_revision/activity1.html', scored: true }))).length > 0);
   check('CONTROL an HQ set one short (Ski Trip left off Spreadsheet applications) is caught', hqProblems(swap((c) => c.find((t) => t.id === 'spreadsheets').acts.pop())).length > 0);
@@ -143,21 +143,36 @@ const SIZES = [[1280, 800], [1024, 768], [768, 1024], [390, 844]];
     await openHome();
     const tiles = await page.evaluate(() => [...document.querySelectorAll('[data-open]')].map((b) => b.dataset.open));
     check('home: Digital data, Software and Ethical, legal and environmental impact have Open; the six locked topics do not', tiles.join(',') === 'digital-data,software,impact', tiles.join(','));
-    // ---- v13: Digital data has no activities on the platform (and no slides): its tile and page say so
+    // ---- v21: Digital data has its slide set and its HQ set of five: its tile and page list them
     const ddTile = await page.evaluate(() => { const b = document.querySelector('[data-open="digital-data"]'), c = b && b.closest('.topic'); return c ? c.innerText.replace(/\s+/g, ' ') : ''; });
-    check('home (v13): the Digital data tile reads "No slides · No activities · exam questions"', /No slides · No activities · exam questions/.test(ddTile), ddTile);
-    const ddPage = () => page.evaluate(() => ({ job: ((document.querySelector('.job') || {}).innerText || '').replace(/\s+/g, ' ').trim(), none: ((document.getElementById('noActs') || {}).innerText || '').trim(), acts: document.querySelectorAll('[data-act]').length, decks: document.querySelectorAll('[data-deck]').length }));
-    const ddGood = (d) => d.job.indexOf(JOB_DD) === 0 && d.none === L.noActsLine && d.acts === 0 && d.decks === 0;
+    check('home (v21): the Digital data tile reads "1 slide set · 5 activities · exam questions"', /1 slide set · 5 activities · exam questions/.test(ddTile), ddTile);
+    const ddPage = () => page.evaluate(() => ({ job: ((document.querySelector('.job') || {}).innerText || '').replace(/\s+/g, ' ').trim(), none: ((document.getElementById('noActs') || {}).innerText || '').trim(), acts: [...document.querySelectorAll('[data-act]')].map((e) => e.dataset.act).filter((v, i, a) => a.indexOf(v) === i).join(','), decks: [...document.querySelectorAll('[data-deck]')].map((e) => e.dataset.deck).filter((v, i, a) => a.indexOf(v) === i).join(',') }));
+    const ddFull = (d) => d.job.indexOf(JOB_SW) === 0 && d.none === '' && d.acts === 'dd1,dd2,dd3,dd4,dd5' && d.decks === 'dd';
+    const ddGood = (d) => d.job.indexOf(JOB_DD) === 0 && d.none === L.noActsLine && d.acts === '' && d.decks === '';
     await openTopic('digital-data');
-    const dd = await ddPage();
-    check('topic page (Digital data, v13): job line "' + JOB_DD + '", the line "' + L.noActsLine + '", no activity or slide rows', ddGood(dd), JSON.stringify(dd));
+    const ddf = await ddPage();
+    check('topic page (Digital data, v21): job line "' + JOB_SW + '", the slide set dd and the five activities dd1 to dd5, no "no activities" line', ddFull(ddf), JSON.stringify(ddf));
     await helpOk('topic page (Digital data)');
     await fitAll('topic page (Digital data)');
     await page.evaluate(() => S1L.topics.find((t) => t.id === 'digital-data').acts.push({ id: 'db6', title: 'Database Showdown', path: '06.database_showdown.html', scored: true }));
     await click('#cHome'); await openTopic('digital-data');
-    const ddc = await ddPage();
-    check('CONTROL an old activity pushed into the page\'s own Digital data list fails the Digital data page check', !ddGood(ddc), JSON.stringify(ddc));
+    const ddfc = await ddPage();
+    check('CONTROL an old activity pushed into the page\'s own Digital data list fails the Digital data page check', !ddFull(ddfc), JSON.stringify(ddfc));
     await page.evaluate(() => S1L.topics.find((t) => t.id === 'digital-data').acts.pop());
+    // ---- v13 kept: a topic with nothing on the platform says so (the page's own Digital data list emptied for this check, then put back)
+    await page.evaluate(() => { const t = S1L.topics.find((x) => x.id === 'digital-data'); window.__ddKeep = { a: t.acts, d: t.decks }; t.acts = []; t.decks = []; });
+    await click('#cHome');
+    const ddTile0 = await page.evaluate(() => { const b = document.querySelector('[data-open="digital-data"]'), c = b && b.closest('.topic'); return c ? c.innerText.replace(/\s+/g, ' ') : ''; });
+    check('home (v13): a topic with no slides and no activities reads "No slides · No activities · exam questions"', /No slides · No activities · exam questions/.test(ddTile0), ddTile0);
+    await openTopic('digital-data');
+    const dd = await ddPage();
+    check('topic page (v13, empty topic): job line "' + JOB_DD + '", the line "' + L.noActsLine + '", no activity or slide rows', ddGood(dd), JSON.stringify(dd));
+    await fitAll('topic page (empty topic)');
+    await page.evaluate(() => S1L.topics.find((t) => t.id === 'digital-data').acts.push({ id: 'db6', title: 'Database Showdown', path: '06.database_showdown.html', scored: true }));
+    await click('#cHome'); await openTopic('digital-data');
+    const ddc = await ddPage();
+    check('CONTROL an old activity pushed into the emptied list fails the empty-topic check', !ddGood(ddc), JSON.stringify(ddc));
+    await page.evaluate(() => { const t = S1L.topics.find((x) => x.id === 'digital-data'); t.acts = window.__ddKeep.a; t.decks = window.__ddKeep.d; });
     await click('#cHome');
     await openTopic('software');
     const tp = await page.evaluate(() => ({ h1: document.querySelector('.hub h1').innerText.trim(), job: (document.querySelector('.job') || {}).innerText || '', parts: [...document.querySelectorAll('.hubpart h2')].map((h) => h.innerText.replace(/\s+/g, ' ').trim()), resume: !!document.getElementById('resume'), pend: document.getElementById('pend').hidden }));

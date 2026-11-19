@@ -1,6 +1,11 @@
-G9 slide click steps — 2026-11-19T09:13:02.396Z
-GREEN 17 pass, 0 fail
+G9 slide click steps — 2026-11-19T15:47:28.751Z
+GREEN 21 pass, 0 fail
 
+PASS dd: the source deck has 93 shown slides
+PASS dd: the steps in lessons.js equal the click animations in the source deck (75 slides)
+PASS dd: the picture folder holds exactly the 305 pictures
+PASS dd: every click shows something new, nothing else on the slide moves between clicks, all states the same size
+INFO dd smallest click change: 801 pixels
 PASS sw: the source deck has 41 shown slides
 PASS sw: the steps in lessons.js equal the click animations in the source deck (8 slides)
 PASS sw: the picture folder holds exactly the 65 pictures
@@ -16,7 +21,7 @@ PASS ss: the steps in lessons.js equal the click animations in the source deck (
 PASS ss: the picture folder holds exactly the 217 pictures
 PASS ss: every click shows something new, nothing else on the slide moves between clicks, all states the same size
 INFO ss smallest click change: 747 pixels
-INFO slides with clicks: 131, clicks: 197, pictures shown in all: 411
+INFO slides with clicks: 206, clicks: 409, pictures shown in all: 716
 PASS CONTROL a steps map with slide 10 removed is caught
 PASS CONTROL a folder with 10-1.webp missing is caught
 PASS CONTROL a stray step picture (01-0.webp) is caught

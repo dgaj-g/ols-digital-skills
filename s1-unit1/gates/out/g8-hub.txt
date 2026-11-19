@@ -1,18 +1,22 @@
-PASS coverage: all 15 activities exist, load s1_platform/bridge.js and call OLSBridge
-PASS coverage: all 3 slide sets have exactly their n pictures (214 slides)
-INFO topics with no slide set: Digital data, Computer hardware, Network technologies, Cyberspace, network security and data transfer, Cloud computing, Ethical, legal and environmental impact
+PASS coverage: all 20 activities exist, load s1_platform/bridge.js and call OLSBridge
+PASS coverage: all 4 slide sets have exactly their n pictures (307 slides)
+INFO topics with no slide set: Computer hardware, Network technologies, Cyberspace, network security and data transfer, Cloud computing, Ethical, legal and environmental impact
 PASS CONTROL a catalogue entry for a missing activity is caught
-PASS HQ only (v13): the platform lists 15 activities, exactly the HQ sets of software, databases, spreadsheets, titled as their pages, no retired id, none for any other topic
+PASS HQ only (v13): the platform lists 20 activities, exactly the HQ sets of digital-data, software, databases, spreadsheets, titled as their pages, no retired id, none for any other topic
 PASS CONTROL Database Showdown put back on Database applications is caught
 PASS CONTROL Data Detective put back on Digital data is caught
 PASS CONTROL an HQ set one short (Ski Trip left off Spreadsheet applications) is caught
 PASS CONTROL a slide set one picture short is caught
 PASS home: Digital data, Software and Ethical, legal and environmental impact have Open; the six locked topics do not
-PASS home (v13): the Digital data tile reads "No slides · No activities · exam questions"
-PASS topic page (Digital data, v13): job line "Answer the exam questions, then tell your teacher how the topic went.", the line "There are no activities for this topic here yet.", no activity or slide rows
+PASS home (v21): the Digital data tile reads "1 slide set · 5 activities · exam questions"
+PASS topic page (Digital data, v21): job line "Go through the slides, play the activities, answer the exam questions, then tell your teacher how the topic went.", the slide set dd and the five activities dd1 to dd5, no "no activities" line
 PASS topic page (Digital data): has its job line and a Help button that opens and closes
 PASS topic page (Digital data): nothing wider than its box at 1280, 1024, 768 and 390 wide
 PASS CONTROL an old activity pushed into the page's own Digital data list fails the Digital data page check
+PASS home (v13): a topic with no slides and no activities reads "No slides · No activities · exam questions"
+PASS topic page (v13, empty topic): job line "Answer the exam questions, then tell your teacher how the topic went.", the line "There are no activities for this topic here yet.", no activity or slide rows
+PASS topic page (empty topic): nothing wider than its box at 1280, 1024, 768 and 390 wide
+PASS CONTROL an old activity pushed into the emptied list fails the empty-topic check
 PASS topic page: "Software", its job line, the four parts in order, no resume card yet, no "still waiting" line
 PASS topic page: has its job line and a Help button that opens and closes
 PASS topic page: slides "Not started" / Start; OS Control Room "Not played yet" / Play; "0 of 5 done"; topic check "Not done yet" / Start
@@ -65,4 +69,4 @@ PASS last slide with clicks: Next stays "Next" with the more line until the last
 PASS CONTROL with the click steps taken out of the page, the reveal walk fails
 PASS CONTROL a bridge with no "back" message leaves the pupil on the old HQ inside the frame (the back check fails)
 PASS no console errors or failed requests on the page, its slides or the bridge
-GREEN · 66 pass · 0 fail
+GREEN · 70 pass · 0 fail

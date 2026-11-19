@@ -1,4 +1,4 @@
-G0 server GREEN · 2026-11-19T09:09:14.021Z · build 11f21d2131-3447e2f0
+G0 server GREEN · 2026-11-19T15:45:58.898Z · build cfbf6c2392-62b8454a
 PASS A pack->unpack->judge == judge on 9720 answers across 243 questions (0 mismatches)
 PASS A cleaning drops duplicate and unknown picks (S2-10)
 PASS A no view carries keys, accept lists, distractor lists or pair keys

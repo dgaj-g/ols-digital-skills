@@ -139,7 +139,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     tr = await topicRows();
     check('Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged', /^1\.2 Software Open Lock$/.test(tr[1]) && /^1\.1 Digital data Open Lock$/.test(tr[0]), tr.slice(0, 2).join(' | '));
     const swTile = await pupilTile();
-    check('pupil home (v13): the Software tile has Open and reads "1 slide set · 5 activities · exam questions" and "Exam questions: Round 1 · not started"; Digital data reads "No slides · No activities · exam questions"', /No slides · No activities · exam questions/.test(swTile.text) && swTile.swOpen && /1 slide set · 5 activities · exam questions/.test(swTile.sw) && /Exam questions: Round 1 · not started/.test(swTile.sw) && swTile.open, JSON.stringify(swTile));
+    check('pupil home (v13): the Software tile has Open and reads "1 slide set · 5 activities · exam questions" and "Exam questions: Round 1 · not started"; Digital data (v21) reads "1 slide set · 5 activities · exam questions"', /1 slide set · 5 activities · exam questions/.test(swTile.text) && swTile.swOpen && /1 slide set · 5 activities · exam questions/.test(swTile.sw) && /Exam questions: Round 1 · not started/.test(swTile.sw) && swTile.open, JSON.stringify(swTile));
     await clickTab(page, 'Tracker'); await page.waitForSelector('table.track', { timeout: 10000 });
     const h1 = () => page.evaluate(() => (document.querySelector('h1') || {}).innerText || '');
     const pk = await page.evaluate(() => { const q = document.getElementById('tq'); return q ? [...q.options].map((o) => o.value + '=' + o.text).join('|') : null; });
@@ -223,7 +223,7 @@ async function clickTab(page, name) { await page.evaluate((n) => [...document.qu
     const lq0 = await page.$eval('#lq', (s) => s.value), NONE = require(path.join(ROOT, 'platform', 'lessons.js')).S.actsNone;
     await page.select('#lq', 'hardware'); await page.waitForFunction(() => /Activity scores · 11A DT · Computer hardware/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 });
     const hwA = await page.evaluate(() => ({ none: ((document.getElementById('actsNone') || {}).innerText || '').trim(), table: !!document.querySelector('table.agrid'), csv: !!document.getElementById('acsv') }));
-    check('Activities (v13): opens on Software, the first topic with activities; Computer hardware says "' + NONE + '" with no table and no CSV button', lq0 === 'software' && hwA.none === NONE && !hwA.table && !hwA.csv, JSON.stringify([lq0, hwA]));
+    check('Activities (v21): opens on Digital data, the first topic with activities; Computer hardware says "' + NONE + '" with no table and no CSV button', lq0 === 'digital-data' && hwA.none === NONE && !hwA.table && !hwA.csv, JSON.stringify([lq0, hwA]));
     await page.select('#lq', 'software'); await page.waitForFunction(() => /Activity scores · 11A DT · Software/.test((document.querySelector('h1') || {}).innerText || ''), { timeout: 10000 });
     const at = await page.evaluate(() => ({ heads: [...document.querySelectorAll('table.agrid tr:first-child th')].map((t) => t.innerText.trim()), rows: [...document.querySelectorAll('table.agrid tr')].slice(1).map((tr) => tr.innerText.replace(/\s+/g, ' ').trim()), avg: [...document.querySelectorAll('.hb')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()), lock: !!document.querySelector('.lockn') }));
     const aoife = at.rows.find((r) => /^Aoife /.test(r)) || '';

@@ -1,4 +1,4 @@
-G5 staff page · 2026-11-19T09:11:05.026Z
+G5 staff page · 2026-11-19T21:01:37.340Z
 PASS a new class starts with Digital Data locked
 PASS records made (class, pupil stage 1 7/34, card)
 PASS door: passcode box, no tabs; build token on the body, no build footer
@@ -23,7 +23,7 @@ PASS Topics: Open pressed -> the pupil tile has Open again
 PASS CONTROL pupil home: Software, still locked, has no Open on its tile
 PASS pupil home (v7): the third and fourth tiles are Database applications and Spreadsheet applications, both "Not opened yet" with no Open
 PASS Topics: Software Open pressed -> "1.2 Software Open Lock"; Digital Data unchanged
-PASS pupil home (v13): the Software tile has Open and reads "1 slide set · 5 activities · exam questions" and "Exam questions: Round 1 · not started"; Digital data reads "No slides · No activities · exam questions"
+PASS pupil home (v13): the Software tile has Open and reads "1 slide set · 5 activities · exam questions" and "Exam questions: Round 1 · not started"; Digital data (v21) reads "1 slide set · 5 activities · exam questions"
 PASS Tracker: a Topic picker lists the four topics (v7); the heading names Digital data
 PASS Tracker: picking Software -> "Tracker · <class> · Software · Round 1", the picker still on Software, 4 pupils
 PASS Tracker: picking Digital data again -> its heading is back
@@ -52,7 +52,7 @@ PASS Pulse: gone once the call lands
 PASS Export: the CSV has exactly SPEC §3.8 columns, with a BOM
 PASS Export: one row per pupil per stage (4 pupils x 4 stages)
 PASS v11 records: Aoife plays OS Control Room twice, reads 12 slides, sends her Software check
-PASS Activities (v13): opens on Software, the first topic with activities; Computer hardware says "There are no activities or slides for this topic on the platform yet." with no table and no CSV button
+PASS Activities (v21): opens on Digital data, the first topic with activities; Computer hardware says "There are no activities or slides for this topic on the platform yet." with no table and no CSV button
 PASS Activities: one column per Software activity plus Pupil, Last used and Slides seen
 PASS Activities: Aoife shows best 9/10 · 90%, "First go: 7 of 10 · 2 goes", "12 of 41 slides"; the rest "-"
 PASS Activities: the average card says OS Control Room 90% · 1 pupil; the open topic shows no lock note
