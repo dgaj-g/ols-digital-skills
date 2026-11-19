@@ -4,15 +4,21 @@
  * The same object is inlined into the page and put at the top of Code.gs, so the server checks every id against it.
  * An activity id is never reused for another activity: the scores are kept under it.
  * v13 (11 Nov 2026), HIS RULING: only the activity sets made with him for the new course are listed (Software HQ, Databases HQ,
- * Spreadsheets HQ). A new topic's HQ set is added here when he has it made. The older activities were taken off; their ids
+ * Spreadsheets HQ; Digital Data HQ added 19 Nov 2026, v21). A new topic's HQ set is added here when he has it made. The older activities were taken off; their ids
  * are RETIRED and must never be given to a new activity, because pupils' old scores are still kept under them:
  * dh1-dh6 ns1-ns4 sw6 db6-db11 hw1 nt1-nt5 cy1-cy4 cl1-cl2 et1-et2 lg1-lg3 ap1-ap4 em1-em3. */
 var S1L = {
   base: "https://dgaj-g.github.io/s1-digital-technology-gcse/",
   topics: [
     { id: "digital-data", spec: "1.1", title: "Digital data",
-      decks: [],
-      acts: [],
+      decks: [{ id: "dd", title: "Digital data", n: 93, steps: {"2":3,"5":3,"6":6,"7":2,"8":2,"9":2,"10":3,"11":3,"12":4,"13":3,"14":6,"15":3,"16":3,"17":3,"18":2,"19":5,"20":4,"21":6,"22":1,"23":2,"27":3,"28":4,"29":3,"30":4,"31":2,"32":2,"33":1,"34":2,"35":2,"36":3,"37":5,"38":6,"39":1,"40":1,"41":1,"42":3,"43":1,"44":2,"45":1,"46":2,"47":1,"51":3,"52":3,"53":2,"54":1,"55":1,"56":4,"57":3,"58":3,"59":5,"60":6,"61":3,"62":2,"63":1,"67":3,"68":3,"69":5,"70":4,"71":4,"72":3,"73":6,"74":1,"75":3,"76":3,"77":2,"78":1,"79":3,"80":3,"81":6,"82":1,"83":1,"84":2,"85":1,"86":3,"87":1} }],
+      acts: [
+        { id: "dd1", title: "Byte Bank", path: "digital_data_hq/activity1.html", scored: true },
+        { id: "dd2", title: "Club Sign-Up", path: "digital_data_hq/activity2.html", scored: true },
+        { id: "dd3", title: "Photo Lab", path: "digital_data_hq/activity3.html", scored: true },
+        { id: "dd4", title: "Sound Desk", path: "digital_data_hq/activity4.html", scored: true },
+        { id: "dd5", title: "Format Depot", path: "digital_data_hq/activity5.html", scored: true }
+      ],
       parts: [
         "Data and information, and the units from bit to terabyte",
         "Data types: integer, real, date/time, character and string",

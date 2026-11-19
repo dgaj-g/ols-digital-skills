@@ -1,4 +1,4 @@
 url: https://script.google.com/a/macros/c2ken.net/s/AKfycbxI4chI8MnTziXAC3Y-QaMsguiP7nErsAb7JpkOhBNo3s8aMojYPMlCmTgoJ2qhdt6C7w/exec
-token: s1u1-11f21d2131-6f84db94
-version: 20
-seen: 19 Nov 2026 09:19, owner's browser (foot of the /exec?build page)
+token: s1u1-cfbf6c2392-62b8454a
+version: 21
+seen: 19 Nov 2026 21:05, owner's browser (foot of the /exec?build page)
