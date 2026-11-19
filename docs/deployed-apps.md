@@ -22,6 +22,8 @@ URL changes — update it.
 
 | Sociology — Mastering Socialisation (WJEC AS Unit 1 Section A, L6) | Login-gated revision hub: 11 parts (socialisation, culture, agents, social control, key words, five- and ten-mark question trainers marked against the bands, AO2 and examiner parts, badges and board, revision sheets), points/badges/streaks, named class boards, per-class links, staff Tracker/Parts/Export behind the staff passcode (source in `sociology/mastering-socialisation/`; Version 1, build 15131c5bb7-3ad53a5b, deployed 3 Nov 2026) | https://script.google.com/a/macros/c2ken.net/s/AKfycbwcX6a9F3yyoToksv_xwpj7km0o7bBLRk4H4N_arO-x6ZlJw6KG98cJGgcnNXYotpbm/exec | dgartland021@c2ken.net | 2026-11-03 |
 
+| Home Economics — My Kitchen Portfolio (KS3 Digital Portfolio) | Login-gated portfolio builder: per-practical reflections (year-aware J1/J2/J3 focus areas), phone photo/video upload into the pupil's own Drive, one appending portfolio Doc per pupil auto-shared with her class teacher; multi-teacher staff panel with mandatory year group per class, dashboard + CSV | https://script.google.com/a/macros/c2ken.net/s/AKfycbxFtOSNATJUpwr40wMUGiyjIKD1dlgib9TfgGkR0BznveErhnDrE-U8_m-wHPNK8pO55A/exec | dgartland021@c2ken.net | 2026-06-12 |
+
 **Notes**
 - The teacher reaches the **bare `/exec`** for the Staff/admin landing; pupils use a **per-class link** (`…/exec?class=NAME`) that the teacher generates and shares from inside the activity's admin panel.
 - Source code: GG lives in Claude Work `0. Digital Skills Web Activities/GG/`; the Constitution Diagram lives in `government-politics/constitution-diagram/` (+ a server package in Claude Work); Mon Carnet de France lives entirely in this repo at `french/mon-carnet-de-france/` (activity + `server/` + `HANDOVER.md`).
