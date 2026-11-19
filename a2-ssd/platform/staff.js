@@ -50,6 +50,12 @@
       } else fail(e);
     };
   }
+  function boxRetry(box, again) {   // a lost load inside a box or drawer shows why and Try again there, never an empty box (v22)
+    return (e) => {
+      box.innerHTML = '<p>' + h(failText(e)) + '</p><button class="btn sec" data-retry>' + h(T('sys.retry')) + '</button>';
+      box.querySelector('[data-retry]').addEventListener('click', again);
+    };
+  }
 
   // ---------- passcode ----------
   function gate() {
@@ -144,7 +150,7 @@
 
   // ---------- Papers ----------
   function vPapers() {
-    pane().innerHTML = '<p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p>';
+    loading();
     const N = window.NORM;
     Promise.all([call({ op: 'papers', name: CLS }), call({ op: 'papers', name: CLS, topic: 'norm' })]).then(([r, rn]) => {
       pane().innerHTML = '<p class="note">' + h(T('staff.papersNote')) + '</p><div data-list="sql"></div><h3 class="nhead">' + h(T('staff.n.papersHead')) + '</h3><div data-list="norm"></div>';
@@ -173,7 +179,7 @@
       };
       list(pane().querySelector('[data-list="sql"]'), 'sql', r, (id) => T('map.paper', { year: PAPERS[id].year, title: PAPERS[id].title }), () => C.papers.map((p) => p.id));
       list(pane().querySelector('[data-list="norm"]'), 'norm', rn, (id) => N.title(N.paperOf(id)), () => window.A2CONTENT.norm.order.slice());
-    }, (e) => { pane().innerHTML = ''; fail(e); });
+    }, retryCard(() => vPapers()));
   }
 
   // ---------- Live ----------
@@ -248,7 +254,7 @@
     const box = pane().querySelector('[data-nstrip]'); if (!box) return;
     if (!NSEL || !order.includes(NSEL)) NSEL = open.find((id) => order.includes(id)) || order[0];
     const p = window.NORM.paperOf(NSEL), pupils = LIVE.pupils;
-    box.innerHTML = '<p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p>';
+    box.innerHTML = '<p class="note">' + 'Loading' + '<span class="dots"></span></p>';
     call({ op: 'nprog', name: CLS, paper: NSEL }).then((r) => {
       const byId = {}; r.parts.forEach((x) => { byId[x.id] = x; });
       box.innerHTML = '<h3>' + h(window.NORM.title(p)) + '</h3>' + nParts(NSEL).map((q) => {
@@ -257,7 +263,7 @@
           (x.miss ? ' · ' + h(T('staff.n.missed', { label: x.miss.label, n: x.miss.n })) : '') + (not > 0 ? ' <span class="nchip">' + h(T('staff.n.notStarted', { n: not })) + '</span>' : '') + '</p>' +
           '<div class="strip">' + pupils.map((pu) => { const rr = pu.N.P[q.id], f = rr && rr.f != null ? rr.f : null; return '<i class="' + (f == null ? '' : f >= q.marks ? 'd' : 'p') + '" title="' + h((pu.n || pu.email) + ' · ' + (f == null ? T('staff.noAnswer') : f + ' / ' + q.marks)) + '"></i>'; }).join('') + '</div></div>';
       }).join('');
-    }, (e) => { box.innerHTML = ''; fail(e); });
+    }, boxRetry(box, () => nStrip(order, open)));
   }
   function vNLive() {
     const load = () => call({ op: 'live', name: CLS }).then((r) => {
@@ -372,7 +378,7 @@
       const tie = rr.ttext ? '<p class="lab">Her March tie</p><pre>' + h(rr.ttext) + '</pre>' : '';
       const ev = rr.ev ? '<p class="lab">' + h(T('staff.eval')) + '</p><p>' + h(I_EVAL[rr.ev.v] || rr.ev.v) + (rr.ev.c ? ' · ' + h(rr.ev.c) : '') + '</p>' : '';
       box.innerHTML = '<div class="twocol"><div>' + mine + tie + (rr.text && rr.kind !== 'match' ? '<p class="lab">The examiner’s points · ✓ = she ticked it</p>' + points : '') + '</div><div class="exampl"><p class="lab">The examiner’s answer</p><p>' + h(rr.model) + '</p></div></div>' + ev;
-    }, (e) => { box.innerHTML = ''; fail(e); });
+    }, boxRetry(box, () => iDrawer(email, id)));
   }
   // one part's mark points: ✓ / ✗, the mark, the note where a point was lost
   const nPoints = (v) => (v ? '<ul class="check">' + v.points.map((pt) => '<li class="' + (pt.awarded >= pt.of ? 'hit' : 'miss') + '">' + h(pt.label) + ' <span class="note">[' + pt.awarded + '/' + pt.of + ']' + (pt.awarded < pt.of && pt.note ? ' · ' + h(pt.note) : '') + '</span></li>').join('') + '</ul>' : '');
@@ -392,7 +398,7 @@
         '<p>' + h(T(r.d === 1 ? 'staff.n.doorNow' : 'staff.n.doorLearn')) + ' · ' + h(T('staff.firstAnswer', { t: r.f, of: q.marks })) + (r.b > r.f ? ' · ' + h(T('staff.bestAnswer', { t: r.b, of: q.marks })) : '') + ' · ' + h(r.a === 1 ? T('staff.attempts1') : T('staff.attempts', { n: r.a })) + '</p>' +
         (r.s ? '<p class="note">' + h(T('staff.sawAnswer')) + '</p>' : '') +
         (r.fl ? '<p><span class="tg red">' + h(T('staff.flagAt', { label: q.label, beat: T('staff.beat.' + (r.fl.b || 'turn')) })) + '</span> <button class="btn sec" data-ack>' + h(T('staff.ack')) + '</button></p>' : '') +
-        '<div data-detail><p class="note">' + h(T('turn.marking')).replace('…', '') + '<span class="dots"></span></p></div></div>';
+        '<div data-detail><p class="note">' + 'Loading' + '<span class="dots"></span></p></div></div>';
     }).join('');
     const evHtml = ev ? '<div class="part"><b>' + h(T('staff.eval')) + '</b>' + Object.keys(ev.l || {}).map((k) => '<p>' + h(N.EVAL_LINE[k] || k) + ' · <b>' + h(T(EVV[ev.l[k]])) + '</b></p>').join('') +
       '<p>' + h(T('staff.feel', { f: T(FEEL[ev.f]) })) + '</p>' + (ev.c ? '<p>' + h(T('staff.comment', { c: ev.c })) + '</p>' : '') + '</div>' : '<div class="part"><b>' + h(T('staff.eval')) + '</b> <span class="note">' + h(T('staff.evalNone')) + '</span></div>';
@@ -421,7 +427,7 @@
           all.nextElementSibling.innerHTML = '<p class="note">' + h(T('staff.allNote')) + '</p>' + r.a.map((a, i) => '<p>' + h(a.verdict && a.verdict.total !== a.total ? T('staff.attemptThen', { n: i + 1, t: a.total, of: q.marks, now: a.verdict.total }) : T('staff.attemptN', { n: i + 1, t: a.total, of: q.marks })) + ' · <span class="note">' + h(dateOf(a.m)) + '</span></p>' + nInput(a.input, r.kind) + nPoints(a.verdict)).join('');
           all.remove();
         });
-      }, (e) => { box.innerHTML = ''; fail(e); });
+      }, boxRetry(box, () => nDrawer(email, pid)));
     });
   }
   function drawer(email, pid) {
@@ -477,7 +483,7 @@
       '<button class="btn ghost" data-close>' + h(T('staff.close')) + '</button></div><div data-acts><p class="note">' + h(T('staff.act.loading')) + '</p></div></aside>');
     const dr = app.querySelector('.drawer'), box = dr.querySelector('[data-acts]');
     dr.querySelector('[data-close]').addEventListener('click', () => dr.remove());
-    call({ op: 'activity', name: CLS, email }).then((r) => { box.innerHTML = timeline(r); }, (e) => { box.innerHTML = ''; fail(e); });
+    call({ op: 'activity', name: CLS, email }).then((r) => { box.innerHTML = timeline(r); }, boxRetry(box, () => activity(email)));
   }
   function evText(e) {
     if (e.k === 'j') return T('staff.ev.joined');
