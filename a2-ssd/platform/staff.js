@@ -33,10 +33,22 @@
   function frame(inner) {
     app.innerHTML = '<header class="bar"><span class="title">' + h(T('staff.title')) + '</span><span class="who">' + h(ME) + '</span></header><div id="sys"></div><main class="staff">' + inner + '</main>';
   }
+  function failText(e) {
+    return e.code === 'offline' || !e.code || e.code === 'error' ? T('sys.offline') : e.code === 'owner-only' ? T('staff.ownerOnly') : e.code === 'not-staff' ? T('staff.bad') : T('sys.offline');
+  }
   function fail(e) {
     const box = app.querySelector('[data-msg]');
-    const text = e.code === 'offline' || !e.code || e.code === 'error' ? T('sys.offline') : e.code === 'owner-only' ? T('staff.ownerOnly') : e.code === 'not-staff' ? T('staff.bad') : T('sys.offline');
-    if (box) { box.textContent = text; box.hidden = false; }
+    if (box) { box.textContent = failText(e); box.hidden = false; }
+  }
+  function loading() { const p = pane(); if (p) p.innerHTML = '<p class="note">Loading<span class="dots"></span></p>'; }   // a pane is never blank while its first call is out (v21)
+  function retryCard(load) {   // a lost first load paints Try again in the pane, never a blank pane under a red line; a lost refresh keeps the grid and shows the line (v21)
+    return (e) => {
+      const p = pane();
+      if (p && !p.querySelector('[data-refresh]')) {
+        p.innerHTML = '<div class="card"><p>' + h(failText(e)) + '</p><button class="btn" data-retry>' + h(T('sys.retry')) + '</button></div>';
+        p.querySelector('[data-retry]').addEventListener('click', () => { loading(); load(); });
+      } else fail(e);
+    };
   }
 
   // ---------- passcode ----------
@@ -201,7 +213,8 @@
       pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
       const clr = pane().querySelector('[data-clear]');
       if (clr) twoPress(clr, T('staff.clearConfirm', { name: CLS }), (reset) => call({ op: 'clearMine', name: CLS }).then(load, (e) => { reset(); fail(e); }));
-    }, fail);
+    }, retryCard(() => load()));
+    loading();
     load();
     timer = setInterval(() => { if (!document.hidden && TAB === 'live' && !app.querySelector('.drawer')) load(); }, 60000);
   }
@@ -269,7 +282,8 @@
       });
       pane().querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => activity(b.dataset.act)));
       if (r.pupils.length) nStrip(order, open);
-    }, fail);
+    }, retryCard(() => load()));
+    loading();
     load();
     timer = setInterval(() => { if (!document.hidden && TAB === 'live' && TOPIC === 'norm' && !app.querySelector('.drawer')) load(); }, 60000);
   }
@@ -329,7 +343,8 @@
       });
       const clr = pane().querySelector('[data-cs-clear]');
       if (clr) twoPress(clr, 'Take it down? Pupils’ March room goes back to “not out yet”. Their written answers and marks stay.', (reset) => call({ op: 'icase', set: { org: '', text: '', terms: [] }, name: CLS }).then(load, (e) => { reset(); fail(e); }));
-    }, fail);
+    }, retryCard(() => load()));
+    loading();
     load();
     timer = setInterval(() => { if (!document.hidden && TAB === 'live' && TOPIC === 'init' && ISUB === 'igrid' && !app.querySelector('.drawer')) load(); }, 60000);
   }
@@ -529,7 +544,7 @@
   }
   function vCoursework() {
     pane().innerHTML = '<p class="note">' + h(T('staff.cw.loading')) + '</p>';
-    const load = () => Promise.all([cwIndex(), call({ op: 'coursework', name: CLS })]).then(([, r]) => { CWR = r; cwPaint(); }, fail);
+    const load = () => Promise.all([cwIndex(), call({ op: 'coursework', name: CLS })]).then(([, r]) => { CWR = r; cwPaint(); }, retryCard(() => load()));
     const cwPaint = () => {
       const r = CWR, chs = cwChs(), all = chs.reduce((t, c) => t + c.steps.length, 0), sort = sel('cwsort') || 'name';
       const d = new Date(), stamp = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
