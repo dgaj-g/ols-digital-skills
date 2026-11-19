@@ -36,3 +36,4 @@
 4. Read the confirmation panel for the new version number, then open /exec and find the new token.
 | 19 Nov 2026 00:05 | 20 | c83ff4ed42-e141ab08 | v20 Reasons: staff error line clears when a call lands | staff.js call() hides the data-msg line on any call that lands; the clear-my-record call outran the 30-s watchdog tonight and left a stale "Could not reach" line under a grid that had refreshed fine |
 | 19 Nov 2026 00:11 | 21 | c83ff4ed42-ace873f0 | v21 Reasons: Live tab Try again and loading line | staff Live tab paints a Loading line while its first call is out and a Try again card when it is lost; a lost refresh keeps the grid |
+| 19 Nov 2026 09:18 | 22 | c83ff4ed42-6934ca79 | v22 Papers tab: Loading line and Try again | staff Papers tab paints a Loading line and a Try again card when its first call is lost (it was a bare red line); the strip, drawers and activity boxes get Try again too; walked live: card appeared, Try again loaded the eleven papers |
