@@ -255,7 +255,38 @@ function who_(req) {
   if (!cls) return { error: 'unknown-class', email: email };
   return { email: email, cls: cls };
 }
-function pupilView_(rec) { return { n: rec.n, P: rec.P || {}, E: rec.E || {} }; }
+function pupilView_(rec) { return { n: rec.n, P: rec.P || {}, E: rec.E || {}, R: rec.R || {} }; }
+// Start this paper again (19 Nov 2026): R[paper] = { n: which time through, at }. First marks (f, b, a, d) and E never change;
+// this time's marks live in rf / rb / ra and are wiped at each new start. Only a paper with every part marked and How did it go? sent.
+// doing a paper again: this go's marks go to rf/rb/ra; the first marks (f, b, a) are never touched. True when it handled the mark.
+function roundMark_(rec, paperId, p, total) {
+  if (!(rec.R && rec.R[paperId])) return false;
+  if (p.rf == null) { p.rf = total; p.rb = total; p.ra = 1; }
+  else { p.ra = num_(p.ra) + 1; if (total > num_(p.rb)) p.rb = total; }
+  return true;
+}
+function startAgain_(rec, pid, parts) {
+  if (!rec.E[pid]) return 'not-yet';
+  if (!parts.every(function (q) { return rec.P[q.id] && rec.P[q.id].f != null; })) return 'not-yet';
+  rec.R = rec.R || {};
+  rec.R[pid] = { n: num_((rec.R[pid] || {}).n || 1) + 1, at: tmin_() };
+  parts.forEach(function (q) { var p = rec.P[q.id]; delete p.rf; delete p.rb; delete p.ra; });
+  return '';
+}
+function apiAgain(req) {
+  req = req || {};
+  var w = who_(req); if (w.error) return err_(w.error);
+  var pid = str_(req.paper), paper = A2META.papers[pid];
+  if (!paper) return err_('unknown-paper');
+  touch_(w.cls, w.email, 1, 0);
+  return withLock_(function () {
+    var rec = readPupil_(w.cls, w.email) || freshPupil_();
+    var bad = startAgain_(rec, pid, paper.parts);
+    if (bad) return err_(bad);
+    writePupil_(w.cls, w.email, rec);
+    return ok_({ rec: pupilView_(rec) });
+  });
+}
 function classView_(c) { return { order: c.order || A2META.order, open: c.open || [] }; }
 
 function apiBoot(req) {
@@ -317,7 +348,7 @@ function apiMark(req) {
     var p = rec.P[partId] || {};
     var first = p.f == null;
     if (first) { p.d = req.door === 1 ? 1 : 0; p.f = v.total; p.b = v.total; p.a = 1; }
-    else { p.a = num_(p.a) + 1; if (v.total > num_(p.b)) { p.b = v.total; if (p.s) p.sb = 1; } }
+    else if (!roundMark_(rec, paperOf_(partId), p, v.total)) { p.a = num_(p.a) + 1; if (v.total > num_(p.b)) { p.b = v.total; if (p.s) p.sb = 1; } }
     rec.P[partId] = p;
     writePupil_(w.cls, w.email, rec);
     var sc = readScripts_(w.cls, w.email, partId);
@@ -490,8 +521,8 @@ function apiKv(req) {
 var NORM_CAP = 4000;          // characters of one stored norm answer (a structure is under 2 KB)
 var NORM_KINDS = { tables: 1, click: 1, whynot: 1, nonatomic: 1, steps: 1, braces: 1, pick: 1 };
 function nKey_(cls, email) { return 'n:' + cls + ':' + email; }
-function readNorm_(cls, email) { var r = jget_(sp_(), nKey_(cls, email), null) || {}; return { P: r.P || {}, E: r.E || {} }; }
-function writeNorm_(cls, email, rec) { jset_(sp_(), nKey_(cls, email), { P: rec.P, E: rec.E }); }
+function readNorm_(cls, email) { var r = jget_(sp_(), nKey_(cls, email), null) || {}; return { P: r.P || {}, E: r.E || {}, R: r.R || {} }; }
+function writeNorm_(cls, email, rec) { var o = { P: rec.P, E: rec.E }; if (rec.R && Object.keys(rec.R).length) o.R = rec.R; jset_(sp_(), nKey_(cls, email), o); }
 function nMeta_(partId) { return A2META.norm.parts[str_(partId)] || null; }
 function nJudgePart_(partId) { return NormPoints.parts[partId] || NormTwins.twins[partId] || null; }
 function nOpen_(c) { return (c && c.nopen) || A2META.norm.order.slice(); }      // every normalisation paper opens unless staff lock it
@@ -537,7 +568,7 @@ function nLastStruct_(cls, email, partId) {
   if (!a || a[2] == null) return null;
   try { return { struct: JSON.parse(a[2]), total: a[1] }; } catch (e) { return null; }
 }
-function nView_(rec) { return { P: rec.P, E: rec.E }; }
+function nView_(rec) { return { P: rec.P, E: rec.E, R: rec.R || {} }; }
 
 function apiNorm(req) {
   req = req || {};
@@ -545,6 +576,17 @@ function apiNorm(req) {
   var op = str_(req.op), cfg = readClass_(w.cls) || {};
   if (op === 'state') return ok_({ rec: nView_(readNorm_(w.cls, w.email)), order: nOrder_(cfg), open: nOpen_(cfg) });
   if (op === 'eval') return nEval_(w, req);
+  if (op === 'again') {
+    var npid = str_(req.paper), npaper = A2META.norm.papers[npid];
+    if (!npaper) return err_('unknown-paper');
+    touch_(w.cls, w.email, 1, 0);
+    return withLock_(function () {
+      var rec = readNorm_(w.cls, w.email), bad = startAgain_(rec, npid, npaper.parts);
+      if (bad) return err_(bad);
+      writeNorm_(w.cls, w.email, rec);
+      return ok_({ rec: nView_(rec) });
+    });
+  }
   var partId = str_(req.part), meta = nMeta_(partId), jp = nJudgePart_(partId);
   if (!meta || !jp) return err_('unknown-part');
   if (!nAllowed_(cfg, meta)) return err_('locked');
@@ -555,7 +597,7 @@ function apiNorm(req) {
     var res = withLock_(function () {
       var rec = readNorm_(w.cls, w.email), p = rec.P[partId] || {}, first = p.f == null;
       if (first) { p.d = req.door === 1 ? 1 : 0; p.f = v.total; p.b = v.total; p.a = 1; p.m = (v.points || []).map(function (q, i) { return q.awarded < q.of ? i : -1; }).filter(function (i) { return i >= 0; }); } // m: the points missed on the first mark (staff strip, spec §9)
-      else { p.a = num_(p.a) + 1; if (v.total > num_(p.b)) { p.b = v.total; if (p.s) p.sb = 1; } }
+      else if (!roundMark_(rec, meta.paper, p, v.total)) { p.a = num_(p.a) + 1; if (v.total > num_(p.b)) { p.b = v.total; if (p.s) p.sb = 1; } }
       rec.P[partId] = p; writeNorm_(w.cls, w.email, rec);
       var sc = readScripts_(w.cls, w.email, partId);
       sc.a.push([tmin_(), v.total, JSON.stringify(input)]);
@@ -589,6 +631,7 @@ function apiNorm(req) {
     }
     var rec0 = readNorm_(w.cls, w.email), p0 = rec0.P[meta.prev];
     if (!p0 || p0.f == null) return ok_({ kind: 'none', prev: meta.prev });
+    if (rec0.R[meta.paper] && p0.rf == null) return ok_({ kind: 'none', prev: meta.prev }); // started again: not her first-time tables
     var last = nLastStruct_(w.cls, w.email, meta.prev);
     if (!last) return ok_({ kind: 'none', prev: meta.prev, archived: true });
     return ok_({ kind: 'mine', struct: last.struct, prevTotal: last.total, prevOf: pm.marks, prev: meta.prev, seen: !!p0.s });
