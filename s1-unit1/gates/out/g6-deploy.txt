@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-15T15:03:30.542Z
+G6 deploy log + token · 2026-11-19T09:18:58.479Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 15 Nov 2026 15:02 | 19 | 086dac0549-55b1f012 | v19 S1 Unit 1 086dac0549-55b1f012 pupil next round + Databases set + ss hook | his word: "go ahead and build bo
+INFO newest row: | 19 Nov 2026 09:17 | 20 | 11f21d2131-6f84db94 | v20 S1 Unit 1 11f21d2131-6f84db94 All slides grid + Home/End | his ask: a quick way back to the first slide, or
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
