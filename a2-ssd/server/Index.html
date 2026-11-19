@@ -910,7 +910,7 @@ main.ev textarea.comment{width:100%;box-sizing:border-box;display:block;margin:.
 <body>
 <script>window.OLS_BOOT = { classCode: "<?= classCode ?>", baseUrl: "<?= baseUrl ?>" };
 window.A2_VENDOR = ["https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/","https://dgaj-g.github.io/ols-digital-skills/a2-ssd/platform/vendor/"];
-window.A2_DEPLOY = "a2ssd-c83ff4ed42-71ba4af7";
+window.A2_DEPLOY = "a2ssd-c83ff4ed42-e141ab08";
 window.A2_CW = "https://dgaj-g.github.io/ols-digital-skills/a2-ssd/content/coursework/";
 window.A2_DECKS = "https://dgaj-g.github.io/ols-digital-skills/a2-ssd/decks/init/";</script>
 <div class="app" id="app"></div>
@@ -4260,6 +4260,7 @@ window.CW = (function () {
   function call(req) {
     return window.OLS_TRANSPORT.call('apiStaff', req).then((r) => {
       if (!r || r.ok === false) { const e = new Error((r && r.error) || 'error'); e.code = (r && r.error) || 'error'; throw e; }
+      const box = app && app.querySelector('[data-msg]'); if (box) box.hidden = true;   // a call that lands clears any earlier "could not reach" line, so a refresh that works never sits under a stale error (v20)
       return r;
     });
   }
