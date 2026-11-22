@@ -1,6 +1,6 @@
-G6 deploy log + token · 2026-11-22T12:33:11.065Z
+G6 deploy log + token · 2026-11-22T13:10:03.129Z
 PASS DEPLOY_LOG rows, served token, Code.gs header and the live /exec token agree
-INFO newest row: | 22 Nov 2026 12:30 | 22 | a0d9725295-291f2a43 | v22 S1 Unit 1 a0d9725295-291f2a43 Digital data binary intro slide + 4 MB photo | his ask: slide 2 said one phon
+INFO newest row: | 22 Nov 2026 13:09 | 23 | ea2ca1ed30-8482509a | v23 S1 Unit 1 ea2ca1ed30-8482509a Digital data 93 slides: one topic evaluation, compression intro + 2 new slide
 PASS CONTROL newest row names another build: fails
 PASS CONTROL seen token from another build: fails
 GREEN · 3 pass · 0 fail
