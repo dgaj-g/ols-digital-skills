@@ -1098,7 +1098,8 @@
    "nameFallback": "Agent",
    "maxedLabel": "Top {rank} reached. Legend.",
    "openTip": "Open your Agent Kit",
-   "finishTitle": "Mission complete"
+   "finishTitle": "Mission complete",
+   "leaveFinished": "You have finished this lesson. Everything you made is saved. Press Leave to go back to Mission Control. You can open this lesson again from there to look through it."
   },
   "j2": {
    "name": "The Kit Locker",
@@ -1116,6 +1117,7 @@
    "maxedLabel": "This is the highest {rank} there is at the moment.",
    "openTip": "Open your Kit Locker",
    "finishTitle": "Lesson finished",
+   "leaveFinished": "You have finished this lesson. Everything you made is saved. Press Leave to go back to the year map. You can open this lesson again from there to look through it.",
    "moreNote": "More looks join your Kit Locker as your year unlocks new levels."
   },
   "j3": {
@@ -1134,6 +1136,7 @@
    "maxedLabel": "This is the highest {rank} there is at the moment.",
    "openTip": "Open your Wardrobe",
    "finishTitle": "Lesson finished",
+   "leaveFinished": "You have finished this lesson. Everything you made is saved. Press Leave to go back to the year map. You can open this lesson again from there to look through it.",
    "moreNote": "More looks join your Wardrobe as your year unlocks new levels."
   }
  },

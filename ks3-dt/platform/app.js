@@ -892,6 +892,7 @@
 
   function showHub() {
     App.state.lesson = null;
+    App.state.lessonFiled = false;
     App.state.localKeys = null;
     $('#player').hidden = true;
     $('#topbar').hidden = false;
@@ -1675,9 +1676,15 @@
     /* DAMIEN, 3 Aug 2026: in REVIEW this claimed her progress was saved. Nothing
        is written during a review (proven by qa-review-jump), so the message was
        simply untrue - rule 35. It now says what is actually happening. */
+    var finished = !App.state.review && (App.state.lessonFiled ||
+      (App.state.lessonEntry && lessonState(App.state.lessonEntry).done));
     var leaveBody = App.state.review
       ? 'This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time.'
-      : 'Your progress so far is saved — you can come back to where you left off.';
+      /* 25 Nov walks: after Send & finish this still said "Your progress so far is saved".
+         The finished line is registry text (themes.json kits.<year>.leaveFinished), so the
+         language gates read it; a cached registry without it falls back to the old line. */
+      : (finished && App.kitWord('leaveFinished')) ||
+        'Your progress so far is saved — you can come back to where you left off.';
     App.confirm('Leave the lesson?', leaveBody, 'Leave', function (yes) {
       if (!yes) return;
       if (global.PairKit) global.PairKit.stop(); // never poll a channel from the hub
@@ -1702,6 +1709,7 @@
         attempts++;
         App.call('submitExit', payload).then(function (r) {
           if (r && r.ok) {
+            App.state.lessonFiled = true;
             if (r.xp != null) { App.state.xp = Number(r.xp); syncXp(); }
             onDone(r);
           } else if (attempts < 3) setTimeout(go, 1200 * attempts);
