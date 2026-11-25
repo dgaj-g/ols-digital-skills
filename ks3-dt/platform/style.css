@@ -4610,7 +4610,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ===== J3 Lesson 4 "The Rescue": the story fills the screen under the lesson's top bar ===== */
 .rescue-wrap { min-height: 60vh; }
-.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ols-blue); margin: -2px 0 4px; }
+/* after an answer only her pick and the right answer stay, so the question and the line why fit on a school PC screen (25 Nov) */
+.q-opt.q-opt-rest { display: none; }
+/* the story name sits on the dark year map: the theme's bright accent, never navy (unreadable dark on dark, 25 Nov live walk) */
+.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--gold-hi); margin: -2px 0 4px; }
 .rescue-frame {
   position: fixed; left: 0; right: 0; bottom: 0; top: var(--rescue-top, 64px);
   width: 100vw; height: calc(100vh - var(--rescue-top, 64px)); border: 0; z-index: 5; background: #0d1b2a;

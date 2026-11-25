@@ -546,7 +546,7 @@ async function driveToFloor(page, tpl, studioName, gameTitle) {
   await sleep(2200);
   const catchupIntro = await pn.evaluate(() => (document.querySelector('.chunk-host') || {}).textContent || '');
   check(/missed|waited for you/i.test(catchupIntro), 'catch-up intro card leads');
-  await pn.evaluate(() => { const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Start the catch-up/i.test(x.textContent)); if (b) b.click(); });
+  await pn.evaluate(() => { const b = Array.from(document.querySelectorAll('.chunk-host button')).find(x => /Start the (catch-up|lesson)/i.test(x.textContent)); if (b) b.click(); });
   await sleep(1500);
   // walk to the SIGN intro card (recap items -> briefing), then read its copy
   for (let i = 0; i < 60; i++) {

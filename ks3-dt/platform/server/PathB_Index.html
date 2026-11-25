@@ -4618,7 +4618,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ===== J3 Lesson 4 "The Rescue": the story fills the screen under the lesson's top bar ===== */
 .rescue-wrap { min-height: 60vh; }
-.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ols-blue); margin: -2px 0 4px; }
+/* after an answer only her pick and the right answer stay, so the question and the line why fit on a school PC screen (25 Nov) */
+.q-opt.q-opt-rest { display: none; }
+/* the story name sits on the dark year map: the theme's bright accent, never navy (unreadable dark on dark, 25 Nov live walk) */
+.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--gold-hi); margin: -2px 0 4px; }
 .rescue-frame {
   position: fixed; left: 0; right: 0; bottom: 0; top: var(--rescue-top, 64px);
   width: 100vw; height: calc(100vh - var(--rescue-top, 64px)); border: 0; z-index: 5; background: #0d1b2a;
@@ -6070,11 +6073,16 @@ window.OLS_TRANSPORT = {
     // Side quests never count toward the year ring or steal the hero CTA \u2014
     // the 17-mission spine is the progress story; side quests are extras.
     var coreLessons = (man.lessons || []).filter(function (le) { return !le.side; });
-    var doneCount = 0, continueTarget = null;
+    /* 25 Nov live walk: the big button used to point at the FIRST unfinished lesson and open it as a class lesson,
+       so a pupil marked absent for Lessons 2-4 was sent into Lesson 2's class version ("While everyone logs in")
+       while her class was on Lesson 5. Now: today's lesson (the newest open one she has not finished) comes first;
+       with none, the first lesson she missed opens as a catch-up, exactly as its tile does. */
+    var doneCount = 0, continueTarget = null, catchupTarget = null;
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
       if (st.done) doneCount++;
-      else if (!continueTarget && st.accessible && st.ready) continueTarget = le;
+      else if (st.flagged) { if (!catchupTarget) catchupTarget = le; }
+      else if (st.accessible && st.ready) continueTarget = le;
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -6094,6 +6102,10 @@ window.OLS_TRANSPORT = {
       cta.hidden = false;
       cta.textContent = (doneCount ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' \u2014 ' + continueTarget.title;
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
+    } else if (catchupTarget) {
+      cta.hidden = false;
+      cta.textContent = 'Catch up: Lesson ' + catchupTarget.num + ' \u2014 ' + catchupTarget.title;
+      cta.onclick = function () { App.openLesson(catchupTarget.id, { catchup: true }); };
     } else cta.hidden = true;
 
     // public class board (only when the teacher deliberately enabled it)
@@ -6252,7 +6264,9 @@ window.OLS_TRANSPORT = {
          "?" help is carried here too (review finding S-2: every lesson's help
          must be about THAT screen). */
       chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {
-        help: 'Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public \u2014 it is a warm-up, not a test.'
+        help: 'Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public \u2014 it is a warm-up, not a test.',
+        /* catching up on her own, nobody else is logging in (25 Nov live walk) */
+        soloTitle: 'First, a quick warm-up'
       } });
     }
     return chunks.concat(lesson.chunks || []);
@@ -7558,13 +7572,17 @@ window.OLS_TRANSPORT = {
             var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
             if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
           }
+          /* 25 Nov live walk at 1366x625: the feedback pushed the question and her answer off the top of the screen.
+             Now only her answer and the right one stay, so the question, both answers and the line why fit together. */
+          Array.prototype.forEach.call(opts_, function (o) { if (!o.classList.contains('right') && !o.classList.contains('wrong') && !o.classList.contains('reveal')) o.classList.add('q-opt-rest'); });
           fb.hidden = false;
           fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
             (explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx, (it.options || [])[srcIdx])) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
-          fb.querySelector('button').focus();
+          fb.querySelector('button').focus({ preventScroll: true });
+          try { fb.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browser: the page simply stays put */ }
         });
       }
       sendMark();
@@ -10082,7 +10100,8 @@ window.OLS_TRANSPORT = {
         host.innerHTML = '';
         if (!r || !r.ok || !r.items || !r.items.length) { ctx.next(); return; }
         introCard(host, {
-          kicker: 'Do-Now', title: 'While everyone logs in\u2026',
+          /* catching up on her own, nobody else is logging in (25 Nov live walk): the hub owns that title */
+          kicker: 'Do-Now', title: (ctx.catchup && chunk.config && chunk.config.soloTitle) || 'While everyone logs in\u2026',
           text: 'A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.'
         }, 'Warm up', function () {
           itemRunner(host, {
@@ -10415,10 +10434,12 @@ window.OLS_TRANSPORT = {
   /* ================= catch-up intro ================= */
   Engines.catchupintro = {
     mount: function (host, chunk, ctx) {
-      var c = el('<div class="card catchup-card"><span class="intro-kicker">Absent for this lesson?</span>' +
-        '<h2>Here\u2019s what you missed</h2>' +
-        '<p>No problem \u2014 the lesson waited for you. Work through it at your own pace: the platform will guide you exactly like it guided the class. Ask your teacher if anything needs a real human.</p>' +
-        '<button class="primary-btn" type="button">Start the catch-up</button></div>');
+      /* 25 Nov live walk: the old card ran to 37 words and its heading promised a summary it never gave.
+         Now 23 words; the lesson's own opening names the job, as it does for the class. */
+      var c = el('<div class="card catchup-card"><span class="intro-kicker">Catch up</span>' +
+        '<h2>This lesson waited for you</h2>' +
+        '<p>Go at your own pace, one step at a time, like the class did.</p>' +
+        '<button class="primary-btn" type="button">Start the lesson</button></div>');
       host.appendChild(c);
       c.querySelector('button').onclick = function () { ctx.next(); };
     }
