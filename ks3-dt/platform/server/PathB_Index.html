@@ -6632,10 +6632,17 @@ window.OLS_TRANSPORT = {
      simply does not pay, it says so before she commits, and the detail is still
      recorded so the Live tab shows how far she really got. */
   /* An explain is one sentence for every answer, or (J3 L4 The Rescue) a JSON list with one line per
-     option, in option order: she reads the line for the option she clicked. */
-  function explainFor(ex, i) {
-    if (typeof ex === 'string' && ex.charAt(0) === '[') {
-      try { var a = JSON.parse(ex); if (Array.isArray(a)) return a[Number(i)] || ''; } catch (e) { /* plain text */ }
+     option, in option order: she reads the line for the option she clicked. A warm-up's options are
+     shuffled on the server, so its lines come keyed by the option's own words ({"byOption":{...}},
+     made by pack-content from a list): she still reads the line for the words she clicked (25 Nov 2026). */
+  function explainFor(ex, i, words) {
+    var c = typeof ex === 'string' ? ex.charAt(0) : '';
+    if (c === '[' || c === '{') {
+      try {
+        var a = JSON.parse(ex);
+        if (Array.isArray(a)) return a[Number(i)] || '';
+        if (a && a.byOption && typeof a.byOption === 'object') return String(a.byOption[String(words)] || '');
+      } catch (e) { /* plain text */ }
     }
     return ex;
   }
@@ -7554,7 +7561,7 @@ window.OLS_TRANSPORT = {
           fb.hidden = false;
           fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
-            (explainFor(r.explain, srcIdx) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx)) + '</p>' : '') +
+            (explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx, (it.options || [])[srcIdx])) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
           fb.querySelector('button').focus();
@@ -10372,7 +10379,7 @@ window.OLS_TRANSPORT = {
           }
           var fbHtml = (r.feedback || []).map(function (f, i) {
             var it = items[i] || { stem: '', options: [] };
-            var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i]) : f.explain;
+            var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i], (it.options || [])[payload.answers[i]]) : f.explain;
             return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
               '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
               (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + esc(it.stem) + '</p>' : '') +
