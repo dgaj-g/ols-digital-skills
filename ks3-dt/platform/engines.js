@@ -10897,14 +10897,18 @@
         // wiped mid-sentence ("a few words, then back to the start"). Once the
         // open note form is on screen it is never rebuilt - only its prompt line
         // is refreshed (it changes when the first review lands).
+        // The lock is still decided FIRST, on every reply (25 Nov, regression walk):
+        // the floor paints once before the server's first reply, when no other
+        // studio is known yet, so the box opened; keeping that box alive let her
+        // skip both reviews. Her half-typed words live on in v2Typed meanwhile.
+        var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
+        var need = Math.min(quota, others);
         var liveTa = zone.querySelector('.gal-v2-input');
-        if (liveTa) {
+        if (liveTa && given >= need) {
           var promptEl = zone.querySelector('.gal-v2-prompt');
           if (promptEl && promptEl.textContent !== v2Prompt) promptEl.textContent = v2Prompt;
           return;
         }
-        var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
-        var need = Math.min(quota, others);
         if (given < need) {
           zone.innerHTML = '<div class="card gal-v2-card locked"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
             '<p>Unlocks when ' + (need === 1 ? S('passOne', 'your press pass is') : S('passBoth', 'both press passes are')) +

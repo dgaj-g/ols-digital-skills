@@ -8,11 +8,16 @@
      3  a trip to the Review Desk and back keeps the half-typed note
      4  a note that is too short gets its nudge, and the nudge is still there to read 5 seconds later
      5  the finished note files, shows on the done card, and is saved once as filed
+   And first (0, added 25 Nov after the regression walk caught it): the floor paints once BEFORE the server's first
+   reply, when no other studio is known. The box must still lock once the reply shows studios and her passes are
+   unspent: reviews first, the V2 note second. Keeping that early box alive let a pupil skip both reviews.
    CONTROL=1 serves engines.js as it was at c04a6c9b (before the fix): the gate must go RED.
+   CONTROL=2 serves engines.js as it was at 1ecb2b9d (the first fix, which kept the early box alive): must go RED.
    NODE_PATH=$(npm root -g) node tools/record-tutorial/qa-gallery-note.js [--port=8851] */
 const puppeteer = require('puppeteer'), path = require('path'), fs = require('fs'), { spawn, execFileSync } = require('child_process');
 const arg = (k, d) => { const m = process.argv.find(a => a.startsWith('--' + k + '=')); return m ? m.slice(k.length + 3) : d; };
-const ROOT = path.resolve(__dirname, '../../..'), PORT = +arg('port', 8851), CONTROL = process.env.CONTROL === '1', BASE = 'c04a6c9b';
+const ROOT = path.resolve(__dirname, '../../..'), PORT = +arg('port', 8851), CONTROL = process.env.CONTROL === '1' || process.env.CONTROL === '2';
+const BASE = process.env.CONTROL === '2' ? '1ecb2b9d' : 'c04a6c9b';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let PASS = 0; const FAILS = [];
 const check = (ok, msg) => { if (ok) { PASS++; console.log('  PASS  ' + msg); } else { FAILS.push(msg); console.log('  FAIL  ' + msg); } };
@@ -37,7 +42,7 @@ const THIN = 'make it better';
   await page.waitForFunction(() => window.Engines && window.Engines.gallery && window.App, { timeout: 20000 });
   await sleep(1500);
   await page.evaluate((chunk) => {
-    window.__feed = { ok: true, given: 2, total: 5, studioCount: 3, myReviews: [], studios: [
+    window.__feed = { ok: true, given: 0, total: 5, studioCount: 3, myReviews: [], studios: [
       { sid: 'me', mine: true, sn: 'Studio Anya', gt: 'Sushi Drop', gh: 'Catch the sushi before it lands.', rn: 0, tpl: 'catch' },
       { sid: 's2', sn: 'Studio Two', gt: 'Maze Run', gh: 'Find the way out of the maze.', rn: 0, tpl: 'maze' },
       { sid: 's3', sn: 'Studio Three', gt: 'Quiz Night', gh: 'Answer five questions.', rn: 1, tpl: 'quiz' }] };
@@ -48,7 +53,15 @@ const THIN = 'make it better';
     App.state = App.state || {};
     Engines.gallery.mount(host, chunk, {
       draft: {}, catchup: false, review: false, lesson: { id: 'j1-05' }, chunk: chunk,
-      call: function (name) { if (name === 'galleryFeed') { window.__calls++; return Promise.resolve(JSON.parse(JSON.stringify(window.__feed))); } return Promise.resolve({ ok: true }); },
+      /* the first reply is slow, as it is on a busy school network: the floor paints once before it */
+      call: function (name) {
+        if (name === 'galleryFeed') {
+          window.__calls++;
+          const copy = JSON.parse(JSON.stringify(window.__feed));
+          return window.__calls === 1 ? new Promise(r => setTimeout(() => r(copy), 1500)) : Promise.resolve(copy);
+        }
+        return Promise.resolve({ ok: true });
+      },
       saveEvent: function (e) { window.__saved.push(JSON.parse(JSON.stringify(e))); },
       awardBadge: function () { return Promise.resolve(); }, next: function () { window.__next = 1; }
     });
@@ -69,7 +82,16 @@ const THIN = 'make it better';
 
   await sleep(900);
   check(await clickText('Onto the floor'), 'the Reviewer’s Code card opens the floor');
-  await sleep(600);
+
+  console.log('\n== 0 · the floor opens before the server answers, passes not spent ==');
+  for (let i = 0; i < 30 && (await calls()) < 2; i++) await sleep(400);
+  await sleep(300);
+  check(!(await box()) && await page.evaluate(() => !!document.querySelector('#gate-host .gal-v2-card.locked')),
+    'two studios to review, no pass spent: the V2 note is locked (reviews first)');
+  await page.evaluate(() => { window.__feed.given = 2; });
+  let cg = await calls();
+  for (let i = 0; i < 30 && (await calls()) - cg < 1; i++) await sleep(400);
+  await sleep(300);
   check(!!(await box()), 'both passes spent: the V2 note box is on the floor');
   check((await promptLine()) === pNo, 'no reviews yet: the box asks the "while reviews come in" question');
 
