@@ -17253,6 +17253,7 @@ window.OLS_TRANSPORT = {
       var studioDraft = draftAll.studio || {};
       var v2 = String(draft.v2 || '');
       var v2ok = !!draft.v2ok;
+      var v2Typed = v2;        // unsaved text in the V2 note box (survives repaints)
       var feed = null;         // latest galleryFeed reply
       var seenReviews = {};    // for arrival animations + chime
       var firstPaint = true;
@@ -17458,6 +17459,9 @@ window.OLS_TRANSPORT = {
         var zone = floor.querySelector('.gal-v2-zone');
         var given = feed ? feed.given : 0;
         var received = (feed && feed.myReviews) || [];
+        var v2Prompt = received.length
+          ? ((cfg.v2 && cfg.v2.prompt) || 'Read your reviews. Pick ONE that sparked something - what will version 2 change, and why?')
+          : ((cfg.v2 && cfg.v2.promptNoReviews) || 'While reviews come in: what is the ONE thing version 2 of your game would change, and why?');
         if (v2ok) {
           zone.innerHTML = '<div class="card gal-v2-card done"><span class="std-qa-tag">YOUR V2 NOTE &#10003;</span>' +
             '<p>&ldquo;' + esc(v2) + '&rdquo;</p></div>' +
@@ -17472,6 +17476,17 @@ window.OLS_TRANSPORT = {
         // the 7-day archive sweep cleared the gallery - the chunk had no exit at
         // all, with no teacher override. Lock on what is ACHIEVABLE instead.
         // XP already scales with reviews given, so a short quota still scores honestly.
+        // FIX (25 Nov 2026): the floor re-polls every 4 s and every poll repainted
+        // this zone from the last SAVED note, so a pupil's half-typed note was
+        // wiped mid-sentence ("a few words, then back to the start"). Once the
+        // open note form is on screen it is never rebuilt - only its prompt line
+        // is refreshed (it changes when the first review lands).
+        var liveTa = zone.querySelector('.gal-v2-input');
+        if (liveTa) {
+          var promptEl = zone.querySelector('.gal-v2-prompt');
+          if (promptEl && promptEl.textContent !== v2Prompt) promptEl.textContent = v2Prompt;
+          return;
+        }
         var others = (feed && feed.studios || []).filter(function (s) { return !s.mine; }).length;
         var need = Math.min(quota, others);
         if (given < need) {
@@ -17480,14 +17495,14 @@ window.OLS_TRANSPORT = {
             ' spent &mdash; reviews first, your V2 note second.</p></div>';
           return;
         }
-        var prompt = received.length
-          ? ((cfg.v2 && cfg.v2.prompt) || 'Read your reviews. Pick ONE that sparked something - what will version 2 change, and why?')
-          : ((cfg.v2 && cfg.v2.promptNoReviews) || 'While reviews come in: what is the ONE thing version 2 of your game would change, and why?');
         zone.innerHTML = '<div class="card gal-v2-card"><span class="std-qa-tag">YOUR V2 NOTE</span>' +
-          '<p>' + esc(prompt) + '</p>' +
-          '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2) + '</textarea>' +
+          '<p class="gal-v2-prompt">' + esc(v2Prompt) + '</p>' +
+          '<textarea class="gal-v2-input" maxlength="200" placeholder="' + esc((cfg.v2 && cfg.v2.placeholder) || 'In version 2 I would... because a review said...') + '">' + esc(v2Typed) + '</textarea>' +
           '<p class="gal-v2-nudge" role="status" aria-live="polite"></p>' +
           '<button class="primary-btn gal-v2-save" type="button">File the V2 note</button></div>';
+        // keep the half-typed note in memory so a trip to the Review Desk (bonus
+        // pass) and back does not lose it either
+        zone.querySelector('.gal-v2-input').oninput = function () { v2Typed = this.value; };
         zone.querySelector('.gal-v2-save').onclick = function () {
           var ta = zone.querySelector('.gal-v2-input');
           var nudge = zone.querySelector('.gal-v2-nudge');
