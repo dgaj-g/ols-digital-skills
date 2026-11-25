@@ -187,7 +187,14 @@
       else if (f.kind === 'none') means = str('means.none');
     }
     el.means.textContent = means;
+    syncGutter();
   }
+  /* the line numbers sit in their own column, so they follow whichever code box is showing as it scrolls */
+  function codeBox() { return el.ed.classList.contains('hide') ? el.view : el.ed; }
+  function syncGutter() { el.gutter.scrollTop = codeBox().scrollTop; }
+  el.view.addEventListener('scroll', syncGutter);
+  el.ed.addEventListener('scroll', syncGutter);
+  el.gutter.addEventListener('wheel', function (e) { var b = codeBox(); if (b.scrollHeight > b.clientHeight) { e.preventDefault(); b.scrollTop += e.deltaY; } }, { passive: false });
   el.ed.addEventListener('input', function () {
     pendingText = el.ed.value; clearTimeout(textTimer); textTimer = setTimeout(flushText, 150);
   });
