@@ -1025,15 +1025,17 @@ ol { text-align: left; }
 }
 
 /* ============ help beacon ============ */
+/* 25 Nov 2026 (his standard: "Stuck? Show me", never a bare "?"): the round gold ? became a
+   labelled green button, the same words and green as the J3 L7 and J3 L6 lessons' own help. */
 .help-beacon {
   position: fixed; right: 20px; bottom: 20px; z-index: 80;
-  width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
-  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--accent-ink);
-  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
-  box-shadow: 0 10px 28px rgba(var(--gold-rgb), 0.45);
+  min-height: 46px; padding: 10px 20px; border-radius: 999px; border: none; cursor: pointer;
+  background: #2FBF74; color: #06231b; white-space: nowrap;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 10px 28px rgba(47, 191, 116, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.help-beacon:hover { transform: scale(1.1); box-shadow: 0 14px 34px rgba(var(--gold-rgb), 0.6); }
+.help-beacon:hover { transform: scale(1.05); box-shadow: 0 14px 34px rgba(47, 191, 116, 0.55); }
 .help-list { text-align: left; color: var(--ink); padding-left: 20px; }
 .help-list li { margin-bottom: 8px; }
 .help-text { text-align: left; color: var(--ink); line-height: 1.55; margin: 0; }
@@ -1233,7 +1235,7 @@ ol { text-align: left; }
   position: fixed; inset: 0; z-index: 900; background: #000;
   display: grid; place-items: center; transition: opacity 0.4s ease;
 }
-.intro-overlay.gone { opacity: 0; pointer-events: none; }
+.intro-overlay.gone { opacity: 0; } /* keeps catching clicks while it fades: a double click on Skip no longer opens Stuck? */
 .intro-overlay video { width: 100%; height: 100%; object-fit: contain; }
 .intro-skip { position: absolute; right: 18px; bottom: 18px; color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); }
 
@@ -4644,6 +4646,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 body:has(.rescue-frame) .help-beacon { bottom: auto; top: 80px; }
 /* J3 Lesson 7: the page has its own green Stuck? Show me button beside the job line, so the round ? is not shown on this lesson */
 body:has(.see-frame) .help-beacon { display: none; }
+/* J3 Lesson 6: the Night Desk has its own green Stuck? Show me on every screen, so the platform one is not shown */
+body:has(.nightdesk-frame) .help-beacon { display: none; }
 
 </style>
 </head>
@@ -4755,7 +4759,7 @@ window.OLS_ASSET_BASE = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/plat
 </main>
 
 <!-- Help beacon -->
-<button id="help-beacon" class="help-beacon" type="button" data-tour="help" hidden aria-label="Help">?</button>
+<button id="help-beacon" class="help-beacon" type="button" data-tour="help" hidden>Stuck? Show me</button>
 <div class="ols-modal" id="help-modal" hidden>
   <div class="ols-modal-card ols-modal-sm">
     <h2 id="help-title">Stuck?</h2>
@@ -5770,6 +5774,7 @@ window.OLS_TRANSPORT = {
 
   function showHub() {
     App.state.lesson = null;
+    App.state.lessonFiled = false;
     App.state.localKeys = null;
     $('#player').hidden = true;
     $('#topbar').hidden = false;
@@ -6553,9 +6558,15 @@ window.OLS_TRANSPORT = {
     /* DAMIEN, 3 Aug 2026: in REVIEW this claimed her progress was saved. Nothing
        is written during a review (proven by qa-review-jump), so the message was
        simply untrue - rule 35. It now says what is actually happening. */
+    var finished = !App.state.review && (App.state.lessonFiled ||
+      (App.state.lessonEntry && lessonState(App.state.lessonEntry).done));
     var leaveBody = App.state.review
       ? 'This lesson is already finished and nothing you do here is recorded, so there is nothing to save. You can come back and look through it any time.'
-      : 'Your progress so far is saved \u2014 you can come back to where you left off.';
+      /* 25 Nov walks: after Send & finish this still said "Your progress so far is saved".
+         The finished line is registry text (themes.json kits.<year>.leaveFinished), so the
+         language gates read it; a cached registry without it falls back to the old line. */
+      : (finished && App.kitWord('leaveFinished')) ||
+        'Your progress so far is saved \u2014 you can come back to where you left off.';
     App.confirm('Leave the lesson?', leaveBody, 'Leave', function (yes) {
       if (!yes) return;
       if (global.PairKit) global.PairKit.stop(); // never poll a channel from the hub
@@ -6580,6 +6591,7 @@ window.OLS_TRANSPORT = {
         attempts++;
         App.call('submitExit', payload).then(function (r) {
           if (r && r.ok) {
+            App.state.lessonFiled = true;
             if (r.xp != null) { App.state.xp = Number(r.xp); syncXp(); }
             onDone(r);
           } else if (attempts < 3) setTimeout(go, 1200 * attempts);
@@ -10297,7 +10309,7 @@ window.OLS_TRANSPORT = {
   Engines.selfeval = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      var conf = [], diff = '';
+      var conf = [], diff = '', woke = false;
       var c = el('<div class="card se-card"><h2>How did it go?</h2><div class="se-rows"></div>' +
         (cfg.difficulty ? '<div class="se-diff"><p>How did today feel?</p><div class="se-diff-chips">' +
           '<button class="se-chip" data-d="0" type="button">&#128994; Easy</button>' +
@@ -10365,6 +10377,13 @@ window.OLS_TRANSPORT = {
         c.querySelector('.se-submit').disabled = !all;
         var seNote = c.querySelector('.se-locked-note');
         if (seNote) seNote.hidden = all;
+        /* 25 Nov walks: on a school PC the button sits below the bottom of the screen, so the moment it
+           wakes up it is brought into view (once; she can still scroll back up to change an answer). */
+        if (all && !woke) {
+          woke = true;
+          var seBtn = c.querySelector('.se-submit');
+          if (seBtn.scrollIntoView) seBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
       c.querySelector('.se-submit').onclick = function () {
         if (ctx.review) {

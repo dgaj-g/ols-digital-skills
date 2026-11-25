@@ -3702,7 +3702,7 @@
   Engines.selfeval = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
-      var conf = [], diff = '';
+      var conf = [], diff = '', woke = false;
       var c = el('<div class="card se-card"><h2>How did it go?</h2><div class="se-rows"></div>' +
         (cfg.difficulty ? '<div class="se-diff"><p>How did today feel?</p><div class="se-diff-chips">' +
           '<button class="se-chip" data-d="0" type="button">&#128994; Easy</button>' +
@@ -3770,6 +3770,13 @@
         c.querySelector('.se-submit').disabled = !all;
         var seNote = c.querySelector('.se-locked-note');
         if (seNote) seNote.hidden = all;
+        /* 25 Nov walks: on a school PC the button sits below the bottom of the screen, so the moment it
+           wakes up it is brought into view (once; she can still scroll back up to change an answer). */
+        if (all && !woke) {
+          woke = true;
+          var seBtn = c.querySelector('.se-submit');
+          if (seBtn.scrollIntoView) seBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
       c.querySelector('.se-submit').onclick = function () {
         if (ctx.review) {

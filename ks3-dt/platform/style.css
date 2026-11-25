@@ -1017,15 +1017,17 @@ ol { text-align: left; }
 }
 
 /* ============ help beacon ============ */
+/* 25 Nov 2026 (his standard: "Stuck? Show me", never a bare "?"): the round gold ? became a
+   labelled green button, the same words and green as the J3 L7 and J3 L6 lessons' own help. */
 .help-beacon {
   position: fixed; right: 20px; bottom: 20px; z-index: 80;
-  width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
-  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--accent-ink);
-  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
-  box-shadow: 0 10px 28px rgba(var(--gold-rgb), 0.45);
+  min-height: 46px; padding: 10px 20px; border-radius: 999px; border: none; cursor: pointer;
+  background: #2FBF74; color: #06231b; white-space: nowrap;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 10px 28px rgba(47, 191, 116, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.help-beacon:hover { transform: scale(1.1); box-shadow: 0 14px 34px rgba(var(--gold-rgb), 0.6); }
+.help-beacon:hover { transform: scale(1.05); box-shadow: 0 14px 34px rgba(47, 191, 116, 0.55); }
 .help-list { text-align: left; color: var(--ink); padding-left: 20px; }
 .help-list li { margin-bottom: 8px; }
 .help-text { text-align: left; color: var(--ink); line-height: 1.55; margin: 0; }
@@ -1225,7 +1227,7 @@ ol { text-align: left; }
   position: fixed; inset: 0; z-index: 900; background: #000;
   display: grid; place-items: center; transition: opacity 0.4s ease;
 }
-.intro-overlay.gone { opacity: 0; pointer-events: none; }
+.intro-overlay.gone { opacity: 0; } /* keeps catching clicks while it fades: a double click on Skip no longer opens Stuck? */
 .intro-overlay video { width: 100%; height: 100%; object-fit: contain; }
 .intro-skip { position: absolute; right: 18px; bottom: 18px; color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); }
 
@@ -4636,3 +4638,5 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 body:has(.rescue-frame) .help-beacon { bottom: auto; top: 80px; }
 /* J3 Lesson 7: the page has its own green Stuck? Show me button beside the job line, so the round ? is not shown on this lesson */
 body:has(.see-frame) .help-beacon { display: none; }
+/* J3 Lesson 6: the Night Desk has its own green Stuck? Show me on every screen, so the platform one is not shown */
+body:has(.nightdesk-frame) .help-beacon { display: none; }
