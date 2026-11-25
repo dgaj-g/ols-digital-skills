@@ -4857,6 +4857,10 @@
             }
           });
           checkBtn.disabled = flat().length !== it.blocks.length;
+          /* 25 Nov live walk (J1 L4 + L5): the "then this button wakes up" note
+             stayed under an awake button. It speaks only while the button sleeps. */
+          var pln = c.querySelector('.parsons-locked-note');
+          if (pln) pln.hidden = !checkBtn.disabled;
         }
         render();
 
