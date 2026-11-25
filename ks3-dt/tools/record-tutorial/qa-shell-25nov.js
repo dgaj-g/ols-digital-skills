@@ -72,6 +72,14 @@ const clickByText = async (page, re) => {
     check(st.id === 'j1-05' && !st.cu, 'and opens Lesson 5 with the class (' + st.id + ', catch-up ' + st.cu + ')');
     await page.close();
 
+    /* she missed 2-5 and left the Lesson 4 catch-up half done: the button takes her back into Lesson 4 */
+    page = await freshPage(browser, 1366, 625);
+    await setClass(page, ['j1-02', 'j1-03', 'j1-04', 'j1-05']);
+    await page.evaluate(() => { App.state.me.L['4'] = [1]; App.showHub(); });
+    t = await hero(page);
+    check(/^Catch up: Lesson 4\b/.test(t), 'a catch-up she started comes first: "Catch up: Lesson 4" ("' + t + '")');
+    await page.close();
+
     page = await freshPage(browser, 1366, 625);
     await setClass(page, ['j1-02', 'j1-03', 'j1-04', 'j1-05']);
     t = await hero(page);

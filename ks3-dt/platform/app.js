@@ -1199,11 +1199,15 @@
        so a pupil marked absent for Lessons 2-4 was sent into Lesson 2's class version ("While everyone logs in")
        while her class was on Lesson 5. Now: today's lesson (the newest open one she has not finished) comes first;
        with none, the first lesson she missed opens as a catch-up, exactly as its tile does. */
-    var doneCount = 0, continueTarget = null, catchupTarget = null;
+    /* 25 Nov live walk: a catch-up she has already started (she left it mid-way) comes before one she has not. */
+    var doneCount = 0, continueTarget = null, catchupTarget = null, catchupStarted = false;
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
+      var started = !!(App.state.me && App.state.me.L && App.state.me.L[String(le.num)]);
       if (st.done) doneCount++;
-      else if (st.flagged) { if (!catchupTarget) catchupTarget = le; }
+      else if (st.flagged) {
+        if (!catchupTarget || (started && !catchupStarted)) { catchupTarget = le; catchupStarted = started; }
+      }
       else if (st.accessible && st.ready) continueTarget = le;
     });
     $('#ring-count').textContent = doneCount;

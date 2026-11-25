@@ -406,5 +406,160 @@
  "recapPool.4.stem": {
   "from": "A sum in C3 uses the rate in B1. You fill it down to C6. Which box name stays the same in every copy?",
   "to": "A sum in C3 uses the rate in B1. You fill it down to C6. You want every copy to use B1. How do you write B1 so it does not move?"
+ },
+ "common.ifNoQuotes": {
+  "from": null,
+  "to": "Words inside an IF need quote marks round them, like \"Book her\". Numbers and box names do not."
+ },
+ "common.noEq": {
+  "from": null,
+  "to": "Put = at the start of the sum. Without =, the box shows your typing, not the answer."
+ },
+ "common.fillEmptyOne": {
+  "from": null,
+  "to": "{boxes} is still empty. Drag the square down to {to}, or press Fill down."
+ },
+ "common.fillEmptyMany": {
+  "from": null,
+  "to": "{boxes} are still empty. Drag the square down to {to}, or press Fill down."
+ },
+ "common.fillPick": {
+  "from": null,
+  "to": "Click {from} first. Then press Fill down."
+ },
+ "common.fillNow": {
+  "from": null,
+  "to": "{from} is right. Now press Fill down to copy it down to {to}."
+ },
+ "common.welcomeWhere": {
+  "from": null,
+  "to": {
+   "donow": "the Do now questions",
+   "open": "the screen called The job",
+   "poster": "the festival poster",
+   "close": "the last part"
+  }
+ },
+ "c1.changeJudge.no": {
+  "from": "B3 still says 1,200. Click it, type 1300, press Enter.",
+  "to": "B3 is not 1,300 yet. Click it, type 1300, press Enter."
+ },
+ "c2.judge.empty": {
+  "from": "D4 and D5 are still empty. Drag the square down, or press Fill down.",
+  "to": "D3 is empty. Click D3 and type the sum first, then drag it down."
+ },
+ "c2.judge.ok": {
+  "from": "D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One drag made both sums.",
+  "to": "D4 shows £1,500 for car parking and D5 shows £4,800 for T-shirts. One copy made both sums."
+ },
+ "c4.q.0.yes": {
+  "from": "Tell her: yes, we make £4,300",
+  "to": "Tell her: yes, we make money"
+ },
+ "c4.q.0.hint": {
+  "from": null,
+  "to": "Click C3. Type 30 and press Enter. Then look at D13 at the bottom of the sheet. Book her means yes. Not yet means no."
+ },
+ "c4.q.1.no": {
+  "from": "Tell her: no, we lose £1,700",
+  "to": "Tell her: no, we lose money"
+ },
+ "c4.q.1.hint": {
+  "from": null,
+  "to": "Click B3. Type 1000 and press Enter. Then look at D13 at the bottom of the sheet. Book her means yes. Not yet means no."
+ },
+ "c4.q.2.yes": {
+  "from": "Tell her: yes, we make £3,500",
+  "to": "Tell her: yes, we make money"
+ },
+ "c4.q.2.no": {
+  "from": "Tell her: no",
+  "to": "Tell her: no, we lose money"
+ },
+ "c4.q.2.hint": {
+  "from": null,
+  "to": "Click B3, type 1100 and press Enter. Click C3, type 32 and press Enter. Then look at D13. Book her means yes. Not yet means no."
+ },
+ "c5.title": {
+  "from": "Part 5 · The pin",
+  "to": "Part 5 · Pin a box"
+ },
+ "c5.intro1": {
+  "from": "Click the Shop tab. It holds what we sell. VAT is a tax added to every price.",
+  "to": "This is the Shop tab. It holds what we sell. VAT is a tax added to every price."
+ },
+ "c5.changeJudge.pct": {
+  "from": null,
+  "to": "Look at C4: the hoodie now costs £780. In B1, 20% is written 0.2, so 25% is written 0.25. Type 0.25 and press Enter."
+ },
+ "c5.predict2Options": {
+  "from": [
+   "C4 only",
+   "C3 to C6",
+   "B1 and C4",
+   "None"
+  ],
+  "to": [
+   "C4 only",
+   "C3 to C6",
+   "C4 and C5",
+   "None"
+  ]
+ },
+ "close.free.0.text": {
+  "from": "Find the lowest whole-pound ticket price that still books Ivy Rain. On the Plan tab, try prices in C3.",
+  "to": "Find the lowest whole-pound ticket price that still books Ivy Rain. Keep 1,200 tickets in B3. Try prices in C3."
+ },
+ "close.free.0.help": {
+  "from": null,
+  "to": [
+   "Type 25 in C3 and press Enter. D13 says Not yet.",
+   "Go up one pound each time. Watch D13 after each one.",
+   "Stop at the first price where D13 says Book her."
+  ]
+ },
+ "close.free.1.help": {
+  "from": null,
+  "to": [
+   "Type 1300 in B3 and press Enter. D13 says Book her.",
+   "Now try fewer tickets, such as 1250. Watch D13.",
+   "If D13 says Not yet, try more tickets. If it says Book her, try fewer. Find the smallest number that still says Book her."
+  ]
+ },
+ "close.free.2.help": {
+  "from": null,
+  "to": [
+   "Change one number, such as a price in column C.",
+   "Look at D13 after each change.",
+   "If it says Not yet, change another number to fix it."
+  ]
+ },
+ "close.setB3": {
+  "from": null,
+  "to": "First, B3 must say 1,200. Click B3, type 1200, press Enter."
+ },
+ "close.setC3": {
+  "from": null,
+  "to": "First, C3 must say 25. Click C3, type 25, press Enter."
+ },
+ "close.setD10": {
+  "from": null,
+  "to": "First, D10 must say 18,000. Click D10, type 18000, press Enter."
+ },
+ "close.freeEnd": {
+  "from": null,
+  "to": "Everything you change is saved. Press Done when you finish."
+ },
+ "close.helpBtn": {
+  "from": null,
+  "to": "Stuck? Show me"
+ },
+ "close.helpHow": {
+  "from": null,
+  "to": "Do this:"
+ },
+ "close.helpStuck": {
+  "from": null,
+  "to": "Still stuck? Ask the person beside you. Then put your hand up."
  }
 }

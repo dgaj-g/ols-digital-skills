@@ -3,6 +3,7 @@
    Verdict codes (the UI maps each to its kind line in strings.js):
      ok           — right value and it follows the numbers it should
      empty        — nothing in the cell yet
+     no-eq        — a sum typed without the = in front, so the box shows the typing, not the answer
      typed        — the right number, but typed by hand (not a formula) — fails: it would never update
      error        — the formula shows an error code (#NAME?, #VALUE!, #DIV/0!, #REF!, #SYNTAX, #CYCLE!)
      wrong        — a formula, but the wrong number comes out
@@ -21,6 +22,8 @@
     if (raw === '') return { code: 'empty' };
     var v = sh.value(task.cell);
     if (S.isErr(v)) return { code: 'error', err: v.err };
+    /* a sum typed without its = (B3*C3, sum(D8:D10)): name the missing =, never 'the wrong number' */
+    if (raw.charAt(0) !== '=' && isNaN(S.toNum(raw)) && (/(^|[^A-Za-z])\$?[A-Za-z]{1,2}\$?\d+/.test(raw) || /^(sum|if)\s*\(/i.test(raw))) return { code: 'no-eq' };
     if (raw.charAt(0) !== '=') return { code: near(S.toNum(raw), task.expect) || near(raw, task.expect) ? 'typed' : 'wrong', got: v };
     if (!near(v, task.expect)) return { code: 'wrong', got: v };
     for (var i = 0; i < (task.probes || []).length; i++) {
@@ -37,7 +40,7 @@
     var first = checkCell(wb, { sheet: task.sheet, cell: cells[0], expect: task.expect[0], probes: (task.probes || []).map(function (p) { return { set: p.set, expect: p.expect[0] }; }) });
     if (first.code !== 'ok') return first;
     for (var i = 1; i < cells.length; i++) {
-      var raw = sh.rawOf(cells[i]).trim(); if (raw === '') return { code: 'empty', cell: cells[i] };
+      var raw = sh.rawOf(cells[i]).trim(); if (raw === '') return { code: 'empty', cell: cells[i], cells: cells.slice(i).filter(function (c) { return sh.rawOf(c).trim() === ''; }) };
       var v = sh.value(cells[i]); if (S.isErr(v) || !near(v, task.expect[i])) return { code: 'fill-wobble', cell: cells[i], got: S.isErr(v) ? v.err : v };
       if (raw.charAt(0) !== '=') return { code: 'typed', cell: cells[i] };
     }

@@ -23,7 +23,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 /* the build's listed edits to the design's table (recorded in J2L6_BUILD_PROGRESS.md) */
 /* every edit is listed with its old text in j2l6/string-edits.json; a key renamed by a gate fix is listed in GONE */
 const EDITS = {}; Object.entries(readJSON(path.join(__dirname, 'j2l6/string-edits.json')) || {}).forEach(([k, v]) => { EDITS[k] = v.to; });
-const GONE = ['c4.answer'];
+const GONE = ['c4.answer', 'close.free.0.reset', 'close.free.1.reset']; /* 25 Nov: free time names the exact set-up step (setB3, setC3, setD10) instead of a reset line */
 function setAt(o, p, v) { const k = p.split('.'), last = k.pop(); k.reduce((x, y) => x[y], o)[last] = v; }
 function walk(v, p, out) {
   if (typeof v === 'string') out.push([p, v]);
