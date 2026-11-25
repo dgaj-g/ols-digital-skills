@@ -48,7 +48,7 @@
       "runningOut": "Running out of time? Finish this chapter and click Home. Your place is saved.",
       "welcome": "Welcome back, {name}. You were at {chapter}. {lamb} is safe in the barn.",
       "welcomeNoLamb": "Welcome back, {name}. You were at {chapter}.",
-      "windBack": "The story goes back to the start of this chapter. The code you typed is still there."
+      "windBack": "BEEP is back where this step began. The code you typed is still there."
      },
      "close": {
       "kicker": "HOME",
@@ -61,6 +61,7 @@
       "nameTalk": "Dad says whoever found the lamb gets to name her.",
       "nameH": "Type a name for the lamb, then click Name her.",
       "nameEmpty": "Type a name for the lamb first.",
+      "named": "{lamb} it is. Welcome home, {lamb}.",
       "badges": [
        [
         "The Tracks",
@@ -112,6 +113,7 @@
        ]
       ],
       "freeNotRun": "BEEP cannot fly that. Type a for loop, or click one of the three examples.",
+      "freeLine": "BEEP cannot read line {n}. Check what you typed on that line, or click one of the three examples.",
       "finished": "The Search is finished. Your place is saved."
      }
     },

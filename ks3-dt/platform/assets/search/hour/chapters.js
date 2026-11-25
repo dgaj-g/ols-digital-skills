@@ -829,7 +829,7 @@
   }
   /* ---------- 9.4 found her ---------- */
   async function g4() {
-    ch3(); if (!V.plan) { H3 = freshHill(); planMode(H3); drawSquare(11, false, 0); }
+    ch3(); if (!V.plan) { H3 = freshHill(); planMode(H3); drawSquare(10, false, 0); }
     H3.lamb.found = 1; H3.fade = 0; H3.baa = null; U.clock.hide();
     Snd.bleat(false, 1); U.tween(1.8, function (k) { L.bleat = Math.sin(k * Math.PI); L.baa = k < 1 ? k : 0; });
     await U.wait(1.8); L.bleat = 0; L.baa = 0; U.lamb(null);
@@ -840,7 +840,7 @@
   /* ---------- 9.5 what you did ---------- */
   async function g5() {
     ch3(); U.lamb(null); if (!V.plan) { H3 = freshHill(); planMode(H3); } H3.ring0 = 0; H3.lamb.found = 1; H3.baa = null; H3.count = null; H3.beep = null;
-    drawSquare(11, true, 0);
+    drawSquare(10, true, 0);
     await pages([
       function () { return U.screen({ step: STEP3(5), h: 'Here is what you just did.', html: '<p>i counted the rounds: 0, 1, 2, up to 9.</p><p>forward(i * 10) used i, so each side was longer than the last.</p><p>The square grew like this until it found her.</p>' }).done; },
       function (b) { return quiz({ step: STEP3(5), h: 'BEEP runs this loop. What does BEEP say?', back: b, pre: U.card(['for i in range(4):', '    say(i)']),
@@ -875,7 +875,7 @@
       return U.tween(dur * 0.85, function (k) { rb.u = k; b.x = lerp(x0, x1, k); b.y = lerp(y0, y1, k); }).then(function () {
         if (st.where === 'yard') { for (var i = 0; i < 4; i++) { var a = LN.yard[i], c = LN.yard[(i + 1) % 4]; if (!H4.walls[i] && ((nearPt(a, x0, y0) && nearPt(c, x1, y1)) || (nearPt(c, x0, y0) && nearPt(a, x1, y1)))) { H4.walls[i] = 1; st.lit++; S2.flare(); } } }
         if (st.where === 'barn' && !st.atDoor && Math.abs(b.y - LN.door[1]) < 6 && Math.abs(b.x - LN.door[0]) < 10) st.atDoor = true;
-        if (st.where === 'barn' && b.y < LN.door[1] - 6) st.past = true;
+        if (st.where === 'barn' && b.y < LN.door[1] - 6) { st.past = true; if (st.stopPast && (st.pastN = (st.pastN || 0) + 1) >= 2) st.stop = true; }
         return st.stop ? 'stop' : null;
       });
     }
@@ -909,9 +909,15 @@
     var fb = $('.fb', panel);
     [].forEach.call(panel.querySelectorAll('.opt'), function (b) { b.onclick = function () { [].forEach.call(panel.querySelectorAll('.opt'), function (x) { x.classList.remove('picked'); }); b.classList.add('picked'); fb.textContent = 'Click Run to see.'; if (!ran) { box.runB.disabled = false; box.runB.style.opacity = 1; } }; });
     async function go() {
-      [].forEach.call(panel.querySelectorAll('.opt'), function (x) { x.disabled = true; });
+      /* her guess stays; the other two go, so the run's line, the verdict and Next all fit the panel at school-PC size */
+      var pk = panel.querySelector('.opt.picked');
+      [].forEach.call(panel.querySelectorAll('.opt'), function (x) { x.disabled = true; if (x !== pk) x.style.display = 'none'; });
+      fb.textContent = '';
       var r = Py.read(o.lines, o.read), st = await homeRun(box, r.prog, o.where, o.runOpts);
       box.ta.readOnly = true; box.hideRun(); box.under(o.after(st), 'warn'); seen = st;
+      var ok = !!pk && pk.textContent === o.right;
+      if (pk) { pk.classList.remove('picked'); pk.classList.add(ok ? 'right' : 'wrong'); }
+      fb.textContent = ok ? 'You guessed right.' : 'Your guess was wrong. The line above says what really happened.';
       scr.showNext(U.nextDelay(8));
     }
     await scr.done;
@@ -921,7 +927,10 @@
   async function fixTask(o) {
     var tk = task({ step: o.step, h: o.h, card: o.lines, label: "Dad's flight", help: o.help, tries: o.tries || 0, rows: 3, onFirstKey: o.onFirstKey });
     tk.noRing = true; tk.box.set(o.keep || o.lines.join('\n'));
-    if (o.lockRest) { var rest = o.lines.slice(1).join('\n'); tk.box.ta.addEventListener('input', function () { var ls = tk.box.ta.value.split('\n'); if (ls.slice(1).join('\n') !== rest) { var p = tk.box.ta.selectionStart; tk.box.ta.value = ls[0] + '\n' + rest; tk.box.ta.selectionStart = tk.box.ta.selectionEnd = Math.min(p, ls[0].length); tk.box.ta.dispatchEvent(new Event('scroll')); } }); }
+    if (o.lockRest) { var rest = o.lines.slice(1).join('\n');
+      /* only line 1 changes here: Enter would glue her next words onto line 1 and claim the box moved her line in */
+      tk.box.ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !tk.box.ta.readOnly) { e.preventDefault(); e.stopImmediatePropagation(); tk.box.under('Change only line 1, then press Run. Lines 2 and 3 stay as they are.'); } }, true);
+      tk.box.ta.addEventListener('input', function () { var ls = tk.box.ta.value.split('\n'); if (ls.slice(1).join('\n') !== rest) { var p = tk.box.ta.selectionStart; tk.box.ta.value = ls[0] + '\n' + rest; tk.box.ta.selectionStart = tk.box.ta.selectionEnd = Math.min(p, ls[0].length); tk.box.ta.dispatchEvent(new Event('scroll')); } }); }
     tk.box.focus();
     for (;;) {
       var lines = await (o.race ? Promise.race([tk.next(), o.race]) : tk.next());
@@ -937,7 +946,7 @@
       tk.box.lock(true); await U.wait(1.4); await homeReset(o.where); tk.box.lock(false); tk.box.focus();
     }
   }
-  function bugQuiz(step, opts) { return quiz({ step: step, h: 'Name the bug.', opts: shuffle(opts) }); }
+  function bugQuiz(step, opts) { return quiz({ step: step, h: "Name the bug in Dad's flight.", opts: shuffle(opts) }); }
   function loopOf(p) { return p.filter(function (s) { return s.type === 'for'; })[0]; }
   function bodyOp(lp, op) { return lp ? lp.body.filter(function (s) { return s.op === op; })[0] : null; }
   var READ_HOME = { known: ['forward', 'left', 'right', 'look'], loops: true };
@@ -955,7 +964,7 @@
     ch4(); if (!V.plan || V.plan.kind !== 'home') { H4 = freshHome(); planMode(H4); } homeSet('lane'); H4.gates = [0, 0, 0, 0, 0, 0]; H4.ribbons = []; H4.nuala = { x: LN.x0 - 20, y: LN.y + 46 };
     var dad = ['for i in range(5):', '    forward(100)', '    look()'];
     await guessScreen({ step: STEP4(2), above: 'The lane has 6 gates. BEEP lights each one.', lines: dad, read: READ_HOME, where: 'lane',
-      guesses: shuffle(['Lights all 6 gates', 'Lights 5 gates. One stays dark.', 'Never stops']),
+      guesses: shuffle(['Lights all 6 gates', 'Lights 5 gates. One stays dark.', 'Never stops']), right: 'Lights 5 gates. One stays dark.',
       after: function () { return 'range(5) lit 5 gates. The lane has 6.'; },
       then: async function () { await walkNuala(LN.gates[5] - 40, LN.y + 46, 2.2); await U.talk('NUALA', "I can't see the last gate."); } });
     homeReset('lane'); H4.nuala = { x: LN.x0 - 20, y: LN.y + 46 };
@@ -972,7 +981,7 @@
       },
       won: async function () { await walkNuala(LN.gates[5] + 40, LN.y + 46, 2.4); Snd.chirp(); await walkNuala(LN.yard[0][0], LN.yard[0][1] + 30, 1.2); } });
     BUGS[0] = 1;
-    await bugQuiz(STEP4(2), [['Off by one', 'Yes. 5 rounds for 6 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'It stopped after 5 rounds. The count was wrong.']]);
+    await bugQuiz(STEP4(2), [['Off by one', 'Yes. range(5) gives 5 rounds, but there are 6 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'It stopped after 5 rounds. The count was wrong.']]);
   }
   /* ---------- 10.3 the yard, four walls ---------- */
   async function h3() {
@@ -980,7 +989,7 @@
     H4.ribbons = []; H4.walls = [0, 0, 0, 0]; homeSet('yard'); H4.nuala = { x: LN.yard[0][0], y: LN.yard[0][1] + 30 };
     var dad = ['for i in range(4):', '    forward(100)', '    left(80)'];
     await guessScreen({ step: STEP4(3), above: 'The yard has 4 walls. BEEP lights each one, turning at each corner.', lines: dad, read: READ_HOME, where: 'yard',
-      guesses: shuffle(['Lights all 4 walls', 'Drifts off the walls', 'Never stops']),
+      guesses: shuffle(['Lights all 4 walls', 'Drifts off the walls', 'Never stops']), right: 'Drifts off the walls',
       after: function () { return 'left(80) is not a square corner. The light missed the walls.'; } });
     homeReset('yard');
     await fixTask({ step: STEP4(3), h: 'Change one number to fix the turn, then click Run.', lines: dad, read: READ_HOME, where: 'yard',
@@ -1025,19 +1034,18 @@
     var dad = ['while True:', '    forward(10)', '    look()'], failed, failP, clockOn = false, live = null;
     function arm() { failP = new Promise(function (r) { failed = r; }); clockOn = false; U.clock.show("BEEP's battery runs out in", 40); U.clock.onEnd = function () { if (live) live.stop = live.dead = true; failed('fail'); }; }
     function startClock() { if (!clockOn) { clockOn = true; U.clock.start(); } }
-    arm();
     var runOpts = { stopper: function (st) { live = st; }, run: { pillText: function (s) { return s.endless ? 'round ' + s.round + ', no end' : 'round ' + s.round + ' of ' + s.of; } } };
     await guessScreen({ step: STEP4(4), above: 'The barn door is 60 metres away.', note: 'This is a new loop: while True. It has no count.', lines: dad,
       read: { known: ['forward', 'look'], loops: true, whileOk: true }, where: 'barn',
-      guesses: shuffle(['Stops at the barn', 'Never stops', 'Stops short of the barn']),
-      runOpts: { stopper: function (st) { live = st; startClock(); var sb = document.createElement('button'); sb.className = 'btn stopit'; sb.textContent = S.btn.stop; sb.onclick = function () { st.stop = true; sb.remove(); }; $('.btns', panel).appendChild(sb); st.btn = sb; $('.btns', panel).classList.remove('hide'); }, run: runOpts.run },
+      guesses: shuffle(['Stops at the barn', 'Never stops', 'Stops short of the barn']), right: 'Never stops',
+      runOpts: { stopper: function (st) { live = st; /* the guess run is only reading Dad's flight: the battery clock waits for the fix task */ var sb = document.createElement('button'); sb.className = 'btn stopit'; sb.textContent = S.btn.stop; sb.onclick = function () { st.stop = true; sb.remove(); }; $('.btns', panel).appendChild(sb); st.btn = sb; $('.btns', panel).classList.remove('hide'); }, run: runOpts.run },
       after: function (st) { if (st.btn) st.btn.remove(); return 'while True has no count, so it never stops.'; } });
-    homeReset('barn');
+    homeReset('barn'); arm(); /* the battery bar shows from the fix task, where she types; the guess screen has nothing to type */
     var keep = '', tries = 0, res;
     for (;;) {
       res = await fixTask({ step: STEP4(4), h: 'Change the first line to a for loop that stops at the barn, then click Run.', lines: dad, keep: keep, tries: tries, lockRest: true,
         help: 'The barn is 60 metres. Each step is 10 metres.', read: { known: ['forward', 'look'], loops: true, whileNo: true, card: dad }, where: 'barn', race: failP,
-        onRun: startClock, runOpts: { stopper: function (st) { live = st; if (U.clock.on && U.clock.left <= 0) st.stop = st.dead = true; } },
+        onFirstKey: startClock, onRun: startClock, runOpts: { stopper: function (st) { live = st; st.stopPast = true; /* two steps past the barn ends the flight, so range(60) gets its line before the battery dies */ if (U.clock.on && U.clock.left <= 0) st.stop = st.dead = true; } },
         judge: function (p) {
           var lp = loopOf(p);
           if (!lp) return { msg: 'Your lines ran, but BEEP did not reach the barn. Check the first line.' };
@@ -1061,7 +1069,7 @@
       function () { return U.screen({ step: STEP4(5), h: 'Here is what you just did.', html: '<div class="cmp three">' + fl(['for i in range(5):', '    forward(100)', '    look()'], [0, '5']) + fl(['for i in range(4):', '    forward(100)', '    left(80)'], [2, '80']) + fl(['while True:', '    forward(10)', '    look()'], [0, 'while True']) + '</div>' +
         '<p>You found 3 bugs and fixed each one.</p><p>Off by one: range(5) for 6 gates.</p><p>Wrong turn: left(80) is not a square corner.</p><p>Never stops: while True has no count.</p>' }).done; },
       function (b) { return quiz({ step: STEP4(5), h: 'This flight should light 10 gates. It starts with for i in range(9). What is the bug?', back: b,
-        opts: shuffle([['Off by one', 'Yes. 9 rounds for 10 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'range(9) stops after 9 rounds, but 10 gates need 10 rounds.']]) }); }
+        opts: shuffle([['Off by one', 'Yes. range(9) gives 9 rounds, but there are 10 gates.', true], ['Wrong turn', 'There is no turn in this flight.'], ['Never stops', 'range(9) stops after 9 rounds, but 10 gates need 10 rounds.']]) }); }
     ]);
   }
 
@@ -1069,7 +1077,7 @@
   var LAMBNAME = '', GOT = [], EARLY = false, BADGE = { 1: 'b13', 3: 'b14', 4: 'b15' }, BADGE_IDS = ['b13', 'b14', 'b15'];
   function worry(w) { window.SearchChars = window.SearchChars || {}; window.SearchChars.worry = w; }
   async function barnFilm() {
-    U.strip(5, [0, 1, 2, 3, 4]); U.lamb(null); U.clock.hide(); worry(0);
+    U.strip(5, [0, 1, 2, 3, 4]); U.lamb(null); U.clock.hide(); worry(0); U.panelOff(); /* the exit-check panel must not sit over the barn film */
     var bs = { u: 0 }; V.barnSt = bs; V.mode = 'barn'; Snd.rotor(0.15, 2); Snd.setWind(0.2);
     U.tween(6, function (k) { bs.u = k; }); U.wait(2.5).then(function () { S2.chord(); });
     for (var i = 0; i < S.close.barn.length; i++) await U.film(S.close.barn[i], { next: S.btn.next });
@@ -1086,6 +1094,7 @@
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryIt(e); });
     });
     save('close');
+    await U.talk('NUALA', S.close.named.replace(/\{lamb\}/g, U.esc(LAMBNAME))); /* her name for the lamb is said back to her */
   }
   async function badgesAndRecap() {
     var got = S.close.badges.filter(function (b, i) { return GOT.indexOf(BADGE_IDS[i]) !== -1; });
@@ -1171,7 +1180,7 @@
     var pl = SearchBridge.place || {}, c = CH_OF[at] || 0;
     if (at === 'film' || U.Q.get('at')) return Promise.resolve(at);
     return new Promise(function (res) {
-      var line = (LAMBNAME && c === 5 ? S.common.welcome : S.common.welcomeNoLamb).replace('{name}', U.esc(pl.name || '')).replace('{chapter}', S.strip[c]).replace('{lamb}', U.esc(LAMBNAME)).replace('Welcome back, .', 'Welcome back.');
+      var line = (LAMBNAME && c === 5 ? S.common.welcome : S.common.welcomeNoLamb).replace('{name}', U.esc(pl.name || '')).replace('{chapter}', String(S.strip[c]).replace(/^(\d+) (.+)$/, 'chapter $1, $2')).replace('{lamb}', U.esc(LAMBNAME)).replace('Welcome back, .', 'Welcome back.');
       var scr = U.screen({ step: S.strip[c].toUpperCase(), h: line, next: S.btn.carryOn, back: S.btn.startAgain });
       scr.done.then(function (v) { if (v === 'back') { LAMBNAME = ''; GOT = []; res('film'); } else res(at); });
     });

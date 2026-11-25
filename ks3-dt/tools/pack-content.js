@@ -45,6 +45,16 @@ function encryptKeys(keysObj, fileId, sec) {
   return out.toString('base64');
 }
 
+/* The options list of the question with this id (recap pool: items[]; lessons: chunks[].config.items[]).
+   null when the id has no options list (a typed answer, a sort). */
+function optionsOf(node, id) {
+  if (!node || typeof node !== 'object') return null;
+  if (Array.isArray(node)) { for (const x of node) { const o = optionsOf(x, id); if (o) return o; } return null; }
+  if (node.id === id && Array.isArray(node.options)) return node.options;
+  for (const k of Object.keys(node)) { if (k === 'keys') continue; const o = optionsOf(node[k], id); if (o) return o; }
+  return null;
+}
+
 function validateLesson(src, file) {
   const problems = [];
   const keys = src.keys || {};
@@ -722,6 +732,27 @@ function main() {
         (((ch.config || {}).items) || []).forEach(it => {
           if (src.keys[it.id]) src.keys[it.id].x = 1;
         });
+      });
+    }
+    // AN EXPLAIN LIST TRAVELS AS JSON TEXT, KEYED BY THE OPTION'S OWN WORDS (25 Nov 2026, found on the live
+    // walk: the J3 warm-up said "7 days.,> 40 AND < 46 drops both ends: 5 days.,OR needs..."). The server
+    // hands every explain on as a string (str_), so a raw list arrived as its lines glued with commas.
+    // Keyed by words, not position, because the warm-up shuffles its options on the server: the page reads
+    // the line for the words she clicked (explainFor), whatever order she saw them in.
+    // One line per option, in option order: a list of any other length is a problem, never a guess.
+    if (src.keys) {
+      Object.keys(src.keys).forEach(id => {
+        const k = src.keys[id];
+        if (!k || !Array.isArray(k.explain)) return;
+        const opts = optionsOf(src, id);
+        if (!opts) { problems.push(rel + ': ' + id + ' has an explain list but no options to match it to'); return; }
+        if (k.explain.length !== opts.length) { problems.push(rel + ': ' + id + ' has ' + k.explain.length + ' explain lines for ' + opts.length + ' options'); return; }
+        const byOption = {};
+        opts.forEach((o, i) => {
+          if (Object.prototype.hasOwnProperty.call(byOption, String(o))) problems.push(rel + ': ' + id + ' has two options worded "' + o + '"');
+          byOption[String(o)] = String(k.explain[i]);
+        });
+        k.explain = JSON.stringify({ byOption });
       });
     }
     if (src.keys) {

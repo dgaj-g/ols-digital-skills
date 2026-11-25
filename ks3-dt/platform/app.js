@@ -1195,11 +1195,20 @@
     // Side quests never count toward the year ring or steal the hero CTA —
     // the 17-mission spine is the progress story; side quests are extras.
     var coreLessons = (man.lessons || []).filter(function (le) { return !le.side; });
-    var doneCount = 0, continueTarget = null;
+    /* 25 Nov live walk: the big button used to point at the FIRST unfinished lesson and open it as a class lesson,
+       so a pupil marked absent for Lessons 2-4 was sent into Lesson 2's class version ("While everyone logs in")
+       while her class was on Lesson 5. Now: today's lesson (the newest open one she has not finished) comes first;
+       with none, the first lesson she missed opens as a catch-up, exactly as its tile does. */
+    /* 25 Nov live walk: a catch-up she has already started (she left it mid-way) comes before one she has not. */
+    var doneCount = 0, continueTarget = null, catchupTarget = null, catchupStarted = false;
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
+      var started = !!(App.state.me && App.state.me.L && App.state.me.L[String(le.num)]);
       if (st.done) doneCount++;
-      else if (!continueTarget && st.accessible && st.ready) continueTarget = le;
+      else if (st.flagged) {
+        if (!catchupTarget || (started && !catchupStarted)) { catchupTarget = le; catchupStarted = started; }
+      }
+      else if (st.accessible && st.ready) continueTarget = le;
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -1219,6 +1228,10 @@
       cta.hidden = false;
       cta.textContent = (doneCount ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' — ' + continueTarget.title;
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
+    } else if (catchupTarget) {
+      cta.hidden = false;
+      cta.textContent = 'Catch up: Lesson ' + catchupTarget.num + ' — ' + catchupTarget.title;
+      cta.onclick = function () { App.openLesson(catchupTarget.id, { catchup: true }); };
     } else cta.hidden = true;
 
     // public class board (only when the teacher deliberately enabled it)
@@ -1377,7 +1390,9 @@
          "?" help is carried here too (review finding S-2: every lesson's help
          must be about THAT screen). */
       chunks.push({ id: '_recap', engine: 'recap', title: 'Do-Now', minutes: 3, config: {
-        help: 'Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public — it is a warm-up, not a test.'
+        help: 'Five quick questions from past lessons. Click the answer you think is right, read the reason that comes back, move on. Never graded, never public — it is a warm-up, not a test.',
+        /* catching up on her own, nobody else is logging in (25 Nov live walk) */
+        soloTitle: 'First, a quick warm-up'
       } });
     }
     return chunks.concat(lesson.chunks || []);

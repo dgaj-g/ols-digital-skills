@@ -55,10 +55,17 @@
      simply does not pay, it says so before she commits, and the detail is still
      recorded so the Live tab shows how far she really got. */
   /* An explain is one sentence for every answer, or (J3 L4 The Rescue) a JSON list with one line per
-     option, in option order: she reads the line for the option she clicked. */
-  function explainFor(ex, i) {
-    if (typeof ex === 'string' && ex.charAt(0) === '[') {
-      try { var a = JSON.parse(ex); if (Array.isArray(a)) return a[Number(i)] || ''; } catch (e) { /* plain text */ }
+     option, in option order: she reads the line for the option she clicked. A warm-up's options are
+     shuffled on the server, so its lines come keyed by the option's own words ({"byOption":{...}},
+     made by pack-content from a list): she still reads the line for the words she clicked (25 Nov 2026). */
+  function explainFor(ex, i, words) {
+    var c = typeof ex === 'string' ? ex.charAt(0) : '';
+    if (c === '[' || c === '{') {
+      try {
+        var a = JSON.parse(ex);
+        if (Array.isArray(a)) return a[Number(i)] || '';
+        if (a && a.byOption && typeof a.byOption === 'object') return String(a.byOption[String(words)] || '');
+      } catch (e) { /* plain text */ }
     }
     return ex;
   }
@@ -974,13 +981,17 @@
             var revealPos = ord.indexOf(Number(r.correctIdx)); // source -> display position
             if (revealPos !== -1 && opts_[revealPos]) opts_[revealPos].classList.add('reveal');
           }
+          /* 25 Nov live walk at 1366x625: the feedback pushed the question and her answer off the top of the screen.
+             Now only her answer and the right one stay, so the question, both answers and the line why fit together. */
+          Array.prototype.forEach.call(opts_, function (o) { if (!o.classList.contains('right') && !o.classList.contains('wrong') && !o.classList.contains('reveal')) o.classList.add('q-opt-rest'); });
           fb.hidden = false;
           fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
-            (explainFor(r.explain, srcIdx) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx)) + '</p>' : '') +
+            (explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx, (it.options || [])[srcIdx])) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
-          fb.querySelector('button').focus();
+          fb.querySelector('button').focus({ preventScroll: true });
+          try { fb.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browser: the page simply stays put */ }
         });
       }
       sendMark();
@@ -3498,7 +3509,8 @@
         host.innerHTML = '';
         if (!r || !r.ok || !r.items || !r.items.length) { ctx.next(); return; }
         introCard(host, {
-          kicker: 'Do-Now', title: 'While everyone logs in…',
+          /* catching up on her own, nobody else is logging in (25 Nov live walk): the hub owns that title */
+          kicker: 'Do-Now', title: (ctx.catchup && chunk.config && chunk.config.soloTitle) || 'While everyone logs in…',
           text: 'A quick brain warm-up from past lessons. Answer each one, see why, move on. Never graded, never public.'
         }, 'Warm up', function () {
           itemRunner(host, {
@@ -3795,7 +3807,7 @@
           }
           var fbHtml = (r.feedback || []).map(function (f, i) {
             var it = items[i] || { stem: '', options: [] };
-            var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i]) : f.explain;
+            var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i], (it.options || [])[payload.answers[i]]) : f.explain;
             return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
               '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
               (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + esc(it.stem) + '</p>' : '') +
@@ -3831,10 +3843,12 @@
   /* ================= catch-up intro ================= */
   Engines.catchupintro = {
     mount: function (host, chunk, ctx) {
-      var c = el('<div class="card catchup-card"><span class="intro-kicker">Absent for this lesson?</span>' +
-        '<h2>Here’s what you missed</h2>' +
-        '<p>No problem — the lesson waited for you. Work through it at your own pace: the platform will guide you exactly like it guided the class. Ask your teacher if anything needs a real human.</p>' +
-        '<button class="primary-btn" type="button">Start the catch-up</button></div>');
+      /* 25 Nov live walk: the old card ran to 37 words and its heading promised a summary it never gave.
+         Now 23 words; the lesson's own opening names the job, as it does for the class. */
+      var c = el('<div class="card catchup-card"><span class="intro-kicker">Catch up</span>' +
+        '<h2>This lesson waited for you</h2>' +
+        '<p>Go at your own pace, one step at a time, like the class did.</p>' +
+        '<button class="primary-btn" type="button">Start the lesson</button></div>');
       host.appendChild(c);
       c.querySelector('button').onclick = function () { ctx.next(); };
     }

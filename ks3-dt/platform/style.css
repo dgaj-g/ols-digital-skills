@@ -646,7 +646,7 @@ ol { text-align: left; }
 .q-feedback.bad { background: var(--bad-soft); }
 .q-feedback.neutral { background: #F0F4FB; }
 .q-verdict { font-family: var(--font-display); font-weight: 700; margin: 0 0 6px; }
-.q-feedback.good .q-verdict { color: #1E9459; }
+.q-feedback.good .q-verdict { color: #17784A; } /* 25 Nov: was #1E9459, 3.41:1 on --good-soft and 3.86:1 on white; now 4.86 and 5.49 */
 /* the wrong-answer verdict was `--bad` on `--bad-soft`, two shades of one
      colour, at 2.99:1 — measured on a state the chunk-entry audit never stood
      on. Deeper red on the same soft plate: it still reads as the red one. */
@@ -677,7 +677,7 @@ ol { text-align: left; }
 .sim-login .sim-user::placeholder { color: rgba(var(--gold-hi-rgb), 0.4); }
 .sim-login .sim-user:focus { box-shadow: 0 0 0 4px rgba(var(--gold-rgb), 0.25); }
 .sim-msg { color: var(--bad); font-weight: 600; min-height: 1.3em; margin: 2px 0 8px; }
-.step-done { color: #1E9459; font-weight: 700; margin: 12px 0 0; animation: rise 0.3s ease; }
+.step-done { color: #17784A; font-weight: 700; margin: 12px 0 0; animation: rise 0.3s ease; }
 
 /* ============ tour (mini mission board replica) ============ */
 .tour-stage { max-width: 660px; margin: 0 auto; }
@@ -876,7 +876,7 @@ ol { text-align: left; }
 .exit-fb.good { background: var(--good-soft); }
 .exit-fb.bad { background: var(--bad-soft); }
 .exit-fb-verdict { font-family: var(--font-display); font-weight: 700; margin: 0 0 4px; }
-.exit-fb.good .exit-fb-verdict { color: #1E9459; }
+.exit-fb.good .exit-fb-verdict { color: #17784A; }
 /* the exit check's own copy of the wrong-answer verdict: `--bad` on `--bad-soft`,
    two shades of one colour, measured at 2.99:1 on the state the walker stands on
    after a wrong answer. Same fix as `.q-feedback.bad .q-verdict` — the fault was
@@ -1102,7 +1102,7 @@ ol { text-align: left; }
 .lock-cell .lc-num { font-family: var(--font-display); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
 .lock-cell .lc-title { font-weight: 700; font-size: 0.84rem; color: var(--ols-blue); }
 .lock-cell .lc-state { font-size: 0.76rem; font-weight: 700; }
-.lock-cell.is-on .lc-state { color: #1E9459; }
+.lock-cell.is-on .lc-state { color: #17784A; }
 .lock-cell:not(.is-on) .lc-state { color: #9AA5B5; }
 .lock-cell .lc-date { font-size: 0.7rem; color: var(--muted); }
 /* AUDIT FIX B-05: the undo chip on a locked-but-delivered cell. Quiet enough not
@@ -1122,7 +1122,7 @@ ol { text-align: left; }
 .dash-table td { padding: 8px; border-bottom: 1px solid #EFF2F8; }
 .dash-scroll { max-height: 46vh; overflow: auto; border-radius: var(--r-sm); }
 .pill { display: inline-block; border-radius: 999px; padding: 2px 9px; font-weight: 700; font-size: 0.72rem; }
-.pill.done { background: var(--good-soft); color: #1E9459; }
+.pill.done { background: var(--good-soft); color: #17784A; }
 .pill.started { background: #FFF3CF; color: #8A6D00; }
 .pill.none { background: #EDF0F6; color: #9AA5B5; }
 .pill.flag { background: #FDE5E7; color: #D9455B; }
@@ -1182,7 +1182,7 @@ ol { text-align: left; }
 /* DFM 159 - the pupil's own voice, beside the marks but never mistaken for them:
    red is what the marks say, amber is what she says. */
 .pill.voice { background: #FFF3CF; color: #8A6D00; white-space: nowrap; }
-.lc-yes { color: #1E9459; font-weight: 700; }
+.lc-yes { color: #17784A; font-weight: 700; }
 /* the claimed stretch challenge, beside her name (DFM 183) */
 .lc-stretch { font-size: 0.95em; cursor: help; }
 .lc-no { color: var(--bad); font-weight: 700; }
@@ -1194,7 +1194,7 @@ ol { text-align: left; }
    mid-lesson, and a red-looking number would read as a verdict on the pupil. */
 .lc-actwrap { cursor: help; white-space: nowrap; }
 .lc-act { font-variant-numeric: tabular-nums; font-weight: 800; }
-.lc-act.all { color: #1E9459; }
+.lc-act.all { color: #17784A; }
 .lc-act.some { color: #A8760B; }
 .lc-act.none { color: #7A8798; }
 .lc-ship { font-size: 0.92em; }
@@ -1770,7 +1770,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .dc-row.ok { background: var(--good-soft); }
 .dc-row.miss { background: var(--bad-soft); }
 .dc-mark { font-weight: 800; width: 20px; text-align: center; }
-.dc-row.ok .dc-mark { color: #1E9459; }
+.dc-row.ok .dc-mark { color: #17784A; }
 .dc-row.miss .dc-mark { color: var(--bad); }
 .dc-sim { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 0 0 6px; }
 /* side-quest tiles: violet identity on the spine */
@@ -4610,7 +4610,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 
 /* ===== J3 Lesson 4 "The Rescue": the story fills the screen under the lesson's top bar ===== */
 .rescue-wrap { min-height: 60vh; }
-.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ols-blue); margin: -2px 0 4px; }
+/* after an answer only her pick and the right answer stay, so the question and the line why fit on a school PC screen (25 Nov) */
+.q-opt.q-opt-rest { display: none; }
+/* the story name sits on the dark year map: the theme's bright accent, never navy (unreadable dark on dark, 25 Nov live walk) */
+.tile-story { display: block; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; color: var(--gold-hi); margin: -2px 0 4px; }
 .rescue-frame {
   position: fixed; left: 0; right: 0; bottom: 0; top: var(--rescue-top, 64px);
   width: 100vw; height: calc(100vh - var(--rescue-top, 64px)); border: 0; z-index: 5; background: #0d1b2a;

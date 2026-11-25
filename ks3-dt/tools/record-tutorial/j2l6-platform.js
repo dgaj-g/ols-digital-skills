@@ -187,7 +187,7 @@ async function look(page) {
     if (fr) {
       await hourReady(fr);
       await sleep(800);
-      const want = C.welcomeBack.replace('{where}', PART('c4'));
+      const want = C.welcomeBack.replace('{where}', PART('c4').replace(/^(\d+) · /, 'part $1, ')); /* 25 Nov: "part 4, The call", not "4 · The call" */
       const wp = await fr.evaluate(() => ({ screen: Hour.screen(), ask: (document.querySelector('.welcome .ask') || {}).textContent || '',
         btns: Array.from(document.querySelectorAll('.welcome button')).map(x => x.textContent.trim()) }));
       must(wp.screen === 'welcome' && wp.ask === want, 'A10 the hour says "' + want + '" (got "' + wp.ask + '")');

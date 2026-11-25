@@ -42,7 +42,7 @@ wb = plan(); P(wb).set('D3', '=1200*25'); t('✗ D3 =1200*25', 'no-follow', wb, 
 wb = plan(); P(wb).set('D3', '=B3*C4'); t('✗ D3 wrong box', 'wrong', wb, T.d3);
 wb = plan(); P(wb).set('D3', '=B3+C3'); t('✗ D3 plus not times', 'wrong', wb, T.d3);
 wb = plan(); P(wb).set('D3', '=B3*C3*1'); t('~ D3 odd but right', 'ok', wb, T.d3);
-wb = plan(); P(wb).set('D3', 'B3*C3'); t('✗ D3 forgot the =', 'wrong', wb, T.d3);
+wb = plan(); P(wb).set('D3', 'B3*C3'); t('✗ D3 forgot the = (25 Nov: named as no-eq, not "wrong")', 'no-eq', wb, T.d3);
 wb = plan(); P(wb).set('D3', '=B3xC3'); t('✗ D3 letter x', 'error', wb, T.d3);
 wb = plan(); P(wb).set('D3', '=D3*2'); t('✗ D3 refers to itself', 'error', wb, T.d3);
 wb = plan(); t('✗ D3 empty', 'empty', wb, T.d3);

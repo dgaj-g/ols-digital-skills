@@ -22,7 +22,11 @@
       if (over) return;
       var r = Py.read(lines, { known: ['forward', 'left', 'right', 'look'], loops: true, i: true });
       F.last = { done: false, src: lines.join('\n'), steps: 0 };
-      if (!r.ok || !r.prog.some(function (s) { return s.type === 'for'; })) { box.under(S.close.freeNotRun, 'bad'); F.last.done = true; return; }
+      if (!r.ok || !r.prog.some(function (s) { return s.type === 'for'; })) {
+        /* say what is wrong with her line; the 'on the card' wording belongs to the lessons, not free flight */
+        var m = !r.ok && r.msg, ln = m && m.match(/^BEEP cannot read line (\d+)/);
+        box.under(ln ? S.close.freeLine.replace('{n}', ln[1]) : (m && !/card/.test(m) ? m : S.close.freeNotRun), 'bad'); F.last.done = true; return;
+      }
       box.under(''); var me = ++run, tr = Py.trace(r.prog, { cap: 40 }).slice(0, 400), b = st.beep;
       st.ribbons = []; b.x = CX; b.y = CY; b.h = 0; Snd.rotor(0.6, 0.4);
       await box.run(tr, function (s, dur) {

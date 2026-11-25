@@ -39,6 +39,11 @@ function baseline() {
   return out;
 }
 
+/* A row is the SENTENCE. Its "[ledger row engines.js:N]" tail says where that sentence lives today, and N
+   moves every time engines.js grows: the 17 Sep baseline says 2820 for a sentence now at 3501. Compared with
+   the tail, every old sentence read as new debt and sit-review failed on main (found 25 Nov 2026). */
+const sentence = (t) => String(t).replace(/\s*\[ledger row [^\]]*\]\s*$/, '').trim();
+
 /* what this walk saw, against what the build he approved already showed */
 function check(lesson, seen) {
   const now = Array.from(new Set(seen.map((s) => String(s).trim())));
@@ -50,9 +55,10 @@ function check(lesson, seen) {
      the "quiet pass" this whole round exists to kill (DFM 204). */
   if (!fs.existsSync(BASE)) return { fresh: [], gone: [], ceiling: 0, unset: true };
   const was = baseline()[String(lesson)] || [];
+  const wasS = was.map(sentence), nowS = now.map(sentence);
   return {
-    fresh: now.filter((t) => was.indexOf(t) === -1),
-    gone: was.filter((t) => now.indexOf(t) === -1),
+    fresh: now.filter((t) => wasS.indexOf(sentence(t)) === -1),
+    gone: was.filter((t) => nowS.indexOf(sentence(t)) === -1),
     ceiling: was.length
   };
 }
