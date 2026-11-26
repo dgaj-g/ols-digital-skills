@@ -45,7 +45,7 @@
   H.go = function (id, arg) {
     var s = H.steps[id]; if (!s) { console.error('no step', id); return; }
     if (H.cur && H.cur.exit) H.cur.exit();
-    want = {}; H.input = null; H.seq = null; H.onFrame = null; H.onRun = null; firstKey = null;
+    want = {}; H.input = null; H.seq = null; H.onFrame = null; H.onRun = null; H.onStuck = null; firstKey = null;
     H.cur = s; H.id = id; H.t = 0; H.arg = arg || {};
     if (s.save) { save.step = id; store(); }
     cls(el.hfn, 'big', false);
@@ -126,6 +126,19 @@
     el.hprompt.style.display = o.noBox ? 'none' : '';
   };
   H.help = function (list) { el.hhelp.innerHTML = list.map(function (t) { return '<span>' + rich(t) + '</span>'; }).join('<br>'); };
+  /* "Stuck? Show me" (V91, 26 Nov 2026; asked through hour-bridge.js). The step's own next rung first (H.onStuck, set by a
+     step with rungs and cleared by H.go); with every rung already up, the thing to use now beats: the lit Run button, the help
+     under the box, or the card's heading. No new words: every line is the story's own. False only when no card is up
+     (a film, chapter 1, the pause screen), and then the platform's own help opens. */
+  function beat(node) { if (!node) return; Snd.move('knock'); cls(node, 'beat', false); void node.offsetWidth; cls(node, 'beat', true); }
+  H.beatHelp = function () { beat(el.hhelp); };
+  H.stuck = function () {
+    if (!H.on || H.paused || !want.card) return false;
+    if (H.onStuck && H.onStuck()) return true;
+    if (el.hrun.classList.contains('on') && !el.hrun.disabled) { beat(el.hrun); return true; }
+    if ((el.hhelp.textContent || '').trim()) { beat(el.hhelp); return true; }
+    beat(el.hh); return true;
+  };
   H.fb = function (msg, kind) { el.hfb.innerHTML = rich(msg || ''); el.hfb.className = 'fb' + (kind ? ' ' + kind : '') + (el.hfb.classList.contains('short') ? ' short' : ''); };
   function jolt(msg) { Snd.move('wrong'); H.fb(msg, 'bad'); el.hcard.classList.remove('jolt'); void el.hcard.offsetWidth; el.hcard.classList.add('jolt'); }
   H.jolt = jolt;

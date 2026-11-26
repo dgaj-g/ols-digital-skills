@@ -195,9 +195,9 @@
       "id": "j2x5-5",
       "stem": "Which line makes the square grow every round?",
       "options": [
-       "forward(i * 10)",
-       "forward(10)",
-       "left(90)"
+       "`forward(i * 10)`",
+       "`forward(10)`",
+       "`left(90)`"
       ],
       "code": "for i in range(10):\n    forward( ? )\n    left(90)"
      }

@@ -38,4 +38,17 @@
     /* the story is over (or she chose to go to the 5 questions): the platform carries on to its own steps */
     done: function (why) { post({ type: 'done', why: why || 'end' }); }
   };
+  /* "STUCK? SHOW ME" ON THE LESSON'S TOP BAR (V91, 26 Nov 2026). Walked 26 Nov: the button opened the same general box at
+     every step and never showed the step's own help. Now the platform asks the story, the story shows its own next rung of
+     help (or beats the help it already shows), and answers whether it showed something. Only the lesson's own page is heard.
+     The gates' copy (test) has no lesson around it, so it answers on window.__rescueStuck instead. */
+  function stuck() {
+    try { return !!(window.Hour && window.Hour.stuck && window.Hour.stuck()); } catch (e) { return false; }
+  }
+  window.__rescueStuck = function () { return stuck(); };
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (test || e.source !== window.parent || window.parent === window || !m || m.rescue !== 1 || m.type !== 'stuck') return;
+    post({ type: 'stuck', shown: stuck(), id: m.id });
+  });
 })();

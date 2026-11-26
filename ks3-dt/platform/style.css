@@ -3694,7 +3694,10 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* AN ANSWER ABOUT CODE THAT IS NO LONGER THERE (J2 L4 live walk, 26 Nov 2026): once she
    edits after a run, the old verdict, adventure and path check dim (still readable — the
    nudges are what she is fixing from) and one line in full ink says to press RUN again. */
-.pyrun-verdict.is-stale > :not(.pyrun-stale), .pyw-stage.is-stale, .pyl4-host.is-stale { opacity: 0.55; }
+.pyrun-verdict.is-stale > :not(.pyrun-stale), .pyw-stage.is-stale, .pyl4-host.is-stale,
+.pyrun-console-host.is-stale { opacity: 0.55; }
+/* V91: the first line that differs from the target, under NOT YET */
+.pyrun-diff { margin: 8px 0 0; font-size: 0.96rem; line-height: 1.6; color: var(--ink); }
 .pyrun-stale { margin: 0 0 8px; font-weight: 700; font-size: 0.96rem; line-height: 1.5; color: var(--ink); }
 .pyrun-verdict.is-notyet { background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), 0.75); }
 .pyrun-vtag {

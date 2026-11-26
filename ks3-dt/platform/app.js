@@ -847,9 +847,31 @@
       tag.style.top = Math.round(Math.max(4, Math.min(vh - h - 4, s.top))) + 'px';
       tag.style.left = Math.round(Math.max(8, Math.min(vw - w - 8, s.left))) + 'px';
     }
-    function bringIntoView(first) {
-      var wrap = document.getElementById('job-wrap');
-      var r = first.getBoundingClientRect(), wb = wrap ? wrap.getBoundingClientRect().bottom : 0;
+    function bringIntoView(first, els) {
+      var wrap = document.getElementById('job-wrap'), vh = global.innerHeight;
+      var wbNow = function () { return wrap ? wrap.getBoundingClientRect().bottom : 0; };
+      /* 26 Nov (V91, found on the live walk): on a question the answers were scrolled up under the
+         bar, which hid the question's own code and words. Her answers mean nothing without the
+         question, so it comes in first: its top just under the bar, the answers after it. The job
+         line only sticks once the page scrolls, so the move is measured again after the first one. */
+      var card = first.closest ? first.closest('.q-card') : null;
+      var ctx = card ? [].slice.call(card.querySelectorAll('.q-seen, .q-pre, .q-stem')).filter(function (e) {
+        return e.offsetHeight && e.textContent.trim();
+      })[0] : null;
+      if (ctx) {
+        var lastEl = (els && els.length) ? els[els.length - 1] : first;
+        if (ctx.getBoundingClientRect().top >= wbNow() + 4 && lastEl.getBoundingClientRect().bottom <= vh - 8) return;
+        for (var k = 0; k < 2; k++) {
+          var d = ctx.getBoundingClientRect().top - wbNow() - 12;
+          if (Math.abs(d) < 2) break;
+          global.scrollBy(0, Math.round(d));
+        }
+        /* a question too tall for the room still keeps its first answer, ringed, on screen */
+        var fb = first.getBoundingClientRect().bottom;
+        if (fb > vh - 8) global.scrollBy(0, Math.round(fb - vh + 8));
+        return;
+      }
+      var r = first.getBoundingClientRect(), wb = wbNow();
       var room = global.innerHeight - wb;
       if (r.top >= wb + 40 && r.bottom <= global.innerHeight - 8) return;
       var dy = (r.height + 80 <= room) ? (r.top - wb - 48) : (r.top - wb - 40);
@@ -860,7 +882,7 @@
       [].slice.call(document.querySelectorAll('.sm-ring')).forEach(function (e) { if (!t || t.els.indexOf(e) === -1) e.classList.remove('sm-ring'); });
       if (!t) { var tg = document.getElementById('sm-tag'); if (tg) tg.hidden = true; lastFirst = null; return; }
       t.els.forEach(function (e) { e.classList.add('sm-ring'); });
-      if (t.els[0] !== lastFirst) { lastFirst = t.els[0]; bringIntoView(t.els[0]); }
+      if (t.els[0] !== lastFirst) { lastFirst = t.els[0]; bringIntoView(t.els[0], t.els); }
       lastEls = t.els; placeTag(t.els[0], t.tag, t.els);
     }
     function setOpen(on) {
@@ -920,7 +942,13 @@
   /* ---------------- chrome ---------------- */
   function wireChrome() {
     ShowMe.wire();
-    $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
+    /* a story in its own frame (The Rescue) is asked first: it shows its own next help under her typing box.
+       Only when it has nothing to show (a film, the pause screen, no answer) does the general box open. */
+    $('#help-beacon').onclick = function () {
+      var general = function () { renderHelp(); App.openModal('help-modal'); };
+      if (App.askStory && App.askStory(function (shown) { if (!shown) general(); })) return;
+      general();
+    };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
     /* DAMIEN, 15 Aug 2026 (DFM 226): "clicking the codename in the top corner
@@ -1170,8 +1198,13 @@
          neither is an Agent Kit. J1's registry values reproduce this wording
          exactly, so his approved sentence is unchanged on a J1 screen — proved by
          a rendered comparison, not by reading the source. */
-      '<p class="clearance-sub">' + esc(((App.state.kit || {}).kit || {}).explainer || '') +
-      ' ' + esc(kitWord_('popBody')) + '</p>' +
+      /* 26 Nov 2026 (his 25-words-a-screen standard): the explaining sentence
+         says what the kit IS, which she needs once -- on her FIRST level-up,
+         when this device has never seen her above the first level. Every later
+         pop says only the one-line popBody, so the pop stays near 25 words. His
+         J1 sentence is unchanged on the pop where it does its job. */
+      '<p class="clearance-sub">' + (Number(seen) <= 1 ? esc(((App.state.kit || {}).kit || {}).explainer || '') + ' ' : '') +
+      esc(kitWord_('popBody')) + '</p>' +
       '<div class="confirm-actions">' +
       '<button class="ghost-btn" data-act="later" type="button">Later</button>' +
       '<button class="primary-btn" data-act="open" type="button">Open ' + esc(App.kitName()) + '</button>' +

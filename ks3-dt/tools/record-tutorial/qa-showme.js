@@ -30,7 +30,10 @@ const check = (ok, msg, kind) => {
   if (!ok || process.env.VERBOSE) console.log((ok ? '  ok    ' : '  FAIL  ') + '[' + (kind || 'setup') + '] ' + msg);
   if (CONTROL && ok && kind === 'engine') console.log('  CONTROL-PASSED (must fail) ' + msg);
 };
-const old = f => execFileSync('git', ['show', 'origin/main:ks3-dt/platform/' + f], { cwd: ROOT, maxBuffer: 1 << 27 });
+/* the control is the platform from before the help shell (V89, 5c713ba1): once V90 was on main, "origin/main"
+   had the shell and could no longer fail anything. CONTROL_REF=origin/main runs a later fix's own control. */
+const CONTROL_REF = process.env.CONTROL_REF || '5c713ba1';
+const old = f => execFileSync('git', ['show', CONTROL_REF + ':ks3-dt/platform/' + f], { cwd: ROOT, maxBuffer: 1 << 27 });
 const OLD = CONTROL ? { 'app.js': old('app.js'), 'style.css': old('style.css'), 'index.html': old('index.html') } : null;
 
 /* the lessons and their drawn chunks, from the packed content the platform serves */
@@ -204,7 +207,8 @@ async function partChecks(page, L, c) {
 async function questionChecks(page, L, c) {
   const tagLbl = L.id + ' #' + (c.i + 1) + ' ' + c.id + ' (' + c.engine + ', the first question)';
   const went = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('#chunk-host .intro-card button.primary-btn, #chunk-host .card.intro-card button')].find(b => b.offsetParent && !b.disabled);
+    /* an extra-jobs list (items in extrasMode) opens its first job, whose questions are the same cards */
+    const b = [...document.querySelectorAll('#chunk-host .intro-card button.primary-btn, #chunk-host .card.intro-card button, #chunk-host .xj-job')].find(b => b.offsetParent && !b.disabled);
     if (b) b.click(); return !!b;
   });
   if (!went) return;
@@ -216,7 +220,35 @@ async function questionChecks(page, L, c) {
   check(s.optN > 0 && s.optRinged === s.optN, tagLbl + ': every answer is ringed (' + s.optRinged + ' of ' + s.optN + ')', 'engine');
   check(s.tag === 'Choose one', tagLbl + ': the tag says "Choose one" (got "' + s.tag + '")', 'engine');
   check(!!s.tag && !s.tagHits.length, tagLbl + ': the tag covers none of her words' + (s.tagHits.length ? ' (it lies over: ' + JSON.stringify(s.tagHits) + ')' : ''), 'engine');
+  await contextCheck(page, tagLbl, s);
   await click(page, '#showme-close'); await sleep(250);
+  /* the live case: after Next she is at the foot of the page, so the help has to scroll back up */
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await sleep(250);
+  await click(page, '#job-help'); await sleep(450);
+  await contextCheck(page, tagLbl + ' [opened at the foot of the page]', await look(page));
+  await click(page, '#showme-close'); await sleep(250);
+  await page.evaluate(() => window.scrollTo(0, 0)); await sleep(150);
+}
+
+/* 26 Nov (V91), found on the live walk: help rang the answers but scrolled the question's code and
+   wording up under the bar, so she saw four answers and no question. When the question, from its
+   first words to its last answer, fits under the bar, all of it must be in view with the help open. */
+async function contextCheck(page, tagLbl, s) {
+  const g = await page.evaluate(() => {
+    const vis = e => !!e && !!(e.offsetWidth || e.offsetHeight) && getComputedStyle(e).visibility !== 'hidden';
+    const card = [...document.querySelectorAll('#chunk-host .q-card')].find(vis); if (!card) return null;
+    const first = [...card.querySelectorAll('.q-seen, .q-pre, .q-stem')].find(e => vis(e) && e.textContent.trim());
+    const opts = [...card.querySelectorAll('.q-opt')].filter(vis), wrap = document.getElementById('job-wrap');
+    if (!first || !opts.length || !wrap) return null;
+    const ft = first.getBoundingClientRect().top, lb = opts[opts.length - 1].getBoundingClientRect().bottom, fb = opts[0].getBoundingClientRect().bottom;
+    return { ft: Math.round(ft), lb: Math.round(lb), fb: Math.round(fb), wb: Math.round(wrap.getBoundingClientRect().bottom), vh: innerHeight, what: first.className };
+  });
+  if (!s.bar || !g) { check(false, tagLbl + ': the question can be measured with the help open', 'engine'); return; }
+  /* the room under the bar once the job line has stuck at the top (it only sticks when the page scrolls) */
+  const room = g.vh - g.wb, where = ' (question ' + g.ft + '-' + g.lb + ', first answer ends ' + g.fb + ', bar ends ' + g.wb + ', screen ' + g.vh + ')';
+  if ((g.lb - g.ft) + 24 <= room) check(g.ft >= g.wb - 1 && g.lb <= g.vh + 1, tagLbl + ': with the help open, the question and every answer are in view below the bar' + where, 'engine');
+  else if ((g.fb - g.ft) + 24 <= room) check(g.ft >= g.wb - 1 && g.fb <= g.vh + 1, tagLbl + ': with the help open, the question and its first answer are in view below the bar' + where, 'engine');
+  else check(g.fb <= g.vh + 1 && g.fb - 30 >= g.wb, tagLbl + ': (a very tall question) its first answer is on screen below the bar' + where, 'engine');
 }
 
 (async () => {

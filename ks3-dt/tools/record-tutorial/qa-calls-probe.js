@@ -20,7 +20,7 @@
  */
 'use strict';
 const { enginePage } = require('./lib/l4-engine-page.js');
-const BASE_REF = process.env.KS3DT_L4_BASE || '8f58434';
+const BASE_REF = process.env.KS3DT_L4_BASE || '823ab1a8';
 let failures = 0;
 const check = (ok, m, d) => { console.log((ok ? '  PASS  ' : '  FAIL  ') + m + (!ok && d ? '   [' + d + ']' : '')); if (!ok) failures++; };
 const control = (ok, m, d) => { console.log((ok ? '  CTRL  ' : '  FAIL  ') + 'CONTROL: ' + m + (!ok && d ? '   [' + d + ']' : '')); if (!ok) failures++; };

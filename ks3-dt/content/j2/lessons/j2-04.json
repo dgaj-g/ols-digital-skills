@@ -945,99 +945,6 @@
    }
   },
   {
-   "id": "exit",
-   "engine": "exitcheck",
-   "title": "Exit check",
-   "minutes": 2,
-   "config": {
-    "kicker": "Exit check",
-    "cardTitle": "One question before you finish",
-    "readyLabel": "Ready",
-    "intro": "There is one more question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
-    "items": [
-     {
-      "id": "j2x4-1",
-      "stem": "Saoirse's room prints \"You found the key!\" whatever the player types — trolley, window, even banana. What is the most likely mistake?",
-      "options": [
-       "The if and elif lines, or the lines pushed in under them, are wrong",
-       "The input( ) line is missing from the top of the room",
-       "The words in the print lines need str( ) wrapped around them first",
-       "The room has no NEXT: door line pushed in under any of its roads"
-      ]
-     }
-    ],
-    "help": "This is one marked question about the fork you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away.",
-    "job": "Answer one marked question on your own.",
-    "showMe": [
-     "Click Ready.",
-     "Click the answer you think is right.",
-     "Click Finish when you are sure."
-    ]
-   }
-  },
-  {
-   "id": "exitp",
-   "engine": "parsons",
-   "title": "Build the fork",
-   "minutes": 1,
-   "config": {
-    "introKicker": "Exit check — part 2",
-    "intro": "This is the last one, and it is only five lines.\n\nClick a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards.",
-    "item": {
-     "id": "j2x4-p",
-     "prompt": "Put these five lines in the order that makes the fork work.",
-     "blocks": [
-      "    print(\"You go left and find a torch.\")",
-      "    print(\"You go right and find a locked door.\")",
-      "choice = input(\"Do you go left or right? Type left or right.\")",
-      "else:",
-      "if choice == \"left\":"
-     ]
-    },
-    "doneText": "Correct. The question comes first, then the fork checks the answer, and each road's line is pushed in under its own if or else.",
-    "help": "Click a line in The lines to move it into Your program, or drag it across. Press Check my program when you are sure. You get one go.",
-    "pre": true,
-    "trayClickEject": false,
-    "takeBackLabel": "Put this line back",
-    "trayLabel": "The lines",
-    "checkLabel": "Check my program",
-    "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
-    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
-    "lockedNote": "Move every line into Your program, then this button wakes up.",
-    "emptyNote": "Nothing here yet. Click or drag a line across.",
-    "job": "Put the fork’s five lines in order. You get one go.",
-    "showMe": [
-     "Click Ready.",
-     "Click each line in the order the fork needs.",
-     "Click Check my program when you are sure."
-    ]
-   }
-  },
-  {
-   "id": "close",
-   "engine": "selfeval",
-   "title": "How did it go?",
-   "minutes": 2,
-   "config": {
-    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
-    "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own when it comes back. The lesson is finished.",
-    "difficulty": true,
-    "comment": true,
-    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click the button that says how hard the hour felt, and write a comment if you want to. Only your teacher reads the comment. Press Send when every part is done.",
-    "statements": [
-     "I can write an if line and an else line, so my program does one thing or the other.",
-     "I can add a third road with elif.",
-     "I can test my room by trying each of my two words, and then a word I did not plan for."
-    ],
-    "job": "Tell your teacher honestly how today went.",
-    "showMe": [
-     "Click one button under each sentence.",
-     "Click Easy, Just right or Tricky.",
-     "Click Send & finish."
-    ]
-   }
-  },
-  {
    "id": "extras",
    "engine": "pyrun",
    "title": "The Workshop's extra jobs",
@@ -1333,6 +1240,99 @@
      "Click a job in the list to open it.",
      "Build it, then click RUN this room.",
      "To try another job, click Back to the extra jobs."
+    ]
+   }
+  },
+  {
+   "id": "exit",
+   "engine": "exitcheck",
+   "title": "Exit check",
+   "minutes": 2,
+   "config": {
+    "kicker": "Exit check",
+    "cardTitle": "One question before you finish",
+    "readyLabel": "Ready",
+    "intro": "There is one more question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "items": [
+     {
+      "id": "j2x4-1",
+      "stem": "Saoirse's room prints \"You found the key!\" whatever the player types — trolley, window, even banana. What is the most likely mistake?",
+      "options": [
+       "The if and elif lines, or the lines pushed in under them, are wrong",
+       "The input( ) line is missing from the top of the room",
+       "The words in the print lines need str( ) wrapped around them first",
+       "The room has no NEXT: door line pushed in under any of its roads"
+      ]
+     }
+    ],
+    "help": "This is one marked question about the fork you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away.",
+    "job": "Answer one marked question on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Finish when you are sure."
+    ]
+   }
+  },
+  {
+   "id": "exitp",
+   "engine": "parsons",
+   "title": "Build the fork",
+   "minutes": 1,
+   "config": {
+    "introKicker": "Exit check — part 2",
+    "intro": "This is the last one, and it is only five lines.\n\nClick a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards.",
+    "item": {
+     "id": "j2x4-p",
+     "prompt": "Put these five lines in the order that makes the fork work.",
+     "blocks": [
+      "    print(\"You go left and find a torch.\")",
+      "    print(\"You go right and find a locked door.\")",
+      "choice = input(\"Do you go left or right? Type left or right.\")",
+      "else:",
+      "if choice == \"left\":"
+     ]
+    },
+    "doneText": "Correct. The question comes first, then the fork checks the answer, and each road's line is pushed in under its own if or else.",
+    "help": "Click a line in The lines to move it into Your program, or drag it across. Press Check my program when you are sure. You get one go.",
+    "pre": true,
+    "trayClickEject": false,
+    "takeBackLabel": "Put this line back",
+    "trayLabel": "The lines",
+    "checkLabel": "Check my program",
+    "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
+    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
+    "lockedNote": "Move every line into Your program, then this button wakes up.",
+    "emptyNote": "Nothing here yet. Click or drag a line across.",
+    "job": "Put the fork’s five lines in order. You get one go.",
+    "showMe": [
+     "Click Ready.",
+     "Click each line in the order the fork needs.",
+     "Click Check my program when you are sure."
+    ]
+   }
+  },
+  {
+   "id": "close",
+   "engine": "selfeval",
+   "title": "How did it go?",
+   "minutes": 2,
+   "config": {
+    "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
+    "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own when it comes back. The lesson is finished.",
+    "difficulty": true,
+    "comment": true,
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click the button that says how hard the hour felt, and write a comment if you want to. Only your teacher reads the comment. Press Send when every part is done.",
+    "statements": [
+     "I can write an if line and an else line, so my program does one thing or the other.",
+     "I can add a third road with elif.",
+     "I can test my room by trying each of my two words, and then a word I did not plan for."
+    ],
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
     ]
    }
   }
