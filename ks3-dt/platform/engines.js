@@ -4857,6 +4857,10 @@
             }
           });
           checkBtn.disabled = flat().length !== it.blocks.length;
+          /* 25 Nov live walk (J1 L4 + L5): the "then this button wakes up" note
+             stayed under an awake button. It speaks only while the button sleeps. */
+          var pln = c.querySelector('.parsons-locked-note');
+          if (pln) pln.hidden = !checkBtn.disabled;
         }
         render();
 
@@ -4864,6 +4868,9 @@
           checkBtn.disabled = true;
           locked = true;
           c.querySelectorAll('.parsons-block').forEach(function (b) { b.disabled = true; });
+          /* 25 Nov live walk (J1 L3): once marked, "Put this block back" did nothing
+             but still looked live. The answer is in, so the way back goes. */
+          c.querySelectorAll('.take-back').forEach(function (b) { b.remove(); });
           /* the boxes are flattened in order, job one then job two, and marked
              exactly as a single column always was - so the answer key is
              untouched by this whole change */
@@ -7319,6 +7326,8 @@
                 }
               });
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
+              /* 25 Nov live walk: matched means done, so the dead way back goes too. */
+              c.querySelectorAll('.take-back').forEach(function (n) { n.remove(); });
               if (isExtra) {
                 doneJobs[b.id] = true;
                 /* ONE back control, not two. The ghost that has been sitting in the
@@ -9238,7 +9247,10 @@
           if (submitted || running) return;
           var i = Number(btn.closest('.rally-round').getAttribute('data-i'));
           if (i >= timed) return;
-          var v = rounds[i] == null ? 0 : rounds[i] + Number(btn.getAttribute('data-d'));
+          /* 25 Nov live walk: the first press on an empty go used to show 0 and drop
+             the step, so +10 then + + + typed 3, not 13. Every press now counts;
+             a pupil who scored nothing presses − to enter 0. */
+          var v = (rounds[i] == null ? 0 : rounds[i]) + Number(btn.getAttribute('data-d'));
           rounds[i] = Math.max(0, Math.min(max, v));
           paint(); saveDraft();
         };
