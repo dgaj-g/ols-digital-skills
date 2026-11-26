@@ -5254,6 +5254,16 @@
     repliesSay: 'Your program ran to the end, but it did not print an answer you typed. Find the line that is meant to print your answer: the box name on that line must be outside the speech marks. Then look at every line after the input( ) line. A line that starts with that same box name and an = sign puts new words into the box and replaces your answer, so take that line out.',
     takeBack: 'Put this line back'
   };
+  /* A BUILD MAY NARROW ITS LESSON'S ERROR WORDS (V92, J3 L2 live walk, 26 Nov 2026).
+     The lesson's words cover every build in the part, so build 3 (one words gap)
+     read "A number gap takes digits only" with no number gap on screen. A build's
+     own errorWords key wins over the part's; every other key is the part's. */
+  function pyErrWords(cfg, b) {
+    var w = {}, k, src = cfg.errorWords || {}, own = (b && b.errorWords) || {};
+    for (k in src) if (Object.prototype.hasOwnProperty.call(src, k)) w[k] = src[k];
+    for (k in own) if (Object.prototype.hasOwnProperty.call(own, k)) w[k] = own[k];
+    return w;
+  }
 
   /* ================= snap — MATCH A BLOCK TO ITS PYTHON TWIN ================
      J2 Lesson 2, Phase 1 (runner spec §C). She taps a Scratch block she can
@@ -5520,10 +5530,32 @@
       /* App.state is absent where a gate mounts this engine on its own (qa-tray-order) */
       var appS = (global.App && global.App.state) || {};
       var keptAt = (!ctx.review && appS.draft && appS.draft.pyAt) || null;
-      if (keptAt && keptAt.chunk === chunk.id && Number(keptAt.at) > 0 && Number(keptAt.at) < builds.length) {
+      /* A MATCH IS KEPT THE MOMENT IT HAPPENS (V92, J3 L2 live walk, 26 Nov 2026).
+         V91 saved `at` only when a build OPENED, so a reload after MATCHED but
+         before Next build / Continue brought that build back empty — the last
+         build of a part every time, since nothing opens after it. The match now
+         rides in `pyAt.matched`: a reload goes on to the next build, or, after
+         the last one, to a card that says it is matched and carries Continue. */
+      if (keptAt && keptAt.chunk === chunk.id && Number(keptAt.at) >= 0 && Number(keptAt.at) < builds.length &&
+          (Number(keptAt.at) > 0 || keptAt.matched)) {
         at = Number(keptAt.at);
         cleanFirst = Number(keptAt.clean || 0); featureFirst = Number(keptAt.feat || 0);
-        startBuild(); return;
+        if (!keptAt.matched) { startBuild(); return; }
+        if (at + 1 < builds.length) { at++; startBuild(); return; }
+        var lastB = builds[at] || {};
+        introCard(host, {
+          kicker: cfg.kicker,
+          title: (lastB.tab ? String(lastB.tab) + ' — ' : '') + (cfg.matchedLabel || 'MATCHED'),
+          text: cfg.keptMatchedSay || 'You have already finished this build. Click ' + (cfg.continueLabel || 'Continue') + '.'
+        }, cfg.continueLabel || 'Continue', function () { at++; done(); });
+        return;
+      }
+      function keepMatched() {
+        if (ctx.review || cfg.extrasMode || !ctx.saveDraft || !global.App || !App.state || App.state.draftUnavailable) return;
+        if (App.state.lesson !== ctx.lesson) return;          /* a late save never lands in another lesson */
+        var d0 = App.state.draft || {};
+        d0.pyAt = { chunk: chunk.id, at: at, matched: true, clean: cleanFirst, feat: featureFirst };
+        ctx.saveDraft(d0);
       }
       function keepAt() {
         if (ctx.review || cfg.extrasMode || !at || !ctx.saveDraft || !global.App || !App.state || App.state.draftUnavailable) return;
@@ -5898,7 +5930,7 @@
               PyRun.clearWaitNote(runBtn);
               storyW.flush();
               if (chat) chat.closeAsk();
-              con.show(res, cfg.errorWords || {});
+              con.show(res, pyErrWords(cfg, b));
               var ok = judge(res);
               verdict.hidden = false;
               verdict.className = 'pyrun-verdict ' + (ok ? 'is-matched' : 'is-notyet');
@@ -5918,6 +5950,7 @@
               if (chat) runBtn.disabled = false;
               if (attempts === 1 && !b.optional) cleanFirst++;
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
+              keepMatched();
               var last = (at + 1 >= builds.length);
               var go = el('<button class="primary-btn" type="button">' +
                 esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
@@ -6229,7 +6262,7 @@
             PyRun.clearWaitNote(runBtn);
             storyE.flush();
             if (chat) chat.closeAsk();
-            con.show(res, cfg.errorWords || {});
+            con.show(res, pyErrWords(cfg, b));
             /* THE RUN DIED, SO NOTHING WAS MEASURED, SO NOTHING IS CLAIMED
                (S2b). The probe pass runs the SAME source and dies on the SAME
                line, so every probe would come back false and the checklist
@@ -6325,6 +6358,8 @@
             if (backW) backW.className = 'primary-btn pyrun-back';
             return;
           }
+          /* a card-send build is not marked kept: its send is the step still to come on this screen */
+          if (!b.sendCard) keepMatched();
           var last = (at + 1 >= builds.length);
           var go = el('<button class="primary-btn" type="button">' +
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
@@ -6861,7 +6896,7 @@
               PyRun.clearWaitNote(runBtn);
               storyS.flush();
               if (chat) chat.closeAsk();
-              needConsole().show(res, cfg.errorWords || {});
+              needConsole().show(res, pyErrWords(cfg, b));
               /* S2(b) — HIS "FIXES NOT RECOGNISED". This is the card he sat.
                  The run died on the spliced line, the probe pass died with it,
                  and the strip told him three jobs were NOT WORKING YET while
@@ -7063,6 +7098,7 @@
             if (backS) backS.className = 'primary-btn pyrun-back';
             return;
           }
+          if (!b.sendCard) keepMatched();
           var last = (at + 1 >= builds.length);
           var go = el('<button class="primary-btn" type="button">' +
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
@@ -7710,7 +7746,7 @@
             PyRun.clearWaitNote(runBtn);
             storyB.flush();
             if (chatB) chatB.closeAsk();
-            con.show(res, cfg.errorWords || {});
+            con.show(res, pyErrWords(cfg, b));
             var kindB = String((b.check && b.check.kind) || (b.target ? 'target' : 'target'));
             var ok;
             /* ---- THE L4 KINDS (§C13): judged by Fable's routines in a silent
@@ -7824,6 +7860,7 @@
                 if (back) back.className = 'primary-btn pyrun-back';
                 return;
               }
+              keepMatched();
               var lastCore = (at + 1 >= builds.length);
               var moreLabel = lastCore ? (cfg.continueLabel || 'Continue')
                                        : (cfg.nextBuildLabel || 'Next build');
