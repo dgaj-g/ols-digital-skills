@@ -307,7 +307,8 @@ function testStep(o) {  // o: chip, m, want, list, job, help, fin, nextLabel, on
   }
   var t = o.list[o.list.length - 1];
   if (!strokes.length) strokes = t.s;
-  return { chip: o.chip, job: o.jobDone || o.job, help: o.help, pad: { zone: o.zone, lock: 1 }, btns: btn('nx', o.nextLabel, 0, 1),
+  var b = o.nextLabel || S.next;
+  return { chip: o.chip, job: o.jobDone || f(S.doneJob, { b: b }), help: o.helpDone || f(S.doneHelp, { b: b }), pad: { zone: o.zone, lock: 1 }, btns: btn('nx', o.nextLabel, 0, 1),
     side: card(S.thinks, o.after ? o.after(t) : '<div class="guess">' + esc(f(S.said, { g: m[t.g].n })) + '</div>' + barHtml(t.pc) + '<p class="say">' + f(S.howSure, { pc: t.pc }) + '</p><p class="say verdict ' + (t.w === t.g ? 'ok">' + S.right : 'no">' + esc(f(S.wrong, { a: m[t.w].a }))) + '</p>') + (o.extra || ''),
     acts: { nx: function () { st.shown = 0; clear(); o.onNext(); } } };
 }
@@ -343,7 +344,7 @@ var X = {};   // extras, filled below
 var SCREENS = {
   about: function () {
     var ok = inkOK(), A = S.about;
-    return { chip: 0, job: A.job, help: A.help, pad: {}, draw: 'house', btns: btn('go', A.go, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'),
+    return { chip: 0, job: ok ? A.jobDone : A.job, help: ok ? A.helpDone : A.help, pad: {}, draw: 'house', btns: btn('go', A.go, !ok, 1) + btn('rub', S.rub, 0, 0, 'ghost'),
       side: card(S.thinks, '<div class="guess">' + (strokes.length ? A.noIdea : S.drawSomething) + '</div>' + barHtml(0) + lines(A.lines)), acts: { go: function () { st.t0 = Date.now(); go('t-teach'); }, rub: clear } };
   },
   't-teach': function () { var k = st.cls[0].ex.length < 5 ? 0 : 1; return collect({ chip: 1, m: st.cls, k: k, need: 5, job: S.teach.job, help: S.teach.help, next: function () { if (k === 1) go('t-test'); } }); },

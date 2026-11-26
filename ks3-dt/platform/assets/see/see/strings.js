@@ -14,6 +14,7 @@
     yours: 'Your {pl}: {c}', has: 'The {pl} it has: {c}',
     keep: 'Keep this {n}', finished: 'I have finished my {n}',
     said: 'Your computer said {g}.', right: 'Right.', wrong: 'Wrong. It was {a}.',
+    doneJob: 'Read its answer. Then press the yellow button.', doneHelp: ['Read your computer\'s answer.', 'Read how sure it was.', 'Press the yellow button: {b}.'],
     tooSmall: 'Draw a bit more first.',
 
     quiz: { right: 'Right.', wrong: 'Not that one. The green one is right.', nextQ: 'Next question', count: 'Question {i} of {of}' },
@@ -22,6 +23,8 @@
     about: {
       job: 'Draw anything in the white box.',
       help: ['Press and hold in the white box. Move to draw.', 'The button turns yellow. Press it.'],
+      jobDone: 'Read what it thinks. Then press Start teaching it.',
+      helpDone: ['Read what your computer thinks.', 'Press Start teaching it.'],
       noIdea: 'No idea.',
       lines: ['It knows nothing yet.', 'Today you teach it.'],
       go: 'Start teaching it'
@@ -278,7 +281,7 @@
       qs: [
         { stem: 'Nobody told your computer what a sun is. How does it know one?', options: ['It compares your new drawing with the drawings it was given', 'Someone typed in the rules for a sun', 'It looks up the word sun on the internet', 'It understands what the sun is'], explain: ['Yes. It compares a new drawing with the examples you gave it.', 'Nobody typed any rules. It only had your drawings.', 'It never used the internet. It only had your drawings.', 'It does not understand the sun. It only compares drawings.'] },
         { stem: 'Your computer knew your drawings but got another person\'s wrong. Why?', options: ['It had only learned from the way one person draws', 'The other person drew too slowly', 'It had forgotten your drawings by then', 'The other person used a different mouse'], explain: ['Yes. It had only seen the way you draw.', 'Speed does not matter. It only looks at the finished drawing.', 'It still had your drawings. It had never seen how other people draw.', 'The mouse does not matter. The way a person draws does.'] },
-        { stem: 'You drew a cat. Your computer named it, and it was very sure. What does that show?', options: ['A computer can be very sure and still be wrong', 'It had seen lots of cats before', 'It knew it was a cat but did not say', 'When it is very sure it is always right'], explain: ['Yes. It only knew suns and fish, so it picked one of them.', 'It had never seen a cat. You only taught it suns and fish.', 'It could not know a cat. Nobody gave it a cat.', 'It was very sure about the cat, and it was wrong.'] },
+        { stem: 'You drew a cat. Your computer named it as one of your two things. It was very sure. What does that show?', options: ['A computer can be very sure and still be wrong', 'It had seen lots of cats before', 'It knew it was a cat but did not say', 'When it is very sure it is always right'], explain: ['Yes. It only knew suns and fish, so it picked one of them.', 'It had never seen a cat. You only taught it suns and fish.', 'It could not know a cat. Nobody gave it a cat.', 'It was very sure about the cat, and it was wrong.'] },
         { stem: 'What made your computer better at another person\'s drawings?', options: ['Giving it more examples, drawn by more people', 'Drawing the same sun again, more slowly', 'Giving it fewer drawings to remember', 'Telling it to try harder'], explain: ['Yes. More examples from more people showed it more ways to draw.', 'The same drawing again teaches it nothing new.', 'Fewer drawings teach it less. More drawings helped it.', 'It cannot try harder. It only compares drawings.'] },
         { stem: 'A hospital uses a computer like yours to read X-rays. When should a person check its answer?', options: ['When the computer is not very sure of its answer', 'Never, because computers do not make mistakes', 'Only when the X-ray is very clear', 'Only on the first day it is used'], explain: ['Yes. When it is not very sure, a person should look.', 'Computers do make mistakes. Yours called a cat a sun or a fish.', 'How clear the X-ray is does not matter. A person should check when the computer is not very sure.', 'It can be wrong on any day, not only the first.'] }
       ],
