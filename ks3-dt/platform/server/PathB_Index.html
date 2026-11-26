@@ -3394,7 +3394,19 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   20% { transform: translateX(-7px); } 45% { transform: translateX(6px); }
   70% { transform: translateX(-4px); } 88% { transform: translateX(2px); }
 }
-.snap-say { margin: 14px 0 0; font-size: 0.94rem; line-height: 1.5; color: var(--ols-blue); font-weight: 600; min-height: 1.4em; }
+/* THE DESK SPEAKS WHERE SHE IS LOOKING (live walk, 26 Nov 2026): this line sat under the
+   whole desk, about 700px below the fold at 1366x625, so a wrong pair looked like nothing
+   happened at all. It now rides along the bottom of the screen while the desk is on it, and
+   takes the colour of what it says: red-edged for "not a pair", green for a pair. */
+.snap-say { position: sticky; bottom: 12px; z-index: 5; margin: 14px 0 0; padding: 10px 14px;
+  border-radius: 12px; background: #fff; border: 2px solid rgba(26, 58, 107, 0.28);
+  box-shadow: 0 8px 22px rgba(10, 20, 40, 0.22);
+  font-size: 0.96rem; line-height: 1.45; color: var(--ols-blue); font-weight: 600; min-height: 1.4em; }
+.snap-say.is-wrong { border-color: #C4443A; background: #FFF4F2; color: #9E2F27; }
+.snap-say.is-right { border-color: #2E9E63; background: #F1FAF5; color: #1F7A4A; }
+.snap-say.flash { animation: snap-say-flash 0.45s ease-out; }
+@keyframes snap-say-flash { 0% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .snap-say.flash { animation: none; } }
 .snap-verdict { margin: 10px 0 14px; font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
 .snap-verdict b { color: var(--ols-blue); }
 
@@ -7709,6 +7721,33 @@ window.OLS_TRANSPORT = {
        output captured, execLimit as the guard. Resolves EITHER way \u2014 a program
        that fails is not an exception in this app, it is the lesson working. */
     run: function (code, opts) { return PyRun.start(code, opts).p; },
+    /* THE NEVER-CLOSED BRACKET NAMES ITS OWN LINE (live walk, J2 L2, 26 Nov 2026).
+       Skulpt reports an unclosed bracket as "EOF in multi-line statement on line N",
+       where N is the line AFTER the program ends: it kept reading, hoping for the
+       closing bracket, and ran out. A pupil with a four-line program was told "line 5"
+       and every lesson's words say "on that line" -- so she was sent to a line that
+       does not exist. Python 3 itself names the line where the bracket was OPENED
+       ("'(' was never closed"), so the number is moved to that line, and only ever
+       moved back: a line already at or before the opener is left exactly as said. */
+    eofLine: function (err, src) {
+      var m = /EOF in multi-line statement on line (\d+)/.exec(err);
+      if (!m) return err;
+      var stack = [], lines = String(src || '').split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var s = lines[i], q = null;
+        for (var j = 0; j < s.length; j++) {
+          var c = s.charAt(j);
+          if (q) { if (c === '\\') { j++; } else if (c === q) { q = null; } continue; }
+          if (c === '#') break;
+          if (c === '"' || c === "'") { q = c; continue; }
+          if ('([{'.indexOf(c) !== -1) stack.push(i + 1);
+          else if (')]}'.indexOf(c) !== -1) stack.pop();
+        }
+      }
+      var at = stack.length ? stack[0] : 0;
+      /* only the NUMBER is swapped, inside Python's own words: no sentence is written here */
+      return (at && at < Number(m[1])) ? err.replace(m[0], m[0].replace(/\d+$/, String(at))) : err;
+    },
 
     /* v1's shape, plus the three things runner v2 needs, all OPT-IN so a v1
        caller (both Lesson 2s) configures Skulpt with exactly the same keys it
@@ -7820,7 +7859,7 @@ window.OLS_TRANSPORT = {
         }).then(function () {
           return { ok: true, out: out, err: '', limitMs: limit, preLines: preLines };
         }, function (e) {
-          return { ok: false, out: out, err: String(e), limitMs: limit, preLines: preLines };
+          return { ok: false, out: out, err: PyRun.eofLine(String(e), pre + code + post), limitMs: limit, preLines: preLines };
         });
       }, function () {
         return { ok: false, out: '', err: '', offline: true, limitMs: limit, preLines: 0 };
@@ -11629,7 +11668,12 @@ window.OLS_TRANSPORT = {
         var say = c.querySelector('.snap-say');
         var doneBox = c.querySelector('.snap-done');
 
-        function speak(t) { say.textContent = String(t || ''); }
+        function speak(t, kind) {
+          say.textContent = String(t || '');
+          say.classList.remove('is-wrong', 'is-right', 'flash');
+          if (kind) say.classList.add('is-' + kind);
+          void say.offsetWidth; say.classList.add('flash');
+        }
 
         function render() {
           blockList.innerHTML = ''; pyList.innerHTML = '';
@@ -11677,14 +11721,14 @@ window.OLS_TRANSPORT = {
               if (blockNode) blockNode.classList.add('snapped');
               if (pyNode) pyNode.classList.add('snapped');
               solved[p.id] = 1; p.py = pi;
-              speak(cfg.rightSay || PY_SAY.rightSay);
+              speak(cfg.rightSay || PY_SAY.rightSay, 'right');
               setTimeout(function () { pickedBlock = null; busy = false; render(); }, 520);
             } else {
               /* BOTH bounce. Nothing is revealed, nothing is named, and the
                  block stays picked so the next tap is a real second guess. */
               if (blockNode) blockNode.classList.add('bounce');
               if (pyNode) pyNode.classList.add('bounce');
-              speak(cfg.wrongSay || PY_SAY.wrongSay);
+              speak(cfg.wrongSay || PY_SAY.wrongSay, 'wrong');
               setTimeout(function () {
                 if (blockNode) blockNode.classList.remove('bounce');
                 if (pyNode) pyNode.classList.remove('bounce');
@@ -12202,7 +12246,7 @@ window.OLS_TRANSPORT = {
               var go = el('<button class="primary-btn" type="button">' +
                 esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
               verdict.appendChild(go);
-              App.armButton(go, function () { at++; if (at < builds.length) startBuild(); else done(); });
+              App.armButton(go, function () { at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done(); });
             });
           };
 
@@ -12609,7 +12653,7 @@ window.OLS_TRANSPORT = {
           verdict.appendChild(go);
           App.armButton(go, function () {
             if (b.onDone && typeof cfg.onDoneHook === 'string') { /* reserved */ }
-            at++; if (at < builds.length) startBuild(); else done();
+            at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done();
           });
           /* ---- THE CARD SEND (spec \u00a7E1's `card-send`, inside `engine`) ----
              One more thing once the program really works, on the SAME screen
@@ -12920,7 +12964,7 @@ window.OLS_TRANSPORT = {
               wirePublish();
             }
           });
-          function goOn() { at++; if (at < builds.length) startBuild(); else done(); }
+          function goOn() { at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done(); }
           function wirePublish() {
             if (!pubBtn) return;
             App.armButton(pubBtn, function () {
@@ -13240,7 +13284,7 @@ window.OLS_TRANSPORT = {
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
           verdict.appendChild(go);
           App.armButton(go, function () {
-            at++; if (at < builds.length) startBuild(); else done();
+            at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done();
           });
           if (b.sendCard) drawCardSend(verdict, res, b);
         }
@@ -13967,7 +14011,9 @@ window.OLS_TRANSPORT = {
               verdict.appendChild(go);
               App.armButton(go, function () {
                 at++;
-                if (at < builds.length) startBuild();
+                /* a new build starts at the TOP, as a new part does (app.js): the button
+                   she pressed sits at the foot of the last one (live walk, J2 L2, 26 Nov) */
+                if (at < builds.length) { global.scrollTo(0, 0); startBuild(); }
                 else done();
               });
             } else {
@@ -19800,6 +19846,13 @@ window.OLS_TRANSPORT = {
     } else if (b.engine === 'orders') {
       say = [fr.n + ' of the ' + fr.d + ' parts of the Rush done \u2014 her orders written, her partner\'s orders run through her factory, ' +
              'the products checked, and the Rush sealed. It pays the same whatever her partner said of her products.'];
+    } else if (b.engine === 'snap') {
+      /* the matching desk has no RUN button: its number is pairs matched on the first try
+         (live walk, J2 L2 staff side, 26 Nov 2026 \u2014 it was given the Python build's words) */
+      say = [fr.n + ' of ' + fr.d + ' pairs matched on the first try.'];
+      say.push(fr.n === fr.d
+        ? 'Every pair right first time.'
+        : 'The rest were matched after another go \u2014 a wrong pair costs nothing, and the desk explains it.');
     } else {
       say = [fr.n + ' of ' + fr.d + ' cleared first time.'];
       say.push(fr.n === fr.d
@@ -20180,6 +20233,12 @@ window.OLS_TRANSPORT = {
           '<b class="lc-act all">6/6</b> is all of them. It pays for playing and never for being right: how many ' +
           'she predicted correctly is private to her and the pupil she played, and it is not stored anywhere. ' +
           '<span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else if (b.engine === 'snap') {
+        /* the matching desk is not code she wrote: it had the build's sentence (live walk, 26 Nov 2026) */
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the matching: how many of its pairs she ' +
+          'matched <b>on the first try</b>. <b class="lc-act all">6/6</b> means every pair first time; ' +
+          '<b class="lc-act some">4/6</b> means the rest took another go, which costs her nothing; ' +
+          '<span class="lc-dash">&ndash;</span> means she has not started it. Hover a number to read what happened.</p>');
       } else {
         out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the code she wrote: how many of its builds ' +
           'she got right <b>on the first run</b>. <b class="lc-act all">3/3</b> means every one first time; ' +

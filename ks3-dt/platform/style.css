@@ -3386,7 +3386,19 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
   20% { transform: translateX(-7px); } 45% { transform: translateX(6px); }
   70% { transform: translateX(-4px); } 88% { transform: translateX(2px); }
 }
-.snap-say { margin: 14px 0 0; font-size: 0.94rem; line-height: 1.5; color: var(--ols-blue); font-weight: 600; min-height: 1.4em; }
+/* THE DESK SPEAKS WHERE SHE IS LOOKING (live walk, 26 Nov 2026): this line sat under the
+   whole desk, about 700px below the fold at 1366x625, so a wrong pair looked like nothing
+   happened at all. It now rides along the bottom of the screen while the desk is on it, and
+   takes the colour of what it says: red-edged for "not a pair", green for a pair. */
+.snap-say { position: sticky; bottom: 12px; z-index: 5; margin: 14px 0 0; padding: 10px 14px;
+  border-radius: 12px; background: #fff; border: 2px solid rgba(26, 58, 107, 0.28);
+  box-shadow: 0 8px 22px rgba(10, 20, 40, 0.22);
+  font-size: 0.96rem; line-height: 1.45; color: var(--ols-blue); font-weight: 600; min-height: 1.4em; }
+.snap-say.is-wrong { border-color: #C4443A; background: #FFF4F2; color: #9E2F27; }
+.snap-say.is-right { border-color: #2E9E63; background: #F1FAF5; color: #1F7A4A; }
+.snap-say.flash { animation: snap-say-flash 0.45s ease-out; }
+@keyframes snap-say-flash { 0% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .snap-say.flash { animation: none; } }
 .snap-verdict { margin: 10px 0 14px; font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
 .snap-verdict b { color: var(--ols-blue); }
 
