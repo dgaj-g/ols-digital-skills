@@ -1,16 +1,16 @@
 {
  "lesson": "j1-04",
  "kind": "brief",
- "contentVersion": "2026-11-26s",
+ "contentVersion": "2026-11-26u",
  "shots": {
   "01-do-now.jpg": {
    "name": "01-do-now.jpg",
    "chunkId": "_recap",
    "synthetic": true,
-   "textSnippet": "Not unlocked yet — your teacher controls it",
+   "textSnippet": "Where should your DT work live so you can open it anywhere, even at home?",
    "contentAnchor": null,
    "says": "the Do-Now, mid-question",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": null
   },
   "02-briefing.jpg": {
@@ -19,17 +19,17 @@
    "textSnippet": "First bug: a moth, 1947. US Navy, public domain.",
    "contentAnchor": "First bug: a moth, 1947. US Navy, public domain.",
    "says": "the briefing, with the real 1947 logbook page",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": "72f2f477bc1f"
   },
   "03-board.jpg": {
    "name": "03-board.jpg",
    "chunkId": "board",
-   "textSnippet": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
-   "contentAnchor": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
+   "textSnippet": "Lost your game? Nothing is broken. Reload the Scratch tab. Click File, then ‘Load from your computer’. Pick the .sb3 file again.",
+   "contentAnchor": "Lost your game? Nothing is broken. Reload the Scratch tab. Click File, then ‘Load from your computer’. Pick the .sb3 file again.",
    "says": "the Case Board — the hour’s home screen",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "glance-intake.png": {
    "name": "glance-intake.png",
@@ -37,8 +37,8 @@
    "textSnippet": "Detectives study the REAL thing. Open the broken game on your own screen:",
    "contentAnchor": "Detectives study the REAL thing. Open the broken game on your own screen:",
    "says": "Evidence Intake — the steps to get the broken game open",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "04-case.jpg": {
    "name": "04-case.jpg",
@@ -46,8 +46,8 @@
    "textSnippet": "Fix it in Scratch. Then write your case log below: what was wrong and what you changed.",
    "contentAnchor": "Click the green flag. Press the RIGHT arrow. Then try the other three arrows.",
    "says": "a case file as a pupil first meets it — log box empty",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "glance-clues.png": {
    "name": "glance-clues.png",
@@ -55,8 +55,8 @@
    "textSnippet": "Help step 1 — re-read the ticket: Re-read the ticket. Which arrows work? Which ONE doesn’t? That tells you which script to check. Can’t see every stack? Click the minus (–) button at the bottom right ",
    "contentAnchor": "Help step 1 — re-read the ticket: Re-read the ticket. Which arrows work? Which ONE doesn’t? That tells you which script to check. Can’t see every stack? Click the minus (–) button at the bottom right of the code area.",
    "says": "the help steps, open — two free, one that costs a gold stamp",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "glance-jellyfish.png": {
    "name": "glance-jellyfish.png",
@@ -64,8 +64,8 @@
    "textSnippet": "Click ‘Choose a Sprite’ and search ‘Jellyfish’. Build the blocks in the picture. Want more? Add your own change, like a speed-up.",
    "contentAnchor": "Click ‘Choose a Sprite’ and search ‘Jellyfish’. Build the blocks in the picture. Want more? Add your own change, like a speed-up.",
    "says": "the Jellyfish Job — the stretch, with next lesson’s block previewed",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "05-release.jpg": {
    "name": "05-release.jpg",
@@ -73,8 +73,8 @@
    "textSnippet": "Play the WHOLE game for a minute. Watch all four fixes:",
    "contentAnchor": "Play the WHOLE game for a minute. Watch all four fixes:",
    "says": "the release desk — four things to watch, and the count that proves she played",
-   "contentVersion": "2026-11-26s",
-   "chunkHash": "b1351c8778a2"
+   "contentVersion": "2026-11-26u",
+   "chunkHash": "24545284c847"
   },
   "06-exit.jpg": {
    "name": "06-exit.jpg",
@@ -82,7 +82,7 @@
    "textSnippet": "How to build it: drag a block from Blocks across into Your program — or just click it, if you prefer. Drag the blocks up and down to change the order, and drag one back to Blocks to take it out again.",
    "contentAnchor": "🎯 When the flag is clicked, the sprite gets into position without the player seeing it move, then appears in the middle of the screen and animates by changing costume forever.",
    "says": "the ordering puzzle, before any block is placed",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": "158d6a77fd42"
   }
  },
