@@ -20,24 +20,21 @@
    "minutes": 3,
    "config": {
     "clearance": "YEAR 8 · LESSON 4 OF 17",
-    "headline": "Every game ever made went on sale with bugs in it.",
+    "headline": "Every game goes on sale with bugs in it.",
     "lines": [
-     "In 1947, one of the very first computers in the world stopped working. The engineers searched the machine for the **fault** — and found a real moth stuck inside it! They taped the moth into their logbook and wrote: 'First actual case of bug being found.'",
-     "Bugs never went away. Ever since, a **BUG** has meant a **mistake in a program**. Every game you have ever played had hundreds of them while it was being made. A team found them, one by one, so they could be fixed before the game went on sale. That team is called **QA**, short for **Quality Assurance**: checking a game really works before players get it. QA testing is a real job — and today it is yours.",
-     "In this lesson you will learn to **READ** code someone else wrote and work out what it is **SUPPOSED** to do. Then you will find what is actually wrong — by testing, predicting and checking, never by guessing. Those three skills are what this hour is for.",
-     "Last night, a games company called **OLS GAMES** released a new game: **Shark Attack**. This morning the players' reviews are terrible — four separate bugs got past the old testing team. You are the new QA team. Each complaint a player sends in is called a **TICKET**. The next screen is your CASE BOARD: all four tickets are pinned to it, waiting for you. Fix all four bugs and the players get their game back."
+     "Today you are **QA**, the bug-finding team."
     ],
     "images": [
      {
       "src": "assets/img/l4/l4-moth.jpg",
       "alt": "The 1947 Harvard Mark II logbook page with the actual moth taped onto it",
-      "caption": "The first computer 'bug' — a real moth, taped into Harvard's logbook, 1947. U.S. Navy photo (public domain).",
+      "caption": "First bug: a moth, 1947. US Navy, public domain.",
       "wide": true
      }
     ],
     "video": null,
     "cta": "Open the Case Board",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "help": "This card is only for reading. In 1947, engineers found a real moth stuck inside a computer. Ever since, a BUG has meant a mistake in a program. QA means Quality Assurance: checking a game works before players get it. Last night, OLS GAMES released Shark Attack, and players found four bugs. Each complaint is called a TICKET. Today you read the code, test it and fix each bug. When the writing finishes, press the button at the bottom.",
     "job": "Read what today is about, then click Open the Case Board.",
     "showMe": [
      "Read the words as they appear.",
@@ -58,9 +55,9 @@
    },
    "config": {
     "title": "The Case Board",
-    "intro": "Welcome to the QA team's Case Board. Each of the four player TICKETS you read about has been pinned up here, and each ticket has become a CASE: a folder holding one bug for you to find and fix. Start with the training case — it walks you through your first fix. After that, the other three cases open, and you can take them in any order you like. Every case is closed the same way:",
-    "introSolo": "You are on your own today, so you do both jobs: you PLAY the game and you FIX the blocks. The four player TICKETS you read about are pinned up here, and each ticket has become a CASE: a folder holding one bug for you to find and fix. Start with the training case — it walks you through your first fix. After that, the other three cases open, and you can take them in any order. Every case is closed the same way:",
-    "pairNote": "Work as a two-person detective agency with the pupil beside you: the PLAYER runs the game, reads the ticket out loud and says what they see; the ENGINEER moves the blocks. Swap jobs at every new case — a closed case belongs to both of you.",
+    "intro": "Each player TICKET is now a CASE: one bug to fix. Start with the training case. Close every case like this:",
+    "introSolo": "You are on your own, so you play AND fix. Start with the training case. Close every case like this:",
+    "pairNote": "Two jobs: the PLAYER runs the game and reads the ticket aloud. The ENGINEER moves the blocks. Swap every case.",
     "getgame": {
      "url": "https://scratch.mit.edu/projects/editor/",
      "file": "assets/games/shark-attack-broken-edition.sb3",
@@ -295,15 +292,15 @@
      "skipText": "If HQ still cannot see your Drive, you can sign off without the copy. Tell your teacher in class — they can look in your Drive with you."
     },
     "boardTip": "Lost your game? Nothing is broken — reload <b>scratch.mit.edu</b>, then File &rarr; Load from your computer, and pick the .sb3 again.",
-    "help": "The board is your home screen. Its pins are: the film, Evidence Intake (where you get the broken game), the four cases, and the release desk where the fixed game goes back to the players. Start with Evidence Intake, then the TRAINING case. Inside a case you always do the same five things: see the bug happen, read the code, fix one thing, write your log, then re-play to prove it. Stuck on a case? Open the help steps on the card — re-reading the ticket is always free. Chapter 3 of the film is the one worth re-watching while you work.",
+    "help": "The board is your home screen. Start with Evidence Intake: it gives you the broken game. Then open the TRAINING case. The other three cases open after it, in any order. Every case: see the bug, read the code, fix one thing, log it, re-play. Your case log is one sentence: what was wrong and what you changed. A written log and a ticked re-play close the case. Stuck on a case? Open the help steps on the card. The first help steps are free. The last clue from HQ, the company’s head office, turns your stamp silver. A silver case still counts. The website cannot see inside Scratch, so only tick what you saw. The release desk sends the fixed game back to the players. Chapter 3 of the film is worth watching again.",
     "introSteps": [
-     "Play the broken game and SEE the bug happen with your own eyes.",
-     "Read the code and find the ONE thing that is wrong.",
+     "Play the game and SEE the bug.",
+     "Read the code. Find the ONE wrong thing.",
      "Fix that one thing in Scratch.",
-     "Write your CASE LOG — one sentence saying what was wrong and what you changed, just like the engineers wrote one sentence in their logbook in 1947.",
-     "Play the game again and WATCH the bug not happen. That re-play is your proof."
+     "Write your CASE LOG: one sentence saying what was wrong.",
+     "Play again and WATCH it work."
     ],
-    "introAfter": "When the log is written and the re-play is ticked, the case gets its CASE CLOSED stamp. Need help during a case? Every case card carries help steps: the first ones are free, but if you open the final clue from HQ — the company's head office — your stamp turns SILVER instead of GOLD. A silver case still counts. And remember: the website cannot see inside Scratch. YOU are the tester, so only tick what you truly watched happen.",
+    "introAfter": "Only tick what you truly saw happen.",
     "logLead": "Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**.",
     "proofNote": "This tick is a promise. It says: I played the game again, and I watched the bug NOT happen.",
     "lockedNote": "This stamp is locked until your case log in step 3 is written — both halves.",
@@ -370,7 +367,7 @@
    "title": "Rebuild the Opening",
    "minutes": 2,
    "config": {
-    "intro": "Last one. You get five real blocks, and the sentence below describes the game's opening second. Two of the blocks are new, and they say what they do: hide makes the sprite invisible, show makes it visible again. Click the blocks into the order the sentence describes — you have spent the whole hour learning why order matters.",
+    "intro": "Last one: five real blocks. Two are new: hide makes the sprite invisible, show makes it visible.",
     "item": {
      "id": "ex4-p",
      "prompt": "When the flag is clicked, the sprite gets into position without the player seeing it move, then appears in the middle of the screen and animates by changing costume forever.",
@@ -382,7 +379,7 @@
       "go to x: 0  y: 0"
      ]
     },
-    "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
+    "help": "Click blocks from the tray into your program, in the order the sentence says. Hide makes the sprite invisible. Show makes it visible again. Check when you are sure. If the order is wrong, you are shown the working order.",
     "doneText": "Correct — that program does exactly what the card asked.",
     "introKicker": "Exit check — part 2",
     "job": "Put five blocks in the order the sentence describes.",

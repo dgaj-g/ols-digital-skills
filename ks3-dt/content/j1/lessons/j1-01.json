@@ -21,15 +21,12 @@
     "clearance": "YEAR 8 · LESSON 1 OF 17",
     "headline": "Welcome to Digital Technology.",
     "lines": [
-     "You have seventeen Digital Technology lessons this year, one every fortnight.",
-     "You will start by writing code — telling a small computer what to do, and watching it do it. After that you will open a computer up and find out what each part is for, discover how photographs and music are stored as nothing but numbers, follow a message across a network, and design something of your own.",
-     "The screen you just came from is called MISSION CONTROL. It is your home page for the whole year: every one of the seventeen lessons sits on it, and you come back to it at the start and the end of every lesson.",
-     "Today is the lesson that gets you set up, so that none of the other sixteen have to stop and explain things. By the end of the hour you will be able to log in on your own, keep your account safe, find your way around Mission Control, and know exactly where your work is saved.",
-     "You collect badges as you go — five of them today, one for each main part — and points called XP. They are simply a record of what you have done — they unlock new colours for this website later in the year, and only you and your teacher can see them. Nobody is ranked against anybody."
+     "This year has seventeen lessons, one every fortnight.",
+     "Today you learn to log in, find your way and save your work."
     ],
     "video": null,
     "cta": "Start the lesson",
-    "help": "This screen is only for reading — the website is introducing the year and today's lesson. Nothing to answer. When the writing finishes, a button appears at the bottom — press it to start. No button yet means the writing hasn't finished.",
+    "help": "This card is only for reading. The words appear a few at a time. This year you write code, then open up a computer. You find out how photos and music are stored as numbers. You follow a message across a network, then design something of your own. You collect badges and points called XP. Only you and your teacher see them, and nobody is ranked. When the writing finishes, press Start the lesson at the bottom.",
     "job": "Read about the year ahead, then start the lesson.",
     "showMe": [
      "Read the words as they appear.",
@@ -44,7 +41,7 @@
    "minutes": 3,
    "config": {
     "variant": "calibration",
-    "intro": "Before we begin the lesson, you'll have three easy questions. They are just so you can see how this website works. Nothing here is marked and nothing counts — you cannot get them wrong in any way that matters.",
+    "intro": "Three easy practice questions show you how this website works. Nothing here counts.",
     "items": [
      {
       "id": "cal-1",
@@ -98,24 +95,24 @@
     "xp": 15
    },
    "config": {
-    "intro": "In this part you will learn how to keep your school account safe — what makes a password hard for someone else to guess, why yours stays yours, and why you sign out every time. Then the rules of this room. Three things to read, then some questions.",
+    "intro": "Read three cards on keeping your account safe. Then answer questions on them and the room's rules.",
     "steps": [
      {
       "icon": "🔒",
-      "title": "Your password is the one thing you never share",
-      "text": "Not with your best friend, not with your siblings, not with anyone who says they are helping. Never write it in a file on the computer. If you think somebody knows it, tell a teacher and change it — you are not in trouble for saying so.",
+      "title": "Never share your password",
+      "text": "Not even with your best friend. Think someone knows it? Tell a teacher and change it. You are not in trouble.",
       "confirm": "I understand my password is only for me"
      },
      {
       "icon": "🧩",
-      "title": "What makes a password hard to guess",
-      "text": "Two things: LENGTH and SURPRISE. Three unusual words stuck together, with a capital letter and a number or a symbol, is far stronger than one short clever one. Maple!Harbour6sky would take years to break. What gets guessed first is always the same handful of things: your name, your birthday, your team, the word password with numbers on the end, and runs of keys like qwerty. Newry2013 falls in seconds.",
+      "title": "A password nobody can guess",
+      "text": "Three unusual words, a capital, a number, a symbol: Maple!Harbour6sky. A name, birthday or qwerty falls in seconds.",
       "confirm": "I can see what makes a password hard to guess"
      },
      {
       "icon": "🚪",
       "title": "Sign out — every time",
-      "text": "When you finish on ANY school computer, sign out. It locks your files and your privacy behind you. Staying logged in is like walking off and leaving your locker wide open — and anything anyone does in your account looks like YOU did it.",
+      "text": "Finish on any school computer? Sign out. Stay signed in, and anything anyone does looks like YOU did it.",
       "confirm": "I'll sign out every time I finish"
      }
     ],
@@ -212,7 +209,7 @@
       ]
      }
     ],
-    "help": "First come three cards to read — press the tick on each to say you have read it. Then come marked questions: pick the answer you believe is right, and read the reason that comes back, right or wrong. Stuck? Read it once more slowly, then put your hand up.",
+    "help": "First, three cards to read. Press the tick on each one. Then answer the questions and read each reason. Never write your password in a file on the computer. Staying signed in is like leaving your locker open. Stuck? Read the card again slowly, then put your hand up.",
     "job": "Learn to keep your account safe, then answer the questions.",
     "showMe": [
      "Click Start, then read each card.",
@@ -233,27 +230,27 @@
     "xp": 15
    },
    "config": {
-    "intro": "In this part you will learn your way around this website, so you never have to ask where something is. A light moves around the screen and stops on each part in turn. Read each one, then press Next.",
+    "intro": "A light stops on each part of the website. Read each one, then press Next.",
     "stops": [
      {
       "target": "grid",
       "title": "The lesson board",
-      "text": "Your whole year, at a glance. All seventeen Digital Technology lessons live on this board, in the order you will do them. This is where you start every lesson."
+      "text": "All seventeen lessons live here, in order. Start every lesson from this board."
      },
      {
       "target": "locks",
       "title": "Locks",
-      "text": "A padlock means 'not yet'. Your teacher opens each lesson when the class gets to it. A lesson you have finished never locks again — you can go back into it any time, from any computer."
+      "text": "A padlock means not yet. Your teacher opens each lesson when the class reaches it. A finished lesson never locks again."
      },
      {
       "target": "progress",
       "title": "Your record",
-      "text": "Your badges, your points, and the ring showing how far through the year you are. This is private: only you and your teacher can see it. There is no class scoreboard here."
+      "text": "Your badges, points, and how far through the year you are. Only you and your teacher see it."
      },
      {
       "target": "help",
       "title": "The Stuck? Show me button",
-      "text": "Stuck? Show me sits beside Your job now, at the top of every lesson screen. It shows what to do next, never the answer."
+      "text": "It sits beside Your job now on every lesson screen. It shows what to do, never the answer."
      }
     ],
     "itemsIntro": "Four questions about what you have just been shown.",
@@ -321,9 +318,9 @@
    },
    "config": {
     "paired": true,
-    "intro": "In this part you will learn where school work should be kept, and why it matters — and you will find out what it is like to work on the same thing as somebody else at the very same moment. Six files have landed in your Inbox. Send each one where it really belongs — and if something should never be saved at all, there is a place for that too. Choose wrong and the file comes straight back to you, and you are NOT told the answer — work it out from what each file actually is.",
-    "pairPrompt": "YOU ARE WORKING IN A PAIR. You and the person beside you are on this together. Agree before either of you lets a file go — say out loud why it belongs there — and only then drop it. If you disagree, talk it out; you get one shot at each file.",
-    "channelPrompt": "YOU ARE ABOUT TO BE PAIRED WITH SOMEONE ELSE IN THIS CLASS. She will be sitting at a different computer, looking at this same Vault, at the same moment as you. The website will give her a temporary code name for this Vault — you will see it at the top of the screen, and you will find out who she really was when the Vault is sealed. Only one of you holds the controls at a time, and the screen tells you whose turn it is. Use the message box to agree BEFORE a file is dropped — say why it belongs there — then whoever holds the controls drops it. You get one shot at each file, so agree first. (If your class has an odd number, the last three pupils share one Vault as a three.)",
+    "intro": "Drag each file to where it belongs.",
+    "pairPrompt": "Work with the person beside you. Agree out loud before you drop a file.",
+    "channelPrompt": "A classmate on another computer shares this Vault. Agree in the message box first.",
     "files": [
      {
       "id": "f-homework",
@@ -385,7 +382,7 @@
      "syncCatchup": "In class this is a job for two: two pupils, two computers, one shared Vault — agreeing every move at the same moment over a live channel, like a video call. Computing's name for working together live is SYNCHRONOUS (say: SINK-ron-us — 'at the same time'). You have just proved the solo version works too.",
      "async": "Now think of sending a message tonight that your friend doesn't read until tomorrow. You were never together — but the work still moved, because it waited in a shared place. That's ASYNCHRONOUS ('NOT at the same time'). Your Drive does both: work on something live with a classmate, or leave it waiting for future-you to open — even at home. You'll use both all year."
     },
-    "help": "Drag each file from the Inbox into the folder you both agree it belongs in. Talk in the message box FIRST — only the pupil at the controls can drag, and the screen always says whose turn it is. A file that bounces back was wrong: talk it through and try another. The website never gives the answer — working it out together is the activity.",
+    "help": "Drag each file from the Inbox into the folder it belongs in. A classmate on another computer shares this Vault under a code name. You find out who it was when the Vault is sealed. Only one of you holds the controls at a time. The screen says whose turn it is. Agree in the message box before a file is dropped. A file that bounces back was wrong, so talk it through and try another. The website never gives the answer. If your class has an odd number, three pupils share one Vault.",
     "job": "Drag each file into the folder where it belongs.",
     "showMe": [
      "Click Open the Vault.",
@@ -405,7 +402,7 @@
      {
       "icon": "🗄️",
       "title": "Open your real Drive",
-      "text": "Open a NEW tab and go to drive.google.com — on a school computer it signs you in by itself. That page is YOUR real Vault: it follows your login to any device, even at home. If you have never opened a new tab before, press Show me how and watch the short clip.",
+      "text": "Open a new tab and go to drive.google.com. This is your real Vault: it follows your login anywhere.",
       "clip": {
        "src": "assets/video/l1/open-a-tab.mp4",
        "label": "Show me how",
@@ -418,7 +415,7 @@
      {
       "icon": "➕",
       "title": "Spot the + New button",
-      "text": "Top-left: the + New button. That is how folders get made — but you are NOT making any today. Your only job in this step is to FIND the button and remember where it lives. Making the folders is a whole activity of its own called Files That Follow You — a side quest, one of the short extra lessons on your lesson board — and in it you will build your real folders right here: School, DT Work, the lot.",
+      "text": "Find + New at the top left. It makes folders, but not today. The side quest Files That Follow You does that.",
       "confirm": "I found the + New button"
      }
     ],
@@ -443,7 +440,7 @@
     "xp": 25
    },
    "config": {
-    "intro": "This badge is different from the others: there is nothing new to learn in it. You are going to be asked sixteen quick questions about computers, to find out what you can already do and what is brand new to you — before any of it has been taught. This is not a test and you cannot fail it. It is a snapshot of what you already know, so that in June you and your teacher can both see how far you have come. Answer on your own, no conferring. You will NOT be told right or wrong on these — after each answer you will see 'Answer saved', which means your answer went in safely.",
+    "intro": "Sixteen quick questions show what you already know. It is not a test.",
     "ackText": "Answer saved",
     "solo": true,
     "items": [
@@ -608,7 +605,7 @@
       ]
      }
     ],
-    "help": "Click the answer you honestly think is right. Nobody is told right or wrong today — 'Answer saved' means it went in safely. Don't ask a neighbour — this one is about what YOU know today.",
+    "help": "Click the answer you honestly think is right. You are not told if it is right. Answer saved means your answer went in safely. Answer on your own: this is about what YOU know today. In June, you and your teacher see how far you have come.",
     "job": "Answer sixteen questions on your own. Nobody is told right or wrong.",
     "showMe": [
      "Click Open my Agent File.",
@@ -629,7 +626,7 @@
     "xp": 15
    },
    "config": {
-    "intro": "Last part. Choose the codename you will use for the rest of the year, and sign up to five promises.",
+    "intro": "Last part. Choose your codename for the year, then sign five promises.",
     "adjectives": [
      "Amber",
      "Copper",

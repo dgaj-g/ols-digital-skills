@@ -169,7 +169,7 @@ const WORDS = require(R + 'hour-words.js');
     if (i === 1) { await p.click('#hback'); await W.sleep(200); must((await W.st()).say === says[0], 'Back returns to the first page'); await nextOn(); await next(); await W.sleep(200); await nextOn(); }
     await next(); await W.sleep(200);
   }
-  must(/Look inside cross/.test(says[0]) && /I call the gap who/.test(says[3]) && /sends the name Bobby/.test(says[4]) && /carries Billy too/.test(says[5]), 'the six pages tell the gap: ' + says.map(x => x.split('.')[0]).join(' / '));
+  must(/Look inside cross/.test(says[0]) && /The gap is called who/.test(says[3]) && /sends the name Bobby/.test(says[4]) && /carries Billy too/.test(says[5]), 'the six pages tell the gap: ' + says.map(x => x.split('.')[0]).join(' / '));
   must(await W.step('r_gap', 10000), 'Blink\'s lesson ends at the gap');
   s = await W.type('def cross():'); must(s.fbk.indexOf('bad') >= 0 && s.fb, 'the old def line is refused: ' + s.fb);
   s = await W.type('def cross(who)'); must(s.fbk.indexOf('bad') >= 0, 'no colon is refused: ' + s.fb);

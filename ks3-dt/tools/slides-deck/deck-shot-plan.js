@@ -457,16 +457,16 @@ const DECK_SHOTS = {
          the numbered mechanic on its own: a complete thing, 1:0.32, and it renders
          at the full 250pt. The rules are on the slide before it, in the teacher's
          own voice, which is where he ruled they belong. */
-      selector: '.chunk-host .insp-intro-steps',
+      selector: '.chunk-host .insp-rules',   /* V93 (26 Nov) cut the numbered how-to list from the card; the six rules are what is left to point at */
       at: () => {
         const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
         if (!s || s.id !== 'inspection') return false;
         /* the intro card, before the first scene: the steps list exists only there */
-        return !!document.querySelector('.chunk-host .insp-intro-steps') &&
+        return !!document.querySelector('.chunk-host .insp-rules') &&
           !document.querySelector('.chunk-host .insp-stage');
       },
-      mustShow: /file my inspection report/i,
-      says: 'how the inspection works, in the four steps off its own opening card'
+      mustShow: /no food or drink near the machines/i,
+      says: 'the six room rules off the inspection\'s own opening card'
     },
     'snapshot-q': {
       chunk: 'snapshot',
@@ -494,7 +494,7 @@ const DECK_SHOTS = {
         return !!document.querySelector('.chunk-host .intro-card') &&
           !document.querySelector('.chunk-host .q-card');
       },
-      mustShow: /your warrant is your proof/i,
+      mustShow: /six quick questions/i,   /* V93 trimmed the card's first line (26 Nov) */
       says: 'the card that opens the Workshop Warrant'
     },
     selfeval: {
@@ -556,7 +556,7 @@ const DECK_SHOTS = {
       },
       /* the sentence that changes how the class works — "Nothing wrong here is a
          real answer" — has to be IN the picture, not merely on the page */
-      mustShow: /nothing wrong here is a real answer/i,
+      mustShow: /eight real cases/i,   /* V93 trimmed the card's first line (26 Nov) */
       says: 'the card that opens the Studio Code and explains the judging job'
     },
     'portfolio-q': {
@@ -1606,8 +1606,9 @@ const BRIEF_SHOTS = {
       }
     },
     '03-inspect-intro.png': {
-      chunk: 'inspection', says: 'the inspection opening card: the six rules, then how it works',
-      at: () => !!document.querySelector('.chunk-host .insp-intro-steps') &&
+      chunk: 'inspection', says: 'the inspection opening card: the six rules, then Start the inspection',
+      /* V93 (26 Nov) cut the numbered how-to list; the rules list is what marks the card */
+      at: () => !!document.querySelector('.chunk-host .insp-rules') &&
         !document.querySelector('.chunk-host .insp-stage')
     },
     '04-inspect-scene.png': {

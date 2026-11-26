@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-26 from contentVersion 2026-11-26c.
+ * Built 2026-11-26 from contentVersion 2026-11-26q.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1552,11 +1552,11 @@ var DECKS = {
       "shot": "inspect-intro",
       "bullets": [
        "First you get the six rules again, written out, so nobody is guessing.",
-       "Then a numbered list of how it works, and a button that says Start the inspection.",
+       "Then a button that says Start the inspection.",
        "Five of the six rules are ones you can SEE in a room. The first one happens outside the door.",
        "You get four goes at it — your screen calls them Scene 1 of 4 to Scene 4 of 4 — then a harder extra challenge you can choose to do or skip."
       ],
-      "notes": "WHERE THE CLASS IS: about to press into the inspection.\n\nSAY: \"The picture on the right is the screen you land on. Rules first, then how it works, then Start the inspection.\"\n\nTHEN SAY: \"After the four scenes there is a harder extra challenge. It is genuinely optional — there is a Stop here instead button beside it and nothing is taken off you for pressing it.\"\n\nWHY: pupils only take an optional challenge if they believe it is optional, so say it rather than leaving it on the screen.\n\nWHILE THEY WORK: circulate. One of the four scenes turns on reading what is actually ON a screen rather than whether it is lit — the brief says which and why, and it is the one place not to help too early.\n\nWHEN TO MOVE: when most of the class has filed the fourth report, stop the room for the Snapshot. Pupils still on the extra challenge can finish it."
+      "notes": "WHERE THE CLASS IS: about to press into the inspection.\n\nSAY: \"The picture on the right is the screen you land on. Rules first, then Start the inspection.\"\n\nTHEN SAY: \"After the four scenes there is a harder extra challenge. It is genuinely optional — there is a Stop here instead button beside it and nothing is taken off you for pressing it.\"\n\nWHY: pupils only take an optional challenge if they believe it is optional, so say it rather than leaving it on the screen.\n\nWHILE THEY WORK: circulate. One of the four scenes turns on reading what is actually ON a screen rather than whether it is lit — the brief says which and why, and it is the one place not to help too early.\n\nWHEN TO MOVE: when most of the class has filed the fourth report, stop the room for the Snapshot. Pupils still on the extra challenge can finish it."
      }
     ]
    },

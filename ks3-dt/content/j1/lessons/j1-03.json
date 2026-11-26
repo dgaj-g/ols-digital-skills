@@ -23,31 +23,28 @@
     "clearance": "YEAR 8 · LESSON 3 OF 17",
     "headline": "Every game keeps score. Today you build the scorekeeper.",
     "lines": [
-     "In this lesson you will learn what a VARIABLE is: a named box in the computer's memory, where it keeps something it needs to remember. The box's name never changes. The value inside can change any time. Today your box will hold a number — your score. It is the most useful idea in all of programming, and by the end of the hour you will have built one, changed it, reset it and watched it work.",
-     "Look at the photos: the arcade's high-score table, a GAA scoreboard, the step count on a wrist. Behind every one of them is a variable — a box called score, or steps, holding a number that keeps changing.",
-     "You will also learn the second SHAPE of code. Lesson 2 was all events — code that sits and waits for a press. Today you add the LOOP: code that never stops. Your scoreboard uses both at once, and by the end you will know which job belongs to which.",
-     "And at the end, your scoreboard gets a real job: a whole-class Reaction Rally, scored on the scoreboards you built. You are secretly on a team — nobody finds out who is with who until your teacher reveals the teams at the very end."
+     "A VARIABLE is a named box holding a number."
     ],
     "images": [
      {
       "src": "assets/img/l3/l3-arcade.jpg",
       "alt": "An arcade machine's glowing high-scores table",
-      "caption": "An arcade's HIGH SCORES table — every number on it lives in a variable"
+      "caption": "High scores"
      },
      {
       "src": "assets/img/l3/l3-gaa.jpg",
       "alt": "An electronic GAA scoreboard showing HARPS 5-07 PORT 3-11",
-      "caption": "A GAA scoreboard — four numbers, all variables"
+      "caption": "Match score"
      },
      {
       "src": "assets/img/l2/l2-tracker.jpg",
       "alt": "Fitness tracker devices",
-      "caption": "The trackers from Lesson 2 — every step adds 1 to a box called steps"
+      "caption": "Step count"
      }
     ],
     "video": null,
     "cta": "Start the lesson",
-    "help": "Reading only — this screen tells you what today is about. Press the button when it appears.",
+    "help": "This card is only for reading. A variable is a box in the computer's memory. Its name never changes, but the number inside can change. Today your box holds your score. Lesson 2 used events, which wait for a press. Today you also meet the LOOP: code that never stops. At the end, the class plays a Reaction Rally on your scoreboards. You are secretly on a team until your teacher reveals it. When the writing finishes, press Start the lesson at the bottom.",
     "job": "Read what today is about, then start the lesson.",
     "showMe": [
      "Read the words as they appear.",
@@ -285,37 +282,37 @@
    "config": {
     "kicker": "WHOLE-CLASS EVENT",
     "title": "The Reaction Rally",
-    "intro": "This is the Reaction Rally — the speed test your scoreboard was built for. You play in your pair, but every pupil plays for herself: two goes each, and your scores go in under your own name. The game: while the timer on this screen runs, press button A as fast as you can. Your scoreboard counts every press — the number in the box is your score. You are also secretly on a team. The website has mixed the class into four hidden teams, and every score you send in is added to your team's total. Nobody finds out who is on which team until your teacher reveals them on the big screen at the end of the lesson. One of you plays while the other one referees, then you swap jobs. The referee's job is to keep the test fair — the rules below say how.",
+    "intro": "One of you presses A as fast as possible. The other referees. Then swap.",
     "rules": [
-     "Get ready: the player holds the micro:bit and presses B for a fresh 0. The referee checks the display really shows 0.",
-     "The referee presses Start the 5 seconds on the player's screen, and the countdown begins: 3, 2, 1, GO.",
-     "While the timer runs, the player presses button A as fast as she can. When it stops — hands off. Presses after the stop do not count, and the referee is watching.",
-     "Read the final number off the micro:bit — it scrolls across the display over and over. Enter exactly that number for that go. The referee checks it matches.",
-     "Two goes each, then swap jobs. When all four goes are done, each of you presses Send in my scores on your own screen — your two goes are added together."
+     "Player presses B. Referee checks it shows 0.",
+     "Referee clicks Start the 5 seconds.",
+     "Player presses A until the timer stops.",
+     "Enter the exact number the micro:bit shows.",
+     "Two goes each, then both send your scores."
     ],
     "roundsLabel": [
      "Go 1",
      "Go 2"
     ],
     "maxScore": 45,
-    "timerSay": "Referee — this screen belongs to the player, not to you. When she is ready, click the button below to start her 5 seconds.",
-    "soloTimerSay": "You are refereeing yourself today. When you are ready, click the button below to start your 5 seconds.",
-    "lockedNote": "This wakes up when both goes have been played, both scores are in, and you have ticked the box above.",
-    "confirm": "We played it fair: the referee watched every go, and both numbers are exactly what the micro:bit showed",
-    "soloIntro": "The live Rally happened in class — but your scoreboard still gets its goes. You are the player AND the referee today, so the honesty is all yours: the timer runs, you press, and the numbers you enter must be exactly what the micro:bit shows.",
+    "timerSay": "Referee: this is the player's screen. Start the timer when she is ready.",
+    "soloTimerSay": "You referee yourself today. Start the timer when you are ready.",
+    "lockedNote": "This wakes up once both scores are in and the box above is ticked.",
+    "confirm": "We played it fair: both numbers match the micro:bit",
+    "soloIntro": "Your scoreboard still gets its two goes. You are player and referee today, so be honest.",
     "soloRules": [
-     "Press B for a fresh 0 and check the display shows it. Then press Start the 5 seconds and wait for GO.",
-     "Press button A as fast as you can until the timer stops — then hands off, just as if a referee were watching.",
-     "Enter the exact number for each go. Two goes, then press Send in my scores — your two goes are added together for your hidden team."
+     "Press B for 0, then click Start the 5 seconds.",
+     "Press A fast until the timer stops.",
+     "Enter each exact number, then Send in my scores."
     ],
-    "soloConfirm": "Both numbers are exactly what the micro:bit showed — refereed by me, honestly",
+    "soloConfirm": "I refereed myself: both numbers match the micro:bit",
     "suspense": {
      "sealed": "Teams are SEALED. Nobody in this room knows who they're carrying points for.",
      "waiting": "Scores are landing…",
      "revealTease": "Eyes on the big screen — your teacher runs the reveal."
     },
-    "help": "Follow the five rules on screen. For each go: B for a fresh 0, the referee starts the timer, press A as fast as you can, then enter the exact number with the + and − buttons. Tick the referee's check, then press Send in my scores. After that, eyes on the big screen — your teacher runs the reveal.",
-    "soloHelp": "Follow the three rules on screen. Enter each go's exact number with the + and − buttons, tick the promise, then press Send in my scores. The live reveal already happened in class — your points still land with your hidden team.",
+    "help": "One of you plays, the other referees, then you swap. For each go, the player presses B for a fresh 0. The referee clicks Start the 5 seconds on the player's screen. The player presses A as fast as she can until the timer stops. Presses after the stop do not count. The number scrolls across the micro:bit. Enter exactly that number with the + and − buttons. Two goes each. Tick the fair-play box, then press Send in my scores. You are secretly on one of four teams. Your scores add to your team's total. Your teacher reveals the teams on the big screen at the end.",
+    "soloHelp": "Follow the three rules on screen. Enter each go's exact number with the + and − buttons. Tick the promise, then press Send in my scores. The live reveal already happened in class. Your points still go to your hidden team.",
     "timerSeconds": 5,
     "job": "Play two goes each, then send in your own scores.",
     "showMe": [
@@ -380,7 +377,7 @@
    "title": "Build the Scoreboard",
    "minutes": 2,
    "config": {
-    "intro": "Last one. You get four real blocks, and the sentence below describes one working scoreboard. It is TWO separate stacks of blocks — build each job in its own box: the loop's job first, then the button's job.",
+    "intro": "Last one: four real blocks, two separate stacks. The loop's job first, then the button's job.",
     "item": {
      "id": "ex3-p",
      "prompt": "Your scoreboard has two jobs. The first keeps the current score on the LEDs all by itself, over and over, showing whatever number is in the box. The second waits for button A, and adds one to that number every time it is pressed.",
@@ -391,7 +388,7 @@
       "on button A pressed"
      ]
     },
-    "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
+    "help": "Click blocks from the tray into your program, in the order the sentence says. There are two stacks, one for each job. Build the loop's job in the first box. Build the button's job in the second box. Check when you are sure. If the order is wrong, you are shown the working order.",
     "doneText": "Correct — two separate stacks, and together they make the scoreboard work.",
     "stacks": [
      {

@@ -30,14 +30,11 @@
     "clearance": "J3 · LESSON 2 OF 17",
     "headline": "Every day on a film set starts with one sheet of paper.",
     "lines": [
-     "A call sheet is the single piece of paper a film or theatre crew works from. It carries the title, the times, and the numbers everyone needs for the day. On a real production somebody prints it every morning, and nobody starts until it is right.",
-     "In this Studio the call sheet is printed by a program, and this hour you write that program. The language is Python.",
-     "Python is a programming language you type. It is one of the most used languages in the world, and it is what a great deal of real software is written in. You are starting it from nothing today — no Python is assumed and none is needed. Everything you meet in this hour is taught in this hour.",
-     "The job is always the same, and it is the whole lesson: MAKE THE CONSOLE PRINT THE EXACT WORDS YOU ARE ASKED FOR. The console is the strip where a program's words come out. The hour is four BUILDS, and a build is one small job. Every build shows you The target at the top of the card: that is the exact wording the console has to print. You put the Python together, press RUN, and the console shows you what your program really printed. If it says exactly what was asked for, you get MATCHED. If it does not, you get NOT YET, and you look at what came out and work out why.",
-     "Here is what happens this hour, in order. A short film first, just under five minutes, with no sound. Then four builds, and they get harder as you go. You print one exact line, then two lines in the right order. Then you use a box with a name on it (a variable) that remembers a word for you. Last comes a sum that Python works out inside a printed line. It finishes with a card about your next lesson, one marked question, and a screen that asks you how the hour went."
+     "Today you write Python that prints it.",
+     "No Python is needed to start."
     ],
     "cta": "Start the film",
-    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked.",
+    "help": "This card types itself out. Read it, then click Start the film. Today you print a call sheet: the one page a film crew works from. Nothing on this screen is marked.",
     "job": "Read today’s call sheet, then click Start the film.",
     "showMe": [
      "Read the words as they appear.",
@@ -52,7 +49,7 @@
    "minutes": 5,
    "config": {
     "src": "assets/video/j3/j3-l2.mp4",
-    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+    "intro": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
     "fallback": "If the film will not play, carry on — every idea in it is written again on the build cards. Tell whoever is in the room that the film would not play.",
     "chapters": [
      {
@@ -94,19 +91,17 @@
    "config": {
     "kicker": "Badge 1 — the top of the call sheet",
     "title": "Make the console say it",
-    "intro": "Builds 1 and 2 are the two smallest jobs in Python. Build 1 prints one exact line. Build 2 prints two lines in the right order.\n\nThe console prints exactly what your program says — never what you meant. If even one capital letter is different, the printed line does not match The target, and you get NOT YET. Check every letter against The target before you press RUN.",
+    "intro": "Make the console print The target, letter for letter.",
     "steps": [
-     "Read The target at the top of the card. That is exactly what the console has to print — every letter, every space.",
-     "Drag the lines you want into Your program, in the order you want them to run. Some of the lines have a gap in them for you to type into.",
-     "Press RUN. Your program is really run, and the console shows exactly what came out of it.",
-     "MATCHED means the console said exactly what was asked. NOT YET means it did not, and you get the lines back to try again. Nothing is taken off you for a run that does not work."
+     "Build it, then press RUN.",
+     "NOT YET? Find the difference."
     ],
     "beginLabel": "Open the call sheet",
     "targetLead": "The target — make the console print exactly this",
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "runLabel": "RUN my program",
-    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Python runs the top line first.",
     "trayEmpty": "Every line is in your program.",
     "progEmpty": "Nothing here yet — drag or click a line across.",
     "lockedNote": "Move at least one line into Your program, and the RUN button will turn on.",
@@ -211,20 +206,17 @@
    },
    "config": {
     "kicker": "Badge 2 — the rest of the call sheet",
-    "title": "One name, used twice — and a sum",
-    "intro": "Builds 3 and 4 are the last two. Build 3 is the one that matters most.\n\nSo far every word you printed was typed into the line that printed it. Build 3 puts the theatre's name into a VARIABLE instead: a box with a name on it, holding one thing for you. Two different lines then use that box. Change what is in the box, and both lines change, because you only ever typed the name in one place.",
+    "title": "One name, used twice",
+    "intro": "A variable is a named box. The = sign puts a value into it.",
     "steps": [
-     "Read The target at the top of the card. It is two lines this time, and the theatre's name appears in both of them.",
-     "A line with = in it makes a variable: the name on the left, the value on the right. In Python, = means 'put this into that box'. It does not mean 'is the same as'.",
-     "A name used WITHOUT speech marks means the box. The same word INSIDE speech marks is just those letters. That one difference is what build 3 is really about.",
-     "Press RUN, read the console, and fix what needs fixing. Nothing is taken off you for a run that does not work."
+     "Without speech marks, the name means the box."
     ],
     "beginLabel": "Open the call sheet",
     "targetLead": "The target — make the console print exactly this",
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "runLabel": "RUN my program",
-    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time. A line that fills a box has to come above any line that uses it.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Python runs the top line first. Make a box before you use it.",
     "trayEmpty": "Every line is in your program.",
     "progEmpty": "Nothing here yet — drag or click a line across.",
     "lockedNote": "Move at least one line into Your program, and the RUN button will turn on.",
@@ -364,7 +356,7 @@
     "extrasMode": true,
     "kicker": "Optional — the encore sheet",
     "title": "The encore sheet",
-    "intro": "Today's call sheet is done and your badge is banked. The encore sheet is extra. It carries no points, nothing later in the year needs it, and it is here for spare minutes now or any time you come back to this lesson. Stop whenever you are asked to finish: leaving a job puts that job back to its start, and everything else you have done stays saved.",
+    "intro": "These jobs are extra and carry no points. Stop when your teacher calls time. Leaving a job starts it again next time.",
     "reviewIntro": "You have finished this lesson — these jobs stay open any time.",
     "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
     "backLabel": "Back to the encore sheet",
@@ -373,7 +365,7 @@
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "runLabel": "RUN my program",
-    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time. A line that fills a box has to come above any line that uses it.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Python runs the top line first. Make a box before you use it.",
     "trayEmpty": "Every line is in your program.",
     "progEmpty": "Nothing here yet — drag or click a line across.",
     "lockedNote": "Move at least one line into Your program, and the RUN button will turn on.",
@@ -527,24 +519,21 @@
    "title": "What you did, and what is next",
    "minutes": 5,
    "config": {
-    "intro": "Two things to remember from today before you go.",
+    "intro": "Today's Python, and what comes next.",
     "steps": [
      {
       "icon": "🖨️",
-      "title": "The call sheet prints itself now",
-      "text": "You started this hour with no Python at all. You have now built four programs. One prints a title. One prints two lines in the right order. One uses a name you only had to type once, and one works out a sum for itself. Programmers use those same four things every day.",
+      "title": "Today's Python",
       "lines": [
-       "print( ) puts something on the console, exactly as you wrote it.",
-       "Speech marks mean 'these letters'. No speech marks means the variable: the box with this name.",
-       "A name with = after it makes a box (a variable) and puts a value in it.",
-       "str( ) wraps a number so the + can join it onto words, and * multiplies."
+       "print( ) puts words on the console.",
+       "Without speech marks, a name means its box.",
+       "name = value puts a value in a box."
       ]
      },
      {
       "icon": "🎵",
       "title": "Next lesson: more than one thing in a box",
-      "text": "Next fortnight you build a playlist engine. Every box you made today holds ONE value. A playlist is a list of many values, in an order, and Python has its own way of holding a list like that. Everything you wrote today is what next lesson is built on.",
-      "note": "This lesson will stay open if you ever want to look back through the builds before the next lesson."
+      "text": "You build a playlist engine. A playlist holds many values, in order."
      }
     ],
     "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card.",

@@ -6,42 +6,42 @@
    "kind": "app",
    "chunkId": "film",
    "selector": ".chunk-host .video-card",
-   "textSnippet": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to",
-   "contentAnchor": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
-   "cardText": "First words in Python (the film) · Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is just under five minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen. · What Python is · print, exactly · A box with a name on it (a variable) · Reading an error without fear · Done watching",
+   "textSnippet": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
+   "contentAnchor": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
+   "cardText": "First words in Python (the film) · Watch on your own computer. There is no sound. The buttons underneath jump to each part. · What Python is · print, exactly · A box with a name on it (a variable) · Reading an error without fear · Done watching",
    "says": "the film screen with its four chapter buttons",
    "contentVersion": "2026-11-26q",
    "crop": null,
-   "chunkHash": "c5380ea6a633",
-   "px": "1748x1600"
+   "chunkHash": "59e87d430000",
+   "px": "1748x1504"
   },
   "build": {
    "name": "build",
    "kind": "app",
    "chunkId": "callsheet-a",
    "selector": ".chunk-host .pyrun-card",
-   "textSnippet": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs you",
-   "contentAnchor": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time.",
-   "cardText": "1 · TITLE · 2 · TIMES · Build 1. Print the name of the theatre at the top of the call sheet. · print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · THE HARBOUR LIGHT · How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it bac",
+   "textSnippet": "print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it.",
+   "contentAnchor": "print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it.",
+   "cardText": "1 · TITLE · 2 · TIMES · Build 1. Print the name of the theatre at the top of the call sheet. · print( ) is the Python word for putting something on the console. Whatever sits inside the brackets and inside the speech marks comes out exactly as you typed it. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · THE HARBOUR LIGHT · How it works: click or drag a line into Your program. Python runs the top line first. · THE LINES · print(\"\") · the theatre name, exactly as the target shows it · YOUR P",
    "says": "the first build before a line is moved: the target, the lines with their typing gap, and the empty program",
    "contentVersion": "2026-11-26q",
    "crop": null,
-   "chunkHash": "ce4e98fa8334",
-   "px": "2052x1528"
+   "chunkHash": "35eb5493ca9a",
+   "px": "2052x1482"
   },
   "variable": {
    "name": "variable",
    "kind": "app",
    "chunkId": "callsheet-b",
    "selector": ".chunk-host .pyrun-card",
-   "textSnippet": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs you",
-   "contentAnchor": "How it works: to ADD a line, drag it into Your program, or click the line itself. To MOVE a line, drag it up or down inside Your program. To TAKE a line out, drag it back to The lines. Python runs your program from the top line down, one line at a time. A line that fills a box has to come above any line that uses it.",
+   "textSnippet": "The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: t",
+   "contentAnchor": "The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: the words inside the speech marks, then whatever is in the box.",
    "cardText": "3 · VENUE · 4 · MONEY · Build 3. Put the theatre's name in a box, and use that box in both lines. · The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: the words inside the speech marks, then whatever is in the box. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · Tonight at THE HARBOUR LIGHT · Thank you for coming to THE HARBOUR LIGHT · How it wo",
    "says": "the build that makes a variable, before a line is moved: the = line still in the tray",
    "contentVersion": "2026-11-26q",
    "crop": null,
-   "chunkHash": "86adabfc1c16",
-   "px": "2052x1918"
+   "chunkHash": "7fadfadd7a90",
+   "px": "2052x1826"
   }
  }
 }

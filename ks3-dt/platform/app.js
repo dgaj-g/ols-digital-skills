@@ -475,9 +475,7 @@
   var KIT_WORD_FALLBACK = {
     rankWord: 'Clearance',
     popTitle: 'Clearance upgraded',
-    popBody: 'It holds the looks and badge designs your console can wear, unlocked as your XP grows. ' +
-      'This clearance has just unlocked new ones. Open it to try them on — you can change your look ' +
-      'any time from your name chip, top right.',
+    popBody: 'New looks unlocked. Click Open Agent Kit to try one.',
     savedToast: 'Equipped — saved to your Agent File.',
     insigniaLabel: 'Insignia',
     insigniaNote: 'shows beside your codename',
