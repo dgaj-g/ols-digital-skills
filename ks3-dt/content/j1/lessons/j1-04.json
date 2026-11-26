@@ -57,31 +57,36 @@
     "title": "The Case Board",
     "intro": "Each case is one bug. Close every case like this:",
     "introSolo": "On your own today: you play AND fix. Close every case like this:",
-    "pairNote": "Player plays. Engineer moves the blocks. Swap each case.",
+    "pairNote": "Player plays. Engineer moves the blocks. Swap jobs each case.",
     "getgame": {
      "url": "https://scratch.mit.edu/projects/editor/",
      "file": "assets/games/shark-attack-broken-edition.sb3",
-     "intro": "A detective examines the REAL broken thing, not a photo of it. Get the broken game open on your own screen:",
+     "intro": "Detectives study the REAL thing. Open the broken game on your own screen:",
      "steps": [
       {
        "icon": "⬇️",
        "title": "Download the evidence",
-       "text": "Click the gold button — shark-attack-broken-edition.sb3 drops into your Downloads."
+       "text": "Click the gold button."
       },
       {
        "icon": "🧪",
-       "title": "Open the Scratch editor",
-       "text": "Use the second button — scratch.mit.edu opens in a new tab. No login needed, ever. Keep BOTH tabs open: case board here, game there."
+       "title": "Open Scratch",
+       "text": "Click the second button. No login needed."
       },
       {
        "icon": "📂",
-       "title": "Load the broken game",
-       "text": "In Scratch, open the File menu and choose 'Load from your computer'. Pick shark-attack-broken-edition.sb3 from your Downloads, then press OK to replace."
+       "title": "Load the game",
+       "text": "Click File, then ‘Load from your computer’."
       },
       {
-       "icon": "🕵️",
-       "title": "Walk the crime scene",
-       "text": "You should see a Shark, a Fish and a score stuck on 0. The little pictures at the bottom right are the game's SPRITES — a sprite is one character or thing in the game. Click a sprite and you will see its SCRIPTS: the stacks of blocks that tell that sprite what to do. Every sprite carries its OWN scripts, never anyone else's — that is why a bug can hide on one sprite while everything else looks fine. One more word you WILL meet on the Fish: CLONE. A clone is a temporary copy of a sprite that Scratch makes while the game runs — every fish swimming in the water is a clone of the one Fish sprite in the list. Most of the bugs are hiding in the sprites' scripts — but not all of them: one case will take you somewhere new."
+       "icon": "🗂️",
+       "title": "Keep both tabs open",
+       "text": "Case board here, game in Scratch."
+      },
+      {
+       "icon": "🗂️",
+       "title": "Look around",
+       "text": "Click each sprite. Its blocks are its SCRIPTS."
       }
      ],
      "confirm": "The broken game is open in Scratch and I can see its code"
@@ -119,28 +124,29 @@
       "stars": 1,
       "spanners": 1,
       "player": "FinnTastic_11",
-      "ticket": "The shark won't swim RIGHT. Left, up, down — all fine. Right? Nothing. My shark just stares at the wall while the fish laugh at it. One star.",
-      "symptom": "Click the green flag to start the game, then press the RIGHT arrow key and watch what happens. Now try the other three arrow keys, one at a time. The player is not making it up.",
-      "look": "Open the Shark's scripts and compare them with each other. Working code is your best evidence: what does every WORKING arrow script start with that the broken one is missing? Cannot see all five stacks at once? Click the minus (–) button at the bottom right of the code area until they all fit.",
+      "ticket": "My shark won’t swim RIGHT. Left, up, down all work. One star.",
+      "symptom": "Click the green flag. Press the RIGHT arrow. Then try the other three arrows.",
+      "look": "Open the Shark’s scripts. What do all the WORKING arrow scripts have on top?",
       "logHint": "The right-arrow script had no… so I…",
-      "replay": "Click the green flag, then swim a full lap of the tank: RIGHT along the bottom, UP the far wall, LEFT across the top, DOWN back to where you started. Press all four arrow keys on the way round — no shortcuts.",
+      "replay": "Click the flag. Swim a full lap, using all four arrows.",
       "replayConfirm": "Full lap swum — all four arrows work",
       "clue": {
-       "free": "Re-read the ticket. Which arrows work? Which ONE doesn't? That tells you exactly which script to stare at.",
+       "free": "Re-read the ticket. Which arrows work? Which ONE doesn’t? That tells you which script to check. Can’t see every stack? Click the minus (–) button at the bottom right of the code area.",
        "consult": "Ask another agency — another detective pair — that has CLOSED Case 01. One question, detective to detective. (Your teacher also solved this one at the front.)",
        "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
-       "hq": "The bug lives on the SHARK. Put the four arrow-key scripts side by side and look at the very TOP of each."
+       "hq": "The bug lives on the SHARK. Compare the very TOP of each arrow script."
       },
       "mechanicSteps": [
-       "The block at the very top of a stack is called a HAT BLOCK — it has a curved top, like a hat, and it is what starts the script running. A stack with no hat block never runs at all.",
-       "Click Events (the yellow group) and find 'when space key pressed'.",
-       "Drag it until it sits on top of the stack that has no hat — the right-arrow blocks. A white shadow line appears when it is about to snap on.",
-       "The new hat block says 'space'. Click that word and choose 'right arrow' from the list."
+       "The top block of a stack is a HAT BLOCK.",
+       "It has a curved top. With no hat, nothing runs.",
+       "Click Events (yellow) and find ‘when space key pressed’.",
+       "Drag it onto the right-arrow stack until it snaps on.",
+       "Click ‘space’ on the new hat and pick ‘right arrow’."
       ],
       "img": {
        "src": "assets/img/l4/evidence-c1.png",
        "alt": "A screenshot of the game: the shark pressed hard against the right-hand wall of the tank, with a fish swimming nearby.",
-       "caption": "FinnTastic_11 sent this with the ticket: the shark stuck at the wall."
+       "caption": "FinnTastic_11’s screenshot: the shark stuck at the wall."
       }
      },
      {
@@ -150,27 +156,29 @@
       "stars": 2,
       "spanners": 2,
       "player": "ChompChamp07",
-      "ticket": "I ate SO many fish — I kept restarting the game to eat more — and the score just sits on 0. I can literally HEAR the bite happen. This game is eating my points as well as the fish.",
-      "symptom": "Click the green flag and steer the shark to eat the fish. Listen for the bite sound… then look at the score. Click the flag again — a fresh fish arrives. Eat that one too. Still 0?",
-      "look": "Find the script that runs at the moment a fish gets eaten, and read it block by block, out loud. Every block will sound right — until you reach the one NUMBER that is wrong.",
+      "ticket": "I can HEAR the bite, but the score sits on 0. It’s eating my points!",
+      "symptom": "Click the green flag. Steer the shark onto the fish. Listen for the bite, then check the score.",
+      "look": "Find the script that runs when the fish is eaten. Which NUMBER is wrong?",
       "logHint": "The change-score block said… so I…",
-      "replay": "Click the green flag, eat the fish, and watch the score the moment you bite — it must jump to 1. Restart and prove it twice more. Right once could be luck; right three times is proof.",
+      "replay": "Three times: click the flag, eat the fish, check the score is 1.",
       "replayConfirm": "Three restarts, a clean point every time — the scoreboard tells the truth",
       "clue": {
-       "free": "Re-read the ticket. The bite HAPPENS — the sound plays and the fish vanishes — so the eating part of the game works. What is the one thing that never moves?",
+       "free": "Re-read the ticket. The bite HAPPENS: the sound plays and the fish vanishes. So the eating works. What is the one thing that never moves?",
        "consult": "Ask an agency that has CLOSED Case 02 — one question only, detective to detective. Nobody near you has closed it yet? Go straight to HQ’s clue below.",
        "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
-       "hq": "The bug lives on the FISH, in the script that starts 'when I start as a clone'."
+       "hq": "The bug lives on the FISH. Look in the ‘when I start as a clone’ script."
       },
       "img": {
        "src": "assets/img/l4/evidence-c2.png",
        "alt": "A screenshot of the game: the shark chasing a fish, with the score display in the corner still reading 0.",
-       "caption": "ChompChamp07's screenshot: the hunt is on, and the score has not moved off 0."
+       "caption": "ChompChamp07’s screenshot: the score stuck on 0."
       },
       "mechanicSteps": [
-       "Some scripts hold blocks you have not met yet — go to random position, glide, when I start as a clone. That is normal: real QA testers read code they did not write, every day.",
-       "You never need to understand every block. Read the stack out loud, and at each block ask: is this block’s job the thing the ticket says is broken? Skip every block whose job is something else.",
-       "To fix a wrong number: click the white oval on the block, type the right number, then press Enter. A number fix never moves a block."
+       "You will meet new blocks, like glide. That is normal.",
+       "Read the stack out loud, one block at a time.",
+       "Skip any block whose job is not the score.",
+       "To fix a number: click its white oval and type.",
+       "Press Enter. A number fix never moves a block."
       ]
      },
      {
@@ -180,22 +188,25 @@
       "stars": 1,
       "spanners": 3,
       "player": "SharkSnackSara",
-      "ticket": "One fish. ONE. I ate it in ten seconds flat and then swam round an empty ocean for the rest of my life. Where did everybody GO??",
-      "symptom": "Click the green flag, eat the first fish, then keep playing while you count slowly to ten. Watch the water the whole time: do any new fish arrive?",
-      "look": "One script's entire job is making new fish — each new fish is a CLONE, a temporary copy of the Fish sprite. Find that script and read it top to bottom: exactly how many times does it actually make one? One warning from HQ: the hide block at the very top is MEANT to be there. The Fish in the sprite list is only the mould — every swimming fish is a copy of it. The bug is about how many fish get MADE.",
+      "ticket": "One fish. ONE. I ate it, then swam round an empty ocean. Where did they GO?",
+      "symptom": "Click the green flag and eat the first fish. Keep playing while you count to ten. Do new fish arrive?",
+      "look": "Find the script that makes each new fish (a CLONE). How many does it make?",
       "logHint": "The fish-maker script only ran… so I…",
-      "replay": "Click the green flag and play for twenty full seconds. Fish should KEEP arriving the whole time — count at least five new fish before you tick the stamp.",
+      "replay": "Click the flag and play for twenty seconds. Count five new fish.",
       "replayConfirm": "Fish kept coming the whole time",
       "clue": {
-       "free": "Re-read the ticket. The FIRST fish was fine — it swam, it got eaten. It is everything AFTER that first fish the player never sees. So which script's whole job is making fish?",
+       "free": "Re-read the ticket. The FIRST fish was fine. The fish after it never show up. Which script's whole job is making fish? Every swimming fish is a copy of the Fish in the sprite list.",
        "consult": "Ask an agency — another detective pair — that has already CLOSED Case 03. One question, so make it a good one. Nobody in the room has closed it yet? Skip this step and go straight to HQ’s clue below.",
        "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
-       "hq": "The bug lives on the FISH, in the script under 'when green flag clicked' (not the clone one)."
+       "hq": "The bug lives on the FISH. It is in the ‘when green flag clicked’ script, not the clone one."
       },
       "mechanicSteps": [
-       "Drag the blocks you want to repeat OUT onto an empty part of the code area first.",
-       "Drop a forever block under the hat block.",
-       "Drag your blocks back INSIDE the forever block's mouth — a white shadow line shows when they are about to land inside."
+       "Keep the hide block on top — it belongs there.",
+       "Drag the blocks inside repeat out to empty space.",
+       "Drag the empty repeat onto the block list. It disappears.",
+       "Drop a forever block under the hide block.",
+       "Drag your blocks back INSIDE the forever block’s mouth.",
+       "A white shadow line shows where they will land."
       ],
       "img": {
        "src": "assets/img/l4/evidence-c3.png",
@@ -210,22 +221,24 @@
       "stars": 2,
       "spanners": 4,
       "player": "OceanOlivia",
-      "ticket": "Every single time I press the green flag the sea DISAPPEARS. White screen, fish swimming in nothing, then the ocean strolls in a second late. It looks so broken I stopped playing.",
+      "ticket": "Every time I start, the screen is WHITE. The sea strolls in late!",
       "symptom": "Click the green flag and watch ONLY the very first second. Then click it again. And again. Does the same wrong thing happen every time?",
-      "look": "This bug is not on a sprite at all — it is on the STAGE, the game's background. Click the Stage panel on the far right, beside the sprite list, to see its scripts. Read the script top to bottom, and at every block ask: what is the player SEEING right now?",
+      "look": "This bug lives on the STAGE. Click the Stage panel, far right. What shows first?",
       "logHint": "The script switched to… before… so I…",
-      "replay": "Click the green flag three times in a row. The ocean must be on screen from the very first instant, every single time.",
+      "replay": "Click the flag three times. The ocean must be there instantly.",
       "replayConfirm": "Three starts, three instant oceans",
       "clue": {
-       "free": "Re-read the ticket. The sea is not missing — it 'strolls in a second late'. So it does arrive. Watch the very first second again and say exactly what you see, in order.",
+       "free": "Re-read the ticket. The sea is not missing — it ‘strolls in late’. So it does arrive. Watch the very first second again and say exactly what you see, in order.",
        "consult": "Ask an agency that has CLOSED Case 04 — one question, detective to detective. First pair to reach it? Take HQ’s clue below — no shame in it.",
        "consultSolo": "No other agencies are on shift today — you are the whole QA team. If re-reading the ticket didn’t crack it, go straight to HQ’s clue below.",
-       "hq": "Not a sprite at all — open the STAGE's scripts (click the Stage panel, bottom-right, beside the sprite list)."
+       "hq": "The first switch block shows ‘backdrop1’: a blank white screen."
       },
       "mechanicSteps": [
-       "To change which backdrop a switch block shows: click the little white arrow on the block and pick from the list — the same move as Case 01's key menu.",
-       "To delete a block you do not want: drag it out of the script and drop it over the blocks list on the left. It disappears.",
-       "Careful — picking up a block also lifts every block joined UNDER it. Put the ones you want to keep back on the script first."
+       "To change a backdrop, click the switch block’s white arrow.",
+       "Pick from the list, like Case 01’s key menu.",
+       "To delete a block, drag it onto the blocks list.",
+       "Careful: dragging a block lifts every block UNDER it too.",
+       "Put back the blocks you want to keep."
       ],
       "img": {
        "src": "assets/img/l4/evidence-c4.png",
@@ -240,32 +253,32 @@
      "name": "The Jellyfish Job",
      "stars": 5,
      "player": "DeepSeaDara",
-     "ticket": "Five stars, best shark game on the site — but NOTHING can hurt you! Where's the danger? Add something to dodge and it's perfect.",
-     "job": "Add a Jellyfish from Scratch's sprite library: click 'Choose a Sprite' at the bottom right, then search 'Jellyfish'. Build it with the starter blocks in the picture below: the jellyfish drifts to a new spot every couple of seconds, and if the Shark ever touches it, the whole game stops. That 'if touching' block is next lesson's superpower — this is a sneak preview. Finished the jellyfish and want more? Design ONE more change of your own — a second danger, a speed-up, a power-up — and name it in your release note.",
+     "ticket": "Five stars! But NOTHING can hurt you. Add something to dodge.",
+     "job": "Click ‘Choose a Sprite’ and search ‘Jellyfish’. Build the blocks in the picture. Want more? Add your own change, like a speed-up.",
      "img": "assets/img/l4/stretch-jellyfish.png",
-     "test": "Click the green flag and dodge the jellyfish for twenty seconds… then swim into it ON PURPOSE. The game should freeze the instant you touch it.",
+     "test": "Dodge it, then swim into it. The game should freeze.",
      "confirm": "Danger installed — touching the jellyfish ends the game",
-     "ask": "One line for the release notes: what did you add, and what does it do to the player?",
+     "ask": "Release note: what did you add? What does it do?",
      "notePlaceholder": "I added a jellyfish that... so now the player...",
-     "lockedNote": "This tick unlocks when your release note above is written — a full sentence.",
+     "lockedNote": "Write a full sentence first.",
      "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES"
     },
     "stretchNudge": "Your fixed game has gone back to the players — but one five-star request is still pinned to the board. Take the job, or finish for today?",
     "rc": {
      "title": "The whole-game check",
-     "text": "You have fixed four bugs in one game — and some bugs only show up when the whole game is played. So before the game goes back to the players, QA plays the WHOLE game like a real player: one full minute, from the green flag to the end. Watch all four fixes holding at once:",
+     "text": "Play the WHOLE game for a minute. Watch all four fixes:",
      "watch": [
       "All four arrows — swim a full lap.",
-      "Eat at least five fish — the score counts every single one.",
+      "Eat five fish — the score counts every one.",
       "Fish keep arriving for the whole minute.",
-      "Restart twice — the ocean is there from the first instant, every time."
+      "Restart twice — the ocean shows from the first instant."
      ],
      "confirm": "Full sixty-second run — every fix held",
-     "ask": "There is no right or wrong number here — your count is simply proof you really played. How many fish did you catch in your full run?",
-     "lockedNote": "This button unlocks when you type the number of fish you caught into the box above."
+     "ask": "How many fish did you catch?",
+     "lockedNote": "Type your fish count first."
     },
     "ship": {
-     "intro": "When a games company sends a finished game out to its players, they call it SHIPPING the game. A fix only counts once the fixed game is saved somewhere safe — so ship tonight's game to your Drive:",
+     "intro": "Games companies call sending a game out SHIPPING. Ship your fixed game to your Drive:",
      "kinds": [
       "sb3"
      ],
@@ -273,18 +286,18 @@
      "steps": [
       {
        "icon": "💾",
-       "title": "Save the fixed game",
-       "text": "In Scratch, open the File menu and choose 'Save to your computer'. The .sb3 lands in Downloads — that file IS your fixed game."
+       "title": "Save in Scratch",
+       "text": "Click File, then ‘Save to your computer’."
       },
       {
        "icon": "🗄️",
-       "title": "Put it in your Drive",
-       "text": "Open drive.google.com, click into School, then DT Work, and drag the .sb3 in. The same folder as your micro:bit programs."
+       "title": "Open Drive",
+       "text": "Drag the .sb3 into School → DT Work."
       },
       {
        "icon": "🏁",
        "title": "Run the check",
-       "text": "The website looks in your Drive for a freshly-saved .sb3 — then the players get their game back."
+       "text": "The website looks for your new .sb3."
       }
      ],
      "checkLabel": "Check my Drive",
@@ -292,7 +305,7 @@
      "skipText": "If HQ still cannot see your Drive, you can sign off without the copy. Tell your teacher in class — they can look in your Drive with you."
     },
     "boardTip": "Lost your game? Nothing is broken — reload <b>scratch.mit.edu</b>, then File &rarr; Load from your computer, and pick the .sb3 again.",
-    "help": "The board is your home screen. Start with Evidence Intake: it gives you the broken game. Then open the TRAINING case. The other three cases open after it, in any order. Every case: see the bug, read the code, fix one thing, log it, re-play. Your case log is one sentence: what was wrong and what you changed. A written log and a ticked re-play close the case. Stuck on a case? Open the help steps on the card. The first help steps are free. The last clue from HQ, the company’s head office, turns your stamp silver. A silver case still counts. The website cannot see inside Scratch, so only tick what you saw. The release desk sends the fixed game back to the players. Chapter 3 of the film is worth watching again.",
+    "help": "The board is your home screen. Start with Evidence Intake: it gives you the broken game. A sprite is one character or thing in the game, like the Shark. Click a sprite to see its scripts. Its SCRIPTS are the stacks of blocks that tell it what to do. A CLONE is a temporary copy of a sprite, made while the game runs. Then open the TRAINING case. The other three cases open after it, in any order. Every case: see the bug, read the code, fix one thing, log it, re-play. Your case log is one sentence: what was wrong and what you changed. A written log and a ticked re-play close the case. Stuck on a case? Open the help steps on the card. The first help steps are free. The last clue from HQ, the company’s head office, turns your stamp silver. A silver case still counts. The website cannot see inside Scratch, so only tick what you saw. The release desk sends the fixed game back to the players. Chapter 3 of the film is worth watching again.",
     "introSteps": [
      "Play the game and SEE the bug.",
      "Read the code. Find the ONE wrong thing.",
@@ -300,9 +313,9 @@
      "Write your CASE LOG: one sentence saying what was wrong.",
      "Play again. Tick only if you SAW it work."
     ],
-    "logLead": "Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**.",
-    "proofNote": "This tick is a promise. It says: I played the game again, and I watched the bug NOT happen.",
-    "lockedNote": "This stamp is locked until your case log in step 3 is written — both halves.",
+    "logLead": "Fix it in Scratch. Then write your case log below: **what was wrong** and **what you changed**.",
+    "proofNote": "Only tick if you saw it work.",
+    "lockedNote": "Write your case log first.",
     "nudgeShort": "Your log needs both halves in one sentence: what was wrong, and what you changed.",
     "nudgeOwnWords": "Say it in your OWN words — the grey line in the box is only a starter.",
     "clueButton": "Stuck? Open the help steps",

@@ -11110,7 +11110,10 @@
         host.innerHTML = '';
         var bp = t.blueprint || {};
         var steps = (bp.steps || []).map(function (s) {
-          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+          /* V95: the step itself stays short; the exact clicks sit behind a green opener (label from the content) */
+          var how = (s.how && s.how.length) ? '<details class="std-bp-how"><summary>' + esc(bp.howLabel || '') + '</summary><ol>' +
+            s.how.map(function (h) { return '<li>' + esc(h) + '</li>'; }).join('') + '</ol></details>' : '';
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p>' + how + '</div></li>';
         }).join('');
         var c = el('<div class="card std-blueprint"><span class="intro-kicker">BLUEPRINT &middot; ' + esc(t.name) + '</span>' +
           '<h2>' + esc(bp.title || 'What your studio adds') + '</h2>' +

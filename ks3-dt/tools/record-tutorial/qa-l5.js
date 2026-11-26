@@ -205,7 +205,7 @@ function check(cond, msg) {
   await page.evaluate(() => document.querySelector('.std-qa-run').click());
   await sleep(500);
   await page.evaluate(() => {
-    const pass = Array.from(document.querySelectorAll('.std-outcome')).find(b => /exactly 1|exactly one|One per star|0 → 1|Correct!.*climbed|both times|Bounced me back/i.test(b.textContent));
+    const pass = Array.from(document.querySelectorAll('.std-outcome')).find(b => /exactly 1|exactly one|One per star|0 → 1|0, then 1|Correct!.*climbed|both times|Bounced me back/i.test(b.textContent));
     pass.click();
   });
   await sleep(900);
@@ -220,7 +220,7 @@ function check(cond, msg) {
     await sleep(400);
     await page.evaluate(() => {
       const opts = Array.from(document.querySelectorAll('.std-outcome'));
-      const pass = opts.find(b => /exactly|One per star|0 → 1|both times|Bounced me back|announced my actual|arrived anyway|climbing on rights|on stage the whole time|Called me out|went green|froze|one thing each time|holding still/i.test(b.textContent));
+      const pass = opts.find(b => /exactly|One per star|0 → 1|0, then 1|both times|Bounced me back|announced my actual|arrived anyway|climbing on rights|on stage the whole time|Called me out|went green|froze|one thing each time|holding still/i.test(b.textContent));
       (pass || opts[0]).click();
     });
     await sleep(800);

@@ -93,17 +93,19 @@
       "target": "Your challenge: wake the scoreboard.",
       "img": "assets/img/l3/rung1.png",
       "imgAlt": "The finished blocks for rung 1: a forever block with 'show number score' inside it.",
-      "hint": "Variables → 'Make a Variable...' → name it score. Do NOT drag a new forever block: every new project already has one (next to 'on start'). From Basic drag 'show number 0' into forever's mouth, then drop the round 'score' block from Variables into the 0 slot so it reads 'show number score'.",
-      "stepsLead": "Build exactly what Part 2 showed you:",
+      "hint": "Open Variables and click 'Make a Variable...'. Name it score. Don't drag a new forever block. Every new project already has one. From Basic, drag 'show number 0' into the forever block. Then drop the round 'score' block from Variables onto the 0.",
+      "stepsLead": "Build what Part 2 showed you:",
       "steps": [
        "Make a variable and call it score.",
-       "Drag 'show number score' into the forever block on your canvas."
+       "Drag 'show number score' into the forever block already there."
       ],
-      "testLead": "Now prove it:",
       "testSteps": [
-       "Watch your simulator without pressing anything. It already reads 0 — nobody pressed a button. That is the forever loop starting by itself and showing the number in the box, over and over.",
-       "Copy it onto the micro:bit the same way as last lesson: press Download in MakeCode, then drag the file across onto the MICROBIT drive. (If your micro:bit won't connect, keep going on the simulator while your teacher fixes it.)",
-       "The real display reads 0 too — your scoreboard is awake."
+       "Watch your simulator. It already reads 0.",
+       "Nobody pressed a button. The forever loop shows it.",
+       "Now press Download in MakeCode, then drag the file across.",
+       "Drop it on the MICROBIT drive.",
+       "Won't connect? Keep going on the simulator.",
+       "The real display reads 0 too. Your scoreboard is awake."
       ]
      },
      {
@@ -114,20 +116,21 @@
        "src": "assets/video/l3/l3-part3.mp4"
       },
       "target": "Your challenge: make every press of button A count.",
-      "hint": "Number stuck at 1 on the micro:bit? First check you downloaded again after the swap — the micro:bit only changes when a new file lands on it. Still stuck after a fresh download? Then the old 'set score to 1' block is still in there — swap it out, don't stack them: 'change score by 1' ADDS one to whatever is in the box.",
+      "hint": "Number stuck at 1 on the micro:bit? First check you downloaded again after the swap. Still stuck? The old 'set score to 1' is still there. Swap it out; don't stack them. 'change score by 1' ADDS one to the score.",
       "hintImg": "assets/img/l3/rung2.png",
       "stepsLead": "Build what Part 3 showed you:",
       "steps": [
        "Put 'set score to 1' inside 'on button A pressed'.",
-       "Press A. Stuck at 1? Use 'change score by 1'."
+       "Press A a few times. It sticks at 1.",
+       "Swap that block for 'change score by 1'."
       ],
-      "note": "When you're done, your button A event holds just that one block — the forever loop is still doing all the showing.",
-      "testLead": "Now prove it:",
       "testSteps": [
-       "Press Download and drag the new file across. Your micro:bit keeps running the OLD program until a new file lands on it.",
-       "Press A three times. Does the number climb by exactly one per press — 1, 2, 3?",
-       "One more proof, on the SIMULATOR: drag 'show number score' OUT of forever and drop it on empty canvas. The simulator's display goes dark and STAYS dark, even when you press its A. No loop — no scoreboard.",
-       "Put the block back INSIDE forever. (Your real micro:bit still shows the old copy — it only changes when you download again.)"
+       "Press Download and drag the new file across.",
+       "Press A three times. Does it show 1, 2, 3?",
+       "On the SIMULATOR, drag 'show number score' out of forever.",
+       "The simulator goes dark. The real micro:bit still counts.",
+       "That's the OLD program running. Put the block back.",
+       "The micro:bit only changes when you download again."
       ]
      },
      {
@@ -138,43 +141,44 @@
        "src": "assets/video/l3/l3-part4.mp4"
       },
       "target": "Your challenge: give your scoreboard a fresh-start button.",
-      "hint": "Reset lives on its OWN event: a separate 'on button B pressed' block with 'set score to 0' inside it. You do NOT need another 'show number score' anywhere — the forever loop already shows every change the moment it happens. Leave your button A blocks alone.",
+      "hint": "Reset needs its OWN event: 'on button B pressed'. Put 'set score to 0' inside it. You do NOT need another 'show number score'. The forever loop already shows every change. Leave your button A blocks alone.",
       "hintImg": "assets/img/l3/rung3.png",
       "stepsLead": "Build what Part 4 showed you:",
       "steps": [
        "Add a second event: 'on button B pressed'.",
        "Put 'set score to 0' inside it."
       ],
-      "note": "When it works: A still counts up, B wipes the score back to 0, and the loop keeps the number on screen the whole time.",
       "testLead": "Now THE MULTI-ROUND TEST:",
       "testSteps": [
-       "Download and drag the new file across once more, so the micro:bit holds all three parts of your program.",
-       "Press B — it says 0. Press A three times — it says 3. Press B — back to 0.",
-       "Now run that whole cycle three times over. A scoreboard that's right once can still be wrong — three clean rounds is proof."
+       "Download and drag the new file across once more.",
+       "Press B. It shows 0.",
+       "Press A three times. It shows 3.",
+       "Press B. It is back to 0.",
+       "Run that whole cycle three times over.",
+       "Three clean rounds prove your scoreboard works."
       ]
      }
     ],
     "stretch": {
      "title": "Stretch — The High-Score Keeper",
-     "target": "Your stretch challenge: teach your micro:bit to REMEMBER the best score ever.",
+     "target": "Your stretch challenge: make your micro:bit REMEMBER the best score.",
      "stepsLead": "Build it step by step:",
      "steps": [
-      "Make a SECOND variable and call it highScore.",
-      "Add a new event: 'on shake'.",
-      "From Logic, drag an 'if … then' block inside 'on shake'.",
-      "Set the if's question to: score > highScore. (The > sign means 'is bigger than'.)",
-      "Inside the if, put 'set highScore to score'. Now, whenever your score beats the best ever, the best ever is replaced.",
-      "Last job — teach the forever loop to show BOTH numbers. After 'show number score', add 'pause (ms) 1000'.",
-      "Then add 'show string \"H\"', then 'show number highScore'.",
-      "Finish with one more 'pause (ms) 1000'. The display now takes turns: your score … H … the best score … and round again."
+      "Make a second variable called highScore.",
+      "Add 'on shake'. From Logic, put an 'if' block inside.",
+      "Set the if to score > highScore. > means bigger than.",
+      "Inside the if, put 'set highScore to score'.",
+      "In forever, after 'show number score', add 'pause (ms) 1000'.",
+      "Next: 'show string \"H\"', 'show number highScore', one more pause."
      ],
      "testLead": "The proof:",
      "testSteps": [
-      "Score 3 and shake — after the H you see 3.",
-      "Score 5 and shake — after the H you see 5.",
-      "Now score just 2 and shake. After the H it STILL says 5? Then your micro:bit officially remembers the best."
+      "Score 3 and shake. After the H you see 3.",
+      "Score 5 and shake. After the H you see 5.",
+      "Press B, score just 2, and shake.",
+      "Still 5 after the H? It remembers the best!"
      ],
-     "note": "That 'if' block is asking a question — you will build lots more of those next lesson."
+     "note": "That 'if' block asks a question. More next lesson."
     },
     "introSolo": "Build each rung on your own today.",
     "help": "Watch each rung's short film first. Then build what it showed in MakeCode. Then run the proof steps on the card. The micro:bit is the judge. Its display shows if your code works. Today is a NEW project called scoreboard. Missed the name box? Click Untitled at the bottom and type scoreboard. On rung 2 you make the simulator's display go dark on purpose. That is part of the proof. The Debug Hint costs 2 XP. It points to the problem, never the fix. The film button plays the whole film without losing your place.",
@@ -245,7 +249,7 @@
      }
     ],
     "passText": "Saved and checked. Your scoreboard follows your login to any machine — and you're ready to compete. The Rally is next.",
-    "failText": "Not registered yet. Check each step — especially that the .hex went INTO DT Work, not just onto the desktop — then press Check my Drive again.",
+    "failText": "Not registered yet. Check the .hex went INTO DT Work, not just the desktop. Then press Check my Drive again.",
     "help": "Download the .hex from MakeCode and drag it into your Drive, in School, then DT Work. Then press Check my Drive — the website really does look in your Drive. It is the same routine as Lesson 2, and it only takes a minute.",
     "checkLabel": "Check my Drive",
     "demo": {
@@ -258,7 +262,7 @@
     "foundText": "The website found **{name}** in your DT Work folder",
     "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)",
     "skipLabel": "Carry on without registering",
-    "skipText": "If the check still will not run, you can carry on without registering your rig. Tell your teacher in class — they can look in your Drive with you.",
+    "skipText": "If the check will not run, carry on without registering your rig. Tell your teacher in class — they can look in your Drive with you.",
     "job": "Save your scoreboard into your Google Drive, then check it.",
     "showMe": [
      "Download the .hex file from MakeCode.",
@@ -287,7 +291,7 @@
      "Referee clicks Start the 5 seconds.",
      "Player presses A until the timer stops.",
      "Enter the exact number the micro:bit shows.",
-     "Two goes each, then both send your scores."
+     "Two goes each. Then you both send your scores."
     ],
     "roundsLabel": [
      "Go 1",

@@ -32,6 +32,23 @@
    THE RALLY CONSOLE (timer face, "Go 1 of 2", the go labels, "Run the timer first", "Your total") is the
    game's own scoreboard chrome, not reading, and is not counted; nor is the small "NOW SHOWING" label over a
    film (a kicker).
+   J1 INNER CARDS (V95, 26 Nov 2026): the cards a J1 part draws after its first view are counted from the
+   packed content, one card each, with their lists held as bench lists (at most 6 items of 10 words or fewer,
+   a lead of 6 or fewer; an icon list's title and line together, as on a save card):
+   - a LADDER rung, its stretch rung and the unplugged rung: title, the film line, brief, target, picture
+     caption and note on the card; build steps and proof steps (testSteps) as lists; the hint is help.
+   - the CASE BOARD: the get-the-game card (steps as a list), the release check (its watch list), the ship
+     card (steps as a list), and the stretch case. A CASE card is a worked sheet of four numbered steps done in
+     turn, so the ticket (with its picture caption) and each numbered step count as their own card; the
+     "Doing that in Scratch" steps are a list. Keeping the case layout (no engine change) was ruled because
+     more than eleven gates and tools drive it (deck-shot-plan, walk-moves, qa-l4-visual, sit-review ...).
+   - the STUDIO: each contract (headline, pitch, theme; the two columns as lists), the Sprint intro (its three
+     desk steps as a list), and the Studio Desk counted zone by zone like the case card: the kit zone, the
+     blueprint zone, the QA desk head, and each QA check (one row opens at a time). The blueprint card holds its
+     steps as a list; each step's "Show me how" lines are help.
+   HELP is held to the sentence rule only (14 words or fewer): rung hints, case clues, the ship's skip line and
+   each QA answer's fix card (shown only after she reports what went wrong). The QA answer choices are answers,
+   exempt like the exit questions; button and tick-box words stay uncounted.
    CONTROL=1 serves origin/main's packed content: parts must be found over 25 words.
    Run: NODE_PATH=$(npm root -g) node tools/record-tutorial/qa-words-26nov.js [--port=8879] [--only=j3-02] */
 const puppeteer = require('puppeteer'), path = require('path'), fs = require('fs'), { spawn, execFileSync } = require('child_process');
@@ -61,13 +78,68 @@ function lessons() {
   }
   return out;
 }
-/* the later cards a part draws from its own list: one card each */
+/* the later cards a part draws from its own list: one card each (V95: the J1 inner cards, see the header) */
 function listCards(ch) {
   const c = ch.config, out = [];
-  const add = (tag, parts) => out.push({ tag, text: parts.filter(Boolean).join(' \n') });
+  const L = (items, lead) => ({ lead: lead || '', items: (items || []).filter(Boolean) });
+  const icons = steps => (steps || []).map(s => [s.title, s.text].filter(Boolean).join(' '));
+  const add = (tag, parts, lists, help) => out.push({ tag, text: parts.filter(Boolean).join(' \n'),
+    lists: (lists || []).filter(l => l.items.length), help: (help || []).filter(Boolean) });
   if (ch.engine === 'steps') (c.steps || []).forEach((s, k) => add('step ' + (k + 1), [s.title, s.text, (s.lines || []).join(' \n'), s.note]));
-  if (ch.engine === 'ladder') (c.rungs || []).forEach((r, k) => add('rung ' + (k + 1), [r.title, r.brief || r.text || r.intro, (r.steps || []).join(' \n')]));
+  if (ch.engine === 'ladder') {
+    const rung = (tag, r) => add(tag, [r.title, r.part && r.part.label ? 'Watch: ' + r.part.label + '. About 3 minutes.' : '',
+      r.brief || r.text || r.intro, r.target, r.imgCap, r.note, (r.testSteps && r.testSteps.length) ? '' : r.test],
+      [L(r.steps, r.stepsLead), L(r.testSteps, r.testLead)], [r.hint]);
+    (c.rungs || []).forEach((r, k) => rung('rung ' + (k + 1), r));
+    if (c.stretch) rung('stretch', c.stretch);
+    const u = c.unplugged;
+    /* the unplugged card's title is its kicker (not counted); its heading is the engine's own line */
+    if (u) { add('unplugged', ['No screens yet — you two ARE the circuit'], [L(u.lines)]);
+      if (u.soloLines) add('unplugged solo', ['No screens yet — today YOU are the whole circuit'], [L(u.soloLines)]); }
+  }
   if (ch.engine === 'tour') (c.stops || []).forEach((s, k) => add('stop ' + (k + 1), [s.title, s.text || s.body]));
+  if (ch.engine === 'casework') {
+    const g = c.getgame;
+    if (g) add('get the game', ['Get the broken game', g.intro], [L(icons(g.steps))]);
+    (c.cases || []).forEach((cs, k) => {
+      const t = 'case ' + (k + 1) + ' ';
+      add(t + 'ticket', [cs.name, cs.ticket, cs.img && cs.img.caption]);
+      add(t + '1 see it', [cs.symptom]);
+      add(t + '2 read the code', [cs.look, 'Find the ONE thing wrong — don’t rebuild the whole script.'], [],
+        cs.clue ? [cs.clue.free, cs.clue.consult, cs.clue.consultSolo, cs.clue.hq] : []);
+      add(t + '3 fix it', [c.logLead], [L(cs.mechanicSteps, 'Doing that in Scratch:')]);
+      add(t + '4 re-play', [cs.replay, c.proofNote, c.lockedNote]);
+    });
+    const sc = c.stretchCase;
+    /* the stretch file is drawn like a case file: its ticket box, THE JOB box and PROVE IT box are
+       separate boxes on the card, so each counts as its own card (the same rule as the four cases) */
+    if (sc) { add('stretch ticket', [sc.name, sc.ticket]); add('stretch job', [sc.job]);
+      add('stretch prove it', [sc.test, sc.ask, sc.lockedNote]); }
+    const r = c.rc;
+    if (r) add('release check', [r.title, r.text, r.ask, r.lockedNote], [L(r.watch)]);
+    const sh = c.ship;
+    if (sh) add('ship', [sh.intro], [L(icons(sh.steps))], [sh.skipText]);
+  }
+  if (ch.engine === 'studio') {
+    (c.contracts || []).forEach(k => add('contract ' + k.id, [k.headline || k.name, k.pitch, k.theme],
+      [L(k.ships, 'The kit already does'), L(k.adds, 'Your studio adds')]));
+    if (c.templates) {
+      if (c.intro) add('sprint intro', [c.introTitle, c.intro, c.introAfter, c.pairNote], [L(c.introSteps)]);
+      if (c.introSolo) add('sprint intro solo', [c.introTitle, c.introSolo, c.introSoloAfter], [L(c.introSteps)]);
+      const zw = c.zoneWhen || {};
+      add('desk QA head', [zw.qa, c.qaIntro, c.qaLockedNote]);
+      for (const [id, t] of Object.entries(c.templates)) {
+        const bp = t.blueprint || {};
+        add(id + ' desk kit zone', [zw.kit, c.kit && c.kit.intro, t.noteWhere]);
+        add(id + ' desk blueprint zone', [zw.blueprint, bp.intro]);
+        /* V95: each step's 'Show me how' lines open only when she asks, so they are help (sentence rule only) */
+        add(id + ' blueprint', [bp.title, bp.imgCaption, bp.note], [L(icons(bp.steps))],
+          (bp.steps || []).flatMap(s => s.how || []));
+        (t.criteria || []).forEach((q, n) => add(id + ' QA check ' + (n + 1), [q.name, q.test, q.ask], [],
+          (q.outcomes || []).map(o => [o.fix, o.mech].filter(Boolean).join(' '))));
+      }
+    }
+  }
   return out;
 }
 
@@ -199,10 +271,21 @@ const screenText = (page, inFrame) => page.evaluate(([inFrame, BENCH]) => {
         }
         for (const card of listCards(ch)) {
           const n = W(card.text), longS = sentences(card.text).filter(s => W(s) > MAXS);
-          REPORT.push({ id: le.id, part: ch.id, engine: ch.engine, screen: card.tag, words: n, longSentences: longS.length, text: card.text });
+          REPORT.push({ id: le.id, part: ch.id, engine: ch.engine, screen: card.tag, words: n, longSentences: longS.length, text: card.text,
+            lists: (card.lists || []).map(bl => ({ lead: bl.lead, items: bl.items })), help: card.help || [] });
           if (n > MAXW) over++;
           check(n <= MAXW, le.id + ' ' + ch.id + ' ' + card.tag + ': ' + n + ' words (25 at most)');
           check(!longS.length, le.id + ' ' + ch.id + ' ' + card.tag + ': every sentence 14 words or fewer' + (longS.length ? ' — "' + longS[0].slice(0, 70) + '…"' : ''));
+          for (const bl of (card.lists || [])) {
+            const longest = Math.max(0, ...bl.items.map(W)), ok = bl.items.length <= 6 && longest <= 10 && W(bl.lead) <= 6;
+            REPORT.push({ id: le.id, part: ch.id, engine: ch.engine, screen: card.tag + ' list', words: longest, longSentences: 0, text: (bl.lead ? bl.lead + '\n' : '') + bl.items.join('\n') });
+            if (!ok) over++;
+            check(ok, le.id + ' ' + ch.id + ' ' + card.tag + ' list: ' + bl.items.length + ' items, longest ' + longest + ' words' + (bl.lead ? ', lead ' + W(bl.lead) : '') + ' (6 items of 10 words at most, lead 6)');
+          }
+          for (const h of (card.help || [])) {
+            const longH = sentences(h).filter(x => W(x) > MAXS);
+            check(!longH.length, le.id + ' ' + ch.id + ' ' + card.tag + ' help: every sentence 14 words or fewer' + (longH.length ? ' — "' + longH[0].slice(0, 70) + '…"' : ''));
+          }
         }
       }
     }

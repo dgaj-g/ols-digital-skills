@@ -22,7 +22,7 @@
     "headline": "Files that follow you.",
     "lines": [
      "Your login comes with TWO clouds: Google Drive and OneDrive.",
-     "Watch the film, then build folders in both by Lesson 2."
+     "Watch the film, then build folders in both before Lesson 2."
     ],
     "video": "assets/video/shared/sq-cloud-explainer.mp4",
     "videoFilm": {
@@ -320,7 +320,7 @@
      {
       "icon": "🧭",
       "title": "Which cloud is it in?",
-      "text": "The app decides. Each file lives in one cloud.",
+      "text": "The app decides. In DT you will use BOTH clouds.",
       "confirm": "I know how to tell which cloud a file lives in",
       "lines": [
        "Word, Excel, PowerPoint: OneDrive.",

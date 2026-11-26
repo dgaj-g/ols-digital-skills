@@ -1,7 +1,7 @@
 {
  "lesson": "j1-02",
  "kind": "brief",
- "contentVersion": "2026-11-26r",
+ "contentVersion": "2026-11-26s",
  "shots": {
   "prep-flash": {
    "name": "prep-flash",
@@ -18,17 +18,17 @@
    },
    "inset": null,
    "says": "the same film frame, for the brief’s prepare section",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "px": "1440x768"
   },
   "glance-donow.png": {
    "name": "glance-donow.png",
    "chunkId": "_recap",
    "synthetic": true,
-   "textSnippet": "Which of these is the STRONGEST password?",
+   "textSnippet": "Not unlocked yet — your teacher controls it",
    "contentAnchor": null,
    "says": "the Do-Now, mid-question",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": null
   },
   "glance-briefing.png": {
@@ -37,7 +37,7 @@
    "textSnippet": "YEAR 8 · LESSON 2 OF 17",
    "contentAnchor": "YEAR 8 · LESSON 2 OF 17",
    "says": "the briefing card pupils read before anything is plugged in",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "4b6ddb270860"
   },
   "glance-film.png": {
@@ -46,26 +46,26 @@
    "textSnippet": "Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer.",
    "contentAnchor": "Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer.",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "509d48d826c9"
   },
   "glance-rung.png": {
    "name": "glance-rung.png",
    "chunkId": "ladder",
-   "textSnippet": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program on",
-   "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
+   "textSnippet": "Drag the file onto the MICROBIT drive. This is FLASHING.",
+   "contentAnchor": "Drag the file onto the MICROBIT drive. This is FLASHING.",
    "says": "a rung card — the challenge at the top, the real test underneath",
-   "contentVersion": "2026-11-26r",
-   "chunkHash": "2d099cd931fc"
+   "contentVersion": "2026-11-26s",
+   "chunkHash": "79e275864438"
   },
   "brief-rung.png": {
    "name": "brief-rung.png",
    "chunkId": "ladder",
-   "textSnippet": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program on",
-   "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
+   "textSnippet": "Drag the file onto the MICROBIT drive. This is FLASHING.",
+   "contentAnchor": "Drag the file onto the MICROBIT drive. This is FLASHING.",
    "says": "a rung card showing the Debug Hint and its 2 XP price",
-   "contentVersion": "2026-11-26r",
-   "chunkHash": "2d099cd931fc"
+   "contentVersion": "2026-11-26s",
+   "chunkHash": "79e275864438"
   },
   "glance-bank.png": {
    "name": "glance-bank.png",
@@ -73,8 +73,8 @@
    "textSnippet": "The film's program is just an example. Yours is make-it-move.hex.",
    "contentAnchor": "The film's program is just an example. Yours is make-it-move.hex.",
    "says": "Bank Your Build — three steps, then the check",
-   "contentVersion": "2026-11-26r",
-   "chunkHash": "d749cd6da1cb"
+   "contentVersion": "2026-11-26s",
+   "chunkHash": "2070db7df860"
   },
   "glance-puzzle.png": {
    "name": "glance-puzzle.png",
@@ -82,7 +82,7 @@
    "textSnippet": "How to build it: drag a block from Blocks across into Your program — or just click it, if you prefer. Drag the blocks up and down to change the order, and drag one back to Blocks to take it out again.",
    "contentAnchor": "🎯 When you shake it, a ghost appears on the screen, holds for one second, then the screen clears.",
    "says": "the block puzzle, before any block is placed",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "bf7ccccfa1b4"
   },
   "glance-packup.png": {
@@ -91,7 +91,7 @@
    "textSnippet": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
    "contentAnchor": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
    "says": "the hand-back card with the annotated reset-button photograph",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "d8aa345e1075"
   },
   "glance-selfeval.png": {
@@ -100,7 +100,7 @@
    "textSnippet": "Answer each sentence and how today felt. Then you can send.",
    "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "says": "the final screen — compulsory",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "93174ee3e9f2"
   }
  },
