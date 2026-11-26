@@ -2026,6 +2026,19 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    placed row also carries its number and its way back. */
 .parsons-cols { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
 @media (max-width: 640px) { .parsons-cols { grid-template-columns: 1fr; } }
+/* A CARD THAT BUILDS FROM LINES IS WIDER ON A WIDE SCREEN (J2 L4 live walk, 26 Nov
+   2026). At 1366 the 760px card left a third of the screen empty on each side while
+   Python lines broke over three and four rows in the tray. Only cards that hold the two
+   line columns widen; 1000px keeps clear of the Stuck? Show me button at the foot.
+   The player column is 880px and stays so (the lesson bar above must not change width
+   from card to card), so the card reaches out past it evenly on both sides — by margin,
+   never a transform, which would capture the fixed-position drag ghost. */
+@media (min-width: 1200px) {
+  .parsons-card:has(.parsons-cols), .pyrun-card:has(.pyrun-cols) {
+    max-width: none; width: 1000px; margin-left: calc((100% - 1000px) / 2); margin-right: calc((100% - 1000px) / 2);
+  }
+  .pyrun-card .pyrun-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+}
 .parsons-tray, .parsons-prog {
   background: var(--field); border: 1px solid var(--line-l); border-radius: 12px; padding: 10px 12px;
   min-height: 150px;
@@ -3507,6 +3520,18 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    capped at the width they actually have. `align-items: flex-start` because a
    wrapped row baseline-aligned to its tallest child reads as a stagger. */
 .pyp-list li { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; padding-left: 0; }
+/* J2 L4 live walk (26 Nov): `.pyrun-line` is `width: 100%`, so in that wrapping row it
+   took a whole row to itself and the number, the line and its "Put this line back"
+   stacked one above another — a six-line room was two screens tall. The row is now a
+   grid: the number always sits beside its line; the way back sits beside it too when
+   the card is wide, and under the line (never under the number) when it is not. */
+.pyp-list li { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 6px 10px; }
+.pyp-list li .pyrun-line { width: auto; }
+.pyp-list li > .take-back { grid-column: 2; justify-self: start; }
+@media (min-width: 1200px) {
+  .pyp-list li { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .pyp-list li > .take-back { grid-column: 3; justify-self: end; }
+}
 .pyp-num {
   flex: 0 0 28px; text-align: right; color: var(--muted); font-weight: 700;
   font-variant-numeric: tabular-nums; font-size: 0.95rem;
@@ -3601,6 +3626,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyrun-verdict.is-note { background: #FFF2F0; border: 1.5px solid #C4443A; color: #7A2018; }
 .pyrun-verdict.is-note p { margin: 0; font-size: 0.96rem; line-height: 1.55; }
 .pyrun-verdict.is-matched { background: rgba(46, 158, 99, 0.12); border: 1.5px solid #2E9E63; }
+/* AN ANSWER ABOUT CODE THAT IS NO LONGER THERE (J2 L4 live walk, 26 Nov 2026): once she
+   edits after a run, the old verdict, adventure and path check dim (still readable — the
+   nudges are what she is fixing from) and one line in full ink says to press RUN again. */
+.pyrun-verdict.is-stale > :not(.pyrun-stale), .pyw-stage.is-stale, .pyl4-host.is-stale { opacity: 0.55; }
+.pyrun-stale { margin: 0 0 8px; font-weight: 700; font-size: 0.96rem; line-height: 1.5; color: var(--ink); }
 .pyrun-verdict.is-notyet { background: #FFF6E6; border: 1.5px solid rgba(var(--gold-rgb), 0.75); }
 .pyrun-vtag {
   margin: 0 0 6px; font-size: 1.02rem; font-weight: 800; letter-spacing: 0.07em; font-family: var(--font-display);

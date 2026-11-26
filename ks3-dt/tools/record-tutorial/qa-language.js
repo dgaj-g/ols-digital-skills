@@ -177,7 +177,11 @@ const MACHINE_KEYS = new Set([
      Demanding a read-aloud judgement of 'bot' or 'QQTESTONE' would be the gate
      inventing work (DFM 146a), and every one of these has a pupil-facing twin
      that IS judged. */
-  'who', 'slot', 'key', 'probe', 'mark', 'saveAs', 'probeAnswers', 'introVideo', 'exitFace', 'head'
+  'who', 'slot', 'key', 'probe', 'mark', 'saveAs', 'probeAnswers', 'introVideo', 'exitFace', 'head',
+  /* `waitFor` (26 Nov 2026, J2 Lesson 4 live walk): the ids of the jobs a feature waits for before
+     its own hint shows ('path-1', 'path-2'). engines.js reads it only to pick between `nudge` and
+     `waitNudge`, and BOTH of those are walked in full. */
+  'waitFor'
 ]);
 /* MACHINE VALUES THAT SHARE A KEY NAME WITH PUPIL TEXT (14 Sep 2026, found by the
    L4 fresh reads: a separated reader was handed "w1", "w2", "stranger" and

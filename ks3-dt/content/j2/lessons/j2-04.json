@@ -29,7 +29,7 @@
      "1. First you watch a short film. It has no sound.",
      "2. Then you do three training builds — three short practice jobs. In the first you fix a room somebody else wrote. In the second you put a room in order. In the third you add a third road to a room.",
      "3. Then you write your own room. The website checks every road in it before it joins the adventure.",
-     "4. Then you play the class adventure. You go through five rooms, one after another. Each room was written by a classmate, or it is one of the rooms from the training builds. Nobody's name is shown on any room — each room has a number instead.",
+     "4. Then you play the class adventure. You go through up to five rooms, one after another. Each room was written by a classmate, or it is one of the rooms from the training builds. Nobody's name is shown on any room — each room has a number instead.",
      "5. After that there is a screen with four small extra jobs on it. They are there if you want them, and none of them is marked.",
      "The hour ends with one marked question and the How did it go? screen."
     ],
@@ -113,6 +113,7 @@
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room has stopped and is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -219,7 +220,7 @@
        ],
        "usesSay": "It ran, but the fork line still has a single = on it. A single = puts something into a box (a variable). Asking whether two things are the same takes two: =="
       },
-      "matchedSay": "It works. The fork line asks a question now: is what the player typed the same as trolley? Press RUN again and type the other word, to see the other road.",
+      "matchedSay": "It works. The fork line asks a question now: is what the player typed the same as trolley? If you have tried only one word, press RUN again and type the other, to see the other road.",
       "notYetSay": "It is not working yet. Read what Python said in the console, then look at the fork line — the one that starts with if."
      }
     ],
@@ -289,6 +290,7 @@
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -435,7 +437,7 @@
       ],
       "matchedSay": "All three roads work, and the banana test passed: a word you did not plan for still reached a door.",
       "notYetSay": "It is not working yet. The path check shows which words reached a door. If a word reached no door, look at the road for that word: its if, elif or else line, and the door line pushed in under it.",
-      "runCheckedSay": "You chose the second word and wrote its story, so this card cannot show you the exact words to expect. Press RUN and read what the room says."
+      "runCheckedSay": "Your second word and its story are your own, so this card cannot show you the exact words to expect. Press RUN and read what the room says."
      }
     ],
     "pathTable": {
@@ -474,6 +476,7 @@
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
@@ -626,7 +629,12 @@
          "w2"
         ],
         "label": "The two roads tell different stories.",
-        "nudge": "Both roads print the same words. Give each road its own story line."
+        "nudge": "Both roads print the same words. Give each road its own story line.",
+        "waitFor": [
+         "path-1",
+         "path-2"
+        ],
+        "waitNudge": "This job is checked once jobs 2 and 3 both say done."
        }
       ],
       "palette": [
@@ -749,11 +757,11 @@
    "config": {
     "kicker": "The class adventure",
     "title": "Play the class adventure",
-    "intro": "Now you play five rooms, one after another. They are chosen from the rooms your class has written and the rooms from the training builds. Each room asks you a question. You type a word, and the room sends you through a door into another room. Nobody's name is on any room — only a number. If you published your room, one of the five might be yours.",
+    "intro": "Now you play up to five rooms, one after another. They are chosen from the rooms your class has written and the rooms from the training builds. Each room asks you a question. You type a word, and the room sends you through a door into another room. Nobody's name is on any room — only a number. If you published your room, one of them might be yours.",
     "steps": [
      "Read the room, then type one of the words it offers you.",
      "The room sends you through a door into the next room.",
-     "After five rooms the adventure ends. Play again for a different path."
+     "After the last room the adventure ends. Play again for a different path."
     ],
     "beginLabel": "Start the adventure",
     "rooms": 5,
@@ -870,6 +878,7 @@
      "roomCount": "Room {i} of {all}",
      "doorSay": "You go through door {d}.",
      "fetchingSay": "Finding the next room…",
+     "openingSay": "Opening this room. It can take a few seconds…",
      "brokenSay": "Room {n} is not working right now, so the adventure moves on.",
      "endKicker": "THE END",
      "endTitle": "You reached the end.",
@@ -878,7 +887,7 @@
      "playAgainLabel": "Play again",
      "finishLabel": "Finish the adventure and carry on with the lesson",
      "leaveTitle": "Leave the adventure?",
-     "leaveAsk": "You have played {done} of {all} rooms. The badge is for playing all five. Leave now, or keep going?",
+     "leaveAsk": "You have played {done} of {all} rooms. The badge is for playing every room. Leave now, or keep going?",
      "leaveYes": "Leave now",
      "keepGoing": "Keep going",
      "andWord": "and"
@@ -891,7 +900,7 @@
      "replyLabel": "Your choice",
      "sendLabel": "Send"
     },
-    "help": "The adventure is five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter five rooms you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before five rooms, you do not get the badge this time. You can still earn it the next time you play."
+    "help": "The adventure is up to five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter the last room you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before the last room, you do not get the badge this time. You can still earn it the next time you play."
    }
   },
   {
@@ -982,6 +991,7 @@
     "continueLabel": "Continue",
     "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said, fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "sendLabel": "Send",
     "consoleLabels": {
      "title": "The console",
