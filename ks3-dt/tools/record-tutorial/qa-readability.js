@@ -719,6 +719,20 @@ const COLLECT = CA.COLLECT;
          see them. */
       if (S.root) await page.addStyleTag({ content:
         '.ols-modal, .ols-modal-card, #kit-body { max-height: none !important; overflow: visible !important; }' });
+      /* THE TOP BAR IS STICKY, SO A SCROLLED FULL-PAGE SHOT PAINTS IT MID-PAGE
+         (26 Nov 2026). The J2 bot verdict drive leaves the page scrolled, and the
+         shot drew the translucent top bar across the first ready-made line, so the
+         gate read the bar's own dark glass as that chip's ink and plate (1.03:1) —
+         a fault no pupil sees: on her screen the bar rides at the top and the chip
+         slides under it. Back to the top, and the bar in its own place at the head
+         of the page; no colour changes. */
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.addStyleTag({ content: '.topbar { position: relative !important; }' });
+      /* ITS CONTROL: CONTROL_FAINT=1 paints the ready-made line's name in its own
+         plate's grey, which a pupil could not read. The run must then FAIL on that
+         chip, proving the scroll-back did not blind the gate to a real fault. */
+      if (process.env.CONTROL_FAINT === '1') await page.addStyleTag({ content:
+        '.pyp-chip-name { color: #e6e8ee !important; }' });
       await sleep(200);
       const rects = await page.evaluate(COLLECT, [S.extras || [], HIS.map(h => h.sel), S.root || null]);
       const shot = await page.screenshot({ fullPage: true });
