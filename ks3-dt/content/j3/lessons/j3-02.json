@@ -259,6 +259,10 @@
     "builds": [
      {
       "id": "j3b-venue",
+      "errorWords": {
+       "name": "Python does not know that name yet. Put the line that fills the box above the lines that use it.",
+       "syntax": "Python could not read that line. The speech marks are already in the line, so type only the words into the gap, with no speech marks of your own."
+      },
       "tab": "3 · Venue",
       "goalLine": "**Build 3.** Put the theatre's name in a box, and use that box in both lines.",
       "brief": "The name has to come out exactly the same in both lines, so you type it once, into the gap in the first line. That puts it into the box called venue. In a print line, a + sticks two pieces together: the words inside the speech marks, then whatever is in the box.",
