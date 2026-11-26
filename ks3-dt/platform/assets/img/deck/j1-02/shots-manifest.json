@@ -12,7 +12,7 @@
    ],
    "captions": "Press → doors open · Press → green man · Step → count goes up",
    "says": "the three input photographs from her own hook, with their captions",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": "4b6ddb270860",
    "px": "1440x530"
   },
@@ -25,7 +25,7 @@
    ],
    "captions": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
    "says": "the annotated reset-button photo, credit intact",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": "d8aa345e1075",
    "px": "1440x778"
   },
@@ -44,7 +44,7 @@
    },
    "inset": null,
    "says": "the .hex mid-drag onto the MICROBIT drive, from the film itself, with the drive ringed",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "px": "1440x768"
   },
   "film": {
@@ -56,7 +56,7 @@
    "contentAnchor": "Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer.",
    "cardText": "How to use MakeCode (the film) · Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer. · Find MakeCode · First blocks · Onto the real micro:bit · Test it properly · Done watching",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
    "chunkHash": "509d48d826c9",
    "px": "1748x1552"
@@ -70,9 +70,9 @@
    "contentAnchor": "Drag the file onto the MICROBIT drive. This is FLASHING.",
    "cardText": "RUNG 2 — YOUR FIRST SIGNAL · Your challenge: make button B show a HAPPY FACE. · 🔥 The real test: · Press Download in MakeCode. · Drag the file onto the MICROBIT drive. This is FLASHING. · Press the real button B. See the happy face? · No micro:bit working? The simulator counts today. · It worked! ⚡ · Debug Hint (costs 2 XP) · 🎥 Watch the film again",
    "says": "a rung card — the challenge, the test and the Debug Hint",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
-   "chunkHash": "79e275864438",
+   "chunkHash": "bffcc5af333a",
    "px": "1332x1214"
   },
   "bank": {
@@ -84,7 +84,7 @@
    "contentAnchor": "Press the purple Download button in MakeCode.",
    "cardText": "💾 · Download · Press the purple Download button in MakeCode. · 🗄️ · Open your Drive · drive.google.com → School → DT Work · 🎯 · Drag it in · Drag the .hex file into DT Work.",
    "says": "the three Bank Your Build steps",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
    "chunkHash": "2070db7df860",
    "px": "1212x524"
@@ -98,7 +98,7 @@
    "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "cardText": "How did it go? · I can tell an input from an output. · ✓ I can · ≈ Getting there · ✗ Not yet · I can build code that reacts when something happens. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code and spot a problem. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": {
     "to": ".se-row .se-chips",
     "keepFrac": 0.222,

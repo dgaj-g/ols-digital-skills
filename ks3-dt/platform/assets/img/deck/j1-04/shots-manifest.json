@@ -10,7 +10,7 @@
    ],
    "captions": "First bug: a moth, 1947. US Navy, public domain.",
    "says": "the 1947 moth, wide, with its public-domain credit",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "chunkHash": "72f2f477bc1f",
    "px": "1440x748"
   },
@@ -19,13 +19,13 @@
    "kind": "app",
    "chunkId": "board",
    "selector": ".chunk-host .case-board",
-   "textSnippet": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
-   "contentAnchor": "Lost your game? Nothing is broken — reload scratch.mit.edu, then File → Load from your computer, and pick the .sb3 again.",
+   "textSnippet": "Lost your game? Nothing is broken. Reload the Scratch tab. Click File, then ‘Load from your computer’. Pick the .sb3 file again.",
+   "contentAnchor": "Lost your game? Nothing is broken. Reload the Scratch tab. Click File, then ‘Load from your computer’. Pick the .sb3 file again.",
    "cardText": "OLS GAMES · QA DIVISION · The Case Board · 0 of 4 cases closed · 🎥 · Detective’s Handbook · training film · watch any time · 📥 · Evidence Intake · START HERE · get the broken game · CASE 01 · TRAINING · The Frozen Shark · ★★★★★ · 🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 02 · The Broken Scoreboard · ★★★★★ · 🔧🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 03 · The Vanishing Fish · ★★★★★ · 🔧🔧🔧 · SEALED UNTIL YOU HAVE THE GAME · CASE 04 · The White Void · ★★★★★ · 🔧🔧🔧🔧 · SEALED UNTIL YOU HAVE",
    "says": "the Case Board, the hour’s home, with nothing closed yet",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
-   "chunkHash": "b1351c8778a2",
+   "chunkHash": "24545284c847",
    "px": "1812x1294"
   },
   "intake": {
@@ -35,11 +35,11 @@
    "selector": ".chunk-host .card",
    "textSnippet": "Detectives study the REAL thing. Open the broken game on your own screen:",
    "contentAnchor": "Detectives study the REAL thing. Open the broken game on your own screen:",
-   "cardText": "EVIDENCE INTAKE · Get the broken game · Detectives study the REAL thing. Open the broken game on your own screen: · ⬇️ Download the broken game · Open the Scratch editor ↗ · ⬇️ · Download the evidence · Click the gold button. · 🧪 · Open Scratch · Click the second button. No login needed. · 📂 · Load the game · Click File, then ‘Load from your computer’. · 🗂️ · Keep both tabs open · Case board here, game in Scratch. · 🗂️ · Look around · Click each sprite. Its blocks are its SCRIPTS. · The brok",
+   "cardText": "EVIDENCE INTAKE · Get the broken game · Detectives study the REAL thing. Open the broken game on your own screen: · ⬇️ Download the broken game · Open the Scratch editor ↗ · ⬇️ · Download the evidence · Click Download the broken game. · 🧪 · Open Scratch · Click Open the Scratch editor. No login needed. · 📂 · Load the game · Click File, then ‘Load from your computer’. · 🗂️ · Keep both tabs open · Case board here, game in Scratch. · 🗂️ · Look around · Click each sprite. Its blocks are its SCRI",
    "says": "the Evidence Intake card — how she gets the broken game",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
-   "chunkHash": "b1351c8778a2",
+   "chunkHash": "24545284c847",
    "px": "1372x1598"
   },
   "case1": {
@@ -51,9 +51,9 @@
    "contentAnchor": "“My shark won’t swim RIGHT. Left, up, down all work. One star.”",
    "cardText": "★★★★★ · “My shark won’t swim RIGHT. Left, up, down all work. One star.” · — FinnTastic_11",
    "says": "the case ticket as a pupil first meets it — the players’ own report",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
-   "chunkHash": "b1351c8778a2",
+   "chunkHash": "24545284c847",
    "px": "1252x332"
   },
   "release": {
@@ -65,9 +65,9 @@
    "contentAnchor": "Play the WHOLE game for a minute. Watch all four fixes:",
    "cardText": "RELEASE DESK · The whole-game check · THE FULL RUN · Play the WHOLE game for a minute. Watch all four fixes: · All four arrows — swim a full lap. · Eat five fish — the score counts every one. · Fish keep arriving for the whole minute. · Restart twice — the ocean shows from the first instant. · How many fish did you catch? · Type your fish count first. · Full sixty-second run — every fix held · ← Pin it back on the board",
    "says": "the release desk — the whole-game check",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": null,
-   "chunkHash": "b1351c8778a2",
+   "chunkHash": "24545284c847",
    "px": "1372x1190"
   },
   "selfeval": {
@@ -79,7 +79,7 @@
    "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "cardText": "How did it go? · I can work out what someone else's code should do. · ✓ I can · ≈ Getting there · ✗ Not yet · I can find a bug by testing, not guessing. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain what was wrong and what I changed. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
-   "contentVersion": "2026-11-26s",
+   "contentVersion": "2026-11-26u",
    "crop": {
     "to": ".se-row .se-chips",
     "keepFrac": 0.222,

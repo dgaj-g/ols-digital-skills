@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-26 from contentVersion 2026-11-26q.
+ * Built 2026-11-26 from contentVersion 2026-11-26u.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -458,7 +458,7 @@ var DECKS = {
       "bullets": [
        "Every rung lives in the SAME project — make-it-move. You never start a new one.",
        "Each rung card gives you a challenge and a real test: build it, try it on the simulator (the little micro:bit picture in the corner of MakeCode), then prove it on the real micro:bit.",
-       "Rung done? Press the gold button and the next rung appears. After rung 4, a stretch challenge appears for anyone who wants more.",
+       "Rung done? Press It worked! and the next rung appears. After rung 4, a stretch challenge appears for anyone who wants more.",
        "Stuck? The Debug Hint nudges you towards the fix without giving it away, and it costs 2 XP. The film is one click away on every rung card."
       ],
       "notes": "SAY: point at the picture — a rung card: the challenge at the top, the real test underneath, the Debug Hint button below. The rule of the room while they build is SHOW ME: a rung is done when the micro:bit does it in front of your eyes.\n\nWHEN TO MOVE: straight on — one more slide before they build."
@@ -897,7 +897,7 @@ var DECKS = {
       "size": 15,
       "shot": "intake",
       "bullets": [
-       "Click the gold button — shark-attack-broken-edition.sb3 drops into your Downloads.",
+       "Click Download the broken game. The file shark-attack-broken-edition.sb3 drops into your Downloads.",
        "Open the Scratch editor in your second tab — scratch.mit.edu. No login needed, ever.",
        "In Scratch, open the File menu and choose 'Load from your computer'. Pick the .sb3 from your Downloads, then press OK to replace.",
        "Keep BOTH tabs open all hour: case board here, game there."

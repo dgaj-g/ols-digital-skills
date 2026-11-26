@@ -176,7 +176,7 @@
      ]
     },
     "introSolo": "Four rungs to climb, on your own today. The micro:bit is the judge.",
-    "help": "Read the rung card, build what it asks for in MakeCode (its own tab), then TEST it for real — press the button, do the shake. If it worked, press the gold button and the next rung appears. Stuck? That's what the Debug Hint is for — it costs 2 XP and nudges you toward the fix without giving it away. The film button replays the MakeCode film without losing your place.",
+    "help": "Read the rung card. Build it in MakeCode, in its own tab. Test it on the real micro:bit. If it worked, click It worked! The next rung appears. Stuck? The Debug Hint costs 2 XP. It nudges you toward the fix. The film button replays the MakeCode film. You keep your place.",
     "film": {
      "src": "assets/video/l2/l2-tutorial.mp4",
      "chapters": [
@@ -209,7 +209,7 @@
     "showMe": [
      "Click Start climbing, then read the rung card.",
      "Build it in MakeCode. Test it on the real micro:bit.",
-     "When it works, click the gold button."
+     "When it works, click It worked!"
     ]
    }
   },
