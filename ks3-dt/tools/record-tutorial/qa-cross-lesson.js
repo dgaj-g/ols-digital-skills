@@ -120,15 +120,18 @@ for (const f of lessonFiles) {
 check(kitRows >= 3, 'the kit is actually stated in at least three places and every one was checked (' + kitRows + ')');
 
 console.log('\n== 3. one pair model across every ladder lesson (DFM 167b) ==');
+const BOTH_BUILD = /You BOTH build every rung|You both build (each|every) (rung|one)/i;
 let ladders = 0;
 for (const f of lessonFiles) {
   const L = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/' + f), 'utf8'));
   const lad = (L.chunks || []).find(c => c.engine === 'ladder');
   if (!lad) continue;
   const intro = String(lad.config.intro || '');
-  if (!/pair|person beside you|between the two of you/i.test(intro)) continue;  // solo-only ladder
+  /* V94 (26 Nov) cut both intros to one short line - pupils skip long text -
+     "You both build each one/rung. Take turns testing." The model is unchanged. */
+  if (!/\bboth\b|pair|person beside you|between the two of you/i.test(intro)) continue;  // solo-only ladder
   ladders++;
-  check(/You BOTH build every rung/.test(intro),
+  check(BOTH_BUILD.test(intro),
     f + ': the ladder intro puts BOTH pupils on the build, each at her own computer');
   check(!/one of you builds/i.test(intro),
     f + ': and the abandoned one-builds-one-reads model is gone');
@@ -137,7 +140,7 @@ for (const f of lessonFiles) {
   /* the reason the model matters, asserted rather than trusted: a lesson that
      asks her to bank her OWN file must have had her build her OWN program */
   const banks = (L.chunks || []).some(c => c.engine === 'artifact');
-  if (banks) check(/each on your OWN computer/.test(intro),
+  if (banks) check(/each on your OWN computer/.test(intro) || BOTH_BUILD.test(intro),
     f + ': it banks a file per pupil, so every pupil must have built her own program');
 }
 check(ladders >= 2, 'both ladder lessons were found and checked (' + ladders + ')');
@@ -388,7 +391,7 @@ const PRE_INTRO = "This is where you build it — in your pair again: you and th
 const PRE_PREP = "micro:bit class set and cables, one per pair — the same grey box as Lesson 2. Same pairs and the same devices if you can; quiet ownership works.";
 const PRE_WHERE = "The DT office, in the grey box";
 const PRE_WHAT = "15 devices, 15 cables, labelled.";
-control(!/You BOTH build every rung/.test(PRE_INTRO), 'the pre-fix L3 intro never put both pupils on the build');
+control(!BOTH_BUILD.test(PRE_INTRO), 'the pre-fix L3 intro never put both pupils on the build');
 control(/one of you builds/i.test(PRE_INTRO), 'the pre-fix L3 intro carried the abandoned one-builds model');
 control(BANNED_FACTS[0].rx.test(PRE_PREP), 'the pre-fix prep line carried the invented grey box');
 control(BANNED_FACTS[1].rx.test(PRE_WHERE), 'the pre-fix resources row carried the invented DT office');
@@ -508,7 +511,8 @@ console.log('\n== 8. both clouds are first-class DT homes (DFM 252) ==');
   const sq = JSON.parse(fs.readFileSync(path.join(SRC, 'j1/lessons/j1-sq1.json'), 'utf8'));
   const chunk = (id) => (sq.chunks || []).find(c => c.id === id) || { config: {} };
   const drive = chunk('sq-drive').config, one = chunk('sq-onedrive').config;
-  const stepText = (cfg) => (cfg.steps || []).map(s => String(s.text || '')).join(' \n ');
+  /* V93 (25 Nov) moved each step's sub-steps into a short `lines` list - read them too. */
+  const stepText = (cfg) => (cfg.steps || []).map(s => [s.text || ''].concat(s.lines || []).join(' ')).join(' \n ');
   const driveAll = stepText(drive), oneAll = stepText(one);
 
   /* (b) the spine is built in BOTH clouds */
@@ -525,11 +529,13 @@ console.log('\n== 8. both clouds are first-class DT homes (DFM 252) ==');
      reads what it changed, not just the one in front of you (DFM 143b); left
      alone, this guard would have insisted on the wording he rejected. The FACT
      it holds is unchanged: the app decides, and both halves name their cloud. */
-  check(/think about the app you made the file in/i.test(oneAll),
+  /* RE-STAGED 26 Nov (V95): V93 cut the rule to "The app decides." with a short
+     list under it ("Word, Excel, PowerPoint: OneDrive."). Same fact, no arrow. */
+  check(/think about the app you made the file in|The app decides/i.test(oneAll),
     'the which-cloud rule is still the app-decides rule');
-  check(/Word, Excel and PowerPoint save your work into OneDrive/i.test(oneAll),
+  check(/Word, Excel,? (?:and )?PowerPoint(?: save your work into|:) OneDrive/i.test(oneAll),
     'its Microsoft half names OneDrive');
-  check(/Google Docs saves your work into Google Drive/i.test(oneAll),
+  check(/Google Docs(?: saves your work into|:) Google Drive/i.test(oneAll),
     'its Google half names Google Drive');
   /* AND HIS ARROW LAW ON THE VERY STEP THAT WROTE IT (DFM 253c): the rule is a
      sentence now, so no arrow may come back to it. */
@@ -554,8 +560,10 @@ console.log('\n== 8. both clouds are first-class DT homes (DFM 252) ==');
 
   /* The honest asymmetry (DFM 252d): only Drive is machine-checked, and the
      briefing says so rather than implying both are. */
-  const briefLines = (chunk('sq-brief').config.lines || []).join(' ');
-  check(/check your Google Drive ones are really there/i.test(briefLines),
+  /* V93 moved this sentence from the briefing's lines into the briefing's own
+     help panel; it is still said on the briefing card, not hidden. */
+  const briefLines = (chunk('sq-brief').config.lines || []).join(' ') + ' ' + String(chunk('sq-brief').config.help || '');
+  check(/check your Google Drive ones are really there|website checks your Google Drive folders are really there/i.test(briefLines),
     'the briefing names WHICH folders the website checks - the asymmetry is stated, not hidden');
 
   /* Controls both ways (DFM 196). */

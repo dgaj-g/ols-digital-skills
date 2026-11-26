@@ -208,14 +208,14 @@ const DECK_SHOTS = {
     intake: {
       chunk: 'board',
       selector: '.chunk-host .card',
-      mustShow: /detective examines the REAL broken thing/i,
+      mustShow: /Detectives study the REAL thing/i,
       at: () => {
         const s = window.App && App.state && App.state.chunks[App.state.chunkIdx];
         if (!s || s.id !== 'board') return false;
         const h = document.querySelector('.chunk-host');
         if (!h || document.querySelector('.case-board')) return false;
         /* the Evidence Intake view, its steps rendered and NOT yet confirmed */
-        return /A detective examines the REAL broken thing/i.test(h.textContent || '') &&
+        return /Detectives study the REAL thing/i.test(h.textContent || '') &&
           !!h.querySelector('.confirm-step:not(.ticked)');
       },
       says: 'the Evidence Intake card — how she gets the broken game'
@@ -253,7 +253,7 @@ const DECK_SHOTS = {
         const h = document.querySelector('.chunk-host');
         if (!h) return false;
         const num = h.querySelector('input[type=number], .case-count-input');
-        return /whole game is played/i.test(h.textContent || '') &&
+        return /Play the WHOLE game/i.test(h.textContent || '') &&
           (!num || !num.value);
       },
       says: 'the release desk — the whole-game check'
@@ -1494,11 +1494,11 @@ const BRIEF_SHOTS = {
       at: () => !!document.querySelector('.chunk-host .case-board')
     },
     'glance-intake.png': {
-      chunk: 'board', says: 'Evidence Intake — four steps to get the broken game open',
+      chunk: 'board', says: 'Evidence Intake — the steps to get the broken game open',
       at: () => {
         const h = document.querySelector('.chunk-host');
         return !!h && !document.querySelector('.case-board') &&
-          /A detective examines the REAL broken thing/i.test(h.textContent || '');
+          /Detectives study the REAL thing/i.test(h.textContent || '');
       }
     },
     '04-case.jpg': {
@@ -1529,7 +1529,7 @@ const BRIEF_SHOTS = {
       chunk: 'board', says: 'the release desk — four things to watch, and the count that proves she played',
       at: () => {
         const h = document.querySelector('.chunk-host');
-        return !!h && /whole game is played/i.test(h.textContent || '');
+        return !!h && /Play the WHOLE game/i.test(h.textContent || '');
       }
     },
     '06-exit.jpg': {

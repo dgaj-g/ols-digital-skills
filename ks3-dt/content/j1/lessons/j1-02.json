@@ -107,20 +107,20 @@
     "unplugged": {
      "title": "Rung 1 — The Human Circuit",
      "lines": [
-      "This first rung needs no computer at all: you and the person beside you are going to BE the machine. Stand up.",
-      "Every machine from the start of the lesson — the lift, the crossing, the step-counter — has a part that NOTICES something happen (computing calls it a SENSOR) and a part that REACTS (an ACTUATOR). Decide now: one of you is the sensor, the other is the actuator.",
-      "SENSOR: mime pressing an invisible button. ACTUATOR: the instant you see the press, throw both arms up — you are REACTING, like the heart appearing on the screen after button A was pressed.",
-      "New signal! SENSOR: mime shaking the micro:bit. ACTUATOR: wave both hands — you are REACTING again, but this time to a completely different signal. Same rule, new trigger: when THIS happens, do THAT.",
-      "Swap jobs and run both signals again, so each of you has played both parts.",
-      "Finish by saying it out loud together (or a loud whisper will do if you prefer — or you could make a rap out of it (joking — but feel free to try!)): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
+      "Stand up. A SENSOR notices. An ACTUATOR reacts. Pick roles.",
+      "Sensor mimes a button press. Actuator throws both arms up.",
+      "New trigger: sensor mimes a shake. Actuator waves both hands.",
+      "Swap jobs and run both signals again.",
+      "Say it: the press is INPUT, the reaction is OUTPUT.",
+      "When THIS happens, do THAT. That rule is an EVENT."
      ],
      "confirm": "We both played Sensor and Actuator — and said the magic sentence",
      "soloLines": [
-      "This first rung needs no computer at all — and no partner on a catch-up: YOU are the whole machine, both parts of it.",
-      "Every machine from the start of the lesson has a part that NOTICES something happen (a SENSOR) and a part that REACTS (an ACTUATOR). Today you play both.",
-      "With one hand, mime pressing an invisible button. The instant you do, throw your other arm up — that's the heart appearing on the screen.",
-      "New signal: mime shaking a device with one hand, and wave the other — that's the message scrolling across.",
-      "Finish by saying it out loud (quietly counts): the press is the INPUT. The reaction is the OUTPUT. The rule connecting them — when THIS happens, do THAT — is an EVENT. Those three words run the whole hour."
+      "A SENSOR notices. An ACTUATOR reacts. You play both.",
+      "One hand mimes a press. Throw your other arm up.",
+      "New trigger: mime a shake. Wave your other hand.",
+      "Say it: the press is INPUT, the reaction is OUTPUT.",
+      "When THIS happens, do THAT. That rule is an EVENT."
      ],
      "soloConfirm": "I ran both signals — and said the magic sentence"
     },
@@ -128,35 +128,52 @@
      {
       "id": "r2",
       "title": "Rung 2 — Your First Signal",
-      "target": "Your challenge: make the micro:bit show a HAPPY FACE whenever button B is pressed. You built the button A one together with the film — this one is yours, on a different button, with a different picture.",
-      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
-      "hint": "Start from the same shape you saw in the film: an 'on button pressed' block with a 'show icon' block INSIDE it. Then change the dropdown on the event block from A to B, and pick the happy face in the icon dropdown. A block floating on its own never runs."
+      "target": "Your challenge: make button B show a HAPPY FACE.",
+      "hint": "Start with the film's shape: an 'on button pressed' block. Put 'show icon' inside it. Change the event's A to B. Pick the happy face. A block floating on its own never runs.",
+      "testSteps": [
+       "Press Download in MakeCode.",
+       "Drag the file onto the MICROBIT drive. This is FLASHING.",
+       "Press the real button B. See the happy face?",
+       "No micro:bit working? The simulator counts today."
+      ]
      },
      {
       "id": "r3",
       "title": "Rung 3 — A Different Kind of Signal",
-      "target": "Your challenge: a button is not the only way to talk to a micro:bit. Make a GHOST appear when the micro:bit is SHAKEN. Leave your button A and button B blocks exactly where they are — this is a third signal, added alongside them.",
-      "test": "Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then give it a real shake. Does the ghost appear? Now press A and B again to check they still work — all three signals live in the same program.",
-      "hint": "You need an 'on shake' block, not an 'on button pressed' one — look for it in the Input drawer. Put a 'show icon' block inside it and choose the ghost, the shape pictured on the card.",
+      "target": "Your challenge: SHAKE the micro:bit to show a GHOST.",
+      "hint": "Use an 'on shake' block from the Input drawer. Put 'show icon' inside it and pick the ghost. Keep your A and B blocks: shake is a third signal.",
       "hintImg": "assets/img/l2/rung3.png",
       "img": "assets/img/l2/ghost-icon.png",
       "imgAlt": "The ghost icon as it appears on the micro:bit: a five by five pattern of lit LEDs shaped like a ghost",
-      "imgCap": "THIS is the ghost. Look for this shape in the icon dropdown — it is easy to miss.",
-      "imgSmall": true
+      "imgCap": "Find THIS ghost in the icon dropdown.",
+      "imgSmall": true,
+      "testSteps": [
+       "Download, then drag the file onto the MICROBIT drive.",
+       "Give it a real shake. Does the ghost appear?",
+       "Press A and B. Do they still work?"
+      ]
      },
      {
       "id": "r4",
       "title": "Rung 4 — The Vanishing Ghost",
-      "target": "Your challenge: your ghost turns up and never leaves. Make it vanish on its own. When the micro:bit is SHAKEN, this is what should happen: 1. the GHOST appears — 2. it stays on screen for one second — 3. the screen clears itself.",
-      "test": "Copy it across and give it a real shake. Does the ghost appear, hold, then vanish cleanly — every single time? Now prove the pause is earning its place: take the pause block out, copy the program across again, and shake. The ghost seems never to appear at all — the clear wipes it before your eyes can catch it. Put the pause back.",
-      "hint": "The ORDER inside 'on shake' matters: show icon, THEN pause (ms) 1000, THEN clear screen. The pause is the only thing giving the ghost time on screen — without it, 'clear screen' wipes it before your eyes can catch it and you see nothing at all. (Your button A heart stayed put because nothing came along to clear it.)",
-      "hintImg": "assets/img/l2/rung4.png"
+      "target": "Your challenge: on a shake, show the ghost for one second, then clear it.",
+      "hint": "Order matters inside 'on shake': show icon, then pause (ms) 1000, then clear screen. The pause gives the ghost time on screen. Without it, the clear wipes it at once. Your A heart stays because nothing clears it.",
+      "hintImg": "assets/img/l2/rung4.png",
+      "testSteps": [
+       "Flash it and shake. Ghost, pause, gone, every time?",
+       "Now take the pause block out. Flash and shake again.",
+       "The ghost never shows. The clear wipes it too fast.",
+       "Put the pause back."
+      ]
      }
     ],
     "stretch": {
      "title": "Stretch — Two Buttons at Once",
-     "target": "Your stretch challenge: see if you can make one input trigger a whole SEQUENCE. When A and B are pressed at the SAME TIME, this is what should happen: 1. a heart appears — 2. it holds for half a second — 3. a happy face takes its place.",
-     "test": "Copy it across and press A + B together on the real device. Heart, half-second pause, then happy face — every single time?"
+     "target": "Your stretch challenge: press A+B TOGETHER to show a heart. Wait half a second, then a happy face.",
+     "testSteps": [
+      "Flash it. Press A and B together.",
+      "Heart, pause, happy face, every time?"
+     ]
     },
     "introSolo": "Four rungs to climb, on your own today. The micro:bit is the judge.",
     "help": "Read the rung card, build what it asks for in MakeCode (its own tab), then TEST it for real — press the button, do the shake. If it worked, press the gold button and the next rung appears. Stuck? That's what the Debug Hint is for — it costs 2 XP and nudges you toward the fix without giving it away. The film button replays the MakeCode film without losing your place.",
@@ -232,7 +249,7 @@
      }
     ],
     "passText": "Your build now follows your login anywhere — that's the whole point of the Vault. Next lesson you can pick up exactly where you left off, on any machine.",
-    "failText": "Not there yet. Check each step above — especially that the file went INTO the DT Work folder, not just onto the desktop — then run the inspection again.",
+    "failText": "Not there yet. Check the file went INTO the DT Work folder, not just the desktop. Then run the inspection again.",
     "help": "Download your program from MakeCode. Open drive.google.com in a new tab. Drag the .hex into School, then DT Work. Then click Run the inspection. The website looks in your Drive for real. Not found? Check the file is INSIDE DT Work.",
     "demo": {
      "src": "assets/video/shared/save-to-drive.mp4",
@@ -246,7 +263,7 @@
     "foundText": "The website found **{name}** in your DT Work folder",
     "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)",
     "skipLabel": "Carry on without banking your build",
-    "skipText": "If the check still will not run, you can carry on without banking your build. Tell your teacher in class — they can look in your Drive with you.",
+    "skipText": "If the check will not run, carry on without banking your build. Tell your teacher in class — they can look in your Drive with you.",
     "job": "Save your program into your Google Drive, then check it.",
     "showMe": [
      "Download your program from MakeCode.",

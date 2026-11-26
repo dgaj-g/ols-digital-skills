@@ -29,7 +29,11 @@ const check = (c, m) => { console.log((c ? '  PASS ' : '  FAIL ') + m); if (!c) 
   check(/forever/i.test(rungText(l3lad.rungs[0])), 'Rung 1 asks the pupil to build the forever loop');
   /* DFM 168 re-cut: the break-it proof moved to rung 2, WITH its film part */
   check(/dark/i.test(rungText(l3lad.rungs[1])), 'Rung 2 has the genuine fail state (take it out, the screen goes dark)');
-  check(/loop/i.test(l3lad.intro) && /event/i.test(l3lad.intro), 'the ladder intro names both shapes: loop AND event');
+  /* V94 (26 Nov) cut the intro to one short line - pupils skip long text - so the
+     two shapes are now named on the cards where they are BUILT: the loop on
+     rung 1 (it shows 0 with nobody pressing), the event on rung 3 (reset). */
+  check(/forever loop/i.test(rungText(l3lad.rungs[0])) && /\bevent\b/i.test(rungText(l3lad.rungs[2])),
+    'the ladder cards name both shapes where they are built: the loop on rung 1, the event on rung 3');
   check(!/show number score/i.test(l3lad.rungs[1].target) && !/show number score/i.test(l3lad.rungs[2].target),
     'rungs 2 and 3 no longer put the display inside the button events');
   /* L4's claim must be TRUE after the change, not merely reworded.

@@ -2820,6 +2820,19 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .std-stretch-nudge, .gal-v2-nudge { color: #B4262A; font-size: 0.85rem; min-height: 1.2em; margin: 6px 0; }
 .std-continue { display: block; margin: 0 auto; font-size: 1.05rem; }
 .std-blueprint { max-width: 680px; }
+.std-bp-how { margin-top: 8px; }
+.std-bp-how summary {
+  display: inline-block; list-style: none; cursor: pointer; padding: 5px 14px; border-radius: 999px;
+  background: #2FBF74; color: #06231b; font-family: var(--font-display); font-weight: 700; font-size: 0.9rem;
+  line-height: 1.25; box-shadow: 0 4px 12px rgba(47, 191, 116, 0.3);
+}
+.std-bp-how summary::-webkit-details-marker { display: none; }
+.std-bp-how[open] summary { background: #7EE2A8; }
+.std-bp-how ol { margin: 8px 0 0; padding-left: 1.3em; color: var(--ink); font-size: 0.9rem; line-height: 1.45; }
+.std-bp-how li + li { margin-top: 3px; }
+/* the opened clicks are a plain numbered list, not boxes like the outer .af-steps */
+.std-bp-how ol { display: block; list-style: decimal; }
+.std-bp-how ol li { display: list-item; background: none; border: 0; border-radius: 0; padding: 0 0 0 2px; box-shadow: none; }
 .std-blueprint-fig { margin: 14px 0 6px; text-align: center; }
 .std-blueprint-fig img { max-width: min(320px, 90%); border-radius: 10px; border: 1px solid #D8DCE8;
   box-shadow: var(--shadow-md); }
@@ -18138,7 +18151,10 @@ window.OLS_TRANSPORT = {
         host.innerHTML = '';
         var bp = t.blueprint || {};
         var steps = (bp.steps || []).map(function (s) {
-          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p></div></li>';
+          /* V95: the step itself stays short; the exact clicks sit behind a green opener (label from the content) */
+          var how = (s.how && s.how.length) ? '<details class="std-bp-how"><summary>' + esc(bp.howLabel || '') + '</summary><ol>' +
+            s.how.map(function (h) { return '<li>' + esc(h) + '</li>'; }).join('') + '</ol></details>' : '';
+          return '<li><span class="af-icon">' + esc(s.icon || '') + '</span><div><b>' + esc(s.title) + '</b><p>' + esc(s.text) + '</p>' + how + '</div></li>';
         }).join('');
         var c = el('<div class="card std-blueprint"><span class="intro-kicker">BLUEPRINT &middot; ' + esc(t.name) + '</span>' +
           '<h2>' + esc(bp.title || 'What your studio adds') + '</h2>' +

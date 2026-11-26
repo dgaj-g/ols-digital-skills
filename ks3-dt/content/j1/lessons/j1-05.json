@@ -68,7 +68,7 @@
       "id": "catch",
       "name": "Catch It",
       "headline": "The arcade classic",
-      "pitch": "Apples fall, and one bowl waits below. Miss three and the game is over — if you build it that way.",
+      "pitch": "Apples fall. One bowl waits below. Miss three and it's game over.",
       "img": "assets/img/l5/contract-catch.png",
       "imgAlt": "The Catch It starter: an apple falling from a blue sky toward a bowl",
       "ships": [
@@ -81,33 +81,33 @@
        "THE if/else: caught… or dropped?",
        "Game over the instant lives hit zero"
       ],
-      "theme": "Re-skin everything: catch sushi, stars, or falling socks — if it falls, it plays."
+      "theme": "Re-skin it: sushi, stars, falling socks."
      },
      {
       "id": "maze",
       "name": "Maze Escape",
       "headline": "The escape room",
-      "pitch": "The walls bounce you back to the start. Three stars glitter in the corners — and one locked door stands between your beetle and freedom.",
+      "pitch": "Walls bounce you back. Three stars unlock the door to freedom.",
       "img": "assets/img/l5/contract-maze.png",
       "imgAlt": "The Maze Escape starter: a beetle in a walled maze with stars and a locked door",
       "ships": [
        "A beetle with full arrow-key controls",
-       "Walls that already bounce you back to the start",
-       "Three stars that vanish when touched — but nothing counts them",
-       "A door that senses you arrive… and does nothing about it"
+       "Walls that bounce you back to the start",
+       "Three stars that vanish — but nothing counts them",
+       "A door that senses you, then does nothing"
       ],
       "adds": [
        "the stars counter, wired to all three stars",
-       "THE if/else at the door: earned your escape, or not?",
+       "THE if/else at the door: escape or not?",
        "A proper ending when the door swings open"
       ],
-      "theme": "Re-skin it: haunted house, space station, the school at midnight."
+      "theme": "Re-skin it: haunted house, space station, school at midnight."
      },
      {
       "id": "quiz",
       "name": "Quiz Master",
       "headline": "The quiz show",
-      "pitch": "Three questions, two answer tiles, and a host who never stops talking. It is the quickest quiz show on television — and you write the script.",
+      "pitch": "A chatty host asks three questions, with two answer tiles. You write the script.",
       "img": "assets/img/l5/contract-quiz.png",
       "imgAlt": "The Quiz Master starter: a host by a chalkboard with T and F answer tiles",
       "ships": [
@@ -120,7 +120,7 @@
        "THE if/else inside each tile: right… or wrong?",
        "A finale that announces the final score"
       ],
-      "theme": "The questions are YOURS: football, K-pop, Minecraft, Irish — you're the quizmaster now."
+      "theme": "The questions are YOURS: football, K-pop, Minecraft, Irish."
      }
     ],
     "help": "Read all three contracts, then press Sign on the one you WANT to build. Every contract has the same brief, checks and XP. Type a studio name you would be proud to see in lights. You can tear it up and re-sign until your first QA test is recorded.",
@@ -181,19 +181,18 @@
    "config": {
     "phase": "build",
     "introTitle": "The Studio Sprint",
-    "intro": "You have about 25 minutes to build your game. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step.",
+    "intro": "You have about 25 minutes: one short, focused burst, called a SPRINT.",
     "introSteps": [
-     "**THE KIT** — get your game open in Scratch.",
-     "**THE BLUEPRINT** — your builder's plan: the exact blocks to add, in the order to add them.",
-     "**THE QA DESK** — four tests that prove the game really works."
+     "**THE KIT** — open your game in Scratch.",
+     "**THE BLUEPRINT** — the blocks to add, in order.",
+     "**THE QA DESK** — four tests that prove it works."
     ],
-    "introAfter": "You build your OWN game. The person beside you is your tester — when your teacher calls the swap, you run each other's four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
-    "introSolo": "You have about 25 minutes to build your game, and today you run your own tests. Studios call one short, focused burst of work like this a SPRINT. The desk below works top to bottom, and here is your job at each step.",
-    "introSoloAfter": "You build your OWN game and you run your own four tests. Change how it looks as much as you like, but remember: a game that LOOKS finished is not the same as a game that WORKS. The READY FOR GALLERY button only counts green ticks.",
-    "pairNote": "You each build your OWN game, and you are also each other's tester. When your teacher calls the swap, you sit at your partner's machine and run their four tests while they run yours. A tester who did not build the game spots things the builder cannot see.",
-    "qaIntro": "Now you test your game, the way a real studio does. There are four tests below. For each one: read what it asks, try it in Scratch, then click the answer that matches what REALLY happened — even if that is not what you were hoping for. If your answer shows something is not working yet, the desk tells you exactly what to fix. Fix it, run that test again, and the test turns green. When all four are green, your game can open to the public. A test you got wrong first and then fixed earns a FOUND BY QA badge: finding a bug and fixing it is exactly what testing is for.",
+    "introSolo": "You have about 25 minutes: one short, focused burst, called a SPRINT.",
+    "introSoloAfter": "Today you run your own four tests.",
+    "pairNote": "When your teacher calls swap, your partner tests your game.",
+    "qaIntro": "Try each test in Scratch. Click what really happened. A fail shows the fix.",
     "kit": {
-     "intro": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch:",
+     "intro": "Your kit cannot choose, count or end. Its STUDIO NOTE, a programmer's sticky-note, marks your spot.",
      "confirm": "The kit is open in Scratch and I found the STUDIO NOTE comment in its code"
     },
     "masterclass": {
@@ -223,41 +222,76 @@
     "templates": {
      "catch": {
       "name": "Catch It",
-      "noteWhere": "Click the Apple in the sprite list — the STUDIO NOTE is stuck to its code, right beside the blocks that make the apple fall.",
+      "noteWhere": "Find it on the Apple sprite.",
       "file": "assets/games/catch-it-starter.sb3",
       "blueprint": {
        "title": "The Catch It blueprint",
-       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are five steps, and step 3 is the big one. The STUDIO NOTE in the Apple's code marks the exact spot where it goes.",
+       "intro": "Add the blocks in order. Step 3 is the big one, at the STUDIO NOTE.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the variables",
-         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type score for the name, leave “For all sprites” chosen, and press OK. Now do the whole thing again and call the second one lives. A counter for each appears on the stage — leave their ticks on so the player can see them."
+         "text": "Make two: score and lives.",
+         "how": [
+          "Click Variables, the orange category on the left.",
+          "Click 'Make a Variable'.",
+          "Type score, leave 'For all sprites' chosen, and click OK.",
+          "Do it again and call the second one lives.",
+          "Leave both ticks on, so players see the counters."
+         ]
         },
         {
          "icon": "🚩",
-         "title": "Set them at the flag",
-         "text": "On the Apple's when-flag script, before the forever loop: set score to 0, set lives to 3. Variables remember between games — without this, every new game inherits the old numbers."
+         "title": "At the flag",
+         "text": "Set score to 0, lives to 3.",
+         "how": [
+          "Click the Apple. Find its when-flag script.",
+          "Before the forever loop, add set score to 0.",
+          "Under it, add set lives to 3.",
+          "Variables remember old games, so every game must reset them."
+         ]
         },
         {
          "icon": "🔀",
-         "title": "The if/else — the big one",
-         "text": "Click Control (the gold category) and drag out the if/else block. It goes AFTER the fall loop, still INSIDE the forever (the STUDIO NOTE points at the spot). For the question, click Sensing, drag “touching …?” into the pointed slot, and pick Bowl from its little menu. The block has two gaps. In the IF part — the top gap: change score by 1 + start sound pop. In the ELSE part — the gap underneath: change lives by -1."
+         "title": "The big if/else",
+         "text": "Catch scores, miss costs a life.",
+         "how": [
+          "Click Control and drag out the if/else block.",
+          "Put it after the fall loop, still inside the forever.",
+          "The STUDIO NOTE points at the spot.",
+          "Click Sensing. Drag 'touching …?' into the pointed slot.",
+          "Pick Bowl from its little menu.",
+          "IF part, the top gap: change score by 1, then start sound pop.",
+          "ELSE part, the gap underneath: change lives by -1."
+         ]
         },
         {
          "icon": "🏁",
          "title": "The ending",
-         "text": "Inside the else, under 'change lives by -1': add an 'if' with Operators' (=) asking lives = 0. Inside it: say 'Game over!' for 2 seconds, then add 'stop all' from Control — the block that ends every running script. Notice the difference: (=) ASKS a question — 'is lives 0?' — while 'set' MAKES it that number. Asking never changes the number."
+         "text": "Zero lives ends the game.",
+         "how": [
+          "Inside the else, under change lives by -1, add an if.",
+          "Its question: Operators (=), asking lives = 0.",
+          "Inside it, say 'Game over!' for 2 seconds.",
+          "Then add 'stop all' from Control. It ends every script.",
+          "Remember: (=) only ASKS if lives is 0. Set would CHANGE lives."
+         ]
         },
         {
          "icon": "🎨",
          "title": "Make it yours",
-         "text": "New costumes for the apple and bowl, new backdrop, new sounds — from the Scratch libraries or draw your own. Re-skin everything; the brief only cares that it WORKS."
+         "text": "Re-skin everything. It only has to WORK.",
+         "how": [
+          "Pick new costumes for the apple and the bowl.",
+          "Add a new backdrop and new sounds.",
+          "Use the Scratch libraries, or draw your own."
+         ]
         }
        ],
        "img": "assets/img/l5/blueprint-catch.png",
        "imgAlt": "The finished Catch It if/else: touching Bowl scores and plays pop, else lives drops and game over fires at zero",
-       "imgCaption": "The finished landing check — yours should read like this."
+       "imgCaption": "The finished landing check — yours should read like this.",
+       "howLabel": "Show me how"
       },
       "criteria": [
        {
@@ -272,25 +306,25 @@
          },
          {
           "t": "It kept climbing on its own, without me catching anything.",
-          "fix": "Your change-score block is loose inside the fall loop, so it runs on every lap of the loop. It must live in the IF part — the top gap of the if/else — because a point should only exist when 'touching Bowl?' is true.",
-          "mech": "Drag change score by 1 INTO the IF part — the top gap of the if/else, right under the touching Bowl condition."
+          "fix": "Your change score block is loose in the fall loop. It runs on every lap. Move it into the IF part, the top gap. A point should only happen when 'touching Bowl?' is true.",
+          "mech": "Drag change score by 1 into the IF part. That is the top gap, under the touching Bowl question."
          },
          {
           "t": "Nothing — the score never moved.",
-          "fix": "Either the if/else isn't inside the forever (so it ran once, ages ago), or its condition isn't checking the Bowl. Both mean the catch is invisible to your code.",
-          "mech": "Check the if/else sits AFTER the fall loop, INSIDE the forever — and click its condition dropdown: it must say Bowl."
+          "fix": "Either the if/else is outside the forever, so it ran only once. Or its question is not checking the Bowl. Either way, your code never sees the catch.",
+          "mech": "Check the if/else sits after the fall loop, inside the forever. Then click its question's menu: it must say Bowl."
          },
          {
           "t": "The score went up even when I MISSED.",
-          "fix": "Scoring is happening outside the choice. If change score sits outside the if/else, every apple pays out, caught or dropped — selection means the game must CHOOSE.",
-          "mech": "Move change score by 1 into the IF part — the top gap — so only a real catch counts."
+          "fix": "Scoring is happening outside the choice. If change score sits outside the if/else, every apple scores. Caught or dropped, it pays out. Selection means the game must CHOOSE.",
+          "mech": "Move change score by 1 into the IF part, the top gap. Then only a real catch counts."
          }
         ]
        },
        {
         "id": "c2",
         "name": "A miss costs a life",
-        "test": "Click the green flag. DODGE on purpose: steer the bowl away from each apple and let THREE miss, watching the lives counter.",
+        "test": "Click the green flag. Steer away so THREE apples miss. Watch lives.",
         "ask": "What did lives do?",
         "outcomes": [
          {
@@ -299,23 +333,23 @@
          },
          {
           "t": "Lives never moved at all.",
-          "fix": "Nothing is handling the miss. That's exactly what ELSE is for: the ELSE part runs when the answer to 'touching Bowl?' is no. Also check the flag sets lives to 3 — a variable that's never set can't count down.",
+          "fix": "Nothing is handling the miss. That is what ELSE is for. The ELSE part runs when 'touching Bowl?' is no. Also check the flag sets lives to 3. A variable that is never set cannot count down.",
           "mech": "Drag change lives by -1 into the ELSE part — the gap underneath. Check set lives to 3 sits at the flag."
          },
          {
           "t": "I lost a life even when I CAUGHT the apple.",
-          "fix": "Your lives block is running whatever happens — it is sitting outside the else, or after the whole if/else. If/else runs exactly ONE part: a catch runs the IF part, a miss runs the ELSE part.",
-          "mech": "Move change lives by -1 so it sits INSIDE the ELSE part and nowhere else."
+          "fix": "Your lives block runs whatever happens. It sits outside the else, or after the whole if/else. If/else runs exactly ONE part. A catch runs the IF part; a miss runs the ELSE part.",
+          "mech": "Move change lives by -1 so it sits only inside the ELSE part."
          },
          {
           "t": "Lives went UP, or dropped by more than 1 at a time.",
-          "fix": "The number on the block is wrong. A miss costs exactly one life: change lives by -1 — minus one, once, in the ELSE part.",
+          "fix": "The number on the block is wrong. A miss costs exactly one life. Use change lives by -1, once, in the ELSE part.",
           "mech": "Click the number in change lives by and retype -1."
          },
          {
           "t": "Lives behaved — but the SCORE also changed while I was dodging.",
-          "fix": "That's not a lives bug — your scoring is loose. If change score sits outside the if/else, every apple pays out, dodged or not. Check 1's fix is your fix.",
-          "mech": "Move change score by 1 INSIDE the IF part — the top gap (see QA check 1) — then run this dodge test again."
+          "fix": "That's not a lives bug. Your scoring is loose. If change score sits outside the if/else, every apple pays out. Check 1's fix is your fix.",
+          "mech": "Move change score by 1 inside the IF part, the top gap. Then run this dodge test again."
          }
         ]
        },
@@ -331,12 +365,12 @@
          },
          {
           "t": "One apple changed BOTH — score up AND a life gone.",
-          "fix": "One of your blocks has escaped the if/else, so it runs no matter which branch fires. The whole point of selection: one situation, one branch, never both.",
-          "mech": "Both blocks live INSIDE the if/else — score in the IF part, lives in the ELSE part. Nothing score-ish after it."
+          "fix": "One of your blocks has escaped the if/else. It runs whichever part fires. That is the point of selection: one situation, one part, never both.",
+          "mech": "Both blocks live inside the if/else. Score goes in the IF part, lives in the ELSE part. Nothing about score goes after it."
          },
          {
           "t": "Sometimes an apple fell and NOTHING changed.",
-          "fix": "Your if/else probably runs once instead of every fall — it has slipped outside the forever loop. Every single apple needs its own landing check.",
+          "fix": "Your if/else has slipped outside the forever loop, so it runs only once. Every apple needs its own landing check.",
           "mech": "Drag the whole if/else INSIDE the forever, straight after the fall loop."
          }
         ]
@@ -353,18 +387,18 @@
          },
          {
           "t": "It said game over… but apples kept falling and scoring.",
-          "fix": "'Say' isn't 'stop'. After the message the game needs 'stop all' — the block that ends every running script.",
+          "fix": "'Say' is not 'stop'. After the message, the game needs 'stop all'. That block ends every running script.",
           "mech": "Inside if lives = 0, after the say block: add 'stop all' from Control."
          },
          {
           "t": "Nothing happened — lives just kept going: -1, -2, -3…",
-          "fix": "Nothing is checking lives. The check belongs right where a life is lost: inside the else, straight after change lives by -1 — the only moment lives can hit zero.",
+          "fix": "Nothing is checking lives. The check goes where a life is lost: inside the else. Put it straight after change lives by -1. That is the only moment lives can hit zero.",
           "mech": "Drag an if into the else under change lives by -1. Condition: Operators (=) with lives and 0."
          },
          {
           "t": "The game ended too early, before my lives ran out.",
           "fix": "Either lives never started at 3, or the condition isn't asking for exactly 0. Set lives to 3 at the flag; the check reads lives = 0.",
-          "mech": "Check the flag script sets lives to 3, and the if condition reads lives = 0 exactly."
+          "mech": "Check the flag script sets lives to 3. The if condition must read lives = 0 exactly."
          }
         ]
        }
@@ -377,41 +411,75 @@
      },
      "maze": {
       "name": "Maze Escape",
-      "noteWhere": "Click the Door in the sprite list — the STUDIO NOTE is stuck to its code.",
+      "noteWhere": "Find it on the Door sprite.",
       "file": "assets/games/maze-escape-starter.sb3",
       "blueprint": {
        "title": "The Maze Escape blueprint",
-       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are five steps, and step 4 is the big one. Before you start, run the kit and walk the beetle into a wall: it says “Ouch! Back to the start.” and puts you back at the beginning. That is an IF block already doing its job — the same family as the block you are about to build. The STUDIO NOTE on the Door marks the exact spot where yours goes.",
+       "intro": "Add the blocks in order. Step 4 is the big one, at the STUDIO NOTE.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the stars variable",
-         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type stars for the name, leave “For all sprites” chosen, and press OK. A counter appears on the stage — leave its tick on so players can watch it climb."
+         "text": "One counter, called stars.",
+         "how": [
+          "Click Variables, the orange category on the left.",
+          "Click 'Make a Variable'.",
+          "Type stars, leave 'For all sprites' chosen, and click OK.",
+          "Leave its tick on, so players watch it climb."
+         ]
         },
         {
          "icon": "🚩",
-         "title": "Set it at the flag",
-         "text": "On the Beetle's when-flag script, after point in direction: set stars to 0. Variables remember between games — no reset, no fresh start."
+         "title": "At the flag",
+         "text": "Set stars to 0.",
+         "how": [
+          "Click the Beetle. Find its when-flag script.",
+          "After point in direction, add set stars to 0.",
+          "Variables remember old games, so every game must reset them."
+         ]
         },
         {
          "icon": "⭐",
-         "title": "Count on ALL THREE stars",
-         "text": "Open Star1: its pickup script already plays the sound and hides — drop change stars by 1 between them. Now do the same on Star2 and Star3. Every sprite owns its scripts (the Lesson 4 rule): one edited star leaves two that still can't count."
+         "title": "Count ALL THREE stars",
+         "text": "Each star adds 1 when collected.",
+         "how": [
+          "Click Star1. Its script plays a sound, then hides.",
+          "Drop change stars by 1 between those two blocks.",
+          "Do the same on Star2 and Star3.",
+          "Each sprite owns its own scripts, so each star needs the block."
+         ]
         },
         {
          "icon": "🚪",
-         "title": "The door's if/else — the big one",
-         "text": "Open the Door. The STUDIO NOTE points at the gap between 'wait until touching Beetle' and 'wait until NOT touching Beetle'. Put an if/else there, with Operators' (=) asking stars = 3. The block has two gaps. In the IF part — the top gap: switch costume to door-open, say 'You escaped!' for 2 seconds, then 'stop all'. In the ELSE part — the gap underneath: say 'Locked! Collect all 3 stars.' for 2 seconds. Notice the difference: (=) ASKS a question — 'is stars 3?' — while 'set' MAKES it so. Asking never changes the number."
+         "title": "The door's if/else",
+         "text": "All 3 stars open the door.",
+         "how": [
+          "Walk into a wall first: an IF already sends you back.",
+          "Click the Door. The STUDIO NOTE marks a gap.",
+          "The gap sits between its two wait until blocks.",
+          "Put an if/else there, asking stars = 3 with Operators (=).",
+          "IF part, the top gap: switch costume to door-open.",
+          "Then say 'You escaped!' for 2 seconds, then add 'stop all'.",
+          "ELSE part, the gap underneath: say 'Locked! Collect all 3 stars.' for 2 seconds.",
+          "Remember: (=) only ASKS if stars is 3. Set would CHANGE stars."
+         ]
         },
         {
          "icon": "🎨",
          "title": "Make it yours",
-         "text": "Re-skin the beetle, the stars, the backdrop — haunted house? space station? You can even redraw the Maze sprite's walls in the paint editor (keep them solid — the bounce needs something to touch)."
+         "text": "Re-skin it. Keep the walls solid.",
+         "how": [
+          "Re-skin the beetle, the stars and the backdrop.",
+          "A haunted house or a space station? Your choice.",
+          "You can redraw the Maze walls in the paint editor.",
+          "Keep them solid: the bounce needs something to touch."
+         ]
         }
        ],
        "img": "assets/img/l5/blueprint-maze.png",
        "imgAlt": "The finished Door if/else: stars = 3 opens the door and stops the game, else the door stays locked",
-       "imgCaption": "The finished door check — yours should read like this."
+       "imgCaption": "The finished door check — yours should read like this.",
+       "howLabel": "Show me how"
       },
       "criteria": [
        {
@@ -426,18 +494,18 @@
          },
          {
           "t": "Stars vanished, but the counter stayed on 0.",
-          "fix": "The pickups still aren't counting. Each star needs change stars by 1 inside its touching-Beetle if — and check the counter exists: did you make the variable and set it to 0 at the flag?",
-          "mech": "Open each Star sprite: drag change stars by 1 into the if, between the sound and the hide."
+          "fix": "The stars still are not counting. Each star needs change stars by 1 inside its touching-Beetle if. Also check you made the stars variable. Is it set to 0 at the flag?",
+          "mech": "Open each Star sprite. Drag change stars by 1 into its if, between the sound and the hide."
          },
          {
           "t": "ONE star counted — the other two didn't.",
-          "fix": "You've edited one star and left its siblings unfinished. Every sprite owns its own scripts (the Lesson 4 rule) — the block you added to Star1 doesn't exist on Star2 or Star3 until you put it there.",
+          "fix": "You edited one star and left the other two unfinished. Every sprite owns its own scripts: the Lesson 4 rule. The block on Star1 does not exist on Star2 or Star3. You must add it there too.",
           "mech": "Click Star2 in the sprite list, add change stars by 1 to its if. Repeat for Star3."
          },
          {
           "t": "The counter jumped past 3, or double-counted a star.",
-          "fix": "Either stars never resets (set stars to 0 at the flag) or a star counts more than once — the hide must come straight after the count, so a collected star can't keep counting.",
-          "mech": "Check the Beetle's flag script sets stars to 0. Then check each star's script runs in this order: play the sound, change stars by 1, then hide."
+          "fix": "Either stars never resets, or a star counts more than once. Set stars to 0 at the flag. The hide must come straight after the count. Then a collected star cannot keep counting.",
+          "mech": "Check the Beetle's flag script sets stars to 0. Each star's script must go: play sound, change stars by 1, then hide."
          }
         ]
        },
@@ -453,13 +521,13 @@
          },
          {
           "t": "Nothing. The door ignored me completely.",
-          "fix": "The doorbell rings, but nobody answers: your if/else isn't in the door's script yet. The kit only SENSES the beetle — deciding what to do about it is your job.",
-          "mech": "Open the Door sprite: the if/else goes in the gap between the two wait-until blocks (the STUDIO NOTE marks it)."
+          "fix": "The doorbell rings, but nobody answers. Your if/else is not in the door's script yet. The kit only SENSES the beetle. Deciding what happens is your job.",
+          "mech": "Open the Door sprite. The if/else goes between the two wait until blocks. The STUDIO NOTE marks the gap."
          },
          {
           "t": "It let me escape with ZERO stars!",
-          "fix": "The two parts are swapped, or the condition is wrong. 'You escaped!' belongs in the IF part — the part that runs when stars = 3 is TRUE. The ELSE part is the door saying no.",
-          "mech": "Check the condition reads stars = 3, with 'You escaped!' in the IF part and 'Locked!' in the ELSE part."
+          "fix": "The two parts are swapped, or the condition is wrong. 'You escaped!' belongs in the IF part. That part runs when stars = 3 is TRUE. The ELSE part is the door saying no.",
+          "mech": "Check the condition reads stars = 3. 'You escaped!' goes in the IF part; 'Locked!' goes in the ELSE part."
          }
         ]
        },
@@ -475,12 +543,12 @@
          },
          {
           "t": "Still locked, even with all 3 stars collected.",
-          "fix": "The condition can't see your stars. It must compare the round orange stars VARIABLE with 3 — a typed word 'stars' is just text. And if QA check 1 isn't green yet, the counter may never have reached 3 at all.",
-          "mech": "In the (=) block: left side is the orange stars oval dragged from Variables, right side is 3."
+          "fix": "The condition cannot see your stars. It must compare the round orange stars VARIABLE with 3. A typed word 'stars' is just text. Is QA check 1 green yet? If not, the counter may never reach 3.",
+          "mech": "In the (=) block, the left side is the orange stars oval from Variables. The right side is 3."
          },
          {
           "t": "It said 'You escaped!' but the game kept running behind the message.",
-          "fix": "An escape should end the run — that's the END part of the brief. After the say, the IF part needs 'stop all' — the block that ends every running script.",
+          "fix": "An escape should end the game: that is the END part of the brief. After the say, the IF part needs 'stop all'. That block ends every running script.",
           "mech": "Add 'stop all' from Control, right after 'You escaped!' inside the IF part."
          }
         ]
@@ -497,13 +565,13 @@
          },
          {
           "t": "I walked straight through a wall like a ghost.",
-          "fix": "Somewhere in the sprint, the wall rule got broken — a studio re-tests EVERYTHING before shipping, because new code can break old code. Restore the Beetle's wall script: it's a working if you can read.",
-          "mech": "The Beetle's second flag script must read: forever, and inside it, if touching Maze then go to x -165 y 0."
+          "fix": "Something in the sprint broke the wall rule. Studios re-test EVERYTHING before shipping, because new code can break old code. Put back the Beetle's wall script.",
+          "mech": "Check the Beetle's second flag script. Inside its forever: if touching Maze, then go to x -165 y 0."
          },
          {
           "t": "The wall bounced me somewhere strange, not the start.",
-          "fix": "The go-to inside the wall rule has drifted. It should send the beetle to the exact start position — the same x and y the flag script uses.",
-          "mech": "Compare the wall rule's go-to with the flag script's go-to: both read x -165, y 0."
+          "fix": "The go-to in the wall rule has drifted. It should send the beetle to the exact start. That is the same x and y the flag script uses.",
+          "mech": "Compare the wall rule's go-to with the flag script's go-to. Both should read x -165, y 0."
          }
         ]
        }
@@ -516,46 +584,86 @@
      },
      "quiz": {
       "name": "Quiz Master",
-      "noteWhere": "Click the True Tile in the sprite list — the STUDIO NOTE is stuck to its code, and a matching note sits on the False Tile.",
+      "noteWhere": "Click True Tile, then False Tile.",
       "file": "assets/games/quiz-master-starter.sb3",
       "blueprint": {
        "title": "The Quiz Master blueprint",
-       "intro": "This is your BLUEPRINT — a builder's plan. It lists the exact blocks your game needs, in the order you add them. There are six steps, and the last one is the best: you write the quiz questions yourself. Two variables are already in the kit — q and answer. They are the host's own wiring, so leave them alone. The only new one your studio makes is the score. The STUDIO NOTE on each answer tile marks the exact spot where your if/else goes.",
+       "intro": "Add the blocks in order. Step 3 is the big one, at the STUDIO NOTE.",
        "steps": [
         {
          "icon": "🧮",
          "title": "Make the score",
-         "text": "Down the left of the Scratch window is a list of coloured categories — Motion, Looks, Sound and the rest. Click Variables (the orange one), then click the button that says “Make a Variable”. Type score for the name, leave “For all sprites” chosen, and press OK. A counter appears on the stage — the audience needs to see it, so leave its tick on."
+         "text": "One new variable, called score.",
+         "how": [
+          "Click Variables, the orange category on the left.",
+          "Click 'Make a Variable'.",
+          "Type score, leave 'For all sprites' chosen, and click OK.",
+          "Leave its tick on, so the audience sees it.",
+          "The kit already has q and answer. Leave those two alone."
+         ]
         },
         {
          "icon": "🚩",
-         "title": "Set it at the flag",
-         "text": "On the host's when-flag script, before question 1: set score to 0. Variables remember between games — skip this and every new contestant inherits the last one's points."
+         "title": "At the flag",
+         "text": "Set score to 0.",
+         "how": [
+          "Find the host's when-flag script.",
+          "Before question 1, add set score to 0.",
+          "Variables remember old games, so every game must reset them."
+         ]
         },
         {
          "icon": "🔀",
-         "title": "The True tile's if/else — the big one",
-         "text": "Open the True Tile. Your if/else REPLACES the purple say block (the one that says “I don’t know how to check answers yet!”) — the STUDIO NOTE marks it. The condition asks: answer = true. The block has two gaps. In the IF part — the top gap: say 'Correct!' for 1 second, then change score by 1. In the ELSE part — the gap underneath: say 'Not this time!' for 1 second. Keep 'broadcast next' underneath — it asks for the next question. Notice the difference: (=) ASKS a question — 'is the answer true?' — while 'set' MAKES it so. Asking never changes anything."
+         "title": "The True tile",
+         "text": "Its if/else scores a right answer.",
+         "how": [
+          "Click the True Tile. The STUDIO NOTE marks a purple say block.",
+          "Your if/else REPLACES that say block.",
+          "Its question: answer = true.",
+          "IF part, the top gap: say 'Correct!' for 1 second.",
+          "Then change score by 1.",
+          "ELSE part, the gap underneath: say 'Not this time!' for 1 second.",
+          "Keep 'broadcast next' underneath. It asks for the next question.",
+          "Remember: (=) only ASKS if the answer is true. Set would CHANGE the answer."
+         ]
         },
         {
          "icon": "🔁",
          "title": "Now the False tile",
-         "text": "Same job, one twist: this tile is right when the answer is FALSE — its condition reads answer = false. The praise and the point go in the IF part, 'Not this time!' goes in the ELSE part, and broadcast next stays at the bottom."
+         "text": "Same job, but right means FALSE.",
+         "how": [
+          "Its question reads answer = false.",
+          "The praise and the point go in the IF part.",
+          "'Not this time!' goes in the ELSE part.",
+          "Broadcast next stays at the bottom."
+         ]
         },
         {
          "icon": "📣",
          "title": "The finale",
-         "text": "In the host's final message, swap the plain say for Operators' join: first slot 'That's the quiz! You scored ', second slot the orange score variable. Now the show ends with YOUR contestant's number in lights."
+         "text": "The host announces the real score.",
+         "how": [
+          "Find the host's final say block.",
+          "Swap its words for a join block from Operators.",
+          "Slot 1: type 'That's the quiz! You scored ' with a space at the end.",
+          "Slot 2: drag in the orange score variable."
+         ]
         },
         {
          "icon": "🎨",
          "title": "Write YOUR quiz",
-         "text": "Rewrite the three questions in the host's scripts on any topic you like — and set each question's answer to true or false to match. Wrong answer settings are the quizmaster's own bug: QA will find it."
+         "text": "Three questions, any topic, true or false.",
+         "how": [
+          "Rewrite the three questions in the host's scripts.",
+          "Set each answer to true or false to match.",
+          "A wrong answer setting is your own bug. QA will find it."
+         ]
         }
        ],
        "img": "assets/img/l5/blueprint-quiz.png",
        "imgAlt": "The finished True Tile if/else: answer = true scores and praises, else Not this time",
-       "imgCaption": "The finished tile check — yours should read like this."
+       "imgCaption": "The finished tile check — yours should read like this.",
+       "howLabel": "Show me how"
       },
       "criteria": [
        {
@@ -570,24 +678,24 @@
          },
          {
           "t": "It said 'Correct!' but the score never moved.",
-          "fix": "The praise runs but the points don't — change score by 1 must sit in the SAME IF part as the 'Correct!' say. If it is below the if/else, it never met the choice.",
-          "mech": "Drag change score by 1 into the IF part — the top gap — next to say 'Correct!'."
+          "fix": "The praise runs, but the point does not. Change score by 1 must sit in the SAME IF part as 'Correct!'. Below the if/else, it never meets the choice.",
+          "mech": "Drag change score by 1 into the IF part, the top gap. Put it next to say 'Correct!'."
          },
          {
           "t": "Nothing at all — no reply, no point.",
-          "fix": "The tile still can't check answers — the if/else hasn't replaced the purple say block yet, or the whole script lost its broadcast. The tile needs: check the answer, respond, THEN broadcast next.",
-          "mech": "Open the tile: if/else replaces the purple say block (STUDIO NOTE marks it); broadcast next stays at the bottom."
+          "fix": "The tile still cannot check answers. Maybe the if/else has not replaced the purple say block yet. Or the script lost its broadcast. The tile must check the answer, reply, THEN broadcast next.",
+          "mech": "Open the tile. The if/else replaces the purple say block the STUDIO NOTE marks. Broadcast next stays at the bottom."
          },
          {
           "t": "It said 'Not this time!' to a RIGHT answer.",
-          "fix": "The tile is checking the wrong word. The True tile asks answer = true — a misspelling ('ture'), a stray space, or the False tile's word in the True tile breaks the match every time.",
-          "mech": "Click the (=) block's text slot and retype: true — no stray spaces or extra characters."
+          "fix": "The tile is checking the wrong word. The True tile asks answer = true. A typo like 'ture' breaks the match every time. So does a stray space, or the False tile's word.",
+          "mech": "Click the (=) block's text slot. Retype: true, with no stray spaces or extra characters."
          }
         ]
        },
        {
         "id": "c2",
-        "name": "Wrong answers don't",
+        "name": "Wrong answers don't score",
         "test": "Fresh green flag. Answer question 1 WRONGLY on purpose. Watch the score AND what happens next.",
         "ask": "What happened?",
         "outcomes": [
@@ -597,13 +705,13 @@
          },
          {
           "t": "A wrong answer still scored a point!",
-          "fix": "Points are leaking through the choice. If change score sits outside the if/else — or in the ELSE part — every click pays out. Points live ONLY in the IF part. Check BOTH tiles.",
+          "fix": "Points are leaking through the choice. Change score may sit outside the if/else, or in the ELSE part. Then every click scores. Points live ONLY in the IF part. Check BOTH tiles.",
           "mech": "On each tile: change score by 1 belongs inside the IF part, nowhere else."
          },
          {
           "t": "The quiz got stuck — no reply ever came, or no next question.",
-          "fix": "The broadcast has gone missing. Right or wrong, the tile must still ask for the next question — 'broadcast next' runs AFTER the if/else, every click.",
-          "mech": "Put broadcast next back at the bottom of the tile's click script, below the if/else."
+          "fix": "The broadcast has gone missing. Right or wrong, the tile must still ask for the next question. 'Broadcast next' runs after the if/else, on every click.",
+          "mech": "Put broadcast next back at the bottom of the tile's click script. It goes below the if/else."
          }
         ]
        },
@@ -619,12 +727,12 @@
          },
          {
           "t": "There's no score on the stage at all.",
-          "fix": "The variable exists, but it's invisible — and a quiz show without a scoreboard is just a chat. The checkbox beside the variable puts it on stage.",
+          "fix": "The variable exists, but it is hidden. A quiz show needs a scoreboard. The checkbox beside the variable puts it on stage.",
           "mech": "In the Variables group, tick the checkbox beside score."
          },
          {
           "t": "It started from last game's total instead of 0.",
-          "fix": "Variables remember! Without 'set score to 0' at the flag, every new game starts with the last game's points still in the box — the sneakiest bug in the studio.",
+          "fix": "Variables remember! Without 'set score to 0' at the flag, old points carry over. It is the sneakiest bug in the studio.",
           "mech": "Add set score to 0 to the host's when-flag script, before question 1."
          }
         ]
@@ -632,7 +740,7 @@
        {
         "id": "c4",
         "name": "A proper finale",
-        "test": "Answer all three questions, then watch what happens after question 3 — and try one extra click.",
+        "test": "Answer all three questions. Watch what happens next. Then try one extra click.",
         "ask": "How did the show end?",
         "outcomes": [
          {
@@ -641,12 +749,12 @@
          },
          {
           "t": "It ended with a plain 'That's the quiz!' — no score in sight.",
-          "fix": "The finale hasn't been upgraded. The join block glues your words and the live score into one announcement — that's the difference between an ending and a FINALE.",
+          "fix": "The finale has not been upgraded yet. The join block glues your words and the live score together. That turns an ending into a FINALE.",
           "mech": "Click Operators and drag out the join block. Slot 1: 'That's the quiz! You scored '. Slot 2: the orange score variable. Drop the join into the final say."
          },
          {
           "t": "It announced 'You scored score' — the word, not the number!",
-          "fix": "The word 'score' got typed where the VARIABLE should sit. The typed word is just text; the orange oval from Variables is the live number.",
+          "fix": "The word 'score' was typed where the VARIABLE should go. A typed word is just text. The orange oval from Variables is the live number.",
           "mech": "Drag the round orange score block into join's second slot, replacing the typed word."
          }
         ]
@@ -659,7 +767,7 @@
       }
      }
     },
-    "help": "The desk works top to bottom. THE KIT gets your game open in Scratch. THE BLUEPRINT is your builder's plan — the exact blocks your contract needs, in order, and the yellow STUDIO NOTE in the code marks the spot. THE QA DESK holds four tests: read each one, try it in Scratch, then click the answer that matches what really happened. A wrong result tells you exactly what to fix. The READY FOR GALLERY button lights up when all four tests are green.",
+    "help": "Work down the desk from the top. THE KIT gives you your game to open in Scratch. Download the kit and open the Scratch editor. Then click File, then 'Load from your computer'. Click the sprite the card names to find its STUDIO NOTE. THE BLUEPRINT lists the blocks to add, in order. Click 'Show me how' on any step for the exact clicks. THE QA DESK holds four tests. Try each one in Scratch, then click what really happened. A wrong result shows you exactly what to fix. Change the look as much as you like. A game that LOOKS finished may not WORK. READY FOR GALLERY lights up only when all four tests are green. Fix a test you got wrong, and you earn a FOUND BY QA badge.",
     "masterclassAlt": {
      "title": "The idea: sequence, then selection",
      "button": "The idea — watch the first half again",
@@ -695,11 +803,11 @@
      "tryAgain": "try again.",
      "noConnection": "No connection - try again."
     },
-    "qaLockedNote": "These four checks wake up the moment you tick step 1 — the kit open in Scratch, with its STUDIO NOTE found. There is nothing to test until your game is running. Your blueprint in step 2 is open right now: read it and start building.",
+    "qaLockedNote": "Tick step 1 to unlock them.",
     "zoneWhen": {
-     "kit": "Start here. Nothing else works until your game is open in Scratch.",
-     "blueprint": "Open this while you build. It stays here all lesson — read it as often as you need.",
-     "qa": "Run these four tests once your game does something. They are how you know it really works."
+     "kit": "Start here.",
+     "blueprint": "Keep this open while you build.",
+     "qa": "Test once your game runs."
     },
     "job": "Build your game, working down the desk from the top.",
     "showMe": [
@@ -722,7 +830,7 @@
    },
    "config": {
     "introTitle": "Press Night",
-    "intro": "Half the class shows, half plays. Then swap. Each press pass is one review.",
+    "intro": "Half shows, half plays, then swap. Each press pass lets you review one game.",
     "quota": 2,
     "stems": {
      "like": "I like…",
@@ -754,7 +862,7 @@
     },
     "wrap": {
      "title": "Press Night is done",
-     "note": "No scores. No rankings. Real games, real reviews, real ideas for version 2 — that is how studios grow. (Reviews that arrive after you finish won't pop up tonight; they will be waiting next time you open this lesson.) Want to keep building at home? In Scratch, open the File menu and choose 'Save to your computer'."
+     "note": "No scores. No rankings. Real games, real reviews, real ideas for version 2. Late reviews will be waiting next time you open this lesson. To keep building at home, click File in Scratch, then 'Save to your computer'."
     },
     "closed": {
      "title": "Press Night has closed",
@@ -826,7 +934,7 @@
     "foundText": "The website found **{name}** in your DT Work folder",
     "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)",
     "skipLabel": "Carry on without shipping",
-    "skipText": "If the check still will not run, you can carry on without shipping your game. Tell your teacher in class — they can look in your Drive with you.",
+    "skipText": "If the check will not run, carry on without shipping your game. Tell your teacher in class — they can look in your Drive with you.",
     "job": "Save your game into your Google Drive, then check it.",
     "showMe": [
      "In Scratch, click File, then Save to your computer.",

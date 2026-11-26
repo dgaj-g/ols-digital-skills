@@ -12,7 +12,7 @@
    ],
    "captions": "High scores · Match score · Step count",
    "says": "the arcade, the GAA scoreboard and Lesson 2’s trackers",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "chunkHash": "10fcfb9fa95e",
    "px": "1440x530"
   },
@@ -26,7 +26,7 @@
    "ring": null,
    "inset": null,
    "says": "the named box with its value arriving, from the film itself",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "px": "1440x768"
   },
   "rung1": {
@@ -38,9 +38,9 @@
    "contentAnchor": null,
    "cardText": "▶ NOW SHOWING · ① WATCH: PART 2 — MAKE THE VARIABLE · About 2 minutes. · ↻ Watch this part again",
    "says": "a rung’s own slice of the film, sitting on the rung card",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "crop": null,
-   "chunkHash": "5dddacfd3834",
+   "chunkHash": "6ea3d887b5b1",
    "px": "1212x912"
   },
   "rig": {
@@ -52,9 +52,9 @@
    "contentAnchor": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
    "cardText": "REGISTER YOUR RIG · Register your rig · Your rig is your scoreboard program. Save it to Drive before the Rally. · Show me how · ⬇️ · Download · Press Download in MakeCode. You get scoreboard.hex. · 🗄️ · Open your Drive · drive.google.com → School → DT Work · 🏁 · Drag it in · Drag scoreboard.hex into DT Work. · Check my Drive",
    "says": "the Register Your Rig check-in card",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "crop": null,
-   "chunkHash": "7074f4210811",
+   "chunkHash": "b7a10b9e0190",
    "px": "1332x1164"
   },
   "rally": {
@@ -66,9 +66,9 @@
    "contentAnchor": "Referee: this is the player's screen. Start when ready.",
    "cardText": "GO 1 OF 2 · 5 · Referee: this is the player's screen. Start when ready. · Start the 5 seconds",
    "says": "the Rally timer before it is started — whose screen it is, and the start button",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "crop": null,
-   "chunkHash": "ed80a6954254",
+   "chunkHash": "cee321ace6d8",
    "px": "1292x518"
   },
   "selfeval": {
@@ -80,7 +80,7 @@
    "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "cardText": "How did it go? · I can create a variable and change its value. · ✓ I can · ≈ Getting there · ✗ Not yet · I can check the score is right over several rounds. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain my score variable in my own words. · ✓ I can · ≈ Getting there · ✗ Not yet · I can say how forever loops differ from events. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt",
    "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
-   "contentVersion": "2026-11-26r",
+   "contentVersion": "2026-11-26s",
    "crop": {
     "to": ".se-row .se-chips",
     "keepFrac": 0.196,
