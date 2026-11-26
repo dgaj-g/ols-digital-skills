@@ -102,7 +102,12 @@
       "label": "Inside her head"
      }
     ],
-    "help": "Press play. You can watch the film again as many times as you like."
+    "help": "Press play. You can watch the film again as many times as you like.",
+    "job": "Watch the short film of Bernadette thinking.",
+    "showMe": [
+     "Click play on the film.",
+     "When it ends, click Done watching."
+    ]
    }
   },
   {
@@ -125,7 +130,13 @@
     "help": "Click each step in the order it happens. Then check.",
     "doneText": "Yes. Those four steps go round and round.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this step back"
+    "takeBackLabel": "Put this step back",
+    "job": "Put the four steps in the order they happen.",
+    "showMe": [
+     "Click Ready.",
+     "Click each step in the order it happens.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -211,7 +222,13 @@
       ]
      }
     ],
-    "help": "Answer on your own. Your teacher sees how the class did."
+    "help": "Answer on your own. Your teacher sees how the class did.",
+    "job": "Answer three marked questions on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Next. On the last question, click Finish."
+    ]
    }
   },
   {
@@ -235,7 +252,13 @@
     "help": "Click each step in the order it happens. Then check.",
     "doneText": "Yes. You put the four steps in the right order.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this step back"
+    "takeBackLabel": "Put this step back",
+    "job": "Put the four processor steps in order.",
+    "showMe": [
+     "Click Ready.",
+     "Click each step in the order the processor does it.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -251,7 +274,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the button under each sentence that says how today went. The comment box goes to your teacher only."
+    "help": "Click the button under each sentence that says how today went. The comment box goes to your teacher only.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],

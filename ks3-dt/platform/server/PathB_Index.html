@@ -717,12 +717,13 @@ ol { text-align: left; }
 .tour-tiles .tile .tile-title { font-size: 0.9rem; }
 .tour-tiles .tile .tile-state { position: static; align-self: flex-start; margin-top: 5px; }
 .tour-tiles .tile.is-locked { opacity: 0.55; }
+/* 26 Nov: the tour's picture of the help button matches the real one, beside "Your job now" */
 .tour-beacon {
-  position: absolute; right: 16px; bottom: 14px;
-  width: 38px; height: 38px; display: grid; place-items: center;
-  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--accent-ink);
-  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; border-radius: 50%;
-  box-shadow: var(--glow-gold);
+  position: absolute; right: 20px; top: 20px;
+  padding: 6px 15px; border-radius: 999px; white-space: nowrap;
+  background: #2FBF74; color: #06231b;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; line-height: 1.2;
+  box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35);
 }
 .tour-spot { outline: 3px solid var(--gold-hi); outline-offset: 4px; border-radius: var(--r-md); animation: spotPulse 1.4s ease-in-out infinite; }
 .tour-callout {
@@ -1044,6 +1045,59 @@ ol { text-align: left; }
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .help-beacon:hover { transform: scale(1.05); box-shadow: 0 14px 34px rgba(47, 191, 116, 0.55); }
+
+/* ============ show me: the job line and its help (task 10, 26 Nov 2026) ============ */
+/* The J3 L7 standard on every part the platform draws: "Your job now:" with the green button beside
+   it, a bar of steps that opens UNDER the line and pushes her work down (never covers it), and a
+   green ring with a tag on the thing to use next. The corner button stands down while the line shows. */
+body.sm-on .help-beacon { display: none; }
+.job-wrap { position: sticky; top: 0; z-index: 40; margin: 0 0 14px; }
+.job-strip {
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px;
+  background: rgba(13, 26, 52, 0.97); border: 1px solid var(--line-d); border-bottom: 3px solid #2FBF74;
+  border-radius: var(--r-md); backdrop-filter: blur(12px); box-shadow: var(--shadow-soft);
+}
+.job-line { flex: 1 1 auto; min-width: 0; margin: 0; color: var(--text-d); font-size: 1.02rem; font-weight: 600; line-height: 1.35; }
+.job-lead { color: #7EE2A8; font-family: var(--font-display); font-weight: 700; }
+.job-help {
+  flex: 0 0 auto; min-height: 42px; padding: 8px 18px; border-radius: 999px; border: none; cursor: pointer;
+  background: #2FBF74; color: #06231b; white-space: nowrap;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35); transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.job-help:hover { transform: scale(1.04); box-shadow: 0 8px 22px rgba(47, 191, 116, 0.5); }
+.job-help[aria-expanded="true"] { background: #7EE2A8; }
+.job-help.nudge { animation: sm-nudge 1.1s ease-in-out infinite; }
+@keyframes sm-nudge {
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35); }
+  50% { transform: scale(1.09); box-shadow: 0 0 0 8px rgba(47, 191, 116, 0.28), 0 6px 18px rgba(47, 191, 116, 0.5); }
+}
+.showme-bar {
+  display: flex; align-items: flex-end; gap: 16px; margin-top: 8px; padding: 12px 14px 12px 18px;
+  background: #F1FBF5; color: var(--ink); border: 2px solid #2FBF74; border-radius: var(--r-md);
+  box-shadow: var(--shadow-soft);
+}
+.showme-bar[hidden] { display: none; }
+.showme-text { flex: 1 1 auto; min-width: 0; }
+.showme-kicker { margin: 0 0 4px; color: #1B7A47; font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+.showme-steps { margin: 0 0 6px; padding-left: 24px; font-size: 1.02rem; font-weight: 600; line-height: 1.45; }
+.showme-steps li { margin: 2px 0; }
+.showme-stuck { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+.showme-close {
+  flex: 0 0 auto; min-height: 40px; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  background: #fff; color: #1B7A47; border: 2px solid #2FBF74; white-space: nowrap;
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; line-height: 1.2;
+}
+.showme-close:hover { background: #E1F6EB; }
+.sm-ring { outline: 3px solid #2FBF74 !important; outline-offset: 3px; animation: sm-ring 1.4s ease-in-out infinite; }
+@keyframes sm-ring { 0%, 100% { outline-color: #2FBF74; } 50% { outline-color: rgba(47, 191, 116, 0.35); } }
+.sm-tag {
+  position: fixed; z-index: 90; padding: 4px 10px; border-radius: 8px; pointer-events: none; white-space: nowrap;
+  background: #2FBF74; color: #06231b; font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 6px 16px rgba(3, 8, 20, 0.35);
+}
+.sm-tag[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .job-help.nudge, .sm-ring { animation: none; } }
 .help-list { text-align: left; color: var(--ink); padding-left: 20px; }
 .help-list li { margin-bottom: 8px; }
 .help-text { text-align: left; color: var(--ink); line-height: 1.55; margin: 0; }
@@ -3692,6 +3746,14 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    floor between two interactive controls, with room to spare) */
 .pyrun-exit-row { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line-l); }
 .pyrun-card .pyrun-exit-row { margin-top: 20px; }
+/* the question extras zone (26 Nov 2026): inside a job, both ways out sit on a
+   plate of their own under the question card, so they keep the card's ink and
+   ground on every skin and never read as one of the answers */
+.xj-rowcard { margin-top: 12px; padding: 4px 20px 16px; max-width: 760px; }
+.xj-rowcard .pyrun-exit-row { margin-top: 0; }
+.xj-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.pyrun-job.done { border-color: rgba(46, 158, 99, 0.5); }
+.xj-kicker { display: block; margin-bottom: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
   .snap-block.snapped, .snap-py.snapped, .snap-block.bounce, .snap-py.bounce { animation: none; }
@@ -4822,10 +4884,28 @@ window.OLS_ASSET_BASE = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/plat
   </div>
   <div class="review-banner" id="review-banner" hidden><span class="review-banner-tag">&#10003; ALREADY COMPLETED</span><span class="review-banner-text">You are looking back through a lesson you have finished. Nothing here is marked, nothing is saved, and nothing you already earned can change.</span></div>
   <div class="chunk-rail" id="chunk-rail"></div>
+  <!-- task 10, 26 Nov 2026: the J3 L7 help standard on every part the platform draws -->
+  <div class="job-wrap" id="job-wrap" hidden>
+    <div class="job-strip" id="job-strip">
+      <p class="job-line"><span class="job-lead">Your job now:</span> <span id="job-text"></span></p>
+      <button id="job-help" class="job-help" type="button" aria-expanded="false" aria-controls="showme-bar">Stuck? Show me</button>
+    </div>
+    <div class="showme-bar" id="showme-bar" role="region" aria-label="Help for this screen" hidden>
+      <div class="showme-text">
+        <p class="showme-kicker">Do this</p>
+        <ol class="showme-steps" id="showme-steps"></ol>
+        <p class="showme-stuck">Still stuck? Ask the person beside you. Then put your hand up.</p>
+      </div>
+      <button id="showme-close" class="showme-close" type="button">Got it</button>
+    </div>
+  </div>
+  <!-- the help words for the two parts the platform draws itself (the Do-Now and the catch-up card) -->
+  
   <div class="chunk-host" id="chunk-host"></div>
 </main>
 
 <!-- Help beacon -->
+<span class="sm-tag" id="sm-tag" aria-hidden="true" hidden></span>
 <button id="help-beacon" class="help-beacon" type="button" data-tour="help" hidden>Stuck? Show me</button>
 <div class="ols-modal" id="help-modal" hidden>
   <div class="ols-modal-card ols-modal-sm">
@@ -5638,8 +5718,237 @@ window.OLS_TRANSPORT = {
     }
   }
 
+  /* ---------------- show me: the job line and its help (task 10, 26 Nov 2026) ----------------
+     His words, 25 Nov: "there absolutely MUST have more help available and clarity for pupils who
+     might be stuck all to easily". The J3 L7 standard, now on every part the platform draws itself:
+     a "Your job now:" line, a green "Stuck? Show me" beside it that opens a short bar of steps UNDER
+     the line (never over her work), and a green ring with a short tag on the thing to use next. On
+     a question every option is ringed, never only the right one. 20 s with no click or key pulses
+     the button; 40 s shows the ring by itself. Closing touches nothing she has done. Every sentence
+     comes from the part's own content (job, showMe; soloJob/soloShowMe on a catch-up) or, for the
+     platform's own Do-Now and catch-up cards, from index.html. A part with no job line (the hour
+     lessons that run in their own frame) keeps the corner button exactly as before. */
+  var ShowMe = (function () {
+    var cur = null, open = false, idleRing = false, last = Date.now(), idleMs = 20000, lastFirst = null, lastEls = null, builtin = null;
+    var TAG = { press: 'Click this', choose: 'Choose one', type: 'Type here', play: 'Click play', drag: 'Move these', click: 'Click this', line: 'Click a line', read: 'Read this' };
+    var INTRO = '.card.intro-card button.primary-btn';
+    /* what to ring, most-advanced state first: [selector, tag, ring all?, test]. Mapped from engines.js
+       (WARMUP_TRIM_25NOV/ENGINE_RINGS.md); anything not listed falls through to the shared tail. */
+    var RINGS = {
+      briefing: [['.dossier-cta', 'press'], ['.dossier-film video', 'play', 0, 'unplayed'], ['.dossier-lines', 'read']],
+      video: [['.video-card video', 'play', 0, 'unplayed'], ['.video-card .primary-btn', 'press'], ['.video-soon .primary-btn', 'press']],
+      ladder: [['.confirm-step', 'press'], ['.ladder-card .rung-worked', 'press'], ['.rung-actions .primary-btn', 'press']],
+      artifact: [['.af-card .rung-actions .primary-btn', 'press'], ['.af-demo-btn', 'press']],
+      parsons: [['.pt-list .parsons-block', 'drag', 1], ['.parsons-check', 'press']],
+      steps: [['.step-action .confirm-step', 'press'], ['input.sim-user', 'type', 0, 'empty']],
+      selfeval: [['.se-chips', 'choose', 'row:.se-chip:.se-chip.on'], ['.se-submit', 'press']],
+      compass: [['.cmp-row', 'choose', 'row:.cmp-side:.cmp-side.on'], ['.cmp-settle', 'press']],
+      tour: [['.tour-callout .primary-btn', 'press']],
+      vault: [['.vault-tray .vault-file', 'drag', 1]],
+      diagnostic: [['.seal-card .primary-btn', 'press']],
+      codename: [['#cn-keep', 'press'], ['.oath-sign', 'press'], ['.belonging-card .primary-btn', 'press']],
+      tournament: [['.rally-transmit', 'press'], ['.rally-confirm', 'press'], ['.rally-step', 'press'], ['.rally-timer-btn', 'press']],
+      casework: [['.case-close-btn', 'press'], ['textarea.case-log-input', 'type', 0, 'empty'], ['.case-file:not(.sealed):not(.closed)', 'click', 1]],
+      studio: [['#std-name', 'type', 0, 'empty'], ['.std-sign', 'press'], ['.std-enter', 'press'], ['.std-kit-confirm', 'press'],
+        ['.std-qa-outcomes .std-outcome', 'choose', 1], ['.std-qa-row:not(.pass) .std-qa-run', 'press'], ['.std-ready-btn.lit', 'press'],
+        ['#std-gt', 'type', 0, 'empty'], ['#std-gh', 'type', 0, 'empty'], ['.std-doors button', 'press'], ['.std-continue', 'press']],
+      gallery: [['textarea.gal-stem-input', 'type', 0, 'empty'], ['.gal-v2-save', 'press'], ['.gal-file-btn', 'press'], ['.gal-marquee-card.clickable', 'click', 1]],
+      drivecheck: [['.dc-card .primary-btn', 'press']],
+      /* the question extras zone (26 Nov): on its list, the jobs not done yet; inside a job the shared tail
+         rings the answers and Next, as on every quiz */
+      items: [['.xj-job:not(.done)', 'choose', 1]],
+      inspect: [['.insp-report .insp-next', 'press'], ['.insp-file', 'press'], ['.insp-zone', 'click', 1]],
+      snap: [['.snap-done .primary-btn', 'press'], ['.snap-py', 'choose', 1, 'picked:.snap-block'], ['.snap-block', 'click', 1]],
+      pyrun: [['.pyrun-verdict.is-matched .primary-btn', 'press'], ['#pyx-reply', 'type', 0, 'empty'], ['.pyx-send', 'press'],
+        ['.pyt-list .pyrun-line', 'line', 1], ['.pyrun-run', 'press'], ['.pyrun-job', 'click', 1]],
+      chatswap: [['.swap-done', 'press'], ['.swap-go', 'press'], ['.swap-send-report', 'press'], ['.swap-report-btn', 'press']],
+      relay: [['#pyx-reply', 'type', 0, 'empty'], ['.pyx-send', 'press']],
+      duel: [['.duel-next', 'press'], ['.duel-done', 'press'], ['.duel-lock', 'press', 0, 'chosen:.duel-card .duel-option'], ['.duel-card .duel-option', 'choose', 1]]
+    };
+    var TAIL = [[INTRO, 'press'], ['.pair-wait .pw-own', 'press'], ['.q-feedback .primary-btn', 'press'], ['.q-opt', 'choose', 1],
+      ['input[type="text"], input:not([type]), textarea', 'type', 0, 'empty'], ['button.primary-btn, .btn-primary', 'press']];
+    function builtins() {
+      if (builtin) return builtin;
+      try { builtin = JSON.parse((document.getElementById('sm-builtin') || {}).textContent || '{}'); } catch (e) { builtin = {}; }
+      return builtin;
+    }
+    function wordsFor(ch) {
+      if (!ch) return null;
+      var c = ch.config || {}, b = builtins()[ch.engine] || {}, solo = !!App.state.catchup;
+      var job = (solo && c.soloJob) || c.job || (solo && b.soloJob) || b.job || '';
+      var steps = (solo && c.soloShowMe) || c.showMe || (solo && b.soloShowMe) || b.showMe || [];
+      return (job && steps.length) ? { job: String(job), steps: steps.map(String), ring: c.ring || null } : null;
+    }
+    function usable(e) {
+      if (!e || e.disabled || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('locked')) return false;
+      if (!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)) return false;
+      var cs = global.getComputedStyle(e);
+      return cs.visibility !== 'hidden' && cs.display !== 'none';
+    }
+    function pick(host, rule) {
+      var sel = rule[0], all = rule[2], test = rule[3] || '';
+      var els = [].slice.call(host.querySelectorAll(sel)).filter(usable);
+      if (!els.length) return null;
+      if (typeof all === 'string' && all.indexOf('row:') === 0) {      /* the first row with nothing chosen: all of its choices */
+        var p = all.split(':'), row = null;
+        els.some(function (r) { if (!r.querySelector(p[2])) { row = r; return true; } return false; });
+        if (!row) return null;
+        var opts = [].slice.call(row.querySelectorAll(p[1])).filter(usable);
+        return opts.length ? opts : null;
+      }
+      if (test === 'empty') els = els.filter(function (e) { return !String(e.value || '').trim(); });
+      if (test === 'unplayed') els = els.filter(function (e) { return e.paused && !e.ended && e.currentTime < 0.5; });
+      if (test.indexOf('picked:') === 0 && !host.querySelector(test.slice(7) + '.picked, ' + test.slice(7) + '.on, ' + test.slice(7) + '.sel')) return null;
+      if (test.indexOf('chosen:') === 0) {
+        var ch = test.slice(7);
+        if (!host.querySelector(ch + '.picked, ' + ch + '.on, ' + ch + '.sel, ' + ch + '.chosen, ' + ch + '[aria-pressed="true"]')) return null;
+      }
+      if (!els.length) return null;
+      return all ? els : [els[0]];
+    }
+    function target() {
+      var host = document.getElementById('chunk-host'), w = cur && wordsFor(cur);
+      if (!host || !w) return null;
+      var rules = (w.ring || []).map(function (r) { return [r.sel, r.tag || 'press', r.all ? 1 : 0, r.test || '']; })
+        .concat(RINGS[cur.engine] || [], TAIL);
+      for (var i = 0; i < rules.length; i++) {
+        var got = pick(host, rules[i]);
+        if (got) return { els: got, tag: TAG[rules[i][1]] || TAG.press };
+      }
+      return null;
+    }
+    function unring() {
+      [].slice.call(document.querySelectorAll('.sm-ring')).forEach(function (e) { e.classList.remove('sm-ring'); });
+      var tag = document.getElementById('sm-tag'); if (tag) tag.hidden = true;
+      lastFirst = null;
+    }
+    /* THE TAG NEVER HIDES HER WORDS (26 Nov 2026). Hung a full tag's height above the ring, it lay
+       over the line above ("Stop when your teacher calls time" lost three words on the Extra jobs
+       card; on How did it go? it sat on the sentence the buttons answer). It now tries four spots in
+       turn -- on the ring's top edge like a label on a frame, beside the ringed row, on the ring's
+       bottom edge, then clear above -- and takes the first that covers no words and stays on screen
+       under the job line. The choice is kept until the ring, the tag or the window changes, so the
+       400 ms tick and scrolling only move it. qa-showme checks every part for covered words. */
+    var tagKey = '', tagMode = -1, tagFirst = null;
+    function tagSpots(r, h, els) {
+      var right = r.right;
+      (els || []).forEach(function (e) { var b = e.getBoundingClientRect(); if (Math.abs(b.top - r.top) < 6) right = Math.max(right, b.right); });
+      return [
+        { top: r.top - Math.round(h * 0.65), left: r.left + 12 },
+        { top: r.top + Math.round((r.height - h) / 2), left: right + 14 },
+        { top: r.bottom - Math.round(h * 0.35), left: r.left + 12 },
+        { top: r.top - h - 10, left: r.left }
+      ];
+    }
+    function coversWords(box) {
+      var host = document.getElementById('chunk-host'); if (!host) return false;
+      var walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT), n, rg = document.createRange();
+      while ((n = walk.nextNode())) {
+        if (!n.textContent.trim() || !n.parentElement) continue;
+        var pb = n.parentElement.getBoundingClientRect();
+        if (pb.bottom < box.top || pb.top > box.bottom || pb.right < box.left || pb.left > box.right) continue;
+        rg.selectNodeContents(n);
+        var qs = rg.getClientRects();
+        for (var i = 0; i < qs.length; i++) {
+          var q = qs[i];
+          if (q.width >= 1 && q.left < box.right && q.right > box.left && q.top < box.bottom - 3 && q.bottom > box.top + 3) return true;
+        }
+      }
+      return false;
+    }
+    function placeTag(first, text, els) {
+      var tag = document.getElementById('sm-tag'), wrap = document.getElementById('job-wrap');
+      if (!tag || !first) return;
+      tag.textContent = text; tag.hidden = false;
+      var r = first.getBoundingClientRect(), wb = wrap ? wrap.getBoundingClientRect().bottom : 0;
+      var h = tag.offsetHeight, w = tag.offsetWidth, vw = global.innerWidth, vh = global.innerHeight;
+      var spots = tagSpots(r, h, els);
+      var fits = function (s) { return s.top >= wb + 4 && s.top + h <= vh - 4 && s.left >= 8 && s.left + w <= vw - 8; };
+      var key = text + '|' + Math.round(r.width) + 'x' + Math.round(r.height) + '|' + vw + 'x' + vh + '|' + (els || []).length;
+      if (key !== tagKey || first !== tagFirst || tagMode < 0 || !fits(spots[tagMode])) {
+        tagKey = key; tagFirst = first; tagMode = -1;
+        for (var i = 0; i < spots.length; i++) {
+          var c = spots[i];
+          if (fits(c) && !coversWords({ top: c.top, bottom: c.top + h, left: c.left, right: c.left + w })) { tagMode = i; break; }
+        }
+      }
+      var s = spots[tagMode >= 0 ? tagMode : (spots[0].top >= wb + 4 ? 0 : 2)];
+      tag.style.top = Math.round(Math.max(4, Math.min(vh - h - 4, s.top))) + 'px';
+      tag.style.left = Math.round(Math.max(8, Math.min(vw - w - 8, s.left))) + 'px';
+    }
+    function bringIntoView(first) {
+      var wrap = document.getElementById('job-wrap');
+      var r = first.getBoundingClientRect(), wb = wrap ? wrap.getBoundingClientRect().bottom : 0;
+      var room = global.innerHeight - wb;
+      if (r.top >= wb + 40 && r.bottom <= global.innerHeight - 8) return;
+      var dy = (r.height + 80 <= room) ? (r.top - wb - 48) : (r.top - wb - 40);
+      global.scrollBy(0, Math.round(dy));
+    }
+    function ring() {
+      var t = target();
+      [].slice.call(document.querySelectorAll('.sm-ring')).forEach(function (e) { if (!t || t.els.indexOf(e) === -1) e.classList.remove('sm-ring'); });
+      if (!t) { var tg = document.getElementById('sm-tag'); if (tg) tg.hidden = true; lastFirst = null; return; }
+      t.els.forEach(function (e) { e.classList.add('sm-ring'); });
+      if (t.els[0] !== lastFirst) { lastFirst = t.els[0]; bringIntoView(t.els[0]); }
+      lastEls = t.els; placeTag(t.els[0], t.tag, t.els);
+    }
+    function setOpen(on) {
+      open = !!on;
+      var bar = document.getElementById('showme-bar'), btn = document.getElementById('job-help');
+      if (bar) bar.hidden = !open;
+      if (btn) { btn.setAttribute('aria-expanded', open ? 'true' : 'false'); btn.classList.remove('nudge'); }
+      if (open) { idleRing = false; ring(); } else { idleRing = false; unring(); }
+    }
+    function poke() {
+      last = Date.now();
+      var btn = document.getElementById('job-help'); if (btn) btn.classList.remove('nudge');
+      if (idleRing && !open) { idleRing = false; unring(); }
+    }
+    function tick() {
+      if (!cur) return;
+      var v = document.querySelector('#chunk-host video');
+      if (document.hidden || (v && !v.paused && !v.ended)) last = Date.now();   /* watching a film is not being stuck */
+      var idle = Date.now() - last, btn = document.getElementById('job-help');
+      if (btn) btn.classList.toggle('nudge', !open && idle >= idleMs);
+      if (!open && !idleRing && idle >= 2 * idleMs) idleRing = true;
+      if (open || idleRing) ring();
+    }
+    function mount(ch) {
+      setOpen(false);
+      var w = wordsFor(ch), wrap = document.getElementById('job-wrap');
+      cur = w ? ch : null;
+      document.body.classList.toggle('sm-on', !!w);
+      if (!wrap) return;
+      wrap.hidden = !w;
+      if (!w) return;
+      stickUnder();
+      document.getElementById('job-text').textContent = w.job;
+      document.getElementById('showme-steps').innerHTML = w.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+      last = Date.now();
+    }
+    /* the line sticks just under the site's own top bar, which is sticky too and sits above it */
+    function stickUnder() {
+      var wrap = document.getElementById('job-wrap'), bar = document.getElementById('topbar');
+      if (wrap) wrap.style.top = ((bar && !bar.hidden && bar.offsetHeight) ? bar.offsetHeight + 6 : 6) + 'px';
+    }
+    function hide() { setOpen(false); cur = null; document.body.classList.remove('sm-on'); var w = document.getElementById('job-wrap'); if (w) w.hidden = true; }
+    function wire() {
+      var btn = document.getElementById('job-help'), close = document.getElementById('showme-close');
+      if (btn) btn.onclick = function () { setOpen(!open); };
+      if (close) close.onclick = function () { setOpen(false); };
+      ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (evt) { document.addEventListener(evt, poke, { passive: true, capture: true }); });
+      global.addEventListener('resize', function () { if (cur) stickUnder(); if (open || idleRing) ring(); });
+      global.addEventListener('scroll', function () { if (lastFirst) placeTag(lastFirst, (document.getElementById('sm-tag') || {}).textContent || '', lastEls); }, { passive: true });
+      global.setInterval(tick, 400);
+    }
+    return { mount: mount, hide: hide, wire: wire, isOpen: function () { return open; }, close: function () { setOpen(false); },
+      setIdle: function (ms) { idleMs = Math.max(200, Number(ms) || 20000); last = Date.now(); } };
+  })();
+  App.showMe = ShowMe;
+
   /* ---------------- chrome ---------------- */
   function wireChrome() {
+    ShowMe.wire();
     $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
@@ -5685,6 +5994,7 @@ window.OLS_TRANSPORT = {
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') ['help-modal', 'qr-modal', 'confirm-modal', 'kit-modal'].forEach(App.closeModal);
+      if (e.key === 'Escape' && ShowMe.isOpen()) ShowMe.close();
     });
     // active-time heartbeat: visible + recently-interacting minutes count
     var lastInteract = Date.now();
@@ -5846,6 +6156,7 @@ window.OLS_TRANSPORT = {
     $('#player').hidden = true;
     $('#topbar').hidden = false;
     $('#help-beacon').hidden = false;
+    ShowMe.hide();
     $('#hub').hidden = false;
     renderHub();
     maybeClearancePop();
@@ -6460,9 +6771,11 @@ window.OLS_TRANSPORT = {
       host.innerHTML = '<div class="card"><h2>' + esc(ch.title || '') + '</h2><p>This part is being prepared.</p>' +
         '<button class="primary-btn" type="button">Continue</button></div>';
       host.querySelector('button').onclick = function () { App.nextChunk(); };
+      ShowMe.hide();
       return;
     }
     engine.mount(host, ch, App.engineCtx(ch));
+    ShowMe.mount(ch);
   }
   /* Re-mount the chunk that is already on screen, from its saved draft.
      Added 2 Aug 2026 for the Reaction Rally wedge (review finding S-1): every
@@ -6604,6 +6917,7 @@ window.OLS_TRANSPORT = {
   function finishLesson() {
     var s = App.state;
     s.advancing = false;
+    ShowMe.hide();
     if (global.PairKit) global.PairKit.stop();
     var wasCatchup = s.catchup;
     var num = String(s.lessonEntry.num);
@@ -7027,6 +7341,15 @@ window.OLS_TRANSPORT = {
       if (ctx.review || ctx.catchup) { cb('solo'); return; }
       if (!Number(App.state.pairing)) { cb('social'); return; }
       var stageIdx = Number(App.state.chunkIdx);
+      /* A LATE REPLY NEVER PAINTS OVER THE NEXT SCREEN (26 Nov 2026 walk). The join call is a round trip;
+         if she has moved to another part (the rail, Back, a remount) before it answers, the answer belongs
+         to a screen that is gone and is dropped, and its polling stops with it. */
+      var gen = PairKit._gen = (PairKit._gen || 0) + 1, lessonAt = ctx.lesson && ctx.lesson.id;
+      function stale() {
+        return PairKit._gen !== gen || Number(App.state.chunkIdx) !== stageIdx ||
+          !(App.state.lesson && App.state.lesson.id === lessonAt);
+      }
+      var cbNow = cb; cb = function (m) { if (!stale()) cbNow(m); };
       var began = Date.now();
       var box = null;
       /* DAMIEN, 31 Jul 2026: "the girls need to be clearly shown when they actually
@@ -7113,6 +7436,7 @@ window.OLS_TRANSPORT = {
       }
       function poll() {
         ctx.call('pairJoin', { lessonId: ctx.lesson.id, stageIdx: stageIdx }).then(function (r) {
+          if (stale()) return;
           if (!r || !r.ok) {
             // hard refusal degrades to the one-machine social mode; a wifi blip keeps listening
             if (r && r.error && r.error !== 'transport') { if (box) box.remove(); cb('social'); return; }
@@ -9354,10 +9678,109 @@ window.OLS_TRANSPORT = {
     }
   };
 
+  /* ================= THE QUESTION EXTRAS ZONE (26 Nov 2026) =================
+     His ask, 25 Nov: "plenty of extra tasks for those students who fly through it
+     so that everyone can fully utilise the hour". The four first-day lessons (J1
+     L1, the Drive side quest, J2 L1, J3 L1) have no code to build, so the pyrun
+     extras hub had nothing to offer them and a quick pupil sat with nothing to do.
+     This is the SAME zone (DFM 265's shape: it comes after the badge, pays
+     nothing, records nothing, and the way out is on every screen she can reach)
+     built from short sets of marked questions instead of builds. Each job runs
+     through the itemRunner every quiz uses, so each answer is marked on the spot
+     with its reason, from the keys fetched when the lesson opened.
+     Its markup borrows the pyrun hub's classes, so the list of jobs looks and
+     behaves like the one J2 and J3 pupils already know.
+     CONFIG-GATED: only an items chunk that declares `extrasMode` gets it, so every
+     other items chunk renders exactly as before. */
+  function itemsExtras(host, chunk, ctx) {
+    var cfg = chunk.config, jobs = cfg.jobs || [], doneJobs = {}, scores = {};
+    function finishLabel() { return cfg.finishLabel || ''; }
+    function leave() { finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
+    function paras(text, cls) {
+      return String(text || '').split(/\n\s*\n/).filter(function (p) { return p.trim(); }).map(function (p) {
+        return '<p class="' + cls + '">' + fmtBold(p.trim()) + '</p>';
+      }).join('');
+    }
+    function hub() {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var lead = (ctx.review && cfg.reviewIntro) ? cfg.reviewIntro + '\n\n' + (cfg.intro || '') : (cfg.intro || '');
+      var allDone = jobs.length > 0 && jobs.every(function (j) { return doneJobs[j.id]; });
+      var promoted = allDone && cfg.allDoneLabel;
+      var c = el('<div class="card pyrun-hub xj-hub">' +
+        '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
+        '<h2>' + esc(cfg.title || '') + '</h2>' + paras(lead, 'intro-lead') +
+        '<div class="pyrun-jobs">' + jobs.map(function (j) {
+          return '<button class="pyrun-job xj-job' + (doneJobs[j.id] ? ' done' : '') + '" type="button" data-job="' + esc(j.id || '') + '">' +
+            '<b class="pyrun-job-title">' + esc(j.title || '') + '</b>' +
+            '<span class="pyrun-job-whiff">' + esc(j.whiff || '') + '</span>' +
+            (doneJobs[j.id] ? '<span class="pyrun-job-tick">' + esc(scores[j.id]) + '</span>' : '') +
+            '</button>';
+        }).join('') + '</div>' +
+        (promoted && cfg.allDoneSay ? '<p class="pyrun-alldone-say">' + fmtBold(cfg.allDoneSay) + '</p>' : '') +
+        '<div class="rung-actions pyrun-exit-row' + (promoted ? ' is-alldone' : '') + '">' +
+        '<button class="' + (promoted ? 'primary-btn' : 'ghost-btn') + ' pyrun-finish xj-finish" type="button">' +
+        esc(promoted ? cfg.allDoneLabel : finishLabel()) + '</button></div></div>');
+      host.appendChild(c);
+      c.querySelectorAll('.xj-job').forEach(function (btn) {
+        App.armButton(btn, function () {
+          var j = jobs.filter(function (x) { return String(x.id) === btn.getAttribute('data-job'); })[0];
+          if (j) runJob(j);
+        });
+      });
+      App.armButton(c.querySelector('.xj-finish'), leave);
+    }
+    /* A JOB: its questions, with both ways out under them on every question \u2014
+       back to the list, or on to the rest of the lesson \u2014 so "time up" half way
+       through a job is still one click. */
+    function exitRow(primaryBack) {
+      return '<div class="rung-actions pyrun-exit-row xj-row">' +
+        '<button class="' + (primaryBack ? 'primary-btn' : 'ghost-btn') + ' xj-back" type="button">' + esc(cfg.backLabel || '') + '</button>' +
+        '<button class="ghost-btn pyrun-finish xj-finish" type="button">' + esc(finishLabel()) + '</button></div>';
+    }
+    function wireRow(root) {
+      App.armButton(root.querySelector('.xj-back'), hub);
+      App.armButton(root.querySelector('.xj-finish'), leave);
+    }
+    function runJob(j) {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var box = el('<div class="xj-run"></div>');
+      var row = el('<div class="card xj-rowcard">' + exitRow(false) + '</div>');
+      host.appendChild(box);
+      host.appendChild(row);
+      wireRow(row);
+      itemRunner(box, {
+        items: j.items || [], mode: 'feedback',
+        markFn: function (it, i) { return ctx.markItem(it.id, i); },
+        onDone: function (r) {
+          doneJobs[j.id] = 1;
+          scores[j.id] = String(cfg.scoreTick || '').replace('{right}', r.right).replace('{total}', r.total);
+          jobDone(j, r);
+        }
+      });
+      /* the job's own name sits on its first card, where she reads first */
+      var first = box.querySelector('.q-card');
+      if (first && j.title) first.insertAdjacentHTML('afterbegin', '<span class="intro-kicker xj-kicker">' + esc(j.title) + '</span>');
+    }
+    function jobDone(j, r) {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var c = el('<div class="card intro-card xj-done">' +
+        '<span class="intro-kicker">' + esc(j.title || '') + '</span>' +
+        '<h2>' + esc(String(cfg.scoreLine || '').replace('{right}', r.right).replace('{total}', r.total)) + '</h2>' +
+        paras(cfg.doneSay, 'intro-lead') + exitRow(true) + '</div>');
+      host.appendChild(c);
+      wireRow(c);
+    }
+    hub();
+  }
+
   /* ================= items (calibration / rules checks) ================= */
   Engines.items = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      if (cfg.extrasMode) { itemsExtras(host, chunk, ctx); return; }
       introCard(host, {
         /* The calibration card is named by the chunk itself ("Warm-up") - the old
            hardcoded "Console calibration" reintroduced the console vocabulary the
@@ -9587,7 +10010,7 @@ window.OLS_TRANSPORT = {
           '    <div class="tile mini is-open"><span class="tile-icon">\u26a1</span><span class="tile-title">Make It Move</span><span class="tile-state open">Ready</span></div>' +
           '    <div class="tile mini is-locked" data-t="locks"><span class="tile-icon">\ud83c\udfaf</span><span class="tile-title">Scoreboard Engineer</span><span class="tile-state lock">&#128274;</span></div>' +
           '  </div>' +
-          '  <div class="tour-beacon" data-t="help">?</div>' +
+          '  <div class="tour-beacon" data-t="help">Stuck? Show me</div>' +
           '</div>' +
           '<div class="tour-callout"><h3></h3><p></p><button class="primary-btn" type="button">Next</button></div>' +
           '</div>');

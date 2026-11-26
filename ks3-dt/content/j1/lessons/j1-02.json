@@ -45,7 +45,12 @@
     ],
     "video": null,
     "cta": "Start the lesson",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start."
+    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "job": "Read what today is about, then start the lesson.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Click Start the lesson at the bottom."
+    ]
    }
   },
   {
@@ -75,7 +80,13 @@
       "label": "Test it properly"
      }
     ],
-    "help": "Press play, or use the chapter buttons to jump to the part you need. You can come back and re-watch any chapter at any time — especially chapter 4 if your build isn't behaving."
+    "help": "Press play, or use the chapter buttons to jump to the part you need. You can come back and re-watch any chapter at any time — especially chapter 4 if your build isn't behaving.",
+    "job": "Watch the film and build along with it in MakeCode.",
+    "showMe": [
+     "Click play, or click a chapter button.",
+     "Build each program on your own screen as you watch.",
+     "Click Done watching when you finish."
+    ]
    }
   },
   {
@@ -179,6 +190,12 @@
      "Open MakeCode using the button above. Keep it in its own tab all lesson.",
      "Build each rung (each activity) in the SAME project that you created for the video tutorial you've just completed on the previous screen, which you called make-it-move. The project name stays the same as you climb the ladder and complete each new activity — you never start a new one.",
      "Every time you press Download it saves a new copy of the WHOLE project, replacing the one from last time. If a box asks whether you want to replace the old file, say yes — that is exactly what you want."
+    ],
+    "job": "Do the four rung challenges with your partner. Test each on the real micro:bit.",
+    "showMe": [
+     "Click Start climbing, then read the rung card.",
+     "Build it in MakeCode. Test it on the real micro:bit.",
+     "When it works, click the gold button."
     ]
    }
   },
@@ -231,7 +248,13 @@
     "foundText": "The website found **{name}** in your DT Work folder",
     "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)",
     "skipLabel": "Carry on without banking your build",
-    "skipText": "If the check still will not run, you can carry on without banking your build. Tell your teacher in class — they can look in your Drive with you."
+    "skipText": "If the check still will not run, you can carry on without banking your build. Tell your teacher in class — they can look in your Drive with you.",
+    "job": "Save your program into your Google Drive, then check it.",
+    "showMe": [
+     "Download your program from MakeCode.",
+     "Drag the file into DT Work, inside your School folder.",
+     "Click Run the inspection."
+    ]
    }
   },
   {
@@ -263,7 +286,13 @@
       ]
      }
     ],
-    "help": "Two marked questions about today. Answer on your own — your teacher sees how the class did. Your verdicts arrive once the whole report is filed, at the end of the last screen."
+    "help": "Two marked questions about today. Answer on your own — your teacher sees how the class did. Your verdicts arrive once the whole report is filed, at the end of the last screen.",
+    "job": "Answer two marked questions on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Next. On the last question, click Finish."
+    ]
    }
   },
   {
@@ -286,7 +315,13 @@
     "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
     "trayClickEject": false,
     "takeBackLabel": "Put this block back",
-    "introKicker": "Exit check — part 2"
+    "introKicker": "Exit check — part 2",
+    "job": "Put four blocks in the order the sentence describes.",
+    "showMe": [
+     "Click Ready.",
+     "Click each block in the order the sentence says.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -331,7 +366,12 @@
       "confirm": "My micro:bit is switched off and handed back"
      }
     ],
-    "help": "Two jobs. First, clear your program off the micro:bit: click the button on the card to get the empty program, then drag it onto the MICROBIT drive just like you have all lesson — when the yellow light stops flashing, press A and B and nothing should happen. Then hold the small black button on the back for about 5 seconds until the little red light fades, unplug the USB lead and hand it back. Nothing you made is lost: your work is in MakeCode and in your Drive."
+    "help": "Two jobs. First, clear your program off the micro:bit: click the button on the card to get the empty program, then drag it onto the MICROBIT drive just like you have all lesson — when the yellow light stops flashing, press A and B and nothing should happen. Then hold the small black button on the back for about 5 seconds until the little red light fades, unplug the USB lead and hand it back. Nothing you made is lost: your work is in MakeCode and in your Drive.",
+    "job": "Clear your micro:bit and switch it off for the next class.",
+    "showMe": [
+     "Click Start, then do what each card says.",
+     "Click the button under a card when it is done."
+    ]
    }
   },
   {
@@ -347,7 +387,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+    "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],

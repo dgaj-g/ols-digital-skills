@@ -13,7 +13,7 @@
  *
  *   (1) A pyrun chunk WITHOUT `extrasMode` renders BYTE-IDENTICALLY to the engine he
  *       has already sat. The stretch field is gone from that engine, so the control is
- *       run against `a3b5fce`'s engine pulled out of git — not described, RUN.
+ *       run against `4e375cd5`'s engine pulled out of git — not described, RUN.
  *   (2) The hub says what it is BEFORE it lists what to click (DFM 151), lists every
  *       job the content declares, and carries the way out.
  *   (3) The way out is on EVERY screen (265c): the hub AND every job card, live from
@@ -42,7 +42,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('./node_modules/playwright');
 
-const BASE_REF = 'a3b5fce';          /* V55 — the engine before the extras zone. PINNED. */
+const BASE_REF = '4e375cd5';         /* V55 — the engine before the extras zone (parent of 09aaedc3; was a3b5fce before the history purge). PINNED. */
 const REPO = path.resolve(__dirname, '..', '..', '..');
 const ENGINES = path.join(REPO, 'ks3-dt', 'platform', 'engines.js');
 const STYLE = path.join(REPO, 'ks3-dt', 'platform', 'style.css');
@@ -149,8 +149,16 @@ const MOUNT = `(function(chunk, review){
          takes the line however it is tagged, and the tag change itself is asserted
          two checks below rather than being quietly absorbed. A guard that widens its
          own exemption to stay green stops being a guard (DFM 213). */
+      /* AND ONE MORE, ALSO IN THE OPEN (26 Nov 2026). The J2/J3 Lesson 4 build
+         (c9eb842b) gave every pyrun card an EMPTY <div class="pyl4-host"> that only
+         a Level-4 chunk ever fills. It draws nothing here, so it is set aside -- but
+         only when EMPTY, and the emptiness is asserted below, so a host that starts
+         drawing on a non-Level-4 card still fails this gate. */
       const shape = h => h.replace(/<(button|div)[^>]*class="pyrun-line[^"]*"[\s\S]*?<\/\1>/g, '')
-                          .replace(/data-si="\d+"/g, '');
+                          .replace(/data-si="\d+"/g, '')
+                          .replace(/<div class="pyl4-host"><\/div>/g, '');
+      check((a.match(/class="pyl4-host"/g) || []).length === (a.match(/<div class="pyl4-host"><\/div>/g) || []).length,
+        '  and the Level-4 host on this card is EMPTY, so setting it aside hides nothing she sees');
       check(shape(a) === shape(b),
         '  and its card is BYTE-IDENTICAL to the pre-change engine once the shuffled tray is set aside');
       const tagsOf = h => Array.from(h.matchAll(/<(button|div)[^>]*class="pyrun-line([^"]*)"/g))

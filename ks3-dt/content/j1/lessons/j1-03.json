@@ -47,7 +47,12 @@
     ],
     "video": null,
     "cta": "Start the lesson",
-    "help": "Reading only — this screen tells you what today is about. Press the button when it appears."
+    "help": "Reading only — this screen tells you what today is about. Press the button when it appears.",
+    "job": "Read what today is about, then start the lesson.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Click Start the lesson at the bottom."
+    ]
    }
   },
   {
@@ -199,7 +204,13 @@
      ],
      "defaultT": 85
     },
-    "clearToast": "Rung cleared — scoreboard upgraded."
+    "clearToast": "Rung cleared — scoreboard upgraded.",
+    "job": "Build the scoreboard with your partner, one rung at a time.",
+    "showMe": [
+     "Click Start climbing, then watch the rung film.",
+     "Build it in MakeCode. Test it on the real micro:bit.",
+     "When it works, click It worked!"
+    ]
    }
   },
   {
@@ -251,7 +262,13 @@
     "foundText": "The website found **{name}** in your DT Work folder",
     "noFolderText": "The website could not find your School > DT Work folder. Build it right now in Drive — + New → Folder → \"School\", then \"DT Work\" inside it — and press the check button again. (The Files That Follow You side quest walks you through it too.)",
     "skipLabel": "Carry on without registering",
-    "skipText": "If the check still will not run, you can carry on without registering your rig. Tell your teacher in class — they can look in your Drive with you."
+    "skipText": "If the check still will not run, you can carry on without registering your rig. Tell your teacher in class — they can look in your Drive with you.",
+    "job": "Save your scoreboard into your Google Drive, then check it.",
+    "showMe": [
+     "Download the .hex file from MakeCode.",
+     "Drag the file into DT Work, inside your School folder.",
+     "Click Check my Drive."
+    ]
    }
   },
   {
@@ -299,7 +316,14 @@
     },
     "help": "Follow the five rules on screen. For each go: B for a fresh 0, the referee starts the timer, press A as fast as you can, then enter the exact number with the + and − buttons. Tick the referee's check, then press Send in my scores. After that, eyes on the big screen — your teacher runs the reveal.",
     "soloHelp": "Follow the three rules on screen. Enter each go's exact number with the + and − buttons, tick the promise, then press Send in my scores. The live reveal already happened in class — your points still land with your hidden team.",
-    "timerSeconds": 5
+    "timerSeconds": 5,
+    "job": "Play two goes each, then send in your own scores.",
+    "showMe": [
+     "On the micro:bit, press B to reset. Press A fast.",
+     "Set your score with the + and − buttons.",
+     "Click We played it fair, then Send in my scores."
+    ],
+    "soloJob": "Play two goes on your own, then send in your scores."
    }
   },
   {
@@ -341,7 +365,13 @@
       ]
      }
     ],
-    "help": "Three marked questions about today. Answer them on your own. You find out how you did at the end, after the last screen."
+    "help": "Three marked questions about today. Answer them on your own. You find out how you did at the end, after the last screen.",
+    "job": "Answer three marked questions on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Next. On the last question, click Finish."
+    ]
    }
   },
   {
@@ -375,7 +405,13 @@
     ],
     "trayClickEject": false,
     "takeBackLabel": "Put this block back",
-    "introKicker": "Exit check — part 2"
+    "introKicker": "Exit check — part 2",
+    "job": "Put four blocks into two stacks, as the sentence says.",
+    "showMe": [
+     "Click Ready.",
+     "Click each block in the order the sentence says.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -392,7 +428,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],

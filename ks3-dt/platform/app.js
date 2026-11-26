@@ -689,8 +689,237 @@
     }
   }
 
+  /* ---------------- show me: the job line and its help (task 10, 26 Nov 2026) ----------------
+     His words, 25 Nov: "there absolutely MUST have more help available and clarity for pupils who
+     might be stuck all to easily". The J3 L7 standard, now on every part the platform draws itself:
+     a "Your job now:" line, a green "Stuck? Show me" beside it that opens a short bar of steps UNDER
+     the line (never over her work), and a green ring with a short tag on the thing to use next. On
+     a question every option is ringed, never only the right one. 20 s with no click or key pulses
+     the button; 40 s shows the ring by itself. Closing touches nothing she has done. Every sentence
+     comes from the part's own content (job, showMe; soloJob/soloShowMe on a catch-up) or, for the
+     platform's own Do-Now and catch-up cards, from index.html. A part with no job line (the hour
+     lessons that run in their own frame) keeps the corner button exactly as before. */
+  var ShowMe = (function () {
+    var cur = null, open = false, idleRing = false, last = Date.now(), idleMs = 20000, lastFirst = null, lastEls = null, builtin = null;
+    var TAG = { press: 'Click this', choose: 'Choose one', type: 'Type here', play: 'Click play', drag: 'Move these', click: 'Click this', line: 'Click a line', read: 'Read this' };
+    var INTRO = '.card.intro-card button.primary-btn';
+    /* what to ring, most-advanced state first: [selector, tag, ring all?, test]. Mapped from engines.js
+       (WARMUP_TRIM_25NOV/ENGINE_RINGS.md); anything not listed falls through to the shared tail. */
+    var RINGS = {
+      briefing: [['.dossier-cta', 'press'], ['.dossier-film video', 'play', 0, 'unplayed'], ['.dossier-lines', 'read']],
+      video: [['.video-card video', 'play', 0, 'unplayed'], ['.video-card .primary-btn', 'press'], ['.video-soon .primary-btn', 'press']],
+      ladder: [['.confirm-step', 'press'], ['.ladder-card .rung-worked', 'press'], ['.rung-actions .primary-btn', 'press']],
+      artifact: [['.af-card .rung-actions .primary-btn', 'press'], ['.af-demo-btn', 'press']],
+      parsons: [['.pt-list .parsons-block', 'drag', 1], ['.parsons-check', 'press']],
+      steps: [['.step-action .confirm-step', 'press'], ['input.sim-user', 'type', 0, 'empty']],
+      selfeval: [['.se-chips', 'choose', 'row:.se-chip:.se-chip.on'], ['.se-submit', 'press']],
+      compass: [['.cmp-row', 'choose', 'row:.cmp-side:.cmp-side.on'], ['.cmp-settle', 'press']],
+      tour: [['.tour-callout .primary-btn', 'press']],
+      vault: [['.vault-tray .vault-file', 'drag', 1]],
+      diagnostic: [['.seal-card .primary-btn', 'press']],
+      codename: [['#cn-keep', 'press'], ['.oath-sign', 'press'], ['.belonging-card .primary-btn', 'press']],
+      tournament: [['.rally-transmit', 'press'], ['.rally-confirm', 'press'], ['.rally-step', 'press'], ['.rally-timer-btn', 'press']],
+      casework: [['.case-close-btn', 'press'], ['textarea.case-log-input', 'type', 0, 'empty'], ['.case-file:not(.sealed):not(.closed)', 'click', 1]],
+      studio: [['#std-name', 'type', 0, 'empty'], ['.std-sign', 'press'], ['.std-enter', 'press'], ['.std-kit-confirm', 'press'],
+        ['.std-qa-outcomes .std-outcome', 'choose', 1], ['.std-qa-row:not(.pass) .std-qa-run', 'press'], ['.std-ready-btn.lit', 'press'],
+        ['#std-gt', 'type', 0, 'empty'], ['#std-gh', 'type', 0, 'empty'], ['.std-doors button', 'press'], ['.std-continue', 'press']],
+      gallery: [['textarea.gal-stem-input', 'type', 0, 'empty'], ['.gal-v2-save', 'press'], ['.gal-file-btn', 'press'], ['.gal-marquee-card.clickable', 'click', 1]],
+      drivecheck: [['.dc-card .primary-btn', 'press']],
+      /* the question extras zone (26 Nov): on its list, the jobs not done yet; inside a job the shared tail
+         rings the answers and Next, as on every quiz */
+      items: [['.xj-job:not(.done)', 'choose', 1]],
+      inspect: [['.insp-report .insp-next', 'press'], ['.insp-file', 'press'], ['.insp-zone', 'click', 1]],
+      snap: [['.snap-done .primary-btn', 'press'], ['.snap-py', 'choose', 1, 'picked:.snap-block'], ['.snap-block', 'click', 1]],
+      pyrun: [['.pyrun-verdict.is-matched .primary-btn', 'press'], ['#pyx-reply', 'type', 0, 'empty'], ['.pyx-send', 'press'],
+        ['.pyt-list .pyrun-line', 'line', 1], ['.pyrun-run', 'press'], ['.pyrun-job', 'click', 1]],
+      chatswap: [['.swap-done', 'press'], ['.swap-go', 'press'], ['.swap-send-report', 'press'], ['.swap-report-btn', 'press']],
+      relay: [['#pyx-reply', 'type', 0, 'empty'], ['.pyx-send', 'press']],
+      duel: [['.duel-next', 'press'], ['.duel-done', 'press'], ['.duel-lock', 'press', 0, 'chosen:.duel-card .duel-option'], ['.duel-card .duel-option', 'choose', 1]]
+    };
+    var TAIL = [[INTRO, 'press'], ['.pair-wait .pw-own', 'press'], ['.q-feedback .primary-btn', 'press'], ['.q-opt', 'choose', 1],
+      ['input[type="text"], input:not([type]), textarea', 'type', 0, 'empty'], ['button.primary-btn, .btn-primary', 'press']];
+    function builtins() {
+      if (builtin) return builtin;
+      try { builtin = JSON.parse((document.getElementById('sm-builtin') || {}).textContent || '{}'); } catch (e) { builtin = {}; }
+      return builtin;
+    }
+    function wordsFor(ch) {
+      if (!ch) return null;
+      var c = ch.config || {}, b = builtins()[ch.engine] || {}, solo = !!App.state.catchup;
+      var job = (solo && c.soloJob) || c.job || (solo && b.soloJob) || b.job || '';
+      var steps = (solo && c.soloShowMe) || c.showMe || (solo && b.soloShowMe) || b.showMe || [];
+      return (job && steps.length) ? { job: String(job), steps: steps.map(String), ring: c.ring || null } : null;
+    }
+    function usable(e) {
+      if (!e || e.disabled || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('locked')) return false;
+      if (!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)) return false;
+      var cs = global.getComputedStyle(e);
+      return cs.visibility !== 'hidden' && cs.display !== 'none';
+    }
+    function pick(host, rule) {
+      var sel = rule[0], all = rule[2], test = rule[3] || '';
+      var els = [].slice.call(host.querySelectorAll(sel)).filter(usable);
+      if (!els.length) return null;
+      if (typeof all === 'string' && all.indexOf('row:') === 0) {      /* the first row with nothing chosen: all of its choices */
+        var p = all.split(':'), row = null;
+        els.some(function (r) { if (!r.querySelector(p[2])) { row = r; return true; } return false; });
+        if (!row) return null;
+        var opts = [].slice.call(row.querySelectorAll(p[1])).filter(usable);
+        return opts.length ? opts : null;
+      }
+      if (test === 'empty') els = els.filter(function (e) { return !String(e.value || '').trim(); });
+      if (test === 'unplayed') els = els.filter(function (e) { return e.paused && !e.ended && e.currentTime < 0.5; });
+      if (test.indexOf('picked:') === 0 && !host.querySelector(test.slice(7) + '.picked, ' + test.slice(7) + '.on, ' + test.slice(7) + '.sel')) return null;
+      if (test.indexOf('chosen:') === 0) {
+        var ch = test.slice(7);
+        if (!host.querySelector(ch + '.picked, ' + ch + '.on, ' + ch + '.sel, ' + ch + '.chosen, ' + ch + '[aria-pressed="true"]')) return null;
+      }
+      if (!els.length) return null;
+      return all ? els : [els[0]];
+    }
+    function target() {
+      var host = document.getElementById('chunk-host'), w = cur && wordsFor(cur);
+      if (!host || !w) return null;
+      var rules = (w.ring || []).map(function (r) { return [r.sel, r.tag || 'press', r.all ? 1 : 0, r.test || '']; })
+        .concat(RINGS[cur.engine] || [], TAIL);
+      for (var i = 0; i < rules.length; i++) {
+        var got = pick(host, rules[i]);
+        if (got) return { els: got, tag: TAG[rules[i][1]] || TAG.press };
+      }
+      return null;
+    }
+    function unring() {
+      [].slice.call(document.querySelectorAll('.sm-ring')).forEach(function (e) { e.classList.remove('sm-ring'); });
+      var tag = document.getElementById('sm-tag'); if (tag) tag.hidden = true;
+      lastFirst = null;
+    }
+    /* THE TAG NEVER HIDES HER WORDS (26 Nov 2026). Hung a full tag's height above the ring, it lay
+       over the line above ("Stop when your teacher calls time" lost three words on the Extra jobs
+       card; on How did it go? it sat on the sentence the buttons answer). It now tries four spots in
+       turn -- on the ring's top edge like a label on a frame, beside the ringed row, on the ring's
+       bottom edge, then clear above -- and takes the first that covers no words and stays on screen
+       under the job line. The choice is kept until the ring, the tag or the window changes, so the
+       400 ms tick and scrolling only move it. qa-showme checks every part for covered words. */
+    var tagKey = '', tagMode = -1, tagFirst = null;
+    function tagSpots(r, h, els) {
+      var right = r.right;
+      (els || []).forEach(function (e) { var b = e.getBoundingClientRect(); if (Math.abs(b.top - r.top) < 6) right = Math.max(right, b.right); });
+      return [
+        { top: r.top - Math.round(h * 0.65), left: r.left + 12 },
+        { top: r.top + Math.round((r.height - h) / 2), left: right + 14 },
+        { top: r.bottom - Math.round(h * 0.35), left: r.left + 12 },
+        { top: r.top - h - 10, left: r.left }
+      ];
+    }
+    function coversWords(box) {
+      var host = document.getElementById('chunk-host'); if (!host) return false;
+      var walk = document.createTreeWalker(host, NodeFilter.SHOW_TEXT), n, rg = document.createRange();
+      while ((n = walk.nextNode())) {
+        if (!n.textContent.trim() || !n.parentElement) continue;
+        var pb = n.parentElement.getBoundingClientRect();
+        if (pb.bottom < box.top || pb.top > box.bottom || pb.right < box.left || pb.left > box.right) continue;
+        rg.selectNodeContents(n);
+        var qs = rg.getClientRects();
+        for (var i = 0; i < qs.length; i++) {
+          var q = qs[i];
+          if (q.width >= 1 && q.left < box.right && q.right > box.left && q.top < box.bottom - 3 && q.bottom > box.top + 3) return true;
+        }
+      }
+      return false;
+    }
+    function placeTag(first, text, els) {
+      var tag = document.getElementById('sm-tag'), wrap = document.getElementById('job-wrap');
+      if (!tag || !first) return;
+      tag.textContent = text; tag.hidden = false;
+      var r = first.getBoundingClientRect(), wb = wrap ? wrap.getBoundingClientRect().bottom : 0;
+      var h = tag.offsetHeight, w = tag.offsetWidth, vw = global.innerWidth, vh = global.innerHeight;
+      var spots = tagSpots(r, h, els);
+      var fits = function (s) { return s.top >= wb + 4 && s.top + h <= vh - 4 && s.left >= 8 && s.left + w <= vw - 8; };
+      var key = text + '|' + Math.round(r.width) + 'x' + Math.round(r.height) + '|' + vw + 'x' + vh + '|' + (els || []).length;
+      if (key !== tagKey || first !== tagFirst || tagMode < 0 || !fits(spots[tagMode])) {
+        tagKey = key; tagFirst = first; tagMode = -1;
+        for (var i = 0; i < spots.length; i++) {
+          var c = spots[i];
+          if (fits(c) && !coversWords({ top: c.top, bottom: c.top + h, left: c.left, right: c.left + w })) { tagMode = i; break; }
+        }
+      }
+      var s = spots[tagMode >= 0 ? tagMode : (spots[0].top >= wb + 4 ? 0 : 2)];
+      tag.style.top = Math.round(Math.max(4, Math.min(vh - h - 4, s.top))) + 'px';
+      tag.style.left = Math.round(Math.max(8, Math.min(vw - w - 8, s.left))) + 'px';
+    }
+    function bringIntoView(first) {
+      var wrap = document.getElementById('job-wrap');
+      var r = first.getBoundingClientRect(), wb = wrap ? wrap.getBoundingClientRect().bottom : 0;
+      var room = global.innerHeight - wb;
+      if (r.top >= wb + 40 && r.bottom <= global.innerHeight - 8) return;
+      var dy = (r.height + 80 <= room) ? (r.top - wb - 48) : (r.top - wb - 40);
+      global.scrollBy(0, Math.round(dy));
+    }
+    function ring() {
+      var t = target();
+      [].slice.call(document.querySelectorAll('.sm-ring')).forEach(function (e) { if (!t || t.els.indexOf(e) === -1) e.classList.remove('sm-ring'); });
+      if (!t) { var tg = document.getElementById('sm-tag'); if (tg) tg.hidden = true; lastFirst = null; return; }
+      t.els.forEach(function (e) { e.classList.add('sm-ring'); });
+      if (t.els[0] !== lastFirst) { lastFirst = t.els[0]; bringIntoView(t.els[0]); }
+      lastEls = t.els; placeTag(t.els[0], t.tag, t.els);
+    }
+    function setOpen(on) {
+      open = !!on;
+      var bar = document.getElementById('showme-bar'), btn = document.getElementById('job-help');
+      if (bar) bar.hidden = !open;
+      if (btn) { btn.setAttribute('aria-expanded', open ? 'true' : 'false'); btn.classList.remove('nudge'); }
+      if (open) { idleRing = false; ring(); } else { idleRing = false; unring(); }
+    }
+    function poke() {
+      last = Date.now();
+      var btn = document.getElementById('job-help'); if (btn) btn.classList.remove('nudge');
+      if (idleRing && !open) { idleRing = false; unring(); }
+    }
+    function tick() {
+      if (!cur) return;
+      var v = document.querySelector('#chunk-host video');
+      if (document.hidden || (v && !v.paused && !v.ended)) last = Date.now();   /* watching a film is not being stuck */
+      var idle = Date.now() - last, btn = document.getElementById('job-help');
+      if (btn) btn.classList.toggle('nudge', !open && idle >= idleMs);
+      if (!open && !idleRing && idle >= 2 * idleMs) idleRing = true;
+      if (open || idleRing) ring();
+    }
+    function mount(ch) {
+      setOpen(false);
+      var w = wordsFor(ch), wrap = document.getElementById('job-wrap');
+      cur = w ? ch : null;
+      document.body.classList.toggle('sm-on', !!w);
+      if (!wrap) return;
+      wrap.hidden = !w;
+      if (!w) return;
+      stickUnder();
+      document.getElementById('job-text').textContent = w.job;
+      document.getElementById('showme-steps').innerHTML = w.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+      last = Date.now();
+    }
+    /* the line sticks just under the site's own top bar, which is sticky too and sits above it */
+    function stickUnder() {
+      var wrap = document.getElementById('job-wrap'), bar = document.getElementById('topbar');
+      if (wrap) wrap.style.top = ((bar && !bar.hidden && bar.offsetHeight) ? bar.offsetHeight + 6 : 6) + 'px';
+    }
+    function hide() { setOpen(false); cur = null; document.body.classList.remove('sm-on'); var w = document.getElementById('job-wrap'); if (w) w.hidden = true; }
+    function wire() {
+      var btn = document.getElementById('job-help'), close = document.getElementById('showme-close');
+      if (btn) btn.onclick = function () { setOpen(!open); };
+      if (close) close.onclick = function () { setOpen(false); };
+      ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (evt) { document.addEventListener(evt, poke, { passive: true, capture: true }); });
+      global.addEventListener('resize', function () { if (cur) stickUnder(); if (open || idleRing) ring(); });
+      global.addEventListener('scroll', function () { if (lastFirst) placeTag(lastFirst, (document.getElementById('sm-tag') || {}).textContent || '', lastEls); }, { passive: true });
+      global.setInterval(tick, 400);
+    }
+    return { mount: mount, hide: hide, wire: wire, isOpen: function () { return open; }, close: function () { setOpen(false); },
+      setIdle: function (ms) { idleMs = Math.max(200, Number(ms) || 20000); last = Date.now(); } };
+  })();
+  App.showMe = ShowMe;
+
   /* ---------------- chrome ---------------- */
   function wireChrome() {
+    ShowMe.wire();
     $('#help-beacon').onclick = function () { renderHelp(); App.openModal('help-modal'); };
     $('#help-close').onclick = function () { App.closeModal('help-modal'); };
     $('#agent-chip').onclick = function () { App.openKit(); };
@@ -736,6 +965,7 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') ['help-modal', 'qr-modal', 'confirm-modal', 'kit-modal'].forEach(App.closeModal);
+      if (e.key === 'Escape' && ShowMe.isOpen()) ShowMe.close();
     });
     // active-time heartbeat: visible + recently-interacting minutes count
     var lastInteract = Date.now();
@@ -897,6 +1127,7 @@
     $('#player').hidden = true;
     $('#topbar').hidden = false;
     $('#help-beacon').hidden = false;
+    ShowMe.hide();
     $('#hub').hidden = false;
     renderHub();
     maybeClearancePop();
@@ -1511,9 +1742,11 @@
       host.innerHTML = '<div class="card"><h2>' + esc(ch.title || '') + '</h2><p>This part is being prepared.</p>' +
         '<button class="primary-btn" type="button">Continue</button></div>';
       host.querySelector('button').onclick = function () { App.nextChunk(); };
+      ShowMe.hide();
       return;
     }
     engine.mount(host, ch, App.engineCtx(ch));
+    ShowMe.mount(ch);
   }
   /* Re-mount the chunk that is already on screen, from its saved draft.
      Added 2 Aug 2026 for the Reaction Rally wedge (review finding S-1): every
@@ -1655,6 +1888,7 @@
   function finishLesson() {
     var s = App.state;
     s.advancing = false;
+    ShowMe.hide();
     if (global.PairKit) global.PairKit.stop();
     var wasCatchup = s.catchup;
     var num = String(s.lessonEntry.num);

@@ -70,7 +70,13 @@
     ],
     "demoNote": "Nothing in there is clever. Somebody typed every one of those sentences, and somebody typed the line that decides which sentences come out when the player types trolley. Today that somebody is you.",
     "cta": "Start the film",
-    "help": "The words on this card appear a few at a time, as if somebody were typing them. A small piece of a text adventure plays at the bottom of the card. Read the whole card, then press Start the film."
+    "help": "The words on this card appear a few at a time, as if somebody were typing them. A small piece of a text adventure plays at the bottom of the card. Read the whole card, then press Start the film.",
+    "job": "Read the card and watch the adventure on it. Then click Start the film.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Watch the adventure on the card.",
+     "Click Start the film."
+    ]
    }
   },
   {
@@ -97,7 +103,12 @@
      }
     ],
     "_chapterTimes": "COMPUTED AT BUILD 17 Sep 2026 from j2-l4/chapters.json (halves parts/j2-l4-a.mp4, 390.86s); qa-cross-lesson §4 holds these to the served file",
-    "help": "Press play, or click one of the three buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow, so if you miss something you can carry on."
+    "help": "Press play, or click one of the three buttons underneath the film to jump to that part. Everything the film shows is written again on the cards that follow, so if you miss something you can carry on.",
+    "job": "Watch the film about the fork in the road.",
+    "showMe": [
+     "Click play, or click a button under the film.",
+     "Click Done watching when it ends."
+    ]
    }
   },
   {
@@ -226,7 +237,13 @@
     ],
     "help": "This room has nine lines and one mistake.\n\n1. Read the lines.\n2. Press RUN my room.\n3. Python stops and shows what it said in the console, with a plain line under it.\n4. Fix the fork line — the one that starts with if — and press RUN again.\n5. When the room asks, type trolley in the box and press Send. Then run it again and try window.",
     "chatPrints": true,
-    "blankEmptySay": "The gap on the fork line is still empty. The fork line is the one that starts with if. In that gap, type the sign that asks the question: is what the player typed the same as trolley? Then press RUN."
+    "blankEmptySay": "The gap on the fork line is still empty. The fork line is the one that starts with if. In that gap, type the sign that asks the question: is what the player typed the same as trolley? Then press RUN.",
+    "job": "Run the canteen room, find the wrong symbol, and fix it.",
+    "showMe": [
+     "Click Open the room, then RUN my room.",
+     "Read what Python says in the console.",
+     "Fix the line that starts with if. Run again."
+    ]
    }
   },
   {
@@ -268,7 +285,13 @@
     "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
     "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
     "lockedNote": "Move every line into Your program, then this button wakes up.",
-    "emptyNote": "Nothing here yet. Click or drag a line across."
+    "emptyNote": "Nothing here yet. Click or drag a line across.",
+    "job": "Put the room’s eight lines in the right order.",
+    "showMe": [
+     "Click Ready.",
+     "Click each line in the order the room needs.",
+     "Click Check my program when all eight are in."
+    ]
    }
   },
   {
@@ -454,7 +477,13 @@
      "doorWord": "door"
     },
     "help": "The top five lines are already in place and cannot move.\n\n1. Read the eight lines on the left.\n2. Move the six you need into Your program, in this order: the elif line, its story line, its door line, then the else line, its story line, its door line.\n3. Type your second word into the first gap. Type what happens on its road into the second gap.\n4. Press RUN my room. Try lamp, then your second word, then banana.\n\nThe two lines you leave behind are mistakes on purpose: a fork line with a single =, and a door line with no spaces in front of it.",
-    "chatPrints": true
+    "chatPrints": true,
+    "job": "Add the second road with elif, and the else road.",
+    "showMe": [
+     "Click Open the room.",
+     "Click six lines in order. Leave out the two mistakes.",
+     "Type in the gaps, then click RUN my room."
+    ]
    }
   },
   {
@@ -740,7 +769,13 @@
      "SAY WHAT HAPPENS"
     ],
     "capsLabel": "NOT FINISHED YET",
-    "capsSay": "All five jobs work, but your room still has CAPITAL words from the shape in it: {caps}. Change them to your own words, then press RUN again."
+    "capsSay": "All five jobs work, but your room still has CAPITAL words from the shape in it: {caps}. Change them to your own words, then press RUN again.",
+    "job": "Write your own room for the class adventure.",
+    "showMe": [
+     "Click the box. Type two words players can choose from.",
+     "Click Start writing, then write your room.",
+     "Click RUN my room to test it."
+    ]
    }
   },
   {
@@ -900,7 +935,13 @@
      "replyLabel": "Your choice",
      "sendLabel": "Send"
     },
-    "help": "The adventure is up to five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter the last room you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before the last room, you do not get the badge this time. You can still earn it the next time you play."
+    "help": "The adventure is up to five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter the last room you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before the last room, you do not get the badge this time. You can still earn it the next time you play.",
+    "job": "Play up to five rooms from your class and the training builds.",
+    "showMe": [
+     "Click Start the adventure.",
+     "Type one of the words the room offers.",
+     "Click Send to go through the door."
+    ]
    }
   },
   {
@@ -925,7 +966,13 @@
       ]
      }
     ],
-    "help": "This is one marked question about the fork you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away."
+    "help": "This is one marked question about the fork you built today. You are told whether you were right, and why, at the very end of the lesson — not straight away.",
+    "job": "Answer one marked question on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Finish when you are sure."
+    ]
    }
   },
   {
@@ -957,7 +1004,13 @@
     "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
     "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
     "lockedNote": "Move every line into Your program, then this button wakes up.",
-    "emptyNote": "Nothing here yet. Click or drag a line across."
+    "emptyNote": "Nothing here yet. Click or drag a line across.",
+    "job": "Put the fork’s five lines in order. You get one go.",
+    "showMe": [
+     "Click Ready.",
+     "Click each line in the order the fork needs.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -975,6 +1028,12 @@
      "I can write an if line and an else line, so my program does one thing or the other.",
      "I can add a third road with elif.",
      "I can test my room by trying each of my two words, and then a word I did not plan for."
+    ],
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
     ]
    }
   },
@@ -1268,7 +1327,13 @@
       "runCheckedSay": "Every word here is yours, so this card cannot tell you what to expect. Press RUN and play your room."
      }
     ],
-    "chatPrints": true
+    "chatPrints": true,
+    "job": "Try an extra job if you have time. You do not have to.",
+    "showMe": [
+     "Click a job in the list to open it.",
+     "Build it, then click RUN this room.",
+     "To try another job, click Back to the extra jobs."
+    ]
    }
   }
  ],
