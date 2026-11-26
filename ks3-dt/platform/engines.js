@@ -1093,6 +1093,33 @@
        output captured, execLimit as the guard. Resolves EITHER way — a program
        that fails is not an exception in this app, it is the lesson working. */
     run: function (code, opts) { return PyRun.start(code, opts).p; },
+    /* THE NEVER-CLOSED BRACKET NAMES ITS OWN LINE (live walk, J2 L2, 26 Nov 2026).
+       Skulpt reports an unclosed bracket as "EOF in multi-line statement on line N",
+       where N is the line AFTER the program ends: it kept reading, hoping for the
+       closing bracket, and ran out. A pupil with a four-line program was told "line 5"
+       and every lesson's words say "on that line" -- so she was sent to a line that
+       does not exist. Python 3 itself names the line where the bracket was OPENED
+       ("'(' was never closed"), so the number is moved to that line, and only ever
+       moved back: a line already at or before the opener is left exactly as said. */
+    eofLine: function (err, src) {
+      var m = /EOF in multi-line statement on line (\d+)/.exec(err);
+      if (!m) return err;
+      var stack = [], lines = String(src || '').split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var s = lines[i], q = null;
+        for (var j = 0; j < s.length; j++) {
+          var c = s.charAt(j);
+          if (q) { if (c === '\\') { j++; } else if (c === q) { q = null; } continue; }
+          if (c === '#') break;
+          if (c === '"' || c === "'") { q = c; continue; }
+          if ('([{'.indexOf(c) !== -1) stack.push(i + 1);
+          else if (')]}'.indexOf(c) !== -1) stack.pop();
+        }
+      }
+      var at = stack.length ? stack[0] : 0;
+      /* only the NUMBER is swapped, inside Python's own words: no sentence is written here */
+      return (at && at < Number(m[1])) ? err.replace(m[0], m[0].replace(/\d+$/, String(at))) : err;
+    },
 
     /* v1's shape, plus the three things runner v2 needs, all OPT-IN so a v1
        caller (both Lesson 2s) configures Skulpt with exactly the same keys it
@@ -1204,7 +1231,7 @@
         }).then(function () {
           return { ok: true, out: out, err: '', limitMs: limit, preLines: preLines };
         }, function (e) {
-          return { ok: false, out: out, err: String(e), limitMs: limit, preLines: preLines };
+          return { ok: false, out: out, err: PyRun.eofLine(String(e), pre + code + post), limitMs: limit, preLines: preLines };
         });
       }, function () {
         return { ok: false, out: '', err: '', offline: true, limitMs: limit, preLines: 0 };
@@ -5013,7 +5040,12 @@
         var say = c.querySelector('.snap-say');
         var doneBox = c.querySelector('.snap-done');
 
-        function speak(t) { say.textContent = String(t || ''); }
+        function speak(t, kind) {
+          say.textContent = String(t || '');
+          say.classList.remove('is-wrong', 'is-right', 'flash');
+          if (kind) say.classList.add('is-' + kind);
+          void say.offsetWidth; say.classList.add('flash');
+        }
 
         function render() {
           blockList.innerHTML = ''; pyList.innerHTML = '';
@@ -5061,14 +5093,14 @@
               if (blockNode) blockNode.classList.add('snapped');
               if (pyNode) pyNode.classList.add('snapped');
               solved[p.id] = 1; p.py = pi;
-              speak(cfg.rightSay || PY_SAY.rightSay);
+              speak(cfg.rightSay || PY_SAY.rightSay, 'right');
               setTimeout(function () { pickedBlock = null; busy = false; render(); }, 520);
             } else {
               /* BOTH bounce. Nothing is revealed, nothing is named, and the
                  block stays picked so the next tap is a real second guess. */
               if (blockNode) blockNode.classList.add('bounce');
               if (pyNode) pyNode.classList.add('bounce');
-              speak(cfg.wrongSay || PY_SAY.wrongSay);
+              speak(cfg.wrongSay || PY_SAY.wrongSay, 'wrong');
               setTimeout(function () {
                 if (blockNode) blockNode.classList.remove('bounce');
                 if (pyNode) pyNode.classList.remove('bounce');
@@ -5586,7 +5618,7 @@
               var go = el('<button class="primary-btn" type="button">' +
                 esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
               verdict.appendChild(go);
-              App.armButton(go, function () { at++; if (at < builds.length) startBuild(); else done(); });
+              App.armButton(go, function () { at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done(); });
             });
           };
 
@@ -5993,7 +6025,7 @@
           verdict.appendChild(go);
           App.armButton(go, function () {
             if (b.onDone && typeof cfg.onDoneHook === 'string') { /* reserved */ }
-            at++; if (at < builds.length) startBuild(); else done();
+            at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done();
           });
           /* ---- THE CARD SEND (spec §E1's `card-send`, inside `engine`) ----
              One more thing once the program really works, on the SAME screen
@@ -6304,7 +6336,7 @@
               wirePublish();
             }
           });
-          function goOn() { at++; if (at < builds.length) startBuild(); else done(); }
+          function goOn() { at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done(); }
           function wirePublish() {
             if (!pubBtn) return;
             App.armButton(pubBtn, function () {
@@ -6624,7 +6656,7 @@
             esc(last ? (cfg.continueLabel || 'Continue') : (cfg.nextBuildLabel || 'Next step')) + '</button>');
           verdict.appendChild(go);
           App.armButton(go, function () {
-            at++; if (at < builds.length) startBuild(); else done();
+            at++; if (at < builds.length) { global.scrollTo(0, 0); startBuild(); } else done();
           });
           if (b.sendCard) drawCardSend(verdict, res, b);
         }
@@ -7351,7 +7383,9 @@
               verdict.appendChild(go);
               App.armButton(go, function () {
                 at++;
-                if (at < builds.length) startBuild();
+                /* a new build starts at the TOP, as a new part does (app.js): the button
+                   she pressed sits at the foot of the last one (live walk, J2 L2, 26 Nov) */
+                if (at < builds.length) { global.scrollTo(0, 0); startBuild(); }
                 else done();
               });
             } else {

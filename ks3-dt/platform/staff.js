@@ -1381,6 +1381,13 @@
     } else if (b.engine === 'orders') {
       say = [fr.n + ' of the ' + fr.d + ' parts of the Rush done — her orders written, her partner\'s orders run through her factory, ' +
              'the products checked, and the Rush sealed. It pays the same whatever her partner said of her products.'];
+    } else if (b.engine === 'snap') {
+      /* the matching desk has no RUN button: its number is pairs matched on the first try
+         (live walk, J2 L2 staff side, 26 Nov 2026 — it was given the Python build's words) */
+      say = [fr.n + ' of ' + fr.d + ' pairs matched on the first try.'];
+      say.push(fr.n === fr.d
+        ? 'Every pair right first time.'
+        : 'The rest were matched after another go — a wrong pair costs nothing, and the desk explains it.');
     } else {
       say = [fr.n + ' of ' + fr.d + ' cleared first time.'];
       say.push(fr.n === fr.d
@@ -1761,6 +1768,12 @@
           '<b class="lc-act all">6/6</b> is all of them. It pays for playing and never for being right: how many ' +
           'she predicted correctly is private to her and the pupil she played, and it is not stored anywhere. ' +
           '<span class="lc-dash">&ndash;</span> means she never reached it.</p>');
+      } else if (b.engine === 'snap') {
+        /* the matching desk is not code she wrote: it had the build's sentence (live walk, 26 Nov 2026) */
+        out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the matching: how many of its pairs she ' +
+          'matched <b>on the first try</b>. <b class="lc-act all">6/6</b> means every pair first time; ' +
+          '<b class="lc-act some">4/6</b> means the rest took another go, which costs her nothing; ' +
+          '<span class="lc-dash">&ndash;</span> means she has not started it. Hover a number to read what happened.</p>');
       } else {
         out.push('<p>The <b>' + App.esc(b.title) + '</b> column is the code she wrote: how many of its builds ' +
           'she got right <b>on the first run</b>. <b class="lc-act all">3/3</b> means every one first time; ' +

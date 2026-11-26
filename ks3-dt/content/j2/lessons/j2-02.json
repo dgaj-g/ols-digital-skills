@@ -184,7 +184,7 @@
     "matchedLabel": "MATCHED",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows. That is a working program, and you wrote it.",
-    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one line and press RUN again.",
+    "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one line and press RUN again.",
     "continueLabel": "Continue",
     "firstTryXp": 5,
     "firstTryXpCap": 15,
@@ -199,7 +199,7 @@
     },
     "errorWords": {
      "name": "Python does not know that name. Check how it is spelled — Python treats a capital letter as a different letter altogether.",
-     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "syntax": "Python could not read that line at all. Look for a missing bracket or a missing speech mark.",
      "type": "You have tried to join a word to a number. The + cannot join those by itself — wrap the number in str( ) and then the + can join it on.",
      "other": "Python stopped at the line named above. Read that line again, slowly."
     },
@@ -212,7 +212,7 @@
       "target": [
        "Score: 2"
       ],
-      "matchedSay": "MATCHED. That is your first working Python program: a variable, two changes to it, and a line that prints the result.",
+      "matchedSay": "That is your first working Python program: a variable, two changes to it, and a line that prints the result.",
       "lines": [
        {
         "t": "score = 0"
@@ -245,7 +245,7 @@
       "target": [
        "Stars: 3"
       ],
-      "matchedSay": "MATCHED. Nothing told you how many adding lines to use — you read the number in The target and worked it out. That is exactly what a programmer does.",
+      "matchedSay": "Nothing told you how many adding lines to use — you read the number in The target and worked it out. That is exactly what a programmer does.",
       "lines": [
        {
         "t": "stars = 0"
@@ -282,7 +282,7 @@
        "Level up!",
        "Level: 2"
       ],
-      "matchedSay": "MATCHED. Both lines came out, and they came out in the order you stacked them. That is Python running your program from the top down.",
+      "matchedSay": "Both lines came out, and they came out in the order you stacked them. That is Python running your program from the top down.",
       "lines": [
        {
         "t": "level = 0"
@@ -340,7 +340,7 @@
     "matchedLabel": "MATCHED",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows. That is a working program, and you wrote it.",
-    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one line and press RUN again.",
+    "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one line and press RUN again.",
     "consoleLabels": {
      "title": "The console",
      "idle": "Nothing has run yet. Build your program, then press RUN.",
@@ -352,7 +352,7 @@
     },
     "errorWords": {
      "name": "Python does not know that name. Check how it is spelled — Python treats a capital letter as a different letter altogether.",
-     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "syntax": "Python could not read that line at all. Look for a missing bracket or a missing speech mark.",
      "type": "You have tried to join a word to a number. The + cannot join those by itself — wrap the number in str( ) and then the + can join it on.",
      "other": "Python stopped at the line named above. Read that line again, slowly."
     },
@@ -366,7 +366,7 @@
       "target": [
        "Score: 10"
       ],
-      "matchedSay": "MATCHED. You worked backwards from the answer to the number that had to go in the box, and the console proved you right.",
+      "matchedSay": "You worked backwards from the answer to the number that had to go in the box, and the console proved you right.",
       "lines": [
        {
         "t": "score = ____",
@@ -399,7 +399,7 @@
        "Stars: 2",
        "Score: 4"
       ],
-      "matchedSay": "MATCHED. Two boxes, each with its own name, each printed in its own line. Python kept them apart the whole way through, because you gave them different names.",
+      "matchedSay": "Two boxes, each with its own name, each printed in its own line. Python kept them apart the whole way through, because you gave them different names.",
       "lines": [
        {
         "t": "stars = 0"
@@ -436,7 +436,7 @@
       "target": [
        "Score: 6"
       ],
-      "matchedSay": "MATCHED. Nobody told you how many adding lines to use, or how much each one added. You read the number in The target and worked it out, which is the whole job.",
+      "matchedSay": "Nobody told you how many adding lines to use, or how much each one added. You read the number in The target and worked it out, which is the whole job.",
       "lines": [
        {
         "t": "score = 0"
@@ -478,7 +478,7 @@
      {
       "icon": "🔤",
       "title": "You can already read Python",
-      "text": "An hour ago you had never seen a line of Python. You have now matched six blocks to six lines of it, and written a working program out of four more. Every one of those lines does a job Scratch can do as well: make a box, add to what is in it, print an answer. Python writes those jobs down a different way, and that is the part that was new today.",
+      "text": "An hour ago you had never seen a line of Python. You have now matched six blocks to six lines of it, and built three working programs of your own. Every one of those lines does a job Scratch can do as well: make a box, add to what is in it, print an answer. Python writes those jobs down a different way, and that is the part that was new today.",
       "lines": [
        "print( ) puts something on the console, the way say puts something on the Scratch stage.",
        "A name with an = after it makes a variable, the way set score to makes one in Scratch.",

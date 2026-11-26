@@ -94,7 +94,7 @@
     "matchedLabel": "MATCHED",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows.",
-    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one thing and press RUN again.",
+    "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one thing and press RUN again.",
     "blankEmptySay": "One of the gaps in your lines is still empty, so there is nothing for Python to print there. Click the gap, type into it, then press RUN.",
     "nextBuildLabel": "Next build",
     "continueLabel": "Continue",
@@ -111,7 +111,7 @@
     },
     "errorWords": {
      "name": "Python does not know that name. Words you want printed have to sit inside speech marks, like \"THE HARBOUR LIGHT\". Without them, Python goes looking for a box with that name and cannot find one. Look at what you typed into the gap, put speech marks round it, then press RUN.",
-     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "syntax": "Python could not read that line at all. Look for a missing bracket or a missing speech mark.",
      "type": "You have tried to join a word to a number. The + cannot join those by itself — wrap the number in str( ) and then the + can join it on.",
      "indent": "One of the lines has spaces at the front that should not be there. Drag it back to The lines and put it in again.",
      "value": "Python read the line, but it did not understand what was typed into the gap. Check what you typed into each gap, then press RUN.",
@@ -127,7 +127,7 @@
       "target": [
        "THE HARBOUR LIGHT"
       ],
-      "matchedSay": "MATCHED. That is a working Python program, and it is one line long.",
+      "matchedSay": "That is a working Python program, and it is one line long.",
       "lines": [
        {
         "t": "print(\"____\")",
@@ -153,7 +153,7 @@
        "THE HARBOUR LIGHT",
        "Doors open at 7"
       ],
-      "matchedSay": "MATCHED. The console printed your lines in exactly the order you stacked them. Swap them round and the call sheet comes out wrong.",
+      "matchedSay": "The console printed your lines in exactly the order you stacked them. Swap them round and the call sheet comes out wrong.",
       "lines": [
        {
         "t": "print(\"THE HARBOUR LIGHT\")"
@@ -205,7 +205,7 @@
     "matchedLabel": "MATCHED",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows.",
-    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one thing and press RUN again.",
+    "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one thing and press RUN again.",
     "blankEmptySay": "One of the gaps in your lines is still empty, so there is nothing for Python to put there. Click the gap, type into it, then press RUN.",
     "nextBuildLabel": "Next build",
     "continueLabel": "Continue",
@@ -222,7 +222,7 @@
     },
     "errorWords": {
      "name": "Python does not know that name. Either it is spelled differently from the box you made, or it was meant to be words and needs speech marks around it.",
-     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "syntax": "Python could not read that line at all. Look for a missing bracket or a missing speech mark.",
      "type": "You have tried to join a word to a number. The + cannot join those by itself — wrap the number in str( ) and then the + can join it on.",
      "indent": "One of the lines has spaces at the front that should not be there. Drag it back to The lines and put it in again.",
      "value": "Python read the line, but it did not understand what was typed into the gap. Check what you typed into each gap, then press RUN.",
@@ -239,7 +239,7 @@
        "Tonight at THE HARBOUR LIGHT",
        "Thank you for coming to THE HARBOUR LIGHT"
       ],
-      "matchedSay": "MATCHED. Look at what you did there: the theatre's name is typed once and printed twice. If the show moved venue tomorrow, you would change one box, and every line that uses it would change with it.",
+      "matchedSay": "The theatre’s name is typed once, in one box, and printed twice. Change that box and both lines change with it.",
       "lines": [
        {
         "t": "venue = \"____\"",
@@ -273,7 +273,7 @@
       "target": [
        "Money taken: 240 pounds"
       ],
-      "matchedSay": "MATCHED. Nobody typed 240 anywhere — Python worked it out. Change the price or the number of seats and the call sheet prints the new answer by itself.",
+      "matchedSay": "Nobody typed 240 anywhere — Python worked it out. Change the price or the number of seats and the call sheet prints the new answer by itself.",
       "lines": [
        {
         "t": "price = ____",
@@ -344,7 +344,7 @@
     "matchedLabel": "MATCHED",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows.",
-    "notYetSay": "The console did not print what The target shows. Look at what it really printed, in the console under your program. Then change one thing and press RUN again.",
+    "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one thing and press RUN again.",
     "consoleLabels": {
      "title": "The console",
      "idle": "Nothing has run yet. Build your program, then press RUN.",
@@ -356,7 +356,7 @@
     },
     "errorWords": {
      "name": "Python does not know that name. Either it is spelled differently from the box you made, or it was meant to be words and needs speech marks around it.",
-     "syntax": "Python could not read that line at all. Look for a bracket or a speech mark that was opened and never closed.",
+     "syntax": "Python could not read that line at all. Look for a missing bracket or a missing speech mark.",
      "type": "You have tried to join a word to a number. The + cannot join those by itself — wrap the number in str( ) and then the + can join it on.",
      "other": "Python stopped at the line named above. Read that line again, slowly."
     },
@@ -370,7 +370,7 @@
       "target": [
        "Money taken: 300 pounds"
       ],
-      "matchedSay": "MATCHED. You chose the two numbers yourself and Python did the multiplying. Somebody else in the room almost certainly picked a different pair and got the same 300 — both are right, because the console only checks the money.",
+      "matchedSay": "You chose the two numbers yourself and Python did the multiplying. Someone else may have picked a different pair that also makes 300. Both programs are right, because both print the same line.",
       "lines": [
        {
         "t": "price = ____",
@@ -413,7 +413,7 @@
        "Money taken: 240 pounds",
        "Money taken: 300 pounds"
       ],
-      "matchedSay": "MATCHED. The same print line came out twice with two different answers, because what was inside the box had changed underneath it.",
+      "matchedSay": "The same print line came out twice with two different answers, because the number in the box had changed in between.",
       "lines": [
        {
         "t": "price = 4"
@@ -446,7 +446,7 @@
        "Doors open at 7",
        "Money taken: 240 pounds"
       ],
-      "matchedSay": "MATCHED. That is the whole call sheet, printed by one program you put together yourself out of five lines.",
+      "matchedSay": "That is the whole call sheet, printed by one program you put together yourself out of five lines.",
       "lines": [
        {
         "t": "print(\"THE HARBOUR LIGHT\")"
