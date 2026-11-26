@@ -1370,6 +1370,9 @@
         var idx = 0;
         while (idx < App.state.chunks.length - 1 && done.indexOf(App.state.chunks[idx].id) !== -1) idx++;
         App.state.chunkIdx = idx;
+        /* 26 Nov live walk: J2/J3 L1 step 3 sends her to the green Saved word. On a resume her place
+           came back from her saved record, so everything so far IS saved: show it now, not on her next save. */
+        if (idx > 0 && !App.state.review && !App.state.draftUnavailable) { $('#save-chip').hidden = false; updateOutboxDot(); }
         renderRail(); mountChunk();
       });
     }).catch(function () {

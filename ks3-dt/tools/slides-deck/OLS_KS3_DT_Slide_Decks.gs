@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-13 from contentVersion 2026-11-13c.
+ * Built 2026-11-26 from contentVersion 2026-11-26c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -123,7 +123,7 @@ var DECKS = {
        "The main parts of each lesson are named sections called badges. Finish one, earn its badge.",
        "Badges bring points called XP. XP unlocks new colours for the website later in the year — it is private to you and your teacher, and nobody is ranked.",
        "Click an answer and you find out straight away whether you were right — and why. Read the reason every time.",
-       "Stuck? The round ? button is on every screen — and your teacher is always the last step."
+       "The green Stuck? Show me button is on every screen — and your teacher is always the last step."
       ],
       "notes": "SAY: point at the picture on the right — this is what every marked answer looks like: the verdict, the reason, then Next. Tell them to read the reason every single time, because that is where the learning is.\n\nIf the connection to the website slows down, a clicked answer says Checking… for a few seconds instead of answering straight away — worth one calm sentence if it happens.\n\nWHEN TO MOVE: straight on."
      }
@@ -185,7 +185,7 @@ var DECKS = {
        "Open Google Classroom — the class link is waiting there.",
        "Bookmark it: press the star, save to the Bookmarks bar.",
        "Read the Welcome together, then work to the END OF BADGE 2 — and stop there.",
-       "Your screen tells you everything else. Stuck? The round ? button, then a hand up."
+       "Your screen tells you everything else. If you are stuck, press the green Stuck? Show me button, then put your hand up."
       ],
       "notes": "WHERE THE CLASS IS: about to touch their screens for the first time.\n\nSAY: the Welcome screen is worth reading ALOUD together — it types itself out, so wait for the last line, then read it while they follow on their own screens.\n\nThen they work alone: warm-up, Badge 1, Badge 2. Say the stop rule now — \"when you finish Badge 2, stop and look up.\"\n\nWalk the room. Quietly hand a credential slip to anyone whose login will not work.\n\nWHEN TO MOVE: when the first pupils finish Badge 2, stop the whole room for the Vault."
      }
@@ -1484,7 +1484,7 @@ var DECKS = {
        "Read the welcome card together — it types itself out, so wait for the last line.",
        "Then work on your own. The screen gives you five short steps, one at a time.",
        "When a card pops up to say you have finished that part, stop and look up. That card is your badge.",
-       "Stuck on the way? Click the round ? button at the bottom right, then put your hand up."
+       "If you get stuck on the way, click the green Stuck? Show me button at the bottom right, then put your hand up."
       ],
       "notes": "WHERE THE CLASS IS: about to open the website for the first time.\n\nSAY: \"Google Classroom first, then the Digital Technology Lesson 1 link. Nothing else.\" Wait until the room is on the welcome card before you say another word.\n\nTHEN SAY: \"We are going to read this together.\" The card types itself out, so wait for the last line, then read it aloud while pupils follow on their own screens. It also explains the Google permission screens they clicked through to get in, so nobody is left wondering what those were.\n\nTHEN SAY: \"Work through the five steps on your own. When your badge card pops up, stop and look up.\"\n\nWATCH FOR: if the link is not on Google Classroom, put the QR code from the Classes tab on the board instead. And walk the room — the pupils who need you are the ones who cannot find something on screen.\n\nWHEN TO MOVE: when the first badge cards appear, stop the whole room for the inspection."
      }
@@ -1505,7 +1505,7 @@ var DECKS = {
        "The Year map button at the top left. It takes you back to the page with all seventeen lessons on it — but do not press it yet.",
        "The padlocks on your year map. Nearly every tile has one, and that is normal: each lesson opens on the day you do it.",
        "The small green word Saved at the top right. There is no save button on this website.",
-       "The round ? button at the bottom right. It gives you help for the screen you are on.",
+       "The green Stuck? Show me button at the bottom right. It gives you help for the screen you are on.",
        "Your own name at the top right. It opens your Kit Locker, where the new looks for your screen are kept."
       ],
       "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps.\n\nSAY: \"Seven minutes on this now saves you a term of putting your hand up. Each step tells you exactly what to look for.\"\n\nTHEN SAY, pointing at the picture: \"The steps come one at a time. You tick the box yourself once you have found the thing, and the next step then appears. There is nothing to hurry.\"\n\nWATCH FOR: the padlock step. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked. Say that one out loud yourself rather than leaving it to the screen.\n\nWHEN TO MOVE: straight on to the badge slide while they work."
@@ -2927,7 +2927,7 @@ var DECKS = {
        "Read the opening card together — it types itself out, so wait for the last line.",
        "Then work on your own. The screen gives you five short steps, one at a time.",
        "When a card pops up to say you have finished that part, stop and look up. That card is your badge.",
-       "Stuck on the way? Click the round ? button at the bottom right, then put your hand up."
+       "If you get stuck on the way, click the green Stuck? Show me button at the bottom right, then put your hand up."
       ],
       "notes": "WHERE THE CLASS IS: about to open the website for the first time.\n\nSAY: \"Google Classroom first, then the Digital Technology Lesson 1 link. Nothing else.\" Wait until the room is on the opening card before you say another word.\n\nTHEN SAY: \"We are going to read this together.\" The card types itself out, so wait for the last line, then read it aloud while pupils follow on their own screens. It repeats the options facts in the pupils' own words and explains what those Google permission screens were for.\n\nTHEN SAY: \"Work through the five steps on your own. When your badge card pops up, stop and look up.\"\n\nWATCH FOR: if the link is not on Google Classroom, put the QR code from the Classes tab on the board instead. And walk the room — the pupils who need you are the ones who cannot find something on screen.\n\nWHEN TO MOVE: when the first badge cards appear, stop the whole room for the studio code."
      }
@@ -2948,7 +2948,7 @@ var DECKS = {
        "The Year map button at the top left. It takes you back to the page with all seventeen lessons on it — but do not press it yet.",
        "The padlocks on your year map. Nearly every tile has one, and that is normal: each lesson opens on the day the class does it.",
        "The small green word Saved at the top right. There is no save button on this website.",
-       "The round ? button at the bottom right. It gives you help for the screen you are on.",
+       "The green Stuck? Show me button at the bottom right. It gives you help for the screen you are on.",
        "Your own name at the top right. It opens your Wardrobe, which holds the different looks your screen can wear."
       ],
       "notes": "WHERE THE CLASS IS: on the second screen of the lesson, working down five short steps.\n\nSAY: \"Seven minutes on this now saves you a term of putting your hand up. Each step tells you exactly what to look for.\"\n\nTHEN SAY, pointing at the picture: \"The steps come one at a time. You tick the box yourself once you have found the thing, and the next step then appears. There is nothing to hurry.\"\n\nWATCH FOR: the padlock step. A locked tile looks like a fault to a pupil who has never seen this website, and every tile except today's is locked. Say that one out loud yourself rather than leaving it to the screen.\n\nWHEN TO MOVE: straight on to the badge slide while they work."

@@ -535,7 +535,7 @@
    "lesson": "j3-07",
    "topic": "Teaching a computer with examples",
    "thread": "kp-ml-pattern",
-   "stem": "You drew a cat. Your computer named it, and it was very sure. What does that show?",
+   "stem": "You drew a cat. Your computer named it as one of your two things. It was very sure. What does that show?",
    "options": [
     "A computer can be very sure and still be wrong",
     "It had seen lots of cats before",

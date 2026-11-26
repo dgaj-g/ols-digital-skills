@@ -6258,6 +6258,9 @@ window.OLS_TRANSPORT = {
         var idx = 0;
         while (idx < App.state.chunks.length - 1 && done.indexOf(App.state.chunks[idx].id) !== -1) idx++;
         App.state.chunkIdx = idx;
+        /* 26 Nov live walk: J2/J3 L1 step 3 sends her to the green Saved word. On a resume her place
+           came back from her saved record, so everything so far IS saved: show it now, not on her next save. */
+        if (idx > 0 && !App.state.review && !App.state.draftUnavailable) { $('#save-chip').hidden = false; updateOutboxDot(); }
         renderRail(); mountChunk();
       });
     }).catch(function () {
@@ -21398,7 +21401,7 @@ window.OLS_TRANSPORT = {
       '<h4>Read this to the class</h4><ol>' +
         '<li>&ldquo;Your DT lesson today is ' + label + '. It is unlocked and waiting for you, and it gives you every instruction on screen.&rdquo;</li>' +
         '<li>&ldquo;Open the class link &mdash; it is on your bookmarks bar and on Google Classroom &mdash; and carry on from wherever you are.&rdquo;</li>' +
-        '<li>&ldquo;If you are stuck, press the round ? button on your screen, then quietly ask the person beside you.&rdquo;</li>' +
+        '<li>&ldquo;If you are stuck, press the green Stuck? Show me button on your screen, then quietly ask the person beside you.&rdquo;</li>' +
         '<li>&ldquo;If your computer misbehaves, share with the person beside you &mdash; nothing is lost, the website keeps your place.&rdquo;</li>' +
       '</ol>' +
       '<h4>For you</h4>' +
