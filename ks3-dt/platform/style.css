@@ -3973,6 +3973,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pye-plan-list { margin: 0 0 14px 1.25em; padding: 0; }
 .pye-plan-list li { margin: 0 0 8px; line-height: 1.55; color: var(--ink); font-size: 0.98rem; }
 .pye-plan-brief { margin: 0 0 18px; font-size: 0.95rem; line-height: 1.6; color: var(--ink); }
+.pye-bench-brief { white-space: pre-line; }
 .pye-start { display: block; }
 
 /* THE JOBS AS A PINNED STRIP. Same three sentences as the plan and the verdict
@@ -4450,6 +4451,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* a parsons block that must show its own indentation (opt-in; every existing
    puzzle renders exactly as it did) */
 .parsons-block.is-pre { white-space: pre-wrap; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+/* ...and the working order shown after a wrong go keeps those same spaces (J2 L4 walk, 26 Nov 2026) */
+.parsons-answer.is-pre li { white-space: pre-wrap; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
 /* the reason a sleeping RUN is asleep, parked beside the button itself — never
    under a console the pupil has to scroll past (DFM 205's "beside itself") */
@@ -4610,6 +4613,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    four, and a line that renders flush with its `if` is a wrong program on the
    pupil's screen (found in the j3-03 deck pictures, 14 Sep 2026) */
 .pyw-line code { white-space: pre-wrap; }
+/* a long line wraps INSIDE its own column, beside its number: it dropped below
+   the number, so line 3 read as a blank line and the long line had no number
+   (J2 L4 walk, 26 Nov 2026). A blank's hint keeps its own row underneath. */
+.pyw-line code { flex: 1 1 0; min-width: 0; }
+.pyw-line .pyrun-blank-hint { flex: 0 0 100%; }
 /* lines already in place at the top of Your program (fixedTop), read not moved */
 .pyp-fixed { margin: 0 0 8px; padding: 8px 10px; border-radius: 9px; background: rgba(0,0,0,.04); border: 1px dashed var(--line-l); }
 .pyp-fixed-label { margin: 0 0 6px; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 800; color: #5B6579; }

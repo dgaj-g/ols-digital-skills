@@ -3981,6 +3981,7 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pye-plan-list { margin: 0 0 14px 1.25em; padding: 0; }
 .pye-plan-list li { margin: 0 0 8px; line-height: 1.55; color: var(--ink); font-size: 0.98rem; }
 .pye-plan-brief { margin: 0 0 18px; font-size: 0.95rem; line-height: 1.6; color: var(--ink); }
+.pye-bench-brief { white-space: pre-line; }
 .pye-start { display: block; }
 
 /* THE JOBS AS A PINNED STRIP. Same three sentences as the plan and the verdict
@@ -4458,6 +4459,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 /* a parsons block that must show its own indentation (opt-in; every existing
    puzzle renders exactly as it did) */
 .parsons-block.is-pre { white-space: pre-wrap; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+/* ...and the working order shown after a wrong go keeps those same spaces (J2 L4 walk, 26 Nov 2026) */
+.parsons-answer.is-pre li { white-space: pre-wrap; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
 /* the reason a sleeping RUN is asleep, parked beside the button itself \2014  never
    under a console the pupil has to scroll past (DFM 205's "beside itself") */
@@ -4618,6 +4621,11 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    four, and a line that renders flush with its `if` is a wrong program on the
    pupil's screen (found in the j3-03 deck pictures, 14 Sep 2026) */
 .pyw-line code { white-space: pre-wrap; }
+/* a long line wraps INSIDE its own column, beside its number: it dropped below
+   the number, so line 3 read as a blank line and the long line had no number
+   (J2 L4 walk, 26 Nov 2026). A blank's hint keeps its own row underneath. */
+.pyw-line code { flex: 1 1 0; min-width: 0; }
+.pyw-line .pyrun-blank-hint { flex: 0 0 100%; }
 /* lines already in place at the top of Your program (fixedTop), read not moved */
 .pyp-fixed { margin: 0 0 8px; padding: 8px 10px; border-radius: 9px; background: rgba(0,0,0,.04); border: 1px dashed var(--line-l); }
 .pyp-fixed-label { margin: 0 0 6px; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 800; color: #5B6579; }
@@ -7987,6 +7995,23 @@ window.OLS_TRANSPORT = {
       if (n) n.remove();
     },
 
+    /* THE VERDICT IS READ WHERE SHE IS LOOKING (J2 L4 walk, 26 Nov 2026). At
+       school-PC size the NOT WORKING YET / IT WORKS box drew under the console,
+       below the fold: she pressed RUN and saw nothing change. Measured on the
+       next frame, so a Continue button appended in the same turn counts too. */
+    verdictInView: function (v) {
+      if (!v) return;
+      var go = function () {
+        try {
+          var r = v.getBoundingClientRect();
+          if (!r.height || (r.bottom <= (global.innerHeight || 0) && r.top >= 0)) return;
+          var calm = global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          v.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' });
+        } catch (e) { /* old browser: the page simply stays put */ }
+      };
+      if (global.requestAnimationFrame) global.requestAnimationFrame(go); else go();
+    },
+
     /* ---- the console surface -------------------------------------------
        A NEW pupil surface, so it sets its OWN ink on its OWN ground and never
        inherits the shell's light text (the exact fault DFM 207g found on the
@@ -8277,6 +8302,17 @@ window.OLS_TRANSPORT = {
     if (Array.isArray(want)) return want.map(function (i) { return replies[Number(i)]; }).filter(function (r) { return r != null; });
     return replies.slice();
   };
+  /* THE SHAPE'S CAPITAL WORDS LEFT IN HER ROOM (J2 L4 walk, 26 Nov 2026). A room that kept
+     "SAY WHAT HAPPENS ON THIS ROAD." on both roads did all five jobs and was told every word in
+     it was her own. The card lists the shape's capital phrases (`placeholders`); any still in
+     her code are returned, so the room cannot publish until they are her words. */
+  PyRun.leftoverCaps = function (code, phrases) {
+    var src = String(code || '');
+    return (phrases || []).filter(function (p) {
+      var q = String(p || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return !!q && new RegExp('(^|[^A-Za-z])' + q + '(?![A-Za-z])').test(src);
+    });
+  };
   PyRun.checkPaths = function (code, cfg, runPy) {
     runPy = runPy || PyRun.runPy;
     var parseRun = PyRun.parseRoomRun;
@@ -8305,8 +8341,20 @@ window.OLS_TRANSPORT = {
       var features = {};
       features['scene-ask'] = !anyErr && !!w1 && w1.scene.length > 0 && w1.asks.length === 1 &&
         words.length >= 2 && words.every(function (w) { return w && mentions(w1.asks[0], w); });
-      features['path-1'] = !!(w1 && w1.ok && w1.door && w1.story.length > 0);
-      features['path-2'] = !!(w2 && w2.ok && w2.door && w2.story.length > 0);
+      /* A WORD'S ROAD IS ITS OWN ROAD (J2 L4 walk, 26 Nov 2026). A room whose elif still said
+         "SECOND" sent her second word down the else road, printed the banana story, reached a
+         door \u2014 and passed job 3 and the whole room. A word now passes only when its run tells a
+         different story from the banana run, or when her code really compares with that word
+         (so an else road that copies a story she wrote for a word is not punished). */
+      function codeNames(word) {
+        var q = String(word || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return !!q && new RegExp('==\\s*["\']' + q + '["\']').test(String(code || ''));
+      }
+      function ownRoad(w, word) {
+        return !(st && st.ok && w.story === st.story && w.door === st.door) || codeNames(word);
+      }
+      features['path-1'] = !!(w1 && w1.ok && w1.door && w1.story.length > 0) && ownRoad(w1, words[0]);
+      features['path-2'] = !!(w2 && w2.ok && w2.door && w2.story.length > 0) && ownRoad(w2, words[1]);
       features['catch-all'] = !!(st && st.ok && st.door);
       features['different'] = !!(w1 && w2 && w1.ok && w2.ok && w1.story !== w2.story);
       /* training-3's three-word variant asks for the same things under other names */
@@ -11508,7 +11556,11 @@ window.OLS_TRANSPORT = {
               listEl.appendChild(n);
             });
             if (!list.length) {
-              listEl.appendChild(el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
+              /* the empty program names the tray's own thing (J2 L4 walk, 26 Nov 2026):
+                 a lesson whose tray is "The lines" must not be told to drag a block.
+                 The default is the shipped wording, so no locked puzzle moves. */
+              listEl.appendChild(cfg.emptyNote != null ? el('<li class="pp-empty">' + esc(cfg.emptyNote) + '</li>') :
+                el('<li class="pp-empty">Nothing here yet &mdash; drag or click a block across.</li>'));
             }
           });
           checkBtn.disabled = flat().length !== it.blocks.length;
@@ -11557,7 +11609,11 @@ window.OLS_TRANSPORT = {
                     '<ol class="parsons-answer">' + slice.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol></div>';
                 }).join('');
               } else {
-                answerHtml = '<ol class="parsons-answer">' +
+                /* the working order keeps its pushed-in lines pushed in (J2 L4 walk,
+                   26 Nov): its own explanation says "pushed in under it", so a list
+                   that flattened the four spaces taught the opposite. Opt-in with
+                   the blocks' own `pre`, so every other puzzle is untouched. */
+                answerHtml = '<ol class="parsons-answer' + PRE + '">' +
                   order.map(function (si) { return '<li>' + esc(it.blocks[si]) + '</li>'; }).join('') + '</ol>';
               }
               fb.className = 'q-feedback bad';
@@ -12239,7 +12295,12 @@ window.OLS_TRANSPORT = {
                                                   : (judge.usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
                                                    : judge.repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
                                                                           : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+              PyRun.verdictInView(verdict);
               if (!ok) { runBtn.disabled = false; return; }
+              /* A ROOM THAT ASKS STAYS RUNNABLE ONCE IT WORKS: its own IT WORKS
+                 line sends her back to RUN it and try the other road, and the
+                 button had gone to sleep under that sentence (J2 L4 walk, 26 Nov) */
+              if (chat) runBtn.disabled = false;
               if (attempts === 1 && !b.optional) cleanFirst++;
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
               var last = (at + 1 >= builds.length);
@@ -12619,6 +12680,7 @@ window.OLS_TRANSPORT = {
             esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
             (feats.length ? '<p class="pyf-count">' + esc(String(n) + ' / ' + String(feats.length)) + '</p>' : '') +
             '<p class="pyrun-vsay">' + esc(say) + '</p>';
+          PyRun.verdictInView(verdict);
           if (!ok) { runBtn.disabled = false; return; }
           if (attempts === 1 && !feats.length) cleanFirst++;
           /* HER PROGRAM HAS TO SURVIVE THE SCREEN IT WAS WRITTEN ON. The Swap is
@@ -12777,10 +12839,37 @@ window.OLS_TRANSPORT = {
         /* AN OPTIONAL BUILD STARTS FROM WHAT SHE ALREADY WROTE (\u00a7C13: the twist
            and the chain carry `from: "l4room"` / `"l4factory"`) \u2014 her saved draft
            is the starting text, so "your room is already in the box" is true */
-        var keptCode = (b.from && ctx.draft && ctx.draft[b.from]) ? String(ctx.draft[b.from]) : '';
+        /* HER ROOM SURVIVES A RELOAD (J2 L4 walk, 26 Nov 2026). The room was kept only once every
+           job was done, so a reload, or the Year map button, half-way through threw away all she
+           had typed and her two words. Each RUN now keeps her room and words in her lesson draft
+           (wipKey), and the bench opens on them; a room that passed opens on the room it passed with. */
+        var wipKey = b.saveAs ? String(b.saveAs) + 'Wip' : '';
+        var wipNow = (wipKey && ctx.draft && ctx.draft[wipKey]) || null;
+        var keptCode = (wipNow && wipNow.code) ? String(wipNow.code)
+          : (b.from && ctx.draft && ctx.draft[b.from]) ? String(ctx.draft[b.from])
+          : (b.saveAs && ctx.draft && ctx.draft[b.saveAs]) ? String(ctx.draft[b.saveAs]) : '';
+        var wipSavedAt = 0, wipTimer = 0;
+        function keepWip(code) {
+          if (!wipKey || ctx.review || !ctx.saveDraft || App.state.draftUnavailable) return;
+          if (App.state.lesson !== ctx.lesson) return;          /* a late save never lands in another lesson */
+          var now = Date.now(), d0 = App.state.draft || {};
+          var had = d0[wipKey] || {};
+          if (had.code === code && JSON.stringify(had.words || {}) === JSON.stringify(wordsVals)) return;
+          if (now - wipSavedAt < 30000 && had.code) {           /* one save in 30 seconds; the latest room follows */
+            if (!wipTimer) wipTimer = setTimeout(function () { wipTimer = 0; keepWip(keptCode); }, 30000 - (now - wipSavedAt));
+            return;
+          }
+          var next = { code: String(code), words: wordsVals };
+          var trial = {}; Object.keys(d0).forEach(function (k) { trial[k] = d0[k]; }); trial[wipKey] = next;
+          /* the server drops a draft of 8,000 characters or more SILENTLY: stay well under it */
+          if (String(code).length > 3000 || JSON.stringify(trial).length >= 7600) return;
+          d0[wipKey] = next; wipSavedAt = now;
+          ctx.saveDraft(d0);
+        }
         /* THE TWO WORDS (\u00a7C13, j2-04 myroom): typed on the PLAN face, pinned on the
            BENCH, and the words the path check runs under */
-        var wordsVals = {};
+        var wordsKept = (wipNow && wipNow.words) || (b.saveAs && ctx.draft && ctx.draft[String(b.saveAs) + 'Words']) || null;
+        var wordsVals = (wordsKept && typeof wordsKept === 'object') ? wordsKept : {};
         var published = null;            /* her room number once roomPut has said so */
         var publishedCode = null;
         var state = {};                       /* feature id -> true once matched */
@@ -12847,6 +12936,11 @@ window.OLS_TRANSPORT = {
             '</div>');
           host.appendChild(c);
           wireExitS(c);
+          /* the "type both words" refusal goes once she types (J2 L4 walk, 26 Nov 2026: it stayed
+             up, red, over two filled boxes) */
+          c.querySelectorAll('[data-w]').forEach(function (inp) {
+            inp.addEventListener('input', function () { var sy = c.querySelector('.pth-words-say'); if (sy) sy.hidden = true; });
+          });
           App.armButton(c.querySelector('.pye-start'), function () {
             if (Wd) {
               /* both words, and two different ones \u2014 the refusal explains itself
@@ -12868,6 +12962,10 @@ window.OLS_TRANSPORT = {
               }
               wordsVals = vals;
             }
+            /* the typing box opens at the top of the page (J2 L4 walk, 26 Nov 2026): Start writing sits
+               at the foot of a long plan, and the bench drew under a page still scrolled down, so she
+               landed among the ready-made lines with her five jobs and her room out of sight above */
+            global.scrollTo(0, 0);
             bench();
           }, { repeat: true });   /* a refused press (empty or same words) must leave the button alive \u2014 App.armButton is one-shot by default, and the L4 wrong-path walk found Start dead after its own refusal (14 Sep 2026) */
         }
@@ -12918,8 +13016,14 @@ window.OLS_TRANSPORT = {
           var c = el('<div class="card pyrun-card pye-bench" data-build="' + esc(b.id || '') + '">' +
             '<h2 class="pyrun-goal">' + fmtBold(b.goalLine || '') + '</h2>' +
             pinnedHtml +
-            '<h3 class="pye-strip-h">' + esc(b.checklistLabel || cfg.checklistLabel || '') + '</h3>' +
-            '<ol class="pyf-list pye-strip">' + jobs + '</ol>' +
+            /* a build that opens straight on the bench (the optional twist has no plan face) shows its own
+               numbered steps here, and a build with no jobs gets no "five jobs" heading over an empty
+               list (J2 L4 walk, 26 Nov 2026: the twist showed neither its steps nor any jobs) */
+            (b.optional && b.brief ? '<p class="pye-plan-brief pye-bench-brief">' + fmtBold(b.brief) + '</p>' : '') +
+            (feats.length
+              ? '<h3 class="pye-strip-h">' + esc(b.checklistLabel || cfg.checklistLabel || '') + '</h3>' +
+                '<ol class="pyf-list pye-strip">' + jobs + '</ol>'
+              : '') +
             specHtml +
             '<div class="pye-host"></div>' +
             (b.starter && b.starter.length && !starterUsed
@@ -12935,9 +13039,17 @@ window.OLS_TRANSPORT = {
             '<div class="pyrun-verdict" hidden></div>' +
             pubHtml +
             exitRowS +
+            /* THE REFUSABLE EXTRA HAS ITS WAY OUT ON THE CARD (DFM 265c), as the tray build's does: a pupil
+               who said yes to the twist and cannot finish it is one press from the rest of the lesson
+               (J2 L4 walk, 26 Nov 2026: the twist bench had no way on but a pass) */
+            (b.optional && !isExtraS && (b.stopLabel || cfg.stopLabel)
+              ? '<div class="rung-actions pyrun-exit-row"><button class="ghost-btn pyrun-stop" type="button">' +
+                esc(b.stopLabel || cfg.stopLabel) + '</button></div>'
+              : '') +
             '</div>');
           host.appendChild(c);
           wireExitS(c);
+          if (c.querySelector('.pyrun-stop')) App.armButton(c.querySelector('.pyrun-stop'), function () { done(); });
           wireHelpRow(c, b);
 
           var ed = PyRun.editor(c.querySelector('.pye-host'),
@@ -13084,12 +13196,15 @@ window.OLS_TRANSPORT = {
               return;
             }
             keptCode = code;
+            keepWip(code);
             verdict.hidden = true;
             runBtn.disabled = true;
             attempts++;
             replies = [];
             if (chat) chat.clear();
             needConsole().running();
+            /* the last run's path check goes when a new run starts (J2 L4 walk, 26 Nov 2026) */
+            if (l4host) l4host.innerHTML = '';
             if (cfg.waitingSay) PyRun.waitNote(runBtn, cfg.waitingSay);
             var storyS = PyRun.storyRouter(cfg, needChat);
             liveRun = PyRun.start(code, {
@@ -13191,9 +13306,12 @@ window.OLS_TRANSPORT = {
                   });
                   var stoppedAll = ordered.length > 0 && ordered.every(function (r) { return r.stopped; });
                   paintJobs(ordered, true, stoppedAll);
-                  var all = ordered.every(function (r) { return r.ok; });
+                  var jobsAll = ordered.every(function (r) { return r.ok; });
+                  /* every job done, but the shape's capital words still in her room: not ready to publish */
+                  var caps = jobsAll ? PyRun.leftoverCaps(code, b.placeholders || cfg.placeholders) : [];
+                  var all = jobsAll && !caps.length;
                   if (attempts === 1 && !b.optional) featureFirst = ordered.filter(function (r) { return r.ok; }).length;
-                  settleStaged(res, all, ordered, c, verdict, ed, runBtn, false, true);
+                  settleStaged(res, all, ordered, c, verdict, ed, runBtn, false, true, caps);
                   setPublish(all);
                 });
                 return;
@@ -13216,19 +13334,26 @@ window.OLS_TRANSPORT = {
           };
         }
 
-        function settleStaged(res, ok, results, c, verdict, ed, runBtn, usesMissing, l4) {
+        function settleStaged(res, ok, results, c, verdict, ed, runBtn, usesMissing, l4, caps) {
           var n = (results || []).filter(function (r) { return r.ok; }).length;
+          /* every job done but capital words from the shape still in her room (J2 L4 walk, 26 Nov):
+             the card's own heading and sentence, with the phrases named */
+          var capsLeft = !ok && caps && caps.length ? caps : null;
           /* ---- THE HEADING IS COMPUTED FROM THE FEATURE LIST (J5) ----------
              His exhibit: "ALL FOUR" printed over a count of 3/3, at the exact
              moment of her success. The label was AUTHORED and the count was
              derived, so the two could disagree and one day did. Now only one of
              them is a fact and the other is made from it. */
+          /* a build with no jobs never says "all five jobs done" (J2 L4 walk, 26 Nov 2026: the twist did) */
+          var hasJobs = !!(b.features || []).length;
           var head = ok
-            ? fill(cfg.matchedAllLabel || b.matchedAllLabel || cfg.matchedLabel || 'MATCHED', n)
-            : fill(cfg.notYetLabel || 'NOT YET', n);
+            ? fill(hasJobs ? (cfg.matchedAllLabel || b.matchedAllLabel || cfg.matchedLabel || 'MATCHED')
+                           : (b.matchedLabel || cfg.matchedLabel || 'MATCHED'), n)
+            : fill((capsLeft && cfg.capsLabel) || cfg.notYetLabel || 'NOT YET', n);
           var say = ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
                        : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
                                       : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay));
+          if (capsLeft && cfg.capsSay) say = String(cfg.capsSay).replace('{caps}', capsLeft.join(', '));
           /* ONE ROW PER JOB, IN THE SAME WORDS AS THE PLAN AND THE STRIP \u2014 she
              reads the same sentence in all three places (DFM 144). */
           var rows = (results || []).map(function (r) {
@@ -13256,14 +13381,18 @@ window.OLS_TRANSPORT = {
             (rows ? '<ol class="pyv-list">' + rows + '</ol>' : '') +
             '<p class="pyrun-vsay">' + esc(fill(say, n)) + '</p>' +
             (nudges ? '<ol class="pyv-nudges">' + nudges + '</ol>' : '');
+          PyRun.verdictInView(verdict);
           if (!ok) { runBtn.disabled = false; return; }
           if (attempts === 1 && !(b.features || []).length) cleanFirst++;
           /* the Swap reads this draft \u2014 unchanged from the shape he approved */
           if (b.saveAs && ctx.saveDraft) {
             var keep = String(ed.value());
             if (keep.length <= 3000) {
-              var d = ctx.draft || {};
+              var d = App.state.draft || ctx.draft || {};
               d[String(b.saveAs)] = keep;
+              /* the passed room is kept; its half-way copy goes, so the draft stays small */
+              if (wipKey) { delete d[wipKey]; if (wipTimer) { clearTimeout(wipTimer); wipTimer = 0; } }
+              if (cfg.words && Object.keys(wordsVals).length) d[String(b.saveAs) + 'Words'] = wordsVals;
               ctx.saveDraft(d);
             }
           }
@@ -13273,6 +13402,9 @@ window.OLS_TRANSPORT = {
           if (cfg.publish && !b.optional) { runBtn.disabled = false; return; }
           ed.lock();
           c.querySelectorAll('.pyp-chip').forEach(function (n2) { n2.disabled = true; });
+          /* once the refusable extra works, its Continue is the way on: the skip row under it goes,
+             so two buttons that do the same thing never sit one above the other (J2 L4 cold read, 26 Nov 2026) */
+          var skipRow = c.querySelector('.pyrun-stop'); if (skipRow && skipRow.parentNode) skipRow.parentNode.hidden = true;
           if (cfg.extrasMode) {
             doneJobs[b.id] = true;
             var backS = c.querySelector('.pyrun-back');
@@ -13825,7 +13957,13 @@ window.OLS_TRANSPORT = {
           });
           if (!tray.children.length) tray.appendChild(el('<p class="pt-empty">' + esc(cfg.trayEmpty || PY_SAY.trayEmpty) + '</p>'));
           placed.forEach(function (si, i) {
-            var li = el('<li><span class="pyp-num">' + (i + 1) + '.</span>' + lineHtml(lines[si], 'placed', si) + '</li>');
+            /* HER LINES CARRY PYTHON'S OWN NUMBERS (J2 L4 walk, 26 Nov 2026). Under
+               five locked lines numbered 1-5 hers restarted at 1, so "SyntaxError ...
+               line 9" named a number that was on no line she could see \u2014 and every
+               lesson tells her to look "on that line". The program Python runs is the
+               locked lines then hers (codeOf), so hers count on from the last locked one.
+               With no locked lines this is i + 1, exactly as before. */
+            var li = el('<li><span class="pyp-num">' + (fixedTop.length + i + 1) + '.</span>' + lineHtml(lines[si], 'placed', si) + '</li>');
             /* BY CLASS, never "the first button in the li" \u2014 a gap-carrying row is
                not a <button> any more (DFM 267f), and the same habit is what killed
                "Start climbing" and then "Run the inspection again" (DFM 143a). */
@@ -13870,6 +14008,9 @@ window.OLS_TRANSPORT = {
           repliesB = [];
           if (chatB) chatB.clear();
           con.running();
+          /* the last run's path check goes when a new run starts (J2 L4 walk, 26 Nov 2026): it used to
+             stay up, still showing the old run's SyntaxError rows, while the new run was going */
+          var l4old = c.querySelector('.pyl4-host'); if (l4old) l4old.innerHTML = '';
           /* the assemble card owns a conversation too, and it was the one the
              confused walk was actually standing on when it reported a sleeping
              RUN with nothing beside it */
@@ -13973,6 +14114,7 @@ window.OLS_TRANSPORT = {
                 : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
                  : repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
                                   : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+            PyRun.verdictInView(verdict);
             if (ok) {
               /* the extras zone counts nothing: no first-try score, no bonus, no
                  record (DFM 265a). The tick a finished job earns is on the hub, for
@@ -13988,6 +14130,10 @@ window.OLS_TRANSPORT = {
               c.querySelectorAll('.pyrun-blank').forEach(function (n) { n.disabled = true; });
               /* 25 Nov live walk: matched means done, so the dead way back goes too. */
               c.querySelectorAll('.take-back').forEach(function (n) { n.remove(); });
+              /* A ROOM THAT ASKS STAYS RUNNABLE ONCE IT WORKS. Its steps send her back
+                 to RUN it with her other words, and the button had gone to sleep under
+                 them (J2 L4 walk, 26 Nov 2026: training build 3, and the extra jobs) */
+              if (chatB) runBtn.disabled = false;
               if (isExtra) {
                 doneJobs[b.id] = true;
                 /* ONE back control, not two. The ghost that has been sitting in the
@@ -14689,7 +14835,7 @@ window.OLS_TRANSPORT = {
           var ask = card.querySelector('.rly-leave-ask');
           ask.hidden = false;
           ask.innerHTML = '<b>' + esc(W.leaveTitle || '') + '</b><p>' +
-            esc(fill(W.leaveAsk, { done: playState.visited.length, all: limit })) + '</p>' +
+            esc(fill(W.leaveAsk, { done: playState.visited.length, all: Math.min(limit, pool.length) })) + '</p>' +
             '<div class="confirm-actions"><button class="ghost-btn rly-leave-yes" type="button">' + esc(W.leaveYes || '') + '</button> ' +
             '<button class="primary-btn rly-leave-no" type="button">' + esc(W.keepGoing || '') + '</button></div>';
           App.armButton(ask.querySelector('.rly-leave-yes'), function () { stopped = true; finish(false); });
@@ -14706,7 +14852,8 @@ window.OLS_TRANSPORT = {
           var head = card.querySelector('.rly-room');
           head.className = 'rly-room' + (room.mine ? ' is-mine' : '');
           head.textContent = headFor(room);
-          card.querySelector('.rly-count').textContent = fill(W.roomCount, { i: playState.visited.length, all: limit });
+          /* the count never promises more rooms than the class adventure holds (J2 L4 walk, 26 Nov 2026: "Room 4 of 5", then the end) */
+          card.querySelector('.rly-count').textContent = fill(W.roomCount, { i: playState.visited.length, all: Math.min(limit, pool.length) });
           chat.clear();   /* a story moves forward: every room starts a fresh transcript */
           chat.say('note', '\u2014 ' + headFor(room) + ' \u2014', '');
           codeFor(room).then(function (code) {

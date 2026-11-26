@@ -111,7 +111,7 @@
     "notYetLabel": "NOT WORKING YET",
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
-    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room has stopped and is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
@@ -209,7 +209,7 @@
        "    print( \"NEXT: door A\" )",
        "else:",
        "    print( what happens for anything else )",
-       "    print( \"NEXT: door A\" )"
+       "    print( \"NEXT: door B\" )"
       ],
       "shapeNote": "The two lines pushed in under the if belong to the if. They only run when the answer was the first word. The two lines pushed in under else run for anything else.",
       "check": {
@@ -219,7 +219,7 @@
        ],
        "usesSay": "It ran, but the fork line still has a single = on it. A single = puts something into a box (a variable). Asking whether two things are the same takes two: =="
       },
-      "matchedSay": "It works. The fork line asks a question now: is what the player typed the same as trolley? Press RUN again and type window when the room asks, to see the other road.",
+      "matchedSay": "It works. The fork line asks a question now: is what the player typed the same as trolley? Press RUN again and type the other word, to see the other road.",
       "notYetSay": "It is not working yet. Read what Python said in the console, then look at the fork line — the one that starts with if."
      }
     ],
@@ -238,14 +238,14 @@
     "intro": "You get the eight lines of a working room, out of order. Put them in the order that does these four things:",
     "steps": [
      "Say where the player is.",
-     "Ask the question.",
-     "The first road: if the player typed left, the room says what happens, then says its door line (the line that starts with NEXT: door).",
-     "The other road: for anything else, the room says what happens, then says its door line."
+     "Ask: left or right?",
+     "If the player typed left: the music room, then door A.",
+     "For anything else: the stairs, then door B."
     ],
-    "introAfter": "Click a line on the left to move it across into Your program, or drag it across. The lines that belong under the if and the else are already pushed in by four spaces — leave them as they are. You get one go, and you are shown the working order afterwards.",
+    "introAfter": "Click a line to move it across, or drag it. The lines under the if and the else are already pushed in by four spaces. You get one go, then you see the working order.",
     "item": {
      "id": "j2t4-corridor",
-     "prompt": "Put these eight lines in the order that makes the corridor room work.",
+     "prompt": "Say where the player is, then ask left or right. Left: the music room, then door A. Anything else: the stairs, then door B.",
      "blocks": [
       "    print(\"You turn left and find the music room open.\")",
       "choice = input(\"Do you go left or right? Type left or right.\")",
@@ -262,7 +262,12 @@
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "trayLabel": "The lines",
-    "checkLabel": "Check my program"
+    "checkLabel": "Check my program",
+    "pre": true,
+    "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
+    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
+    "lockedNote": "Move every line into Your program, then this button wakes up.",
+    "emptyNote": "Nothing here yet. Click or drag a line across."
    }
   },
   {
@@ -282,7 +287,7 @@
     "notYetLabel": "NOT WORKING YET",
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
-    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
@@ -467,7 +472,7 @@
     "notYetLabel": "NOT WORKING YET",
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
-    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said and which line it stopped at. Fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
@@ -569,7 +574,7 @@
      "doneSay": "It is room {n}. Nobody sees your name on it — only the number. Any classmate who plays the adventure might land in it.",
      "failSay": "Your room could not be sent just now. Press Publish again in a moment.",
      "changedSay": "You changed your room after publishing it. Press Publish again to send the new version.",
-     "continueLabel": "Play the class adventure",
+     "continueLabel": "See the optional twist",
      "skipLabel": "Carry on without publishing my room"
     },
     "builds": [
@@ -710,12 +715,24 @@
       "notYetSay": "It is not working yet. Read the console. A twist needs eight spaces in front of its if and its else, and each part of the twist needs a door line.",
       "runCheckedSay": "The twist is yours, so this card cannot tell you the exact words to expect. Press RUN, take the road with the twist in it, and answer the second question.",
       "finishLabel": "Finish this part and carry on",
-      "staged": true
+      "staged": true,
+      "matchedLabel": "IT WORKS",
+      "stopLabel": "Skip the twist and go to the class adventure"
      }
     ],
     "help": "This card comes in two parts. First you get ready, then you write your room.\n\n1. Read the five jobs your room has to do, and watch the film.\n2. Type the two words your player will be able to type. Your question must say them.\n3. Press Start writing.\n4. Click a line on the right to put it in your room, then change its CAPITAL words. Or press Put the shape in for me and change every CAPITAL word.\n5. Press RUN my room and play it. The path check under the five jobs shows which words reached a door.\n6. When all five jobs say done, press Publish my room to the class adventure.",
     "jobWord": "Job",
-    "chatPrints": true
+    "chatPrints": true,
+    "placeholders": [
+     "PLACE",
+     "SAY WHAT THE PLAYER CAN SEE",
+     "ASK YOUR QUESTION",
+     "FIRST",
+     "SECOND",
+     "SAY WHAT HAPPENS"
+    ],
+    "capsLabel": "NOT FINISHED YET",
+    "capsSay": "All five jobs work, but your room still has CAPITAL words from the shape in it: {caps}. Change them to your own words, then press RUN again."
    }
   },
   {
@@ -927,7 +944,11 @@
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "trayLabel": "The lines",
-    "checkLabel": "Check my program"
+    "checkLabel": "Check my program",
+    "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
+    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
+    "lockedNote": "Move every line into Your program, then this button wakes up.",
+    "emptyNote": "Nothing here yet. Click or drag a line across."
    }
   },
   {
@@ -959,7 +980,7 @@
     "notYetLabel": "NOT WORKING YET",
     "notCheckedLabel": "could not be checked",
     "continueLabel": "Continue",
-    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console underneath to see what Python said, fix that line, and press RUN again.",
+    "runDiedSay": "Your room stopped before it finished, so this card cannot say whether it works. Read the console under your room to see what Python said, fix that line, and press RUN again.",
     "waitingSay": "The room is waiting for the player to type. Look just below the RUN button for the box called The adventure. Type your choice in the reply space there and press Send.",
     "sendLabel": "Send",
     "consoleLabels": {
