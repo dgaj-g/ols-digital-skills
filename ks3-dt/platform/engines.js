@@ -2233,6 +2233,23 @@
         }
         return;
       }
+      /* Backspace in a line's leading spaces takes away one whole indent (back to the
+         last multiple of four), the way Tab and Enter put one in. Before this, one press
+         took one space, and a pupil leaving an if block had to press it four times
+         (J2 L4 live walk, 26 Nov). */
+      if (e.key === 'Backspace' && ta.selectionStart === ta.selectionEnd && ta.selectionStart > 0) {
+        var p0 = ta.selectionStart, bf = ta.value.slice(0, p0);
+        var ln = bf.slice(bf.lastIndexOf('\n') + 1);
+        if (/^ +$/.test(ln)) {
+          var cut = ln.length % 4 || 4;
+          e.preventDefault();
+          ta.value = bf.slice(0, p0 - cut) + ta.value.slice(p0);
+          ta.selectionStart = ta.selectionEnd = p0 - cut;
+          paint();
+          ta.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        return;
+      }
       if (e.key !== 'Tab') return;
       e.preventDefault();
       var a = ta.selectionStart, b = ta.selectionEnd;
@@ -6460,6 +6477,9 @@
                   '<button class="primary-btn pth-published-go" type="button">' + esc(P.continueLabel || cfg.continueLabel || 'Continue') + '</button></div>';
                 pubBtn = null;
                 App.armButton(box.querySelector('.pth-published-go'), goOn);
+                /* the card is the way on, so it is brought on screen (J2 L4 live walk, 26 Nov:
+                   at 1366x681 it drew half below the fold) */
+                PyRun.verdictInView(box.querySelector('.pth-published'));
               }).catch(function () {
                 /* honest, and never a dead end: the button comes back, the room
                    she wrote is still in the box, and a way on that pays nothing
@@ -6544,11 +6564,28 @@
                           : (b.pendingLabel || cfg.pendingLabel || 'not yet')));
               if (num) row.querySelector('.pyf-tag').insertBefore(num, row.querySelector('.pyf-tag').firstChild);
               var nu = row.querySelector('.pyf-nudge');
-              if (!ok && ran && !stopped && f.nudge) { nu.hidden = false; nu.textContent = f.nudge; }
+              var say = (!ok && ran && !stopped) ? jobNudge(f, results) : '';
+              if (say) { nu.hidden = false; nu.textContent = say; }
               else { nu.hidden = true; nu.textContent = ''; }
             });
           }
           paintJobs([], false);
+
+          /* AN ANSWER ABOUT CODE THAT IS NO LONGER THERE IS MARKED AS OLD (J2 L4 live
+             walk, 26 Nov 2026): after she edited, the last run's adventure and verdict
+             stayed bright on screen as if they described the new code. They stay
+             readable, since the nudges are what she is fixing from, but they dim, and
+             the room's own `staleSay` line says to press RUN again. */
+          var lastRun = null;
+          ed.area.addEventListener('input', function () {
+            if (lastRun == null) return;
+            var stale = String(ed.value()) !== lastRun;
+            [verdict, stage, l4host].forEach(function (n) { if (n) n.classList.toggle('is-stale', stale); });
+            var note = verdict.querySelector('.pyrun-stale');
+            if (stale && !note && cfg.staleSay && !verdict.hidden) {
+              verdict.insertAdjacentHTML('afterbegin', '<p class="pyrun-stale">' + esc(cfg.staleSay) + '</p>');
+            } else if (!stale && note) note.parentNode.removeChild(note);
+          });
 
           runBtn.onclick = function () {
             var code = ed.value();
@@ -6561,6 +6598,8 @@
             }
             keptCode = code;
             keepWip(code);
+            lastRun = String(code);
+            [verdict, stage, l4host].forEach(function (n) { if (n) n.classList.remove('is-stale'); });
             verdict.hidden = true;
             runBtn.disabled = true;
             attempts++;
@@ -6698,6 +6737,19 @@
           };
         }
 
+        /* A JOB THAT DEPENDS ON OTHERS WAITS FOR THEM (J2 L4 live walk, 26 Nov 2026):
+           "Both roads print the same words" was shown when one road had never run at
+           all. A feature may name `waitFor` (the jobs it compares) and `waitNudge`
+           (what to say until those pass); its own `nudge` is only said once they do. */
+        function jobNudge(f, results) {
+          if (!f) return '';
+          var w = f.waitFor || [];
+          var ready = w.every(function (id) {
+            var h = (results || []).find(function (r) { return r.id === id; });
+            return !!(h && h.ok);
+          });
+          return ready ? (f.nudge || '') : (f.waitNudge || '');
+        }
         function settleStaged(res, ok, results, c, verdict, ed, runBtn, usesMissing, l4, caps) {
           var n = (results || []).filter(function (r) { return r.ok; }).length;
           /* every job done but capital words from the shape still in her room (J2 L4 walk, 26 Nov):
@@ -6739,7 +6791,8 @@
           var nudges = (l4 && !ok) ? (results || []).filter(function (r) { return !r.ok; }).map(function (r) {
             var fi = -1, f = null;
             (b.features || []).forEach(function (x, i) { if (x.id === r.id) { f = x; fi = i; } });
-            return (f && f.nudge) ? '<li><b>' + esc(String(cfg.jobWord || 'Job') + ' ' + (fi + 1) + ':') + '</b> ' + esc(f.nudge) + '</li>' : '';
+            var say = jobNudge(f, results);
+            return say ? '<li><b>' + esc(String(cfg.jobWord || 'Job') + ' ' + (fi + 1) + ':') + '</b> ' + esc(say) + '</li>' : '';
           }).join('') : '';
           verdict.innerHTML = '<p class="pyrun-vtag">' + esc(head) + '</p>' +
             (rows ? '<ol class="pyv-list">' + rows + '</ol>' : '') +
@@ -8220,6 +8273,9 @@
           card.querySelector('.rly-count').textContent = fill(W.roomCount, { i: playState.visited.length, all: Math.min(limit, pool.length) });
           chat.clear();   /* a story moves forward: every room starts a fresh transcript */
           chat.say('note', '— ' + headFor(room) + ' —', '');
+          /* a classmate's room comes from the server and can take seconds: a line says
+             so, where the empty box used to sit silent (J2 L4 live walk, 26 Nov 2026) */
+          if (!room.house && codeCache[room.sn] == null && W.openingSay) chat.say('note', W.openingSay, '');
           codeFor(room).then(function (code) {
             if (stopped) return;
             if (code == null) {
