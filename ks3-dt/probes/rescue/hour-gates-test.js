@@ -341,14 +341,16 @@ const want = g => !ONLY || ONLY === String(g);
      ===================================================================================================== */
   if (want(8)) {
     head('GATE 8. gauges');
-    const gauge = () => ev(() => {
+    /* bare: plant a bare number as the label in the SAME step as the read; the hour rewrites the label every frame, so a plant in an earlier step is gone before the read */
+    const gauge = (bare) => ev((bare) => {
+      if (bare) document.getElementById('hgl').textContent = '25';
       const g = document.getElementById('hgauge'), l = document.getElementById('hgl'), b = g.querySelector('.hbar'), i = document.getElementById('hgb');
       const cs = getComputedStyle(b), r = b.getBoundingClientRect(), ri = i.getBoundingClientRect(), rl = l.getBoundingClientRect();
       const a = /rgba?\(([^)]+)\)/.exec(cs.borderTopColor), al = a ? (a[1].split(',')[3] == null ? 1 : parseFloat(a[1].split(',')[3])) : 0;
       const inner = r.width - 2 * (parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft));
       return { on: g.classList.contains('on') && r.width > 0 && r.height > 0, label: l.textContent.trim(), labelSeen: rl.height > 0 && rl.bottom <= r.top + 1,
         border: parseFloat(cs.borderTopWidth), alpha: al, w: Math.round(r.width), fill: +(ri.width / inner).toFixed(3), inView: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight };
-    });
+    }, !!bare);
     const whole = (g, text) => g.on && g.inView && g.labelSeen && g.label === text && WORDS.words(g.label) >= 5 && !/\d/.test(g.label) && g.border >= 1 && g.alpha >= 0.3 && g.w >= 200;
     await frozen('r_hog', 10);
     const g1 = await gauge();
@@ -369,8 +371,7 @@ const want = g => !ONLY || ONLY === String(g);
     must(s2.storm > s1.storm + 40, 'the lane strip shows the storm coming: its front moved ' + (s2.storm - s1.storm) + ' pixels between second 2 and second 30');
     /* controls */
     await frozen('r_hog', 10);
-    await ev(() => { document.getElementById('hgl').textContent = '25'; });
-    must(!whole(await gauge(), 'Time left before the river covers the rock'), 'control: a gauge with a bare number for a label is caught');
+    must(!whole(await gauge(true), 'Time left before the river covers the rock'), 'control: a gauge with a bare number for a label is caught');
     await frozen('r_hog', 10);
     await ev(() => { document.querySelector('#hgauge .hbar').style.border = '0'; });
     must(!whole(await gauge(), 'Time left before the river covers the rock'), 'control: a gauge with no outline is caught');

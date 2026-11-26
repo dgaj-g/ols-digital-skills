@@ -1503,7 +1503,7 @@
    "Rusty"
   ],
   "feedback": [
-   "Billy is not stuck inside any more. The gap takes the name you type."
+   "who is the name of the gap. The winch asks for the name you put into it."
   ],
   "x": {
    "code": [
@@ -1547,7 +1547,7 @@
    "Rusty"
   ],
   "feedback": [
-   "who is the name of the gap. The winch asks for the name you put into it."
+   "Billy is not stuck inside any more. The gap takes the name you type."
   ],
   "x": {
    "code": [
@@ -2009,7 +2009,7 @@
    ],
    "box": ">>>",
    "btn": [
-    "Run the plan [asleep]"
+    "Run the plan"
    ],
    "opts": [],
    "prints": "",
@@ -2724,7 +2724,7 @@
    ],
    "box": "...",
    "btn": [
-    "Run the plan [asleep]"
+    "Run the plan"
    ],
    "opts": [],
    "prints": "",
@@ -2981,9 +2981,9 @@
   "prose": [
    "You saw this: 1 new line inside dash changed 3 dashes.",
    "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "20 lines",
    "3 lines",
-   "1 line",
-   "20 lines"
+   "1 line"
   ],
   "feedback": [],
   "x": {
@@ -3008,9 +3008,9 @@
    "marked": [
     "You saw this: 1 new line inside dash changed 3 dashes.",
     "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "20 lines",
     "3 lines",
-    "1 line",
-    "20 lines"
+    "1 line"
    ],
    "platform": ""
   }
@@ -3023,9 +3023,53 @@
   "prose": [
    "You saw this: 1 new line inside dash changed 3 dashes.",
    "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "20 lines",
    "3 lines",
-   "1 line",
-   "20 lines"
+   "1 line"
+  ],
+  "feedback": [
+   "20 lines is the long way. You would add 1 line at every call. Add the line once, inside dash."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "def dash():",
+      "    print(\"run\")",
+      "    print(\"jump\")",
+      "    print(\"run\")"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next [asleep]"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: 1 new line inside dash changed 3 dashes.",
+    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "20 lines",
+    "3 lines",
+    "1 line"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "l_close",
+  "page": 1,
+  "words": 40,
+  "longest": 11,
+  "prose": [
+   "You saw this: 1 new line inside dash changed 3 dashes.",
+   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "20 lines",
+   "3 lines",
+   "1 line"
   ],
   "feedback": [
    "3 was the number of trees. The new line goes inside dash once."
@@ -3052,9 +3096,9 @@
    "marked": [
     "You saw this: 1 new line inside dash changed 3 dashes.",
     "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "20 lines",
     "3 lines",
-    "1 line",
-    "20 lines"
+    "1 line"
    ],
    "platform": ""
   }
@@ -3067,9 +3111,9 @@
   "prose": [
    "You saw this: 1 new line inside dash changed 3 dashes.",
    "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
+   "20 lines",
    "3 lines",
-   "1 line",
-   "20 lines"
+   "1 line"
   ],
   "feedback": [
    "Yes. Add it once inside dash. All 20 dashes will swim."
@@ -3096,53 +3140,9 @@
    "marked": [
     "You saw this: 1 new line inside dash changed 3 dashes.",
     "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
+    "20 lines",
     "3 lines",
-    "1 line",
-    "20 lines"
-   ],
-   "platform": ""
-  }
- },
- {
-  "step": "l_close",
-  "page": 1,
-  "words": 40,
-  "longest": 11,
-  "prose": [
-   "You saw this: 1 new line inside dash changed 3 dashes.",
-   "Imagine your plan has 20 lines that say dash(). Every dash must also print the word swim. How many lines do you add?",
-   "3 lines",
-   "1 line",
-   "20 lines"
-  ],
-  "feedback": [
-   "20 lines is the long way. You would add 1 line at every call. Add the line once, inside dash."
-  ],
-  "x": {
-   "code": [
-    {
-     "k": "",
-     "lines": [
-      "def dash():",
-      "    print(\"run\")",
-      "    print(\"jump\")",
-      "    print(\"run\")"
-     ]
-    }
-   ],
-   "box": "",
-   "btn": [
-    "Back",
-    "Next"
-   ],
-   "opts": [],
-   "prints": "",
-   "marked": [
-    "You saw this: 1 new line inside dash changed 3 dashes.",
-    "Imagine your plan has 20 lines that say `dash()`. Every dash must also print the word swim. How many lines do you add?",
-    "3 lines",
-    "1 line",
-    "20 lines"
+    "1 line"
    ],
    "platform": ""
   }
@@ -3382,7 +3382,7 @@
    ],
    "box": "...",
    "btn": [
-    "My function is finished [asleep]"
+    "My function is finished"
    ],
    "opts": [],
    "prints": "",
@@ -4054,9 +4054,9 @@
   "prose": [
    "You saw this: the loop called rescue once for each name in gang.",
    "The gang grows to 10 animals. How many times does the loop call rescue?",
-   "1 time",
    "10 times",
-   "3 times"
+   "3 times",
+   "1 time"
   ],
   "feedback": [],
   "x": {
@@ -4080,9 +4080,9 @@
    "marked": [
     "You saw this: the loop called `rescue` once for each name in `gang`.",
     "The gang grows to 10 animals. How many times does the loop call `rescue`?",
-    "1 time",
     "10 times",
-    "3 times"
+    "3 times",
+    "1 time"
    ],
    "platform": ""
   }
@@ -4095,52 +4095,9 @@
   "prose": [
    "You saw this: the loop called rescue once for each name in gang.",
    "The gang grows to 10 animals. How many times does the loop call rescue?",
-   "1 time",
    "10 times",
-   "3 times"
-  ],
-  "feedback": [
-   "rescue is written once. The loop calls it once for every name."
-  ],
-  "x": {
-   "code": [
-    {
-     "k": "",
-     "lines": [
-      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
-      "for who in gang:",
-      "    rescue(who)"
-     ]
-    }
-   ],
-   "box": "",
-   "btn": [
-    "Back",
-    "Next [asleep]"
-   ],
-   "opts": [],
-   "prints": "",
-   "marked": [
-    "You saw this: the loop called `rescue` once for each name in `gang`.",
-    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
-    "1 time",
-    "10 times",
-    "3 times"
-   ],
-   "platform": ""
-  }
- },
- {
-  "step": "d_close",
-  "page": 1,
-  "words": 33,
-  "longest": 13,
-  "prose": [
-   "You saw this: the loop called rescue once for each name in gang.",
-   "The gang grows to 10 animals. How many times does the loop call rescue?",
-   "1 time",
-   "10 times",
-   "3 times"
+   "3 times",
+   "1 time"
   ],
   "feedback": [
    "Yes. The loop calls rescue once for every name in the list."
@@ -4166,9 +4123,9 @@
    "marked": [
     "You saw this: the loop called `rescue` once for each name in `gang`.",
     "The gang grows to 10 animals. How many times does the loop call `rescue`?",
-    "1 time",
     "10 times",
-    "3 times"
+    "3 times",
+    "1 time"
    ],
    "platform": ""
   }
@@ -4181,9 +4138,9 @@
   "prose": [
    "You saw this: the loop called rescue once for each name in gang.",
    "The gang grows to 10 animals. How many times does the loop call rescue?",
-   "1 time",
    "10 times",
-   "3 times"
+   "3 times",
+   "1 time"
   ],
   "feedback": [
    "There were 3 names in gang tonight. The loop calls rescue once for every name."
@@ -4209,9 +4166,52 @@
    "marked": [
     "You saw this: the loop called `rescue` once for each name in `gang`.",
     "The gang grows to 10 animals. How many times does the loop call `rescue`?",
-    "1 time",
     "10 times",
-    "3 times"
+    "3 times",
+    "1 time"
+   ],
+   "platform": ""
+  }
+ },
+ {
+  "step": "d_close",
+  "page": 1,
+  "words": 33,
+  "longest": 13,
+  "prose": [
+   "You saw this: the loop called rescue once for each name in gang.",
+   "The gang grows to 10 animals. How many times does the loop call rescue?",
+   "10 times",
+   "3 times",
+   "1 time"
+  ],
+  "feedback": [
+   "rescue is written once. The loop calls it once for every name."
+  ],
+  "x": {
+   "code": [
+    {
+     "k": "",
+     "lines": [
+      "gang = [\"Billy\", \"Bobby\", \"Conker\"]",
+      "for who in gang:",
+      "    rescue(who)"
+     ]
+    }
+   ],
+   "box": "",
+   "btn": [
+    "Back",
+    "Next"
+   ],
+   "opts": [],
+   "prints": "",
+   "marked": [
+    "You saw this: the loop called `rescue` once for each name in `gang`.",
+    "The gang grows to 10 animals. How many times does the loop call `rescue`?",
+    "10 times",
+    "3 times",
+    "1 time"
    ],
    "platform": ""
   }
@@ -4820,7 +4820,7 @@
    ],
    "box": "...",
    "btn": [
-    "Run the plan [asleep]"
+    "Run the plan"
    ],
    "opts": [],
    "prints": "",

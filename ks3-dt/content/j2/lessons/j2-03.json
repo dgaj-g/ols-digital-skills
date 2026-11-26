@@ -1044,7 +1044,7 @@
     "items": [
      {
       "id": "j2x3-1",
-      "stem": "You add this line to a bot: name = input(\"What is your name?\"). What does Python do when it reaches that line?",
+      "stem": "You add this line to a bot: `name = input(\"What is your name?\")`. What does Python do when it reaches that line?",
       "options": [
        "It puts the question on screen and carries straight on to the next line",
        "It puts the question on screen and waits there until somebody types an answer",

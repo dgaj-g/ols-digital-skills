@@ -109,7 +109,7 @@
      },
      {
       "id": "j3x4-3",
-      "stem": "You type cross(\"Dot\"). What goes into who?",
+      "stem": "You type `cross(\"Dot\")`. What goes into `who`?",
       "options": [
        "Dot",
        "who",

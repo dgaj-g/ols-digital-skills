@@ -769,6 +769,18 @@
     "why": "V85 (16 Nov): the J3 L7 help standard (job line, Stuck? Show me) and the late shift; screens cut to 25 words or fewer",
     "last": true
   },
+  "common.errBetweenAnd": {
+    "from": null,
+    "to": "Put AND between the two numbers, like temp_c BETWEEN 20 AND 22.",
+    "why": "26 Nov live walk: day_no BETWEEN 40 46 (no AND) got the general line about a column name and a sign, which sent her the wrong way; this names the missing word",
+    "last": true
+  },
+  "common.errNotPlace": {
+    "from": null,
+    "to": "Put NOT first, or straight after AND or OR. Like this: NOT area = \"Old Town\".",
+    "why": "26 Nov live walk: area = \"Old Town\" NOT (NOT typed last) got the general line about a column name and a sign; this says where NOT goes",
+    "last": true
+  },
   "common.errSide": {
     "from": null,
     "to": "Each side of OR needs its own column name. Write the column again after OR.",

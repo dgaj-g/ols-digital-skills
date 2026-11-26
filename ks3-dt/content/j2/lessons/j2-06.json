@@ -673,7 +673,7 @@
      },
      {
       "id": "j2x6-2",
-      "stem": "B3 holds 1,200 and C3 holds 25. What does =B3*C3 show?",
+      "stem": "B3 holds 1,200 and C3 holds 25. What does `=B3*C3` show?",
       "options": [
        "30000",
        "1225",
@@ -682,7 +682,7 @@
      },
      {
       "id": "j2x6-3",
-      "stem": "D3 holds =B3*C3. You fill it down one row. What does D4 read?",
+      "stem": "D3 holds `=B3*C3`. You fill it down one row. What does D4 read?",
       "options": [
        "=B4*C4",
        "=B3*C3",

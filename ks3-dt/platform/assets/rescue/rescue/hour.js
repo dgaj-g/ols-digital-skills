@@ -120,7 +120,7 @@
     el.hsub.innerHTML = o.sub ? rich(o.sub) : '';
     H.help(o.help || []);
     cls(el.hfb, 'short', !!o.short);
-    cls(el.hrun, 'on', !!o.run); if (o.run) el.hrun.textContent = o.run; el.hrun.disabled = !!o.runOff;
+    cls(el.hrun, 'on', !!o.run); if (o.run) el.hrun.textContent = o.run; runOK = !o.runOff; runShow();
     if (!o.keepFb) H.fb('', '');
     if (!o.gauge) H.gauge(null);
     el.hprompt.style.display = o.noBox ? 'none' : '';
@@ -135,8 +135,14 @@
     el.hgl.textContent = o.label; el.hgb.style.width = (clamp(o.frac, 0, 1) * 100).toFixed(1) + '%'; cls(el.hgb.parentNode, 'low', o.frac < 0.34);
   };
   /* the Run button lights when her code is ready. Enter on an empty line presses it. */
-  H.runReady = function (on) { el.hrun.disabled = !on; };
-  function runKey() { return !!(H.onRun && el.hrun.classList.contains('on') && !el.hrun.disabled && !PG); }
+  /* 26 Nov walk: she typed the jump line and pressed Run the plan, and nothing happened, because the line only
+     counts after Enter. So while a line sits typed in the box, Run is lit too: pressing it hands in the line
+     first (just as Enter does) and then runs, if the plan is ready. */
+  var runOK = false;
+  function typed() { return !!(H.input && window.HourJudge.norm(el.hinp.value)); }
+  function runShow() { el.hrun.disabled = !(runOK || (el.hrun.classList.contains('on') && typed())); }
+  H.runReady = function (on) { runOK = !!on; runShow(); };
+  function runKey() { return !!(H.onRun && el.hrun.classList.contains('on') && runOK && !PG); }
   /* the words her code prints, one at a time. words = [{ w, c: 'hot' | 'done' | 'bad' }] */
   H.prints = function (words) {
     want.prints = !!words; cls(el.hprints, 'on', !!words); cls(body, 'h-prints', !!words); cls(el.hlane, 'up', !!words);
@@ -172,15 +178,16 @@
     cls(el.hprompt, 'wait', false); el.hinp.disabled = false; el.hinp.value = o.pre || '';
     if (!OPT.freeze) el.hinp.focus({ preventScroll: true });
   };
-  H.wait = function () { H.input = null; cls(el.hprompt, 'wait', true); el.hinp.value = ''; el.hinp.disabled = true; };
+  H.wait = function () { H.input = null; cls(el.hprompt, 'wait', true); el.hinp.value = ''; el.hinp.disabled = true; runShow(); };
   function submit(text) {
-    var o = H.input; if (!o) return;
+    var o = H.input; if (!o) return false;
     var t = window.HourJudge.norm(text);
-    if (!t && !o.empty) return;
+    if (!t && !o.empty) return false;
     var res = o.judge(text);
-    if (!res.ok) { o.tries++; jolt(res.msg); el.hinp.value = o.pre || ''; if (o.bad) o.bad(res, text, o.tries); return; }
+    if (!res.ok) { o.tries++; jolt(res.msg); el.hinp.value = o.pre || ''; if (o.bad) o.bad(res, text, o.tries); runShow(); return false; }
     Snd.move('check'); H.fb(res.msg || '', 'good'); H.input = null; el.hinp.value = '';
-    o.good(res, text);
+    o.good(res, text); runShow();
+    return true;
   }
   H.submit = submit;
 
@@ -385,7 +392,12 @@
     el.hinp.addEventListener('dragover', function (e) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'none'; });
     el.hinp.addEventListener('beforeinput', function (e) { if (/^insertFrom|^insertReplacementText$/.test(e.inputType || '')) e.preventDefault(); });
     el.hnext.addEventListener('click', pageNext); el.hback.addEventListener('click', pageBack);
-    el.hrun.addEventListener('click', function () { if (H.onRun && !el.hrun.disabled) H.onRun(); });
+    el.hinp.addEventListener('input', runShow);
+    el.hrun.addEventListener('click', function () {
+      if (el.hrun.disabled) return;
+      if (typed()) { var ok = submit(el.hinp.value); if (H.input) el.hinp.value = H.input.pre || ''; runShow(); if (!ok) return; }
+      if (H.onRun && runOK) H.onRun();
+    });
     /* in the CAPTURE phase: hour-keys.js stops every key at the document, so a bubble listener here would never hear it */
     window.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !H.paused && e.target !== el.hinp && e.target !== el.hrun && runKey()) { e.preventDefault(); H.onRun(); } }, true);
     /* the 5 questions are the platform's own step after the story: her place is kept, so the story waits for her */

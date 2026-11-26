@@ -832,11 +832,19 @@
        marker keeps that authorable from the lesson JSON instead of hard-coding
        one question's layout, so every lesson gets it. Everything stays escaped;
        only the line break and the code wrapper are markup. */
+    /* 26 Nov walk (J3 L4 Do-Now): a stem with code INSIDE the sentence — "A line reads
+       `print("Seats left: " + str(120 - 87))`. What does the console show?" — showed the
+       backticks raw, because only a line that is nothing but code was wrapped. Thirteen
+       Do-Now questions in J2 and J3 are written that way. Code inside a sentence is now set
+       in the code face too; the text is escaped first, and esc() leaves backticks alone. */
+    function inlineCode(html) {
+      return html.replace(/`([^`]+)`/g, '<code class="q-icode">$1</code>');
+    }
     function stemHtml(s) {
       return String(s == null ? '' : s).split('\n').map(function (line) {
-        var m = /^\s*`(.+)`\s*$/.exec(line);
+        var m = /^\s*`([^`]+)`\s*$/.exec(line);
         if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
-        return line.trim() ? '<span class="q-line">' + esc(line.trim()) + '</span>' : '';
+        return line.trim() ? '<span class="q-line">' + inlineCode(esc(line.trim())) + '</span>' : '';
       }).join('');
     }
 
@@ -3737,6 +3745,18 @@
     App.armButton(c.querySelector('.story-on'), function () { ctx.next(); });
   }
 
+  /* 26 Nov walk (J3 L6 results card): the last card repeats each question, and it showed
+     `day_no BETWEEN 40 AND 46` with the backticks raw. It now sets the stem as the question
+     did: a line that is all code in the code block, code inside a sentence in the code face.
+     Escaped first; only the line spans and the code wrapper are markup. */
+  function fbStemHtml(s) {
+    return String(s == null ? '' : s).split('\n').map(function (line) {
+      var m = /^\s*`([^`]+)`\s*$/.exec(line);
+      if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
+      return line.trim() ? '<span class="q-line">' + esc(line.trim()).replace(/`([^`]+)`/g, '<code class="q-icode">$1</code>') + '</span>' : '';
+    }).join('');
+  }
+
   Engines.exitcheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
@@ -3901,7 +3921,7 @@
             var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i], (it.options || [])[payload.answers[i]]) : f.explain;
             return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
               '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
-              (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + esc(it.stem) + '</p>' : '') +
+              (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + fbStemHtml(it.stem) + '</p>' : '') +
               (!f.correct && it.options[f.correctIdx] ? '<p class="exit-fb-ans">The answer: ' + esc(it.options[f.correctIdx]) + '</p>' : '') +
               (why ? '<p class="exit-fb-why">' + esc(why) + '</p>' : '') + '</div>';
           }).join('');

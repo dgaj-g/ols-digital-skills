@@ -294,7 +294,7 @@
    "lesson": "j3-04",
    "topic": "Defined is not called",
    "thread": "kp-function",
-   "stem": "Eimear types def cross(): and the three lines pushed in under it, and nothing else. She presses Enter. What happens?",
+   "stem": "Eimear types `def cross():` and the three lines pushed in under it, and nothing else. She presses Enter. What happens?",
    "options": [
     "Nothing happens yet: the function waits until it is called",
     "The three lines run once",
@@ -320,7 +320,7 @@
    "lesson": "j3-04",
    "topic": "The gap",
    "thread": "kp-function",
-   "stem": "Caoimhe writes def cross(who): as the first line of a function. What is who?",
+   "stem": "Caoimhe writes `def cross(who):` as the first line of a function. What is `who`?",
    "options": [
     "The gap, which is filled by whatever the call puts in the brackets",
     "The name of the function",
@@ -333,7 +333,7 @@
    "lesson": "j3-04",
    "topic": "Filling the gap",
    "thread": "kp-function",
-   "stem": "A function starts def cross(who): and Aisling types cross(\"Billy\"), then cross(\"Bobby\"). What is in who for the second call?",
+   "stem": "A function starts `def cross(who):` and Aisling types `cross(\"Billy\")`, then `cross(\"Bobby\")`. What is in `who` for the second call?",
    "options": [
     "Bobby",
     "Billy",
@@ -346,7 +346,7 @@
    "lesson": "j3-04",
    "topic": "Change once",
    "thread": "kp-function",
-   "stem": "A plan has 5 calls of dash(). Méabh adds one line inside the function dash. How many of the 5 calls use the new line?",
+   "stem": "A plan has 5 calls of `dash()`. Méabh adds one line inside the function `dash`. How many of the 5 calls use the new line?",
    "options": [
     "All 5",
     "Only the first",
@@ -359,7 +359,7 @@
    "lesson": "j3-04",
    "topic": "A function in a loop",
    "thread": "kp-function",
-   "stem": "Sinéad writes gang = [\"Billy\", \"Bobby\", \"Dot\"], then a loop, for animal in gang:, with rescue(animal) pushed in under it. How many times does rescue run?",
+   "stem": "Sinéad writes `gang = [\"Billy\", \"Bobby\", \"Dot\"]`, then a loop, `for animal in gang:`, with `rescue(animal)` pushed in under it. How many times does `rescue` run?",
    "options": [
     "3 times, once for each name in the list",
     "Once, for the whole list",
@@ -372,7 +372,7 @@
    "lesson": "j3-04",
    "topic": "Defining before calling",
    "thread": "kp-function",
-   "stem": "Gráinne types rescue(\"Billy\") on the first line, and def rescue(who): further down. What happens when the program runs?",
+   "stem": "Gráinne types `rescue(\"Billy\")` on the first line, and `def rescue(who):` further down. What happens when the program runs?",
    "options": [
     "Python stops with an error, because rescue is not defined yet when it is called",
     "Billy is rescued",
@@ -398,7 +398,7 @@
    "lesson": "j3-05",
    "topic": "Defined, never called",
    "thread": "kp-debug",
-   "stem": "Ciarán's program has def fog_horn(): with a print pushed in under it. It runs with no red lines, and nothing happens. Why?",
+   "stem": "Ciarán's program has `def fog_horn():` with a `print` pushed in under it. It runs with no red lines, and nothing happens. Why?",
    "options": [
     "fog_horn is defined, but no line calls it",
     "The print line is broken",
@@ -411,7 +411,7 @@
    "lesson": "j3-05",
    "topic": "Nothing handed back",
    "thread": "kp-debug",
-   "stem": "bearing() prints 214 and has no return. Orla writes b = bearing(). What is in b?",
+   "stem": "`bearing()` prints 214 and has no `return`. Orla writes `b = bearing()`. What is in `b`?",
    "options": [
     "None",
     "214",

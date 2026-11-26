@@ -1201,7 +1201,7 @@
        while her class was on Lesson 5. Now: today's lesson (the newest open one she has not finished) comes first;
        with none, the first lesson she missed opens as a catch-up, exactly as its tile does. */
     /* 25 Nov live walk: a catch-up she has already started (she left it mid-way) comes before one she has not. */
-    var doneCount = 0, continueTarget = null, catchupTarget = null, catchupStarted = false;
+    var doneCount = 0, continueTarget = null, continueStarted = false, catchupTarget = null, catchupStarted = false;
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
       var started = !!(App.state.me && App.state.me.L && App.state.me.L[String(le.num)]);
@@ -1209,7 +1209,7 @@
       else if (st.flagged) {
         if (!catchupTarget || (started && !catchupStarted)) { catchupTarget = le; catchupStarted = started; }
       }
-      else if (st.accessible && st.ready) continueTarget = le;
+      else if (st.accessible && st.ready) { continueTarget = le; continueStarted = started; }
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -1227,7 +1227,8 @@
     var cta = $('#hero-cta');
     if (continueTarget) {
       cta.hidden = false;
-      cta.textContent = (doneCount ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' — ' + continueTarget.title;
+      /* 26 Nov walk (J3 L1): a lesson she left part-way said "Begin:" when no lesson was finished yet. */
+      cta.textContent = ((doneCount || continueStarted) ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' — ' + continueTarget.title;
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
     } else if (catchupTarget) {
       cta.hidden = false;

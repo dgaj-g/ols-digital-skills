@@ -604,6 +604,14 @@ ol { text-align: left; }
   background: var(--field); border: 1.5px solid var(--line-l);
   border-radius: var(--r-md); color: var(--ols-blue);
 }
+/* 26 Nov walk (J3 L4 Do-Now): code inside a question sentence, set in the code face
+   rather than shown with raw backticks round it. */
+.q-icode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em; font-weight: 600; padding: 1px 6px; border-radius: 6px;
+  background: var(--field); border: 1px solid var(--line-l); color: var(--ols-blue);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
 .q-options { display: grid; gap: 10px; }
 .q-opt {
   display: flex; align-items: center; gap: 13px; text-align: left;
@@ -3548,6 +3556,9 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyp-empty {
   list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic; margin: 2px 0; padding: 6px 0;
 }
+/* 26 Nov walk (J3 L2): the grid above caught the empty line too, so "Nothing here yet\2026 "
+   sat in the 28px number column, one word to a line. It is one plain line again. */
+.pyp-list li.pyp-empty { display: block; }
 .pyrun-line {
   display: block; width: 100%; text-align: left; font: inherit; cursor: grab; touch-action: none;
   -webkit-user-select: none; user-select: none;
@@ -6139,7 +6150,7 @@ window.OLS_TRANSPORT = {
        while her class was on Lesson 5. Now: today's lesson (the newest open one she has not finished) comes first;
        with none, the first lesson she missed opens as a catch-up, exactly as its tile does. */
     /* 25 Nov live walk: a catch-up she has already started (she left it mid-way) comes before one she has not. */
-    var doneCount = 0, continueTarget = null, catchupTarget = null, catchupStarted = false;
+    var doneCount = 0, continueTarget = null, continueStarted = false, catchupTarget = null, catchupStarted = false;
     coreLessons.forEach(function (le) {
       var st = lessonState(le);
       var started = !!(App.state.me && App.state.me.L && App.state.me.L[String(le.num)]);
@@ -6147,7 +6158,7 @@ window.OLS_TRANSPORT = {
       else if (st.flagged) {
         if (!catchupTarget || (started && !catchupStarted)) { catchupTarget = le; catchupStarted = started; }
       }
-      else if (st.accessible && st.ready) continueTarget = le;
+      else if (st.accessible && st.ready) { continueTarget = le; continueStarted = started; }
     });
     $('#ring-count').textContent = doneCount;
     var circ = 2 * Math.PI * 52;
@@ -6165,7 +6176,8 @@ window.OLS_TRANSPORT = {
     var cta = $('#hero-cta');
     if (continueTarget) {
       cta.hidden = false;
-      cta.textContent = (doneCount ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' \u2014 ' + continueTarget.title;
+      /* 26 Nov walk (J3 L1): a lesson she left part-way said "Begin:" when no lesson was finished yet. */
+      cta.textContent = ((doneCount || continueStarted) ? 'Continue: ' : 'Begin: ') + 'Lesson ' + continueTarget.num + ' \u2014 ' + continueTarget.title;
       cta.onclick = function () { App.openLesson(continueTarget.id, {}); };
     } else if (catchupTarget) {
       cta.hidden = false;
@@ -7498,11 +7510,19 @@ window.OLS_TRANSPORT = {
        marker keeps that authorable from the lesson JSON instead of hard-coding
        one question's layout, so every lesson gets it. Everything stays escaped;
        only the line break and the code wrapper are markup. */
+    /* 26 Nov walk (J3 L4 Do-Now): a stem with code INSIDE the sentence \u2014 "A line reads
+       `print("Seats left: " + str(120 - 87))`. What does the console show?" \u2014 showed the
+       backticks raw, because only a line that is nothing but code was wrapped. Thirteen
+       Do-Now questions in J2 and J3 are written that way. Code inside a sentence is now set
+       in the code face too; the text is escaped first, and esc() leaves backticks alone. */
+    function inlineCode(html) {
+      return html.replace(/`([^`]+)`/g, '<code class="q-icode">$1</code>');
+    }
     function stemHtml(s) {
       return String(s == null ? '' : s).split('\n').map(function (line) {
-        var m = /^\s*`(.+)`\s*$/.exec(line);
+        var m = /^\s*`([^`]+)`\s*$/.exec(line);
         if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
-        return line.trim() ? '<span class="q-line">' + esc(line.trim()) + '</span>' : '';
+        return line.trim() ? '<span class="q-line">' + inlineCode(esc(line.trim())) + '</span>' : '';
       }).join('');
     }
 
@@ -10403,6 +10423,18 @@ window.OLS_TRANSPORT = {
     App.armButton(c.querySelector('.story-on'), function () { ctx.next(); });
   }
 
+  /* 26 Nov walk (J3 L6 results card): the last card repeats each question, and it showed
+     `day_no BETWEEN 40 AND 46` with the backticks raw. It now sets the stem as the question
+     did: a line that is all code in the code block, code inside a sentence in the code face.
+     Escaped first; only the line spans and the code wrapper are markup. */
+  function fbStemHtml(s) {
+    return String(s == null ? '' : s).split('\n').map(function (line) {
+      var m = /^\s*`([^`]+)`\s*$/.exec(line);
+      if (m) return '<span class="q-code">' + esc(m[1]) + '</span>';
+      return line.trim() ? '<span class="q-line">' + esc(line.trim()).replace(/`([^`]+)`/g, '<code class="q-icode">$1</code>') + '</span>' : '';
+    }).join('');
+  }
+
   Engines.exitcheck = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
@@ -10567,7 +10599,7 @@ window.OLS_TRANSPORT = {
             var why = cfg.optionLines ? explainFor(f.explain, payload.answers[i], (it.options || [])[payload.answers[i]]) : f.explain;
             return '<div class="exit-fb ' + (f.correct ? 'good' : 'bad') + '">' +
               '<p class="exit-fb-verdict">' + (f.correct ? '&#10003; Correct' : '&#10007; Not quite') + '</p>' +
-              (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + esc(it.stem) + '</p>' : '') +
+              (cfg.optionLines && it.stem ? '<p class="exit-fb-q">' + fbStemHtml(it.stem) + '</p>' : '') +
               (!f.correct && it.options[f.correctIdx] ? '<p class="exit-fb-ans">The answer: ' + esc(it.options[f.correctIdx]) + '</p>' : '') +
               (why ? '<p class="exit-fb-why">' + esc(why) + '</p>' : '') + '</div>';
           }).join('');
