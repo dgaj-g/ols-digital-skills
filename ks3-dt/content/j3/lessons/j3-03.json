@@ -331,7 +331,7 @@
     "notYetLabel": "NOT YET",
     "progLabel": "The program",
     "matchedSay": "Those four steps are the whole shape of a playlist engine: make the list, add one, take one out, then print the first three.",
-    "notYetSay": "Not yet. Nothing on this card was typed by you, so this is not your mistake. Look at the console underneath. If Python stopped, Python’s own message is there, and under it there is one line in plain English telling you which line to look at. Read the console and the four lines above it side by side, and find the first line that is not the same. Then press RUN once more.",
+    "notYetSay": "Not yet. Nothing on this card was typed by you, so this is not your mistake. Look at the console under the program. If Python stopped, Python’s own message is there, and under it there is one line in plain English telling you which line to look at. Read the console and the four lines above it side by side, and find the first line that is not the same. Then press RUN once more.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "Make it, add one, take one out, print it",
@@ -411,7 +411,7 @@
      }
     ],
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
-    "runDiedSay": "The program stopped before it got to the end, so nothing could be checked. Nothing on this card was typed by you, so this is not your mistake. Read the console underneath to see what Python said, then press RUN once more.",
+    "runDiedSay": "The program stopped before it got to the end, so nothing could be checked. Nothing on this card was typed by you, so this is not your mistake. Read the console under the program to see what Python said, then press RUN once more.",
     "notCheckedLabel": "could not be checked"
    }
   },
@@ -476,7 +476,7 @@
     "matchedLabel": "IT WORKS",
     "notYetLabel": "NOT YET",
     "matchedSay": "The console says three. You started with three titles, added one and took one out.",
-    "notYetSay": "Not yet. Read the console underneath. Then look again at the line above your program, the one that shows the number your program should print.",
+    "notYetSay": "Not yet. Read the console under your program. Then look again at the line above your program, the one that shows the number your program should print.",
     "targetLead": "This is what it should print:",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
@@ -586,7 +586,7 @@
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
-    "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
+    "runDiedSay": "Your program stopped before it could be checked. Read the console under your program to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
     "notCheckedLabel": "could not be checked"
    }
   },
@@ -746,7 +746,7 @@
     "matchedAllLabel": "EVERY JOB DONE",
     "doneLabel": "done",
     "startLabel": "Start writing",
-    "runDiedSay": "Your engine stopped before it could be checked. Read the console underneath to see what Python said. None of the five jobs at the top has been marked wrong — they were never checked at all.",
+    "runDiedSay": "Your engine stopped before it could be checked. Read the console under your program to see what Python said. None of the five jobs at the top has been marked wrong — they were never checked at all.",
     "notCheckedLabel": "could not be checked"
    }
   },
@@ -775,7 +775,7 @@
     "matchedLabel": "IT WORKS",
     "notYetLabel": "NOT YET",
     "matchedSay": "It works. The console shows exactly what it should.",
-    "notYetSay": "Not yet. Read the console underneath and try again.",
+    "notYetSay": "Not yet. Read the console under your program and try again.",
     "targetLead": "This is what it should print:",
     "consoleLabels": {
      "title": "The console",
@@ -895,7 +895,7 @@
     "waitingSay": "Your program has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN switches back on as soon as your program has finished.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
-    "runDiedSay": "Your program stopped before it could be checked. Read the console underneath to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
+    "runDiedSay": "Your program stopped before it could be checked. Read the console under your program to see what Python said. Nothing has been marked wrong: the checking never ran at all.",
     "notCheckedLabel": "could not be checked",
     "allDoneLabel": "You have finished all three jobs — carry on with the lesson",
     "allDoneSay": "**All three jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen."
