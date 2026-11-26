@@ -43,7 +43,12 @@
      ]
     },
     "cta": "Accept the side quest",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start."
+    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "job": "Read about the side quest, then click Accept the side quest.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Click Accept the side quest at the bottom."
+    ]
    }
   },
   {
@@ -133,7 +138,13 @@
       "confirm": "I re-opened my file and my words were there"
      }
     ],
-    "help": "Work through the steps in order in a second tab — this tab is your checklist. Names matter: School and DT Work, spelled exactly, capitals and all — the inspection checks the real names."
+    "help": "Work through the steps in order in a second tab — this tab is your checklist. Names matter: School and DT Work, spelled exactly, capitals and all — the inspection checks the real names.",
+    "job": "Build your School and DT Work folders in Google Drive.",
+    "showMe": [
+     "Click Start. Open drive.google.com in a second tab.",
+     "Do each step there, then come back here.",
+     "When you finish a card, click the button under it."
+    ]
    }
   },
   {
@@ -173,7 +184,13 @@
      "title": "Getting into Drive and building your folders",
      "close": "Back to the inspection",
      "note": "The film shows the whole build — opening Drive, building School, and building DT Work inside it. The last part makes a test document; the inspection only checks the two folders."
-    }
+    },
+    "job": "Let the website check that your two folders are there.",
+    "showMe": [
+     "Click Run the inspection.",
+     "If something is missing, fix it in Drive.",
+     "Then click Try again."
+    ]
    }
   },
   {
@@ -282,7 +299,156 @@
       "confirm": "I know how to tell which cloud a file lives in"
      }
     ],
-    "help": "Follow the route exactly: My-School → Launch → Microsoft 365 Web Apps → the squares menu → OneDrive. If a sign-in appears at home, it is the normal school one."
+    "help": "Follow the route exactly: My-School → Launch → Microsoft 365 Web Apps → the squares menu → OneDrive. If a sign-in appears at home, it is the normal school one.",
+    "job": "Build the same two folders in your OneDrive.",
+    "showMe": [
+     "Click Start, then follow each card.",
+     "Follow the card: open My-School, click Launch, then Microsoft 365.",
+     "When you finish a card, click the button under it."
+    ]
+   }
+  },
+  {
+   "id": "extras",
+   "engine": "items",
+   "title": "Extra jobs",
+   "minutes": 0,
+   "config": {
+    "extrasMode": true,
+    "kicker": "Optional — extra jobs",
+    "title": "Extra jobs",
+    "intro": "Your main work is done and saved. These jobs are extra. You get no points for them. Stop when your teacher calls time.",
+    "reviewIntro": "You have finished this lesson. You can open these extra jobs again at any time.",
+    "finishLabel": "Finish the rest of the lesson",
+    "backLabel": "Back to the extra jobs",
+    "scoreTick": "{right} of {total} right",
+    "scoreLine": "You got {right} of {total} right.",
+    "doneSay": "Pick another job from the list, or finish the rest of the lesson.",
+    "allDoneLabel": "Finish the rest of the lesson",
+    "allDoneSay": "You have done every extra job.",
+    "job": "Try an extra job if you have time. You do not have to.",
+    "help": "Each job is five questions. Click an answer and you are told straight away if it is right, and why. You can stop at any time.",
+    "showMe": [
+     "Click a job in the list to open it.",
+     "Click an answer, read the reason, then click Next.",
+     "Time up? Click Finish the rest of the lesson."
+    ],
+    "jobs": [
+     {
+      "id": "names",
+      "title": "Name That File",
+      "whiff": "Five questions on naming and filing your work.",
+      "items": [
+       {
+        "id": "x1fn-1",
+        "stem": "Which file name will be easiest to find later?",
+        "options": [
+         "DT Lesson 1 - Passwords",
+         "Untitled document",
+         "asdfgh",
+         "work"
+        ]
+       },
+       {
+        "id": "x1fn-2",
+        "stem": "You have ten files, all called Untitled document. What is the problem?",
+        "options": [
+         "You cannot tell which one is which",
+         "The computer will delete them",
+         "They will not open",
+         "Nothing — that is fine"
+        ]
+       },
+       {
+        "id": "x1fn-3",
+        "stem": "You made a DT file in Google Docs. Which folder should it go in?",
+        "options": [
+         "DT Work, inside your School folder",
+         "Loose in My Drive, outside any folder",
+         "The Trash, to keep it safe",
+         "A brand new folder for each file"
+        ]
+       },
+       {
+        "id": "x1fn-4",
+        "stem": "You make a new Google Doc and do not give it a name. What is it called?",
+        "options": [
+         "Untitled document",
+         "New file",
+         "My document",
+         "Doc 1"
+        ]
+       },
+       {
+        "id": "x1fn-5",
+        "stem": "Why put your files into folders?",
+        "options": [
+         "So you can find them quickly",
+         "Because files will not save without one",
+         "To make the files smaller",
+         "So your teacher cannot see them"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "clouds",
+      "title": "Which Cloud?",
+      "whiff": "Google Drive or OneDrive: where does each file go?",
+      "items": [
+       {
+        "id": "x1cl-1",
+        "stem": "You make a Google Slides presentation. Where is it saved?",
+        "options": [
+         "Google Drive",
+         "OneDrive",
+         "A USB stick",
+         "The desktop of the school PC"
+        ]
+       },
+       {
+        "id": "x1cl-2",
+        "stem": "You make a document in Word Online. Where is it saved?",
+        "options": [
+         "OneDrive",
+         "Google Drive",
+         "A USB stick",
+         "The desktop of the school PC"
+        ]
+       },
+       {
+        "id": "x1cl-3",
+        "stem": "Your file is only on a USB stick, and you left the stick in school. Can you open the file at home?",
+        "options": [
+         "No — the file is on the stick in school",
+         "Yes, from Google Drive",
+         "Yes, from OneDrive",
+         "Yes, from your email"
+        ]
+       },
+       {
+        "id": "x1cl-4",
+        "stem": "What do you need to open your school Google Drive and OneDrive files at home?",
+        "options": [
+         "Your C2k username and password",
+         "The school PC",
+         "A USB stick",
+         "Nothing — they open on any computer"
+        ]
+       },
+       {
+        "id": "x1cl-5",
+        "stem": "At home, you sign in to Google Docs with your school account. What do you see?",
+        "options": [
+         "Your school docs",
+         "Nothing — school docs stay in school",
+         "Only docs you made at home",
+         "Your teacher's docs"
+        ]
+       }
+      ]
+     }
+    ]
    }
   },
   {
@@ -304,7 +470,13 @@
       ]
      }
     ],
-    "help": "One marked question. Your verdict arrives when the report files."
+    "help": "One marked question. Your verdict arrives when the report files.",
+    "job": "Answer one marked question on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Finish when you are sure."
+    ]
    }
   },
   {
@@ -321,9 +493,15 @@
     "difficulty": true,
     "comment": true,
     "help": "Click the chip under each sentence that says how today really went, then the button that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving.",
-    "closingNote": "If your points just crossed a clearance level, your Agent Kit has something new in it — go and look."
+    "closingNote": "If your points just crossed a clearance level, your Agent Kit has something new in it — go and look.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],
- "keysEnc": "pKRhiWGU1uA7tVDshRxe5hvC0IgIrXR+S1lC3VmzKY2RxART4AwzJkehNw/uipC34YlV1nIWd+SlJ4q6p4TiujDUjGsZbP7iOkg7hXNDuEKCiRGqTVGLmmz9HNZxis0gU23ZHayJvmETpuTisGuR9fXTswIWIxgyut/thPNr8g49TmUuCE9WqcmDdRinEHrPCaQMmly1Yl+B3L9ndx1qxnPvi/w6FoqhTLdyT4OVRrh//E+R4b/xfxBv4NnYSTvjl/7EawO46txuuI90/RGtuCVGd+xr0CxYu7GL0Abq/VDn03wnQJIHs6Mk/J4YDAEjxHjA81sJJWBgqR5CC7XBt2URsQhuJxad0CzF92K7t8KVy/lses5N1n3ezjVxvFd47H268YNsrES5npdAdJM7Kh8Sgvl3WWe0wvWtuv+GOtFujnO7aFzNl7RstaonPqrG+oDK9mczcL0BWgnAAi6cEWDJ0oOBaTmtsLRFIyL44H/kat+Dtm2pMfYvnwbLrlvAIMAhUzku9bl5nMNYueglu1ZMT2qJlbNDW4uK7KNFvbiFWWMoNb+qZFzivsaz4/7+ZfXm2ENhJJR9r+W6pLoOEHgDlW7YaYcRRJHndW2AauDmSbL2s6tsCqRn4ujgpF3Vl5rKD6LZcwF6MRFIEkPoM+kSQCId/lkBe1UrbIRCFsYnGydfEPt+WyMu8fHulnwVxPQ/L78/rq3yF2nB+4X2HwcWEtVBUC70pzEELyvATvkFmoMAr0YqN+j4pEU3MR/69K2bQpDOuBnys4jI9i6Q4NhRUtbeWeFXzjlzEYy1rWBhd14WhWhIF1TVlo7ufYT+W8Nss6aEXBGLqHTuiG5R/DsrNf1g7c27RZFT0ii1uA5NLZ0px5XbrM7rxZh0GBLl16EBwy/Db3IBApUN3DL4V0QlthNREoPYQ4iSL+wZvLGvECntc1WiMuz8Wx88ShvkkXgD7MYFoxZnaAWChipUKgjnpghqT6oemkcXn3SaL5zAUE5FGY7nvCMLI+XwSmKGis8GnbkLK44mPkvmpGxKD4q93kwk2Z8YJh6aD/JXUE3++WAPUSFmPz8S6Zssxlmpf2Ax3dw/1qSYSwahxqbWVwM3ZSvxUbiTi9knwwat496Num1zJ+3x0Wb9KH6xK72qwgPQGYHSLikHcQTZNlqCHvCuCXTIY+AGTKnWC8dTOzVKICig47Gk2e0A1nXGBGDpMM55l7Xex51L7oCIchFFuFygXlH2bwYHGTX/TewyD2/7ewJvrmgBV8PBFvGL0/Kw2Grf7RV5U1VKeCRdzrFDMx7gQ3hgq+afvqPbSZw/tHAG210FRq2dVPYLyFo2QAPbTOcVUa84/4cRM0q6afjL+gm14SrQB4uB0p2nwgeE8cIsptjfK//g93Px58fWsbWxR/NVLwlqDyAs0l8tNt7W44UWNmSPC9MJLvl4g8h3Hj4EBgdaUHmErsnYn+h2NFEAHjtXN0M8kG3SbhpSaIztiTeOz20FktOEWLmu2Hgdn1SwexJVOE/SQv6FApoZ8UnVY3K6TYo/PqI3Fu1Xn+dB6x4bouRVkuWE5pjOngIyOLsfDu6dj5aOxVa0WIX4Qz1aQjQZaH4KW3GXDB/Q6xjxnfbVIHwysSKxEq66GqyiYIIAQTUaEpJ3OcTpECicnZ0co+1YdhcEQ9I3BVsnienb/9H0IdTk2elMdj3nAHFI6WLMLXhXcivqevKiwZhV1DP2y+6Tvaqi3piO6d+E62Bl5rvRm/bSwfwJ+fTdBHFsYUcWDdJ+HqxeCX481bPeLJ1bp4blvZ+Kr5cirtBd9ZpnHiwuErxM1Bc1KFIhvYNjuyVOEUzPXXbDLIiAo4SxPNGqNP6vKujmjb8ZkiktJ7Dbp0If0+mbH6zoxUs2tVnZs2I4w7OKUUgi1U/IOO2fIVU8M8Z6juyDCxsLO0ihkx/jhKciI0uyN/OIIAN28DrJIg2us2zsDwK6BzVnCq9IFPG7IKs97GfQXBZIFS5ypofIkbOCHegHhsgJ6gDLB1bHBBt6qBroe9ysPDIoNHAXjgOTgyNOJVYGGnAlb7cn7zyfWOZb9gnRXH40IdcxO5y0Hkfy3hLFHW+lxDdh6YyvKLkDiZaToVslsIqiKkfXZXTKqNnZJDswe4FlJc7iHBnTGsX7PP2FhWJrDIStb9vS1RUGoiaiRsLtQDcI2YQDl8vRxE8pJeWW0RDj3Jk/4ClMhniOMywwYdEElYC++RZiObLsQCOezPOzk9pSQPvGnoZaLQD6l8msInoLJtxu9dnWJoMszeWRIL5sGOncoFcS8Omj+xfGTSGR4zRBsdnQ//fzXJQd029iBDUxV4cdoS8jzdzGaVsQT7yY5yVJvwJ91nNN/k5n6OQeOdFlooU1aSapeX/F1GJ2dEdO23FPsEOUvxmefx2Ex/81tYTRYWE8SOViO04U+nW0qRIGlWxHUtoEwnKN7cdCpgZ7joYJwy5cELFMIRC6wQc8pIbGxSv6RjIiOrHWljMum/B/cIq4xJiaQiAP64KkIyqGpn6nrJiBRagrKAhFnKPu0XBw6BqxEqNHEWRk+cykMn8f9BlAzqBz4wke6xCZ25rpD1KjwsiUZyVo+QCDjMtORRpXf8Nl5r+Q2lZem8idWWRcWo+EaNVowc56vRUlhwIamEWIWZgu+KcG/d8e7jBIramOTd2R3GZs027gn4/F4b+bCSEPu6HKXyq+ty+AcmxfAe7vAzBo3wRx0cKvURWwoiBz5gorlf4hIjE+QLKbqdPmBT1EH6gNZ1pci2l2x2jYEwlSsjMDfy1dBU3MpZenBTcgwc9B1C7PkMujUlZk5ZUPz7cIuQhnPQ67QrNoe++r/rjZJ0PRlkYdRpEuSrX9BNZucxgbiIMuTRg+i3EOcig4t3gZhSkSKIx+YoNLeOCweXeQNfjqwXGBRt1qn4ZT06VBbE0qTCLtKiq3HDTJEQ8iwTWdeqLucQUcaCY5eK0bRJWdshRyU7xVKkuzkuTOWW1lgNHEeBazTs3KQP8+DoTa4/KTbvi4AhIj3NCXNZ3PxbsTuMrLt6YfLf1VzlFKLRl7SBhUvR3jZU+Q+pxzeVWFfaiq83eqVfx8Qs10C3k3bj2iLk8oFf2gjiKvenlBh/XSTfAAf2BhTRoBYHF1C+m2g4dAsPosdy+K4kpNgSYMJIqLemEnwUvoCtU2Uc3e/UZMMELjinJTsiSXF9RetF5mdCSLPDvtJ8sB4LgLjUdS+TyN3Cdjx82MSD4KrsBt/3cqMjjCxIDzPlbI2lqOj08+uo54zSHze0FTtd2iUWPyEeNNrleyvaZxPmVSShJKuBzxisEmxTs0ZSyCv3Xbg+LA98Gf9i6fdvj566RJ88shrtL12p5dJ/D/PoLjC+cHDicFZ4yebNOUjnwyJTqstiCPA7PBT/H/0kKA5YVh8B4cDVCBz/M7SYRhcqKoRFs9+4aDTe1Rc2quOvvNitrGkfe/NHZDMB/Vz+mAUatKPjhS1bR79BsnWSCIJcIvj13VwSO6tlyRYTSMNG2Z9qTY0ugqFlyZMRWW92NIDZXiOcHEw6g12RcA3ILMu8IseWyy23o1AqzJzW7k2+VqtqMnmpaSR+yeyEFY9tbDGNewvEic8VHllBSDqPyJsfpGNjXrgmvedaZYCLh33mmVL6NbHBfl3lfynz5ka5zyU+CNBH2DxlMJIzjTSq3aqU6DkX2L5rQl/wYdTmQy5vtYTp8OpVZzp5yZpP5FW3il2lmlmc+ev4Dljm0gKvB0qIWbtxEw75UbfGPklG6qX+EWnEh1Aq+3o1QabudgPhlGzoK/ZHDNenO3lh9CvFaxKvq5rHiZELTMaFySJcwxE9N/vFl3oONIW7HmbUUKPHXZI7tAv8+BPhEdezidmuFZjjOVqO7P6eoowtaWVHdWaAmscNMAww+4nnmELg3p74KsCr4+oyn6ycIsWcyZKntsGnHUbcoOl1FC2n5MOVhR4xm1koxppqbLlWuHE8Unfnk8tGDtzJDZgh7Z1P1pgMM8VqxwjoUOxjhUchRAM3ZAtfidOMgO9mwu5f34A/LxET3bSbWVb9kG7u2IWkHDw9orlkkwKjg3mGrpHiWBibBFCvjbE25gL3wlIuvJL8BvB+RiUEC0T9015mOu05nY+KG0Z0kGy1bxc82xbAbgQjuV8ShI8mdTatqXBanxm+Umhf/JkLcLNynPb6bg3DmBGeeNcQfpY+IkzqAcE1H1EHmmloZEqKt/CwdGyx7Ekg0PA0Bh0DD+pcEt6GuTg2FwLUg4+ovKHd3LPKCMfgJeVaCE/bagoNjCu9bvH06YLmzEScbLsDFxFYMg6RtgfuypQkwtbdc0XE4K1gNxLSadbsJs3+MZ7BHr1I9cKE+R3Gj69ZRn0RRETKBLiBB3l7k973+Uo3vuoYtxV+IphK4eqbxR1UEtzPsY/KsqncEUk9G0vegb194NZGLzeCDECroA+m2GuhAOdSXJ0QEQbPpsSlrPtUsnyxxzBl3fbhtC0RD48LB2V2CSRs2yrec+Hfr1SEcW2UkHJhBkbhUrhQrdJ8Af4pTIpybXuYLTwbDLvKe9qIfPU+b8UTszCQaIHN3uVAzPyU+/ygyVUM70QMPl+NDKudItPIwtOQMCLvnI7sm5j2NRjNN2S7kWwlmdckqizbbYOio/XFDdMBxVTo6OBnTG/UpxZI6TAiHHHpRCVu4z8JSHxtzT+o3dFpdB0A56K1yCIBbSnRgBJQRTI8ApBAHN7LBPnSybWONzKJ5I6Wu8msbHk4hZC3oIlW9PWWf+4zwctZ8R5h+SjIKuEo4cK7tZWcgn939fTIOjBENlAtLIfGs55CYA59e9tnR8fs3e2XrGDNbmkWB8JEgGup1b9bIHexVS9DlTY6QKlPFCs3ePWezeYtEJ4ZeY+I9l26/5NnatB465G0yL3k3D7gidBfX6UUMAi+E6HpSncp5noCKwxPM3/uE2QFtCIJ6FTYKIAVa0eRfZYuaIQAkSolPduHy6xD+Y+EVdA9WOf0F7+kmzV+GFAveUw6QEFxGr8LSybg7S+M0G0JkOsPKvfF8qKz6g4IUYADpNmii5D2UVuX1vNUsEExM1SzT5k6aA0nTOnz9/bYHfcn0p2yo/m8EQkdPvQb/Sy0VMOte/Dq3GdDmF2/TcghXJg+SVyU9BYCywcqsunQ8dmvg96ic91bpuuhH8Oo3myMnTE9fzPg89NOumZgzgQRHFKYdbjJY6xFzpsNQstZ3JZTDermsDmS8Dq+40Bq8JIzcVN6mJiZ6rXqeVxbjMFU4T0fTlcZyTY0B0fXsKTz+7qfuG6AdULf8BdXRkDFS9p/s2Codkv1uY5UeoP9arflmn6KiP5e4Hum9F3RlLufhhcZPbjDS4yAQPHbajQ7//8uvbYCzUV/DL8swE5FhPBNL4g3YOhgrSrzQxJx/pwfmuTgth6Yfr0Qum9tGgOOHIh7atlm/0bNvv+PWjVCg6frAikJ3mCh5Ad5ANb3GoOxXIo2LF6ePEWT7Xe3h/wZi9Bi8SKfmsqUVygrqrtqq0e3A1pFbGyScd0XtD+i7RcCgU7xctzl7ZzXjIPD7e2XjUg5xD+FebOK2JOhr4OEsBFTL6Bv1nB066LKDqJL2bSk6XML9qb78L5BHh51sIS6RdbIPP1WOnYWvRHXdlJtwawg2CT3tjcQTycE8ROvSGbr8QThCKLB6htv3hzINkHBpoOvtjss9pMI4Ib3GTKBQc94ixboKW0DHOXd5JIH3RR0rLEs7bvnoDyrqGQwq3rA6XMk7trNJf4kfagjNAzRPGn7BJyeEYSsEZzKYc/Bwp1g+xwmBJLOEimlQdOXopKVHUL13vlRVrgr0YToh+50sAMbaVO9TU05VmTbcp09Tz1AiZ28zcwujL7+gV4TQNQydp0N6WNAzsnTbldYGwf+dqsvdCOqzMlW3ETudT1T4Lqz7UT+y3yKMkMQ67f7KSU/ltg1vDtVTbytNDyyn8wgkxBzDNK5eASM653YoCoErL6jNf7bvsJcvl4CgkYfMSbVBr7gxvc5qcKFpJyzoE26VD0Y+7u4w2NU7ebyYibel5KPIAQxGg6lmbtVYVkIRx+5j0onR/qU+aorSJ/yN4cNp8rguN/AjukBGGO73h5ryx7kJHrjIgnmR4mUI9uAJsRo2n7HJGUYcnkWbUSqaP39spOGadjWG3jm9f5VUUpvIexRIQx9vPxPj425KmQ/OcH+6jAKOwqjAxwYgmHxNt9SVjKhEMl2Gaa46W+y8Ad78Te68P+SkMgDRdhN9LIHWxJ4YGmv2UcVvxUBhKe2S2tCRhyT/JMapt3dOv0aTi+0SKBGsORHHyWOxx964u/TXyEwrasMtrJzFy7ZNxaahknMlJOOgiMYWySpAV44NTVpiiNb4/i+lExP4K8eAGKGugy3xsDtz/J7LuEEB16CDJ+6EBc10TTzhLR1iuDZggpH9jibLD5pGcSulmYt8OyQHHxGV4v3kLjyIBmIbREyn0DT5fmV2VMp85lOnkxoUKVJ1lPM2Xpx0EiSH6ZiIrsKF/7muIfq29o5N2PQaPtNisbGEUYNC03fSMzWtjNADQSQ5vp5c8mYVXDEz67bhI6g7ODw26wN2MSoZ4t/BCJEHSOkHZdfbhAXzaG+6LJp8EBCGil1ogmyrHXwcyj4TipI9wmmcWc+2wBn+DK0U9156NUjJVc7zKPtWo7GZzQBuuj+KAcqBGKTbBfmyk6JEgw2+w0Hw1gGklAP9/u/5wTOylfZHo4yE+22IRLm5ztPVHWORxC7oA77mcllNUQ5CsASN9yC3CAmKyCw+5Y36UfxVNVqjpidxjGwdmiCUi7ylhvGfcLb2CuTqT8f9SbyuNjR9DK66mFwDulwO3aD8PgFX08TXKwg=="
+ "keysEnc": "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"
 }

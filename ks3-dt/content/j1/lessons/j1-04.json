@@ -37,7 +37,12 @@
     ],
     "video": null,
     "cta": "Open the Case Board",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start."
+    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "job": "Read what today is about, then click Open the Case Board.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Click Open the Case Board at the bottom."
+    ]
    }
   },
   {
@@ -312,7 +317,13 @@
     "handbookNote": "Come back to this film any time. Chapter 3 helps most while you are working on a case.",
     "sealedNoKit": "SEALED UNTIL YOU HAVE THE GAME",
     "sealedRibbon": "SEALED UNTIL CASE 01 CLOSES",
-    "clueLadderCost": "These help steps are FREE — your gold stamp is safe. Only step 3, HQ’s clue, turns this case’s stamp from GOLD to SILVER."
+    "clueLadderCost": "These help steps are FREE — your gold stamp is safe. Only step 3, HQ’s clue, turns this case’s stamp from GOLD to SILVER.",
+    "job": "Find and fix the bugs in the game, one case at a time.",
+    "showMe": [
+     "Click Open the case board.",
+     "Start with Evidence Intake, then Case 01.",
+     "Follow the steps inside each case."
+    ]
    }
   },
   {
@@ -344,7 +355,13 @@
       ]
      }
     ],
-    "help": "Two marked questions, answered on your own. You find out how you did at the end, after the last screen."
+    "help": "Two marked questions, answered on your own. You find out how you did at the end, after the last screen.",
+    "job": "Answer two marked questions on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Next. On the last question, click Finish."
+    ]
    }
   },
   {
@@ -367,7 +384,13 @@
     },
     "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
     "doneText": "Correct — that program does exactly what the card asked.",
-    "introKicker": "Exit check — part 2"
+    "introKicker": "Exit check — part 2",
+    "job": "Put five blocks in the order the sentence describes.",
+    "showMe": [
+     "Click Ready.",
+     "Click each block in the order the sentence says.",
+     "Click Check my program when you are sure."
+    ]
    }
   },
   {
@@ -383,7 +406,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving."
+    "help": "Click the button under each sentence that says how today really went, then the one that says how it felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],

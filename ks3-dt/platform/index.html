@@ -107,10 +107,33 @@
   </div>
   <div class="review-banner" id="review-banner" hidden><span class="review-banner-tag">&#10003; ALREADY COMPLETED</span><span class="review-banner-text">You are looking back through a lesson you have finished. Nothing here is marked, nothing is saved, and nothing you already earned can change.</span></div>
   <div class="chunk-rail" id="chunk-rail"></div>
+  <!-- task 10, 26 Nov 2026: the J3 L7 help standard on every part the platform draws -->
+  <div class="job-wrap" id="job-wrap" hidden>
+    <div class="job-strip" id="job-strip">
+      <p class="job-line"><span class="job-lead">Your job now:</span> <span id="job-text"></span></p>
+      <button id="job-help" class="job-help" type="button" aria-expanded="false" aria-controls="showme-bar">Stuck? Show me</button>
+    </div>
+    <div class="showme-bar" id="showme-bar" role="region" aria-label="Help for this screen" hidden>
+      <div class="showme-text">
+        <p class="showme-kicker">Do this</p>
+        <ol class="showme-steps" id="showme-steps"></ol>
+        <p class="showme-stuck">Still stuck? Ask the person beside you. Then put your hand up.</p>
+      </div>
+      <button id="showme-close" class="showme-close" type="button">Got it</button>
+    </div>
+  </div>
+  <!-- the help words for the two parts the platform draws itself (the Do-Now and the catch-up card) -->
+  <script type="application/json" id="sm-builtin">{
+    "recap": { "job": "Warm up with quick questions from past lessons. Nothing is graded.",
+      "showMe": ["Click Warm up.", "Click the answer you think is right.", "Read the reason, then click Next."] },
+    "catchupintro": { "job": "Start the lesson you missed, at your own pace.",
+      "showMe": ["Click Start the lesson."] }
+  }</script>
   <div class="chunk-host" id="chunk-host"></div>
 </main>
 
 <!-- Help beacon -->
+<span class="sm-tag" id="sm-tag" aria-hidden="true" hidden></span>
 <button id="help-beacon" class="help-beacon" type="button" data-tour="help" hidden>Stuck? Show me</button>
 <div class="ols-modal" id="help-modal" hidden>
   <div class="ols-modal-card ols-modal-sm">

@@ -110,3 +110,5 @@ timer never fired, the only consequence is a highlight that stays on screen.
 | `app.js :: cls :: 250` | The same, on the class picker. | Cosmetic. |
 | `app.js :: ov :: 250` | The same, on the confirm overlay. | Cosmetic. |
 | `app.js :: go :: 1200` | The stagger on the hub's tile entrance. | Cosmetic; the tiles are clickable as they land. |
+| `app.js :: cur :: 20000` | Stuck? Show me (26 Nov): 20 s with no click, key, wheel or touch pulses the green help button; at twice that the ring shows by itself. | It never moves her on or touches her work: it only draws her eye to help. Any click or key restarts the count, so a pupil who is reading or thinking is never hurried. |
+| `app.js :: btn :: 400` | Stuck? Show me (26 Nov): how often the idle count is looked at and the ring is moved to the control she needs next. | A redraw rate, not a deadline; nothing is awaited from her. |

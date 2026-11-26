@@ -709,12 +709,13 @@ ol { text-align: left; }
 .tour-tiles .tile .tile-title { font-size: 0.9rem; }
 .tour-tiles .tile .tile-state { position: static; align-self: flex-start; margin-top: 5px; }
 .tour-tiles .tile.is-locked { opacity: 0.55; }
+/* 26 Nov: the tour's picture of the help button matches the real one, beside "Your job now" */
 .tour-beacon {
-  position: absolute; right: 16px; bottom: 14px;
-  width: 38px; height: 38px; display: grid; place-items: center;
-  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--accent-ink);
-  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; border-radius: 50%;
-  box-shadow: var(--glow-gold);
+  position: absolute; right: 20px; top: 20px;
+  padding: 6px 15px; border-radius: 999px; white-space: nowrap;
+  background: #2FBF74; color: #06231b;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; line-height: 1.2;
+  box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35);
 }
 .tour-spot { outline: 3px solid var(--gold-hi); outline-offset: 4px; border-radius: var(--r-md); animation: spotPulse 1.4s ease-in-out infinite; }
 .tour-callout {
@@ -1036,6 +1037,59 @@ ol { text-align: left; }
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .help-beacon:hover { transform: scale(1.05); box-shadow: 0 14px 34px rgba(47, 191, 116, 0.55); }
+
+/* ============ show me: the job line and its help (task 10, 26 Nov 2026) ============ */
+/* The J3 L7 standard on every part the platform draws: "Your job now:" with the green button beside
+   it, a bar of steps that opens UNDER the line and pushes her work down (never covers it), and a
+   green ring with a tag on the thing to use next. The corner button stands down while the line shows. */
+body.sm-on .help-beacon { display: none; }
+.job-wrap { position: sticky; top: 0; z-index: 40; margin: 0 0 14px; }
+.job-strip {
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px;
+  background: rgba(13, 26, 52, 0.97); border: 1px solid var(--line-d); border-bottom: 3px solid #2FBF74;
+  border-radius: var(--r-md); backdrop-filter: blur(12px); box-shadow: var(--shadow-soft);
+}
+.job-line { flex: 1 1 auto; min-width: 0; margin: 0; color: var(--text-d); font-size: 1.02rem; font-weight: 600; line-height: 1.35; }
+.job-lead { color: #7EE2A8; font-family: var(--font-display); font-weight: 700; }
+.job-help {
+  flex: 0 0 auto; min-height: 42px; padding: 8px 18px; border-radius: 999px; border: none; cursor: pointer;
+  background: #2FBF74; color: #06231b; white-space: nowrap;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35); transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.job-help:hover { transform: scale(1.04); box-shadow: 0 8px 22px rgba(47, 191, 116, 0.5); }
+.job-help[aria-expanded="true"] { background: #7EE2A8; }
+.job-help.nudge { animation: sm-nudge 1.1s ease-in-out infinite; }
+@keyframes sm-nudge {
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 18px rgba(47, 191, 116, 0.35); }
+  50% { transform: scale(1.09); box-shadow: 0 0 0 8px rgba(47, 191, 116, 0.28), 0 6px 18px rgba(47, 191, 116, 0.5); }
+}
+.showme-bar {
+  display: flex; align-items: flex-end; gap: 16px; margin-top: 8px; padding: 12px 14px 12px 18px;
+  background: #F1FBF5; color: var(--ink); border: 2px solid #2FBF74; border-radius: var(--r-md);
+  box-shadow: var(--shadow-soft);
+}
+.showme-bar[hidden] { display: none; }
+.showme-text { flex: 1 1 auto; min-width: 0; }
+.showme-kicker { margin: 0 0 4px; color: #1B7A47; font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+.showme-steps { margin: 0 0 6px; padding-left: 24px; font-size: 1.02rem; font-weight: 600; line-height: 1.45; }
+.showme-steps li { margin: 2px 0; }
+.showme-stuck { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+.showme-close {
+  flex: 0 0 auto; min-height: 40px; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  background: #fff; color: #1B7A47; border: 2px solid #2FBF74; white-space: nowrap;
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; line-height: 1.2;
+}
+.showme-close:hover { background: #E1F6EB; }
+.sm-ring { outline: 3px solid #2FBF74 !important; outline-offset: 3px; animation: sm-ring 1.4s ease-in-out infinite; }
+@keyframes sm-ring { 0%, 100% { outline-color: #2FBF74; } 50% { outline-color: rgba(47, 191, 116, 0.35); } }
+.sm-tag {
+  position: fixed; z-index: 90; padding: 4px 10px; border-radius: 8px; pointer-events: none; white-space: nowrap;
+  background: #2FBF74; color: #06231b; font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 6px 16px rgba(3, 8, 20, 0.35);
+}
+.sm-tag[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .job-help.nudge, .sm-ring { animation: none; } }
 .help-list { text-align: left; color: var(--ink); padding-left: 20px; }
 .help-list li { margin-bottom: 8px; }
 .help-text { text-align: left; color: var(--ink); line-height: 1.55; margin: 0; }
@@ -3684,6 +3738,14 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
    floor between two interactive controls, with room to spare) */
 .pyrun-exit-row { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line-l); }
 .pyrun-card .pyrun-exit-row { margin-top: 20px; }
+/* the question extras zone (26 Nov 2026): inside a job, both ways out sit on a
+   plate of their own under the question card, so they keep the card's ink and
+   ground on every skin and never read as one of the answers */
+.xj-rowcard { margin-top: 12px; padding: 4px 20px 16px; max-width: 760px; }
+.xj-rowcard .pyrun-exit-row { margin-top: 0; }
+.xj-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.pyrun-job.done { border-color: rgba(46, 158, 99, 0.5); }
+.xj-kicker { display: block; margin-bottom: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
   .snap-block.snapped, .snap-py.snapped, .snap-block.bounce, .snap-py.bounce { animation: none; }

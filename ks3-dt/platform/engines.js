@@ -349,6 +349,15 @@
       if (ctx.review || ctx.catchup) { cb('solo'); return; }
       if (!Number(App.state.pairing)) { cb('social'); return; }
       var stageIdx = Number(App.state.chunkIdx);
+      /* A LATE REPLY NEVER PAINTS OVER THE NEXT SCREEN (26 Nov 2026 walk). The join call is a round trip;
+         if she has moved to another part (the rail, Back, a remount) before it answers, the answer belongs
+         to a screen that is gone and is dropped, and its polling stops with it. */
+      var gen = PairKit._gen = (PairKit._gen || 0) + 1, lessonAt = ctx.lesson && ctx.lesson.id;
+      function stale() {
+        return PairKit._gen !== gen || Number(App.state.chunkIdx) !== stageIdx ||
+          !(App.state.lesson && App.state.lesson.id === lessonAt);
+      }
+      var cbNow = cb; cb = function (m) { if (!stale()) cbNow(m); };
       var began = Date.now();
       var box = null;
       /* DAMIEN, 31 Jul 2026: "the girls need to be clearly shown when they actually
@@ -435,6 +444,7 @@
       }
       function poll() {
         ctx.call('pairJoin', { lessonId: ctx.lesson.id, stageIdx: stageIdx }).then(function (r) {
+          if (stale()) return;
           if (!r || !r.ok) {
             // hard refusal degrades to the one-machine social mode; a wifi blip keeps listening
             if (r && r.error && r.error !== 'transport') { if (box) box.remove(); cb('social'); return; }
@@ -2676,10 +2686,109 @@
     }
   };
 
+  /* ================= THE QUESTION EXTRAS ZONE (26 Nov 2026) =================
+     His ask, 25 Nov: "plenty of extra tasks for those students who fly through it
+     so that everyone can fully utilise the hour". The four first-day lessons (J1
+     L1, the Drive side quest, J2 L1, J3 L1) have no code to build, so the pyrun
+     extras hub had nothing to offer them and a quick pupil sat with nothing to do.
+     This is the SAME zone (DFM 265's shape: it comes after the badge, pays
+     nothing, records nothing, and the way out is on every screen she can reach)
+     built from short sets of marked questions instead of builds. Each job runs
+     through the itemRunner every quiz uses, so each answer is marked on the spot
+     with its reason, from the keys fetched when the lesson opened.
+     Its markup borrows the pyrun hub's classes, so the list of jobs looks and
+     behaves like the one J2 and J3 pupils already know.
+     CONFIG-GATED: only an items chunk that declares `extrasMode` gets it, so every
+     other items chunk renders exactly as before. */
+  function itemsExtras(host, chunk, ctx) {
+    var cfg = chunk.config, jobs = cfg.jobs || [], doneJobs = {}, scores = {};
+    function finishLabel() { return cfg.finishLabel || ''; }
+    function leave() { finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
+    function paras(text, cls) {
+      return String(text || '').split(/\n\s*\n/).filter(function (p) { return p.trim(); }).map(function (p) {
+        return '<p class="' + cls + '">' + fmtBold(p.trim()) + '</p>';
+      }).join('');
+    }
+    function hub() {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var lead = (ctx.review && cfg.reviewIntro) ? cfg.reviewIntro + '\n\n' + (cfg.intro || '') : (cfg.intro || '');
+      var allDone = jobs.length > 0 && jobs.every(function (j) { return doneJobs[j.id]; });
+      var promoted = allDone && cfg.allDoneLabel;
+      var c = el('<div class="card pyrun-hub xj-hub">' +
+        '<span class="intro-kicker">' + esc(cfg.kicker || '') + '</span>' +
+        '<h2>' + esc(cfg.title || '') + '</h2>' + paras(lead, 'intro-lead') +
+        '<div class="pyrun-jobs">' + jobs.map(function (j) {
+          return '<button class="pyrun-job xj-job' + (doneJobs[j.id] ? ' done' : '') + '" type="button" data-job="' + esc(j.id || '') + '">' +
+            '<b class="pyrun-job-title">' + esc(j.title || '') + '</b>' +
+            '<span class="pyrun-job-whiff">' + esc(j.whiff || '') + '</span>' +
+            (doneJobs[j.id] ? '<span class="pyrun-job-tick">' + esc(scores[j.id]) + '</span>' : '') +
+            '</button>';
+        }).join('') + '</div>' +
+        (promoted && cfg.allDoneSay ? '<p class="pyrun-alldone-say">' + fmtBold(cfg.allDoneSay) + '</p>' : '') +
+        '<div class="rung-actions pyrun-exit-row' + (promoted ? ' is-alldone' : '') + '">' +
+        '<button class="' + (promoted ? 'primary-btn' : 'ghost-btn') + ' pyrun-finish xj-finish" type="button">' +
+        esc(promoted ? cfg.allDoneLabel : finishLabel()) + '</button></div></div>');
+      host.appendChild(c);
+      c.querySelectorAll('.xj-job').forEach(function (btn) {
+        App.armButton(btn, function () {
+          var j = jobs.filter(function (x) { return String(x.id) === btn.getAttribute('data-job'); })[0];
+          if (j) runJob(j);
+        });
+      });
+      App.armButton(c.querySelector('.xj-finish'), leave);
+    }
+    /* A JOB: its questions, with both ways out under them on every question —
+       back to the list, or on to the rest of the lesson — so "time up" half way
+       through a job is still one click. */
+    function exitRow(primaryBack) {
+      return '<div class="rung-actions pyrun-exit-row xj-row">' +
+        '<button class="' + (primaryBack ? 'primary-btn' : 'ghost-btn') + ' xj-back" type="button">' + esc(cfg.backLabel || '') + '</button>' +
+        '<button class="ghost-btn pyrun-finish xj-finish" type="button">' + esc(finishLabel()) + '</button></div>';
+    }
+    function wireRow(root) {
+      App.armButton(root.querySelector('.xj-back'), hub);
+      App.armButton(root.querySelector('.xj-finish'), leave);
+    }
+    function runJob(j) {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var box = el('<div class="xj-run"></div>');
+      var row = el('<div class="card xj-rowcard">' + exitRow(false) + '</div>');
+      host.appendChild(box);
+      host.appendChild(row);
+      wireRow(row);
+      itemRunner(box, {
+        items: j.items || [], mode: 'feedback',
+        markFn: function (it, i) { return ctx.markItem(it.id, i); },
+        onDone: function (r) {
+          doneJobs[j.id] = 1;
+          scores[j.id] = String(cfg.scoreTick || '').replace('{right}', r.right).replace('{total}', r.total);
+          jobDone(j, r);
+        }
+      });
+      /* the job's own name sits on its first card, where she reads first */
+      var first = box.querySelector('.q-card');
+      if (first && j.title) first.insertAdjacentHTML('afterbegin', '<span class="intro-kicker xj-kicker">' + esc(j.title) + '</span>');
+    }
+    function jobDone(j, r) {
+      host.innerHTML = '';
+      global.scrollTo(0, 0);
+      var c = el('<div class="card intro-card xj-done">' +
+        '<span class="intro-kicker">' + esc(j.title || '') + '</span>' +
+        '<h2>' + esc(String(cfg.scoreLine || '').replace('{right}', r.right).replace('{total}', r.total)) + '</h2>' +
+        paras(cfg.doneSay, 'intro-lead') + exitRow(true) + '</div>');
+      host.appendChild(c);
+      wireRow(c);
+    }
+    hub();
+  }
+
   /* ================= items (calibration / rules checks) ================= */
   Engines.items = {
     mount: function (host, chunk, ctx) {
       var cfg = chunk.config;
+      if (cfg.extrasMode) { itemsExtras(host, chunk, ctx); return; }
       introCard(host, {
         /* The calibration card is named by the chunk itself ("Warm-up") - the old
            hardcoded "Console calibration" reintroduced the console vocabulary the
@@ -2909,7 +3018,7 @@
           '    <div class="tile mini is-open"><span class="tile-icon">⚡</span><span class="tile-title">Make It Move</span><span class="tile-state open">Ready</span></div>' +
           '    <div class="tile mini is-locked" data-t="locks"><span class="tile-icon">🎯</span><span class="tile-title">Scoreboard Engineer</span><span class="tile-state lock">&#128274;</span></div>' +
           '  </div>' +
-          '  <div class="tour-beacon" data-t="help">?</div>' +
+          '  <div class="tour-beacon" data-t="help">Stuck? Show me</div>' +
           '</div>' +
           '<div class="tour-callout"><h3></h3><p></p><button class="primary-btn" type="button">Next</button></div>' +
           '</div>');

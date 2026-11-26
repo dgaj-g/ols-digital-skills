@@ -28,7 +28,12 @@
      "Here is what happens this hour, in order. A short film first, just under five minutes, with no sound. Then four builds, and they get harder as you go. You print one exact line, then two lines in the right order. Then you use a box with a name on it (a variable) that remembers a word for you. Last comes a sum that Python works out inside a printed line. It finishes with a card about your next lesson, one marked question, and a screen that asks you how the hour went."
     ],
     "cta": "Start the film",
-    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked."
+    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked.",
+    "job": "Read today’s call sheet, then click Start the film.",
+    "showMe": [
+     "Read the words as they appear.",
+     "Click Start the film at the bottom."
+    ]
    }
   },
   {
@@ -58,7 +63,12 @@
       "label": "Reading an error without fear"
      }
     ],
-    "help": "Press play, or click one of the four part buttons underneath the film to jump to that part. Everything the film shows is written again on the build cards, so you do not need to come back to it. Nothing here is marked."
+    "help": "Press play, or click one of the four part buttons underneath the film to jump to that part. Everything the film shows is written again on the build cards, so you do not need to come back to it. Nothing here is marked.",
+    "job": "Watch the film about your first words in Python.",
+    "showMe": [
+     "Click play, or click a button under the film.",
+     "Click Done watching when it ends."
+    ]
    }
   },
   {
@@ -169,7 +179,13 @@
     ],
     "help": "The target at the top of the card is exactly what the console has to print. Drag the lines you want into Your program, type into any gap, then press RUN. The console shows exactly what your program printed — and if Python stops, it shows Python's own words with a plain-English explanation underneath. You can run as many times as you like.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this line back"
+    "takeBackLabel": "Put this line back",
+    "job": "Build two programs. Each must print exactly what the call sheet asks for.",
+    "showMe": [
+     "Click Open the call sheet.",
+     "Drag the lines you need into Your program.",
+     "Type in any gap, then click RUN my program."
+    ]
    }
   },
   {
@@ -315,7 +331,13 @@
     ],
     "help": "The target at the top of the card is exactly what the console has to print. A line with = in it makes a box with a name on it (a variable); a line with print( ) puts something on the console. Drag the lines into the order you want, type into any gap, then press RUN. If Python stops, the console shows Python's own words with a plain-English explanation underneath. You can run as many times as you like.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this line back"
+    "takeBackLabel": "Put this line back",
+    "job": "Build two more programs, keeping the theatre name in a variable.",
+    "showMe": [
+     "Click Open the call sheet.",
+     "Drag the lines into Your program, in order.",
+     "Type in any gap, then click RUN my program."
+    ]
    }
   },
   {
@@ -474,7 +496,13 @@
     ],
     "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the four tonight, then press RUN. Two buttons are always on screen. Back to the encore sheet takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour.",
     "trayClickEject": false,
-    "takeBackLabel": "Put this line back"
+    "takeBackLabel": "Put this line back",
+    "job": "Try an extra job if you have time. You do not have to.",
+    "showMe": [
+     "Click a job in the list to open it.",
+     "Build it, then click RUN my program.",
+     "Click Back to the encore sheet for another."
+    ]
    }
   },
   {
@@ -503,7 +531,12 @@
       "note": "This lesson will stay open if you ever want to look back through the builds before the next lesson."
      }
     ],
-    "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card."
+    "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card.",
+    "job": "Read two cards about today and next lesson.",
+    "showMe": [
+     "Click Start, then read the card.",
+     "Click Done to go on."
+    ]
    }
   },
   {
@@ -528,7 +561,13 @@
       ]
      }
     ],
-    "help": "One marked question about the Python you wrote today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen."
+    "help": "One marked question about the Python you wrote today. You are told whether you were right, and why, at the very end of the lesson — after the How did it go? screen.",
+    "job": "Answer one marked question on your own.",
+    "showMe": [
+     "Click Ready.",
+     "Click the answer you think is right.",
+     "Click Finish when you are sure."
+    ]
    }
   },
   {
@@ -546,7 +585,13 @@
     ],
     "difficulty": true,
     "comment": true,
-    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest."
+    "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click how hard the hour felt. The comment box goes to your teacher and nobody else. Everyone finishes this screen before leaving — it is how your teacher hears from everyone, not just the loudest.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   }
  ],

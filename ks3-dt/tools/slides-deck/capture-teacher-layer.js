@@ -120,9 +120,17 @@ function lessonJson(lesson) {
 }
 function chunkOf(lj, id) { return (lj.chunks || []).find(c => c.id === id) || null; }
 function md5(s) { return crypto.createHash('md5').update(s).digest('hex'); }
+/* The job line and the green Stuck? Show me bar (config job, showMe, soloJob,
+   soloShowMe) draw in #job-wrap, outside the .chunk-host .card these shots photograph.
+   They never change a shot, so they are left out of the fingerprint. */
+function photoPart(c) {
+  const x = JSON.parse(JSON.stringify(c));
+  if (x.config) for (const k of ["job", "showMe", "soloJob", "soloShowMe"]) delete x.config[k];
+  return x;
+}
 function chunkHash(lj, id) {
   const c = chunkOf(lj, id);
-  return c ? md5(JSON.stringify(c)).slice(0, 12) : null;
+  return c ? md5(JSON.stringify(photoPart(c))).slice(0, 12) : null;
 }
 function chunkStrings(chunk) {
   const out = [];

@@ -65,10 +65,18 @@ const LESSON_JSON = JSON.parse(fs.readFileSync(
 function chunkOf(chunkId) {
   return (LESSON_JSON.chunks || []).find(x => x.id === chunkId) || null;
 }
+/* The job line and the green Stuck? Show me bar (config job, showMe, soloJob,
+   soloShowMe) draw in #job-wrap, outside the .chunk-host .card these shots photograph.
+   They never change a shot, so they are left out of the fingerprint. */
+function photoPart(c) {
+  const x = JSON.parse(JSON.stringify(c));
+  if (x.config) for (const k of ["job", "showMe", "soloJob", "soloShowMe"]) delete x.config[k];
+  return x;
+}
 function chunkHash(chunkId) {
   const c = chunkOf(chunkId);
   if (!c) return null;
-  return crypto.createHash('md5').update(JSON.stringify(c)).digest('hex').slice(0, 12);
+  return crypto.createHash('md5').update(JSON.stringify(photoPart(c))).digest('hex').slice(0, 12);
 }
 /* every sentence this chunk owns, flattened, so a line read off the card can be
    matched against the lesson's own words */

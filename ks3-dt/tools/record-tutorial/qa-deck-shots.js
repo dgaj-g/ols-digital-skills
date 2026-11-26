@@ -170,8 +170,16 @@ function chunkStrings(chunk) {
   })(chunk);
   return out;
 }
+/* The job line and the green Stuck? Show me bar (config job, showMe, soloJob,
+   soloShowMe) draw in #job-wrap, outside the .chunk-host .card these shots photograph.
+   They never change a shot, so they are left out of the fingerprint. */
+function photoPart(c) {
+  const x = JSON.parse(JSON.stringify(c));
+  if (x.config) for (const k of ["job", "showMe", "soloJob", "soloShowMe"]) delete x.config[k];
+  return x;
+}
 function chunkHash(chunk) {
-  return crypto.createHash('md5').update(JSON.stringify(chunk)).digest('hex').slice(0, 12);
+  return crypto.createHash('md5').update(JSON.stringify(photoPart(chunk))).digest('hex').slice(0, 12);
 }
 function shotsOn(deck) {
   const names = [];
@@ -393,6 +401,15 @@ for (const year of fs.readdirSync(CONTENT)) {
       'exam chunk was accepted, so stale imagery can still reach a slide.');
   } else {
     notes.push('control: a shot of an older version of b4-exam was REJECTED as stale');
+  }
+  /* the third half: leaving out the help lines must not hide a change to the card */
+  {
+    const c0 = (lessonJson.chunks || []).find(c => c.config) || (lessonJson.chunks || [])[0];
+    const helped = JSON.parse(JSON.stringify(c0)); helped.config = Object.assign({}, helped.config, { job: "control job line", showMe: ["control step"] });
+    const reworded = JSON.parse(JSON.stringify(c0)); reworded.title = String(reworded.title || "") + " (control)";
+    if (chunkHash(helped) !== chunkHash(c0)) fail("THE HELP-LINE CONTROL FAILED. Adding a job line changed the fingerprint, though the job line is not in the photo.");
+    else if (chunkHash(reworded) === chunkHash(c0)) fail("THE CARD-CHANGE CONTROL PASSED. A reworded card kept its old fingerprint, so a stale shot would be accepted.");
+    else notes.push("control: help lines leave the fingerprint alone; a reworded card changes it");
   }
 })();
 

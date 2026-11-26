@@ -1556,7 +1556,13 @@
       ]
      }
     ],
-    "help": "There are 5 questions about the rules you typed today. Click one answer for each. The last screen of the lesson tells you how you did, and why."
+    "help": "There are 5 questions about the rules you typed today. Click one answer for each. The last screen of the lesson tells you how you did, and why.",
+    "job": "Answer five marked questions on your own.",
+    "showMe": [
+     "Click Start the questions.",
+     "Click the answer you think is right.",
+     "Click Next. On the last question, click Finish."
+    ]
    }
   },
   {
@@ -1580,7 +1586,13 @@
     "optionLines": true,
     "flightLabel": "The late shift",
     "finishLabel": "Finish",
-    "help": "Under each sentence, pick the answer that is true for you. Then pick how hard today was. Then press Send & finish. Your teacher reads what you send."
+    "help": "Under each sentence, pick the answer that is true for you. Then pick how hard today was. Then press Send & finish. Your teacher reads what you send.",
+    "job": "Tell your teacher honestly how today went.",
+    "showMe": [
+     "Click one button under each sentence.",
+     "Click Easy, Just right or Tricky.",
+     "Click Send & finish."
+    ]
    }
   },
   {
