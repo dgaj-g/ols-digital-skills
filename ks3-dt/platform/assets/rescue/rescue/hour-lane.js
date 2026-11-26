@@ -304,6 +304,8 @@
     function help(n) { if (n > helped) { helped = n; H.help([n === 1 ? 'The new line prints the word jump.' : EXACT]); } }
     H.card({ k: 'THE LANE', h: HEAD_MEND, sub: 'The clock starts when you type.', run: 'Run the plan', runOff: true, help: again ? [EXACT] : [] });
     if (again) helped = 2;
+    /* "Stuck? Show me" (V91): the next of the two help lines, as a wrong try would bring it */
+    H.onStuck = function () { if (over || !H.input || helped >= 2) return false; help(helped + 1); H.beatHelp(); return true; };
     plan(MEND); showBar({ label: CLOCK_LABEL, plan: 5, lit: true });
     if (H.OPT.freeze && H.OPT.ht > 0) t0 = 0;
     H.onRun = function () { H.onRun = null; over = true; H.go('l_run2', { wall: V.wallX }); };

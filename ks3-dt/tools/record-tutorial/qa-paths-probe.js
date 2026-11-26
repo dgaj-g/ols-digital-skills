@@ -17,14 +17,14 @@
  *   · two questions fail scene-ask (exactly one input)
  *   · the untouched palette with her real words declared: scene-ask fails and
  *     both words fall to the same else story
- * CONTROL (DFM 196): the engine of the build he sat (git show 8f58434) has no
+ * CONTROL (DFM 196): the engine of the build he sat (git show 823ab1a8; was 8f58434 before the history purge) has no
  * `PyRun.checkPaths` and no `PyRun.runPy` at all — the routine is new.
  *
  *   node qa-paths-probe.js
  */
 'use strict';
 const { enginePage } = require('./lib/l4-engine-page.js');
-const BASE_REF = process.env.KS3DT_L4_BASE || '8f58434';
+const BASE_REF = process.env.KS3DT_L4_BASE || '823ab1a8';
 
 let failures = 0;
 const check = (ok, m, d) => { console.log((ok ? '  PASS  ' : '  FAIL  ') + m + (!ok && d ? '   [' + d + ']' : '')); if (!ok) failures++; };
@@ -70,8 +70,10 @@ const PLACEHOLDER = [
 
   const CAPS = LIBRARY.replace('if choice == "lamp":', 'if choice == "Lamp":');
   r = await paths(CAPS, CFG);
-  control(r.features['path-1'] === true && r.rows[0].story.indexOf('chair scrapes') !== -1,
-    '"lamp" vs "Lamp" — the first word falls through to the else road (the table shows it)', r.rows[0].story);
+  /* V87 (J2 L4 walk, engines.js ownRoad): a word that falls through to the else road is no longer
+     credited as its own road — the table shows it AND path 1 refuses it (was: credited, table only) */
+  control(r.features['path-1'] === false && r.rows[0].story.indexOf('chair scrapes') !== -1,
+    '"lamp" vs "Lamp" — the first word falls through to the else road (the table shows it, path 1 refuses it)', r.rows[0].story);
 
   const SAME = LIBRARY.replace('On the desk is a note in red pen: DO NOT OPEN THE DRAWER.', 'The lamp flickers. Under it is a book with your name on it.');
   r = await paths(SAME, CFG);

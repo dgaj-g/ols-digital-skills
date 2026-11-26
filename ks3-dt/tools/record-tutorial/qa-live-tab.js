@@ -956,8 +956,8 @@ async function readTab(page) {
     check(new RegExp(Y.year === 'j2' ? '"5/5"' : '"4/4"').test(csv), Y.year + ': and the rows carry the cell values');
   }
   section('VI2. CONTROL — the build he sat has no Rooms panel and no relay/orders column (DFM 196)');
-  const satStaff = (() => { try { return execFileSync('git', ['show', '8f58434:ks3-dt/platform/staff.js'], { cwd: ROOT, encoding: 'utf8' }); } catch (e) { return null; } })();
-  check(!!satStaff && satStaff.indexOf('rooms-lens') === -1, 'pre-change staff.js (8f58434) has no rooms panel');
+  const satStaff = (() => { try { return execFileSync('git', ['show', '823ab1a8:ks3-dt/platform/staff.js'], { cwd: ROOT, encoding: 'utf8' }); } catch (e) { return null; } })();
+  check(!!satStaff && satStaff.indexOf('rooms-lens') === -1, 'pre-change staff.js (823ab1a8) has no rooms panel');
   check(!!satStaff && !/'relay', 'orders'/.test(satStaff), 'pre-change staff.js detects no relay / orders column');
 
   section('V2. CONTROL — the build he sat must FAIL the J2/J3 panel checks (DFM 196)');

@@ -25,7 +25,7 @@
 const fs = require('fs');
 const path = require('path');
 const { enginePage } = require('./lib/l4-engine-page.js');
-const BASE_REF = process.env.KS3DT_L4_BASE || '8f58434';
+const BASE_REF = process.env.KS3DT_L4_BASE || '823ab1a8';
 const SRC = process.env.KS3DT_SRC || path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/content-src');
 const DRAFT = path.join(process.env.HOME, 'Desktop/Claude Work/KS3 DT Platform/L4_CONTENT_DRAFTS/j2-04.json');
 const lessonFile = fs.existsSync(path.join(SRC, 'j2', 'lessons', 'j2-04.json')) ? path.join(SRC, 'j2', 'lessons', 'j2-04.json') : DRAFT;

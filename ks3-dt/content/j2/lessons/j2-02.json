@@ -6,6 +6,15 @@
  "tagline": "A bureau is an office where things are written out again in another language. Today you turn blocks you already know into your first lines of Python.",
  "mode": "taught",
  "durationMin": 60,
+ "pyDiffSay": {
+  "line": "Look at line {n} of the console. It should say {want}, but your program printed {got}.",
+  "caps": "Look at line {n} of the console. A capital letter is different. It should say {want}.",
+  "spaces": "Look at line {n} of the console. The spaces are different. It should say {want}.",
+  "blank": "Look at line {n} of the console. It should say {want}, but your program printed an empty line.",
+  "short": "Your program printed too few lines. Line {n} of the console is missing. It should say {want}.",
+  "long": "Your program printed more lines than it should. The first extra line is {got}.",
+  "order": "All the right lines are in the console, but in the wrong order. Drag lines up or down in Your program to change the order."
+ },
  "objectives": [
   "Read a Scratch block and say what it does, without needing the block in front of me.",
   "Match a Scratch block to the line of Python that does the same job.",
@@ -201,6 +210,7 @@
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows. That is a working program, and you wrote it.",
     "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one line and press RUN again.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "continueLabel": "Continue",
     "firstTryXp": 5,
     "firstTryXpCap": 15,
@@ -363,6 +373,7 @@
     "notYetLabel": "NOT YET",
     "matchedSay": "The console printed exactly what The target shows. That is a working program, and you wrote it.",
     "notYetSay": "The console did not print what The target shows. Read what the console says, under your program. Then change one line and press RUN again.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "consoleLabels": {
      "title": "The console",
      "idle": "Nothing has run yet. Build your program, then press RUN.",

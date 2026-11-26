@@ -814,6 +814,13 @@
      same way. */
   function itemRunner(host, opts) {
     var idx = 0, right = 0, answers = {}, curOrd = [];
+    /* V91 (26 Nov): a reload half way through the exit check used to start it again from question 1.
+       opts.startAnswers carries the answers she already gave, and she picks up at the first one
+       she has not answered. Only the exit check passes it (collect mode: nothing was marked yet). */
+    if (opts.startAnswers) {
+      Object.keys(opts.startAnswers).forEach(function (k) { answers[k] = opts.startAnswers[k]; });
+      while (idx < opts.items.length - 1 && answers[opts.items[idx].id] != null) idx++;
+    }
     var wrap = el('<div class="runner"></div>');
     host.appendChild(wrap);
     /* DAMIEN, 31 Jul 2026 (live run): opening the Licence Exam instantly answered
@@ -878,7 +885,7 @@
         '<h2 class="q-stem">' + stemHtml(it.stem) + '</h2>' +
         '<div class="q-options">' + curOrd.map(function (oi, i) {
           return '<button class="q-opt" type="button" data-i="' + i + '"><span class="q-letter">' +
-            'ABCD'.charAt(i) + '</span><span>' + esc(it.options[oi]) + '</span></button>';
+            'ABCD'.charAt(i) + '</span><span>' + inlineCode(esc(it.options[oi])) + '</span></button>';
         }).join('') + '</div>' +
         '<div class="q-feedback" hidden></div>' +
         '</div>';
@@ -911,6 +918,7 @@
       var srcIdx = curOrd[i]; // display position -> source index (contract unchanged)
       var ord = curOrd;       // capture: async marking must not race the next show()
       answers[it.id] = srcIdx;
+      if (opts.onAnswer) opts.onAnswer(answers);
       lockOptions();
       // AUDIT FIX (26 Jul 2026): 'collect' (the GRADED exit check) used to advance
       // synchronously inside this click handler, so the next question's options
@@ -1005,7 +1013,7 @@
           fb.hidden = false;
           fb.className = 'q-feedback ' + (r.correct ? 'good' : 'bad');
           fb.innerHTML = '<p class="q-verdict">' + (r.correct ? 'Correct.' : 'Not this time.') + '</p>' +
-            (explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]) ? '<p class="q-explain">' + esc(explainFor(r.explain, srcIdx, (it.options || [])[srcIdx])) + '</p>' : '') +
+            (explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]) ? '<p class="q-explain">' + inlineCode(esc(explainFor(r.explain, srcIdx, (it.options || [])[srcIdx]))) + '</p>' : '') +
             '<button class="primary-btn" type="button">' + (idx === opts.items.length - 1 ? 'Finish' : 'Next') + '</button>';
           App.armButton(fb.querySelector('button'), nextOrDone);   // DFM 104
           fb.querySelector('button').focus({ preventScroll: true });
@@ -1356,6 +1364,46 @@
     matches: function (actual, expected) {
       var want = Array.isArray(expected) ? expected.join('\n') : expected;
       return PyRun.tidy(actual) === PyRun.tidy(want);
+    },
+
+    /* WHERE IT FIRST GOES WRONG (V91, J3 L2 live walk, 26 Nov 2026). NOT YET on a
+       target card said only that the output was not the target, and left her to
+       compare two blocks of text letter by letter: a capital, a space, two lines
+       swapped and a missing line all looked the same. The target is already on the
+       card, so naming the first line that differs gives nothing away. Returns null
+       when they match. */
+    firstDiff: function (actual, expected) {
+      var w = PyRun.tidy(Array.isArray(expected) ? expected.join('\n') : expected);
+      var g = PyRun.tidy(actual);
+      var want = w === '' ? [] : w.split('\n'), got = g === '' ? [] : g.split('\n');
+      if (g === w) return null;
+      if (got.length === want.length && got.slice().sort().join('\n') === want.slice().sort().join('\n')) return { kind: 'order' };
+      for (var i = 0; i < Math.max(got.length, want.length); i++) {
+        if (got[i] === want[i]) continue;
+        if (i >= got.length) return { kind: 'short', n: i + 1, want: want[i] };
+        if (i >= want.length) return { kind: 'long', n: i + 1, got: got[i] };
+        if (got[i].toLowerCase() === want[i].toLowerCase()) return { kind: 'caps', n: i + 1, want: want[i], got: got[i] };
+        if (got[i].replace(/\s+/g, '') === want[i].replace(/\s+/g, '')) return { kind: 'spaces', n: i + 1, want: want[i], got: got[i] };
+        return { kind: got[i] === '' ? 'blank' : 'line', n: i + 1, want: want[i], got: got[i] };
+      }
+      return null;
+    },
+    /* the sentence is the LESSON's own (`pyDiffSay`, read aloud and cold-read like
+       every pupil line); a lesson that names none shows no pointer, byte for byte */
+    diffHtml: function (res, b, words, chatting) {
+      if (!words || chatting || !res || !res.ok || !b || !b.target || !b.target.length) return '';
+      if (String((b.check && b.check.kind) || 'target') !== 'target') return '';
+      var d = PyRun.firstDiff(res.out, b.target);
+      if (!d || !words[d.kind]) return '';
+      var code = function (t) {
+        t = String(t == null ? '' : t);
+        return '<code class="q-icode">' + esc(t.length > 60 ? t.slice(0, 57) + '...' : t) + '</code>';
+      };
+      return '<p class="pyrun-diff">' + esc(String(words[d.kind]))
+          /* functions, so a $ in what she printed is never read as a replacement pattern */
+        .replace('{n}', function () { return esc(String(d.n || '')); })
+        .replace('{want}', function () { return code(d.want); })
+        .replace('{got}', function () { return code(d.got); }) + '</p>';
     },
 
     /* a one-line reason parked directly after a control that has gone to
@@ -3790,8 +3838,12 @@
           if (!b || paid[b.id] || ctx.review) return;
           paid[b.id] = 1;
           ctx.saveEvent({ xp: Number(b.xp || 0), detail: 'b' + b.id + '=1' });
+        } else if (m.type === 'stuck') {
+          var cb = asked[m.id]; delete asked[m.id];
+          if (cb) cb(!!m.shown);
         } else if (m.type === 'done') {
           window.removeEventListener('message', onMsg);
+          App.askStory = null;
           if (m.why === 'quiz') {
             var at = s.chunks.findIndex(function (c) { return c.engine === 'exitcheck'; });
             if (at !== -1) { s.chunkIdx = at; App.remountChunk(); return; }
@@ -3800,6 +3852,18 @@
         }
       }
       window.addEventListener('message', onMsg);
+      /* "STUCK? SHOW ME" (V91, 26 Nov 2026). Walked 26 Nov: the green button opened the same general box at every step.
+         Now it asks the story (hour-bridge.js), which shows its own next rung of help under her typing box and answers.
+         cb(false) — nothing to show, or no answer within 0.8 s — and app.js opens the general box as before.
+         Returns false once this story is gone, so the button is never left asking a frame that is not there. */
+      var asked = {}, askN = 0;
+      App.askStory = function (cb) {
+        if (!frame.isConnected || !frame.contentWindow) { App.askStory = null; return false; }
+        var id = ++askN; asked[id] = cb;
+        try { frame.contentWindow.postMessage({ rescue: 1, type: 'stuck', id: id }, '*'); } catch (e) { delete asked[id]; return false; }
+        setTimeout(function () { var c = asked[id]; if (c) { delete asked[id]; c(false); } }, 800);
+        return true;
+      };
 
       function ending() {
         var st = cfg.stretch;
@@ -3883,13 +3947,24 @@
          five signed-off lessons render byte-identically — J1's own wording is
          REPORTED to Damien as a proposed reword rather than changed under his
          lock (DFM 176/208). */
-      introCard(host, {
+      var dp = (!ctx.review && global.App && App.state && App.state.draft && App.state.draft.exitPart) || null;
+      var part = (dp && dp.chunk === chunk.id && dp.answers && Object.keys(dp.answers).length) ? dp.answers : null;
+      if (!part) introCard(host, {
         kicker: cfg.kicker || 'Exit check',
         title: cfg.cardTitle || 'Before you clock off…',
         text: cfg.intro || ''
-      }, cfg.readyLabel || 'Ready', function () {
+      }, cfg.readyLabel || 'Ready', run);
+      function run() {
+        host.innerHTML = '';
         itemRunner(host, {
-          items: cfg.items, mode: 'collect',
+          items: cfg.items, mode: 'collect', startAnswers: part,
+          /* each answer is kept as she gives it, so a reload carries on from the next question */
+          onAnswer: function (a) {
+            if (ctx.review || !global.App || !App.state) return;
+            App.state.draft = App.state.draft || {};
+            App.state.draft.exitPart = { chunk: chunk.id, answers: a };
+            ctx.saveEvent({ draft: App.state.draft });
+          },
           onDone: function (res) {
             App.state._exitAnswers = cfg.items.map(function (it) { return res.answers[it.id]; });
             App.state._exitItems = cfg.items;
@@ -3897,13 +3972,16 @@
             if (!ctx.review) {
               App.state.draft = App.state.draft || {};
               App.state.draft.exitAnswers = App.state._exitAnswers;
+              delete App.state.draft.exitPart;
               ctx.saveEvent({ draft: App.state.draft });
             }
             if (cfg.storyChunk && !ctx.review && !storyDone(cfg.storyChunk)) { storyBackCard(host, cfg, ctx); return; }
             ctx.next();
           }
         });
-      });
+      }
+      /* back after a reload with some answers given: straight to the next question, no intro card again */
+      if (part) run();
     }
   };
 
@@ -5434,6 +5512,28 @@
 
       if (cfg.extrasMode) { hub(); return; }
 
+      /* A RELOAD KEEPS THE BUILDS SHE HAS ALREADY MATCHED (V91, J3 L2 live walk,
+         26 Nov 2026). Each build she passed moved `at` on in memory only, so a
+         refresh (or a dropped connection) at build 2 of 2 sent her back to build 1
+         and its intro card. Where she is now rides in her lesson draft (`pyAt`),
+         with the first-try count so the bonus is not lost either. */
+      /* App.state is absent where a gate mounts this engine on its own (qa-tray-order) */
+      var appS = (global.App && global.App.state) || {};
+      var keptAt = (!ctx.review && appS.draft && appS.draft.pyAt) || null;
+      if (keptAt && keptAt.chunk === chunk.id && Number(keptAt.at) > 0 && Number(keptAt.at) < builds.length) {
+        at = Number(keptAt.at);
+        cleanFirst = Number(keptAt.clean || 0); featureFirst = Number(keptAt.feat || 0);
+        startBuild(); return;
+      }
+      function keepAt() {
+        if (ctx.review || cfg.extrasMode || !at || !ctx.saveDraft || !global.App || !App.state || App.state.draftUnavailable) return;
+        if (App.state.lesson !== ctx.lesson) return;          /* a late save never lands in another lesson */
+        var d0 = App.state.draft || {}, had = d0.pyAt || {};
+        if (had.chunk === chunk.id && Number(had.at) === at) return;
+        d0.pyAt = { chunk: chunk.id, at: at, clean: cleanFirst, feat: featureFirst };
+        ctx.saveDraft(d0);
+      }
+
       /* ---- A FILM AT THE POINT OF BUILDING (DFM 168, config-gated) --------
          "when a film teaches a build, the film is served in parts, at the point
          of building" — his own law from the Lesson 3 sit. This card's part is
@@ -5582,6 +5682,9 @@
            whole reason "Finish the lesson" is a free move at time-up: there is no
            promise on this screen for leaving to break. */
         if (cfg.extrasMode) { finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); return; }
+        /* the chunk is finished, so where she was inside it is no longer needed */
+        var dz = global.App && App.state && App.state.draft;
+        if (dz && dz.pyAt && dz.pyAt.chunk === chunk.id) delete dz.pyAt;
         /* a STRING, for the reason spelled out on the snap desk's own call */
         finishChunk(ctx, detail, xp);
       }
@@ -5805,6 +5908,8 @@
                                                   : (judge.usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
                                                    : judge.repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
                                                                           : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+              /* no first-difference line on the worked card: she typed nothing here, so "your program
+                 printed" would not be true (its own NOT YET line already says so) */
               PyRun.verdictInView(verdict);
               if (!ok) { runBtn.disabled = false; return; }
               /* A ROOM THAT ASKS STAYS RUNNABLE ONCE IT WORKS: its own IT WORKS
@@ -6189,7 +6294,8 @@
           verdict.innerHTML = '<p class="pyrun-vtag">' +
             esc(ok ? (cfg.matchedLabel || 'MATCHED') : (cfg.notYetLabel || 'NOT YET')) + '</p>' +
             (feats.length ? '<p class="pyf-count">' + esc(String(n) + ' / ' + String(feats.length)) + '</p>' : '') +
-            '<p class="pyrun-vsay">' + esc(say) + '</p>';
+            '<p class="pyrun-vsay">' + esc(say) + '</p>' +
+            ((ok || usesMissing) ? '' : PyRun.diffHtml(res, b, (ctx.lesson || {}).pyDiffSay, !!chat));
           PyRun.verdictInView(verdict);
           if (!ok) { runBtn.disabled = false; return; }
           if (attempts === 1 && !feats.length) cleanFirst++;
@@ -6977,6 +7083,7 @@
         /* leaving a card while a program is waiting at input() must settle that
            program, never leave it suspended under the next screen (DFM 143/265c) */
         if (liveRun) { try { liveRun.abandon(); } catch (e) { /* already settled */ } liveRun = null; }
+        keepAt();
         if (builds[at] && builds[at].optional && !accepted) { offerExtra(); return; }
         var mode = String((builds[at] || {}).mode || cfg.mode || 'assemble');
         if (mode === 'worked') { startWorked(); return; }
@@ -7488,6 +7595,22 @@
           var enough = placed.length > 0;
           runBtn.disabled = !enough;
           lockedNote.hidden = enough;
+          markStaleT();
+        }
+        /* AN ANSWER ABOUT LINES THAT HAVE MOVED IS MARKED AS OLD (V91, J3 L2 live walk,
+           26 Nov 2026): the typed editor already dimmed its last verdict once she edited;
+           the line tray did not, so NOT YET and its pointer stayed bright under a program
+           she had already changed. Same dim, same `staleSay` line where the chunk has one. */
+        var lastRunT = null;
+        function markStaleT() {
+          if (lastRunT == null || verdict.hidden || verdict.classList.contains('is-matched')) return;
+          var st = codeOf() !== lastRunT;
+          [verdict, c.querySelector('.pyrun-console-host'), c.querySelector('.pyl4-host')].forEach(function (n) {
+            if (n) n.classList.toggle('is-stale', st);
+          });
+          var note = verdict.querySelector('.pyrun-stale');
+          if (st && !note && cfg.staleSay) verdict.insertAdjacentHTML('afterbegin', '<p class="pyrun-stale">' + esc(cfg.staleSay) + '</p>');
+          else if (!st && note) note.parentNode.removeChild(note);
         }
         function render() {
           tray.innerHTML = ''; prog.innerHTML = '';
@@ -7547,8 +7670,12 @@
             verdict.innerHTML = '<p>' + esc(cfg.blankEmptySay || PY_SAY.blankEmptySay) + '</p>';
             var inp = c.querySelector('.pyrun-blank[data-key="' + miss.key + '"]');
             if (inp) { inp.classList.add('wants'); inp.focus(); }
+            lastRunT = null;
+            [verdict, c.querySelector('.pyrun-console-host'), c.querySelector('.pyl4-host')].forEach(function (n) { if (n) n.classList.remove('is-stale'); });
             return;
           }
+          lastRunT = codeOf();
+          [verdict, c.querySelector('.pyrun-console-host'), c.querySelector('.pyl4-host')].forEach(function (n) { if (n) n.classList.remove('is-stale'); });
           verdict.hidden = true;
           runBtn.disabled = true;
           repliesB = [];
@@ -7659,7 +7786,8 @@
               '<p class="pyrun-vsay">' + esc(ok ? (b.matchedSay || cfg.matchedSay || PY_SAY.matchedSay)
                 : (usesMissing ? ((b.check && b.check.usesSay) || b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay)
                  : repliesMissing ? ((b.check && b.check.repliesSay) || cfg.repliesSay || PY_SAY.repliesSay)
-                                  : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>';
+                                  : (b.notYetSay || cfg.notYetSay || PY_SAY.notYetSay))) + '</p>' +
+              ((ok || usesMissing || repliesMissing) ? '' : PyRun.diffHtml(res, b, (ctx.lesson || {}).pyDiffSay, !!chatB));
             PyRun.verdictInView(verdict);
             if (ok) {
               /* the extras zone counts nothing: no first-try score, no bonus, no

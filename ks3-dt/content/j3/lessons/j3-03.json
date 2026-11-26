@@ -6,6 +6,15 @@
  "tagline": "You write a program that keeps a list of songs. Your program can add a new song, take one out, put the songs in order, and print the whole list.",
  "mode": "taught",
  "durationMin": 60,
+ "pyDiffSay": {
+  "line": "Look at line {n} of the console. It should say {want}, but your program printed {got}.",
+  "caps": "Look at line {n} of the console. A capital letter is different. It should say {want}.",
+  "spaces": "Look at line {n} of the console. The spaces are different. It should say {want}.",
+  "blank": "Look at line {n} of the console. It should say {want}, but your program printed an empty line.",
+  "short": "Your program printed too few lines. Line {n} of the console is missing. It should say {want}.",
+  "long": "Your program printed more lines than it should. The first extra line is {got}.",
+  "order": "All the right lines are in the console, but in the wrong order. Drag lines up or down in Your program to change the order."
+ },
  "objectives": [
   "Make a list, and get one thing out of it by its position.",
   "Add to a list, take something out of it, and put it in order.",
@@ -510,6 +519,7 @@
     "notYetLabel": "NOT YET",
     "matchedSay": "The console says three. You started with three titles, added one and took one out.",
     "notYetSay": "Not yet. Read the console under your program. Then look again at the line above your program, the one that shows the number your program should print.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "targetLead": "This is what it should print:",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
@@ -656,6 +666,7 @@
     "pendingLabel": "not checked yet",
     "matchedSay": "All five jobs say done. You have written a real program: it holds your own song titles, adds one, takes one out, puts them in order and prints the first three.",
     "notYetSay": "Your engine is not doing all five jobs yet. Look at the five jobs at the top of this card. The jobs that say done are the ones your program already does. If Python stopped, the console says why.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "A playlist engine",
@@ -821,6 +832,7 @@
     "notYetLabel": "NOT YET",
     "matchedSay": "It works. The console shows exactly what it should.",
     "notYetSay": "Not yet. Read the console under your program and try again.",
+    "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "targetLead": "This is what it should print:",
     "consoleLabels": {
      "title": "The console",

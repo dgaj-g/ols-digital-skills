@@ -46,8 +46,8 @@ const { execSync } = require('child_process');
 const ROOT = path.join(__dirname, '..', '..');
 const TEMPLATE = path.join(ROOT, 'platform', 'server', 'Code.gs.template');
 const CONTENT = path.join(ROOT, 'content');
-/* the build he sat: 8f58434 (Version 64) has no room store — the control base */
-const BASE_REF = process.env.ROOM_STORE_BASE || '8f58434';
+/* the build he sat: 823ab1a8 (Version 64; was 8f58434 before the history purge) has no room store — the control base */
+const BASE_REF = process.env.ROOM_STORE_BASE || '823ab1a8';
 const PROP_VALUE_MAX = 9216;
 const PROP_TOTAL_MAX = 500000;
 const HEADROOM_FLOOR = 100000;   // spec §C2: under this, the Sheet-backed fallback

@@ -10,7 +10,7 @@
  * none of the four routines exists.
  *
  *   const { enginePage } = require('./lib/l4-engine-page.js');
- *   const { browser, page } = await enginePage({ ref: '8f58434' });   // or {} for the tree
+ *   const { browser, page } = await enginePage({ ref: '823ab1a8' });   // or {} for the tree
  */
 const fs = require('fs');
 const path = require('path');

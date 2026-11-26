@@ -161,7 +161,7 @@ body.h-card #hcap { left: 36%; }
 .hpill:disabled { opacity: 0.35; cursor: default; }
 
 /* what her code prints, and the lane gauge */
-#hprints { position: fixed; left: 9.4rem; bottom: 2rem; max-width: 50rem; display: none; z-index: 6; padding: 0.6rem 0.9rem 0.7rem; border-radius: 0.8rem;
+#hprints { position: fixed; left: 10.8rem; bottom: 2rem; max-width: 50rem; display: none; z-index: 6; padding: 0.6rem 0.9rem 0.7rem; border-radius: 0.8rem;
   background: rgba(6, 10, 20, 0.92); border: 0.09rem solid rgba(190, 210, 255, 0.24); color: #fff; }
 #hprints.on { display: block; }
 #hprints .k { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.22em; color: #ffd27a; margin-bottom: 0.35rem; }
@@ -170,7 +170,7 @@ body.h-card #hcap { left: 36%; }
 #hprints .row span.hot { color: #10131c; background: #ffd27a; border-color: #ffd27a; }
 #hprints .row span.done { color: #7fe0a0; }
 #hprints .row span.bad { color: #ff9a8f; border-color: #ff9a8f; }
-#hlane { position: fixed; left: 9.4rem; bottom: 2rem; width: 38rem; display: none; z-index: 6; color: #fff; }
+#hlane { position: fixed; left: 10.8rem; bottom: 2rem; width: 38rem; display: none; z-index: 6; color: #fff; }
 #hlane.on { display: block; }
 #hlane .tl { font-size: 0.9rem; color: #c3ccdc; margin: 0 0 0.35rem; text-shadow: 0 0.1rem 0.4rem #000; }
 #hlane.up { bottom: 7.6rem; }
@@ -262,7 +262,10 @@ body.h-on #hpause:hover, body.h-on #hpause:focus-visible { opacity: 1 !important
 #hbadge .card { text-align: center; padding: 36px 40px; width: min(430px, 100%); box-sizing: border-box; border-radius: 1.2rem; background: #141b2e; border: 0.09rem solid #ffd27a;
   box-shadow: 0 0 3rem rgba(255, 210, 122, 0.45); color: #fff; animation: hbadgeIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1); }
 @keyframes hbadgeIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-#hhelp.beat { animation: hhelpBeat 0.9s ease-out; }
+#hhelp.beat, #hrun.beat { animation: hhelpBeat 0.9s ease-out; }
+/* "Stuck? Show me" with nothing else to show: the card's own heading lights for a moment (hour.js H.stuck) */
+#hh.beat { animation: hhBeat 0.9s ease-out; }
+@keyframes hhBeat { 30% { color: #ffd27a; text-shadow: 0 0 0.6rem rgba(255, 210, 122, 0.6); } }
 @keyframes hhelpBeat { 0% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } 30% { box-shadow: 0 0 0 4px rgba(255, 210, 122, 0.6); } 100% { box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } }
 #hbicon { position: static; display: block; margin: 0 auto; width: 116px; height: 116px; animation: hbadgeSpin 1.2s ease-out; }
 @keyframes hbadgeSpin { from { transform: rotateY(360deg); } to { transform: rotateY(0deg); } }

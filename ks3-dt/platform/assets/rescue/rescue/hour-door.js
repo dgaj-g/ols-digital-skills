@@ -149,6 +149,13 @@
     function raise(n, byWait) { if (n > lad.n) { lad.n = n; update(byWait); } }
     lad.bad = function () { lad.wrong++; raise(lad.wrong >= W[2] ? 3 : lad.wrong >= W[1] ? 2 : lad.wrong >= W[0] ? 1 : 0, false); };
     lad.ok = function () { lad.n = lad.floor; lad.wrong = 0; lad.t0 = lad.t; update(false); };
+    /* "Stuck? Show me" (V91): the next rung now, as waiting would bring it; false when every rung is already up */
+    H.onStuck = function () {
+      if (!o.stuck()) return false;
+      var was = lad.shown;
+      for (var n = lad.n + 1; n <= 3; n++) { raise(n, true); if (lad.shown && lad.shown !== was) return true; }
+      return false;
+    };
     step.tick = function (t) {
       lad.t = t;
       var idle = t - lad.t0;

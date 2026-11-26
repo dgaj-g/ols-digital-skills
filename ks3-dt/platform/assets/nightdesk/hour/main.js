@@ -21,6 +21,8 @@
   var Snd = {}; ['buzz', 'ring', 'ding', 'thud', 'tick', 'fanfare'].forEach(function (k) { Snd[k] = function () { if (!st.soundOff && !st.paused) try { Sound[k](); } catch (e) {} }; });
   var seed = 11; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  /* A CODE EXAMPLE NEVER BREAKS ACROSS LINES (26 Nov 2026, live walk): the example after ", like " or "Like this: " in an error line is set in the code face and kept on one line, so "temp_c BETWEEN 20 AND 22" never wraps after BETWEEN. The words are unchanged. */
+  function lineHtml(s) { var h = esc(s), m = /^([\s\S]*?(?:, like |Like this: ))([\s\S]+?)(\.?)$/.exec(h); return m ? m[1] + '<span class="eg">' + m[2] + '</span>' + m[3] : h; }
   function cols(t) { return D.columns[t || st.table]; }
   function runRows(src, t) { try { return src && src.trim() ? Q.run(src, D[t], D.columns[t]) : null; } catch (e) { return null; } }
   function ids(src, t) { return Q.run(src, D[t], D.columns[t]).map(function (r) { return r.id; }); }
@@ -86,8 +88,8 @@
     if (o.after) h += o.after;
     if (!st.ok) { if (o.lead) h += '<p class="small">' + esc(o.lead) + '</p>'; h += '<p class="ask">' + esc(o.ask) + '</p>';
       if (o.hints) { for (var i = 1; i <= st.hint; i++) h += '<p class="hint">' + esc(o.hints[i - 1]) + (i === 3 && o.code ? ' <code>' + esc(o.code) + '</code>' : '') + '</p>'; if (st.hint < 3) h += '<button class="btn ghost" data-act="hint">' + esc(C.hintN.replace('{n}', st.hint + 1)) + '</button>'; }
-      if (o.body) h += o.body; if (st.line) h += '<p class="line ' + st.lineKind + '">' + esc(st.line) + '</p>'; }
-    else h += '<p class="line ' + st.lineKind + '">' + esc(st.line) + '</p><button class="btn" data-act="' + (o.nextAct || 'next') + '">' + esc(o.nextLabel || C.next) + '</button>';
+      if (o.body) h += o.body; if (st.line) h += '<p class="line ' + st.lineKind + '">' + lineHtml(st.line) + '</p>'; }
+    else h += '<p class="line ' + st.lineKind + '">' + lineHtml(st.line) + '</p><button class="btn" data-act="' + (o.nextAct || 'next') + '">' + esc(o.nextLabel || C.next) + '</button>';
     if (o.timed && st.timer && FAILS) h += '<button class="dbg" data-act="debug-timeout">·</button>';
     return h + '</div>'; }
   function scene(cls, inner) { return '<div class="scene ' + cls + '">' + inner + '</div>'; }
@@ -329,7 +331,7 @@
     return '<div class="two">' + deskHTML({ readonly: ro || st.ok, avgs: avgs }) + coach(null, o).replace(/<\/div>$/, lateBar(!st.ok) + '</div>') + '</div>'; }
   function countHTML(n) { var it = n.it, p = st.lt.pick, order = st.lt.order || (st.lt.order = shuffle([0, 1, 2]));
     return scene('plain late', kickLate('count') + '<p class="ask">' + esc(it.facts) + '</p><div class="demo"><code>' + esc(it.rule) + '</code></div><p class="ask">' + esc(L.count.ask) + '</p><div class="opts">' + order.map(function (k) { return '<button class="btn opt' + (p != null ? (k === 0 ? ' right' : k === p ? ' wrong' : '') : '') + '" data-cnt="' + k + '"' + (p != null ? ' disabled' : '') + '>' + esc(String(it.opts[k])) + '</button>'; }).join('') + '</div>'
-      + (p != null ? '<p class="line ' + st.lineKind + '">' + esc(st.line) + '</p><button class="btn" data-act="late-next">' + esc(L.count.next) + '</button>' : '') + lateBar(p == null)); }
+      + (p != null ? '<p class="line ' + st.lineKind + '">' + lineHtml(st.line) + '</p><button class="btn" data-act="late-next">' + esc(L.count.next) + '</button>' : '') + lateBar(p == null)); }
   function raceHTML() { var r = st.lt.race, R = L.race, fr = st.free.race;
     if (!r) return scene('plain late', kickLate('race') + '<p class="ask">' + esc(R.intro) + '</p><div class="levels">' + R.levels.map(function (l, i) { return '<button class="btn opt" data-lvl="' + (i + 1) + '">' + esc(l) + (fr.played.indexOf(i + 1) >= 0 ? '<em>' + esc(L.best.replace('{n}', fr.best[i + 1]).replace('{all}', R.items[i].length)) + '</em>' : '') + '</button>'; }).join('') + '</div>' + lateBar(false));
     if (r.end) return scene('plain late', kickLate('race', R.levels[r.lvl - 1]) + (r.timeUp ? '<p class="ask">' + esc(R.timeUp) + '</p>' : '') + '<p class="ask">' + esc(R.end.replace('{n}', r.right).replace('{all}', r.its.length)) + '</p><div class="opts"><button class="btn" data-act="race-again">' + esc(R.again) + '</button><button class="btn ghost" data-act="late-menu">' + esc(L.menuBack) + '</button></div>');
@@ -373,7 +375,7 @@
   var raceT = null, raceLast = 0;
   function raceOpts() { var r = st.lt.race, it = r.its[r.k]; r.opts = shuffle([it.right].concat(it.wrong)); }
   function raceStart(lvl) { stopRace(); st.lt = { race: { lvl: lvl, its: shuffle(L.race.items[lvl - 1]), k: 0, right: 0, picked: null, end: false, timeUp: false, left: 90000 } }; raceOpts(); fresh(); raceLast = Date.now(); raceT = setInterval(raceTick, 250); render(); window.scrollTo(0, 0); }
-  function raceTick() { var r = st.lt.race, now = Date.now(), dt = now - raceLast; raceLast = now; if (!r || r.end) return stopRace(); if (st.paused || st.helpOn || st.review) return;
+  function raceTick() { var r = st.lt.race, now = Date.now(), dt = now - raceLast; raceLast = now; if (!r || r.end) return stopRace(); if (st.paused || st.helpOn || st.review || r.picked != null) return; /* the clock waits while she reads the reason (26 Nov 2026 walk) */
     r.left -= dt * SPEED; var s = Math.max(0, Math.ceil(r.left / 1000)), t = document.querySelector('main .timer'); if (t) { t.textContent = L.race.time.replace('{s}', s); t.classList.toggle('last', s <= 10); } if (r.left <= 0) raceEnd(true); }
   function racePick(j) { var r = st.lt.race; if (!r || r.end || r.picked != null) return; r.picked = j; if (r.opts[j] === r.its[r.k].right) { r.right++; Snd.ding(); } else Snd.thud(); render(); }
   function raceNext() { var r = st.lt.race; if (!r || r.end) return; r.k++; r.picked = null; if (r.k >= r.its.length) return raceEnd(false); raceOpts(); fresh(); render(); }

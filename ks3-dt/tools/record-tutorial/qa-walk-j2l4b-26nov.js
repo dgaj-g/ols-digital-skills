@@ -123,6 +123,11 @@ const ROOM = (w1, w2, opts) => {
     console.log('\n== 0. the words the engine needs are in the lesson');
     const STALE = C('myroom').staleSay, J5 = C('myroom').builds[0].features[4], OPEN = (C('classadventure').words || {}).openingSay;
     check(['training-1', 'training-3', 'myroom', 'extras'].every(id => /Press RUN again/.test(C(id).staleSay || '')), 'all four run screens carry a staleSay line', 'content');
+    /* V91 (26 Nov walk #10): the extras sat after the self-check, so "finish the rest of the lesson" was untrue
+       and the teacher brief's "After the extra jobs, there is one marked question" was wrong. Extras go before the exit. */
+    const ORDER = lesson.chunks.map(c => c.id);
+    check(ORDER.indexOf('extras') === ORDER.indexOf('classadventure') + 1 && ORDER.indexOf('extras') < ORDER.indexOf('exit') && ORDER[ORDER.length - 1] === 'close',
+      'the extra jobs come straight after the class adventure and before the exit check; the self-check is last (' + ORDER.slice(6).join(' > ') + ')', 'content');
     check(J5.id === 'different' && JSON.stringify(J5.waitFor) === '["path-1","path-2"]' && !!J5.waitNudge, 'job 5 waits for jobs 2 and 3 and has its own waiting line', 'content');
     check(!!OPEN, 'the class adventure has an opening line for a room that loads', 'content');
     check(/up to five rooms/.test(C('classadventure').intro) && /last room/.test(C('classadventure').steps[2]), 'the adventure promises up to five rooms and ends after the last one', 'content');
@@ -261,14 +266,15 @@ const ROOM = (w1, w2, opts) => {
         return { card: card ? Math.round(card.getBoundingClientRect().width) : 0, rows };
       });
     };
-    const ex = await rowCheck('exitp', false);
-    await shot(page, 'j2l4b-6-exitp');
-    check(ex.rows.length >= 3 && ex.rows.every(r => r.spread <= 8), `the exit check's placed lines each sit on one row (${JSON.stringify(ex.rows)})`, 'setup');   /* its short lines fitted before the fix too: a guard, not proof */
-    check(ex.card >= 990, `its card is wide enough for two columns (${ex.card}px)`);
+    /* V91: the extras now come BEFORE the exit check (lesson order), and goTo only moves forward — extras first */
     const xt = await rowCheck('extras', true);
     await shot(page, 'j2l4b-6-extras');
     check(xt.rows.length >= 3 && xt.rows.every(r => r.spread <= 8), `the extras' placed lines each sit on one row (${JSON.stringify(xt.rows)})`);
     check(xt.card >= 990, `its card is wide enough for two columns (${xt.card}px)`);
+    const ex = await rowCheck('exitp', false);
+    await shot(page, 'j2l4b-6-exitp');
+    check(ex.rows.length >= 3 && ex.rows.every(r => r.spread <= 8), `the exit check's placed lines each sit on one row (${JSON.stringify(ex.rows)})`, 'setup');   /* its short lines fitted before the fix too: a guard, not proof */
+    check(ex.card >= 990, `its card is wide enough for two columns (${ex.card}px)`);
     check(!page.__errs.length, `no page errors (${page.__errs.slice(0, 2).join(' | ')})`, 'setup');
     await page.close();
   } finally { await browser.close(); srv.kill(); }

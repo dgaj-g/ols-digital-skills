@@ -297,6 +297,8 @@
     function help(n) { if (n > helped) { helped = n; H.help(n === 1 ? [PAT] : ['Type cross("Spike") or use a name of your own.']); } }
     H.card({ k: 'THE RIVER', h: 'Choose a name for the hedgehog. Use cross to carry it over.', sub: 'The clock starts when you type.', gauge: true, help: again ? [PAT] : [] });
     if (again) helped = 1;
+    /* "Stuck? Show me" (V91): the next of the two help lines, as a wrong try would bring it */
+    H.onStuck = function () { if (over || !H.input || helped >= 2) return false; help(helped + 1); H.beatHelp(); return true; };
     if (H.OPT.freeze && H.OPT.ht > 0) t0 = 0;
     this.sq = 0;
     H.gauge({ label: 'Time left before the river covers the rock', frac: 1 });

@@ -31,7 +31,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { chromium } = require('./node_modules/playwright');
 
-const BASE_REF = process.env.KS3DT_INDENT_BASE || '8f58434';   /* Version 64 — the build he sat */
+const BASE_REF = process.env.KS3DT_INDENT_BASE || '823ab1a8';   /* Version 64 — the build he sat */
 const REPO = path.resolve(__dirname, '..', '..', '..');
 const ENGINES = path.join(REPO, 'ks3-dt', 'platform', 'engines.js');
 const STYLE = path.join(REPO, 'ks3-dt', 'platform', 'style.css');
@@ -115,8 +115,9 @@ async function gutter(pg) {
   const v1 = await typeProgram(on.pg, ['if choice == "lamp":', 'print("A")', 'print("NEXT: door A")']);
   check(v1 === 'if choice == "lamp":\n    print("A")\n    print("NEXT: door A")',
     'Enter after a line ending in ":" lands pushed in by four, and the next Enter keeps the indent', JSON.stringify(v1));
-  await on.pg.keyboard.press('Enter'); await on.pg.keyboard.press('Backspace'); await on.pg.keyboard.press('Backspace');
-  await on.pg.keyboard.press('Backspace'); await on.pg.keyboard.press('Backspace');
+  /* since V87 one Backspace on a line of only spaces takes a whole step (qa-walk-j2l4b section 1); four presses
+     here used to eat the line above (26 Nov) */
+  await on.pg.keyboard.press('Enter'); await on.pg.keyboard.press('Backspace');
   await on.pg.keyboard.type('else:'); await on.pg.keyboard.press('Enter'); await on.pg.keyboard.type('if twist == "yes":');
   await on.pg.keyboard.press('Enter'); await on.pg.keyboard.type('print("B")');
   const v2 = await on.pg.evaluate(() => window.__ed.value());

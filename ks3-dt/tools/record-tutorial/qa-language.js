@@ -249,6 +249,11 @@ function collectStrings(lesson, fileId) {
     });
   };
   ['title', 'tagline'].forEach(k => push(fileId + ' › ' + k, lesson[k]));
+  /* `pyDiffSay` is the lesson's own words for the line under NOT YET that points at the first line of the
+     console that differs from what it should print (V91, 26 Nov 2026). It lives on the LESSON, not on each
+     card, because every Python card in the lesson says it the same way — and a pupil reads it, so it is
+     walked like any card's config. Without this it would ship unledgered: the walk only went into chunks. */
+  walk(lesson.pyDiffSay || {}, fileId + ' › pyDiffSay');
   /* `objectives` is DELIBERATELY out of scope: grepped the whole shell (app.js,
      engines.js, staff.js) - zero references, so no pupil ever reads them. They
      are lesson metadata for planning and the briefs. Counting them would also
@@ -2837,6 +2842,10 @@ function runControls() {
     'and ledger-tool.js — the WRITING end — reads every year at the same one profile');
   control(!/12 or 13-year-old|13 or 14-year-old/.test(toolSrc),
     'with neither retired profile left in it either');
+  /* and a lesson-level pupil line (pyDiffSay, V91) is collected, so it cannot ship unledgered */
+  control(collectStrings({ pyDiffSay: { line: 'Look at line {n}.' }, chunks: [] }, 'x')
+    .some(r => r.path === 'x › pyDiffSay › line'),
+    'a lesson-level pyDiffSay line is walked and needs its own read-aloud record');
   /* the ledger really reaches hub text, in both directions */
   const j2Tag = hubPath('j2-01 › manifest › tagline');
   control(hubLedgerCheck([{ path: 'x › manifest › tagline', text: 'Anything.', year: 'j2', locked: false }], { entries: {} })
