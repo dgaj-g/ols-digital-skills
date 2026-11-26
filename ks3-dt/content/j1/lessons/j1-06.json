@@ -189,7 +189,7 @@
    "title": "Exit check",
    "minutes": 4,
    "config": {
-    "intro": "Three questions about today. These are marked, and your teacher sees your answers.",
+    "intro": "They are marked. Your teacher sees your answers, so answer on your own.",
     "items": [
      {
       "id": "l6-x1",
@@ -228,7 +228,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Next. On the last question, click Finish."
-    ]
+    ],
+    "cardTitle": "Three questions before you finish"
    }
   },
   {
@@ -269,7 +270,7 @@
    "config": {
     "statements": [
      "I can name the seven main parts inside a computer.",
-     "I can say the job of each part in one sentence.",
+     "I can say each part's job in one sentence.",
      "I can say which part a broken computer needs."
     ],
     "difficulty": true,
@@ -280,7 +281,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

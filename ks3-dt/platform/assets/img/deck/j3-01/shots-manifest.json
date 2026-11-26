@@ -10,7 +10,7 @@
    "contentAnchor": "Find the green word Saved, top right. Your work saves by itself, on any school computer.",
    "cardText": "STEP 3 OF 5 · 💾 · Watch your work save itself · Find the green word Saved, top right. Your work saves by itself, on any school computer. · I found the green word Saved at the top",
    "says": "an orientation step: what to look for, and the box to tick when it is found",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "639c22ba2f75",
    "px": "1372x604"
@@ -24,7 +24,7 @@
    "contentAnchor": null,
    "cardText": "Badge earned · Studio Pass · +12 XP · Onward",
    "says": "the badge card that appears over the lesson, with its points",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "639c22ba2f75",
    "px": "912x776"
@@ -38,7 +38,7 @@
    "contentAnchor": "Read eight real cases from a DT room. Decide if each is IN LINE with the room rules or AGAINST them.",
    "cardText": "THE STUDIO CODE · Quick check · Read eight real cases from a DT room. Decide if each is IN LINE with the room rules or AGAINST them. · Open the first case",
    "says": "the card that opens the Studio Code and explains the judging job",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "f64a3e60465c",
    "px": "1372x578"
@@ -50,9 +50,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards?",
    "contentAnchor": "A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards?",
-   "cardText": "2 OF 12 · A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards? · A · Three songs, with an empty gap where song 2 used to be · B · Three songs, shuffled into a brand-new order · C · Three songs — and the songs that were after the gap have each moved up one place · D · Four songs, but song 2 is silent",
+   "cardText": "2 OF 12 · A playlist holds four songs. Song 2 is deleted. What is the playlist like afterwards? · A · Three songs, with an empty gap where song 2 used to be · B · Three songs — and the songs that were after the gap have each moved up one place · C · Three songs, shuffled into a brand-new order · D · Four songs, but song 2 is silent",
    "says": "a Portfolio Zero question, unanswered — one question, four choices, no verdict",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "4fc8d6df457a",
    "px": "1372x922"
@@ -66,7 +66,7 @@
    "contentAnchor": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick.",
    "cardText": "Which one sounds more like you? · Pick one from each pair. You can change them until you press the button. · Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick. · I would rather design how it looks and reads · I would rather write the code that keeps the score · Something you made is not working properly and nobody knows why. ",
    "says": "the Compass board — three pairs, nothing picked, the settle button still locked",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "f09e8914091b",
    "px": "1372x1442"
@@ -76,13 +76,13 @@
    "kind": "app",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I know how to check my own progress on this website.",
-   "cardText": "How did it go? · I know what this year is building towards. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the studio code, and I judged the cases. · ✓ I can · ≈ Getting there · ✗ Not yet · I know how to check my own progress on this website. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I know what this year is building towards. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the studio code, and I judged the cases. · ✓ I can · ≈ Getting there · ✗ Not yet · I know how to check my progress on this website. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "3b1d5516175b",
+   "chunkHash": "4f80fd26dd28",
    "px": "1372x1402"
   }
  }

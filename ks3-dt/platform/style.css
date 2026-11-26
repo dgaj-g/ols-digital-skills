@@ -2183,6 +2183,8 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 }
 .af-demo-video { width: 100%; border-radius: var(--r-md); background: #000; display: block; }
 .af-demo-len, .af-demo-fallback { margin: 6px 0 0; color: var(--muted); font-size: 0.86rem; }
+/* V94: the film's length sits beside the head, in plain case */
+.af-demo-head .af-demo-len { margin: 0; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .af-demo-note {
   margin: 8px 0 0; font-weight: 700; color: var(--ols-blue);
   background: rgba(var(--gold-rgb), 0.12); border: 1px solid rgba(var(--gold-rgb), 0.5);

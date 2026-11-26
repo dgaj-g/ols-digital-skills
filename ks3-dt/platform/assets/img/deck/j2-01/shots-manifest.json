@@ -10,7 +10,7 @@
    "contentAnchor": "Find the green word Saved, top right. Your work saves by itself, on any school computer.",
    "cardText": "STEP 3 OF 5 · 💾 · Watch your work save itself · Find the green word Saved, top right. Your work saves by itself, on any school computer. · I found the green word Saved at the top",
    "says": "a workbench step: what to look for, and the box to tick when it is found",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "4fb9a97a4dc5",
    "px": "1372x604"
@@ -24,7 +24,7 @@
    "contentAnchor": null,
    "cardText": "Badge earned · Your Workbench · +12 XP · Onward",
    "says": "the badge card that appears over the lesson, with its points",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "4fb9a97a4dc5",
    "px": "912x776"
@@ -38,7 +38,7 @@
    "contentAnchor": "Tell your teacher about anything broken, straight away.",
    "cardText": "Line up quietly outside until your teacher arrives. · No food or drink near the machines. · Never unplug, move or take apart the equipment. · Leave your area tidy, chair pushed in. · Sign out every time you finish. · Tell your teacher about anything broken, straight away.",
    "says": "the six room rules off the inspection's own opening card",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "f89cff366345",
    "px": "1104x432"
@@ -50,9 +50,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
    "contentAnchor": "A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps?",
-   "cardText": "1 OF 12 · A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps? · A · It would end up in exactly the same place · B · The robot would break · C · It would end up somewhere different · D · It would not move at all",
+   "cardText": "1 OF 12 · A robot is told to take three steps forward, then turn left, then take two more steps forward. What would change if it turned left FIRST and then took all five steps? · A · It would end up somewhere different · B · It would end up in exactly the same place · C · The robot would break · D · It would not move at all",
    "says": "a Snapshot question, unanswered — one question, four choices, no verdict",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "30a13af26db8",
    "px": "1372x930"
@@ -66,7 +66,7 @@
    "contentAnchor": "Six quick questions about this hour. Each is marked straight away, with the reason.",
    "cardText": "THE WORKSHOP WARRANT · Quick check · Six quick questions about this hour. Each is marked straight away, with the reason. · Start",
    "says": "the card that opens the Workshop Warrant",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "bd7d348c6710",
    "px": "1372x578"
@@ -76,13 +76,13 @@
    "kind": "app",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I know the DT room rules, and I found them in the inspection.",
-   "cardText": "How did it go? · I know my way around this website. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the DT room rules, and I found them in the inspection. · ✓ I can · ≈ Getting there · ✗ Not yet · I understand what the Snapshot was for. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I know my way around this website. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the DT room rules from the inspection. · ✓ I can · ≈ Getting there · ✗ Not yet · I understand what the Snapshot was for. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "fadb62ce5b35",
+   "chunkHash": "217ecfb8a2cf",
    "px": "1372x1402"
   }
  }

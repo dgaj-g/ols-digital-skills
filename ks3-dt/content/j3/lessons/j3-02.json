@@ -553,7 +553,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j3x2-1",
@@ -584,9 +584,9 @@
     "alreadyFiled": "You already sent this to your teacher when you finished the lesson. Looking back through it now does not change what you sent.",
     "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own. That is the lesson finished.",
     "statements": [
-     "I can write a print line that puts exactly the words I want on the console.",
-     "I can put a value in a variable and use it in more than one line.",
-     "I can read the console and work out why my program did what it did."
+     "I can print exactly the words I want.",
+     "I can reuse a value stored in a variable.",
+     "I can use the console to explain what happened."
     ],
     "difficulty": true,
     "comment": true,
@@ -596,7 +596,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

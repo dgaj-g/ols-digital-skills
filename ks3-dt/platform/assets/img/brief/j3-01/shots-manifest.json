@@ -1,7 +1,7 @@
 {
  "lesson": "j3-01",
  "kind": "brief",
- "contentVersion": "2026-11-26q",
+ "contentVersion": "2026-11-26r",
  "shots": {
   "01-briefing.png": {
    "name": "01-briefing.png",
@@ -9,7 +9,7 @@
    "textSnippet": "This year you make real things, judge them, and find what suits you.",
    "contentAnchor": "This year you make real things, judge them, and find what suits you.",
    "says": "the opening card, including what January's options actually mean",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "a22628ace881"
   },
   "02-orientation.png": {
@@ -18,7 +18,7 @@
    "textSnippet": "Find the green word Saved, top right. Your work saves by itself, on any school computer.",
    "contentAnchor": "Find the green word Saved, top right. Your work saves by itself, on any school computer.",
    "says": "an orientation step — what to look for, and the box to tick",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "639c22ba2f75"
   },
   "03-code-intro.png": {
@@ -27,7 +27,7 @@
    "textSnippet": "Read eight real cases from a DT room. Decide if each is IN LINE with the room rules or AGAINST them.",
    "contentAnchor": "Read eight real cases from a DT room. Decide if each is IN LINE with the room rules or AGAINST them.",
    "says": "the card that opens the Studio Code and explains the judging job",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "f64a3e60465c"
   },
   "04-case.png": {
@@ -36,7 +36,7 @@
    "textSnippet": "Against the code. The rule is to sign out every time you finish, and she has finished — she has gone. The next person to sit down is inside her account, and anything done there looks like she did it.",
    "contentAnchor": "Against the code. The rule is to sign out every time you finish, and she has finished — she has gone. The next person to sit down is inside her account, and anything done there looks like she did it.",
    "says": "a judged case: the verdict and the reason underneath it",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "f64a3e60465c"
   },
   "05-portfolio.png": {
@@ -45,7 +45,7 @@
    "textSnippet": "A program is given these three instructions, in this order: set the total to 10, add 5 to the total, then print the total. What appears on the screen?",
    "contentAnchor": "A program is given these three instructions, in this order: set the total to 10, add 5 to the total, then print the total. What appears on the screen?",
    "says": "a Portfolio Zero question — no verdict on these, by design",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "4fc8d6df457a"
   },
   "06-compass.png": {
@@ -54,7 +54,7 @@
    "textSnippet": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winn",
    "contentAnchor": "Your group is making a quiz game for the school open night. Somebody has to design how it looks and how the questions are worded. Somebody has to write the code that keeps the score and picks the winner. You get first pick.",
    "says": "the Compass board — three pairs, nothing picked yet",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "f09e8914091b"
   },
   "07-exit.png": {
@@ -63,17 +63,17 @@
    "textSnippet": "Which of these is TRUE about the two GCSE Digital Technology routes, going by what this lesson has told you?",
    "contentAnchor": "Which of these is TRUE about the two GCSE Digital Technology routes, going by what this lesson has told you?",
    "says": "the marked exit question, before it is answered",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "561bf621a5a5"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "ad7b2530cee0"
   },
   "08-selfeval.png": {
    "name": "08-selfeval.png",
    "chunkId": "selfeval",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I know how to check my own progress on this website.",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "says": "the final screen, untouched — compulsory, and the comment box comes to the teacher",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "3b1d5516175b"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "4f80fd26dd28"
   }
  },
  "reused": {}

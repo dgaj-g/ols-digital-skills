@@ -1508,7 +1508,7 @@
     "kicker": "Last five questions",
     "cardTitle": "5 questions about asking a table",
     "readyLabel": "Start the questions",
-    "intro": "Click one answer for each question. Your teacher sees how the class did, so answer on your own. You find out how you did on the last screen of the lesson.",
+    "intro": "Answer on your own: your teacher sees how the class did. You get your score at the end.",
     "items": [
      {
       "id": "j3x6-1",
@@ -1580,7 +1580,7 @@
     ],
     "difficulty": true,
     "comment": true,
-    "lockedNote": "Click an answer under each of the 3 sentences above. Then click how hard the hour felt. Then the \"Send & finish\" button will work.",
+    "lockedNote": "Answer each sentence and how today felt. Then you can send.",
     "doneTitle": "The hour is over. Everything you did is saved.",
     "scoreLine": "You got {n} of the {total} questions right.",
     "optionLines": true,

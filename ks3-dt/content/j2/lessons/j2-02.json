@@ -534,7 +534,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j2x2-1",
@@ -565,9 +565,9 @@
     "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
     "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
     "statements": [
-     "I can look at a Scratch block and say what it does.",
-     "I can find the line of Python that does the same job as a block.",
-     "I can read the console and work out what my program really did."
+     "I can say what a Scratch block does.",
+     "I can match a Scratch block to its Python line.",
+     "I can read the console to see what really happened."
     ],
     "difficulty": true,
     "comment": true,
@@ -577,7 +577,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

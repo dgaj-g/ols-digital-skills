@@ -1082,7 +1082,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j2x3-1",
@@ -1113,9 +1113,9 @@
     "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
     "offlineSay": "The internet has dropped out. Your answers are saved on this computer and will send on their own when it comes back. The lesson is finished.",
     "statements": [
-     "I can write a line that asks a question and keeps the answer.",
-     "I can put somebody's answer into a sentence my program prints.",
-     "I can read what Python says when it stops, and work out what to change."
+     "I can ask a question and keep the answer.",
+     "I can print a sentence with somebody's answer in it.",
+     "When Python stops, I can read why and fix it."
     ],
     "difficulty": true,
     "comment": true,
@@ -1125,7 +1125,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

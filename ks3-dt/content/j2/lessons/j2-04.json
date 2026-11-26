@@ -1236,7 +1236,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "There is one more question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j2x4-1",
@@ -1308,16 +1308,17 @@
     "comment": true,
     "help": "Under each sentence, click the button that says how today really went. Then, at the bottom of the screen, click the button that says how hard the hour felt, and write a comment if you want to. Only your teacher reads the comment. Press Send when every part is done.",
     "statements": [
-     "I can write an if line and an else line, so my program does one thing or the other.",
+     "I can write if and else lines for two roads.",
      "I can add a third road with elif.",
-     "I can test my room by trying each of my two words, and then a word I did not plan for."
+     "I can test both roads and one surprise answer."
     ],
     "job": "Tell your teacher honestly how today went.",
     "showMe": [
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

@@ -729,7 +729,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j3x-1",
@@ -762,7 +762,7 @@
     "statements": [
      "I know what this year is building towards.",
      "I know the studio code, and I judged the cases.",
-     "I know how to check my own progress on this website."
+     "I know how to check my progress on this website."
     ],
     "difficulty": true,
     "comment": true,
@@ -772,7 +772,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

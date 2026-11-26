@@ -37,7 +37,8 @@
  },
  "opening.line3": {
   "from": "People use this to plan parties, trips and whole festivals.",
-  "to": "People use spreadsheets to plan parties, trips and whole festivals."
+  "to": "People plan whole festivals like this.",
+  "why": "26 Nov 2026 V94: the opening screen held to 25 words (his \"pupils don't read long text\")"
  },
  "story.b1": {
   "from": "Hi! Aoife from the Lumen festival here. Our planner’s laptop just died.",
@@ -561,5 +562,15 @@
  "close.helpStuck": {
   "from": null,
   "to": "Still stuck? Ask the person beside you. Then put your hand up."
+ },
+ "opening.line1": {
+  "from": "Today you make a computer do your sums for you.",
+  "to": "Today you make a computer do your sums.",
+  "why": "26 Nov 2026 V94: the opening screen held to 25 words (his \"pupils don't read long text\")"
+ },
+ "opening.line2": {
+  "from": "When one number changes, it redoes every sum on its own.",
+  "to": "Change one number and it redoes every sum.",
+  "why": "26 Nov 2026 V94: the opening screen held to 25 words (his \"pupils don't read long text\")"
  }
 }
