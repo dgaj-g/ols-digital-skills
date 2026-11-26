@@ -17,6 +17,7 @@
 const puppeteer = require('puppeteer'), path = require('path'), fs = require('fs'), { spawn, execFileSync } = require('child_process');
 const arg = (k, d) => { const m = process.argv.find(a => a.startsWith('--' + k + '=')); return m ? m.slice(k.length + 3) : d; };
 const ROOT = path.resolve(__dirname, '../../..'), KS3 = path.join(ROOT, 'ks3-dt'), PORT = +arg('port', 8878);
+let SAW_STRIP = false;   /* did this lesson draw a job line? (CONTROL repair, 26 Nov) */
 const CONTROL = process.env.CONTROL === '1', ONLY = arg('only', '');
 const REPORT = process.env.REPORT ? [] : null;   // REPORT=file.json: what each part rings, for a human look
 const FRAME = new Set(['operation', 'rescue', 'twolights', 'search', 'headliner', 'nightdesk', 'see']);
@@ -27,6 +28,7 @@ const check = (ok, msg, kind) => {
   if (kind === 'engine') { ENGINE_ALL++; if (!ok) ENGINE_FAILS++; }
   if (ok) PASS++; else FAILS.push(msg);
   if (!ok || process.env.VERBOSE) console.log((ok ? '  ok    ' : '  FAIL  ') + '[' + (kind || 'setup') + '] ' + msg);
+  if (CONTROL && ok && kind === 'engine') console.log('  CONTROL-PASSED (must fail) ' + msg);
 };
 const old = f => execFileSync('git', ['show', 'origin/main:ks3-dt/platform/' + f], { cwd: ROOT, maxBuffer: 1 << 27 });
 const OLD = CONTROL ? { 'app.js': old('app.js'), 'style.css': old('style.css'), 'index.html': old('index.html') } : null;
@@ -173,6 +175,10 @@ async function partChecks(page, L, c) {
   await click(page, '#job-help'); await sleep(450);
   s = await look(page);
   check(s.bar, tagLbl + ': Stuck? Show me opens the bar', 'engine');
+  /* 26 Nov CONTROL repair: the closing checks below passed on origin/main, where there is no bar to
+     close. Each now counts only when the bar really opened, so the control can fail every one. */
+  const opened = !!s.bar;
+  if (s.strip) SAW_STRIP = true;
   const long = s.steps.filter(t => words(t) > 10);
   check(s.steps.length >= 1 && s.steps.length <= 3 && !long.length, tagLbl + ': 1 to 3 steps of 10 words or fewer (' + JSON.stringify(s.steps) + ')', 'engine');
   check(/^Still stuck\? Ask the person beside you\. Then put your hand up\.$/.test(s.stuck), tagLbl + ': the "Still stuck?" line ends the bar', 'engine');
@@ -182,14 +188,16 @@ async function partChecks(page, L, c) {
   check(!!s.barR && (s.scrollY > 0 || s.barR.b <= s.hostT + 1), tagLbl + ': at the top of the page the bar sits above her work (bar bottom ' + (s.barR && s.barR.b) + ', work top ' + s.hostT + ')', 'engine');
   check(below.length >= 1 && !!s.tag, tagLbl + ': a ring and a tag ("' + s.tag + '") mark the thing to use next, below the bar and on screen' + (s.rings.length ? ' (rings at ' + s.rings.map(x => x.r.t + '-' + x.r.b).join(',') + ')' : ' (no ring at all)'), 'engine');
   if (s.optN) check(s.optRinged === s.optN, tagLbl + ': every answer is ringed, not only one (' + s.optRinged + ' of ' + s.optN + ')', 'engine');
-  check(!s.tagHits.length, tagLbl + ': the tag covers none of her words' + (s.tagHits.length ? ' (it lies over: ' + JSON.stringify(s.tagHits) + ')' : ''), 'engine');
+  check(!!s.tag && !s.tagHits.length, tagLbl + ': the tag covers none of her words' + (s.tagHits.length ? ' (it lies over: ' + JSON.stringify(s.tagHits) + ')' : ''), 'engine');
   await click(page, '#showme-close'); await sleep(350);
   s = await look(page);
-  check(!s.bar && !s.rings.length, tagLbl + ': Got it closes the bar and takes the ring away', 'engine');
-  check((await snap(page)) === before, tagLbl + ': her work is exactly as it was after the help closes', 'engine');
-  await click(page, '#job-help'); await sleep(300); await page.keyboard.press('Escape'); await sleep(300);
+  check(opened && !s.bar && !s.rings.length, tagLbl + ': Got it closes the bar and takes the ring away', 'engine');
+  check(opened && (await snap(page)) === before, tagLbl + ': her work is exactly as it was after the help closes', 'engine');
+  await click(page, '#job-help'); await sleep(300);
+  const reopened = !!(await look(page)).bar;
+  await page.keyboard.press('Escape'); await sleep(300);
   s = await look(page);
-  check(!s.bar, tagLbl + ': Esc closes the bar', 'engine');
+  check(reopened && !s.bar, tagLbl + ': Esc closes the bar', 'engine');
 }
 
 /* on a question, the options themselves: press the intro's start and look again */
@@ -207,7 +215,7 @@ async function questionChecks(page, L, c) {
   const s = await look(page);
   check(s.optN > 0 && s.optRinged === s.optN, tagLbl + ': every answer is ringed (' + s.optRinged + ' of ' + s.optN + ')', 'engine');
   check(s.tag === 'Choose one', tagLbl + ': the tag says "Choose one" (got "' + s.tag + '")', 'engine');
-  check(!s.tagHits.length, tagLbl + ': the tag covers none of her words' + (s.tagHits.length ? ' (it lies over: ' + JSON.stringify(s.tagHits) + ')' : ''), 'engine');
+  check(!!s.tag && !s.tagHits.length, tagLbl + ': the tag covers none of her words' + (s.tagHits.length ? ' (it lies over: ' + JSON.stringify(s.tagHits) + ')' : ''), 'engine');
   await click(page, '#showme-close'); await sleep(250);
 }
 
@@ -229,6 +237,7 @@ async function questionChecks(page, L, c) {
 
     for (const L of LS) {
       console.log('\n' + L.id + ' (' + L.chunks.length + ' parts)');
+      SAW_STRIP = false;
       await openLesson(page, L.id);
       /* the parts as the platform builds them (its own Do-Now first, from lesson 2 on) */
       const built = await page.evaluate((frame) => App.state.chunks.map((c, i) => ({ i, id: c.id, engine: c.engine })).filter(c => frame.indexOf(c.engine) === -1), [...FRAME]);
@@ -246,7 +255,7 @@ async function questionChecks(page, L, c) {
       page.__errs.length = 0;
       await page.evaluate(() => App.showHub()); await sleep(300);
       h = await look(page);
-      check(h.beacon && !h.strip && !h.bar, L.id + ': back on the hub the job line is gone and the corner help is back', 'engine');
+      check(SAW_STRIP && h.beacon && !h.strip && !h.bar, L.id + ': back on the hub the job line is gone and the corner help is back', 'engine');
     }
 
     if (!ONLY || ONLY.includes('j3-02')) {
@@ -257,16 +266,19 @@ async function questionChecks(page, L, c) {
       const can = await page.evaluate(() => !!(App.showMe && App.showMe.setIdle));
       check(can, 'idle: the help can be told a shorter wait for the test', 'engine');
       if (can) {
-        await page.evaluate(() => App.showMe.setIdle(400));
-        await sleep(650);
+        /* 1 s idle: pulse from 1 s, ring from 2 s. The old 400 ms gave a 400 ms window and failed
+           1 time in 2 under load (26 Nov); this gives the look a full second either side. */
+        await page.evaluate(() => App.showMe.setIdle(1000));
+        await sleep(1450);
         let s = await look(page);
         check(s.nudge && !s.rings.length, 'idle 1x: the button pulses, no ring yet', 'engine');
-        await sleep(600);
+        await sleep(1100);
         s = await look(page);
         check(s.rings.length >= 1 && !!s.tag && !s.bar, 'idle 2x: the ring and its tag show by themselves, the bar stays shut', 'engine');
+        const hadRing = s.rings.length >= 1;
         await page.mouse.click(5, 300); await sleep(250);
         s = await look(page);
-        check(!s.nudge && !s.rings.length, 'any click clears the pulse and the ring', 'engine');
+        check(hadRing && !s.nudge && !s.rings.length, 'any click clears the pulse and the ring', 'engine');
         await page.evaluate(() => App.showMe.setIdle(20000));
       }
       console.log('\nFit: the job line and its button at four screen sizes (J3 L2 callsheet-a)');
