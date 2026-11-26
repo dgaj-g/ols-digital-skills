@@ -104,7 +104,9 @@ const ALLOWED_SHRINK = [
   ['j3-03', '/chunks/8/config/intro',
    'V93 25-word trim (26 Nov 2026): his feedback that pupils skip long text. Shorter on purpose, the meaning kept in fewer words; the rest sits in the steps, the card checklist or Stuck? Show me. Cold read and ledgered'],
   ['j3-03', '/chunks/10/config/intro',
-   'V93 25-word trim (26 Nov 2026): his feedback that pupils skip long text. Shorter on purpose, the meaning kept in fewer words; the rest sits in the steps, the card checklist or Stuck? Show me. Cold read and ledgered']
+   'V93 25-word trim (26 Nov 2026): his feedback that pupils skip long text. Shorter on purpose, the meaning kept in fewer words; the rest sits in the steps, the card checklist or Stuck? Show me. Cold read and ledgered'],
+  ['j3-03', '/chunks/9/config/intro',
+   'V94 shorter end cards (26 Nov 2026): the Exit Check opening card cut to 25 words or fewer after his feedback that pupils skip long text. "Answer on your own: your teacher sees how the class did." keeps the two facts a pupil needs; the puzzle and the last screen announce themselves. Both separated V94 readers passed it (cold-reads/V94/j3-A, j3-B) and it is ledgered']
 ];
 const ALLOWED_REPEATS = [
   ['when i was beep flew metres',

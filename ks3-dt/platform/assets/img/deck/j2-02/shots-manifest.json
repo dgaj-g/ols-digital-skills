@@ -10,7 +10,7 @@
    "contentAnchor": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
    "cardText": "From blocks to Python (the film) · Watch on your own computer. There is no sound. The buttons underneath jump to each part. · Why anyone types code · Meet print() · A variable: a box with a name on it · Reading a whole program · Done watching",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "d5a3c37e93c3",
    "px": "1748x1504"
@@ -24,7 +24,7 @@
    "contentAnchor": "The green join block sticks two things together, so this says the words Score: followed by whatever number is in the score box.",
    "cardText": "Your challenge: match all six blocks to their Python lines. · How it works: click a block, then a Python line. A wrong pair comes back. · SCRATCH BLOCKS · This block makes your character say Hello! in a speech bubble on the screen. · This block puts the number 0 into a variable called score. A variable is a box with a name on it that holds one value for you. · This block adds 1 to whatever is already in the score box. · This block puts the word Aoife into a variable called name. Words go in spee",
    "says": "the top of the matching desk before anything is matched: the blocks on the left, the lines of Python on the right",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": {
     "to": ".snap-blocks .snap-list .snap-block:nth-of-type(2)",
     "keepFrac": 0.399,
@@ -41,9 +41,9 @@
    "selector": ".chunk-host .pyrun-card",
    "textSnippet": "How it works: click or drag a line into Your program. Drag it back to take it out. Python runs the top line first.",
    "contentAnchor": "How it works: click or drag a line into Your program. Drag it back to take it out. Python runs the top line first.",
-   "cardText": "SCOREBOARD · STARS · LEVEL UP · Build the scoreboard. Four of these seven lines make it work. · The score starts at 0. It goes up by one, twice. Then the console prints the word Score: followed by the number. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · Score: 2 · How it works: click or drag a line into Your program. Drag it back to take it out. Python runs the top line first. · THE LINES · print(\"Score: \" + str(Score)) · score = score + 1 · print(\"Score: \" + str(score)) · score = 0 · pr",
+   "cardText": "SCOREBOARD · STARS · LEVEL UP · Build the scoreboard. Four of these seven lines make it work. · The score starts at 0. It goes up by one, twice. Then the console prints the word Score: followed by the number. · THE TARGET — MAKE THE CONSOLE PRINT EXACTLY THIS · Score: 2 · How it works: click or drag a line into Your program. Drag it back to take it out. Python runs the top line first. · THE LINES · score = score + 1 · print(\"Score: \" + score) · print(\"Score: \" + str(score) · score = score + 1 · ",
    "says": "the build screen before a line is moved: the target, the lines, the empty program and RUN still asleep",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "21962dc8cf06",
    "px": "2052x1956"
@@ -67,13 +67,13 @@
    "kind": "app",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I can find the line of Python that does the same job as a block.",
-   "cardText": "How did it go? · I can look at a Scratch block and say what it does. · ✓ I can · ≈ Getting there · ✗ Not yet · I can find the line of Python that does the same job as a block. · ✓ I can · ≈ Getting there · ✗ Not yet · I can read the console and work out what my program really did. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I can say what a Scratch block does. · ✓ I can · ≈ Getting there · ✗ Not yet · I can match a Scratch block to its Python line. · ✓ I can · ≈ Getting there · ✗ Not yet · I can read the console to see what really happened. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the compulsory How did it go? screen, untouched",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "5bb1ea578518",
+   "chunkHash": "0924d253f916",
    "px": "1372x1402"
   }
  }

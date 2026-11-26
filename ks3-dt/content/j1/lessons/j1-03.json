@@ -65,7 +65,7 @@
    },
    "config": {
     "title": "The Scoreboard Ladder",
-    "intro": "This is where you build it — with the person beside you, one micro:bit shared between the two of you. Three rungs, each one an upgrade. The micro:bit is the judge: the number on its display is either right, or it is lying — and your tests will catch it.\n\nYou BOTH build every rung, each on your OWN computer — exactly like last lesson. Talk it through together as you go, and watch the simulator on your own screen: it shows your score the moment your blocks change. You share the real micro:bit for the real test, so take turns. At each rung, one of you downloads the program and drags the file across, while the other presses the buttons and reads the display. Swap over at every rung, so you both do both.\n\nYou'll build TWO shapes of code today: an EVENT that sits and waits for a button press, and a LOOP that just keeps going on its own.",
+    "intro": "You both build each rung. Take turns testing.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
@@ -74,13 +74,13 @@
      "label": "Part 1 — What is a variable?",
      "src": "assets/video/l3/l3-part1.mp4"
     },
-    "setupLead": "Before rung 1, set MakeCode up like this:",
+    "setupLead": "Before rung 1, set up MakeCode:",
     "setup": [
-     "Open MakeCode using the button above. Keep it in its own tab all lesson.",
-     "Click New Project, type scoreboard as the project's name, and press Create. Do NOT open last lesson's project — today's scoreboard is a fresh build, started from empty. (Missed the name box? Click the box at the bottom that says Untitled and type scoreboard there.)",
-     "A blue Welcome box may pop up when the editor opens — click its ✕ to close it. You do not need the tour today.",
-     "Build all three rungs in this SAME project. It grows as you climb — you never start another one today.",
-     "Every time you press Download it saves a new copy of the WHOLE project, replacing the one from last time. If a box asks whether you want to replace the old file, say yes — that is exactly what you want."
+     "Open MakeCode with the button above. Keep its tab open.",
+     "Click New Project, not last lesson's project.",
+     "Name it scoreboard. Press Create. Build every rung in it.",
+     "If a blue Welcome box pops up, click its ✕.",
+     "Download replaces the old file. If asked, say yes."
     ],
     "rungs": [
      {
@@ -97,7 +97,7 @@
       "stepsLead": "Build exactly what Part 2 showed you:",
       "steps": [
        "Make a variable and call it score.",
-       "Drag 'show number score' INSIDE the forever block that is already sitting on your canvas."
+       "Drag 'show number score' into the forever block on your canvas."
       ],
       "testLead": "Now prove it:",
       "testSteps": [
@@ -118,9 +118,8 @@
       "hintImg": "assets/img/l3/rung2.png",
       "stepsLead": "Build what Part 3 showed you:",
       "steps": [
-       "Add a separate event: 'on button A pressed', with 'set score to 1' inside it.",
-       "Press A on the simulator a few times. Watch the display: the number sticks at 1, no matter how many times you press.",
-       "Now swap 'set score to 1' for 'change score by 1'."
+       "Put 'set score to 1' inside 'on button A pressed'.",
+       "Press A. Stuck at 1? Use 'change score by 1'."
       ],
       "note": "When you're done, your button A event holds just that one block — the forever loop is still doing all the showing.",
       "testLead": "Now prove it:",
@@ -177,8 +176,8 @@
      ],
      "note": "That 'if' block is asking a question — you will build lots more of those next lesson."
     },
-    "introSolo": "This is where you build it — on your own today, so you do every job yourself: build the blocks AND run the multi-round test. Three rungs, each one an upgrade. The micro:bit is the judge — or the on-screen simulator, if there is no micro:bit beside you. You'll build two shapes of code: an EVENT that waits for a button press, and a LOOP that keeps going on its own.",
-    "help": "Each rung starts with its own short video: press play and watch it, then build what it showed in MakeCode (in its own tab), then run the proof steps on the card. Rung 2's break-it step — making the simulator's display go dark on purpose — is part of the proof. The Debug Hint costs 2 XP and points you towards the problem; it never gives the fix away. The film button plays the whole film without losing your place.",
+    "introSolo": "Build each rung on your own today.",
+    "help": "Watch each rung's short film first. Then build what it showed in MakeCode. Then run the proof steps on the card. The micro:bit is the judge. Its display shows if your code works. Today is a NEW project called scoreboard. Missed the name box? Click Untitled at the bottom and type scoreboard. On rung 2 you make the simulator's display go dark on purpose. That is part of the proof. The Debug Hint costs 2 XP. It points to the problem, never the fix. The film button plays the whole film without losing your place.",
     "film": {
      "src": "assets/video/l3/l3-tutorial.mp4",
      "chapters": [
@@ -223,7 +222,7 @@
    },
    "config": {
     "title": "Register your rig",
-    "intro": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled out mid-Rally, your work is safe.",
+    "intro": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
     "kinds": [
      "hex"
     ],
@@ -232,17 +231,17 @@
      {
       "icon": "⬇️",
       "title": "Download",
-      "text": "Press the purple Download button in MakeCode — a file called scoreboard.hex lands in Downloads."
+      "text": "Press Download in MakeCode. You get scoreboard.hex."
      },
      {
       "icon": "🗄️",
-      "title": "Vault",
-      "text": "Open drive.google.com in a new tab. Click into School, then DT Work — the same folder as last lesson."
+      "title": "Open your Drive",
+      "text": "drive.google.com → School → DT Work"
      },
      {
       "icon": "🏁",
       "title": "Drag it in",
-      "text": "Drag the .hex file in. That's it saved — the website will check it is really there."
+      "text": "Drag scoreboard.hex into DT Work."
      }
     ],
     "passText": "Saved and checked. Your scoreboard follows your login to any machine — and you're ready to compete. The Rally is next.",
@@ -252,7 +251,7 @@
     "demo": {
      "src": "assets/video/shared/save-to-drive.mp4",
      "open": false,
-     "note": "The program saved in the film is just an example — do not copy it. You are saving your own program, scoreboard.hex."
+     "note": "The film's program is just an example. Yours is scoreboard.hex."
     },
     "checking": "Looking inside your Drive for your file…",
     "errorText": "The check could not reach your Drive — try again in a moment.",
@@ -282,7 +281,7 @@
    "config": {
     "kicker": "WHOLE-CLASS EVENT",
     "title": "The Reaction Rally",
-    "intro": "One of you presses A as fast as possible. The other referees. Then swap.",
+    "intro": "Take turns: one plays, one referees.",
     "rules": [
      "Player presses B. Referee checks it shows 0.",
      "Referee clicks Start the 5 seconds.",
@@ -295,11 +294,11 @@
      "Go 2"
     ],
     "maxScore": 45,
-    "timerSay": "Referee: this is the player's screen. Start the timer when she is ready.",
-    "soloTimerSay": "You referee yourself today. Start the timer when you are ready.",
-    "lockedNote": "This wakes up once both scores are in and the box above is ticked.",
+    "timerSay": "Referee: this is the player's screen. Start when ready.",
+    "soloTimerSay": "You referee yourself. Start when ready.",
+    "lockedNote": "Enter both scores and tick the box.",
     "confirm": "We played it fair: both numbers match the micro:bit",
-    "soloIntro": "Your scoreboard still gets its two goes. You are player and referee today, so be honest.",
+    "soloIntro": "You play and referee today. Be honest.",
     "soloRules": [
      "Press B for 0, then click Start the 5 seconds.",
      "Press A fast until the timer stops.",
@@ -311,7 +310,7 @@
      "waiting": "Scores are landing…",
      "revealTease": "Eyes on the big screen — your teacher runs the reveal."
     },
-    "help": "One of you plays, the other referees, then you swap. For each go, the player presses B for a fresh 0. The referee clicks Start the 5 seconds on the player's screen. The player presses A as fast as she can until the timer stops. Presses after the stop do not count. The number scrolls across the micro:bit. Enter exactly that number with the + and − buttons. Two goes each. Tick the fair-play box, then press Send in my scores. You are secretly on one of four teams. Your scores add to your team's total. Your teacher reveals the teams on the big screen at the end.",
+    "help": "Follow the five rules on screen. One of you plays, the other referees, then you swap. For each go, the player presses B for a fresh 0. The referee clicks Start the 5 seconds on the player's screen. The player presses A as fast as she can until the timer stops. Presses after the stop do not count. The number scrolls across the micro:bit. Enter exactly that number with the + and − buttons. Two goes each. Tick the fair-play box, then press Send in my scores. You are secretly on one of four teams. Your scores add to your team's total. Your teacher reveals the teams on the big screen at the end.",
     "soloHelp": "Follow the three rules on screen. Enter each go's exact number with the + and − buttons. Tick the promise, then press Send in my scores. The live reveal already happened in class. Your points still go to your hidden team.",
     "timerSeconds": 5,
     "job": "Play two goes each, then send in your own scores.",
@@ -329,7 +328,7 @@
    "title": "Exit Check",
    "minutes": 2,
    "config": {
-    "intro": "Three questions about today before you go — and these ARE marked: your teacher sees your answers. Think like a scoreboard engineer.",
+    "intro": "They are marked. Your teacher sees your answers, so answer on your own.",
     "items": [
      {
       "id": "ex3-1",
@@ -368,7 +367,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Next. On the last question, click Finish."
-    ]
+    ],
+    "cardTitle": "Three questions before you finish"
    }
   },
   {
@@ -419,9 +419,9 @@
    "config": {
     "statements": [
      "I can create a variable and change its value.",
-     "I can test my code over several rounds to check the score is right.",
-     "I can explain what my score variable is doing in my own words.",
-     "I can say what a forever loop does differently from an event."
+     "I can check the score is right over several rounds.",
+     "I can explain my score variable in my own words.",
+     "I can say how forever loops differ from events."
     ],
     "difficulty": true,
     "comment": true,
@@ -431,7 +431,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

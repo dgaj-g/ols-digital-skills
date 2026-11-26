@@ -958,9 +958,9 @@
    "minutes": 2,
    "config": {
     "kicker": "Exit check",
-    "cardTitle": "One marked question, and then a short puzzle to finish",
+    "cardTitle": "One marked question, then a short puzzle",
     "readyLabel": "Ready",
-    "intro": "This question is marked. Your teacher sees how the class did on it, so answer it on your own. After it there is one short puzzle, and then one last screen asking how the hour went.",
+    "intro": "Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j3x3-1",
@@ -1023,9 +1023,9 @@
     "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
     "offlineSay": "The connection has dropped, so your answers are saved on this computer and will be sent as soon as the connection is back. You have finished the lesson.",
     "statements": [
-     "I can make a list, and get one thing out of it by its position.",
-     "I can add to a list, take something out of it and put it in order.",
-     "I can read a few lines of Python and say what they will print."
+     "I can make a list and get items by position.",
+     "I can add, remove and sort items in a list.",
+     "I can read Python and say what it will print."
     ],
     "difficulty": true,
     "comment": true,
@@ -1035,7 +1035,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

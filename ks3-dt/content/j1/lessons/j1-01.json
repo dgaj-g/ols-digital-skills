@@ -969,7 +969,7 @@
    "title": "Exit Check",
    "minutes": 3,
    "config": {
-    "intro": "One last question — this one IS marked, and your teacher sees how the class did.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "ex-1",
@@ -988,7 +988,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Finish when you are sure."
-    ]
+    ],
+    "cardTitle": "One question before you finish"
    }
   },
   {
@@ -1000,7 +1001,7 @@
     "statements": [
      "I know what makes a password hard to guess.",
      "I know the rules of the DT rooms.",
-     "I know where my work is saved and how to find it again."
+     "I can find my saved work again."
     ],
     "difficulty": true,
     "comment": true,
@@ -1010,7 +1011,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

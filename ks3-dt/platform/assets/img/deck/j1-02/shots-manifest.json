@@ -12,7 +12,7 @@
    ],
    "captions": "Press → doors open · Press → green man · Step → count goes up",
    "says": "the three input photographs from her own hook, with their captions",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "4b6ddb270860",
    "px": "1440x530"
   },
@@ -25,7 +25,7 @@
    ],
    "captions": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
    "says": "the annotated reset-button photo, credit intact",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "d8aa345e1075",
    "px": "1440x778"
   },
@@ -44,7 +44,7 @@
    },
    "inset": null,
    "says": "the .hex mid-drag onto the MICROBIT drive, from the film itself, with the drive ringed",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "px": "1440x768"
   },
   "film": {
@@ -56,7 +56,7 @@
    "contentAnchor": "Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer.",
    "cardText": "How to use MakeCode (the film) · Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer. · Find MakeCode · First blocks · Onto the real micro:bit · Test it properly · Done watching",
    "says": "the film screen with its four chapter buttons",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "509d48d826c9",
    "px": "1748x1552"
@@ -70,9 +70,9 @@
    "contentAnchor": "🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film button below replays exactly how, if you need it. Then press the real button B. Did the happy face appear? (If your device won't connect, the on-screen simulator counts while your teacher sorts it.)",
    "cardText": "RUNG 2 — YOUR FIRST SIGNAL · Your challenge: make the micro:bit show a HAPPY FACE whenever button B is pressed. You built the button A one together with the film — this one is yours, on a different button, with a different picture. · 🔥 The real test: Copy your program onto the micro:bit: press Download in MakeCode, then drag the downloaded file onto the MICROBIT drive. Copying it across like this is called FLASHING the program onto the device — that is the word your teacher will use. The film b",
    "says": "a rung card — the challenge, the test and the Debug Hint",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "765dbf73e91e",
+   "chunkHash": "2d099cd931fc",
    "px": "1332x1390"
   },
   "bank": {
@@ -80,32 +80,32 @@
    "kind": "app",
    "chunkId": "bank",
    "selector": ".chunk-host .af-steps",
-   "textSnippet": "New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on.",
-   "contentAnchor": "New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on.",
-   "cardText": "💾 · Download your build · In MakeCode press the purple Download button. A file ending in .hex lands in the computer's Downloads folder — that file IS your program. · 🗄️ · Open your Vault · New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on. · 🎯 · Drag it in · Drag the .hex file from Downloads into DT Work. Done — the website can now verify it's really there.",
+   "textSnippet": "Press the purple Download button in MakeCode.",
+   "contentAnchor": "Press the purple Download button in MakeCode.",
+   "cardText": "💾 · Download · Press the purple Download button in MakeCode. · 🗄️ · Open your Drive · drive.google.com → School → DT Work · 🎯 · Drag it in · Drag the .hex file into DT Work.",
    "says": "the three Bank Your Build steps",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "df38525e01eb",
-   "px": "1212x690"
+   "chunkHash": "d749cd6da1cb",
+   "px": "1212x524"
   },
   "selfeval": {
    "name": "selfeval",
    "kind": "app",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I can tell the difference between an input and an output.",
-   "cardText": "How did it go? · I can tell the difference between an input and an output. · ✓ I can · ≈ Getting there · ✗ Not yet · I can build code that reacts when something happens. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code and notice when it's not working. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I can tell an input from an output. · ✓ I can · ≈ Getting there · ✗ Not yet · I can build code that reacts when something happens. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code and spot a problem. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": {
     "to": ".se-row .se-chips",
     "keepFrac": 0.222,
     "from": null,
     "fromFrac": 0
    },
-   "chunkHash": "287759bc1b55",
+   "chunkHash": "93174ee3e9f2",
    "px": "1372x351"
   }
  }

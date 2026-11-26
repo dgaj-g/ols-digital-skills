@@ -1,16 +1,16 @@
 {
  "lesson": "j1-05",
  "kind": "brief",
- "contentVersion": "2026-11-26q",
+ "contentVersion": "2026-11-26r",
  "shots": {
   "01-do-now.jpg": {
    "name": "01-do-now.jpg",
    "chunkId": "_recap",
    "synthetic": true,
-   "textSnippet": "Which of these is the STRONGEST password?",
+   "textSnippet": "Where should your DT work live so you can open it anywhere, even at home?",
    "contentAnchor": null,
    "says": "the Do-Now, mid-question",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": null
   },
   "02-briefing.jpg": {
@@ -19,7 +19,7 @@
    "textSnippet": "YEAR 8 · LESSON 5 OF 17",
    "contentAnchor": "YEAR 8 · LESSON 5 OF 17",
    "says": "the briefing pupils read at the start of the hour",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "af20a78a48fd"
   },
   "03-contracts.jpg": {
@@ -28,7 +28,7 @@
    "textSnippet": "Signed the wrong one? Tear it up and re-sign before your first QA test. Re-signing gives a fresh kit. Your Scratch work stays with the old contract.",
    "contentAnchor": "Signed the wrong one? Tear it up and re-sign before your first QA test. Re-signing gives a fresh kit. Your Scratch work stays with the old contract.",
    "says": "the contracts desk, all three still open",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "de805bd035d2"
   },
   "04-film.jpg": {
@@ -37,7 +37,7 @@
    "textSnippet": "This film teaches the if/else block on its own. Your blueprint shows where it goes in YOUR game.",
    "contentAnchor": "This film teaches the if/else block on its own. Your blueprint shows where it goes in YOUR game.",
    "says": "the masterclass film — part one plays here",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "74e8c1bf8206"
   },
   "05-sprint.jpg": {
@@ -46,7 +46,7 @@
    "textSnippet": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one pro",
    "contentAnchor": "Your starter kit already runs, but it is not finished: it cannot choose, count or end yet — that is your job today. Somewhere in its code is a yellow STUDIO NOTE. A note like that is a message one programmer leaves for another; it does nothing when the game runs, and this one marks the exact spot where your big block goes. Get the kit open in Scratch:",
    "says": "the Studio Desk — the kit, the blueprint and the four QA checks",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "d97f458907f8"
   },
   "06-press.jpg": {
@@ -55,17 +55,17 @@
    "textSnippet": "Unlocks when your press pass is spent — reviews first, your V2 note second.",
    "contentAnchor": "Unlocks when your press pass is spent — reviews first, your V2 note second.",
    "says": "the marquee at Press Night",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "93678d4be539"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "feb0cb6fb321"
   },
   "08-ship.jpg": {
    "name": "08-ship.jpg",
    "chunkId": "ship",
-   "textSnippet": "Your game is real now — and a real game must not live and die on one classroom machine. This is the same save-to-Drive routine as every build this term: three steps, about a minute. Then your game fol",
-   "contentAnchor": "Your game is real now — and a real game must not live and die on one classroom machine. This is the same save-to-Drive routine as every build this term: three steps, about a minute. Then your game follows your login home — any school computer, any time.",
+   "textSnippet": "Save your game to Drive. Then it follows you home.",
+   "contentAnchor": "Save your game to Drive. Then it follows you home.",
    "says": "Ship your game — the same save-to-Drive routine as every build this term",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "9edc91df3c73"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "106e0edfaba6"
   },
   "09-exit.jpg": {
    "name": "09-exit.jpg",
@@ -73,8 +73,8 @@
    "textSnippet": "In an if/else block, what happens when the condition turns out to be FALSE?",
    "contentAnchor": "In an if/else block, what happens when the condition turns out to be FALSE?",
    "says": "an exit-check question, verdict held back until the report is filed",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "3ce3a570ec9c"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "22e2d196ad63"
   }
  },
  "reused": {

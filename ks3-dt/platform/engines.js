@@ -4260,8 +4260,11 @@
         /* rule 13: a ladder reads at a glance, but the dashed rung does not -
            so it is named where she first meets it, on the intro card only */
         var key = withKey
-          ? '<p class="lad-key">This ladder is your progress. The rung you are on glows, and it turns gold for good once you have done it.' +
-            (hasStretch ? ' The dashed rung with the star, above the top, is the extra challenge &mdash; it wakes up once all ' + n + ' rungs are gold.' : '') + '</p>'
+          /* V94 (his 26 Nov ask: "super clear while being shorter"): the
+             picture already shows the glow and the dashed rung, so the key only
+             names what each mark means */
+          ? '<p class="lad-key">Gold = done.' +
+            (hasStretch ? ' &#9733; = extra challenge.' : '') + '</p>'
           : '';
         return '<div class="lad-wrap">' + svg + '</div>' + key;
       }
@@ -4351,14 +4354,14 @@
          instead - so telling her to build there would send her looking for
          something that is not on the screen (DFM 35). */
       function partDoneLine(isIntro) {
-        return '<p class="rung-part-done" hidden>You&rsquo;ve watched this part of the tutorial &mdash; now ' +
-          (isIntro ? 'get MakeCode set up' : 'build it') + ' using the instructions below.</p>';
+        return '<p class="rung-part-done" hidden>Done? Now ' +
+          (isIntro ? 'set up MakeCode' : 'build it') + ' below.</p>';
       }
       function partHtml(part, isIntro) {
         if (!part || !part.src) return '';
         return '<div class="rung-part">' +
           (skinned ? '<p class="now-showing">&#9654; NOW SHOWING</p>' : '') +
-          '<p class="rung-step-head">&#9312; Watch this part &mdash; <b>' + esc(part.label || 'the film') + '</b></p>' +
+          '<p class="rung-step-head">&#9312; Watch: <b>' + esc(part.label || 'the film') + '</b></p>' +
           '<video class="rung-part-video" controls preload="metadata" playsinline src="' + esc(asset(part.src)) + '"></video>' +
           '<p class="rung-part-note"><span class="rung-part-len"></span>' +
           ' <button class="ghost-btn rung-part-replay" type="button">&#8635; Watch this part again</button></p>' +
@@ -4375,12 +4378,18 @@
         v.addEventListener('loadedmetadata', function () {
           if (!lenLine || !isFinite(v.duration)) return;
           var m = Math.max(1, Math.round(v.duration / 60));
-          lenLine.textContent = 'This part runs about ' + m + ' minute' + (m === 1 ? '' : 's') + '.';
+          lenLine.textContent = 'About ' + m + ' minute' + (m === 1 ? '' : 's') + '.';
         });
-        v.addEventListener('ended', function () { if (doneLine) doneLine.hidden = false; });
+        /* V94: once she has watched it, the length has done its job - the
+           done line takes its place so the card does not grow */
+        v.addEventListener('ended', function () {
+          if (doneLine) doneLine.hidden = false;
+          if (lenLine) lenLine.hidden = true;
+        });
         var rb = root.querySelector('.rung-part-replay');
         if (rb) rb.onclick = function () {
           if (doneLine) doneLine.hidden = true;
+          if (lenLine) lenLine.hidden = false;
           try { v.currentTime = 0; v.play(); } catch (e) {}
         };
       }
@@ -4406,7 +4415,8 @@
       function openerRow() {
         return cfg.makecode
           ? '<p class="ladder-open"><a class="ghost-btn" href="' + esc(cfg.makecode.url) + '" target="_blank" rel="noopener">' + esc(cfg.makecode.label || 'Open MakeCode') + ' &#8599;</a>' +
-            '<span class="ladder-open-note">keep it open in its own tab &mdash; you will hop between it and this ladder</span></p>'
+            /* V94: a card with a set-up list says "keep its tab open" there */
+            ((cfg.setup || []).length ? '' : '<span class="ladder-open-note">keep it open in its own tab &mdash; you will hop between it and this ladder</span>') + '</p>'
           : '';
       }
 
@@ -4420,7 +4430,7 @@
         var steps = cfg.setup || [];
         if (!steps.length) return '';
         return '<div class="ladder-setup"><p class="ladder-setup-lead">' +
-          esc(cfg.setupLead || 'Before your first rung, set MakeCode up like this:') + '</p><ol>' +
+          esc(cfg.setupLead || 'First, set up MakeCode:') + '</p><ol>' +
           steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
           '</ol></div>';
       }
@@ -9359,10 +9369,12 @@
         var d = cfg.demo;
         if (!d || !d.src) return '';
         return '<div class="af-demo">' +
-          '<p class="af-demo-head">Watch first: saving your program into Google Drive</p>' +
+          /* V94 (his 26 Nov ask: shorter and super clear): the head is content's
+             (demo.head) and carries the film's length beside it; the "won't load"
+             line only appears if the film really fails to load */
+          '<p class="af-demo-head">' + esc(d.head || 'Watch first') + ' <span class="af-demo-len"></span></p>' +
           '<video class="af-demo-video" controls preload="metadata" playsinline src="' + esc(asset(d.src)) + '"></video>' +
-          '<p class="af-demo-len"></p>' +
-          '<p class="af-demo-fallback">If the film won&rsquo;t load, the written steps below cover everything it shows.</p>' +
+          '<p class="af-demo-fallback" hidden>If the film won&rsquo;t load, the written steps below cover everything it shows.</p>' +
           (d.note ? '<p class="af-demo-note">' + esc(d.note) + '</p>' : '') +
           '</div>';
       }
@@ -9375,8 +9387,11 @@
         v.addEventListener('loadedmetadata', function () {
           if (!lenLine || !isFinite(v.duration)) return;
           var m = Math.floor(v.duration / 60), s = Math.round(v.duration % 60);
-          lenLine.textContent = 'The film lasts about ' + (m ? m + ' minute' + (m === 1 ? '' : 's') + ' ' : '') +
-            s + ' seconds. You can pause it at any point and catch up.';
+          lenLine.textContent = '\u00b7 ' + (m ? m + ' minute' + (m === 1 ? '' : 's') + ' ' : '') + s + ' seconds';
+        });
+        v.addEventListener('error', function () {
+          var fb = root.querySelector('.af-demo-fallback');
+          if (fb) fb.hidden = false;
         });
       }
 
@@ -11331,11 +11346,13 @@
         kicker: chunk.title,
         title: cfg.introTitle || 'Press Night',
         text: cfg.intro || '',
-        extra: '<div class="gal-code"><b class="gal-code-head">The Reviewer&rsquo;s Code &mdash; kind &middot; specific &middot; helpful</b>' +
+        /* V94: the head and banner are content's (code.head, code.banner), so
+           the language gate and the ledger read them; short defaults */
+        extra: '<div class="gal-code"><b class="gal-code-head">' + (code.head ? esc(code.head) : 'The Reviewer&rsquo;s Code') + '</b>' +
           '<ul class="gal-code-rules">' + rules + '</ul>' +
           (code.badExample ? '<p class="gal-code-eg"><span class="gal-eg-bad">&#10007; ' + esc(code.badExample) + '</span><br>' +
             '<span class="gal-eg-good">&#10003; ' + esc(code.goodExample || '') + '</span></p>' : '') +
-          '<p class="gal-banner">&#128065;&#65039; Reviews are signed, and your teacher reads every one.</p></div>'
+          '<p class="gal-banner">&#128065;&#65039; ' + esc(code.banner || 'Your teacher reads every signed review.') + '</p></div>'
       }, 'Onto the floor', floorView);
 
       /* pupils never see review counts or a needs-a-critic tag (that would be

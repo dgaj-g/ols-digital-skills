@@ -55,9 +55,9 @@
    },
    "config": {
     "title": "The Case Board",
-    "intro": "Each player TICKET is now a CASE: one bug to fix. Start with the training case. Close every case like this:",
-    "introSolo": "You are on your own, so you play AND fix. Start with the training case. Close every case like this:",
-    "pairNote": "Two jobs: the PLAYER runs the game and reads the ticket aloud. The ENGINEER moves the blocks. Swap every case.",
+    "intro": "Each case is one bug. Close every case like this:",
+    "introSolo": "On your own today: you play AND fix. Close every case like this:",
+    "pairNote": "Player plays. Engineer moves the blocks. Swap each case.",
     "getgame": {
      "url": "https://scratch.mit.edu/projects/editor/",
      "file": "assets/games/shark-attack-broken-edition.sb3",
@@ -298,9 +298,8 @@
      "Read the code. Find the ONE wrong thing.",
      "Fix that one thing in Scratch.",
      "Write your CASE LOG: one sentence saying what was wrong.",
-     "Play again and WATCH it work."
+     "Play again. Tick only if you SAW it work."
     ],
-    "introAfter": "Only tick what you truly saw happen.",
     "logLead": "Make your fix in Scratch. Then write your case log in the box just below — one sentence with two halves: **what was wrong**, and **what you changed**.",
     "proofNote": "This tick is a promise. It says: I played the game again, and I watched the bug NOT happen.",
     "lockedNote": "This stamp is locked until your case log in step 3 is written — both halves.",
@@ -329,7 +328,7 @@
    "title": "Exit Check",
    "minutes": 3,
    "config": {
-    "intro": "Two questions about today before you go — and these ARE marked: your teacher sees your answers. Think like a detective, not a guesser.",
+    "intro": "They are marked. Your teacher sees your answers, so answer on your own.",
     "items": [
      {
       "id": "ex4-1",
@@ -358,7 +357,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Next. On the last question, click Finish."
-    ]
+    ],
+    "cardTitle": "Two questions before you finish"
    }
   },
   {
@@ -397,9 +397,9 @@
    "minutes": 2,
    "config": {
     "statements": [
-     "I can read code someone else wrote and work out what it should do.",
-     "I can find a bug by testing and checking — not by guessing.",
-     "I can explain what was wrong and what I changed, in my own words."
+     "I can work out what someone else's code should do.",
+     "I can find a bug by testing, not guessing.",
+     "I can explain what was wrong and what I changed."
     ],
     "difficulty": true,
     "comment": true,
@@ -409,7 +409,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

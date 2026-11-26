@@ -10,7 +10,7 @@
    "contentAnchor": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
    "cardText": "How a program waits for you (the film) · Watch on your own computer. There is no sound. The buttons underneath jump to each part. · What a chatbot really is · The program stops and waits · Reading the whole program · Done watching",
    "says": "the film screen with its three chapter buttons",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "a81366e055de",
    "px": "1748x1504"
@@ -24,7 +24,7 @@
    "contentAnchor": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
    "cardText": "Make this bot say hello, ask your name, and greet you by it. · Pick a style, then press RUN. One name is spelled wrong on purpose. Python stops and names it. · You picked The Butler. Its three lines are below. · THE BOT'S PROGRAM · print(\"Good afternoon.\") · = input(\"And what may I call you?\") · the name of the box the answer goes into · print(\"A pleasure, \" + name + \". Do sit down.\") · Show me the shape · RUN this bot · Your bot has stopped and is waiting for you to type an answer. Look just be",
    "says": "the first training build, stopped and waiting: the bot has asked its question and the reply space has appeared",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "de042f0cdebf",
    "px": "1572x1760"
@@ -38,7 +38,7 @@
    "contentAnchor": "Python does not know a box (a variable) with that name. Check the spelling on this line matches the box name you made further up.",
    "cardText": "THE CONSOLE · Your program printed this: · Good afternoon. · Python stopped, and this is exactly what it said: · NameError: name 'name' is not defined on line 3 · Python does not know a box (a variable) with that name. Check the spelling on this line matches the box name you made further up.",
    "says": "the console after a run that did not work: Python's own words, and a line underneath in plain English",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "de042f0cdebf",
    "px": "1452x602"
@@ -52,14 +52,14 @@
    "contentAnchor": "You wrote the question this bot asks, and the answer will be whatever you type, so this card cannot tell you the exact words to expect. Press RUN and read what your bot says.",
    "cardText": "1 · 2 · Build a bot that asks a question you write yourself, then uses the answer in its reply. · Read all six lines on the left. · Four of these lines make the bot work. Move those four into Your program. · Put them in this order: the bot's opening line, the line that asks the question, the line that replies using the answer, and the line that says it is finished. · Leave the two mistakes where they are. · Type into every gap. · Press RUN my bot, then type your answer in the reply space that ap",
    "says": "the third training build before a line is moved: the lines shuffled, the gaps in them, and the empty program",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": {
     "to": ".pyt-list",
     "keepFrac": 0.767,
     "from": ".pyrun-cols",
     "fromFrac": 0.372
    },
-   "chunkHash": "fb4918ee5c93",
+   "chunkHash": "e151ca1d23e8",
    "px": "2052x1152"
   },
   "plan": {
@@ -71,7 +71,7 @@
    "contentAnchor": "Pick your own easy questions, not the film's.",
    "cardText": "YOUR BOT · Your bot: twelve minutes · Watch this first. It has no sound. · THREE JOBS · Write your own chatbot. · Your bot asks two questions. · It keeps each answer in its own box. · Its last line uses both answers. · Pick your own easy questions, not the film's. · Start writing",
    "says": "the PLAN face of Your bot: the goal, the film, and the three jobs, before anything can be typed",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "64304a228e79",
    "px": "1692x1800"
@@ -83,9 +83,9 @@
    "selector": ".chunk-host .pye-bench",
    "textSnippet": "Not sure where to start? Press the button below and the whole shape drops into your program. The sentences are still yours to write.",
    "contentAnchor": "Not sure where to start? Press the button below and the whole shape drops into your program. The sentences are still yours to write.",
-   "cardText": "Write your own chatbot. · WHAT YOUR BOT HAS TO DO · 1NOT CHECKED YET · Your bot asks two questions. · 2NOT CHECKED YET · It keeps each answer in its own box. · 3NOT CHECKED YET · Its last line uses both answers. · YOUR BOT · 1 line · 1 · Not sure where to start? Press the button below and the whole shape drops into your program. The sentences are still yours to write. · Write the shape for me · READY-MADE LINES · Click a line to add it where the bar flashes. Then change the words. · Ask your sec",
+   "cardText": "Write your own chatbot. · WHAT YOUR BOT HAS TO DO · 1NOT CHECKED YET · Your bot asks two questions. · 2NOT CHECKED YET · It keeps each answer in its own box. · 3NOT CHECKED YET · Its last line uses both answers. · YOUR BOT · 1 line · 1 · Not sure where to start? Press the button below and the whole shape drops into your program. The sentences are still yours to write. · Write the shape for me · READY-MADE LINES · Click a line to add it where the bar flashes. Then change the words. · Reply using ",
    "says": "the BENCH face: the three jobs along the top, the empty typing box, and the four ready-made lines under it",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "64304a228e79",
    "px": "1692x2216"
@@ -99,7 +99,7 @@
    "contentAnchor": "You are in the queue. The website is waiting for somebody else in your class to finish their bot. The moment one does, the two of you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.",
    "cardText": "Waiting for a partner. · You are in the queue. The website is waiting for somebody else in your class to finish their bot. The moment one does, the two of you become partners and this screen changes by itself. Nothing is wrong: stay on this screen. · FRED · Right, this waiting's a bit awkward, and I don't like silence. I'm Fred, and I'm a chatbot, so I'm not real. What should I call you? Make a name up — don't use your real one. · Say something back · Say it · You keep everything you have alread",
    "says": "the waiting card while the website finds a partner, with Fred on it",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "fd945721ae2f",
    "px": "1372x1394"
@@ -111,9 +111,9 @@
    "selector": ".pair-pop .badge-pop-card",
    "textSnippet": "You are not told who they really are until the Swap is finished. So do not type anybody's real name here, not even your own. Your teacher can read every message that goes between you.",
    "contentAnchor": "You are not told who they really are until the Swap is finished. So do not type anybody's real name here, not even your own. Your teacher can read every message that goes between you.",
-   "cardText": "PARTNER FOUND · You have a partner. · Your partner for the Swap is Pliers 2. They are at another computer in this room, and they have just finished a bot too. · On their screen, you are Hammer 5. · You are not told who they really are until the Swap is finished. So do not type anybody's real name here, not even your own. Your teacher can read every message that goes between you. · You test their bot, they test yours, and you each write the other a short report. · Start the Swap",
+   "cardText": "PARTNER FOUND · You have a partner. · Your partner for the Swap is Hammer 5. They are at another computer in this room, and they have just finished a bot too. · On their screen, you are Chisel 3. · You are not told who they really are until the Swap is finished. So do not type anybody's real name here, not even your own. Your teacher can read every message that goes between you. · You test their bot, they test yours, and you each write the other a short report. · Start the Swap",
    "says": "the PARTNER FOUND card: her own call sign, her partner's, and the button that opens the Swap",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "fd945721ae2f",
    "px": "912x1052"
@@ -127,7 +127,7 @@
    "contentAnchor": "Answer their bot honestly, the way anybody would. When it has finished, the report button underneath turns on.",
    "cardText": "THE TESTER'S SEAT · Their bot, and you are the one using it · Answer their bot honestly, the way anybody would. When it has finished, the report button underneath turns on. · THE CONVERSATION · THE BOT · What should I call you? · YOU · chips · THE BOT · What is the best thing to eat after school? · Your reply · Send · THE CONSOLE · Running their bot… · Write the report · Running out of time? Click here to leave the Swap and carry on with the rest of the lesson.",
    "says": "the tester's seat: a partner's bot running on her screen, waiting for her answer",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
    "chunkHash": "fd945721ae2f",
    "px": "1372x1596"
@@ -141,9 +141,9 @@
    "contentAnchor": "Running out of time? Click here to carry on with the rest of the lesson.",
    "cardText": "EXTRA JOBS · The Workshop's extra jobs · These three jobs are extra. They carry no points, and nothing is saved. · Job 1 — a bot that asks about the weekend · One question, one reply, all your own words. · Job 2 — make it louder · Print one message between two lines of dashes. · Job 3 — the neater way to join words · A shortcut real Python programmers use every day. · Running out of time? Click here to carry on with the rest of the lesson.",
    "says": "the extra-jobs screen, untouched, with the button that carries her on to the rest of the lesson",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "166fe238af23",
+   "chunkHash": "5dd23b72e505",
    "px": "1572x1068"
   }
  }

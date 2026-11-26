@@ -984,7 +984,7 @@
     "kicker": "Exit check",
     "cardTitle": "One question before you finish",
     "readyLabel": "Ready",
-    "intro": "One last question, and this one IS marked. Your teacher sees how the class did on it, so answer it on your own.",
+    "intro": "It is marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "j2x-1",
@@ -1016,7 +1016,7 @@
     "offlineSay": "Your connection is playing up, so your answers are safe on this computer and will send by themselves. That is the lesson finished.",
     "statements": [
      "I know my way around this website.",
-     "I know the DT room rules, and I found them in the inspection.",
+     "I know the DT room rules from the inspection.",
      "I understand what the Snapshot was for."
     ],
     "difficulty": true,
@@ -1027,7 +1027,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

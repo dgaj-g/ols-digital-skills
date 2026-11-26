@@ -99,7 +99,7 @@
    },
    "config": {
     "title": "The Signal Relay Ladder",
-    "intro": "This is where you learn to BUILD, and you do it with the person beside you: one micro:bit shared between the two of you. The ladder has four small challenges, called rungs, and you climb them in order. Rung 1 needs no computer at all. Rungs 2, 3 and 4 are real programs you build in MakeCode, copy onto the micro:bit, and test with your own hands.\n\nYou BOTH build every rung, each on your OWN computer. Talk it through together as you go, and try it on the simulator on your own screen first — that is the little micro:bit picture in the corner of MakeCode. You share the real micro:bit for the real test, so take turns: at each rung, one of you copies the program across and presses the button while the other watches. Swap over at every rung, so you both do both.\n\nNobody marks this. The micro:bit itself is the judge — either it does what the card says, or it doesn't, and you can both see which.",
+    "intro": "Four rungs to climb. You both build each one. Take turns testing on the micro:bit.",
     "makecode": {
      "url": "https://makecode.microbit.org/",
      "label": "Open MakeCode"
@@ -158,7 +158,7 @@
      "target": "Your stretch challenge: see if you can make one input trigger a whole SEQUENCE. When A and B are pressed at the SAME TIME, this is what should happen: 1. a heart appears — 2. it holds for half a second — 3. a happy face takes its place.",
      "test": "Copy it across and press A + B together on the real device. Heart, half-second pause, then happy face — every single time?"
     },
-    "introSolo": "This is where you learn to BUILD — on your own today, so you play both parts yourself. The ladder has four small challenges, called rungs, and you climb them in order. Each rung card tells you exactly what your program should do: build it in MakeCode (in your other tab, or the on-screen simulator), then run the real test yourself. Nobody marks this — the micro:bit is still the judge.",
+    "introSolo": "Four rungs to climb, on your own today. The micro:bit is the judge.",
     "help": "Read the rung card, build what it asks for in MakeCode (its own tab), then TEST it for real — press the button, do the shake. If it worked, press the gold button and the next rung appears. Stuck? That's what the Debug Hint is for — it costs 2 XP and nudges you toward the fix without giving it away. The film button replays the MakeCode film without losing your place.",
     "film": {
      "src": "assets/video/l2/l2-tutorial.mp4",
@@ -182,11 +182,11 @@
      ],
      "defaultT": 132
     },
-    "setupLead": "Before you start rung 2, set MakeCode up like this:",
+    "setupLead": "Before rung 2, set up MakeCode:",
     "setup": [
-     "Open MakeCode using the button above. Keep it in its own tab all lesson.",
-     "Build each rung (each activity) in the SAME project that you created for the video tutorial you've just completed on the previous screen, which you called make-it-move. The project name stays the same as you climb the ladder and complete each new activity — you never start a new one.",
-     "Every time you press Download it saves a new copy of the WHOLE project, replacing the one from last time. If a box asks whether you want to replace the old file, say yes — that is exactly what you want."
+     "Open MakeCode with the button above. Keep its tab open.",
+     "Build every rung in your make-it-move project.",
+     "Download replaces the old file. If asked, say yes."
     ],
     "job": "Do the four rung challenges with your partner. Test each on the real micro:bit.",
     "showMe": [
@@ -209,7 +209,7 @@
    },
    "config": {
     "title": "Bank your build",
-    "intro": "A build that lives on one computer is a build you can lose. In this step you learn the habit that protects every piece of work you ever make in DT: save it to your Google Drive — the Vault from Lesson 1 — and it follows your login to ANY machine, even at home. The website will then genuinely check your Drive and only give the badge when the file is really there.",
+    "intro": "Save YOUR program to Drive.",
     "kinds": [
      "hex"
     ],
@@ -217,27 +217,28 @@
     "steps": [
      {
       "icon": "💾",
-      "title": "Download your build",
-      "text": "In MakeCode press the purple Download button. A file ending in .hex lands in the computer's Downloads folder — that file IS your program."
+      "title": "Download",
+      "text": "Press the purple Download button in MakeCode."
      },
      {
       "icon": "🗄️",
-      "title": "Open your Vault",
-      "text": "New tab → drive.google.com → open School → DT Work. Don't see those folders? Click + New → Folder, make 'School', open it, make 'DT Work' inside — thirty seconds, then carry on."
+      "title": "Open your Drive",
+      "text": "drive.google.com → School → DT Work"
      },
      {
       "icon": "🎯",
       "title": "Drag it in",
-      "text": "Drag the .hex file from Downloads into DT Work. Done — the website can now verify it's really there."
+      "text": "Drag the .hex file into DT Work."
      }
     ],
     "passText": "Your build now follows your login anywhere — that's the whole point of the Vault. Next lesson you can pick up exactly where you left off, on any machine.",
     "failText": "Not there yet. Check each step above — especially that the file went INTO the DT Work folder, not just onto the desktop — then run the inspection again.",
-    "help": "Three steps: download your program from MakeCode, open your Google Drive in a new tab, drag the file into School → DT Work. Then press the inspection button and the website checks your Drive for real. If it says the file isn't there, check it went INSIDE the DT Work folder, not just onto the desktop.",
+    "help": "Download your program from MakeCode. Open drive.google.com in a new tab. Drag the .hex into School, then DT Work. Then click Run the inspection. The website looks in your Drive for real. Not found? Check the file is INSIDE DT Work.",
     "demo": {
      "src": "assets/video/shared/save-to-drive.mp4",
      "open": true,
-     "note": "The program saved in the film is just an example — do not copy it. You are saving your own program, make-it-move.hex."
+     "note": "The film's program is just an example. Yours is make-it-move.hex.",
+     "head": "Watch first"
     },
     "checkLabel": "Run the inspection",
     "checking": "Looking inside your Drive for your file…",
@@ -260,7 +261,7 @@
    "title": "Exit Check",
    "minutes": 2,
    "config": {
-    "intro": "Two scenarios before you go — and unlike everything else today, these ARE marked: your teacher sees how the class did, so think like a debugger before you answer.",
+    "intro": "They are marked. Answer on your own: your teacher sees how the class did.",
     "items": [
      {
       "id": "ex2-1",
@@ -289,7 +290,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Next. On the last question, click Finish."
-    ]
+    ],
+    "cardTitle": "Two questions before you finish"
    }
   },
   {
@@ -373,9 +375,9 @@
    "minutes": 2,
    "config": {
     "statements": [
-     "I can tell the difference between an input and an output.",
+     "I can tell an input from an output.",
      "I can build code that reacts when something happens.",
-     "I can test my code and notice when it's not working."
+     "I can test my code and spot a problem."
     ],
     "difficulty": true,
     "comment": true,
@@ -385,7 +387,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

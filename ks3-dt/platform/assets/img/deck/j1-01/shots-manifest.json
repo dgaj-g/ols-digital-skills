@@ -7,11 +7,11 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may say 'Checking…' for a few second",
    "contentAnchor": "When you click an answer to a question like this one, what do you think happens next?",
-   "cardText": "1 OF 3 · When you click an answer to a question like this one, what do you think happens next? · A · You are told straight away whether you were right, and why · Correct. · Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may say 'Checking…' for a few seconds first — that is normal, and it is not broken. · Next",
+   "cardText": "1 OF 3 · When you click an answer to a question like this one, what do you think happens next? · A · Nothing at all until the whole lesson is finished · C · You are told straight away whether you were right, and why · Not this time. · Your answer is checked right on your own computer, so the verdict and the reason appear straight away. If the connection to the website seems slower than usual, it may say 'Checking…' for a few seconds first — that is normal, and it is not broken. · Next",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "96eb9ae5899c",
-   "px": "1372x960"
+   "px": "1372x1096"
   },
   "vault-door": {
    "name": "vault-door",
@@ -21,7 +21,7 @@
    "contentAnchor": "🤝 Work with the person beside you. Agree out loud before you drop a file.",
    "cardText": "BADGE 3 — THE VAULT · The Vault · Drag each file to where it belongs. · 🤝 Work with the person beside you. Agree out loud before you drop a file. · Open the Vault",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "27f238764850",
    "px": "1372x628"
   },
@@ -33,7 +33,7 @@
    "contentAnchor": "Open a new tab and go to drive.google.com. This is your real Vault: it follows your login anywhere.",
    "cardText": "STEP 1 OF 2 · 🗄️ · Open your real Drive · Open a new tab and go to drive.google.com. This is your real Vault: it follows your login anywhere. · 🎥 Show me how · I can see my Google Drive",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "efbffc6de3f3",
    "px": "1372x692"
   },
@@ -43,9 +43,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Which of these is a piece of HARDWARE?",
    "contentAnchor": "Which of these is a piece of HARDWARE?",
-   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · The keyboard · B · Google Docs · C · A password · D · A website",
+   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · The keyboard · B · Google Docs · C · A website · D · A password",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "9fa44136a3b1",
    "px": "1372x842"
   },
@@ -55,9 +55,9 @@
    "selector": ".chunk-host .q-card",
    "textSnippet": "Which of these is a piece of HARDWARE?",
    "contentAnchor": "Which of these is a piece of HARDWARE?",
-   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · The keyboard · Answer saved · B · Google Docs · C · A password · D · A website",
+   "cardText": "1 OF 16 · Which of these is a piece of HARDWARE? · A · The keyboard · Answer saved · B · Google Docs · C · A website · D · A password",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "9fa44136a3b1",
    "px": "1372x842"
   },
@@ -65,11 +65,11 @@
    "name": "codename",
    "chunkId": "b5-codename",
    "selector": ".chunk-host .codename-card",
-   "textSnippet": "YOUR CODENAME Agent Amber Swift 🎲 Shuffle Keep this name",
+   "textSnippet": "YOUR CODENAME Agent Auburn Comet 🎲 Shuffle Keep this name",
    "contentAnchor": null,
-   "cardText": "YOUR CODENAME · Agent Amber Swift · 🎲 Shuffle · Keep this name",
+   "cardText": "YOUR CODENAME · Agent Auburn Comet · 🎲 Shuffle · Keep this name",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "78ef9932f0d4",
    "px": "1372x512"
   },
@@ -77,12 +77,12 @@
    "name": "selfeval",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I know where my work is saved and how to find it again.",
-   "cardText": "How did it go? · I know what makes a password hard to guess. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the rules of the DT rooms. · ✓ I can · ≈ Getting there · ✗ Not yet · I know where my work is saved and how to find it again. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer every sentence above — and how it felt — and this button wakes up. · Send & finish",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I know what makes a password hard to guess. · ✓ I can · ≈ Getting there · ✗ Not yet · I know the rules of the DT rooms. · ✓ I can · ≈ Getting there · ✗ Not yet · I can find my saved work again. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt. Then you can send. · Send & finish",
    "crop": null,
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "19c8a6cb8d47",
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "0aa50f8d3768",
    "px": "1372x1402"
   },
   "vault-matched": {
@@ -91,12 +91,12 @@
    "selector": ".pair-pop .badge-pop-card",
    "textSnippet": "Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message.",
    "contentAnchor": null,
-   "cardText": "PARTNER FOUND · You’ve been paired! · Your partner for this Vault is Agent Merlin. She is at another computer, looking at the same Vault as you. · Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message. · Talk it through, agree, then whoever holds the controls drops the file. · Open the Vault together",
+   "cardText": "PARTNER FOUND · You’ve been paired! · Your partner for this Vault is Agent Kestrel. She is at another computer, looking at the same Vault as you. · Who she really is stays secret until the Vault is sealed — so keep real names out of the message box, including your own. Remember: your teacher can read every message. · Talk it through, agree, then whoever holds the controls drops the file. · Open the Vault together",
    "crop": {
     "to": ".pair-pop-line",
     "keepFrac": 0.447
    },
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "27f238764850",
    "px": "912x467"
   },
@@ -108,7 +108,7 @@
    "contentAnchor": null,
    "cardText": "Waiting to be paired. · You are in the queue. The website is waiting for another pupil in your class to reach the Vault — the moment one does, you become partners and this screen changes by itself. Nothing is wrong: stay on this screen.",
    "crop": null,
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "27f238764850",
    "px": "1372x724"
   }

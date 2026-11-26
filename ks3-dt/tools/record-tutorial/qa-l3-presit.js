@@ -95,10 +95,14 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     check(/New Project/i.test(lad.setup.join(' ')), label + ': it says to click New Project');
 
     // A2 the banned generic noun
-    check(/micro:bit is the judge/.test(lad.intro) && !/DEVICE is the judge/.test(lad.intro),
-      label + ': the ladder intro says the micro:bit is the judge, never "the DEVICE"');
-    check(/micro:bit is the judge/.test(lad.introSolo) && !/DEVICE is the judge/.test(lad.introSolo),
-      label + ': the solo intro says it too');
+    /* V94 (his 26 Nov ask: shorter screens) - the first view is held to 25 words,
+       and the judge line would take it to 30. The law is the banned noun, which
+       stays checked on every line below; the positive line now lives in the help
+       panel the pair AND the solo pupil both open, instead of on the card. */
+    check(/micro:bit is the judge/.test(String(lad.help || '')) && !/DEVICE is the judge/.test(lad.intro + ' ' + lad.help),
+      label + ': the ladder help says the micro:bit is the judge, never "the DEVICE"');
+    check(!/DEVICE/.test(lad.intro) && !/DEVICE/.test(lad.introSolo),
+      label + ': neither intro uses "the DEVICE"');
     check(!/DEVICE is the judge/.test(JSON.stringify(L3)), label + ': "DEVICE is the judge" is gone from the whole lesson');
 
     // The guided-build re-cut (DFM 168): rung 1 = variable + the loop showing it
@@ -230,8 +234,15 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
        register (DFM 173's family) and is now plain. Same promise, testable. */
     check(/find out how you did at the end, after the last screen/.test(L3.chunks.find(c => c.id === 'exit').config.help),
       label + ': the exit help says plainly when she finds out how she did');
-    check(/every step adds 1 to a box called steps/i.test(JSON.stringify(L3.chunks[0].config.images)),
-      label + ': the tracker caption is words, not block syntax');
+    /* V93 (25-word trims) cut the hook captions to short picture labels, so the
+       tracker's caption became "Step count". The check's point is "words, not
+       block syntax": it now holds that, rather than pinning the old sentence. */
+    {
+      const trk = (L3.chunks[0].config.images || []).find(im => /tracker/.test(im.src || ''));
+      const cap = String((trk && trk.caption) || '');
+      check(/step/i.test(cap) && !/change\b.*\bby\b|set\b.*\bto\b|['"]/.test(cap),
+        label + ': the tracker caption is words, not block syntax');
+    }
 
     // A13/A14
     check(!/the real device|their device never showed|A device dies/.test(JSON.stringify(L3.teacherBrief)),
@@ -253,7 +264,9 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   console.log('\n== 1b. the three reported Lesson 2 strings (DFM 150 sweep) ==');
   for (const [label, L2] of [['source', srcL2], ['packed', packL2]]) {
     const lad2 = L2.chunks.find(c => c.id === 'ladder').config;
-    check(/micro:bit is still the judge/.test(lad2.introSolo), label + ': L2 solo intro says the micro:bit is the judge');
+    /* V94 cut the L2 solo intro to two lines; "still" belonged to the dropped
+       "Nobody marks this", so either form passes. */
+    check(/micro:bit is (still )?the judge/.test(lad2.introSolo), label + ': L2 solo intro says the micro:bit is the judge');
     const ex21 = L2.chunks.find(c => c.id === 'exit').config.items.find(i => i.id === 'ex2-1');
     check(ex21.options[1] === 'You forgot to flash the code onto the micro:bit', label + ': ex2-1 option 1 names the micro:bit');
     if (label === 'source') {
@@ -354,7 +367,8 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   check(/scoreboard/.test(introDom.setupText) && /last lesson's project/i.test(introDom.setupText),
     "the rendered steps name scoreboard and refer to the old one as \"last lesson's project\" (DFM 181)");
   check(/Before rung 1/.test(introDom.lead), 'the rendered lead line is on screen above them');
-  check(/micro:bit is the judge/.test(introDom.body), 'the rendered intro says the micro:bit is the judge');
+  // V94: the judge line moved to the help panel (25-word first view); the banned noun stays out.
+  check(!/DEVICE/.test(introDom.body), 'the rendered intro never says "the DEVICE"');
 
   /* DFM 168: the guided-build part player, on the intro card and every rung */
   console.log('\n== 3b. the film part player (DFM 168) ==');
@@ -371,9 +385,11 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   });
   check(introPartDom.has, 'the intro card carries the Part 1 player');
   check(introPartDom.w >= 500, 'the rendered player is a real size, not a thumbnail (' + Math.round(introPartDom.w) + 'px)');
-  check(/① Watch this part/.test(introPartDom.head) && /Part 1/.test(introPartDom.head),
-    'its step head reads "① Watch this part — Part 1 …"');
-  check(/runs about \d+ minute/.test(introPartDom.note), 'the card says how long the part runs');
+  /* V94 (26 Nov 2026, his "super clear while being shorter"): the head is now
+     "① Watch: Part 1 …" and the length line "About N minutes." - same truths, fewer words */
+  check(/① Watch/.test(introPartDom.head) && /Part 1/.test(introPartDom.head),
+    'its step head reads "① Watch: Part 1 …"');
+  check(/about \d+ minute/i.test(introPartDom.note), 'the card says how long the part runs');
   check(introPartDom.replay, 'and offers "Watch this part again"');
 
   /* walk to rung 1 */
@@ -394,7 +410,7 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
   check(/It worked!/.test(rungDom.label) && !/device/i.test(rungDom.label), 'the rung button reads "It worked!" with no generic noun');
   check(/Watch your simulator/i.test(rungDom.test), 'the rendered rung 1 test starts at the simulator');
   check(rungDom.hasPart, 'rung 1 carries its own part player');
-  check(rungDom.heads.some(t => /① Watch this part/.test(t)) && rungDom.heads.some(t => /② Build it yourself/.test(t)),
+  check(rungDom.heads.some(t => /① Watch/.test(t)) && rungDom.heads.some(t => /② Build it yourself/.test(t)),
     'the ①-watch and ②-build heads are both on the card');
   check(/③ Prove it/.test(rungDom.test), 'the test box leads with ③ Prove it');
 
@@ -431,7 +447,7 @@ const PRE_GB_S2TEST = "Download it again and drag the new file across — your m
     'the scrubber spans ONLY this part (' + Math.round(partPlay.duration) + 's of the ' + filmLen + 's film) — it cannot stray into another rung');
   check(partPlay.stopped, 'reaching the end shows "now build it below"');
   check(partPlay.replayedToZero, 'Watch-this-part-again returns to the start of the part');
-  check(/runs about \d+ minute/.test(partPlay.note),
+  check(/about \d+ minute/i.test(partPlay.note),  // V94: the line now reads "About N minutes."
     'the length is read off the file itself, not typed into the content (' + partPlay.note.trim() + ')');
 
   /* CONTROL + the L2 guard: a ladder with no parts renders none of this */

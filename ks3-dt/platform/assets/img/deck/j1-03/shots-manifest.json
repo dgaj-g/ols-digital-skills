@@ -12,7 +12,7 @@
    ],
    "captions": "High scores · Match score · Step count",
    "says": "the arcade, the GAA scoreboard and Lesson 2’s trackers",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "10fcfb9fa95e",
    "px": "1440x530"
   },
@@ -26,7 +26,7 @@
    "ring": null,
    "inset": null,
    "says": "the named box with its value arriving, from the film itself",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "px": "1440x768"
   },
   "rung1": {
@@ -34,13 +34,13 @@
    "kind": "app",
    "chunkId": "ladder",
    "selector": ".chunk-host .rung-part",
-   "textSnippet": "① WATCH THIS PART — PART 2 — MAKE THE VARIABLE",
+   "textSnippet": "① WATCH: PART 2 — MAKE THE VARIABLE",
    "contentAnchor": null,
-   "cardText": "▶ NOW SHOWING · ① WATCH THIS PART — PART 2 — MAKE THE VARIABLE · This part runs about 2 minutes. · ↻ Watch this part again",
+   "cardText": "▶ NOW SHOWING · ① WATCH: PART 2 — MAKE THE VARIABLE · About 2 minutes. · ↻ Watch this part again",
    "says": "a rung’s own slice of the film, sitting on the rung card",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "7d13b1ab299f",
+   "chunkHash": "5dddacfd3834",
    "px": "1212x912"
   },
   "rig": {
@@ -48,27 +48,27 @@
    "kind": "app",
    "chunkId": "rig",
    "selector": ".chunk-host .af-card",
-   "textSnippet": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real ra",
-   "contentAnchor": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled out mid-Rally, your work is safe.",
-   "cardText": "REGISTER YOUR RIG · Register your rig · Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled o",
+   "textSnippet": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
+   "contentAnchor": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
+   "cardText": "REGISTER YOUR RIG · Register your rig · Your rig is your scoreboard program. Save it to Drive before the Rally. · Show me how · ⬇️ · Download · Press Download in MakeCode. You get scoreboard.hex. · 🗄️ · Open your Drive · drive.google.com → School → DT Work · 🏁 · Drag it in · Drag scoreboard.hex into DT Work. · Check my Drive",
    "says": "the Register Your Rig check-in card",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "cad22d385cec",
-   "px": "1332x1554"
+   "chunkHash": "7074f4210811",
+   "px": "1332x1164"
   },
   "rally": {
    "name": "rally",
    "kind": "app",
    "chunkId": "rally",
    "selector": ".chunk-host .rally-timer",
-   "textSnippet": "Referee: this is the player's screen. Start the timer when she is ready.",
-   "contentAnchor": "Referee: this is the player's screen. Start the timer when she is ready.",
-   "cardText": "GO 1 OF 2 · 5 · Referee: this is the player's screen. Start the timer when she is ready. · Start the 5 seconds",
+   "textSnippet": "Referee: this is the player's screen. Start when ready.",
+   "contentAnchor": "Referee: this is the player's screen. Start when ready.",
+   "cardText": "GO 1 OF 2 · 5 · Referee: this is the player's screen. Start when ready. · Start the 5 seconds",
    "says": "the Rally timer before it is started — whose screen it is, and the start button",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": null,
-   "chunkHash": "bcf18a995ca5",
+   "chunkHash": "ed80a6954254",
    "px": "1292x518"
   },
   "selfeval": {
@@ -76,18 +76,18 @@
    "kind": "app",
    "chunkId": "selfeval",
    "selector": ".chunk-host .se-card",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I can test my code over several rounds to check the score is right.",
-   "cardText": "How did it go? · I can create a variable and change its value. · ✓ I can · ≈ Getting there · ✗ Not yet · I can test my code over several rounds to check the score is right. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain what my score variable is doing in my own words. · ✓ I can · ≈ Getting there · ✗ Not yet · I can say what a forever loop does differently from an event. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters le",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
+   "cardText": "How did it go? · I can create a variable and change its value. · ✓ I can · ≈ Getting there · ✗ Not yet · I can check the score is right over several rounds. · ✓ I can · ≈ Getting there · ✗ Not yet · I can explain my score variable in my own words. · ✓ I can · ≈ Getting there · ✗ Not yet · I can say how forever loops differ from events. · ✓ I can · ≈ Getting there · ✗ Not yet · How did today feel? · 🟢 Easy · 🟡 Just right · 🔴 Tricky · 60 characters left · Answer each sentence and how today felt",
    "says": "the top of the compulsory How did it go? screen: its heading and the first rating row, untouched",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "crop": {
     "to": ".se-row .se-chips",
     "keepFrac": 0.196,
     "from": null,
     "fromFrac": 0
    },
-   "chunkHash": "a71df70c0a26",
+   "chunkHash": "faaeb86e53a8",
    "px": "1372x351"
   }
  }

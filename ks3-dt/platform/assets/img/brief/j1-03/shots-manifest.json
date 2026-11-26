@@ -1,7 +1,7 @@
 {
  "lesson": "j1-03",
  "kind": "brief",
- "contentVersion": "2026-11-26q",
+ "contentVersion": "2026-11-26r",
  "shots": {
   "01-do-now.jpg": {
    "name": "01-do-now.jpg",
@@ -10,7 +10,7 @@
    "textSnippet": "Where should your DT work live so you can open it anywhere, even at home?",
    "contentAnchor": null,
    "says": "the Do-Now, mid-question",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": null
   },
   "02-briefing.jpg": {
@@ -19,7 +19,7 @@
    "textSnippet": "YEAR 8 · LESSON 3 OF 17",
    "contentAnchor": "YEAR 8 · LESSON 3 OF 17",
    "says": "the briefing card that opens the lesson",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "10fcfb9fa95e"
   },
   "04-rung-card.jpg": {
@@ -28,8 +28,8 @@
    "textSnippet": "Copy it onto the micro:bit the same way as last lesson: press Download in MakeCode, then drag the file across onto the MICROBIT drive. (If your micro:bit won't connect, keep going on the simulator whi",
    "contentAnchor": "Copy it onto the micro:bit the same way as last lesson: press Download in MakeCode, then drag the file across onto the MICROBIT drive. (If your micro:bit won't connect, keep going on the simulator while your teacher fixes it.)",
    "says": "a rung card with its own part-film on top, then the steps and the proof",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "7d13b1ab299f"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "5dddacfd3834"
   },
   "glance-stretch.png": {
    "name": "glance-stretch.png",
@@ -37,26 +37,26 @@
    "textSnippet": "Finish with one more 'pause (ms) 1000'. The display now takes turns: your score … H … the best score … and round again.",
    "contentAnchor": "Finish with one more 'pause (ms) 1000'. The display now takes turns: your score … H … the best score … and round again.",
    "says": "the stretch card — a second variable and the first if-block they meet",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "7d13b1ab299f"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "5dddacfd3834"
   },
   "05-rig.jpg": {
    "name": "05-rig.jpg",
    "chunkId": "rig",
-   "textSnippet": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real ra",
-   "contentAnchor": "Your scoreboard program is built — this part keeps it safe before the Rally. You are going to save a copy into your Google Drive, the same way as last lesson: three steps, about a minute. In a real rally every car is checked in before the race — your RIG is your scoreboard program, and this is its check-in. When the file is in your Drive, press Check my Drive below, and the website will look to make sure it is really there. Then even if a cable is pulled out mid-Rally, your work is safe.",
+   "textSnippet": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
+   "contentAnchor": "Your rig is your scoreboard program. Save it to Drive before the Rally.",
    "says": "Register Your Rig — the Lesson 2 Drive routine, checked for real",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "cad22d385cec"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "7074f4210811"
   },
   "06-rally.jpg": {
    "name": "06-rally.jpg",
    "chunkId": "rally",
-   "textSnippet": "One of you presses A as fast as possible. The other referees. Then swap.",
-   "contentAnchor": "One of you presses A as fast as possible. The other referees. Then swap.",
+   "textSnippet": "Referee: this is the player's screen. Start when ready.",
+   "contentAnchor": "Referee: this is the player's screen. Start when ready.",
    "says": "the Rally console, before any score is entered",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "bcf18a995ca5"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "ed80a6954254"
   },
   "08-exit.jpg": {
    "name": "08-exit.jpg",
@@ -64,17 +64,17 @@
    "textSnippet": "🎯 Your scoreboard has two jobs. The first keeps the current score on the LEDs all by itself, over and over, showing whatever number is in the box. The second waits for button A, and adds one to that ",
    "contentAnchor": "🎯 Your scoreboard has two jobs. The first keeps the current score on the LEDs all by itself, over and over, showing whatever number is in the box. The second waits for button A, and adds one to that number every time it is pressed.",
    "says": "the two-stack puzzle, before any block is placed",
-   "contentVersion": "2026-11-26q",
+   "contentVersion": "2026-11-26r",
    "chunkHash": "fe3b1fd9991f"
   },
   "glance-selfeval.png": {
    "name": "glance-selfeval.png",
    "chunkId": "selfeval",
-   "textSnippet": "Answer every sentence above — and how it felt — and this button wakes up.",
-   "contentAnchor": "I can test my code over several rounds to check the score is right.",
+   "textSnippet": "Answer each sentence and how today felt. Then you can send.",
+   "contentAnchor": "Answer each sentence and how today felt. Then you can send.",
    "says": "the final screen — compulsory",
-   "contentVersion": "2026-11-26q",
-   "chunkHash": "a71df70c0a26"
+   "contentVersion": "2026-11-26r",
+   "chunkHash": "faaeb86e53a8"
   }
  },
  "reused": {

@@ -722,7 +722,7 @@
    },
    "config": {
     "introTitle": "Press Night",
-    "intro": "Half the room shows their game. Half plays them. Then swap. You have TWO PRESS PASSES: two signed reviews.",
+    "intro": "Half the class shows, half plays. Then swap. Each press pass is one review.",
     "quota": 2,
     "stems": {
      "like": "I like…",
@@ -734,8 +734,10 @@
       "SPECIFIC: name the exact moment.",
       "HELPFUL: give a real idea for version 2."
      ],
-     "badExample": "\"it was good i liked it\" tells the studio nothing.",
-     "goodExample": "\"I like how the lives make each drop risky. I wonder: a golden apple?\""
+     "badExample": "\"it was good\" tells the studio nothing.",
+     "goodExample": "\"I like the lives. I wonder: a golden apple?\"",
+     "head": "The Reviewer's Code",
+     "banner": "Your teacher reads every signed review."
     },
     "rounds": {
      "note": "Two rounds — your teacher calls the swap.",
@@ -795,7 +797,7 @@
    },
    "config": {
     "title": "Ship your game",
-    "intro": "Your game is real now — and a real game must not live and die on one classroom machine. This is the same save-to-Drive routine as every build this term: three steps, about a minute. Then your game follows your login home — any school computer, any time.",
+    "intro": "Save your game to Drive. Then it follows you home.",
     "kinds": [
      "sb3"
     ],
@@ -804,17 +806,17 @@
      {
       "icon": "💾",
       "title": "Save your game",
-      "text": "In Scratch, open the File menu and choose 'Save to your computer'. The .sb3 lands in Downloads — that file IS your game."
+      "text": "Click File, then Save to your computer."
      },
      {
       "icon": "🗄️",
-      "title": "Put it in your Drive",
-      "text": "Open drive.google.com, click into School, then DT Work, and drag the .sb3 in. The same folder as everything you have saved this term."
+      "title": "Open your Drive",
+      "text": "drive.google.com → School → DT Work"
      },
      {
       "icon": "🏁",
-      "title": "Run the check",
-      "text": "The website looks in your Drive for a freshly-saved .sb3. Your game now follows your login home."
+      "title": "Drag it in",
+      "text": "Drag the .sb3 file into DT Work."
      }
     ],
     "help": "Shipping your game takes three steps. First, save the .sb3 from Scratch: open the File menu and choose 'Save to your computer'. Then drag that file into your Google Drive, into School, then DT Work. Last, press Check my Drive. The website really does look in your Drive, the same check as every build this term.",
@@ -839,7 +841,7 @@
    "title": "Exit Check",
    "minutes": 3,
    "config": {
-    "intro": "Two questions about today before you go — and these ARE marked: your teacher sees your answers. Think like a designer AND a tester.",
+    "intro": "They are marked. Your teacher sees your answers, so answer on your own.",
     "items": [
      {
       "id": "ex5-1",
@@ -868,7 +870,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Next. On the last question, click Finish."
-    ]
+    ],
+    "cardTitle": "Two questions before you finish"
    }
   },
   {
@@ -907,9 +910,9 @@
    "minutes": 2,
    "config": {
     "statements": [
-     "I can use if/else to make my game react differently in different situations.",
-     "I can test my own game against a checklist before sharing it.",
-     "I can tell the difference between a game that looks finished and one that actually works."
+     "I can use if/else so my game reacts differently.",
+     "I can check my game against a checklist before sharing.",
+     "I know a game that looks finished may not work."
     ],
     "difficulty": true,
     "comment": true,
@@ -919,7 +922,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

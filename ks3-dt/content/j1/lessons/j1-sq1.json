@@ -486,7 +486,7 @@
    "title": "Exit Check",
    "minutes": 2,
    "config": {
-    "intro": "One scenario before the side quest closes.",
+    "intro": "Answer it on your own, then the side quest closes.",
     "items": [
      {
       "id": "sq-ex1",
@@ -505,7 +505,8 @@
      "Click Ready.",
      "Click the answer you think is right.",
      "Click Finish when you are sure."
-    ]
+    ],
+    "cardTitle": "One last question"
    }
   },
   {
@@ -528,7 +529,8 @@
      "Click one button under each sentence.",
      "Click Easy, Just right or Tricky.",
      "Click Send & finish."
-    ]
+    ],
+    "lockedNote": "Answer each sentence and how today felt. Then you can send."
    }
   }
  ],

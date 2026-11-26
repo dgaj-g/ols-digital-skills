@@ -19,9 +19,9 @@
     donow: { kicker: 'Do now', intro: 'Here are five questions from earlier lessons. Click the answer you think is right.', progress: 'Question {n} of 5', right: 'Right.', wrong: 'Not that one. The right answer is shown.', finish: 'The warm-up is done. Now for today’s job.', button: 'On to the job' },
     opening: {
       kicker: 'J2 · Lesson 6',
-      line1: 'Today you make a computer do your sums for you.',
-      line2: 'When one number changes, it redoes every sum on its own.',
-      line3: 'People use spreadsheets to plan parties, trips and whole festivals.',
+      line1: 'Today you make a computer do your sums.',
+      line2: 'Change one number and it redoes every sum.',
+      line3: 'People plan whole festivals like this.',
       button: 'Show me the job'
     },
     story: {

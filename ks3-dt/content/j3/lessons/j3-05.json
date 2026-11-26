@@ -69,7 +69,7 @@
     "kicker": "Five questions",
     "cardTitle": "5 questions about finding faults",
     "readyLabel": "Start the questions",
-    "intro": "Click one answer for each question. Your teacher sees how the class did, so answer on your own. You find out how you did on the last screen of the lesson.",
+    "intro": "Answer on your own: your teacher sees how the class did. You get your score at the end.",
     "items": [
      {
       "id": "j3x5-1",
@@ -145,13 +145,13 @@
     "alreadyFiled": "You have already sent this to your teacher. You can read back through it as often as you like, and nothing you click now will change what you sent.",
     "offlineSay": "The internet connection has stopped. Your answers are saved on this computer. They will be sent when the connection comes back. You have finished the lesson.",
     "statements": [
-     "I can read Python's red lines to find the line and the fault.",
-     "I can spot a function that is defined but never called.",
-     "I can say what return does, and why a function with no return gives None."
+     "I can use Python's red lines to find each fault.",
+     "I can spot a function defined but never called.",
+     "I can say what return does, and why None appears."
     ],
     "difficulty": true,
     "comment": true,
-    "lockedNote": "Click an answer under each of the 3 sentences above, and click how hard the hour felt. Then the \"Send & finish\" button will work.",
+    "lockedNote": "Answer each sentence and how today felt. Then you can send.",
     "doneTitle": "Your answers are sent. Bug Bounty is finished.",
     "scoreLine": "You got {n} of the {total} questions right.",
     "optionLines": true,
