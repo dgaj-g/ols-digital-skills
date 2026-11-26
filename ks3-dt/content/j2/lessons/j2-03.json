@@ -28,21 +28,9 @@
    "minutes": 4,
    "config": {
     "clearance": "J2 · LESSON 3 OF 17",
-    "headline": "Today your program asks you a question and waits.",
+    "headline": "Today your program asks a question and waits.",
     "lines": [
-     "Every program you have run in here does exactly the same thing every time you press RUN. Today's program does not. Today you build a chatbot.",
-     "A chatbot is a program that asks you a question, waits for you to type an answer, and then uses your answer in its next sentence.",
-     "It is not clever and it is not alive. It follows a list of instructions somebody typed. It follows them in the same order, every single time. That list does three jobs, in this order. The chatbot asks a question. It keeps the answer in a box with a name on it (a variable). Then it prints a reply using what is in that box.",
-     "You met variables last lesson. A variable is a box with a name on it. You write the name, then an equals sign, then whatever you want to keep. What is on the right of the equals sign goes into the box. Today, what you keep in the box is whatever somebody typed.",
-     "There is one more thing worth knowing before you start. Whatever somebody types goes into the box as WORDS, every single time — even if they type a number. Because it is words, a + can stick it straight onto the end of one of your sentences. You will see that done in a minute.",
-     "Here is a small chatbot running, just below. Watch it once before you build your own.",
-     "Here is what happens in the next hour, in the order it happens.",
-     "1. First you watch a short film. It has no sound.",
-     "2. Then you do three training builds. In the first you fix a bot somebody else wrote, in the second you put one in order, and in the third you write the words yourself.",
-     "3. Then you get twelve minutes to build your own bot. You pick its two questions yourself.",
-     "4. Then comes the Chatbot Swap. Somebody else in this room, at another computer, gets your bot and tries it out. You get theirs. You will each write the other a short report about it.",
-     "You are not told who your partner is until the very end. You each get a call sign instead — a made-up name, like Spanner 7. They see your call sign, and you see theirs.",
-     "5. After the Swap there is a screen with three small extra jobs on it. They are there if you want them, and none of them is marked.\n\nThe hour finishes with one marked question, and then a screen that asks you how it went."
+     "You build one like this."
     ],
     "demoTitle": "A chatbot, running",
     "demoStepMs": 1500,
@@ -50,7 +38,7 @@
      {
       "who": "bot",
       "label": "The bot",
-      "text": "Hello. I am a chatbot. What is your first name?"
+      "text": "Hello. What is your first name?"
      },
      {
       "who": "you",
@@ -83,10 +71,9 @@
       "text": "Last word: Sorcha likes toast, so I like Sorcha."
      }
     ],
-    "demoNote": "Nothing in there is clever. Somebody typed every one of those sentences. The same person wrote the lines that drop your answers into those sentences. By the end of this hour you will have written lines like those yourself.",
     "cta": "Start the film",
-    "help": "The words on this card appear a few at a time, as if somebody were typing them. A small chatbot runs at the bottom of the card. Read the whole card, then click the button at the bottom. Nothing on this screen is marked.",
-    "demoAfterLine": 6,
+    "help": "The words on this card appear a few at a time. A small chatbot runs under the first line. Somebody typed every line the bot says. Whatever you type to it is kept as words, even a number. Read the card, then click Start the film. Nothing here is marked.",
+    "demoAfterLine": 1,
     "job": "Read the card and watch the chatbot, then start the film.",
     "showMe": [
      "Read the words as they appear.",
@@ -102,7 +89,7 @@
    "minutes": 5,
    "config": {
     "src": "assets/video/j2/j2-l3-a.mp4",
-    "intro": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film take you straight to any part.",
+    "intro": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
     "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film would not play.",
     "chapters": [
      {
@@ -135,7 +122,7 @@
     "mode": "worked",
     "kicker": "Training build 1",
     "title": "A bot that says hello",
-    "intro": "Every chatbot on the planet is built out of the same three jobs, one after the other: ask, keep, reply. This first bot does each of them exactly once, so you can see all three at the same time.\n\nThe bot on this card is not finished. There is a real mistake in it, put there on purpose. You will press RUN, Python will tell you what is wrong, and you will put it right.",
+    "intro": "Every chatbot does three jobs: ask, keep, reply. This one has a mistake for you to fix.",
     "beginLabel": "Pick a style",
     "runLabel": "RUN this bot",
     "continueLabel": "Continue",
@@ -149,7 +136,7 @@
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "Ask, keep, reply",
-    "shapeLead": "Every chatbot in this lesson does these three jobs, in this order. The box (a variable) is where the answer is kept. The words change, but the shape stays the same.",
+    "shapeLead": "Every chatbot here does these three jobs, in this order. The answer is kept in a box (a variable).",
     "shapeClose": "Back to my bot",
     "consoleLabels": {
      "title": "The console",
@@ -184,7 +171,7 @@
       "id": "t1",
       "mode": "worked",
       "goalLine": "Make this bot say hello, ask your name, and greet you by it.",
-      "brief": "Pick the style you want, then press RUN. Something in this bot is spelled wrong on purpose — Python will stop and tell you the name it could not find.",
+      "brief": "Pick a style, then press RUN. One name is spelled wrong on purpose. Python stops and names it.",
       "styleKicker": "Pick a style",
       "styleTitle": "Which bot do you want to fix?",
       "styleLead": "Both bots do exactly the same three jobs. They just say them differently. Pick the one you like.",
@@ -274,7 +261,7 @@
    "title": "Training build 2: put it in order",
    "minutes": 6,
    "config": {
-    "intro": "You get the four lines of a working bot, out of order. Put them in the order that makes this happen: the bot says hello, asks what your favourite food is, replies using what you typed, and then adds one last line that uses no answer.\n\nClick a line in the column called The lines to move it across, or drag it. You get one go. Whether you get it right or not, you are shown the working order afterwards.",
+    "intro": "Put the four lines in order: hello, question, reply, last line. Click or drag each line across. You get one go.",
     "item": {
      "id": "j2t2-echo",
      "prompt": "A working bot greets the person, asks one question, uses the answer in its reply, and then says one last line that uses no answer at all.",
@@ -314,10 +301,10 @@
    "config": {
     "kicker": "Training build 3",
     "title": "Now you write the words",
-    "intro": "You build two short bots on this screen. This time you fill in the gaps yourself — the box names, and in the first bot the question as well.\n\nThe first bot has six lines waiting on the left, out of order. Four of the six make a working bot, and those four have three gaps in them.\n\nOne gap is the question the bot asks, and you write that yourself. The other two gaps are both the name of the box that keeps the answer. You choose that name, then type it into both gaps, spelled exactly the same each time.\n\nThe other two lines are real mistakes people make, and they stay where they are.\n\nNothing is typed for you and nothing is corrected for you. Press RUN and see what really happens.",
+    "intro": "Build two short bots. This time you type into the gaps yourself. Nothing is typed for you.",
     "beginLabel": "Open the program",
     "runLabel": "RUN my bot",
-    "howLine": "Move the lines you need into **Your program**, put them in the right order, then type into every gap.",
+    "howLine": "Move the lines you need into **Your program**, in order. Then type into every gap.",
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "trayEmpty": "Every line has been moved across.",
@@ -373,10 +360,10 @@
       "check": {
        "kind": "clean",
        "usesReplies": true,
-       "repliesSay": "Your bot ran to the end, but it did not print an answer you typed. Your bot needs exactly one line with input( ) in it. If the line input(\"What is your favourite colour?\") is on the right, it asks a question and keeps nothing, so put it back on the left. If the line colour = \"What is your favourite colour?\" is on the right, it keeps the question in the box instead of your answer, so put it back on the left too."
+       "repliesSay": "Your bot ran to the end, but it printed no answer you typed. Your bot needs exactly one line with input( ) in it. If input(\"What is your favourite colour?\") is on the right, it keeps nothing. Put it back on the left. If colour = \"What is your favourite colour?\" is on the right, put it back too. That line keeps the question, not your answer."
       },
       "goalLine": "Build a bot that asks a question you write yourself, then uses the answer in its reply.",
-      "brief": "Two of the six lines are real mistakes people make, and you leave those two where they are. One keeps the QUESTION in the box instead of the answer. The other asks the question and keeps nothing at all.",
+      "brief": "Write your own question. Type one box name into both box gaps, spelled the same. Two lines are wrong: one keeps the question, one keeps nothing.",
       "lines": [
        {
         "t": "print(\"Bench bot, ready.\")"
@@ -451,7 +438,7 @@
        "repliesSay": "Your bot ran to the end, but it printed the word name instead of the name you typed. Look for a Hello line where name sits inside speech marks: Python prints the word, not what is in the box. Put that line back on the left and use the Hello line with a gap in it, with name typed in the gap."
       },
       "goalLine": "Build a bot that asks your name once and uses it TWICE.",
-      "brief": "Two of the five lines are real mistakes people make, and you leave those two where they are. One puts the WORD name on the screen instead of what you typed. The other spells the box name with a capital letter, and Python treats that as a completely different box.",
+      "brief": "Two lines are wrong. One prints the WORD name, not what you typed. One spells the box with a capital letter, so Python sees a different box.",
       "lines": [
        {
         "t": "name = input(\"What is your first name?\")"
@@ -535,15 +522,14 @@
    "config": {
     "mode": "editor",
     "kicker": "Your bot",
-    "title": "You have twelve minutes to build one bot, in your own words.",
-    "intro": "So far you have built bots with most of the words already written for you. This one is yours: you choose what it asks, and you write every word it says.\n\nWatch the two-minute film first. It shows the two things people get stuck on — picking questions that are easy to answer, and writing a last line that uses both answers at once.",
+    "title": "Your bot: twelve minutes",
     "introVideo": "assets/video/j2/j2-l3-b.mp4",
-    "introVideoSay": "The film has no sound and lasts just over two minutes. Watch how its bot is built, then pick your own two questions. Do not copy the ones in the film.",
+    "introVideoSay": "Watch this first. It has no sound.",
     "runLabel": "RUN my bot",
     "continueLabel": "Continue",
     "checklistLabel": "What your bot has to do",
     "paletteLabel": "Ready-made lines",
-    "paletteLead": "Click a line and it lands in your program where the flashing bar is. Then change the words to yours.",
+    "paletteLead": "Click a line to add it where the bar flashes. Then change the words.",
     "firstInsertSay": "**That line is now in your program.** Everything between the speech marks is yours to change — click into it and type over it.",
     "starterSay": "Not sure where to start? Press the button below and the whole shape drops into your program. The sentences are still yours to write.",
     "starterLabel": "Write the shape for me",
@@ -552,13 +538,13 @@
     "notYetLabel": "NOT EVERY JOB IS WORKING YET",
     "pendingLabel": "not checked yet",
     "matchedSay": "That is a working chatbot, and every word in it is yours. Somebody else in this room is about to try it.",
-    "notYetSay": "Your bot is not doing every job yet. The list at the top of this card shows which jobs it is doing. Read the console to see whether Python stopped on one of your lines.",
+    "notYetSay": "Your bot is not doing every job yet. The list at the top shows which jobs it does. Read the console in case Python stopped.",
     "staleSay": "You have changed the program since you pressed RUN. Press RUN again to check it.",
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "A two-question bot",
     "shapeClose": "Back to my bot",
-    "shapeLead": "This is the shape, with nothing written in yet. Each box (a variable) holds one answer. Anything in pointy brackets is a name or a sentence you write yourself.",
+    "shapeLead": "The shape, with nothing filled in. Each box (a variable) holds one answer. Replace each part in pointy brackets with your own words.",
     "featureXp": 3,
     "featureXpCap": 8,
     "editor": {
@@ -599,14 +585,14 @@
      "QQTESTTWO"
     ],
     "stopLabel": "Running out of time? Click here to carry on with the rest of the lesson.",
-    "help": "This card comes in two parts.\n\n1. Read the three jobs your bot has to do, and watch the film.\n2. Press Start writing.\n3. Type your bot in the black space, or click a ready-made line and change its words to yours.\n4. Press RUN my bot, then answer your own bot in the reply space that appears.\n\nThe three jobs are checked again every time you press RUN. Nothing is corrected for you, so read the console if Python stops.",
+    "help": "This card has two parts. Watch the film, then press Start writing. Type your bot in the black space. Or click a ready-made line and change its words. Press RUN my bot, then answer your own bot. Pick easy questions: somebody else answers them soon. Whatever they type comes back as words, so + joins it onto your sentences. If Python stops, read the console.",
     "builds": [
      {
       "id": "mybot",
       "saveAs": "l3bot",
       "mode": "editor",
-      "goalLine": "Write a chatbot that asks TWO questions and uses both answers.",
-      "brief": "Pick two questions that anybody in this room could answer straight away — a favourite food, a team, a subject, a film. Do not pick anything that needs thinking about. Somebody else is going to answer these in about ten minutes. Whatever they type comes back as words, so a + is all you need to join it onto your sentences.",
+      "goalLine": "Write your own chatbot.",
+      "brief": "Pick your own easy questions, not the film's.",
       "palette": [
        {
         "label": "Ask a question and keep the answer",
@@ -648,7 +634,7 @@
        {
         "id": "stores",
         "probe": "echoes",
-        "label": "It keeps each answer in its own box (its own variable).",
+        "label": "It keeps each answer in its own box.",
         "nudge": "Look at the box name on each of your input( ) lines. If both lines use the same name, the second answer replaces the first, and one of your answers is lost."
        },
        {
@@ -667,10 +653,10 @@
        "print( a verdict using <box 1> AND <box 2> )"
       ],
       "matchedSay": "It works, and every word in it is yours. This is the bot the next screen hands to somebody else.",
-      "notYetSay": "Your bot is not doing every job yet. The list at the top of this card shows which jobs it is doing. Read the console to see whether Python stopped on one of your lines.",
+      "notYetSay": "Your bot is not doing every job yet. The list at the top shows which jobs it does. Read the console in case Python stopped.",
       "chat": true,
       "staged": true,
-      "planLabel": "The three jobs your bot has to do"
+      "planLabel": "Three jobs"
      }
     ],
     "waitingSay": "Your bot has stopped and is waiting for you to type an answer. Look just below the RUN button for the box called The conversation. Type your answer in the reply space there and press Send. RUN turns on again as soon as the bot has finished.",
@@ -700,13 +686,10 @@
    },
    "config": {
     "kicker": "The Chatbot Swap",
-    "title": "Somebody else is about to use your bot",
-    "intro": "Sooner or later, every program gets used by somebody who did not write it. That is when you find out what is really wrong with it.\n\nHere is what happens. Your bot goes to somebody else in this room, and their bot comes to you. You chat with theirs and then write them a short report — one thing that worked, and one thing you would change.\n\nNobody is marked on how their bot behaves. If it stops working while you are using it, that is a real find, and it goes in the report.",
+    "title": "Your bot goes to someone else",
+    "intro": "Their bot comes to you. Chat with it, then write two sentences.",
     "steps": [
-     "You are given a **call sign** — a made-up name like Spanner 7. That is the only name your partner sees, and theirs is the only one you see.",
-     "Your bot travels to them and theirs comes to you.",
-     "You chat with their bot, then write two short answers about it.",
-     "Their report about your bot arrives on your screen, and both real names are shown at the very end."
+     "You see only their **call sign**."
     ],
     "beginLabel": "Open the workshop door",
     "phaseCount": 4,
@@ -856,7 +839,7 @@
      "leaveLine": "Right, you're away. Grand. Absolutely grand.",
      "exitMs": 1600
     },
-    "help": "Your bot goes to somebody else in this room, and their bot comes to you.\n\n1. Answer their bot in the reply space that appears.\n2. Read what it says back.\n3. Click Write the report.\n4. Write one sentence in each of the two spaces, then send it.\n\nYour teacher can read everything that passes between you, so do not use real names. If you are short of time, press the button at the bottom that begins “Running out of time?”. It takes you out of the Swap and on to the rest of the lesson.",
+    "help": "Your bot goes to somebody else in this room, and theirs comes to you. You each see only a call sign, a made-up name like Spanner 7. Answer their bot, then click Write the report. Write one sentence in each space, then send it. Nobody is marked on how their bot behaves. Your teacher can read everything, so never use real names. Both real names are shown at the very end. Short of time? Press the button that begins Running out of time?",
     "leaveTitle": "Leave the Swap now?",
     "leaveAsk": "You have done {done} of the {all} parts. If you leave now you keep everything you have already earned, but there is no badge for the Swap. You can still finish the rest of the lesson.",
     "leaveYes": "Leave the Swap",
@@ -878,7 +861,7 @@
     "extrasMode": true,
     "kicker": "Extra jobs",
     "title": "The Workshop's extra jobs",
-    "intro": "There are three small jobs on this screen, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do here is saved.\n\nDo one, do all three, or do none. You can stop at any moment.",
+    "intro": "These three jobs are extra. They carry no points, and nothing is saved.",
     "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
     "finishLabel": "Running out of time? Click here to carry on with the rest of the lesson.",
     "backLabel": "Back to the extra jobs",
@@ -931,7 +914,7 @@
       "check": {
        "kind": "clean",
        "usesReplies": true,
-       "repliesSay": "Your bot ran to the end, but it did not print the answer you typed. The line weekend = \"your weekend\" is the mistake. It puts the words your weekend into the weekend box, so your answer is replaced. Put that line back on the left and keep the line with input( ) in it."
+       "repliesSay": "Your bot ran to the end, but it printed no answer you typed. The line weekend = \"your weekend\" is the mistake. It puts the words your weekend in the weekend box. That replaces your answer. Put that line back on the left. Keep the line with input( ) in it."
       },
       "title": "Job 1 — a bot that asks about the weekend",
       "whiff": "One question, one reply, all your own words.",

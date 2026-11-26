@@ -21,14 +21,11 @@
     "clearance": "J3 · LESSON 1 OF 17",
     "headline": "The Studio is open.",
     "lines": [
-     "The theme of J3 Digital Technology this year is The Studio. This is because you will work the way a real studio works: you make things, you look hard at them, and you decide what to do next. You have seventeen Studio lessons this year, one every fortnight.",
-     "This is your last year of Digital Technology before GCSE, and it builds three things you can point at afterwards. You CREATE real work: programs you write yourself, data you turn into something worth reading, web pages you design for somebody else to use. You learn to JUDGE work, your own and other people's, against a standard instead of a feeling. And you get better at CHOOSING, because you will have real evidence about what you are good at. Those three are worth having whatever subjects you end up taking.",
-     "There is one particular thing that evidence is useful for. In JANUARY you pick your GCSE options. Digital Technology is one of the subjects on that list and it is optional: plenty of people will pick it, plenty will not, and both of those are fine answers. If you do pick it, there are two routes inside it, Multimedia and Programming, and by January you will know far more about which kind of work suits you. If you do not pick it, everything this year teaches you is still yours.",
-     "One thing about the screens you clicked through to get here. Those were Google's own permission screens, and they were asking whether this website is allowed to know who you are, so that your work saves under your name. You only see them the very first time you sign in. You will not see them again.",
-     "Here is what this hour holds, in order. First a short look around this website, which takes about seven minutes. Then the studio code: six real situations, and you decide whether each one is in line with the code or against it. Then Portfolio Zero, which is twelve quick questions about where you are starting from, and it is not a test. Then your Compass, which asks what kind of work you actually enjoy. It finishes with a card about where the year goes next, one marked question, and a screen that asks you how the hour went."
+     "This year you make real things, judge them, and find what suits you.",
+     "First, a quick look around this website."
     ],
     "cta": "Show me around",
-    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and press the button at the bottom when you are ready to move on. Nothing here is marked.",
+    "help": "This card types itself out. Read it, then press the button at the bottom. The Google screens you clicked through only come the first time you sign in. Nothing here is marked.",
     "job": "Read what today is about, then click Show me around.",
     "showMe": [
      "Read the words as they appear.",
@@ -48,36 +45,36 @@
     "xp": 12
    },
    "config": {
-    "intro": "There are five things to find on this screen. This website is where every Studio lesson lives, so seven minutes now saves you asking all year. Each step tells you what to look for and what you will SEE when you have found it.",
+    "intro": "Find five things on this website. Each step says what to look for.",
     "steps": [
      {
       "icon": "🗺️",
-      "title": "You already know where your year map is",
-      "text": "Your year map is the page you came from to get here, and it holds all seventeen lessons in six groups, with a heading over each group. Look at the top left of this screen: the button there says Year map, and it takes you back at any time. Do not press it now — you come back to your year map at the end of the lesson.",
+      "title": "Find the Year map button",
+      "text": "It is at the top left. It takes you back to all seventeen lessons. Do not press it now.",
       "confirm": "I can see the Year map button at the top left"
      },
      {
       "icon": "🔒",
-      "title": "A locked tile is normal, not a fault",
-      "text": "Most of the tiles on your year map have a small padlock on them. Nothing is broken. Your teacher opens each lesson on the day you do it, so a locked tile just means the class has not got there yet. Only the lesson you are working on is open.",
+      "title": "A padlock is normal",
+      "text": "A locked tile is a lesson your class has not reached yet. Your teacher opens each one on the day.",
       "confirm": "I understand what a locked tile means"
      },
      {
       "icon": "💾",
       "title": "Watch your work save itself",
-      "text": "Look along the top of this screen, over on the right, for a small green word: Saved. You never press a save button here. Every time you answer something or finish a part of a lesson, this website writes it to your own record, and that green word tells you it has landed. Your work follows your login, so you can pick it up on any school computer.",
+      "text": "Find the green word Saved, top right. Your work saves by itself, on any school computer.",
       "confirm": "I found the green word Saved at the top"
      },
      {
       "icon": "❓",
       "title": "Find the help button",
-      "text": "Look at the bottom right of this screen for the green button that says Stuck? Show me. Click it now. A panel opens with help for the part of the lesson you are on, so it says something different on every screen. Press Back to the lesson when you have read it.",
+      "text": "Click the green Stuck? Show me button, bottom right. It shows what to do on this screen.",
       "confirm": "I opened Stuck? Show me and read what it said"
      },
      {
       "icon": "🎭",
       "title": "Open your Wardrobe",
-      "text": "Click your name in the top right corner. Your Wardrobe opens. Every real studio has a wardrobe department, the people who look after how everything looks: this one is yours, and it holds the looks your screen can wear. You earn them by finishing lessons, and anything you unlock stays yours for the rest of the year, even if your points move around later. You have not earned anything yet, so most of what you can see is still padlocked. Close it and come back here.",
+      "text": "Click your name, top right. Your Wardrobe holds looks you earn by finishing lessons. Then close it.",
       "confirm": "I opened my Wardrobe and saw what is in it"
      }
     ],
@@ -103,7 +100,7 @@
    },
    "config": {
     "startLabel": "Open the first case",
-    "intro": "These are the DT room rules. They are the same six rules every DT room in this school runs on, and there is nothing new in them — what is new is the job you are given here.\n\nA working studio writes its rules down as a code of conduct, and then somebody has to decide whether people are keeping it. Today that somebody is you. You will read six real situations. For each one you decide whether it is IN LINE with the code or AGAINST it, and if it is against it, which standard it breaks.\n\nWatch out for one thing: not every case is somebody doing something wrong. Nothing wrong here is a real answer, and it is the right answer more than once.",
+    "intro": "Read eight real cases from a DT room. Decide if each is IN LINE with the room rules or AGAINST them.",
     "stretchFrom": 6,
     "stretchXp": 5,
     "stretch": {
@@ -221,11 +218,11 @@
     "openLabel": "Start Portfolio Zero",
     "sealingLabel": "Saving your Portfolio Zero…",
     "sealTitle": "Portfolio Zero saved",
-    "sealBody": "Twelve answers, kept as the record of where you were on day one. You read it back before your options in January, and again in the last lesson of the year.",
+    "sealBody": "Your twelve answers are saved. You read them again in January and at the end of the year.",
     "claimLabel": "Claim the badge",
-    "intro": "This part is called Portfolio Zero. A portfolio is the collection of work somebody shows to prove what they can do, and this is yours before you have made any of it — the zero at the start.\n\nThere are twelve quick questions. Nine of them are about things you might be able to work out, and three of them just ask how you feel about your own work. It is NOT a test and you cannot fail it. Most of the nine are about things you have not been taught yet, so not knowing is completely normal.\n\nThis one is only about what you can DO. Later in the hour there is a second activity called your Compass, and that one asks something different: what you ENJOY.\n\nYou will not be told right or wrong on any of them, and that is on purpose. You read this back twice: once before your options in January, and once in the last lesson of the year, when you will see for yourself how far you have come.",
+    "intro": "Twelve quick questions. It is not a test.",
     "ackText": "Answer saved",
-    "solo": "You do this one on your own, quietly — nobody is told right or wrong here, so there is nothing to compare.",
+    "solo": "Do this on your own. Nobody is told right or wrong.",
     "items": [
      {
       "id": "j3p-01",
@@ -376,11 +373,11 @@
    },
    "config": {
     "introTitle": "Your Compass",
-    "intro": "Portfolio Zero asked what you can DO. Your Compass asks something completely different: what you actually ENJOY.\n\nThere are three questions and each one gives you two things to choose between. Neither side is better than the other, and there is no right answer. Pick the one that sounds more like you, even if it is only slightly more.\n\nAt the end a needle settles and you are told, in plain words, what it found. If you pick all three on one side it lands firmly there. If you split them, it settles near the middle — which is a real answer too, and the most common one.",
-    "note": "Your Compass decides nothing. It is where you are standing today, and today is the first day of the year. You look at it again before your options in January, and people do change their minds.",
+    "intro": "Three questions about what you ENJOY. Pick the side that sounds more like you. There is no right answer.",
+    "note": "Your Compass decides nothing.",
     "begin": "Ask me the three questions",
     "boardTitle": "Which one sounds more like you?",
-    "boardLead": "Pick one from each pair. You can change any of them until you press the button at the bottom.",
+    "boardLead": "Pick one from each pair. You can change them until you press the button.",
     "lockedNote": "Pick one from all three pairs, and the button below wakes up.",
     "settleLabel": "Settle my compass",
     "pairs": [
@@ -422,7 +419,7 @@
       "route": "And if you do pick GCSE Digital Technology in January, that side of the work is the Programming route."
      }
     },
-    "resultNote": "Nothing has been decided here. Your Compass is saved so you can look at it again before your options in January, and you can answer these three questions differently then.",
+    "resultNote": "Nothing is decided. You can answer differently in January.",
     "doneLabel": "Keep going",
     "help": "Three either/or questions about what you ENJOY, not what you are good at. There is no right answer and nothing is marked. Pick one from each pair, then press the button to settle the needle. Nothing you pick here decides anything — you look at it again in January.",
     "designLabel": "DESIGNING AND COMMUNICATING",
@@ -703,15 +700,15 @@
    "title": "Where this year goes",
    "minutes": 6,
    "config": {
-    "intro": "One card to look at before you go, so you know where the year is heading.",
+    "intro": "One card about where the year goes next.",
     "steps": [
      {
       "icon": "🧭",
       "title": "Two routes, one shared start",
-      "text": "This picture is the map of GCSE Digital Technology. Everyone who takes it does the same core work first, and then it splits into two routes: Multimedia, which is the designing and communicating side, and Programming, which is the building and problem-solving side. You do not choose between them today. Digital Technology is one of the subjects on your options list in JANUARY, and it is optional. Deciding it is not for you is a perfectly good decision, and this year is worth doing either way. Your next lesson is called First Words in Python, and you write real code in it. Nothing is assumed: it starts from your very first line.",
+      "text": "Everyone starts with the same core. You choose a route in January, or neither.",
       "img": "assets/img/j3/route-map.svg",
       "imgAlt": "A flat diagram. One wide block on the left is labelled The shared core, everybody does this. An arrow leads from it to two blocks side by side on the right: Multimedia, designing and communicating, and Programming, building and problem-solving. Underneath, a line reads: you choose in January, and you can choose neither.",
-      "imgCap": "The two GCSE Digital Technology routes, and the core work everybody does first.",
+      "imgCap": "The two GCSE routes.",
       "confirm": "I know where this year is heading"
      }
     ],

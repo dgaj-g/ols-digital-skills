@@ -21,26 +21,21 @@
     "clearance": "J2 · LESSON 4 OF 17",
     "headline": "Today your program chooses what happens next.",
     "lines": [
-     "Every program you have written so far runs its lines in order, from the top to the bottom, and it does the same thing every time. Today you write a program that CHOOSES. It reads what the player typed, and then it decides which lines to run.",
-     "You are going to build a text adventure. A text adventure is a story that a program tells you one piece at a time. It asks you what to do, you type your answer, and what happens next depends on what you typed.",
-     "Here is one room of a text adventure, playing on its own further down this card. The room asks one question. What happens next depends on the answer, and each thing that can happen next is called a road. The player typed the word trolley, so the room chose the trolley road. Watch it once.",
-     "The whole class is building one adventure today. It is set in this school after the bell has gone: everybody has gone home, the doors are still open, and odd things happen. Each of you writes ONE room — a place in the school, one question, and two roads the player can take. When your room is finished, it joins the class's adventure, and you can play it, going through rooms your classmates wrote.",
-     "Here is what happens in the next hour, in the order it happens.",
-     "1. First you watch a short film. It has no sound.",
-     "2. Then you do three training builds — three short practice jobs. In the first you fix a room somebody else wrote. In the second you put a room in order. In the third you add a third road to a room.",
-     "3. Then you write your own room. The website checks every road in it before it joins the adventure.",
-     "4. Then you play the class adventure. You go through up to five rooms, one after another. Each room was written by a classmate, or it is one of the rooms from the training builds. Nobody's name is shown on any room — each room has a number instead.",
-     "5. After that there is a screen with four small extra jobs on it. They are there if you want them, and none of them is marked.",
-     "The hour ends with one marked question and the How did it go? screen."
+     "You write one room of the class's text adventure."
     ],
-    "demoTitle": "One room playing on its own",
+    "demoTitle": "The canteen",
     "demoStepMs": 1500,
-    "demoAfterLine": 3,
+    "demoAfterLine": 1,
     "demo": [
      {
       "who": "bot",
       "label": "The room",
-      "text": "You are in the canteen. Every chair is stacked on the tables."
+      "text": "You are in the canteen."
+     },
+     {
+      "who": "bot",
+      "label": "The room",
+      "text": "Every chair is stacked on the tables."
      },
      {
       "who": "bot",
@@ -68,9 +63,8 @@
       "text": "You go through door A."
      }
     ],
-    "demoNote": "Nothing in there is clever. Somebody typed every one of those sentences, and somebody typed the line that decides which sentences come out when the player types trolley. Today that somebody is you.",
     "cta": "Start the film",
-    "help": "The words on this card appear a few at a time, as if somebody were typing them. A small piece of a text adventure plays at the bottom of the card. Read the whole card, then press Start the film.",
+    "help": "The words on this card appear a few at a time. A text adventure is a story a program tells one piece at a time. One room of it plays under the first line. Its question splits the story into two roads the player can take. Somebody typed every sentence in it, and the line that chooses. Today that somebody is you. The whole class is building one adventure today. Next comes a film, then three practice builds. Then you write your room and play the class adventure. Read the card, then press Start the film.",
     "job": "Read the card and watch the adventure on it. Then click Start the film.",
     "showMe": [
      "Read the words as they appear.",
@@ -86,7 +80,7 @@
    "minutes": 6,
    "config": {
     "src": "assets/video/j2/j2-l4-a.mp4",
-    "intro": "Watch this film on your own computer. It has no sound, so every word you need is written on the screen. It comes in three parts. The three buttons under the film jump to each part.",
+    "intro": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
     "fallback": "If the film will not play, carry on — everything it shows is on the cards that come next, in writing. Tell whoever is in the room that the film did not play.",
     "chapters": [
      {
@@ -156,15 +150,13 @@
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "The place, the question and the fork",
-    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeLead": "Every room has the same shape: where you are, one question, then the fork.",
     "shapeClose": "Back to my room",
     "kicker": "Training build 1",
-    "intro": "This room is already written — it is the canteen room you watched on the first card. One symbol in it is wrong on purpose. You press RUN, Python stops, you read what it says, and you put it right.",
+    "intro": "The canteen room from the first card has one wrong symbol.",
     "steps": [
-     "Read the room's nine lines.",
-     "Press RUN my room.",
-     "Python stops at the fork line — the line that starts with if. Python's own words appear underneath. Under them, there is a line written in ordinary words. Read that line.",
-     "Fix the fork line, press RUN again, and type trolley when the room asks. Then press RUN once more and type window when the room asks."
+     "Press RUN my room. Python stops.",
+     "Fix the line that starts with if."
     ],
     "beginLabel": "Open the room",
     "builds": [
@@ -172,8 +164,8 @@
       "id": "t1",
       "mode": "worked",
       "chat": true,
-      "goalLine": "Make this canteen room work: the player types trolley or window, and the room chooses the right road.",
-      "brief": "The fork is the line that starts with if. It ASKS a question: is what the player typed the same as trolley? Something on that line is wrong on purpose, and Python will stop there and tell you.",
+      "goalLine": "Make the canteen room choose the right road.",
+      "brief": "The fork is the line that starts with if. It asks: did the player type trolley? Once it is fixed, run it twice: type trolley, then window.",
       "lines": [
        {
         "t": "print(\"You are in the canteen. Every chair is stacked on the tables.\")"
@@ -253,14 +245,14 @@
    "minutes": 5,
    "config": {
     "introKicker": "Training build 2",
-    "intro": "You get the eight lines of a working room, out of order. Put them in the order that does these four things:",
+    "intro": "In order:",
     "steps": [
-     "Say where the player is.",
-     "Ask: left or right?",
-     "If the player typed left: the music room, then door A.",
-     "For anything else: the stairs, then door B."
+     "Where the player is.",
+     "The question.",
+     "If left: music room, door A.",
+     "Else: stairs, door B."
     ],
-    "introAfter": "Click a line to move it across, or drag it. The lines under the if and the else are already pushed in by four spaces. You get one go, then you see the working order.",
+    "introAfter": "You get one go.",
     "item": {
      "id": "j2t4-corridor",
      "prompt": "Say where the player is, then ask left or right. Left: the music room, then door A. Anything else: the stairs, then door B.",
@@ -276,14 +268,14 @@
      ]
     },
     "doneText": "Correct. The question has to be asked before the fork can check the answer, and each road has its own door line pushed in under it.",
-    "help": "Click a line on the left to move it into Your program. You can drag it across instead. A line you have moved stays where you put it until you drag it back or press Put this line back. Press Check my program when all eight are across.",
+    "help": "Click a line on the left to move it into Your program. You can drag it across instead. The lines under the if and the else are already pushed in. Drag a line back to take it out. Press Check my program when every line is across. You get one go.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "trayLabel": "The lines",
     "checkLabel": "Check my program",
     "pre": true,
     "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
-    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Drag lines up or down to reorder.",
     "lockedNote": "Move every line into Your program, then this button wakes up.",
     "emptyNote": "Nothing here yet. Click or drag a line across.",
     "job": "Put the room’s eight lines in the right order.",
@@ -345,22 +337,19 @@
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "Place, question, fork",
-    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeLead": "Every room has the same shape: where you are, one question, then the fork.",
     "shapeClose": "Back to my room",
     "kicker": "Training build 3",
-    "intro": "The library room is half written. Its first road is done. You add the second road with elif, and the road for anything else with else. Two of the lines you are given are mistakes on purpose, and you leave those where they are.",
+    "intro": "Finish the library room: add the elif road and the else road.",
     "steps": [
-     "Read the five lines already in Your program. They cannot be moved.",
-     "Read the eight lines in The lines. Six of them belong in the room.",
-     "Move the six across, in order: the elif road, then the else road.",
-     "Type into the two gaps: the word for your elif road, and what happens on that road.",
-     "Press RUN my room and try all three words. Then try a word that is not in the question."
+     "Leave out the two wrong lines.",
+     "Fill both gaps, then try every word."
     ],
     "beginLabel": "Open the room",
     "firstTryXp": 8,
     "firstTryXpCap": 8,
     "lockedNote": "RUN switches on as soon as there is at least one line in Your program.",
-    "howLine": "Move the lines you need into **Your program**, put them in the right order, then type into every gap.",
+    "howLine": "Move the lines you need into **Your program**, in order. Then type into every gap.",
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "takeBackLabel": "Put this line back",
@@ -373,7 +362,7 @@
       "id": "t3",
       "chat": true,
       "goalLine": "Finish the library room: add the second road and the road for anything else.",
-      "brief": "The question already offers three words: lamp, desk and door. The lamp road is written. You choose ONE of the other two words for your elif road, and you write what happens there yourself. The else road is for any word the player types that you did not plan for.",
+      "brief": "The question offers lamp, desk and door. The lamp road is written. Pick desk or door for your elif road. Write what happens there. The else road catches any other word.",
       "fixedTop": [
        "print(\"You are in the library. The lights are off, but one lamp is on.\")",
        "choice = input(\"Do you go to the lamp, the desk or the door? Type lamp, desk or door.\")",
@@ -537,13 +526,12 @@
     "shapeLabel": "Show me the shape",
     "shapeKicker": "The shape",
     "shapeTitle": "Place, question, fork",
-    "shapeLead": "Every room in this lesson has the same shape. First it says where the player is. Then it asks one question. Then comes the fork. The words change; the shape stays the same.",
+    "shapeLead": "Every room has the same shape: where you are, one question, then the fork.",
     "shapeClose": "Back to my room",
     "kicker": "Your room",
-    "title": "Write your room",
-    "intro": "This is the room you write yourself. When it works, it joins the class adventure. The five jobs it has to do are listed below. The film on this card shows a room being written.",
+    "title": "Your room",
     "introVideo": "assets/video/j2/j2-l4-b.mp4",
-    "introVideoSay": "This film is three and a half minutes long. It shows how a room is written. Then it shows the path check, which is how the website tests your room.",
+    "introVideoSay": "Watch this first.",
     "mode": "editor",
     "featureXp": 2,
     "featureXpCap": 8,
@@ -553,7 +541,7 @@
     "matchedAllLabel": "ALL FIVE JOBS DONE",
     "emptySay": "Your room is empty. Click a line on the right to put it in, or press Put the shape in for me.",
     "paletteLabel": "Lines you can use — click one, then change its words",
-    "paletteLead": "Click one, and it goes into your room at the cursor (the blinking line in the box). The words in CAPITALS are the ones you change.",
+    "paletteLead": "Click a line to add it where the cursor blinks. Change the words in CAPITALS.",
     "firstInsertSay": "The line you clicked is in your room now. Change its CAPITAL words to your own before you press RUN.",
     "starterSay": "Want the whole shape put in for you? Every CAPITAL word will still be yours to change.",
     "starterLabel": "Put the shape in for me",
@@ -566,8 +554,7 @@
      "indentGuides": true
     },
     "words": {
-     "title": "The two words your player can type",
-     "lead": "Before you write anything, decide the two words. Your question must SAY them, and the website uses them to test your room.",
+     "title": "Two words your question offers",
      "boxes": [
       {
        "key": "w1",
@@ -616,14 +603,13 @@
       "mode": "editor",
       "staged": true,
       "chat": true,
-      "planLabel": "The five jobs your room has to do",
-      "goalLine": "Write one room of the class adventure: a place in this school, one question, two roads, and a door for anything else the player types.",
-      "brief": "Pick a place in this school that anybody in your class could picture: the canteen, the ICT room, the gym, the library, the car park, the stairs. Your two words are what the player types to choose a road, so your question must say them.",
+      "planLabel": "Five jobs",
+      "goalLine": "Write one school room for the class adventure.",
       "features": [
        {
         "id": "scene-ask",
         "probe": "scene-ask",
-        "label": "It says where the player is, then asks ONE question that says your two words.",
+        "label": "It names a place, then asks ONE question.",
         "nudge": "Your first line should print the place. Then count the lines with input( ) in them: your room needs exactly one, and the question inside it must say both of your words."
        },
        {
@@ -631,7 +617,7 @@
         "probe": "path",
         "word": "w1",
         "door": true,
-        "label": "If the player types your FIRST word, one road runs and ends with a door line.",
+        "label": "FIRST word: one road, ending at a door.",
         "nudge": "Look at the word in speech marks on your if line. It must match your first word exactly. Capital letters count. The road under it needs a NEXT: door line."
        },
        {
@@ -639,7 +625,7 @@
         "probe": "path",
         "word": "w2",
         "door": true,
-        "label": "If the player types your SECOND word, the other road runs and ends with a door line.",
+        "label": "SECOND word: another road, ending at a door.",
         "nudge": "Look at the word in speech marks on your elif line. It must match your second word exactly, and its road needs a NEXT: door line."
        },
        {
@@ -647,7 +633,7 @@
         "probe": "path",
         "word": "stranger",
         "door": true,
-        "label": "If the player types anything else, the room still sends them through a door.",
+        "label": "Any other word: still a door.",
         "nudge": "The banana test: the player typed banana, and your room had no road for it. The else road catches every word you did not plan for — check it is there, and that it ends with a door line."
        },
        {
@@ -757,7 +743,7 @@
       "stopLabel": "Skip the twist and go to the class adventure"
      }
     ],
-    "help": "This card comes in two parts. First you get ready, then you write your room.\n\n1. Read the five jobs your room has to do, and watch the film.\n2. Type the two words your player will be able to type. Your question must say them.\n3. Press Start writing.\n4. Click a line on the right to put it in your room, then change its CAPITAL words. Or press Put the shape in for me and change every CAPITAL word.\n5. Press RUN my room and play it. The path check under the five jobs shows which words reached a door.\n6. When all five jobs say done, press Publish my room to the class adventure.",
+    "help": "This card has two parts: get ready, then write your room.\n\n1. Watch the film and read the five jobs.\n2. Pick a place anyone here could picture, like the gym.\n3. Type your two words. Your question must say both.\n4. Press Start writing.\n5. Click a line to add it, then change its CAPITAL words.\n6. Press RUN my room and play it. The path check shows which words reached a door.\n7. When all five jobs say done, press Publish my room to the class adventure.",
     "jobWord": "Job",
     "chatPrints": true,
     "placeholders": [
@@ -792,11 +778,9 @@
    "config": {
     "kicker": "The class adventure",
     "title": "Play the class adventure",
-    "intro": "Now you play up to five rooms, one after another. They are chosen from the rooms your class has written and the rooms from the training builds. Each room asks you a question. You type a word, and the room sends you through a door into another room. Nobody's name is on any room — only a number. If you published your room, one of them might be yours.",
+    "intro": "Play up to five rooms, one after another.",
     "steps": [
-     "Read the room, then type one of the words it offers you.",
-     "The room sends you through a door into the next room.",
-     "After the last room the adventure ends. Play again for a different path."
+     "Type a word the room offers, then press Send."
     ],
     "beginLabel": "Start the adventure",
     "rooms": 5,
@@ -906,7 +890,7 @@
     ],
     "_houseRoomsNote": "each room's program is its lines joined with newlines; authored as lines[].t so the language gate reads them as code (pupil-visible when played, judged like pyrun lines)",
     "words": {
-     "roomsOpen": "{n} rooms are in the class adventure so far.",
+     "roomsOpen": "Rooms so far: {n}.",
      "roomHead": "Room {n}",
      "roomMine": "Room {n} — this one is yours",
      "roomHouse": "Room {n} — one of the rooms from the training builds",
@@ -935,7 +919,7 @@
      "replyLabel": "Your choice",
      "sendLabel": "Send"
     },
-    "help": "The adventure is up to five rooms long. Each room is a small program running on your screen. Somebody in your class wrote it, or it is one of the rooms from the training builds.\n\n1. Read what the room says.\n2. Type one of the words it offers into the box, and press Send.\n3. You go through a door into the next room.\n\nAfter the last room you reach the end. Press the Play again button to take a different path. The button at the bottom finishes the adventure and carries on with the lesson. If you leave before the last room, you do not get the badge this time. You can still earn it the next time you play.",
+    "help": "Each room is a small program. Somebody in your class wrote it, or it is a training room. Nobody's name is shown, only a number. Read the room. Type one of its words and press Send. You go through a door into the next room. After the last room, press Play again for a new path. The button at the bottom carries on with the lesson. Leave early and there is no badge this time. You can still earn it next time.",
     "job": "Play up to five rooms from your class and the training builds.",
     "showMe": [
      "Click Start the adventure.",
@@ -988,7 +972,7 @@
     },
     "extrasMode": true,
     "kicker": "Extra jobs",
-    "intro": "There are four small jobs on this screen, and they are all optional. **None of them is worth any points**, nothing here is marked, and nothing you do here is saved. They are here if you have time, and you can come back to them after the lesson is finished.",
+    "intro": "Four extra jobs. They carry no points, and nothing is saved.",
     "reviewIntro": "**You have already finished this lesson.** These jobs still work, so you can come back and try them any time.",
     "finishLabel": "Is the hour nearly up? Click here to finish the rest of the lesson.",
     "backLabel": "Back to the extra jobs",
@@ -1007,7 +991,7 @@
     "takeBackLabel": "Put this line back",
     "allDoneLabel": "All four jobs are done — carry on with the lesson",
     "allDoneSay": "**All four jobs are done.** Nothing here was marked and nothing was saved, so there is nothing left to do on this screen.",
-    "help": "There are four jobs on this screen, and you do not have to do any of them. None of them is worth points, and nothing here is saved. Pick one from the list, or press the button at the bottom to carry on with the lesson.",
+    "help": "Every job here is extra. None carries points, and nothing is saved. Pick one from the list. The button at the bottom carries on with the lesson.",
     "builds": [
      {
       "id": "j2x4-password",
@@ -1281,7 +1265,7 @@
    "minutes": 1,
    "config": {
     "introKicker": "Exit check — part 2",
-    "intro": "This is the last one, and it is only five lines.\n\nClick a line in The lines to move it across, or drag it. You get one go, and you are shown the working order afterwards.",
+    "intro": "Last one: five lines. Click or drag each line across. You get one go.",
     "item": {
      "id": "j2x4-p",
      "prompt": "Put these five lines in the order that makes the fork work.",
@@ -1301,7 +1285,7 @@
     "trayLabel": "The lines",
     "checkLabel": "Check my program",
     "goalLine": "Your job now: move all {n} lines into **Your program**, in the right order.",
-    "howLine": "**How to build it:** click a line in **The lines** to move it across, or drag it. Drag lines up or down to change the order.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Drag lines up or down to reorder.",
     "lockedNote": "Move every line into Your program, then this button wakes up.",
     "emptyNote": "Nothing here yet. Click or drag a line across.",
     "job": "Put the fork’s five lines in order. You get one go.",

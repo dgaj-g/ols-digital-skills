@@ -30,18 +30,11 @@
     "clearance": "J2 · LESSON 2 OF 17",
     "headline": "Same job. Different language.",
     "lines": [
-     "A translation bureau is an office where people take something written in one language and write it again in another. That is your job for the next hour. You will do it at a desk on this screen, with Scratch on one side and Python on the other.",
-     "The two languages are Scratch and Python. You have met Scratch before: it is the one where you drag coloured blocks together. Python is a programming language you TYPE instead of drag. It is one of the most used languages in the world, and by the end of this hour you will have written and run some.",
-     "Here is the thing worth knowing before you start. A Scratch block and a line of Python can do exactly the same job. The block says it with a shape and a colour; Python says it with words and brackets. So today is not a new idea. It is a second way of writing down an idea you already have.",
-     "Why does anyone type code, if dragging blocks works? Two reasons. Typing is far quicker once you know the words, and almost all of the software you use every day was typed rather than dragged. Scratch was built to teach you the ideas. Python is what people build with.",
-     "Here is the hour, in order.",
-     "First a short film, about four and a half minutes, with no sound.",
-     "Then the matching desk: six Scratch blocks, and you find the Python line that does the same job as each one.",
-     "Then the build. You put Python lines together into a real program and press RUN. Whatever your program prints comes up in the strip under your program called the console, so you can see exactly what it did.",
-     "It finishes with a card about your next lesson, one marked question, and a screen that asks you how the hour went."
+     "Today you work at a translation bureau: Scratch in, Python out.",
+     "Python does the same jobs, but you type it."
     ],
     "cta": "Start the film",
-    "help": "This card types itself out. Read it through — your teacher may be reading it with the class — and click the button at the bottom when you are ready. Nothing on this screen is marked.",
+    "help": "This card types itself out. Your teacher may read it with the class. Click the button at the bottom when you are ready. Nothing on this screen is marked.",
     "job": "Read what today is about, then start the film.",
     "showMe": [
      "Read the words as they appear.",
@@ -56,7 +49,7 @@
    "minutes": 5,
    "config": {
     "src": "assets/video/j2/j2-l2.mp4",
-    "intro": "Watch this on your OWN computer. It has no sound, so every word you need is written on the screen. It is about four and a half minutes long, and it is in four parts — you can click the buttons underneath to jump to any part while you are on this screen.",
+    "intro": "Watch on your own computer. There is no sound. The buttons underneath jump to each part.",
     "fallback": "If the film will not play, carry on — every block it shows appears again on the next screen, with a line underneath saying what it does. Tell whoever is in the room that the film would not play.",
     "chapters": [
      {
@@ -98,24 +91,21 @@
    "config": {
     "kicker": "Badge 1 — the matching desk",
     "title": "Six blocks, six lines of Python",
-    "intro": "This is the first half of your Bureau work, and it is about READING rather than writing.\n\nOn the left are six Scratch blocks. Each one has a line underneath it saying what that block does, so you never have to remember. On the right are six lines of Python, shuffled. Exactly one Python line does the same job as each block.",
+    "intro": "Match each block to the Python line doing the same job.",
     "steps": [
-     "Click a block on the left. It gets a gold ring, so you can see which one you are working on.",
-     "Click the Python line on the right that you think does the same job.",
-     "If they are a pair, they lock together and both leave the desk. If they are not, they both come back and you try again.",
-     "The desk does not tell you which one was wrong, and it never shows you an answer. Read them again and think it through — that is the whole activity."
+     "Click a block, then a Python line."
     ],
     "beginLabel": "Open the desk",
-    "goalLine": "**Your challenge:** clear the desk. Match all six blocks to the six lines of Python that do the same job.",
-    "howLine": "**How it works:** click a block, then click a Python line. A correct pair locks and leaves. A wrong pair comes back, and nothing is revealed.",
+    "goalLine": "**Your challenge:** match all six blocks to their Python lines.",
+    "howLine": "**How it works:** click a block, then a Python line. A wrong pair comes back.",
     "blocksLabel": "Scratch blocks",
     "pythonLabel": "Python lines",
     "pickBlockSay": "Click a block on the left to start.",
     "pickPythonSay": "Now click the Python line you think does the same job.",
     "pickBlockFirstSay": "Click a block on the left first, then a Python line.",
     "rightSay": "That is a pair. Both are locked in.",
-    "wrongSay": "Not a pair. Both go back on the desk — read them again and try a different one.",
-    "doneText": "**The desk is clear.** You have just read six Scratch blocks and found the Python that does the same job as every one of them. Next you write programs of your own out of lines like these, and run them for real.",
+    "wrongSay": "Not a pair. Both go back on the desk. Try another.",
+    "doneText": "**The desk is clear.** You found the Python for all six blocks. Next you build programs from lines like these.",
     "doneSay": "All six matched.",
     "continueLabel": "Go to the build",
     "firstTryXp": 1,
@@ -166,8 +156,8 @@
       "gloss": "This block says the number that is in the score box, and nothing else."
      }
     ],
-    "help": "Click a Scratch block on the left, then click the Python line on the right that you think does the same job. The line under each block tells you what that block does, so you never need to remember Scratch. A wrong pair simply comes back — you can try as often as you like, and nothing is taken off you.",
-    "pythonNote": "Some of these lines have str( ) in them. You do not need to know what that does yet — match on what the block does.",
+    "help": "Click a Scratch block on the left. Then click the Python line that does the same job. The line under each block says what it does. A wrong pair just comes back, and nothing is taken off you. The desk never shows an answer, so read them again.",
+    "pythonNote": "You do not need to know what str( ) does yet.",
     "job": "Match each Scratch block to the Python line that does the same job.",
     "showMe": [
      "Click Open the desk.",
@@ -190,19 +180,16 @@
    "config": {
     "kicker": "Badge 2 — the build",
     "title": "Make a scoreboard, in Python",
-    "intro": "Now you write a program rather than read one, and you run it for real.\n\nA customer has come into the Bureau and asked for a scoreboard. It has three jobs to do. It starts the score at 0. It adds a point, twice. Then it prints the score with the word Score: in front of it.",
+    "intro": "Start the score at 0, add a point twice, then print it.",
     "steps": [
-     "Seven lines are waiting in **The lines**. FOUR of them are the program. The other three have real mistakes in them, the kind everybody makes.",
-     "Drag the lines you want across into Your program, in the order you want them to run — or just click a line, if you prefer.",
-     "When you are ready, press RUN. Your program is really run, and the console underneath shows exactly what it printed.",
-     "If the console does not print exactly what The target shows, your lines stay where they are and you try again. Nothing is taken off you for a wrong run."
+     "Three of the seven lines have mistakes."
     ],
     "beginLabel": "Open the build",
     "targetLead": "The target — make the console print exactly this",
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "runLabel": "RUN my program",
-    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Drag it back to take it out. Python runs the top line first.",
     "trayEmpty": "Every line is in your program.",
     "progEmpty": "Nothing here yet — drag or click a line across.",
     "lockedNote": "Move at least one line into Your program, and the RUN button turns on.",
@@ -334,7 +321,7 @@
       ]
      }
     ],
-    "help": "Drag the lines you want into Your program, in the order you want them to run, then press RUN. Your program is really run and the console shows exactly what it printed — and if Python stops, the console shows you Python's own words plus a plain-English explanation underneath. Three of the seven lines have real mistakes in them. You can run as many times as you like.",
+    "help": "Drag the lines you want into Your program, in order. Then press RUN. The console under your program shows what it printed. If Python stops, the console says why, in plain English. Three of the seven lines have mistakes. You can run it as often as you like.",
     "nextBuildLabel": "Next build",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
@@ -355,7 +342,7 @@
     "extrasMode": true,
     "kicker": "Optional — extra jobs",
     "title": "The Bureau's extra jobs",
-    "intro": "The Bureau's work for today is finished and your badge is already yours. These extra jobs are here if there is time left, or for any day you want to come back. They add no points, nothing needs them, and you can stop whenever your teacher calls time. Leaving a job puts that job back to its start; everything else you have done stays saved.",
+    "intro": "These jobs are extra and carry no points. Leaving a job starts it again.",
     "reviewIntro": "You have finished this lesson — these jobs stay open any time.",
     "finishLabel": "Nearly time up? Click here to finish the rest of the lesson.",
     "backLabel": "Back to the extra jobs",
@@ -364,7 +351,7 @@
     "trayLabel": "The lines",
     "progLabel": "Your program",
     "runLabel": "RUN my program",
-    "howLine": "**How it works:** to ADD a line, drag it into **Your program**, or click the line itself. To MOVE a line, drag it up or down inside **Your program**. To TAKE a line out, drag it back to **The lines**. Python runs your program from the top line down, one line at a time.",
+    "howLine": "**How it works:** click or drag a line into **Your program**. Drag it back to take it out. Python runs the top line first.",
     "trayEmpty": "Every line is in your program.",
     "progEmpty": "Nothing here yet — drag or click a line across.",
     "lockedNote": "Move at least one line into Your program, and the RUN button turns on.",
@@ -495,7 +482,7 @@
       ]
      }
     ],
-    "help": "Every job on this screen is extra. They add no points, and nothing later in the year needs them. Click a job to open it, build it the way you built the others, then press RUN. Two buttons are always on screen. Back to the extra jobs takes you to the list of jobs. The other one says “Nearly time up? Click here to finish the rest of the lesson.” Click that one whenever your teacher calls time, even half way through a job, and it takes you on to the rest of the hour.",
+    "help": "Every job here is extra and carries no points. Click a job, build it, then press RUN. Back to the extra jobs shows the list again. The Nearly time up? button takes you on to the rest of the hour. Click it whenever your teacher calls time, even half way through a job.",
     "trayClickEject": false,
     "takeBackLabel": "Put this line back",
     "job": "Try an extra job if you have time. You do not have to.",
@@ -512,24 +499,22 @@
    "title": "What you did, and what is next",
    "minutes": 4,
    "config": {
-    "intro": "Two things to remember from the Bureau before you go.",
+    "intro": "Today's Python, and what comes next.",
     "steps": [
      {
       "icon": "🔤",
-      "title": "You can already read Python",
-      "text": "An hour ago you had never seen a line of Python. You have now matched six blocks to six lines of it, and built three working programs of your own. Every one of those lines does a job Scratch can do as well: make a box, add to what is in it, print an answer. Python writes those jobs down a different way, and that is the part that was new today.",
+      "title": "Today's Python",
       "lines": [
-       "print( ) puts something on the console, the way say puts something on the Scratch stage.",
-       "A name with an = after it makes a variable, the way set score to makes one in Scratch.",
-       "Speech marks mean the thing inside them is words, not a number.",
-       "str( ) wraps a number so the + can join it onto words — that is how the score got into the printed sentence."
+       "print( ) shows something on the console.",
+       "score = 0 makes a variable.",
+       "Speech marks mean words.",
+       "str( ) lets + join a number onto words."
       ]
      },
      {
       "icon": "🤖",
       "title": "Next lesson: the program talks back",
-      "text": "Next fortnight you build a chatbot. Every program you have run so far does exactly the same thing every time you press RUN. A chatbot asks the person at the keyboard a question, waits for the answer, and uses what they typed. That is one new Python word, and you already have everything else you need for it.",
-      "note": "This lesson will stay open if you ever want to look back at the six pairs before the next lesson."
+      "text": "You build a chatbot. It asks a question and uses the answer."
      }
     ],
     "help": "Two cards to read, then the last two screens. Nothing here is marked. Click Continue at the bottom of each card.",

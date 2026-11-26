@@ -72,9 +72,10 @@ check(j1.kit && j1.kit.explainer === 'Your Agent Kit is kind of like this websit
   'and its explaining sentence is his approved wording from DFM 87, character for character');
 /* the pop CONCATENATES the explainer with the rest of the sentence, so the join
    is what a pupil actually reads — assert the joined string, not the parts */
-const popJoin = j1.kit.explainer + ' It holds the looks and badge designs your console can wear,';
-check(popJoin.indexOf('costumes! It holds the looks') > 0,
-  'and the clearance pop still reads "…costumes! It holds the looks…" — the registry join reproduces the old literal');
+/* 26 Nov 2026 (his 25-words-a-screen standard): the first pop is his sentence, then the short popBody */
+const popJoin = j1.kit.explainer + ' ' + (j1.kit.popBody || '');
+check(popJoin.indexOf('costumes! New looks unlocked.') > 0,
+  'and the first clearance pop reads "…costumes! New looks unlocked…": his sentence, then the short line');
 
 section('EVERY J1 XP BREAKPOINT UNLOCKS EXACTLY WHAT IT USED TO');
 /* the three pupil paths DFM 165 tuned the ladder to, plus each threshold's own

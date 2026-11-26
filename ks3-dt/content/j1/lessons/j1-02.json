@@ -21,31 +21,28 @@
     "clearance": "YEAR 8 · LESSON 2 OF 17",
     "headline": "Today you make a computer react.",
     "lines": [
-     "In this lesson you will learn what an INPUT and an OUTPUT are — and you will prove you know, by building a tiny computer that reacts when you press it.",
-     "Look at the three photos below. A lift button, a pedestrian crossing, a fitness tracker: something happens (the INPUT — a press, a step), and something reacts (the OUTPUT — the doors open, the green man lights, the step count goes up). Every machine you have ever used works on that one idea.",
-     "The computer in your hands today is called a micro:bit — a computer the size of a biscuit, with two buttons and a grid of 25 tiny lights. You will work in a pair with the person sitting beside you, one micro:bit between the two of you, and together you will TELL it how to react: press a button, get a picture; shake it, get a ghost.",
-     "By the end of the hour you will have built a program on a real device, tested it with your own hands, and learned the first rule of every programmer's life: when it doesn't work, the code is trying to tell you something."
+     "Every machine has an INPUT, then an OUTPUT."
     ],
     "images": [
      {
       "src": "assets/img/l2/l2-lift.jpg",
       "alt": "A lift control panel of buttons",
-      "caption": "A lift's buttons — pure input"
+      "caption": "Press → doors open"
      },
      {
       "src": "assets/img/l2/l2-crossing.jpg",
       "alt": "A UK pedestrian crossing button unit",
-      "caption": "Press (input) → green man (output)"
+      "caption": "Press → green man"
      },
      {
       "src": "assets/img/l2/l2-tracker.jpg",
       "alt": "Fitness tracker devices",
-      "caption": "Trackers sensing every step you take"
+      "caption": "Step → count goes up"
      }
     ],
     "video": null,
     "cta": "Start the lesson",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "help": "This card is only for reading. An INPUT is something that happens, like a press or a step. The OUTPUT is how the machine reacts. Today you work in a pair, with one micro:bit between you. A micro:bit is a computer the size of a biscuit. It has two buttons and 25 tiny lights. When the writing finishes, press Start the lesson at the bottom.",
     "job": "Read what today is about, then start the lesson.",
     "showMe": [
      "Read the words as they appear.",
@@ -60,7 +57,7 @@
    "minutes": 7,
    "config": {
     "src": "assets/video/l2/l2-tutorial.mp4",
-    "intro": "Watch this film on your OWN computer — both of you, at the same time — and build the programs along with it on your own screen. Later in the film the program gets sent to the real micro:bit. When you and your partner reach that part, pick ONE of your two computers to do it on, because you have one micro:bit between you.",
+    "intro": "Watch on your own computer and build along. Later, send your program to the micro:bit from ONE computer.",
     "fallback": "If the video won't load, don't worry — your teacher's demonstration covers everything, and every rung card repeats the steps you need.",
     "chapters": [
      {
@@ -80,7 +77,7 @@
       "label": "Test it properly"
      }
     ],
-    "help": "Press play, or use the chapter buttons to jump to the part you need. You can come back and re-watch any chapter at any time — especially chapter 4 if your build isn't behaving.",
+    "help": "Press play, or click a chapter button to jump to a part. You can watch any chapter again. Chapter 4 helps if your build is not working. You share one micro:bit, so send the program from one computer.",
     "job": "Watch the film and build along with it in MakeCode.",
     "showMe": [
      "Click play, or click a chapter button.",
@@ -301,7 +298,7 @@
    "title": "Build the Program",
    "minutes": 2,
    "config": {
-    "intro": "Last one: four real blocks, one working program. Put them in the order that matches the sentence — you spent today learning why order inside an event matters.",
+    "intro": "Last one: four real blocks. Put them in the order the sentence says.",
     "item": {
      "id": "ex2-p",
      "prompt": "When you shake it, a ghost appears on the screen, holds for one second, then the screen clears.",
@@ -334,39 +331,34 @@
     "steps": [
      {
       "icon": "🧹",
-      "title": "Clear your program off the micro:bit",
-      "text": "Your program is still sitting on the micro:bit, and it would still be there for the next class — they would press a button and see YOUR heart appear. Holding the reset button cannot remove it; the only way to clear a micro:bit is to send it a different program. So you are going to send it an empty one.",
+      "title": "Clear the micro:bit",
+      "text": "An empty program clears it.",
       "lines": [
-       "Click the button below. A file called clear-my-microbit.hex lands in your Downloads folder.",
-       "Drag that file onto the MICROBIT drive, exactly the way you have done all lesson.",
-       "The yellow light on the micro:bit flashes while the file copies across. When it stops, the micro:bit is empty.",
-       "Check it: press button A and button B. Nothing happens now — and that is exactly right."
+       "Click the button below.",
+       "Drag it onto the MICROBIT drive.",
+       "Press A and B: nothing happens."
       ],
       "link": {
        "href": "assets/files/l2/clear-my-microbit.hex",
        "label": "Get the empty program"
       },
-      "note": "Nothing you made today is lost. Your program is saved in MakeCode and in your Drive from Bank Your Build — this only clears the micro:bit itself.",
       "confirm": "My micro:bit is empty — A and B do nothing"
      },
      {
       "icon": "🔌",
-      "title": "Switch your micro:bit off",
-      "text": "Your micro:bit has a small black button on the BACK. It is called the reset button, and holding it down switches the micro:bit off so your program stops running. Here is what to do:",
+      "title": "Switch it off",
+      "text": "Find the black button on the BACK.",
       "lines": [
-       "Turn your micro:bit over so you are looking at the back. Find the small black button — the picture below shows you exactly where it is.",
-       "Press and HOLD that button for about 5 seconds.",
-       "Watch the tiny red light on the back. It fades from bright red to nothing — that is how you know your program has stopped. (If the USB lead is still plugged in, the light may then blink slowly. That is normal: it just means the computer is still feeding it power. It stays off once you unplug the lead.)",
-       "Let go, unplug the USB lead, and hand your micro:bit back to your teacher."
+       "Hold it 5 seconds, until the red light fades.",
+       "Unplug it and hand it back."
       ],
       "img": "assets/img/l2/microbit-reset.jpg",
       "imgAlt": "The back of a micro:bit V2. The small black reset button is circled near the top edge, sitting between the silver USB socket and the white battery socket.",
       "imgCap": "The reset button is on the BACK, between the USB socket and the battery socket. Photo: SimonWaldherr, CC BY 4.0, annotated by us.",
-      "note": "Nothing you built today is lost. Your program is saved in MakeCode, and in your Drive from Bank Your Build — it was only the micro:bit itself you cleared in the job above. Holding this button switches the micro:bit off; it never deletes anything of yours.",
       "confirm": "My micro:bit is switched off and handed back"
      }
     ],
-    "help": "Two jobs. First, clear your program off the micro:bit: click the button on the card to get the empty program, then drag it onto the MICROBIT drive just like you have all lesson — when the yellow light stops flashing, press A and B and nothing should happen. Then hold the small black button on the back for about 5 seconds until the little red light fades, unplug the USB lead and hand it back. Nothing you made is lost: your work is in MakeCode and in your Drive.",
+    "help": "Two jobs, so the next class finds an empty micro:bit. First, click Get the empty program. Drag the file onto the MICROBIT drive, as you have all lesson. Wait until the yellow light stops flashing. Then press A and B: nothing should happen. Next, hold the small black button on the back for about 5 seconds. The red light fades out. If the lead is plugged in, it may blink slowly: that is normal. Unplug the USB lead and hand the micro:bit back. Nothing you made is lost. Your work is in MakeCode and in your Drive.",
     "job": "Clear your micro:bit and switch it off for the next class.",
     "showMe": [
      "Click Start, then do what each card says.",

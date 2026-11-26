@@ -367,6 +367,15 @@ const WALK = require('../record-tutorial/lib/walk-moves.js');
 async function stepOnce(page) {
   const st = await page.evaluate(WALK.detectKind);
   const mv = WALK.MOVES[st.kind];
+  /* the drag and the hold live in WALK.ACTIONS (they take the page, not the
+     DOM) — without this branch the Vault was never dragged after 27 Aug and
+     the walk stalled at its Inbox (found 26 Nov, V93; capture-teacher-layer
+     already did this) */
+  if (!mv && WALK.ACTIONS[st.kind]) {
+    await WALK.ACTIONS[st.kind](page);
+    await sleep(WALK.SETTLE[st.kind] || 650);
+    return st.kind;
+  }
   if (!mv) {
     /* nothing shared knows this screen: press the primary button, exactly as
        the old local engine did, so a new surface degrades rather than stops */

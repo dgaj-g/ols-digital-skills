@@ -22,15 +22,13 @@
     "clearance": "YEAR 8 · LESSON 5 OF 17",
     "headline": "You fixed their game. Now ship your own.",
     "lines": [
-     "In this lesson you will learn the block that lets a game make a DECISION: **if/else**. The game asks one question, like: is the apple touching the bowl? Then it runs exactly one of two sets of blocks — one set if the answer is yes, a different set if the answer is no. Computing calls this **SELECTION**, and it is the difference between a slideshow and a game.",
-     "Last lesson your QA team rescued Shark Attack. Today OLS GAMES is hiring new studios — and one of them is yours. Three **CONTRACTS** are on the desk — a contract is a signed deal to build one game. Yours will be a catching game, a maze escape, or a quiz show. Every contract demands the SAME three things — your game must **choose**, **count**, and **end** — but everything else is yours: your name, your look, your rules.",
-     "One more thing. Tonight is **PRESS NIGHT**: the class plays the game you ship, and your studio gets its first signed reviews. Every game gets played by real players — so every studio tests its own game hard before the doors open.",
-     "Today you hold both jobs: designer and QA tester. Time to open your doors."
+     "Today your game makes a DECISION with **if/else**.",
+     "Tonight the class plays it at **PRESS NIGHT**."
     ],
     "images": [],
     "video": null,
     "cta": "Start your studio",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "help": "This card is only for reading. An if/else block asks one question, like: is the apple touching the bowl? It runs one set of blocks for yes and another for no. Computing calls this SELECTION. A CONTRACT is a signed deal to build one game. Choose a catching game, a maze escape or a quiz show. Every game must choose, count and end. Your name, look and rules are yours. Tonight the class plays your game, so test it hard first. When the writing finishes, press Start your studio at the bottom.",
     "job": "Read what today is about, then start your studio.",
     "showMe": [
      "Read the words as they appear.",
@@ -52,10 +50,10 @@
    "config": {
     "phase": "sign",
     "title": "Three contracts on the desk",
-    "intro": "Read all three contracts before you sign — you are choosing the game you will ship tonight. There is no easy option: every contract carries the same BRIEF (the list of things your game must do), the same checks and the same XP. When you sign, you sign with a STUDIO NAME — pick one you will be proud for the whole class to see tonight.",
-    "introSolo": "Catch-up day — the studios have been and gone, but the contracts are still on the desk. Read all three, pick the game you will build, and sign with a STUDIO NAME you would be proud of. Every contract carries the same BRIEF (the list of things your game must do), the same checks and the same XP, whichever you choose.",
+    "intro": "Read all three, then sign one with a STUDIO NAME. Each has the same brief and XP.",
+    "introSolo": "Catch-up day: read all three, then sign one with a STUDIO NAME. Same brief, same XP.",
     "namePlaceholder": "e.g. Golden Otter Games",
-    "signNote": "Signed the wrong one? You can tear a contract up and re-sign — right up until your first QA test is recorded. (Re-signing means a fresh kit: anything you built in Scratch stays with the old contract.)",
+    "signNote": "Signed the wrong one? Tear it up and re-sign before your first QA test. Re-signing gives a fresh kit. Your Scratch work stays with the old contract.",
     "brief": {
      "title": "Every contract carries the same brief",
      "items": [
@@ -125,7 +123,7 @@
       "theme": "The questions are YOURS: football, K-pop, Minecraft, Irish — you're the quizmaster now."
      }
     ],
-    "help": "Read all three contracts, then press Sign on the one you WANT to build — same brief, same checks, same XP whichever you pick. Type a studio name you would be proud to see up in lights. You can tear it up and re-sign right up until your first QA test is recorded.",
+    "help": "Read all three contracts, then press Sign on the one you WANT to build. Every contract has the same brief, checks and XP. Type a studio name you would be proud to see in lights. You can tear it up and re-sign until your first QA test is recorded.",
     "strings": {
      "seeContracts": "See the contracts",
      "backToContracts": "Back to the contracts",
@@ -160,8 +158,8 @@
       "label": "The if/else block"
      }
     ],
-    "help": "Watch this whichever contract you signed — the block is the same in all three, and it is taught here on its own, not on anybody's game. Your blueprint shows where it goes in yours. The worked example and the testing chapters wait on your Studio Desk, beside your blueprint, for the moment you need them.",
-    "note": "This film teaches the if/else block itself — not any one of the three games. Nobody's answer is given away here. You will watch the block being built in Scratch and tested, then your blueprint shows exactly where it goes in the game YOU picked. The worked example and the testing chapters live on your Studio Desk, beside the blueprint.",
+    "help": "Watch this whichever contract you signed. The block is the same in all three games. Nobody's answer is given away here. Your blueprint shows where it goes in your game. The worked example and testing chapters wait on your Studio Desk.",
+    "note": "This film teaches the if/else block on its own. Your blueprint shows where it goes in YOUR game.",
     "job": "Watch the film about making your game react.",
     "showMe": [
      "Click play, or click a chapter button.",
@@ -724,7 +722,7 @@
    },
    "config": {
     "introTitle": "Press Night",
-    "intro": "The doors are open across the studio floor. Half the room EXHIBITS — shows their game at their own desk — while the other half TOURS the room playing them. Then you swap. You are about to give, and get, your first real reviews. Every review follows the Reviewer's Code, and every review is signed. You have TWO PRESS PASSES to spend — each pass is one signed review you write about another studio's game.",
+    "intro": "Half the room shows their game. Half plays them. Then swap. You have TWO PRESS PASSES: two signed reviews.",
     "quota": 2,
     "stems": {
      "like": "I like…",
@@ -732,19 +730,19 @@
     },
     "code": {
      "rules": [
-      "KIND — you're reviewing the game, never the maker. Reviews build studios up.",
-      "SPECIFIC — name the exact moment. 'The wasabi near the end got me twice' beats 'it's good' every time.",
-      "HELPFUL — your 'I wonder' should hand the studio a real idea for version 2."
+      "KIND: review the game, never the maker.",
+      "SPECIFIC: name the exact moment.",
+      "HELPFUL: give a real idea for version 2."
      ],
-     "badExample": "\"it was good i liked it\" — kind, but it tells the studio nothing.",
-     "goodExample": "\"I like how the lives counter makes every drop feel risky — I wonder what a golden apple worth 3 points would add.\""
+     "badExample": "\"it was good i liked it\" tells the studio nothing.",
+     "goodExample": "\"I like how the lives make each drop risky. I wonder: a golden apple?\""
     },
     "rounds": {
      "note": "Two rounds — your teacher calls the swap.",
      "exhibitTip": "Have your game running FULL SCREEN in Scratch, with this marquee page beside it. Welcome your players, show them the controls, and watch your reviews land below. Still in beta? Exhibit anyway — reviews are written about what is there.",
      "tourTip": "Play 2 or 3 games at their desks first. Remember the studio names — back here, you will pick them off the marquee and write your reviews."
     },
-    "deskNote": "Play it at their desk first — and as you play, ask like a reviewer: does it REACT? TRACK? END? Then write your review: kind, specific, helpful.",
+    "deskNote": "Play it at their desk first. Does it REACT? TRACK? END? Then write your review: kind, specific, helpful.",
     "likePlaceholder": "name the exact bit you liked, and why it works",
     "wonderPlaceholder": "a question or idea that could make version 2 even better",
     "v2": {
@@ -760,7 +758,7 @@
      "title": "Press Night has closed",
      "note": "The gallery ran live in class — exhibits, players, reviews landing in real time. The marquee below is what's left of the night. One thing every studio still writes: the V2 note."
     },
-    "help": "Half the room exhibits, half tours — your teacher calls the swap. Exhibiting: game running full screen, welcome your players, watch reviews land. Touring: play 2 or 3 games at their desks, then come back here, pick them off the marquee, and write your reviews — kind, specific, helpful, and signed. Your V2 note unlocks once both your reviews are in.",
+    "help": "Half the room exhibits and half tours. Your teacher calls the swap. Exhibiting: run your game full screen and welcome your players. Touring: play 2 or 3 games at their desks. Then come back, pick them off the marquee and write your reviews. Every review is kind, specific, helpful and signed. Your V2 note unlocks once both your reviews are in.",
     "strings": {
      "yourReviews": "The reviews your game received:",
      "filedOnNight": "reviews were filed on the night",
@@ -879,7 +877,7 @@
    "title": "Rebuild the Score Check",
    "minutes": 2,
    "config": {
-    "intro": "This is the last job of the night. You get five real blocks, and the sentence below describes one clean scoring loop — the exact pattern your game shipped with. Click the blocks into the order the sentence describes.",
+    "intro": "Last job of the night: five real blocks. Put them in the order the sentence says.",
     "item": {
      "id": "ex5-p",
      "prompt": "The score starts at zero. Every time the sprite touches the ball, the score goes up by one; otherwise the game just takes a breath — and keeps checking, forever.",
@@ -891,7 +889,7 @@
       "if <touching Ball?> then — with change score by 1 in the IF part"
      ]
     },
-    "help": "Click blocks from the tray into your program, in the order the sentence describes. Check when you're sure — you'll be shown the working order if it's off.",
+    "help": "Click blocks from the tray into your program, in the order the sentence says. Check when you are sure. If the order is wrong, you are shown the working order.",
     "doneText": "Correct — that program does exactly what the card asked.",
     "introKicker": "Exit check — part 2",
     "job": "Put five blocks in the order the sentence describes.",

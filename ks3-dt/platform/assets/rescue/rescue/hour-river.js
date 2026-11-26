@@ -190,9 +190,9 @@
   /* ---------- Blink explains the gap (his look, 6 Oct 2026): six short pages at her own pace. Nothing goes dark: the river, the panel
      and Blink stay in view. Next opens when each page's picture has finished; Back is always there. ---------- */
   var SAY_1 = 'Look inside cross. The name Billy is written inside it. So cross can only ever carry Billy.';
-  var SAY_2 = 'Bobby needs the same pull and the same tip. Only the name is different. A second function would take too long. The river is rising.';
+  var SAY_2 = 'Bobby needs the same pull and tip. Only the name is different. No time for a second function: the river is rising.';
   var SAY_3 = 'So we take the name out of cross. We leave a gap where Billy was.';
-  var SAY_4 = 'The gap needs a name. I call the gap who. So who is written where Billy was. An animal\'s name will come in through the brackets of the def line. So who goes in those brackets too.';
+  var SAY_4 = 'The gap is called who. who goes where Billy was. It goes in the def line\'s brackets too, because names come in there.';
   var SAY_5 = 'Now watch. cross("Bobby") sends the name Bobby in through the brackets. Every who becomes Bobby. So the winch prints Bobby, pull, tip.';
   var SAY_6 = 'The same function carries Billy too. cross("Billy") sends Billy in. One function can carry any name.';
   var NEXT_6 = 'Now make the gap';

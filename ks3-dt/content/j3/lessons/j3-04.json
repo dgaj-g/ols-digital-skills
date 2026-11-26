@@ -43,7 +43,7 @@
     "stretch": {
      "kicker": "EXTRA CHALLENGE",
      "title": "2 hard questions about functions",
-     "text": "You finished the story. A function is a set of instructions with a name, like the 4 functions you wrote in the story. If you want more, here are 2 hard questions. Each one uses functions in a way the story did not show you.\n\nYou can skip them. Blink's 5 questions come next either way.",
+     "text": "A function is a set of instructions with a name.\n\nSkip these if you like: Blink's 5 questions come next.",
      "goLabel": "Try the 2 hard questions",
      "skipLabel": "Skip them and go to Blink's 5 questions",
      "xp": 5,

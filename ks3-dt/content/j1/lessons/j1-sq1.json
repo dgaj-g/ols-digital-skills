@@ -21,11 +21,8 @@
     "clearance": "SIDE QUEST · SELF-PACED",
     "headline": "Files that follow you.",
     "lines": [
-     "In Mission Control you filed pretend files into a pretend Vault. This side quest is the real thing.",
-     "Watch the film first — it shows what 'the cloud' actually is, and why your work can follow you to any computer.",
-     "Your school login comes with TWO clouds: Google Drive and OneDrive.",
-     "You are about to build your real folders in both — and the website will check your Google Drive ones are really there.",
-     "Twenty minutes, any device, any time — but have it done before Lesson 2."
+     "Your login comes with TWO clouds: Google Drive and OneDrive.",
+     "Watch the film, then build folders in both by Lesson 2."
     ],
     "video": "assets/video/shared/sq-cloud-explainer.mp4",
     "videoFilm": {
@@ -43,7 +40,7 @@
      ]
     },
     "cta": "Accept the side quest",
-    "help": "This screen is only for reading — it tells you what today's lesson is about. When the writing finishes, press the button at the bottom to start.",
+    "help": "This card is only for reading. In Mission Control you filed pretend files into a pretend Vault. This side quest is the real thing. The film shows what the cloud is, and why your work follows you. The website checks your Google Drive folders are really there. It takes about twenty minutes, on any device. When the writing finishes, press Accept the side quest at the bottom.",
     "job": "Read about the side quest, then click Accept the side quest.",
     "showMe": [
      "Read the words as they appear.",
@@ -57,12 +54,12 @@
    "title": "Build your Drive Vault",
    "minutes": 7,
    "config": {
-    "intro": "Google Drive is the cloud that follows your C2k login to ANY device — school, home, even a phone. Time to build your Vault in it, for real.",
+    "intro": "Google Drive follows your C2k login to ANY device. Build your real Vault in it.",
     "steps": [
      {
       "icon": "🗄️",
       "title": "Open your real Drive",
-      "text": "Log into My-School, the way you do every day. In the Launch panel, click View All, then Google Workspace, then Launch App under Google Drive. If Google Drive is already a tile in your Launch panel, click that instead. At home you can go straight to drive.google.com and sign in with your C2k email (yourusername@c2ken.net).",
+      "text": "Log into My-School as usual.",
       "confirm": "My Drive is open",
       "clip": {
        "src": "assets/video/shared/sq-drive-build.mp4",
@@ -111,34 +108,50 @@
          "text": "You can see that the document lives inside the DT Work folder, which lives inside the School folder, which lives inside My Drive. Subfolders are folders that live inside other folders - so DT Work is a subfolder inside School."
         }
        ]
-      }
+      },
+      "lines": [
+       "In Launch, click View All, then Google Workspace.",
+       "Click Launch App under Google Drive."
+      ]
      },
      {
       "icon": "📁",
       "title": "Create your School folder",
-      "text": "Click + New (top-left) → New folder. Name it exactly: School — capital S, nothing else. You might see other folders in your Drive already — some you made yourself, and some were made for you by websites you use in class. Leave those as they are. From now on, every folder you make yourself will go inside School — your own filing home, just like the Vault. If the name comes out wrong, right-click the folder, click Rename, and fix it.",
-      "confirm": "My School folder exists"
+      "text": "Click + New, then New folder.",
+      "confirm": "My School folder exists",
+      "lines": [
+       "Name it exactly: School.",
+       "Leave any other folders as they are."
+      ]
      },
      {
       "icon": "🎮",
       "title": "Create DT Work inside School",
-      "text": "Open your School folder (double-click it), then + New → New folder again. Name this one exactly: DT Work. This is your DT home on the Google side. Your DT work made with Google tools like Docs and Slides lives here, and so do the files your DT lessons ask you to save. Your DT teacher can find it when you share it. School can hold other subjects too: if you ever want a home for another class's work, make that subject's folder inside School the same way. Today, DT Work is the only folder you need.",
-      "confirm": "DT Work is inside School"
+      "text": "Double-click School to open it.",
+      "confirm": "DT Work is inside School",
+      "lines": [
+       "Click + New, then New folder.",
+       "Name it exactly: DT Work."
+      ]
      },
      {
       "icon": "📄",
-      "title": "Put your first real file in it",
-      "text": "Inside DT Work, click + New, then Google Docs, then Blank document. A blank document opens - type your codename (or your name, if Lesson 1 hasn't given you a codename yet), then close the tab. No save button needed: Google Docs saves to the cloud as you type.",
-      "confirm": "My first file is in DT Work"
+      "title": "Put a real file in it",
+      "text": "In DT Work, click + New, then Google Docs.",
+      "confirm": "My first file is in DT Work",
+      "lines": [
+       "Click Blank document.",
+       "Type your codename, then close the tab."
+      ]
      },
      {
       "icon": "🔁",
       "title": "Prove the cloud kept it",
-      "text": "Close the Doc's tab, then open drive.google.com fresh and double-click your file inside DT Work. Your words are still there — nothing was ever \"saved\" by you, and nothing was lost. That is the whole point of the cloud.",
+      "text": "Open drive.google.com again. Double-click your file in DT Work. Your words are still there.",
       "confirm": "I re-opened my file and my words were there"
      }
     ],
-    "help": "Work through the steps in order in a second tab — this tab is your checklist. Names matter: School and DT Work, spelled exactly, capitals and all — the inspection checks the real names.",
+    "help": "Do the steps in a second tab. This tab is your checklist. Names matter: School and DT Work, spelled exactly, capitals and all. The inspection checks the real names. Google Drive already a tile in Launch? Click that instead. At home, go to drive.google.com and sign in with your C2k email. Other folders already in your Drive? Leave them as they are. Every folder you make yourself goes inside School. Name wrong? Right-click the folder, click Rename and fix it. DT Work is your DT home on the Google side. Google Docs saves as you type, so there is no save button.",
     "job": "Build your School and DT Work folders in Google Drive.",
     "showMe": [
      "Click Start. Open drive.google.com in a second tab.",
@@ -164,7 +177,7 @@
     "errorText": "The website could not be reached just then. Nothing is lost — try again in a moment.",
     "skipText": "If the inspection still will not run, you can carry on with the side quest without it. Tell your teacher in class — they can check your folders with you.",
     "skipLabel": "Carry on without the inspection",
-    "intro": "Now prove it. The website will look inside your actual Google Drive — with your permission, that is what the tick-boxes on your first day allowed — and check the folders are really there. Nothing else is looked at: just the two folder names.",
+    "intro": "Now prove it. The website looks in your Drive for just the two folder names.",
     "checks": [
      {
       "id": "school",
@@ -177,7 +190,7 @@
     ],
     "passText": "Inspection PASSED. Your Vault is real, and it will follow you to every device you ever sign in on. That has earned you the Vault Builder badge — 20 XP. Press the button below to claim it, and the points are banked.",
     "failText": "Not there yet — that's fixable in under a minute. Check the exact names, and if you are not sure how to build the folders, Show me how below plays the film again. Then try the inspection again.",
-    "help": "Press the button and the website checks your real Drive for the two folders. If it fails, the message names what's missing — fix it in the Drive tab and run it again. You can retry as often as you like.",
+    "help": "Press the button and the website checks your real Drive for the two folders. It uses the permission you gave on your first day. Nothing else is looked at. If it fails, the message names what is missing. Fix it in the Drive tab and run it again. You can try as often as you like.",
     "clip": {
      "src": "assets/video/shared/sq-drive-build.mp4",
      "label": "Show me how",
@@ -199,12 +212,12 @@
    "title": "The other cloud: OneDrive",
    "minutes": 6,
    "config": {
-    "intro": "Here's the twist: your C2k login comes with TWO clouds. OneDrive is Microsoft's — it's where Word, Excel and PowerPoint work lives, in DT and in lots of your other subjects. Same idea as Drive, different building.",
+    "intro": "Your C2k login has a second cloud: OneDrive. Word, Excel and PowerPoint work lives here.",
     "steps": [
      {
       "icon": "☁️",
       "title": "Open your OneDrive",
-      "text": "Log into My-School, the way you do every day. In the Launch panel, click Microsoft 365 Web Apps. When it opens, click the squares menu in the very top-left corner and choose OneDrive - if you cannot see it there, type OneDrive into the search box at the top of that menu. Then click My files, down the left-hand side.",
+      "text": "Log into My-School.",
       "confirm": "My OneDrive is open",
       "clip": {
        "src": "assets/video/shared/sq-onedrive.mp4",
@@ -278,28 +291,44 @@
          "text": "You can see that, because we created the document inside the folder we wanted it to live in, that's where we will find it."
         }
        ]
-      }
+      },
+      "lines": [
+       "In Launch, click Microsoft 365 Web Apps.",
+       "Top-left squares menu: click OneDrive.",
+       "Click My files."
+      ]
      },
      {
       "icon": "📁",
       "title": "Build a School folder here too",
-      "text": "Click + Create or upload, then Folder. Name it exactly: School - you can pick a folder colour too, if you like. You might see folders here already — OneDrive and Teams make some of their own. Leave those as they are. Now both of your clouds have the same tidy top level - future-you will be very grateful. If the name comes out wrong, right-click the folder, click Rename, and fix it.",
-      "confirm": "OneDrive has a School folder"
+      "text": "Click + Create or upload, then Folder.",
+      "confirm": "OneDrive has a School folder",
+      "lines": [
+       "Name it exactly: School.",
+       "Leave any other folders as they are."
+      ]
      },
      {
       "icon": "📁",
       "title": "And DT Work inside it",
-      "text": "Open your School folder, then click + Create or upload and Folder again, and name it exactly: DT Work. Now BOTH of your clouds have the same two folders. This one is your DT home on the Microsoft side - later in the course, the DT work you make in Word, Excel or PowerPoint will live here. And just like on the Google side, you can add a folder for any other subject inside School whenever you want one.",
-      "confirm": "DT Work is inside School — in OneDrive too"
+      "text": "Open School. Click + Create or upload, then Folder.",
+      "confirm": "DT Work is inside School — in OneDrive too",
+      "lines": [
+       "Name it exactly: DT Work."
+      ]
      },
      {
       "icon": "🧭",
-      "title": "Which cloud is a file saved in?",
-      "text": "Here is how you always know: think about the app you made the file in. Word, Excel and PowerPoint save your work into OneDrive. Google Docs saves your work into Google Drive. They are two separate places — a file saved in one is not in the other. In DT you will use both, and every lesson tells you which one to use, so you never have to guess.",
-      "confirm": "I know how to tell which cloud a file lives in"
+      "title": "Which cloud is it in?",
+      "text": "The app decides. Each file lives in one cloud.",
+      "confirm": "I know how to tell which cloud a file lives in",
+      "lines": [
+       "Word, Excel, PowerPoint: OneDrive.",
+       "Google Docs: Google Drive."
+      ]
      }
     ],
-    "help": "Follow the route exactly: My-School → Launch → Microsoft 365 Web Apps → the squares menu → OneDrive. If a sign-in appears at home, it is the normal school one.",
+    "help": "Follow the route exactly: My-School, Launch, Microsoft 365 Web Apps, the squares menu, OneDrive. Cannot see OneDrive in the squares menu? Type OneDrive into its search box. If a sign-in appears at home, it is the normal school one. OneDrive and Teams make some folders of their own. Leave those as they are. Name wrong? Right-click the folder, click Rename and fix it. DT Work here is your DT home on the Microsoft side. Word, Excel and PowerPoint save into OneDrive. Google Docs saves into Google Drive. Every lesson tells you which one to use.",
     "job": "Build the same two folders in your OneDrive.",
     "showMe": [
      "Click Start, then follow each card.",

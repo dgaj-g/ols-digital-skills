@@ -233,9 +233,9 @@
 
   /* ---------- a reminder of lists and loops from Lesson 3 (his look, 6 Oct 2026): three short pages, once per pupil ---------- */
   var L3 = '<span class="dcode">playlist = ["Opening Night", "Curtain Up", "Last Bus Home"]\nfor song in playlist:\n<span class="hot">    print(song)</span></span>';
-  var REM_1 = 'gang is a list. It holds three names in a row: Billy, Bobby and {name}. A list is like a rack of numbered boxes, one name in each.';
-  var REM_2 = 'In Lesson 3 you wrote a loop like this. The line underneath runs once for each song. The four spaces push it inside the loop.';
-  var REM_3 = 'Now write a loop through gang the same way. Each name goes into the gap of rescue, one at a time. Try hard yourself first. If you stay stuck, help appears under the box bit by bit.';
+  var REM_1 = 'gang is a list of three names: Billy, Bobby and {name}. A list is a rack of numbered boxes, one name in each.';
+  var REM_2 = 'In Lesson 3 you wrote this loop. Four spaces push the line inside it, so it runs once for each song.';
+  var REM_3 = 'Now write one like it, looping through gang. It calls rescue once for each name. Try hard yourself first. Help then appears under the box.';
   var REM_NEXT = 'Write my loop';
   H.def('d_remind', { ch: 4, save: true, enter: function () {
     var dd = data();
