@@ -596,6 +596,14 @@ ol { text-align: left; }
   background: var(--field); border: 1.5px solid var(--line-l);
   border-radius: var(--r-md); color: var(--ols-blue);
 }
+/* 26 Nov walk (J3 L4 Do-Now): code inside a question sentence, set in the code face
+   rather than shown with raw backticks round it. */
+.q-icode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em; font-weight: 600; padding: 1px 6px; border-radius: 6px;
+  background: var(--field); border: 1px solid var(--line-l); color: var(--ols-blue);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
 .q-options { display: grid; gap: 10px; }
 .q-opt {
   display: flex; align-items: center; gap: 13px; text-align: left;
@@ -3540,6 +3548,9 @@ button.agent-chip:hover { border-color: var(--gold-hi); box-shadow: 0 0 0 4px rg
 .pyp-empty {
   list-style: none; color: var(--muted); font-size: 0.86rem; font-style: italic; margin: 2px 0; padding: 6px 0;
 }
+/* 26 Nov walk (J3 L2): the grid above caught the empty line too, so "Nothing here yet…"
+   sat in the 28px number column, one word to a line. It is one plain line again. */
+.pyp-list li.pyp-empty { display: block; }
 .pyrun-line {
   display: block; width: 100%; text-align: left; font: inherit; cursor: grab; touch-action: none;
   -webkit-user-select: none; user-select: none;

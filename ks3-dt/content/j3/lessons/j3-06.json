@@ -94,6 +94,8 @@
       "tagType": "Type here",
       "tagLike": "Like this",
       "errBetween": "BETWEEN needs the small number first.",
+      "errBetweenAnd": "Put AND between the two numbers, like temp_c BETWEEN 20 AND 22.",
+      "errNotPlace": "Put NOT first, or straight after AND or OR. Like this: NOT area = \"Old Town\".",
       "errSide": "Each side of OR needs its own column name. Write the column again after OR."
      },
      "stamp": {
@@ -1528,7 +1530,7 @@
      },
      {
       "id": "j3x6-3",
-      "stem": "day_no BETWEEN 40 AND 46 keeps how many days?",
+      "stem": "`day_no BETWEEN 40 AND 46` keeps how many days?",
       "options": [
        "7",
        "6",
