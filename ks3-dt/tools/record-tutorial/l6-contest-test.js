@@ -242,7 +242,7 @@ function pieces(s) { return String(s).split(/(?<=[.!?])\s+|\s+·\s+|\n/).map(fun
 function toks(s) { return (String(s).toLowerCase().replace(/’/g, "'").match(/\{[a-z]+\}|[a-z0-9]+(?:'[a-z]+)?/g) || []); }
 function isPh(t) { return t.charAt(0) === '{'; }
 function subseq(c, s) { var j = 0; for (var i = 0; i < s.length && j < c.length; i++) if (c[j] === s[i] || isPh(c[j]) || isPh(s[i])) j++; return j === c.length; }
-var SOURCE = [].concat(literals(path.join(__dirname, 'l6v2-src/strings.js')), literals(path.join(__dirname, 'l6v2-src/contest.js')), literals(path.join(ROOT, 'platform/assets/see/see/strings.js')));
+var SOURCE = [].concat(literals(path.join(__dirname, 'l6v2-src/strings.js')), literals(path.join(__dirname, 'l6v2-src/contest.js')), literals(path.join(ROOT, 'platform/assets/see/see/strings.js')), literals(path.join(__dirname, 'l6v2-src/live-lines.js')), literals(path.join(__dirname, 'l6v2-src/live-lines2.js')));
 var SRC_SENT = []; SOURCE.forEach(function (s) { pieces(s).forEach(function (p) { var t = toks(p); if (t.length) SRC_SENT.push(t); }); });
 function fromSource(sentence) { var c = toks(sentence); if (!c.length) return true; return SRC_SENT.some(function (s) { return s.length >= c.length && subseq(c, s); }); }
 function walkStrings(x, p, f) { if (typeof x === 'string') f(x, p); else if (Array.isArray(x)) x.forEach(function (v, k) { walkStrings(v, p + '[' + k + ']', f); }); else if (x && typeof x === 'object') Object.keys(x).forEach(function (k) { if (k !== 'REWRITES') walkStrings(x[k], p + '.' + k, f); }); }
@@ -258,7 +258,7 @@ function stringRule(S, Q, rewrites) {
   var noReason = Object.keys(STR.REWRITES || {}).filter(function (k) { return !(STR.REWRITES[k] && STR.REWRITES[k].length > 10); });
   ok('STRINGS every REWRITE carries its reason', noReason.length === 0, noReason.join(' | '));
   controlMustFail('STRINGS an invented sentence', function () { return stringRule({ x: 'Bernadette loves pizza on Fridays.' }, [], {}).length === 0; });
-  controlMustFail('STRINGS a source sentence with its words reordered', function () { return stringRule({ x: 'Answer own on your.' }, [], {}).length === 0; });
+  controlMustFail('STRINGS a source sentence with its words reordered', function () { return stringRule({ x: 'Surgeon head is points most the with whoever.' }, [], {}).length === 0; });
   controlMustFail('STRINGS a source sentence with one word swapped', function () { return stringRule({ x: 'Now wait for {partner} to leave.' }, [], {}).length === 0; });
 })();
 

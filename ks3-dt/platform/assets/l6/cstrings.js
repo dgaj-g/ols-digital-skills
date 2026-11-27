@@ -16,7 +16,11 @@
       film: "Round 3 of 4 · Inside Bernadette's head · The film · Against {partner}",
       result: 'The result · Against {partner}',
       you: 'You are {me}',
-      team: 'You are a team'
+      team: 'You are a team',
+      job: 'Extra jobs · {job} · On your own',
+      hub: 'Extra jobs · On your own',
+      solo: 'On your own · You are {me}',
+      pair: 'With your partner · You are {me}'
     },
     /* the job line ("Your job now: …"), ≤14 words each */
     job: {
@@ -31,7 +35,9 @@
       filmSeen: 'Press On to the questions. Or watch it again first.',
       result: 'Read the result, then press Continue.',
       notice: 'Read the card, then press {btn}.',
-      away: 'Sit together at one of your two PCs.'
+      away: 'Sit together at one of your two PCs.',
+      hub: 'Click a job to start it.',
+      job: 'To leave this job, click Back to the extra jobs at the top.'
     },
     begin: {
       kicker: 'You worked with your partner. Now you play against them.',
@@ -107,8 +113,52 @@
       fallbackSit: 'Sit together at one of your two PCs.', /* 'You play as a team.' moved to help.away: a first name with an accent (Bríd) counts as two words */
       fallbackButton: 'We are together. Carry on',
       linkAlone: 'Carry on against Bernadette',
-      team: 'You are a team'
+      team: 'You are a team',
+      /* the operation (operation.html) */
+      fallbackPC: "This PC cannot link to your partner's PC.",
+      fallbackGo: 'Go and sit with {name}.',
+      doorInside: 'Inside {him} are seven parts. One thing inside {him} is not a part.', /* 'Each part does one job.' moved to help.door */
+      fluffMe: 'That was fluff, not a part. Dust stops the fan from cooling the PC.',
+      fluffThem: '{partner} cleaned out the fluff.',
+      fluffTile: 'Cleaned',
+      opDone: 'Continue to the contest',
+      ownCores: "This PC's processor can do {n} things at once.",
+      ownMem: 'This PC has about {n} gigabytes (GB) of memory.', /* 'GB is how memory is measured. More GB means more room.' moved to help.own */
+      ownScreen: "This PC's screen is {w} by {h} dots.",
+      ownUnknown: 'This PC does not say how much memory it has.'
     },
+    /* THE EXTRA JOBS (the platform's hub card, then each job's own screen) */
+    hub: {
+      kicker: 'On your own · Extra jobs',
+      title: 'Six extra jobs. Do any, in any order.',
+      intro: 'The lesson stops when your teacher says STOP.', /* 'Leave a job at any moment with the Back button at the top.' moved to help.hub */
+      jobs: [
+        { id: 'desmond', title: 'Operate on Desmond', whiff: 'Desmond is a second patient. You take out all seven parts by yourself.' },
+        { id: 'nigel', title: 'Operate on Nigel', whiff: 'Nigel is a third patient. He talks more than the other patients.' },
+        { id: 'find', title: 'Find the parts in a real PC', whiff: 'You see a photo of an open PC. A line names one part. Click that part in the photo.' },
+        { id: 'customers', title: 'The right part for three customers', whiff: 'Three customers in a computer shop say what their PC needs. Click the part to add to each PC.' },
+        { id: 'own', title: 'Your own PC', whiff: 'You see three facts about the PC you are sitting at.' },
+        { id: 'letter', title: 'The discharge letter', whiff: "This is Bernadette's letter home. It lists what you did today." }
+      ],
+      finish: 'Finish the lesson',
+      finished: 'Next is the exit check. It is four questions. You answer them on your own.',
+      back: 'Back to the extra jobs',
+      done: 'Job done'
+    },
+    find: { ask: 'Click the {part}.', right: 'Yes. That is the {part}.', wrong: 'That is not the part the line names. Try again.', done: 'You found all seven.' },
+    cust: {
+      says: '{customer} says:',
+      question: 'Which part should the computer shop add?',
+      people: [
+        { who: 'Aoife', need: 'I edit videos and the picture on my screen keeps jumping.', right: 'gpu', why: 'The graphics card draws the picture. A better one keeps video smooth.' },
+        { who: 'Mr Doyle', need: 'I keep thousands of photos and I have no room left.', right: 'drive', why: 'Photos live on the storage drive. A bigger one holds more.' },
+        { who: 'Sam', need: 'When I have lots of things open, my computer slows right down.', right: 'mem', why: 'Memory holds everything that is open right now.', more: 'With more memory, the computer has more room.' }
+      ],
+      right: 'Yes. {why}', wrong: 'That is not the right part. Read what the customer says again.', done: 'You have helped all three customers.', next: 'Next customer'
+    },
+    /* the operation's own lines, cut from the live V1 lines2.js (frozen copy in tools/record-tutorial/l6v2-src) */
+    op: { together: '{p} is at the same table.', together3: '{p} and {q} are at the same table.', alone: 'You work on {me} on your own.', found: '{p} found {n} of the 7 jobs.' },
+    parts: { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' },
     /* THE HELP LIST per screen ("Do this"): the screen's job line first, then the lines the trims moved off the card,
        then the mode's own help. Every line is a sentence of the source, cut down only. */
     help: {
@@ -125,7 +175,15 @@
       solo: ['Answer on your own.', 'When you click, Bernadette answers too. Then you see both answers.'],
       team: ['Agree each answer together, then click it.', 'Bernadette answers too. Then you see both answers.'],
       more: ['You get one point for each right answer.', 'Whoever has the most points at the end is head surgeon.'],
-      away: ['Your partner is {name}.', 'You play as a team.', 'Press We are together. Carry on.']
+      away: ['Your partner is {name}.', 'You play as a team.', 'Press We are together. Carry on.'],
+      /* the operation and the extra jobs */
+      door: ['Each part does one job.', 'Click a part to take it out.', 'See what goes wrong.', 'Fill in {his} chart.'],
+      doorPair: 'You work on {me} together.',
+      opAway: ['Your partner is {name}.', 'Press We are together. Carry on.'],
+      hub: ['Click a job to start it.', 'Leave a job at any moment with the Back button at the top.'],
+      find: ['A line names one part.', 'Click that part in the photo.'],
+      cust: ['Read what the customer says.', 'Click the part to add to each PC.'],
+      own: ['GB is how memory is measured.', 'More GB means more room.']
     },
     /* the platform's own help layer (see/hour.html), copied */
     layer: {
@@ -142,7 +200,8 @@
     'Windows is the boss program. It starts every program and shares out the parts.': 'Q8 why (contest.js): the source\'s four sentences (25 words) cannot sit beside the answer chips; the question is hidden on the reveal, so "It" needs its noun',
     'Press We are together. Carry on.': 'the help names the fallback button by its words (feedback: buttons named by their words)',
     'You are a team · Against Bernadette': 'team kicker: fixes.team + the mode line (modes announce themselves)',
-    'Question {k} of {total} · The answer': 'reveal kicker: the top bar\'s question count + "The answer" from rev.answer'
+    'Question {k} of {total} · The answer': 'reveal kicker: the top bar\'s question count + "The answer" from rev.answer',
+    'Go and sit with {name}.': 'the operation\'s blocked link runs both surgeons on seat A\'s PC (as V1), so seat B is sent to A by her real name: the live V1 line "Go and sit with {p}." with its second sentence dropped'
   };
   root.L6C_STRINGS = S;
   if (typeof module !== 'undefined' && module.exports) module.exports = S;

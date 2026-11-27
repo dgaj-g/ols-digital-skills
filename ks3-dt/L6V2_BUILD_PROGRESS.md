@@ -52,3 +52,4 @@ Target: Apps Script Version 96, contentVersion 2026-11-27a.
 - D9 Hub: title + intro (15 words); kicker/buttons chrome; job 'Click a job to start it.'; ring the job buttons.
 - Live V1 lines.js/lines2.js frozen into l6v2-src/ as extra STRINGS sources (op-page cuts of live strings pass).
 - 09:42 D1-D9 recorded; editing op page now.
+- 09:49 cstrings V2 op/hub/find/cust/own strings + frozen live lines sources; STRINGS gate green with controls. Next: operation.html + ui2.js.
