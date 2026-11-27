@@ -258,7 +258,7 @@ async function contest(page, fr, opts) {
       else if (v.ph === 'q' && answered !== v.q) {
         if (CQ.Q[v.q].kind === 'order') {
           for (let g = 0; g < 12; g++) {
-            const cur = await fr.$eval('#card .order .block', bs => bs.map(b => +b.dataset.k));
+            const cur = await fr.$$eval('#card .order .block', bs => bs.map(b => +b.dataset.k));
             const pos = [0, 1, 2, 3].findIndex((k, j) => cur[j] !== k); if (pos === -1) break;
             await fr.click('#card .order .block[data-k="' + pos + '"] [data-act="up"]'); await sleep(80);
           }

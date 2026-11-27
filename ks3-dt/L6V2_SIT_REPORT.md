@@ -4,7 +4,7 @@ One page. What a pupil sees and where she would stall. Walked by l6-walk.js (the
 right and wrong paths: 46/46 at 683 × 768 and 46/46 at 1366 × 768; 103 presses, 45 XP, 2 badges), l6-contest-look.js
 (two seats on the live channel, seat A at 1366 × 681 and seat B at 750 × 900, every screen fitted at four sizes),
 l6-channel-test.js (17/17) and qa-l6-paired.js (two and three real platform windows on the live Firebase channel: pair,
-partner gone, partner gone mid-operation, link blocked, reload, trio). 0 page errors on every run.
+partner gone, partner gone mid-operation, link blocked, reload, trio: 89 checks, 0 failed). 0 page errors on every run.
 
 | Moment | What she sees | Would she stall? |
 |---|---|---|

@@ -852,7 +852,9 @@
       /* 26 Nov (V91, found on the live walk): on a question the answers were scrolled up under the
          bar, which hid the question's own code and words. Her answers mean nothing without the
          question, so it comes in first: its top just under the bar, the answers after it. The job
-         line only sticks once the page scrolls, so the move is measured again after the first one. */
+         line only sticks once the page scrolls, so the move is measured again after the first one.
+         27 Nov (V96): measured until it settles (up to four moves), because when the job line sits low on
+         the page two moves can both be spent before it sticks, leaving the question below the room. */
       var card = first.closest ? first.closest('.q-card') : null;
       var ctx = card ? [].slice.call(card.querySelectorAll('.q-seen, .q-pre, .q-stem')).filter(function (e) {
         return e.offsetHeight && e.textContent.trim();
@@ -860,7 +862,7 @@
       if (ctx) {
         var lastEl = (els && els.length) ? els[els.length - 1] : first;
         if (ctx.getBoundingClientRect().top >= wbNow() + 4 && lastEl.getBoundingClientRect().bottom <= vh - 8) return;
-        for (var k = 0; k < 2; k++) {
+        for (var k = 0; k < 4; k++) {
           var d = ctx.getBoundingClientRect().top - wbNow() - 12;
           if (Math.abs(d) < 2) break;
           global.scrollBy(0, Math.round(d));
