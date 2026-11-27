@@ -380,7 +380,8 @@ const LANDMARKS = {
     ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'exitp'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'close']
   ],
-  /* J1 Lesson 6, THE OPERATION: walked by l6-walk.js, which reaches inside the frame for the frame's surfaces */
+  /* J1 Lesson 6, THE OPERATION V2 (27 Nov 2026): walked by l6-walk.js, which reaches inside the frame for the frame's
+     surfaces. c3 is the contest page (solo against Bernadette on a walk: the pair is l6-contest-look's job). */
   '6': [
     ['the Do-Now', '.q-opt', '_recap'],
     ['the door: the patient and the Begin button', '#doorsay, #beginbtn', 'c1'],
@@ -389,18 +390,23 @@ const LANDMARKS = {
     ['a wrong job card, crossed out', '#cardlist .card.wrong', 'c2'],
     ['the chart filling in', '#lines li, #chart', 'c2'],
     ['the operation done, with its Continue', '#done.on #nextbtn', 'c2'],
-    ['the ward of broken computers', '#beds .bed', 'c3'],
-    ['the parts tray beside an open bed', '#tray .tpart', 'c3'],
-    ['the ward round done', '#wdone.on', 'c3'],
-    ['who is in charge, with its four answers', '.xopts .xopt', 'c4'],
-    ['the film', '.video-card, .vid-chapter', 'c5'],
-    ['the ordering puzzle', '.parsons-card, .parsons-tray', 'c6'],
-    ['the real names to match', '.xmatch .xjob', 'c7'],
-    ['the extra jobs hub, untouched', '.pyrun-hub .pyrun-job', 'extras'],
-    ['the way out, INSIDE a job (265c)', '.xfinish', 'extras'],
+    ['the contest begin card', 'body[data-phase="begin"] #card [data-act="start"]', 'c3'],
+    ['the contest help strip, opened', '#help:not([hidden]) #helpText li', 'c3'],
+    ['a round card', 'body[data-phase="intro"] #card [data-act="introgo"]', 'c3'],
+    ['a broken computer and the parts to choose from', 'body[data-phase="q"] #card [data-act="pick"] img', 'c3'],
+    ['a question with four lettered answers', 'body[data-phase="q"] #card [data-act="pick"] .letter', 'c3'],
+    ['the reveal, with the reason', 'body[data-rev="1"] #card .why', 'c3'],
+    ['the scoreboard beside the card', '#side .state', 'c3'],
+    ['the film of the processor at work', 'body[data-phase="film"] #film', 'c3'],
+    ['the four steps to put in order', 'body[data-phase="q"] #card .order .block [data-act="up"]', 'c3'],
+    ['the result, with its Continue', 'body[data-phase="result"] #card [data-act="cont"]', 'c3'],
+    ['the extra jobs hub, untouched', '.op-hub .pyrun-job', 'extras'],
+    ['the way out, INSIDE a job: Back and Finish at the top (265c)', '#xtop #xback', 'extras'],
+    ['three facts about her own PC', '#xfact', 'extras'],
     ['the discharge letter', '#llines li', 'extras'],
+    ['a second patient on the table', '#slots .slot', 'extras'],
+    ['the list of jobs with one ticked done', '.op-hub .pyrun-job-tick', 'extras'],
     ['the exit check', '.q-opt, .exit-q', 'c8'],
-    ['the closing ordering puzzle', '.parsons-card, .parsons-tray', 'c8b'],
     ['the closing screen', '.se-row, .se-card, .se-submit', 'c9']
   ],
   'j2-5': [

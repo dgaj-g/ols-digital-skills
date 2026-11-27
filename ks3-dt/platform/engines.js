@@ -11942,11 +11942,15 @@
 
 
   /* THE OPERATION (J1 L6, spec §3.1–3.3, §3.9, §7). One engine, four stages by chunk.config.stage:
-     door | op | ward | letter. The page (assets/l6/operation.html) runs in a frame, as the Rescue does;
+     door | op | ward | letter | contest. The page (assets/l6/operation.html; the contest: assets/l6/contest.html, V2)
+     runs in a frame, as the Rescue does;
      this side owns the pairing (PairKit, per lesson, quiet), the saves and the partner reveal.
      The frame is told its seat, the seats at the table and the live room by its hash; the live room
      carries the moves (Firebase, no sign-in, nothing that names a pupil — DFM 325).
-     frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone}; here → frame: {op:1, type:'names'}. */
+     frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone|alone}; here → frame: {op:1, type:'names'}.
+     THE CONTEST (V2, stage 'contest'): the whole contest rides on draft.opC (the page's own save, handed back in the hash
+     as H.contest), so a reload carries on where she was; 'done' ends the chunk; 'alone' is the page carrying on against
+     Bernadette when the link dies (it saves its own opC). */
   /* The lesson's own pairing words sit on its first chunk. Every stage passes them, so a later stage's brief wait never
      flashes the Vault's words (J1 L6, J3 L5). */
   function lessonPairWords(cfg, ctx) {
@@ -11971,6 +11975,8 @@
          No points, the way out on every screen (the hub AND each job), leaving a job costs nothing. */
       function hub() {
         stage = 'extras'; job = null; host.innerHTML = '';
+        /* V2 (DFM 390+): the hub is a platform card, so the platform's own help layer (App.showMe: job line, green
+           Stuck? Show me, ring) mounts on it; each job is a frame with the page's own help layer, so it unmounts there */
         var done = draft.opExtras = draft.opExtras || {};
         var lead = (ctx.review && cfg.reviewIntro) ? cfg.reviewIntro + '\n\n' + (cfg.intro || '') : (cfg.intro || '');
         var jobs = (cfg.builds || []).map(function (b) {
@@ -11983,9 +11989,15 @@
           '<div class="rung-actions pyrun-exit-row"><button class="btn btn-primary pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
         host.appendChild(c);
         c.querySelectorAll('.pyrun-job').forEach(function (b) {
-          App.armButton(b, function () { job = b.getAttribute('data-job'); stage = job; pairStage(ctx, host, draft, 'opOwn', open, pw); });
+          App.armButton(b, function () {
+            job = b.getAttribute('data-job'); stage = job;
+            if (App.showMe && App.showMe.hide) { try { App.showMe.hide(); } catch (e) { } }
+            /* V2: every extra job is On your own (spec §5.8), so no pairing step between the list and the job */
+            if (cfg.extrasMode) open('own'); else pairStage(ctx, host, draft, 'opOwn', open, pw);
+          });
         });
         App.armButton(c.querySelector('.pyrun-finish'), finishExtras);
+        if (cfg.job && App.showMe && App.showMe.mount) { try { App.showMe.mount(chunk); } catch (e) { } }
       }
       function finishExtras() { if (ctx.review) { ctx.next(); return; } finishChunk(ctx, (chunk.id || 'extras') + '=extras', 0); }
       function seedOf(room) { var h = 7; String(room || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return h || 1; }
@@ -11997,10 +12009,14 @@
           room: paired ? st.room : null, seed: seedOf(paired ? st.room : ''),
           names: paired && st.names ? st.names : null,
           round: Number(draft.opRound || 0), fallback: paired && st.room && draft.opFallback === st.room ? 1 : 0 };
-        if (stage === 'letter') H.letter = draft.op || null;
+        if (stage === 'letter') { H.letter = draft.op || null; if (!H.names && PairKit.st && PairKit.st.names && draft.op && (draft.op.seats || []).length > 1) H.names = PairKit.st.names; }
+        if (stage === 'contest') H.contest = draft.opC || null;
         if (stage === 'door' && paired && pw && pw.waitOwnLabel) H.alone = { say: pw.waitLongSay || '', label: pw.waitOwnLabel };
         if (stage === 'ward' && !ctx.review && draft.ward) H.wardDone = 1;
-        if (job) H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '' };
+        if (job) {
+          var jb = (cfg.builds || []).filter(function (b) { return b.id === job; })[0];
+          H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '', title: jb ? jb.title || '' : '' };
+        }
         host.innerHTML = '';
         var wrap = el('<div class="rescue-wrap"><p class="rescue-loading">' + esc(cfg.loading || '') + '</p>' +
           '<iframe class="rescue-frame" title="' + esc(chunk.title || 'The operation') + '"></iframe></div>');
@@ -12026,11 +12042,21 @@
           if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
           var m = e.data;
           if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
-          if (m.type === 'ready') { if (stage === 'letter') sendNames(); }
-          else if (job && (m.type === 'next' || m.type === 'xfinish')) {
+          if (m.type === 'ready') { if ((stage === 'letter' && !job) || stage === 'contest') sendNames(); }
+          else if (stage === 'contest' && m.type === 'save' && m.opC) { draft.opC = m.opC; save(); }
+          else if (stage === 'contest' && m.type === 'done') {
             gone = true; window.removeEventListener('message', onMsg);
-            if (m.type === 'next') { draft.opExtras = draft.opExtras || {}; draft.opExtras[job] = 1; save(); hub(); } else finishExtras();
+            if (ctx.review) { ctx.next(); return; }
+            finishChunk(ctx, 'contest');
           }
+          else if (stage === 'contest' && m.type === 'alone') { save(); }
+          else if (job && (m.type === 'next' || m.type === 'xfinish' || m.type === 'xback')) {
+            gone = true; window.removeEventListener('message', onMsg);
+            /* 'next' = the job's own end button (the job is ticked); 'xback' = the top bar's Back (leaving costs nothing) */
+            if (m.type === 'next') { draft.opExtras = draft.opExtras || {}; draft.opExtras[job] = 1; save(); hub(); }
+            else if (m.type === 'xback') hub(); else finishExtras();
+          }
+          else if (job) { /* a second patient run in a job never writes the lesson's own operation, round or fallback */ }
           else if (m.type === 'begin' || m.type === 'next') {
             gone = true; window.removeEventListener('message', onMsg);
             if (ctx.review) { ctx.next(); return; }
@@ -12042,7 +12068,7 @@
             if (paired && st.room) { draft.opAlone = st.room; save(); }
             finishChunk(ctx, stage);
           }
-          else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } }
+          else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } if (stage === 'contest') sendNames(); }
           else if (m.type === 'save') { draft.opRound = Number(m.round || 0); save(); }
           else if (m.type === 'done' && m.save) {
             draft.op = m.save; draft.opRound = Number(m.save.round || 0);

@@ -49,7 +49,7 @@ function screenFn(root) {
     p.on('pageerror', function (e) { errs.push(tag + ' ' + e.message); }); p.on('console', function (m) { if (m.type() === 'error') errs.push(tag + ' console ' + m.text()); });
     await p.goto(ROOT + '?solo=1&bot=1&fast=1&seed=5&still=1&tour=0'); await p.waitForFunction(function () { return document.title === 'ready'; });
     await p.waitForTimeout(2500); await p.screenshot({ path: SHOTS + '/look_door_' + tag + '.png' });
-    await p.click('#beginbtn'); await p.waitForTimeout(400); await p.screenshot({ path: SHOTS + '/look_table_' + tag + '.png' });
+    await p.click('#doornext'); await p.click('#beginbtn'); await p.waitForTimeout(400); await p.screenshot({ path: SHOTS + '/look_table_' + tag + '.png' });
     var ov = await p.evaluate(overFn);
     console.log(tag, 'table', JSON.stringify(ov));
     if (ov.over.length || ov.rightAir < ov.padRight - 1) { bad++; console.log(tag, 'FAIL table width/overflow'); }

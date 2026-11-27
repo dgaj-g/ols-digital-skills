@@ -120,8 +120,11 @@ const EXPECT = {
      discipline as the qa-j1-unchanged re-pin of 23 Aug: prove it, then pin it,
      and write down why.) */
   '5': { xp: 42, chunks: 10, presses: 20, marks: 7, badges: 4 },
-  /* J1 Lesson 6, THE OPERATION: pinned from l6-walk.js runs (presses reported, not asserted) */
-  '6': { xp: 45, chunks: 12, presses: 99, marks: 45, badges: 2 },
+  /* J1 Lesson 6, THE OPERATION V2: re-pinned 27 Nov 2026 from l6-walk.js runs (presses reported, not asserted).
+     chunks 12 → 7: the V1 ward, boss, film, puzzle and names chunks became the one contest chunk (c3), and the
+     closing puzzle (c8b) went (spec §5). xp, marks and badges did not move (the contest finishes c3 with the
+     ward's badge). */
+  '6': { xp: 45, chunks: 7, presses: 103, marks: 45, badges: 2 },
   'S1': { xp: 30, chunks: 6, presses: 6, marks: 1, badges: 1 },
   /* J2 Lesson 1, pinned from a real run on 16 Aug 2026 — deterministic values
      only (DFM 199). The turn count is still reported, never asserted. */

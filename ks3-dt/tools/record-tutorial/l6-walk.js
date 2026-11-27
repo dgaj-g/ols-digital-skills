@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-/* l6-walk.js: J1 Lesson 6 "Inside the Machine" (THE OPERATION) walked as one pupil on the platform shell.
+/* l6-walk.js: J1 Lesson 6 "Inside the Machine" (THE OPERATION V2, 27 Nov 2026) walked as one pupil on the platform shell.
  *
  * sit-wrongpath.js and sit-review.js press platform buttons; most of this lesson is a page in a frame
- * (assets/l6/operation.html), so they stand aside for lesson 6 and point here, as they do for The Rescue.
+ * (assets/l6/operation.html, and the contest: assets/l6/contest.html), so they stand aside for lesson 6 and point here.
  * This walk takes Anya (Demo-8A) through every step of the lesson ALONE, from the tile to the done card:
- * the frame steps are driven inside the frame (its own buttons, or the OPUI/OPWARDUI hooks the keyboard uses),
+ * the frame steps are driven inside the frame (its own buttons, or the OPUI hooks the keyboard uses; the contest by
+ * its own buttons only, solo against Bernadette, all 17 questions, the film, the result),
  * the platform steps by the shared movers in lib/walk-moves.js. Coverage is ASSERTED, not printed:
  *   every landmark in sit-wrongpath.js LANDMARKS['6'] must be stood on (on the page or inside the frame),
  *   and the walk's shape (xp, chunks, presses, marks, badges) must equal sit-review.js EXPECT['6'].
- * CONTROL: --control adds a landmark nobody can stand on and walks past the ward round without fixing it;
+ * CONTROL: --control adds a landmark nobody can stand on and leaves the discharge letter unopened in the extra jobs;
  * the run must then FAIL. Run it with --expect-fail to prove that.
  *
  *   node ks3-dt/tools/record-tutorial/l6-walk.js [--base http://localhost:8121] [--width 1366] [--control --expect-fail]
@@ -53,7 +54,7 @@ async function seed(page) {
     const now = Math.floor((Date.now() - 1767225600000) / 60000);
     db.locks = db.locks || {}; db.locks['Demo-8A'] = db.locks['Demo-8A'] || {};
     for (const n of ['1', '2', '3', '4', '5', '6']) db.locks['Demo-8A'][n] = { u: now, on: 1 };
-    /* one pupil, one laptop: the walk is the solo path (sit-review does the same); the pair path is l6-harness and the smoke */
+    /* one pupil, one PC: the walk is the solo path (sit-review does the same); the pair path is l6-harness and the smoke */
     db.cfg = db.cfg || {}; db.cfg['Demo-8A'] = db.cfg['Demo-8A'] || {}; db.cfg['Demo-8A'].pairing = { on: 0 };
     const kk = 'Demo-8A:' + email;
     db.pupils = db.pupils || {};
@@ -72,7 +73,24 @@ const frameOf = async page => { const h = await page.$('#chunk-host iframe.rescu
 const VISIBLE = sel => { const els = document.querySelectorAll(sel); for (const e of els) { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none') return true; } return false; };
 
 /* stand on whatever landmarks this chunk owns that are on screen now, on the page or inside the frame */
+/* --transcript <file>: every distinct screen's visible words, in her order, for the cold readers (DFM 270) */
+const TX = argOf('--transcript', '');
+let txLast = '';
+async function tx(page, ck) {
+  if (!TX) return;
+  const vis = () => { const out = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) { const e = n.parentElement; if (!e || !n.textContent.trim()) continue; if (/^(SCRIPT|STYLE|NOSCRIPT)$/.test(e.tagName)) continue;
+      const r = e.getBoundingClientRect(), cs = getComputedStyle(e); if (r.width <= 0 || r.height <= 0 || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+      out.push(n.textContent.replace(/\s+/g, ' ').trim()); }
+    return out.join('\n'); };
+  const top = await page.evaluate(vis).catch(() => '');
+  const fr = await frameOf(page); const inner = fr ? await fr.evaluate(vis).catch(() => '') : '';
+  const text = (inner ? inner + '\n[platform around the frame]\n' : '') + top;
+  if (text === txLast) return; txLast = text;
+  fs.appendFileSync(TX, '\n----- screen (' + ck + ') -----\n' + text + '\n');
+}
 async function look(page, ck) {
+  await tx(page, ck);
   const fr = await frameOf(page);
   for (const [label, sel, at] of LANDMARKS) {
     if (at !== ck || stood[label]) continue;
@@ -109,6 +127,11 @@ const fclick = (fr, sel) => fr.evaluate(s => { const b = document.querySelector(
 async function door(page) {
   const fr = await frameReady(page); if (!fr) return false;
   await sleep(1500); await look(page, 'c1');
+  /* card 1's Next wakes once the patient has spoken (V2 D1: two cards), then card 2 shows Begin */
+  await fr.waitForFunction(() => { const b = document.getElementById('doornext'); return b && !b.hidden && !b.disabled; }, null, { timeout: 15000 }).catch(() => {});
+  await fclick(fr, '#doornext');
+  await fr.waitForFunction(() => { const b = document.getElementById('beginbtn'); return b && !b.hidden && !b.disabled; }, null, { timeout: 15000 }).catch(() => {});
+  await look(page, 'c1');
   const ok = await fclick(fr, '#beginbtn');
   if (!ok) console.log('  door: begin not clickable', await fr.evaluate(() => { const b = document.getElementById('beginbtn'); return JSON.stringify({ b: b && { d: b.disabled, h: b.hidden }, hash: location.hash.slice(0, 200), door: !!document.querySelector('#begin.on') }); }));
   return ok;
@@ -133,51 +156,71 @@ async function op(page) {
   await sleep(1200); await look(page, 'c2');
   return fclick(fr, '#nextbtn');
 }
-async function ward(page, skip) {
-  const fr = await frameReady(page); if (!fr) return false;
-  await fr.waitForFunction(() => window.OPWARDUI && OPWARDUI.W, null, { timeout: 10000 });
-  await sleep(600); await look(page, 'c3');
-  if (skip) return fr.evaluate(() => { window.parent.postMessage({ op: 1, type: 'next' }, '*'); return true; });
-  const ids = await fr.evaluate(() => OPWARDUI.W.S.order.slice());
-  for (const id of ids) {
-    await fclick(fr, '.bed[data-bed="' + id + '"]'); await sleep(700); await look(page, 'c3');
-    const miss = await fr.evaluate(i => OPWARDUI.W.bed(i).missing, id);
-    await fclick(fr, '.tpart[data-part="' + miss + '"]'); await sleep(2900); await look(page, 'c3');
+/* the contest (V2): solo against Bernadette, by the page's own buttons. One wrong answer on question 2 (a pupil
+   who slips), every other answer right; the film in round 3 is watched to its end. */
+const CQ = require('../../platform/assets/l6/contest.js');
+function pickFor(i, rightOne) { const q = CQ.Q[i]; const r = CQ.rightChar(i); if (rightOne) return r; if (q.kind === 'part') return String((+r + 1) % 7); return r === '1' ? '2' : '1'; }
+async function contest(page) {
+  let fr = null;
+  for (let i = 0; i < 40 && !fr; i++) { const f = await frameOf(page); if (f && await f.evaluate(() => !!(window.L6C && document.body.dataset.phase)).catch(() => false)) fr = f; else await sleep(300); }
+  if (!fr) return false;
+  const sel = (a, v) => v == null ? `#card [data-act="${a}"]:not([disabled]), #side [data-act="${a}"]:not([disabled])` : `#card [data-act="${a}"][data-v="${v}"]:not([disabled])`;
+  const act = async (a, v, ms) => { await fr.waitForSelector(sel(a, v), { timeout: ms || 8000 }); await fr.click(sel(a, v)); presses++; };
+  const has = (a, v) => fr.evaluate(s => !!document.querySelector(s), sel(a, v));
+  const st = () => fr.evaluate(() => ({ ph: document.body.dataset.phase || '', rev: document.body.dataset.rev === '1', q: L6C.E.view().q }));
+  await sleep(700); await look(page, 'c3');
+  /* the green Stuck? Show me, opened once and closed: closing touches nothing */
+  await fr.click('#helpBtn'); await sleep(300); await look(page, 'c3'); await fr.click('#helpClose'); await sleep(200);
+  await act('start');
+  let answered = -1, filmSeen = false;
+  for (let guard = 0; guard < 400; guard++) {
+    const v = await st(); await look(page, 'c3');
+    if (v.ph === 'intro') { if (await has('filmplay')) await act('filmplay'); else await act('introgo'); }
+    else if (v.ph === 'film') {
+      if (await has('filmgo')) { filmSeen = true; await look(page, 'c3'); await act('filmgo'); }
+      else { await sleep(1000); continue; }
+    }
+    else if (v.ph === 'q' && v.rev) { await sleep(500); await look(page, 'c3'); await act('next'); }
+    else if (v.ph === 'q' && answered !== v.q) {
+      const i = v.q, q = CQ.Q[i], rightOne = i !== 1;
+      if (q.kind === 'order') {
+        for (let g = 0; g < 12; g++) {
+          const cur = await fr.$$eval('#card .order .block', bs => bs.map(b => +b.dataset.k));
+          const pos = [0, 1, 2, 3].findIndex((k, j) => cur[j] !== k); if (pos === -1) break;
+          await fr.click(`#card .order .block[data-k="${pos}"] [data-act="up"]`); presses++; await sleep(80);
+          await look(page, 'c3');
+        }
+        await act('lock');
+      } else await act('pick', pickFor(i, rightOne));
+      answered = i;
+    }
+    else if (v.ph === 'result') { await sleep(600); await look(page, 'c3'); must(filmSeen, 'the contest film played to its end before round 3'); await act('cont'); return true; }
+    await sleep(350);
   }
-  await sleep(800); await look(page, 'c3');
-  return fclick(fr, '#wnext');
+  return false;
 }
-async function boss(page, ck) {
-  const fr = await frameReady(page); if (!fr) return false;
-  await sleep(600); await look(page, ck);
-  await fclick(fr, '.xopt[data-i="1"]'); await sleep(500); await look(page, ck);
-  await fclick(fr, '.xopt[data-i="0"]'); await sleep(500);
-  return fclick(fr, '#xnext');
-}
-async function names(page, ck) {
-  const fr = await frameReady(page); if (!fr) return false;
-  await sleep(600); await look(page, ck);
-  /* first round: two names swapped, so the check says "Not quite"; then put right */
-  const n = await fr.evaluate(() => document.querySelectorAll('.xjob').length);
-  for (let j = 0; j < n; j++) { const want = j === 0 ? 1 : j === 1 ? 0 : j; await fclick(fr, '.xjob[data-j="' + j + '"]'); await fclick(fr, '.xname[data-n="' + want + '"]'); }
-  await fclick(fr, '#xcheck'); await sleep(700); await look(page, ck);
-  for (let r = 0; r < 3; r++) {
-    for (let j = 0; j < n; j++) { if (await fr.evaluate(x => !!document.querySelector('.xjob[data-j="' + x + '"]:not(.right)'), j)) { await fclick(fr, '.xjob[data-j="' + j + '"]'); await fclick(fr, '.xname[data-n="' + j + '"]'); } }
-    if (await fclick(fr, '#xcheck')) await sleep(700);
-    if (await fr.evaluate(() => !document.getElementById('xnext').hidden)) break;
-  }
-  await look(page, ck);
-  return fclick(fr, '#xnext');
-}
-async function extras(page) {
+/* the extra jobs (V2): three of the six, each by its own way out. Your own PC to its end (Back to the extra jobs at
+   the foot ticks it done); the discharge letter (its own button); a second patient left part-way by the top bar's Back. */
+async function extras(page, skipLetter) {
   await sleep(800); await look(page, 'extras');
-  for (const jobId of ['machine', 'letter']) {
-    const ok = await page.evaluate(id => { const b = document.querySelector('.pyrun-job[data-job="' + id + '"]'); if (!b) return false; b.click(); return true; }, jobId);
-    if (!ok) continue; presses++;
-    const fr = await frameReady(page); if (!fr) continue;
+  const hubBack = () => page.waitForFunction(() => !!document.querySelector('.op-hub .pyrun-job'), null, { timeout: 8000 }).then(() => true, () => false);
+  for (const jobId of skipLetter ? ['own', 'desmond'] : ['own', 'letter', 'desmond']) {
+    const ok = await page.evaluate(id => { const b = document.querySelector('.op-hub .pyrun-job[data-job="' + id + '"]'); if (!b) return false; b.click(); return true; }, jobId);
+    if (!must(ok, 'the extra job "' + jobId + '" opens from the list')) continue; presses++;
+    const fr = await frameReady(page); if (!must(!!fr, 'the extra job "' + jobId + '" loads')) continue;
     await sleep(900); await look(page, 'extras');
-    await fclick(fr, '#' + (jobId === 'letter' ? 'lnext' : 'xnext'));
-    await sleep(1500); await look(page, 'extras');
+    if (jobId === 'own') { for (let i = 0; i < 4 && await fclick(fr, '#xfnext'); i++) { await sleep(400); await look(page, 'extras'); } await fclick(fr, '#xnext'); }
+    else if (jobId === 'letter') await fclick(fr, '#lnext');
+    else {
+      /* a second patient: through its door to the table, one part out, then the top bar's Back (nothing is lost) */
+      await fr.waitForFunction(() => window.OPUI && OPUI.S, null, { timeout: 10000 }).catch(() => {});
+      for (const b of ['#doornext', '#beginbtn']) { await fr.waitForFunction(id => { const e = document.querySelector(id); return e && !e.hidden && !e.disabled; }, b, { timeout: 15000 }).catch(() => {}); await fclick(fr, b); await sleep(500); }
+      for (let i = 0; i < 12 && await fr.evaluate(() => OPUI.tour && OPUI.tour.active()); i++) { await fclick(fr, '#tournext'); await sleep(250); }
+      await sleep(600); await look(page, 'extras');
+      await fclick(fr, '#xback');
+    }
+    must(await hubBack(), 'the extra job "' + jobId + '" comes back to the list of jobs');
+    await sleep(700); await look(page, 'extras');
   }
   const ok = await page.evaluate(() => { const b = document.querySelector('.pyrun-finish'); if (!b) return false; b.click(); return true; });
   if (ok) presses++;
@@ -231,10 +274,8 @@ async function platformStep(page, ck) {
       let ok;
       if (ck === 'c1') ok = await door(page);
       else if (ck === 'c2') ok = await op(page);
-      else if (ck === 'c3') ok = await ward(page, CONTROL);
-      else if (ck === 'c4') ok = await boss(page, ck);
-      else if (ck === 'c7') ok = await names(page, ck);
-      else if (ck === 'extras') ok = await extras(page);
+      else if (ck === 'c3') ok = await contest(page);
+      else if (ck === 'extras') ok = await extras(page, CONTROL);
       else ok = await platformStep(page, ck);
       if (!ok && await page.evaluate(() => !!document.querySelector('.exit-done'))) { await look(page, ck); break; }
       if (!ok) { must(false, 'the walk could not leave ' + ck); break; }

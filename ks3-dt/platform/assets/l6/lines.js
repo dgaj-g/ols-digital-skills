@@ -91,7 +91,7 @@ var LINES = {
   ward: [
     { id: 'library', name: 'the library computer', missing: 'drive', hello: 'Every book I had is gone. The shelves. Empty. Shh.', fixed: 'Found. Shelved. Shh.', still: 'Still nothing on me. Not a book.' },
     { id: 'byrne',   name: "Mr Byrne's gaming PC", missing: 'fan',   hello: 'Level. Twelve. Is. So. Warm.', fixed: 'Cool. Level twelve. Finally.', still: 'Still. Roasting. Try. Again.' },
-    { id: 'rose',    name: "Granny Rose's laptop", missing: 'mem',   hello: 'I was emailing somebody. About something. Was I?', fixed: 'Yes. Emailing Rose. About the bins. Good.', still: 'I still do not know what I was doing, dear.' },
+    { id: 'rose',    name: "Granny Rose's computer", missing: 'mem',   hello: 'I was emailing somebody. About something. Was I?', fixed: 'Yes. Emailing Rose. About the bins. Good.', still: 'I still do not know what I was doing, dear.' },
     { id: 'chippy',  name: 'the till at the chip shop', missing: 'psu', hello: '', fixed: 'Two cod. One large chips. Next.', still: '' },
     { id: 'office',  name: 'the school office computer', missing: 'gpu', hello: 'I am working. I promise. I just cannot show you.', fixed: 'There. Timetables. Lovely timetables.', still: 'Still dark. Still working. Still invisible.' },
     { id: 'kiosk',   name: 'the cinema ticket machine', missing: 'cpu', hello: 'Two tickets for the- the- the-', fixed: 'The seven o clock showing. Enjoy the film.', still: 'Still stuck. Two tickets for the- the- the-' }

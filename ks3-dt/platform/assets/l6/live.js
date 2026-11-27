@@ -6,7 +6,7 @@
 (function (root) {
   var PARTS = ['mem', 'drive', 'cpu', 'gpu', 'fan', 'psu', 'board'];
   var BEDS = ['library', 'byrne', 'rose', 'chippy', 'office', 'kiosk'];
-  var T2C = { hello: 'h', state: 's', clean: 'c', pull: 'p', seal: 'l', again: 'a', take: 'k', fix: 'f', wstate: 'w' };
+  var T2C = { hello: 'h', state: 's', clean: 'c', pull: 'p', seal: 'l', again: 'a', take: 'k', fix: 'f', wstate: 'w', cstate: 'x' };
   var C2T = {}; Object.keys(T2C).forEach(function (k) { C2T[T2C[k]] = k; });
   var ST = { in: 'i', out: 'o', sealed: 's' }, TS = { i: 'in', o: 'out', s: 'sealed' };
   function b36(n) { return n == null ? '' : Math.round(n).toString(36); }
@@ -15,6 +15,8 @@
   /* encode one bus message as a short string: type|seat|round|... */
   function encode(m) {
     var c = T2C[m.type]; if (!c) return null;
+    /* J1 L6 V2 contest (K120/K121): one whole snapshot per seat, x|seat|q|a|m|Bs17,Cs17 (contest.js has the same codec) */
+    if (m.type === 'cstate') { var cs = m.s || {}; return [c, m.seat || '', m.q == null ? '' : m.q, m.a || '', m.m || '', Object.keys(cs).map(function (k) { return k + cs[k]; }).join(',')].join('|'); }
     var h = [c, m.seat || '', m.round == null ? '' : m.round];
     if (m.type === 'state') {
       h.push(m.fluff === 'gone' ? 'g' : 'i');
@@ -30,6 +32,11 @@
   function decode(s) {
     if (typeof s !== 'string') return null;
     var h = s.split('|'), type = C2T[h[0]]; if (!type) return null;
+    if (type === 'cstate') {
+      var r = { type: 'cstate', seat: h[1] || null, q: h[2] === '' ? 0 : +h[2], a: h[3] || '', m: h[4] || '', s: {} };
+      (h[5] ? h[5].split(',') : []).forEach(function (x) { if (x.length > 1) r.s[x[0]] = x.slice(1); });
+      return r;
+    }
     var m = { type: type, seat: h[1] || null, round: h[2] === '' ? null : +h[2] };
     if (type === 'state') {
       m.fluff = h[3] === 'g' ? 'gone' : 'in';
@@ -55,8 +62,8 @@
     opts = opts || {};
     var now = opts.now || function () { return Date.now(); };
     var hs = [], seen = {}, joined = now(), connected = false, onConn = [], timers = [], closed = false;
-    /* LAST SIGN OF LIFE per other seat, on OUR clock (never hers, so a skewed laptop cannot fake it): a fresh
-       presence beat or a move. A pupil whose laptop shut stops beating; the frames read quietFor() and let go. */
+    /* LAST SIGN OF LIFE per other seat, on OUR clock (never hers, so a skewed PC cannot fake it): a fresh
+       presence beat or a move. A pupil whose PC shut stops beating; the frames read quietFor() and let go. */
     var seenAt = {}, lastBeat = {};
     var ref = db.ref('rooms/' + room);
     function deliver(m) { hs.forEach(function (h) { h(m); }); }

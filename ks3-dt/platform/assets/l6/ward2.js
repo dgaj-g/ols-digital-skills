@@ -13,6 +13,9 @@
   var NAMES = H.names || null;
   window.addEventListener('message', function (e) { var m = e.data; if (e.source !== window.parent || !m || m.op !== 1) return; if (m.type === 'names' && m.names) { NAMES = m.names; if (H.stage === 'letter') letter(); } });
   function cont(btn) { OPCONT(btn, post); }
+  /* V2 (D6): the blocked-link lines are the contest's (cstrings fixes), with the partner's real first name */
+  var C = window.L6C_STRINGS, LY = window.OPLAYER;
+  function firstOf(s) { var i = seats.indexOf(s), n = NAMES && NAMES[i]; return n ? String(n).trim().split(/\s+/)[0] : L.callsigns[s]; }
   if (H.stage === 'letter') { letter(); post('ready', { stage: 'letter' }); document.title = 'ready'; return; }
 
   /* ================= the ward round ================= */
@@ -27,7 +30,7 @@
     WARD = WD.makeWard({ seat: me, seats: st, beds: WD.pickBeds(seats, seed), cap: solo || st.length === 1 ? 6 : null, bus: solo ? null : bus });
     if (!solo) bus.on(WARD.receive);
   }
-  /* a partner whose laptop has gone quiet for GONE_MS: her unfinished computers are let go and the share counted again */
+  /* a partner whose PC has gone quiet for GONE_MS: her unfinished computers are let go and the share counted again */
   function goneTick() {
     if (!fb || FALLBACK || !fb.quietFor || WARD.doneAll()) return;
     Object.keys(WARD.S.presence).forEach(function (s) { if (fb.quietFor(s) > OPLIVE.GONE_MS && !WARD.S.presence[s].gone) { WARD.gone(s); render(); } });
@@ -48,13 +51,13 @@
   }
   function goFallback() {
     if (FALLBACK) return; FALLBACK = true; post('fallback'); if (fb) fb.close();
-    if (seat !== 'A') { $('ward').hidden = true; $('away').hidden = false; $('awaysay').textContent = 'Go and sit with ' + L.callsigns.A + '. You share one laptop.'; cont($('awaybtn')); return; }
+    if (seat !== 'A') { $('ward').hidden = true; $('away').hidden = false; $('awaysay').textContent = C.fixes.fallbackPC + ' ' + C.fixes.fallbackGo.replace('{name}', firstOf('A')); cont($('awaybtn')); return; }
     start(true); open = null; trays = {}; build(); render();
   }
   var open = null, trays = {}, seenSaid = 0, speech = {};
   function build() {
     $('ward').hidden = false; $('wtitle').textContent = 'Ward round';
-    $('wteam').innerHTML = boldDr(U.team.replace('{p}', ME), ME) + (FALLBACK ? '<span class="wlive">' + esc('The live link is slow. Share one laptop and take turns.') + '</span>' : '');
+    $('wteam').innerHTML = boldDr(U.team.replace('{p}', ME), ME) + (FALLBACK ? '<span class="wlive">' + esc(C.fixes.fallbackMe.replace('{name}', firstOf(seats.filter(function (s) { return s !== 'A'; })[0] || 'B'))) + '</span>' : '');
     $('beds').innerHTML = WARD.S.order.map(function (id) {
       var b = WARD.bed(id);
       return '<button class="bed" type="button" data-bed="' + id + '"><span class="bface"></span><span class="bname">' + esc(cap(b.name)) + '</span><span class="bstat"></span></button>';
@@ -133,5 +136,7 @@
     var rv = others.length && others.every(function (s) { return nm(s); }) ? (others.length === 1 ? U.reveal.replace('{p}', nm(others[0])) : U.reveal3.replace('{p}', nm(others[0])).replace('{q}', nm(others[1]))) : '';
     $('lreveal').textContent = rv;
     cont($('lnext'));
+    /* V2: in the extra jobs the letter has the job's top bar and the help layer, like every other job */
+    if (H.extras && LY) { LY.top(); LY.job(C.job.intro.replace('{btn}', $('lnext').textContent), [C.hub.jobs.filter(function (j) { return j.id === 'letter'; }).map(function (j) { return j.whiff; })[0]], LY.press($('lnext'))); }
   }
 })();
