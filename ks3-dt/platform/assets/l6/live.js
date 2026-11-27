@@ -97,7 +97,7 @@
         if (closed) return;
         var m = {}; for (var k in data) m[k] = data[k]; m.type = type;
         var j = encode(m); if (!j || j.length >= 200) return;
-        ref.child(seat).push({ j: j, t: now() });
+        return ref.child(seat).push({ j: j, t: now() }); /* V97: the push goes back, so Leave the contest can wait for it */
       },
       connected: function () { return connected; },
       quietFor: function (s) { return now() - Math.max(seenAt[s] || 0, joined); },

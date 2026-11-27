@@ -67,6 +67,11 @@
     if (q.kind === 'mcq') return String(1 + (k % 3));
     return String.fromCharCode(97 + 1 + (k % 23));
   }
+  /* LEAVE (V97, the way out part-way): a pupil who presses Leave the contest sends one last snapshot with q = N + 1 (LEFT).
+     Every other PC then lets Bernadette answer for her at once, flagged '3', on every question she did not answer
+     herself (her own answers are the ones her own snapshot flags '0'). Each PC works the same flags out from the same last
+     snapshot, so both screens give the same reason (DFM 399), and a '3' is never written into the s map. */
+  var LEFT = N + 1;
   /* A LATE stand-in travels in the s map in capitals (digit d -> letter A+d; an order letter upper-cased), a GONE one as the plain answer char,
      so the PC it was made for keeps the reason at no extra byte. m[i] is '1' for gone, '2' for late. */
   function toLate(ch) { return /[0-9]/.test(ch) ? String.fromCharCode(65 + +ch) : ch.toUpperCase(); }
@@ -85,18 +90,23 @@
     var mine = S[me];
     var sIn = {}; others.forEach(function (o) { sIn[o] = dash(N); });
     var answeredAt = {}, lastSeen = {}, standEv = {};
+    var own = {}; /* per other seat: the answers she gave herself (her snapshot's '0' flags), '-' elsewhere */
+    function hasLeft(o) { return o !== 'Z' && !!S[o] && S[o].q > N; }
+    function ownCh(o, i) { return own[o] ? own[o][i] : '-'; }
+    /* she has left: every answer that is not her own is Bernadette's, for that reason, on every PC */
+    function relabelLeft(o) { for (var i = 0; i < N; i++) if (ownCh(o, i) === '-' && S[o].a[i] !== '-' && S[o].m[i] !== '3') { S[o].m = setAt(S[o].m, i, '3'); standEv[o + ':' + i] = 'left'; } }
     var goneMs = opt.goneMs || GONE_MS, lateMs = opt.lateMs || LATE_MS; /* overridable ONLY by the gate controls */
     function now() { return opt.now ? opt.now() : Date.now(); }
     others.forEach(function (o) { if (o !== 'Z') lastSeen[o] = now(); }); /* the partner was here a second ago: the operation just ended */
     function seenNow(o) { lastSeen[o] = now(); if (lastSeen[o + ':wasGone']) { lastSeen[o + ':wasGone'] = 0; emit({ back: o }); } }
     function emit(ev) { if (opt.onChange) opt.onChange(ev || {}); }
     function snapshot() { var s = {}; others.forEach(function (o) { if (o !== 'Z' && /[^-]/.test(sIn[o])) s[o] = sIn[o]; }); return { type: 'cstate', seat: me, q: mine.q, a: mine.a, m: mine.m, s: s }; }
-    function broadcast() { if (opt.send && !solo) opt.send(snapshot()); }
+    function broadcast() { if (opt.send && !solo) return opt.send(snapshot()); }
     function allAnswered(i) { return all.every(function (s) { return S[s].a[i] !== '-'; }); }
     function revealed(i) { return i < N && allAnswered(i); }
     function putStandIn(o, i, kind) {
-      var ch = standIn(seed, o, i), flag = kind === 'late' ? '2' : '1';
-      if (o !== 'Z') sIn[o] = setAt(sIn[o], i, flag === '2' ? toLate(ch) : ch);
+      var ch = standIn(seed, o, i), flag = kind === 'late' ? '2' : kind === 'left' ? '3' : '1';
+      if (o !== 'Z' && flag !== '3') sIn[o] = setAt(sIn[o], i, flag === '2' ? toLate(ch) : ch);
       S[o].a = setAt(S[o].a, i, ch); S[o].m = setAt(S[o].m, i, flag);
       standEv[o + ':' + i] = kind;
       broadcast(); emit({ standIn: { seat: o, i: i, kind: kind } });
@@ -115,6 +125,9 @@
       answerOrder: function (i, perm) { return E.answer(i, permChar(perm)); },
       next: function () { if (mine.q < N && revealed(mine.q)) { mine.q++; broadcast(); emit({ next: mine.q }); return true; } return false; },
       hello: function () { broadcast(); },
+      /* Leave the contest: one last snapshot that says so. Returns what send returned (the push), so the page can wait for it. */
+      leave: function () { if (mine.q > N) return null; mine.q = LEFT; var r = broadcast(); emit({ leave: me }); return r; },
+      hasLeft: hasLeft,
       receive: function (m) {
         if (!m || m.seat === me) return;
         if (m.type === 'hello') { broadcast(); return; }
@@ -125,13 +138,16 @@
         for (var i = 0; i < N; i++) {
           if (m.a && m.a[i] !== '-' && S[o].a[i] === '-') { S[o].a = setAt(S[o].a, i, m.a[i]); S[o].m = setAt(S[o].m, i, (m.m || zeros(N))[i]); changed = true; }
         }
-        if ((m.q || 0) > S[o].q) { S[o].q = m.q; changed = true; }
+        if (m.a) { var ow = own[o] || dash(N); for (var k = 0; k < N; k++) if (ow[k] === '-' && m.a[k] !== '-' && (m.m || zeros(N))[k] === '0') ow = setAt(ow, k, m.a[k]); own[o] = ow; }
+        if ((m.q || 0) > S[o].q) { var wasIn = S[o].q <= N; S[o].q = m.q; changed = true; if (wasIn && m.q > N) { relabelLeft(o); emit({ left: o }); } }
         var sm = m.s || {};
         Object.keys(sm).forEach(function (target) {
           if (!S[target]) return;
           for (var i = 0; i < N; i++) {
             var raw = sm[target][i]; if (raw === '-') continue;
             var ch = fromLate(raw, i), flag = isLate(raw) ? '2' : '1';
+            if (target !== me && hasLeft(target) && ownCh(target, i) === '-') flag = '3';
+            if (target !== me && S[target].m[i] === '3') continue; /* a '3' is never changed back */
             if (target === me) {
               if (mine.a[i] !== ch || mine.m[i] !== flag) { mine.a = setAt(mine.a, i, ch); mine.m = setAt(mine.m, i, flag); standEv[me + ':' + i] = flag === '2' ? 'late' : 'forMe'; mineChanged = true; }
             } else if (S[target].a[i] !== ch || S[target].m[i] !== flag) {
@@ -150,6 +166,7 @@
             for (var i = 0; i < N; i++) if (mine.a[i] !== '-' && S.Z.a[i] === '-' && answeredAt[i] != null && t - answeredAt[i] >= SOLO_MS) putStandIn('Z', i, 'solo');
             return;
           }
+          if (hasLeft(o)) { for (var j = 0; j < N; j++) if (mine.a[j] !== '-' && S[o].a[j] === '-') putStandIn(o, j, 'left'); return; }
           var seen = t - lastSeen[o];
           if (opt.presence) seen = Math.min(seen, opt.presence(o));
           var gone = seen >= goneMs;
@@ -173,7 +190,7 @@
       score: function (s) { var n = 0; for (var i = 0; i < N; i++) if (isRight(i, S[s].a[i])) n++; return n; },
       isGone: function (o) { return !!lastSeen[o + ':wasGone']; },
       seatState: function (s) { return S[s]; },
-      standKind: function (s, i) { return standEv[s + ':' + i] || (S[s].m[i] === '2' ? 'late' : S[s].m[i] === '1' ? 'forMe' : ''); },
+      standKind: function (s, i) { return standEv[s + ':' + i] || (S[s].m[i] === '3' ? 'left' : S[s].m[i] === '2' ? 'late' : S[s].m[i] === '1' ? 'forMe' : ''); },
       /* a plain picture of where I am, for the page */
       view: function () {
         var q = mine.q, i = q < N ? q : N - 1, r = roundOf(i);
@@ -182,6 +199,7 @@
         others.forEach(function (o) {
           var st = S[o];
           if (o === 'Z') partnerState[o] = 'solo';
+          else if (hasLeft(o)) partnerState[o] = 'left';
           else if (lastSeen[o + ':wasGone']) partnerState[o] = 'gone';
           else if (q < N && st.a[q] !== '-') partnerState[o] = 'answered';
           else if (st.q < q) partnerState[o] = 'behind';
@@ -210,7 +228,7 @@
     return m;
   }
 
-  var api = { makeEngine: makeEngine, codec: { encode: encodeCstate, decode: decodeCstate, code: CSTATE_CODE }, Q: Q, N: N, ROUNDS: ROUNDS, PARTS: PARTS, PART_NAME: PART_NAME, PERMS: PERMS, hash32: hash32, standIn: standIn, rightChar: rightChar, isRight: isRight, answerName: answerName, screenOrder: screenOrder, permChar: permChar, charPerm: charPerm, GONE_MS: GONE_MS, LATE_MS: LATE_MS, SOLO_MS: SOLO_MS };
+  var api = { LEFT: LEFT, makeEngine: makeEngine, codec: { encode: encodeCstate, decode: decodeCstate, code: CSTATE_CODE }, Q: Q, N: N, ROUNDS: ROUNDS, PARTS: PARTS, PART_NAME: PART_NAME, PERMS: PERMS, hash32: hash32, standIn: standIn, rightChar: rightChar, isRight: isRight, answerName: answerName, screenOrder: screenOrder, permChar: permChar, charPerm: charPerm, GONE_MS: GONE_MS, LATE_MS: LATE_MS, SOLO_MS: SOLO_MS };
   root.L6CONTEST = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

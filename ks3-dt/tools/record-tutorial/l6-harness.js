@@ -204,7 +204,7 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   await SA.close(); await SB.close();
   const SS = await page(ctx, PAGE + '?solo=1&fast=1&tour=1', 683, 768, errs); await SS.waitForSelector('#begin.on', { timeout: 20000 }); await SS.click('#doornext'); await SS.click('#beginbtn'); await sleep(400);
   const solo = await SS.evaluate(() => ({ n: OPUI.tour.steps().length, team: document.getElementById('team').textContent, fs: parseFloat(getComputedStyle(document.getElementById('team')).fontSize) }));
-  gate('solo at 683: five steps (no partner step), team line says on your own, ≥15 px', solo.n === 5 && solo.team === 'You are Dr Marmalade. You work on Bernadette on your own.' && solo.fs >= 15, JSON.stringify(solo));
+  gate('solo at 683: five steps (no partner step), team line says she works alone (V97 wording, DFM 409), ≥15 px', solo.n === 5 && solo.team === 'You are Dr Marmalade. You work alone on Bernadette.' && solo.fs >= 15, JSON.stringify(solo));
   const walkS = []; for (let k = 0; k < 6; k++) { const d = await tourState(SS); if (!d) break; walkS.push(d); if (d.at === 'case') await shot(SS, '29_tour_case_683'); if (d.at === 'chart') await shot(SS, '30_tour_chart_683'); await SS.click('#tournext'); await sleep(450); }
   gate('tour at 683: spotlight on target, box on screen and off the lit area, every step', walkS.length === 5 && walkS.every(w => w.spotOn && w.boxIn && !w.boxOverSpot), JSON.stringify(walkS.filter(w => !(w.spotOn && w.boxIn && !w.boxOverSpot)).map(w => w.at + ':' + w.spotOn + w.boxIn + w.boxOverSpot)));
   const fl = await SS.$eval('.slot[data-part="fluff"] img', e => ({ src: e.getAttribute('src'), w: e.naturalWidth, h: e.naturalHeight }));

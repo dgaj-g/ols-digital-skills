@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-27 from contentVersion 2026-11-27a.
+ * Built 2026-11-27 from contentVersion 2026-11-27c.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1205,7 +1205,7 @@ var DECKS = {
  "j1-06": {
   "id": "j1-06.deck",
   "lesson": "j1-06",
-  "deckName": "KS3 DT · J1 Lesson 6 — Inside the Machine (Teacher Deck)",
+  "deckName": "KS3 DT · J1 Lesson 6 — The Operation (Teacher Deck)",
   "driveFileId": "1minBeI_x-0McQvFlOhDNFXlX2DdDgvXwpdGtd_biWWA",
   "theme": {
    "id": "operating-theatre",
@@ -1229,7 +1229,7 @@ var DECKS = {
       "kind": "title",
       "bg": "title",
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
-      "heading": "Inside the Machine",
+      "heading": "The Operation",
       "sub": "KS3 Digital Technology · J1 · Lesson 6",
       "notes": "WHERE THE CLASS IS: coming in, sitting at any PC and logging in.\n\nSAY: welcome them in. Ask them to log in and open the class link.\n\nWHEN TO MOVE: when most pupils are logged in, stop the room. Eyes front."
      },
@@ -1327,7 +1327,7 @@ var DECKS = {
        "Four questions, on your own.",
        "Then How did it go?"
       ],
-      "notes": "WHERE THE CLASS IS: on the extra jobs, or finishing the contest. Stop the room. Eyes front for one minute.\n\nSAY: STOP. Click Finish the lesson. These four questions are on your own. They are marked, and you see every answer on your Live tab. A pair still in the contest finishes it first. Their next screen shows Finish the lesson.\n\nWHEN TO MOVE: send them in. As they finish How did it go?, put the last slide up."
+      "notes": "WHERE THE CLASS IS: on the extra jobs, or finishing the contest. Stop the room. Eyes front for one minute.\n\nSAY: STOP. Still in the contest? Click Leave the contest. Then click Finish the lesson. These four questions are on your own. They are marked, and you see every answer on your Live tab.\n\nWHEN TO MOVE: send them in. As they finish How did it go?, put the last slide up."
      }
     ]
    },

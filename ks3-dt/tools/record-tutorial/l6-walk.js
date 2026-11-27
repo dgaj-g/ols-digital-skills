@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* l6-walk.js: J1 Lesson 6 "Inside the Machine" (THE OPERATION V2, 27 Nov 2026) walked as one pupil on the platform shell.
+/* l6-walk.js: J1 Lesson 6 "The Operation" (V2, 27 Nov 2026; title from "Inside the Machine" in V97) walked as one pupil on the platform shell.
  *
  * sit-wrongpath.js and sit-review.js press platform buttons; most of this lesson is a page in a frame
  * (assets/l6/operation.html, and the contest: assets/l6/contest.html), so they stand aside for lesson 6 and point here.
@@ -262,7 +262,7 @@ async function platformStep(page, ck) {
     await sleep(600);
     xp0 = await page.evaluate(() => App.state.xp || 0);
     const tile = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(e => /Lesson\s*6(?!\d)/i.test(e.textContent)); if (t) t.click(); return t ? t.textContent.replace(/\s+/g, ' ').trim() : null; });
-    must(!!tile && /Inside the Machine/i.test(tile), 'the Lesson 6 tile is Inside the Machine (' + tile + ')');
+    must(!!tile && /The Operation/i.test(tile), 'the Lesson 6 tile is The Operation (' + tile + ')');
     if (!tile) throw new Error('no Lesson 6 tile');
     await sleep(2500);
     for (let guard = 0; guard < 20; guard++) {

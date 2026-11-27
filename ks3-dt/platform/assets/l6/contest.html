@@ -194,7 +194,14 @@ h2.ask{font-size:26px;margin:0 0 14px;font-weight:600;line-height:1.25}
 .spot{outline:4px solid var(--green)!important;outline-offset:5px;border-radius:14px;animation:spot .8s ease-in-out infinite alternate}
 @keyframes spot{to{outline-offset:10px}}
 #tag{position:fixed;z-index:6;display:none;background:var(--green);color:#06231b;font-weight:900;font-size:16px;padding:3px 13px;border-radius:99px;pointer-events:none;white-space:nowrap}
-@media (prefers-reduced-motion: reduce){.spot,#helpBtn.nudge{animation:none}}
+/* V97: Leave the contest sits at the right of the top bar; its busy state while the last snapshot goes */
+#top .you .btn.small{padding:4px 12px;font-size:15px;flex:0 0 auto;white-space:nowrap}
+#leaveBtn[hidden]{display:none}
+.btn.busy{display:inline-flex;align-items:center;gap:10px}
+.btn.busy:disabled{opacity:.8}
+.spin{width:16px;height:16px;border:2px solid rgba(26,26,26,.3);border-top-color:#1a1a1a;border-radius:50%;animation:l6spin .8s linear infinite}
+@keyframes l6spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spot,#helpBtn.nudge,.spin{animation:none}}
 /* contest additions */
 .patient p.kicker{text-transform:none;letter-spacing:0;font-size:15px;color:var(--mute);margin:0 0 4px}
 .verdict .chip{font-size:18px;font-weight:600}
@@ -225,7 +232,7 @@ h2.ask{font-size:26px;margin:0 0 14px;font-weight:600;line-height:1.25}
 <div id="app">
   <header id="top">
     <div class="where" id="where"></div>
-    <div class="you" id="you"></div>
+    <div class="you"><span id="you"></span><button class="btn ghost small" id="leaveBtn" type="button" data-act="leave" hidden></button></div>
   </header>
   <div id="main">
     <section id="card"></section>

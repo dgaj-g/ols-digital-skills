@@ -1,4 +1,4 @@
-/* J1 L6 V2 THE CONTEST — every pupil-facing string of contest.html (Version 96).
+/* J1 L6 V2 THE CONTEST — every pupil-facing string of contest.html (Version 96; V97 adds Leave the contest).
    COPIED from the design's source of record (J1_L6_REDESIGN/prototype/strings.js = spec §5), never retyped. Under the
    26 Nov ruling (≤25 words a screen, ≤14 a sentence) some cards are TRIMMED: a trim keeps the source's own words in
    order and drops the rest; a dropped line moves into the help list of the same screen. The few lines that are not a
@@ -20,7 +20,8 @@
       job: 'Extra jobs · {job} · On your own',
       hub: 'Extra jobs · On your own',
       solo: 'On your own · You are {me}',
-      pair: 'With your partner · You are {me}'
+      pair: 'With your partner · You are {me}',
+      leave: 'Leave the contest'
     },
     /* the job line ("Your job now: …"), ≤14 words each */
     job: {
@@ -35,9 +36,20 @@
       filmSeen: 'Press On to the questions. Or watch it again first.',
       result: 'Read the result, then press Continue.',
       notice: 'Read the card, then press {btn}.',
-      away: 'Sit together at one of your two PCs.',
+      away: 'Sit together at one PC. Use your PC or your partner\'s PC.',
       hub: 'Click a job to start it.',
-      job: 'To leave this job, click Back to the extra jobs at the top.'
+      job: 'To leave this job, click Back to the extra jobs at the top.',
+      leave: 'Press Leave the contest, or press Stay in the contest.',
+      leaving: 'Wait a moment. The extra jobs come next.'
+    },
+    /* V97: the way out part-way (Leave the contest, top right of the bar), for when the teacher says STOP */
+    leave: {
+      title: 'Leave the contest?',
+      pair: ['Bernadette answers for you from now on.', 'You cannot come back.', 'Next you choose from six extra jobs about computer parts.'],
+      alone: ['The contest stops here for you.', 'You cannot come back.', 'Next you choose from six extra jobs about computer parts.'],
+      yes: 'Leave the contest',
+      no: 'Stay in the contest',
+      busy: 'Leaving the contest'
     },
     begin: {
       kicker: 'You worked with your partner. Now you play against them.',
@@ -53,7 +65,7 @@
       { kicker: 'Round 1 of 4 · Against {partner}', title: 'Ward round', lines: ['Six more computers are broken.', 'Each one tells you what is wrong, in its own words.', 'Click the part it needs.'], button: 'See the first computer' },
       { kicker: 'Round 2 of 4 · Against {partner}', title: 'Who is in charge?', lines: ['Bernadette has seven parts.', 'One program tells them all what to do.', 'It is called the operating system.'], button: 'First question' },
       { kicker: 'Round 3 of 4 · Against {partner}', title: "Inside Bernadette's head", lines: ['Watch Bernadette add 4 and 3.', 'Then you answer two questions and put four steps in order.'], button: 'Play the film', again: 'Watch it again', go: 'On to the questions' },
-      { kicker: 'Round 4 of 4 · Against {partner}', title: 'The real names', lines: ['The box of a new PC does not say "the thinking part".', 'It uses the real names. There are five questions.'], button: 'First question' }
+      { kicker: 'Round 4 of 4 · Against {partner}', title: 'The real names', lines: ['The box of a new PC does not say "the thinking part".', 'The five questions use the real names of the parts.'], button: 'First question' }
     ],
     film: ['Bernadette wants to add 4 and 3.', 'Memory holds the instruction: add 4 and 3.', 'The processor reads the instruction from memory.', 'The processor does it. 4 + 3 = 7.', 'The answer, 7, goes back into memory.', 'Then the processor reads the next instruction. Then it reads the one after that.', 'Every computer works like this. It does these steps millions of times every second.'],
     filmBoard: { think: '4 + 3 = ?', mem: 'MEMORY', cpu: 'PROCESSOR', waiting: ['add 7 and 2', 'take 1 from 9', 'add 5 and 5'], current: 'add 4 and 3' },
@@ -71,7 +83,8 @@
       late: '{partner} took too long. Bernadette answered instead.',
       back: "{partner}'s PC is linked to yours again.",
       partnerAnswered: '{partner} has answered this one.',
-      linkLost: "Your PC has lost its link to your partner's PC. Wait for the link to come back."
+      linkLost: "Your PC has lost its link to your partner's PC. Wait for the link to come back.",
+      left: 'Bernadette answers for {partner} from now on.'
     },
     rev: {
       kicker: 'Question {k} of {total} · The answer',
@@ -92,7 +105,8 @@
       behind: '{partner} is on question {k} of round {r}.',
       gone: "{partner}'s PC has lost its link to yours.",
       solo: 'Bernadette answers after you.',
-      ahead: '{partner} is on the next question and is waiting for you.'
+      ahead: '{partner} is on the next question and is waiting for you.',
+      left: '{partner} has left the contest.'
     },
     result: {
       title: 'The result',
@@ -110,7 +124,7 @@
     },
     fixes: {
       fallbackMe: "This PC cannot link to your partner's PC. Your partner is {name}.",
-      fallbackSit: 'Sit together at one of your two PCs.', /* 'You play as a team.' moved to help.away: a first name with an accent (Bríd) counts as two words */
+      fallbackSit: 'Sit together at one PC. Use your PC or your partner\'s PC.', /* 'You play as a team.' moved to help.away: a first name with an accent (Bríd) counts as two words */
       fallbackButton: 'We are together. Carry on',
       linkAlone: 'Carry on against Bernadette',
       team: 'You are a team',
@@ -131,7 +145,7 @@
     hub: {
       kicker: 'On your own · Extra jobs',
       title: 'Six extra jobs. Do any, in any order.',
-      intro: 'The lesson stops when your teacher says STOP.', /* the leave-a-job line moved to help.hub */
+      intro: 'When your teacher says STOP, click Finish the lesson.', /* V97: names the button; the leave-a-job line moved to help.hub */
       jobs: [
         { id: 'desmond', title: 'Operate on Desmond', whiff: 'Desmond is a second patient. You take out all seven parts by yourself.' },
         { id: 'nigel', title: 'Operate on Nigel', whiff: 'Nigel is a third patient. He talks more than the other patients.' },
@@ -148,7 +162,7 @@
     find: { ask: 'Click the {part}.', right: 'Yes. That is the {part}.', wrong: 'That is not the part the line names. Try again.', done: 'You found all seven.' },
     cust: {
       says: '{customer} says:',
-      question: 'Which part should the computer shop add?',
+      question: 'Which part should the computer shop add to this customer\'s PC?',
       people: [
         { who: 'Aoife', need: 'I edit videos and the picture on my screen keeps jumping.', right: 'gpu', why: 'The graphics card draws the picture. A better one keeps video smooth.' },
         { who: 'Mr Doyle', need: 'I keep thousands of photos and I have no room left.', right: 'drive', why: 'Photos live on the storage drive. A bigger one holds more.' },
@@ -157,7 +171,7 @@
       right: 'Yes. {why}', wrong: 'That is not the right part. Read what the customer says again.', done: 'You have helped all three customers.', next: 'Next customer'
     },
     /* the operation's own lines, cut from the live V1 lines2.js (frozen copy in tools/record-tutorial/l6v2-src) */
-    op: { together: '{p} is your partner, at another PC in this room.', together3: '{p} and {q} are your partners, at other PCs in this room.', alone: 'You work on {me} on your own.', found: '{p} found {n} of the 7 jobs.' },
+    op: { together: '{p} is your partner, at another PC in this room.', together3: '{p} and {q} are your partners, at other PCs in this room.', alone: 'You work alone on {me}.', found: '{p} found {n} of the 7 jobs.' },
     parts: { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' },
     /* THE HELP LIST per screen ("Do this"): the screen's job line first, then the lines the trims moved off the card,
        then the mode's own help. Every line is a sentence of the source, cut down only. */
@@ -176,6 +190,7 @@
       team: ['Agree each answer together, then click it.', 'Bernadette answers too. Then you see both answers.'],
       more: ['You get one point for each right answer.', 'Whoever has the most points at the end is head surgeon.'],
       away: ['Your partner is {name}.', 'You play as a team.', 'Press the button "We are together. Carry on".'],
+      leave: ['Press Leave the contest to go to the extra jobs.', 'Press Stay in the contest to go back to the contest.'],
       /* the operation and the extra jobs */
       door: ['Each part does one job.', 'Click a part to take it out.', 'Read what {me} says next.', 'Click the job that part did. It goes in {his} chart.'],
       doorPair: 'You work on {me} together.',
@@ -213,6 +228,25 @@
     'Question {k} of {total} · The answer': 'reveal kicker: the top bar\'s question count + "The answer" from rev.answer',
     'Answer four marked questions on your own.': 'exit check job line (lesson JSON c8): the live line "Answer three marked questions on your own." with the count moved from three to four (spec §2, §5.9: x5 joins)',
     'Four questions before you finish': 'exit check card title (lesson JSON c8): the live "Three questions before you finish" with the count moved to four (spec §5.9)',
+    'Leave the contest': 'V97 (his ask, 27 Nov 2026): the way out part-way when the teacher says STOP; the button names what it does, as Back to the extra jobs does',
+    'Leave the contest?': 'V97: the confirm card asks the button\'s own words back, so she knows what she pressed',
+    'Bernadette answers for you from now on.': 'V97: what her partner\'s screen does after she leaves (the stand-in rule, DFM 391/399)',
+    'You cannot come back.': 'V97: the one thing leaving cannot undo, said before she presses; shortened from "You cannot come back to the contest." (the title above it already says the contest) so the card keeps to 25 words once the next line says what the extra jobs are (my call after round v97-r2)',
+    'Next you choose from six extra jobs about computer parts.': 'V97: where Leave the contest goes; the extra jobs list holds Finish the lesson; cold readers v97-r1 (27 Nov 2026), both readers failed it: "extra jobs" was never explained before this card (was "Next are the extra jobs."); cold readers v97-r2 (27 Nov 2026), both readers failed it again: "six extra jobs" still said nothing about what they are, so the line now says they are about computer parts (my call after the two rounds, keeping the name the next screen uses)',
+    'The contest stops here for you.': 'V97: the same card when nobody else is linked (on her own, a team at one PC, or the link has gone)',
+    'Stay in the contest': 'V97: the way back from the confirm card, named by what it does',
+    'Leaving the contest': 'V97: the busy state on the button while her last answer goes to her partner\'s PC',
+    'Press Leave the contest, or press Stay in the contest.': 'V97: the confirm card\'s job line names both buttons by their words',
+    'Wait a moment. The extra jobs come next.': 'V97: the job line while the busy button waits',
+    'Bernadette answers for {partner} from now on.': 'V97: the partner\'s screen after she leaves; the same reason on every screen (DFM 399)',
+    '{partner} has left the contest.': 'V97: the state line names the thing that changed (DFM 397)',
+    'Press Leave the contest to go to the extra jobs.': 'V97: help for the confirm card, one line per button; cold readers v97-r1 (27 Nov 2026), both readers failed it: the button\'s words opened the sentence as if they were a command (was "Leave the contest takes you to the extra jobs.")',
+    'Press Stay in the contest to go back to the contest.': 'V97: help for the confirm card, one line per button; cold readers v97-r1 (27 Nov 2026), both readers failed it: same trip, and "where you were" was vague (was "Stay in the contest takes you back to where you were.")',
+    'The five questions use the real names of the parts.': 'V97 dispute 3 (my call, 27 Nov 2026): the source "It uses the real names." follows a line about the box, so "It" could mean the box; the round is named instead; cold readers v97-r1 (27 Nov 2026), both readers failed it: "the real names" could mean the pupils\' real names; the line now says of the parts; the two sentences were then joined into one so the round card keeps to 25 counted words (it was 28; my call, 27 Nov 2026, same meaning as the line both v97-r2 readers passed)',
+    'When your teacher says STOP, click Finish the lesson.': 'V97 dispute 6 (my call, 27 Nov 2026): the source "The lesson stops when your teacher says STOP." never said what to press; the line names the button on the same screen',
+    'Sit together at one PC. Use your PC or your partner\'s PC.': 'away card + its job line: the source "Sit together at one of your two PCs." made her ask which PC and whose; build reader r1-b and v97-r1-a both failed it (27 Nov 2026); then cold readers v97-r2 (27 Nov 2026), both readers failed it again: "Use yours or a partner\'s." left out the noun twice, so the line now says PC both times (my call after the two rounds)',
+    'Which part should the computer shop add to this customer\'s PC?': 'customers job: the source "Which part should the computer shop add?" did not say add to what; build reader jobs-r1-a and v97-r1-a both failed it (27 Nov 2026)',
+    'You work alone on {me}.': 'door, on her own: the source "You work on {me} on your own." piles two "on"s round the name; build reader jobs-r1-a and v97-r1-a both failed it (27 Nov 2026)',
     'Go and sit with {name}.':'the operation\'s blocked link runs both surgeons on seat A\'s PC (as V1), so seat B is sent to A by her real name: the live V1 line "Go and sit with {p}." with its second sentence dropped'
   };
   root.L6C_STRINGS = S;
