@@ -15,7 +15,8 @@
   const root = () => document.getElementById('app');
   const app = { set innerHTML(v) { A.paint(v); }, get innerHTML() { return root().innerHTML; }, querySelector: (s) => root().querySelector(s), querySelectorAll: (s) => root().querySelectorAll(s) };
   const h = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const header = (crumbs) => A.header(crumbs, true) + '<div id="sys"></div>';
+  // this topic's Help button says "Stuck? Show me" (audit Q25), not the other topics' label
+  const header = (crumbs) => A.header(crumbs, true).replace(/(<button class="helpbtn"[^>]*>)[^<]*(<\/button>)/, '$1' + h(HELP.button) + '$2') + '<div id="sys"></div>';
   const C0 = () => [{ t: A.T('cw.crumbHome'), go: '#home' }, { t: IC.topic.tile, go: '#init' }];
   const rec = (id) => IREC.P[id] || {};
   const isInitHash = () => /^#(init|ipage|ipart|ieval|icase)(\/|$)/.test(location.hash);
@@ -57,18 +58,20 @@
   const statesOf = (s) => (STATES[s - 1] && STATES[s - 1].states) || 1;
   function deckStep(dir) {
     const p = deckPos(); let s = p.s, k = p.k;
-    if (dir > 0) { if (k + 1 < statesOf(s)) k++; else { s = s >= NSLIDES ? 1 : s + 1; k = 0; } }
+    if (dir > 0) { if (k + 1 < statesOf(s)) k++; else if (s >= NSLIDES) { const pl = app.querySelector('.ipages'); if (pl) pl.scrollIntoView({ behavior: 'smooth' }); return; } else { s = s + 1; k = 0; } }
     else { if (k > 0) k--; else { s = s <= 1 ? NSLIDES : s - 1; k = statesOf(s) - 1; } }
     deckSave({ s, k }); paintDeck();
   }
   function deckJump(s) { deckSave({ s, k: 0 }); paintDeck(); }
-  function capText(p, n) { return 'Slide ' + p.s + ' of ' + NSLIDES + (n > 1 ? ' · ' + p.k + ' of ' + (n - 1) + ' reveals shown' : ''); }
+  const atEnd = (p) => p.s >= NSLIDES && p.k + 1 >= statesOf(p.s);
+  function capText(p, n) { return atEnd(p) ? 'That’s the slides done. Now open page 1 below.' : 'Slide ' + p.s + ' of ' + NSLIDES + (n > 1 ? ' · ' + p.k + ' of ' + (n - 1) + ' reveals shown' : ''); }
+  const nextText = (p) => (atEnd(p) ? 'Go to the pages' : 'Next');
   function deckHtml() {
     const p = deckPos(), n = statesOf(p.s);
     const dots = STATES.map((x) => '<span class="dot' + (x.slide === p.s ? ' on' : '') + '" data-dot="' + x.slide + '" role="button" tabindex="0" aria-label="Slide ' + x.slide + '"></span>').join('');
     return '<section class="card deck"><h2>' + h(IC.topic.deck) + '</h2>'
       + '<img class="slide" src="' + h(slideSrc(p.s, p.k)) + '" alt="Slide ' + p.s + ' of ' + NSLIDES + '">'
-      + '<div class="row deckrow"><button class="btn sec" data-deck-back>Back</button><span class="cap" data-cap>' + capText(p, n) + '</span><button class="btn" data-deck-next>Next</button></div>'
+      + '<div class="row deckrow"><button class="btn sec" data-deck-back>Back</button><span class="cap" data-cap>' + capText(p, n) + '</span><button class="btn" data-deck-next>' + nextText(p) + '</button></div>'
       + '<div class="dots">' + dots + '</div></section>';
   }
   function paintDeck() {
@@ -76,6 +79,7 @@
     const p = deckPos(), n = statesOf(p.s);
     img.src = slideSrc(p.s, p.k); img.alt = 'Slide ' + p.s + ' of ' + NSLIDES;
     const cap = app.querySelector('[data-cap]'); if (cap) cap.textContent = capText(p, n);
+    const nb = app.querySelector('[data-deck-next]'); if (nb) nb.textContent = nextText(p);
     app.querySelectorAll('.deck [data-dot]').forEach((d) => d.classList.toggle('on', +d.dataset.dot === p.s));
     // warm the next image
     const nx = new Image(); nx.src = p.k + 1 < n ? slideSrc(p.s, p.k + 1) : slideSrc(p.s >= NSLIDES ? 1 : p.s + 1, 0);
@@ -96,18 +100,21 @@
 
   // ---------- shared pieces ----------
   function marksLine(q) {
-    if (q.kind === 'match') return plural(q.marks, 'mark', 'marks');
-    return q.tm ? plural(q.pm, 'mark', 'marks') + ' now, plus ' + q.tm + ' more in March' : plural(q.pm, 'mark', 'marks') + ' · tick the points';
+    // every kind is marked out of pm now; tm more come in March (A8, A11, A12)
+    return q.tm ? plural(q.pm, 'mark', 'marks') + ' now, plus ' + q.tm + ' more in March' : plural(q.pm, 'mark', 'marks') + (q.kind === 'match' ? ' · choose the answers' : ' · tick the points');
   }
   function stateOf(q) {
     const p = rec(q.id);
-    if (p.a) { const N = q.kind === 'match' ? q.marks : q.pm; return p.f === p.b ? 'First try ' + p.f + ' of ' + N : 'First try ' + p.f + ' of ' + N + ' · best ' + p.b + ' of ' + N; }
+    if (p.a) { const N = q.pm; return p.f === p.b ? 'First try ' + p.f + ' of ' + N : 'First try ' + p.f + ' of ' + N + ' · best ' + p.b + ' of ' + N; }
     if (p.k) return 'Written, not marked yet';
     return 'Not tried';
   }
-  const srcLine = (q) => q.src + ' · ' + plural(q.marks, 'mark', 'marks');
-  function sectionsHtml(b) {
-    return IC.pages[b].sections.map((s) => '<section class="card psec"><h2>' + h(s.h) + ' <small class="yrs">' + h(s.yrs) + '</small></h2><ul class="plines">'
+  const srcLine = (q) => q.src + ' · ' + marksLine(q);
+  // q given: only the cards from the year this question was asked (A1), and the cards with no year
+  function sectionsHtml(b, q) {
+    const all = IC.pages[b].sections, yr = q && (String(q.src).match(/\d{4}/) || [])[0];
+    const mine = yr ? all.filter((s) => !s.yrs || String(s.yrs).indexOf(yr) >= 0) : all;
+    return (mine.some((s) => s.yrs) ? mine : all).map((s) => '<section class="card psec"><h2>' + h(s.h) + (s.yrs ? ' <small class="yrs">' + h(s.yrs) + '</small>' : '') + '</h2><ul class="plines">'
       + s.lines.map((l) => '<li class="pline" data-line="' + h(l[0]) + '">' + h(l[1]) + '</li>').join('') + '</ul></section>').join('');
   }
   function askCard(q, withTie) {
@@ -125,7 +132,7 @@
   }
   function flagBtn(q) {
     const on = !!rec(q.id).fl;
-    return '<button class="flag' + (on ? ' on' : '') + '" data-flag>' + (on ? 'Your teacher will see this ✓' : 'Ask your teacher') + '</button>';
+    return '<button class="flag' + (on ? ' on' : '') + '" data-flag>' + (on ? 'Your teacher will see you asked about ' + h(q.src) + ' ✓' : 'Ask your teacher about this question') + '</button>';
   }
   function wireFlag(q, beat) {
     const fl = app.querySelector('[data-flag]'); if (!fl) return;
@@ -147,13 +154,13 @@
       + '<button class="room' + (room === 'march' ? ' on' : '') + '" role="tab" aria-selected="' + (room === 'march') + '" data-room="march" data-go="#init/march">' + h(IC.topic.rooms.march) + '<small>' + (CS ? h(CS.org) : 'opens in March') + '</small></button></div>';
     let body = '';
     if (room === 'know') {
-      body = deckHtml() + '<h2 class="sect">The examiner’s points, bullet by bullet</h2><ul class="parts bullets">' + BULLETS.map((b, i) => {
+      body = deckHtml() + '<h2 class="sect">The examiner’s points: three pages</h2><ul class="parts ipages">' + BULLETS.map((b, i) => {
         const done = !!(IREC.G && IREC.G[b.id]);
-        return '<li data-go="#ipage/' + b.id + '" tabindex="0" role="button"><span class="n">' + (i + 1) + '</span><span class="name"><b>' + h(b.short) + '</b><small>' + h(b.plain) + '</small></span><span class="state' + (done ? ' done' : '') + '">' + (done ? 'Ticked ✓' : 'Not ticked yet') + '</span></li>';
+        return '<li' + (done ? ' class="done"' : '') + ' data-go="#ipage/' + b.id + '" tabindex="0" role="button"><span class="n">' + (i + 1) + '</span><span class="name"><b>' + h(b.short) + '</b><small>' + h(b.plain) + '</small></span><span class="state' + (done ? ' done' : '') + '">' + (done ? 'Ticked ✓' : 'Not ticked yet') + '</span></li>';
       }).join('') + '</ul>';
     } else if (room === 'apply') {
-      body = BULLETS.map((b, i) => '<h2 class="sect">Bullet ' + (i + 1) + ' · ' + h(b.short) + '</h2><ul class="parts qs">' + IC.parts.filter((q) => q.b === b.id).map((q) =>
-        '<li data-go="#ipart/' + q.id + '" tabindex="0" role="button"><span class="src">' + h(q.src) + '</span><span class="name">' + h(q.ask) + '</span><span class="marks">' + h(marksLine(q)) + '</span><span class="state">' + h(stateOf(q)) + '</span></li>').join('') + '</ul>').join('');
+      body = BULLETS.map((b, i) => '<h2 class="sect">Page ' + (i + 1) + ' · ' + h(b.short) + '</h2><ul class="parts qs">' + IC.parts.filter((q) => q.b === b.id).map((q) =>
+        '<li' + (rec(q.id).a || rec(q.id).k ? '' : ' class="nt"') + ' data-go="#ipart/' + q.id + '" tabindex="0" role="button"><span class="src">' + h(q.src) + '</span><span class="name">' + h(q.ask) + '</span><span class="marks">' + h(marksLine(q)) + '</span><span class="state">' + h(stateOf(q)) + '</span></li>').join('') + '</ul>').join('');
     } else {
       if (!CS) body = '<div class="card"><p class="marchempty">' + h(IC.topic.marchEmpty) + '</p></div>';
       else {
@@ -166,9 +173,11 @@
           }).join('') + '</ul>';
       }
     }
-    const job = room === 'know' ? JOB.know : room === 'apply' ? JOB.apply : JOB.march;
+    const job = room === 'know' ? JOB.know : room === 'apply' ? JOB.apply : CS ? JOB.march : JOB.marchEmpty;
     app.innerHTML = header(C0().slice(0, 1).concat([{ t: IC.topic.tile }])) + '<main class="init"><h1>' + h(IC.topic.tile) + '</h1><p class="sub">' + h(IC.topic.sub) + '</p>' + rooms + '<p class="job">' + h(job) + '</p>' + body + '</main>';
     if (room === 'know') { wireDeck(); paintDeck(); }
+    // "Back to the pages" lands on the list, not the top of the deck (K4)
+    if (room === 'know' && cur.toPages) { cur.toPages = false; const pl = app.querySelector('.ipages'); if (pl) pl.scrollIntoView(); }
   };
 
   // #ipage/<b> — the examiner's points and the quick check
@@ -186,12 +195,14 @@
       const ready = Q.picks.every((x) => x != null);
       let res = '';
       if (Q.result) {
-        res = Q.result.pass ? '<div class="qresult"><p class="pass">All 3 right. This page is ticked ✓</p><div class="row"><button class="btn" data-go="#init">Back to the bullets</button><button class="btn sec" data-qmore>Three more questions</button></div></div>'
-          : '<div class="qresult"><p class="miss">' + Q.result.wrong.length + ' of 3 not right. Read the line, then try three more.</p><ul class="wrong">' + Q.result.wrong.map((w) => '<li>Question ' + (Q.items.indexOf(w.i) + 1) + ': not right. See the line: “' + h(LINE[w.L] || '') + '”</li>').join('') + '</ul><div class="row"><button class="btn" data-qmore>Three more questions</button></div></div>';
+        const bi = BULLETS.findIndex((x) => x.id === b), nb = BULLETS[bi + 1];
+        const nextBtn = nb ? '<button class="btn" data-go="#ipage/' + nb.id + '">Next page: ' + h(nb.short) + '</button>' : '<button class="btn" data-go="#init/apply">Try a past question</button>';
+        res = Q.result.pass ? '<div class="qresult"><p class="pass">All 3 right. This page is ticked ✓</p><div class="row">' + nextBtn + '<button class="btn sec" data-go="#init/pages">Back to the pages</button><button class="btn ghost" data-qmore>Three more questions</button></div></div>'
+          : '<div class="qresult"><p class="miss">' + (3 - Q.result.wrong.length) + ' of 3 right. Read the line, then try three more.</p><ul class="wrong">' + Q.result.wrong.map((w) => '<li>Question ' + (Q.items.indexOf(w.i) + 1) + ': not right. See the line: “' + h(LINE[w.L] || '') + '”</li>').join('') + '</ul><div class="row"><button class="btn" data-qmore>Three more questions</button><button class="btn sec" data-go="#init/pages">Back to the pages</button></div></div>';
       }
       foot = '<div class="card quick"><h2>Quick check</h2>' + items + (Q.result ? '' : '<div class="row"><button class="btn" data-qcheck' + (ready ? '' : ' disabled') + '>Check my three answers</button>' + (ready ? '' : '<span class="why">Pick one answer for each question first.</span>') + '</div>') + errLine() + res + '</div>';
     }
-    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>Bullet ' + b.slice(1) + ' of 3 · ' + h(BY[b].short) + '</h1><p class="spec">In the spec: ' + h(BY[b].spec) + '</p><p class="job">' + h(Q ? JOB.quick : JOB.page) + '</p>' + sectionsHtml(b) + foot + '</main>';
+    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>Page ' + b.slice(1) + ' of 3 · ' + h(BY[b].short) + '</h1><p class="spec">CCEA’s name for it: ' + h(BY[b].spec) + '</p><p class="job">' + h(Q ? JOB.quick : JOB.page) + '</p>' + sectionsHtml(b) + foot + (Q && Q.result && Q.result.pass ? '' : '<p class="pagefoot"><button class="btn ghost" data-go="#init/pages">Back to the pages</button></p>') + '</main>';
     const start = app.querySelector('[data-quick]'); if (start) start.addEventListener('click', () => { cur.quick = { items: drawQuick(b), picks: [null, null, null], result: null }; render(); app.querySelector('.quick').scrollIntoView(); });
     if (Q) {
       app.querySelectorAll('.quick input[type=radio]').forEach((r) => r.addEventListener('change', () => { Q.picks[+r.name.slice(1)] = +r.value; const btn = app.querySelector('[data-qcheck]'); if (btn && Q.picks.every((x) => x != null)) { btn.disabled = false; const w = btn.parentElement.querySelector('.why'); if (w) w.remove(); } }));
@@ -221,7 +232,7 @@
     app.querySelectorAll('[data-door]').forEach((d) => d.addEventListener('click', () => { DOOR[id] = d.dataset.door === 'write' ? 1 : 0; A.go('#ipart/' + id + (d.dataset.door === 'write' ? '/turn' : '/lesson')); }));
   };
   function vLesson(q) {
-    app.innerHTML = header(partCrumbs(q).concat([{ t: 'The lesson' }])) + '<main class="init ipage"><h1>The lesson · ' + h(BY[q.b].short) + '</h1><p class="job">' + h(JOB.beat2) + '</p>' + askCard(q, false) + sectionsHtml(q.b)
+    app.innerHTML = header(partCrumbs(q).concat([{ t: 'The lesson' }])) + '<main class="init ipage"><h1>The lesson · ' + h(BY[q.b].short) + '</h1><p class="job">' + h(JOB.beat2) + '</p>' + askCard(q, false) + sectionsHtml(q.b, q)
       + '<div class="row foot"><button class="btn" data-go="#ipart/' + q.id + '/turn">' + (q.kind === 'match' ? 'Answer it now' : 'Write it now') + '</button></div></main>';
   }
   // drafts before the lock live in this browser only
@@ -259,22 +270,24 @@
     try { localStorage.removeItem(draftKey(id)); } catch (e) { /* fine */ }
     if (!cur.ticks) cur.ticks = (p.t || []).slice();
     const marked = !!cur.verdict;
-    const ticks = '<ul class="ticks">' + S.labels.map((l, i) => '<li><label data-tick="' + i + '"><input type="checkbox" value="' + i + '"' + (cur.ticks.includes(i) ? ' checked' : '') + (marked ? ' disabled' : '') + '> <span>' + h(l.l) + (l.tie ? ' <small class="tag">March</small>' : '') + (l.auto ? ' <small class="tag">read from your words</small>' : '') + '</span></label></li>').join('') + '</ul>';
+    const waits = (l) => l.tie && !CS;   // a case-study point cannot be ticked before March (A9)
+    cur.ticks = cur.ticks.filter((i) => !(S.labels[i] && waits(S.labels[i])));
+    const ticks = '<ul class="ticks">' + S.labels.map((l, i) => '<li' + (waits(l) ? ' class="waits"' : '') + '><label data-tick="' + i + '"><input type="checkbox" value="' + i + '"' + (cur.ticks.includes(i) ? ' checked' : '') + (marked || waits(l) ? ' disabled' : '') + '> <span>' + h(l.l) + (l.tie ? ' <small class="tag">' + (CS ? 'March' : 'March: tick it then') + '</small>' : '') + (l.auto ? ' <small class="tag">read from your words</small>' : '') + '</span></label></li>').join('') + '</ul>';
     let marks = '';
     if (marked) {
       const v = cur.verdict;
       const isLv = q.kind === 'levels';
       const score = isLv ? v.mark + ' <small>of 6 marks</small>' : v.pts + ' <small>of ' + q.pm + ' marks for the points</small>';
-      const march = q.tm ? 'In March this question is worth ' + q.marks + ' marks: ' + q.tm + ' more for tying your points to the case study.' : 'In March you tie these same points to the case study for the full ' + q.marks + ' marks.';
-      marks = '<div class="card marks"><h2>Your examiner’s marks</h2><p class="score">' + score + '</p>' + (isLv ? bandsHtml(v.band) : '') + '<p class="march">' + h(march) + '</p><p class="hist">' + (p.a === 1 ? 'Marked once.' : 'Marked ' + p.a + ' times · first ' + p.f + ' · best ' + p.b + '.') + '</p>'
+      const march = q.tm ? 'In March this question is worth ' + q.marks + ' marks: ' + q.tm + ' more for tying your points to the case study.' : '';
+      marks = '<div class="card marks"><h2>Your examiner’s marks</h2><p class="score">' + score + '</p>' + (isLv ? bandsHtml(v.band) : '') + (march ? '<p class="march">' + h(march) + '</p>' : '') + '<p class="hist">' + (p.a === 1 ? 'Marked once.' : 'Marked ' + p.a + ' times · first ' + p.f + ' · best ' + p.b + '.') + '</p>'
         + '<div class="row"><button class="btn sec" data-fix>Fix my ticks</button><button class="btn sec" data-show>Show the examiner’s answer</button><button class="btn ghost" data-go="#ipart/' + id + '/more">Another question</button><button class="btn ghost" data-go="#ieval/' + id + '">How did it go?</button></div>' + errLine() + '</div>';
       if (cur.model) marks += '<div class="card exampl"><h2>The examiner’s answer</h2><p class="model">' + h(cur.model) + '</p></div>';
     } else if (p.a) marks = '<p class="hist">Marked ' + (p.a === 1 ? 'once' : p.a === 2 ? 'twice' : p.a + ' times') + ' before: first try ' + p.f + ' of ' + q.pm + ' · best ' + p.b + ' of ' + q.pm + '.</p>';
-    const lockedBox = q.kind === 'story' ? '<textarea class="prose" data-write readonly rows="5">' + h(S.text) + '</textarea>' : '<textarea class="prose" data-write readonly rows="9">' + h(S.text) + '</textarea>';
-    shell(JOB.marks, '<div class="card write locked"><p class="meta">Your answer, locked</p>' + lockedBox + '</div><div class="card tickcard"><h2>Tick the points you made</h2>' + ticks + (marked ? '' : '<div class="row"><button class="btn" data-mark>Mark my ticks</button></div>' + errLine()) + '</div>' + marks + flagBtn(q));
-    app.querySelectorAll('.ticks input').forEach((c) => c.addEventListener('change', () => { const i = +c.value; cur.ticks = cur.ticks.filter((x) => x !== i); if (c.checked) cur.ticks.push(i); }));
+    const lockedBox = '<p class="lockedtext">' + h(S.text) + '</p>';
+    shell(JOB.marks, '<div class="card write locked"><p class="meta">Your answer, locked</p>' + lockedBox + '</div><div class="card tickcard"><h2>Tick the points you made</h2>' + ticks + (marked ? '' : '<div class="row"><button class="btn" data-mark>Mark my ticks</button><span class="why" data-noticks' + (cur.ticks.length ? ' hidden' : '') + '>No ticks yet: check your writing against each point.</span></div>' + errLine()) + '</div>' + marks + flagBtn(q));
+    app.querySelectorAll('.ticks input').forEach((c) => c.addEventListener('change', () => { const i = +c.value; cur.ticks = cur.ticks.filter((x) => x !== i); if (c.checked) cur.ticks.push(i); const nt = app.querySelector('[data-noticks]'); if (nt) nt.hidden = cur.ticks.length > 0; }));
     const mk = app.querySelector('[data-mark]'); if (mk) mk.addEventListener('click', () => { icall({ op: 'mark', part: id, ticks: cur.ticks.slice().sort((a, b) => a - b) }, mk).then((r) => { cur.verdict = r.verdict; render(); app.querySelector('.card.marks').scrollIntoView(); }, fail); });
-    const fx = app.querySelector('[data-fix]'); if (fx) fx.addEventListener('click', () => { cur.verdict = null; cur.model = null; render(); });
+    const fx = app.querySelector('[data-fix]'); if (fx) fx.addEventListener('click', () => { cur.verdict = null; cur.model = null; render(); const tc = app.querySelector('.tickcard'); if (tc) tc.scrollIntoView(); });
     const sh = app.querySelector('[data-show]'); if (sh) sh.addEventListener('click', () => { icall({ op: 'answer', part: id }, sh).then((r) => { cur.model = r.model || ''; render(); app.querySelector('.card.exampl').scrollIntoView(); }, fail); });
     wireFlag(q, 'turn');
   }
@@ -282,15 +295,15 @@
     const id = q.id, p = rec(id), picks = cur.picks || (cur.picks = q.rows.map(() => null));
     if (cur.verdict) {
       const v = cur.verdict;
-      shell(JOB.marks, '<div class="card marks"><h2>Your marks</h2><p class="score">' + v.score + ' <small>of ' + q.marks + ' marks</small></p><ul class="check">' + q.rows.map((r, i) => '<li class="' + (v.ok[i] ? 'hit' : 'miss') + '"><b>' + h(r.text) + ':</b> ' + h(r.opts[picks[i]]) + (v.ok[i] ? '' : (v.hints && v.hints[i] ? ' — ' + h(v.hints[i]) : '')) + '</li>').join('') + '</ul>'
-        + '<p class="hist">' + (p.a === 1 ? 'Checked once.' : 'Checked ' + p.a + ' times · first ' + p.f + ' · best ' + p.b + '.') + '</p>'
+      shell(JOB.checked, '<div class="card marks"><h2>Your marks</h2><p class="score">' + v.score + ' <small>of ' + q.pm + ' marks</small></p><ul class="check">' + q.rows.map((r, i) => '<li class="' + (v.ok[i] ? 'hit' : 'miss') + '"><b>' + h(r.text) + ':</b> ' + h(r.opts[picks[i]]) + (v.ok[i] ? '' : (v.hints && v.hints[i] ? ' — ' + h(v.hints[i]) : '')) + '</li>').join('') + '</ul>'
+        + '<p class="hist">' + (p.a === 1 ? 'Checked once.' : 'Checked ' + p.a + ' times · first try ' + p.f + ' of ' + q.pm + ' · best ' + p.b + ' of ' + q.pm + '.') + '</p>'
         + '<div class="row"><button class="btn sec" data-again>Try again</button><button class="btn ghost" data-go="#ipart/' + id + '/more">Another question</button><button class="btn ghost" data-go="#ieval/' + id + '">How did it go?</button></div></div>' + flagBtn(q));
-      app.querySelector('[data-again]').addEventListener('click', () => { cur.verdict = null; cur.picks = q.rows.map(() => null); render(); });
+      app.querySelector('[data-again]').addEventListener('click', () => { const ok = v.ok || []; cur.verdict = null; cur.picks = picks.map((x, i) => (ok[i] ? x : null)); render(); });
       wireFlag(q, 'turn'); return;
     }
     const rows = q.rows.map((r, i) => '<div class="mrow"><label for="m' + i + '">' + h(r.text) + '</label><select data-row="' + i + '" id="m' + i + '"><option value="">Choose…</option>' + r.opts.map((o, j) => '<option value="' + j + '"' + (picks[i] === j ? ' selected' : '') + '>' + h(o) + '</option>').join('') + '</select></div>').join('');
     const ready = picks.every((x) => x != null);
-    shell(JOB.beat3, '<div class="card match">' + rows + '<div class="row"><button class="btn" data-check' + (ready ? '' : ' disabled') + '>Check my choices</button><span class="why"' + (ready ? ' hidden' : '') + '>Choose one option for each row first.</span></div>' + errLine() + (p.a ? '<p class="hist">Checked ' + (p.a === 1 ? 'once' : p.a + ' times') + ' before: first ' + p.f + ' · best ' + p.b + ' of ' + q.marks + '.</p>' : '') + '</div>' + flagBtn(q));
+    shell(JOB.choose, '<div class="card match">' + rows + '<div class="row"><button class="btn" data-check' + (ready ? '' : ' disabled') + '>Check my choices</button><span class="why"' + (ready ? ' hidden' : '') + '>Choose one option for each row first.</span></div>' + errLine() + (p.a ? '<p class="hist">Checked ' + (p.a === 1 ? 'once' : p.a + ' times') + ' before: first try ' + p.f + ' of ' + q.pm + ' · best ' + p.b + ' of ' + q.pm + '.</p>' : '') + '</div>' + flagBtn(q));
     const chk = app.querySelector('[data-check]'), why = chk.parentElement.querySelector('.why');
     app.querySelectorAll('select[data-row]').forEach((s) => s.addEventListener('change', () => { picks[+s.dataset.row] = s.value === '' ? null : +s.value; const ok = picks.every((x) => x != null); chk.disabled = !ok; why.hidden = ok; }));
     chk.addEventListener('click', () => { icall({ op: 'check', part: id, picks, door: DOOR[id] || 0 }, chk).then((r) => { cur.verdict = r.verdict; render(); }, fail); });
@@ -343,7 +356,7 @@
     const crumbs = partCrumbs(q).concat([{ t: 'How did it go?' }]);
     const shell = (inner) => { app.innerHTML = header(crumbs) + '<main class="init ev"><h1>How did it go?</h1><p class="job">' + h(JOB.verdict) + '</p>' + askCard(q, false) + inner + '</main>'; };
     const VW = { can: 'I can', getting: 'Getting there', not: 'Not yet' };
-    if (sent) { shell('<div class="card"><p>Already sent: <b>' + h(VW[sent.v] || sent.v) + '</b>' + (sent.c ? ' — “' + h(sent.c) + '”' : '') + '</p><p class="meta">Your teacher saw it the first time. It is not changed by a second try.</p><div class="row"><button class="btn" data-go="#ipart/' + id + '/more">Another question</button><button class="btn sec" data-go="#init/apply">Back to Apply it</button></div></div>'); return; }
+    if (sent) { const fresh = cur.justSent; shell('<div class="card sentcard"><p>' + (fresh ? 'Sent to your teacher ✓ ' : 'You sent this already: ') + '<b>' + h(VW[sent.v] || sent.v) + '</b>' + (sent.c ? ' — “' + h(sent.c) + '”' : '') + '</p><p class="meta">' + (fresh ? 'Your teacher can see it now. You send it once for each question.' : 'Your teacher saw it the first time. You send it once for each question.') + '</p><div class="row"><button class="btn" data-go="#ipart/' + id + '/more">Another question</button><button class="btn sec" data-go="#init/apply">Back to Apply it</button></div></div>'); return; }
     const ans = cur.ans || (cur.ans = { v: null, c: '' });
     shell('<div class="card"><div class="line"><span>Could you answer this question in the exam?</span><span class="seg">' + Object.keys(VW).map((k) => '<button data-v="' + k + '"' + (ans.v === k ? ' class="on"' : '') + '>' + VW[k] + '</button>').join('') + '</span></div>'
       + '<label class="lbl">One line to your teacher<textarea class="comment" data-c maxlength="60" rows="2" placeholder="Up to 60 letters">' + h(ans.c) + '</textarea><span class="count" data-count>' + ans.c.length + ' / 60</span></label>'
@@ -351,29 +364,47 @@
     const send = app.querySelector('[data-send]'), why = send.parentElement.querySelector('.why');
     app.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { ans.v = b.dataset.v; app.querySelectorAll('.seg button').forEach((x) => x.classList.toggle('on', x === b)); send.disabled = false; why.hidden = true; }));
     const c = app.querySelector('[data-c]'); c.addEventListener('input', () => { ans.c = c.value.slice(0, 60); app.querySelector('[data-count]').textContent = ans.c.length + ' / 60'; });
-    send.addEventListener('click', () => { icall({ op: 'eval', part: id, v: ans.v, c: ans.c }, send).then(() => { cur.ans = null; render(); }, fail); });
+    send.addEventListener('click', () => { icall({ op: 'eval', part: id, v: ans.v, c: ans.c }, send).then(() => { cur.ans = null; cur.justSent = true; render(); }, fail); });
   };
 
   // ---------- help (the same panel as the other topics, with this topic's lines) ----------
   function helpKey() {
     if (!cur) return 'home';
-    if (cur.k === 'init') return cur.room === 'apply' ? 'apply' : cur.room === 'march' ? 'march' : 'know';
+    if (cur.k === 'init') return cur.room === 'apply' ? 'apply' : cur.room === 'march' ? (CS ? 'march' : 'marchEmpty') : 'know';
+    if (cur.k === 'ieval') return IREC.E && IREC.E[cur.id] ? 'sent' : 'verdict';
     if (cur.k === 'ipage') return cur.quick ? 'quick' : 'page';
-    if (cur.k === 'icase') return 'march';
+    if (cur.k === 'icase') return CS ? 'march' : 'marchEmpty';
     if (cur.k === 'ipart') {
       const kind = PART[cur.id] ? PART[cur.id].kind : 'prose';
-      if (cur.beat === 'lesson') return 'page';
+      if (cur.beat === 'lesson') return 'lesson';
       if (cur.beat === 'turn') return kind === 'story' ? 'story' : kind === 'match' ? 'match' : 'beat3';
-      return 'apply';
+      return 'door';
     }
     return 'apply';
   }
-  function closeHelp() { const p = document.querySelector('.helppanel'); if (p) p.remove(); const b = document.querySelector('[data-help]'); if (b) b.setAttribute('aria-expanded', 'false'); }
+  // the thing to press next gets a gold ring while the help is open
+  const RING = {
+    know: ['[data-deck-next]', '.ipages li:not(.done)'], page: ['[data-quick]'],
+    quick: ['[data-qmore]', '.qresult .btn', '[data-qcheck]:not([disabled])', '.quick .item'],
+    apply: ['.qs li.nt', '.qs li'], door: ['[data-door=learn]'], lesson: ['.foot .btn'],
+    beat3: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
+    story: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
+    match: ['[data-check]:not([disabled])', 'select[data-row]', '[data-again]'],
+    march: ['.tasks', '[data-tielock]', '[data-tiemark]'], marchEmpty: ['[data-room=know]'],
+    verdict: ['.seg button', '[data-send]'], sent: ['.sentcard .btn'], home: ['[data-room=know]']
+  };
+  function ringOn(key) {
+    const sels = RING[key] || [];
+    for (const sel of sels) { const el = app.querySelector(sel); if (el) { el.classList.add('helpring'); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } }
+  }
+  function ringOff() { document.querySelectorAll('.helpring').forEach((e) => e.classList.remove('helpring')); }
+  function closeHelp() { ringOff(); const p = document.querySelector('.helppanel'); if (p) p.remove(); const b = document.querySelector('[data-help]'); if (b) b.setAttribute('aria-expanded', 'false'); }
   function toggleHelp() {
     if (document.querySelector('.helppanel')) return closeHelp();
     const hd = document.querySelector('header.bar'); if (!hd) return;
     hd.insertAdjacentHTML('afterend', '<aside class="helppanel" role="region" aria-label="Help"><ul>' + (HELP[helpKey()] || HELP.home).map((l) => '<li>' + h(l) + '</li>').join('') + '</ul><div class="row"><button class="btn sec" data-helpclose>' + h(HELP.close) + '</button></div></aside>');
     const b = document.querySelector('[data-help]'); if (b) b.setAttribute('aria-expanded', 'true');
+    ringOn(helpKey());
   }
   // capture phase, so the other topics' help listeners never see a click on this topic's screens
   document.addEventListener('click', (e) => {
@@ -389,7 +420,7 @@
   function route(k, bits) {
     closeHelp();
     const same = cur && cur.k === k && cur.id === bits[1] && cur.beat === (bits[2] || null);
-    if (k === 'init') { cur = { k, room: bits[1] === 'apply' ? 'apply' : bits[1] === 'march' ? 'march' : 'know' }; render(); icall({ op: 'state' }).then(() => { if (cur && cur.k === 'init') render(); }, () => {}); return; }
+    if (k === 'init') { cur = { k, room: bits[1] === 'apply' ? 'apply' : bits[1] === 'march' ? 'march' : 'know', toPages: bits[1] === 'pages' }; render(); icall({ op: 'state' }).then(() => { if (cur && cur.k === 'init') render(); }, () => {}); return; }
     if (k === 'ipage') { if (!IC.pages[bits[1]]) return A.go('#init'); cur = { k, b: bits[1], quick: null }; return render(); }
     if (!PART[bits[1]]) return A.go('#init/apply');
     if (k === 'ipart') {

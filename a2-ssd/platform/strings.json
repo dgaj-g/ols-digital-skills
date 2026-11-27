@@ -480,5 +480,16 @@
   "ev.cwUndone": "unmarked chapter {c}",
   "ev.cwDownload": "downloaded {file}",
   "ev.cwClear": "cleared chapter {c}",
-  "ev.cwNotice": "read the “guide has changed” message and ticked to confirm"
+  "ev.cwNotice": "read the “guide has changed” message and ticked to confirm",
+  "staff.i.caseHead": "The case study for March",
+  "staff.i.caseNote": "Until this is filled in, every pupil’s March room says: “{empty}” On release day put in the organisation’s name, the full case-study text, and the names and terms the examiner will want tied, separated by commas. Pupils then tie each answer they have already written to it, and the grid shows the tied mark after a slash.",
+  "staff.i.caseText": "Case study text",
+  "staff.i.caseTerms": "Names and terms to tie, separated by commas",
+  "staff.i.caseDown": "Take the case study down",
+  "staff.i.sumTried": "Marked at least once",
+  "staff.i.sumFull": "Full marks first try",
+  "staff.i.missed": "Most missed so far: {src} ({full} of {tried} got full marks first try). Hover a column head to read the question.",
+  "staff.i.key": "Each cell is her first mark out of the question’s point marks, then · her best if it went up, and after March / her tied mark out of the full exam marks. … means written but not marked yet. ! means she has asked for you. Click a cell to read her answer beside the examiner’s.",
+  "staff.i.choices": "Her last choices · marked by the machine",
+  "staff.i.choicesLater": "Her choices are kept from her next check on."
 }

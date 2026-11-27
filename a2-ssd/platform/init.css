@@ -15,7 +15,7 @@ main.init .foot{margin-top:1rem}
 /* the deck */
 .card.deck{padding:.9rem}
 .card.deck h2{margin:0 0 .5rem}
-.deck img.slide{display:block;width:100%;height:auto;aspect-ratio:16/9;border:1px solid var(--line);border-radius:8px;background:#fff}
+.deck img.slide{display:block;width:auto;max-width:100%;max-height:calc(100vh - 170px);margin:0 auto;height:auto;aspect-ratio:16/9;border:1px solid var(--line);border-radius:8px;background:#fff}
 .deck .deckrow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.6rem 0 .4rem;flex-wrap:wrap}
 .deck .cap{color:var(--mute);font-size:.95rem}
 .deck .dots{display:flex;flex-wrap:wrap;gap:4px;margin:.2rem 0 0}
@@ -24,10 +24,10 @@ main.init .foot{margin-top:1rem}
 .deck .dot.on{background:var(--navy);transform:scale(1.25)}
 .deck .dot:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 /* lists */
-.parts.bullets li{grid-template-columns:2rem 1fr auto}
-.parts.bullets .n{font-weight:800;color:var(--navy);font-size:1.2rem}
-.parts.bullets .name small,.parts.qs .name small{display:block;color:var(--mute);font-weight:400}
-.parts.bullets .state.done{color:var(--ok);font-weight:700}
+.parts.ipages li{grid-template-columns:2rem 1fr auto}
+.parts.ipages .n{font-weight:800;color:var(--navy);font-size:1.2rem}
+.parts.ipages .name small,.parts.qs .name small{display:block;color:var(--mute);font-weight:400}
+.parts.ipages .state.done{color:var(--ok);font-weight:700}
 .parts.qs li{grid-template-columns:110px 1fr 150px auto;align-items:center}
 .parts.qs .src{color:var(--navy);font-weight:700;font-size:.9rem}
 .parts.qs .marks{color:var(--mute);font-size:.9rem}
@@ -106,3 +106,20 @@ main.ev textarea.comment{width:100%;box-sizing:border-box;display:block;margin:.
 
 /* staff grid: Last seen never wraps (look pass 18 Nov) */
 .staff .igrid td:nth-child(2),.staff .igrid th:nth-child(2){white-space:nowrap}
+/* 27 Nov walk fixes */
+main.init .flag.busy{position:fixed}
+@media (min-width:1200px){body:has(main.init) .helppanel{width:340px}body:has(.helppanel) main.init{margin-right:372px}}
+.helpring{outline:3px solid var(--gold,#E4B824);outline-offset:3px;border-radius:8px;animation:helpring 1.2s ease-in-out infinite}
+@keyframes helpring{50%{outline-color:rgba(228,184,36,.35)}}
+@media (prefers-reduced-motion:reduce){.helpring{animation:none}}
+.lockedtext{white-space:pre-wrap;margin:6px 0 0;padding:12px 14px;background:var(--tint,#F4F6FA);border:1px solid var(--line);border-radius:8px;line-height:1.5}
+.ticks li.waits{opacity:.6}
+.parts.ipages li.done .name{color:var(--ok)}
+.pagefoot{margin-top:14px}
+/* walk 27 Nov: staff Reasons grid */
+.staff .igrid,.staff .igrid th,.staff .igrid td{font-family:inherit}
+.staff .igrid td:first-child,.staff .igrid th:first-child{position:sticky;left:0;background:var(--card);z-index:1}.staff .igrid th:first-child{background:var(--tint)}
+.staff .igrid tr.grp th{font-size:.82em;text-align:center;border-bottom:2px solid var(--line)}
+.staff .igrid tr.sum td{font-size:.86em;color:var(--mute);border-top:2px solid var(--line)}
+.staff .idrawer pre{font-family:inherit;white-space:pre-wrap}
+.staff .btn.busy{opacity:.7;cursor:progress}

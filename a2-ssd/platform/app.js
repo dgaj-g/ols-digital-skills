@@ -796,6 +796,7 @@
   function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
   function route() {
     if (!ME.cls) return;
+    LS.set('last:' + ME.email, { h: location.hash || '#home', t: Date.now() });
     const bits = (location.hash || '#home').slice(1).split('/'), k = bits[0];
     if (k === 'sql') vSql();
     else if (k === 'paper') vPaper(bits[1]);
@@ -878,6 +879,11 @@
     flushOutbox();
     window.NORM.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T, againHtml, wireAgain }, r.norm);
     if (window.INIT) window.INIT.mount({ call, kvPut, kvLocal, kvSync, kvKey, header, paint, go, T }, r.init, r.email);
+    // Q21: a reload (Google drops the hash) puts her back where she was, if it was in the last 4 hours
+    const last = LS.get('last:' + ME.email);
+    if (!location.hash && last && last.h && last.h !== '#home' && Date.now() - (last.t || 0) < 4 * 3600 * 1000) {
+      try { history.replaceState(null, '', last.h); } catch (e) { location.hash = last.h; return; }
+    }
     route();
     notice(r.cw);
   }
