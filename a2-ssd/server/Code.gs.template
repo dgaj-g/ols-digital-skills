@@ -743,6 +743,7 @@ function apiInit(req) {
       var rec = readInit_(cls, email), p = rec.P[id] || {}, first = p.f == null;
       if (first) { p.k = p.k || tmin_(); p.d = req.door === 1 ? 1 : 0; p.f = mv.score; p.b = mv.score; p.a = 1; }
       else { p.a = num_(p.a) + 1; if (mv.score > num_(p.b)) { p.b = mv.score; if (p.s) p.sb = 1; } }
+      p.c = choices;   // her last choices, for the teacher's drawer
       rec.P[id] = p; writeInit_(cls, email, rec);
       return { first: first, part: p };
     });
@@ -840,7 +841,8 @@ function iStaffScripts_(cls, pe, id) {
   if (!jp || !meta) return err_('unknown-part');
   var rec = readInit_(cls, pe), p = rec.P[id] || {};
   return ok_({ part: p, text: p.k ? iText_(cls, pe, id) : '', ttext: p.tk ? iText_(cls, pe, id + '-t') : '', labels: iLabels_(jp), model: jp.model || '',
-    kind: jp.kind, marks: meta.marks, pm: meta.pm, ev: rec.E[id] || null });
+    kind: jp.kind, marks: meta.marks, pm: meta.pm, ev: rec.E[id] || null,
+    picks: jp.kind === 'match' && p.c ? p.c : null, right: jp.kind === 'match' && p.c ? InitJudge.match(id, p.c).ok : null });
 }
 // staff: the class's case study for March (one object on the class record)
 function iCase_(name, email, req) {
