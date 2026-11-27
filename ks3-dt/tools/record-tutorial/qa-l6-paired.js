@@ -11,6 +11,8 @@
  *   --scenario blocked   Cara's live link is blocked (she is told to sit with Anya): Anya must still have a way on
  *   --scenario reload    Anya reloads mid-operation and lands back on the same patient with the same parts sealed
  *   --scenario trio      three pupils open together: one room of three, three seats
+ *   --scenario leave     paired; Cara presses Leave the contest at question 6 (V97): Bernadette answers for her on
+ *                        Anya's screen with the reason "left", Cara goes to the extra jobs and comes back there after a reload
  *   --scenario all       every one of the above (default)
  *
  *   node ks3-dt/tools/record-tutorial/qa-l6-paired.js [--base http://localhost:8131] [--scenario all] [--width 1366]
@@ -255,6 +257,14 @@ async function contest(page, fr, opts) {
       else if (v.ph === 'film') { if (await has('filmgo')) await act('filmgo'); else { await sleep(1000); continue; } }
       else if (v.ph === 'notice') { if (await has('noticeok')) await act('noticeok'); }
       else if (v.ph === 'q' && v.rev) { if (await has('next')) await act('next'); }
+      else if (opts.leaveAt != null && v.ph === 'q' && !v.rev && v.q === opts.leaveAt && answered !== v.q) {
+        /* V97: Leave the contest sits in the top bar; the confirm card names both buttons */
+        if (!await fclick(fr, '#leaveBtn')) { await sleep(350); continue; }
+        await fr.waitForFunction(() => document.body.dataset.phase === 'leave', null, { timeout: 5000 });
+        if (opts.onConfirm) await opts.onConfirm();
+        await act('leaveyes');
+        return 'left';
+      }
       else if (v.ph === 'q' && answered !== v.q) {
         if (CQ.Q[v.q].kind === 'order') {
           for (let g = 0; g < 12; g++) {
@@ -603,9 +613,80 @@ async function scenTrio(browser) {
   await ctx.close();
 }
 
+/* V97 (his ask, 27 Nov 2026): the way out part-way. Cara leaves at question 6; Anya plays on with Bernadette answering
+   for Cara at once, and both screens give the same reason. Cara lands on the extra jobs, keeps no contest badge, and a
+   reload brings her back to the extra jobs, never to the contest. */
+async function scenLeave(browser) {
+  const { ctx, pages: [A, B], errs } = await start(browser, ['anya', 'cara']);
+  const [fa, fb] = await Promise.all([frameReady(A, 30000), frameReady(B, 30000)]);
+  if (!must(!!fa && !!fb, 'both door frames opened')) { await ctx.close(); return; }
+  await Promise.all([waitBegin(fa, 30000), waitBegin(fb, 30000)]);
+  await throughDoor(fa); await sleep(900); await throughDoor(fb);
+  await Promise.all([chunkChange(A, 'c1', 10000), chunkChange(B, 'c1', 10000)]);
+  const [oa, ob] = await Promise.all([frameReady(A, 20000), frameReady(B, 20000)]);
+  for (const fr of [oa, ob]) await fr.waitForFunction(() => window.OPUI && OPUI.S, null, { timeout: 10000 });
+  await Promise.all([waitOp(oa, 30000), waitOp(ob, 30000)]);
+  must(await operate([oa, ob]) === true, 'the patient is done on both PCs');
+  await sleep(1500); await fclick(oa, '#nextbtn'); await fclick(ob, '#nextbtn');
+  const [c3a, c3b] = await Promise.all([chunkChange(A, 'c2', 10000), chunkChange(B, 'c2', 10000)]);
+  if (!must(c3a === 'c3' && c3b === 'c3', 'both on to the contest (' + c3a + ', ' + c3b + ')')) { await ctx.close(); return; }
+  await Promise.all([watchMount(A, 'A c3', 8000), watchMount(B, 'B c3', 8000)]);
+  const [wa, wb] = await Promise.all([frameReady(A, 20000), frameReady(B, 20000)]);
+  if (!must(!!wa && !!wb, 'both contest frames opened')) { await ctx.close(); return; }
+  /* What each PC sends from here on (the badge, or the leave). The preview keeps every pupil in ONE localStorage blob
+     that both pages read and rewrite, so two saves at the same moment can wipe one: on 27 Nov Anya's operation entry
+     (chart=7, +20 XP) vanished because both PCs pressed Next together. The live server keeps one row per pupil, so
+     the gate judges what each PC sent, and the records only by their own contest keys, never by comparing totals. */
+  const tap = p => p.evaluate(() => { const call = App.call; App.call = function (a, q) { if (a === 'saveEvent' && q && q.detail != null) { const l = JSON.parse(sessionStorage.getItem('qa-ev') || '[]'); l.push([Number(q.xp || 0), String(q.detail)]); sessionStorage.setItem('qa-ev', JSON.stringify(l)); } return call.apply(this, arguments); }; });
+  await Promise.all([tap(A), tap(B)]);
+  const hb = await hashOf(wb), seatB = hb && hb.seat;
+  let confirm = null;
+  const onConfirm = async () => {
+    confirm = await wb.evaluate(() => ({ text: (document.getElementById('card') || {}).innerText || '', yes: !!document.querySelector('#card [data-act="leaveyes"]'), no: !!document.querySelector('#card [data-act="leaveno"]') }));
+    await shot(B, 'B-leave-confirm');
+  };
+  /* Anya plays the whole contest; Cara plays five questions, then leaves at question 6 */
+  const pa = contest(A, wa, { ms: 300000 });
+  const rb = await contest(B, wb, { stagger: 1500, leaveAt: 5, onConfirm });
+  must(rb === 'left', 'Cara pressed Leave the contest at question 6, then Leave the contest on the confirm card');
+  must(!!confirm && confirm.yes && confirm.no && /Leave the contest\?/.test(confirm.text) && /Bernadette answers for you from now on\./.test(confirm.text), 'the confirm card asks "Leave the contest?" and says Bernadette answers for her (' + (confirm && confirm.text.replace(/\s+/g, ' ').slice(0, 160)) + ')');
+  const nb = await chunkChange(B, 'c3', 12000);
+  must(nb === 'extras', 'Cara lands on the extra jobs (' + nb + ')');
+  await shot(B, 'B-after-leave');
+  /* Anya's screen: Bernadette answers for Cara at once, with the reason "left" */
+  const seen = await wa.waitForFunction(s => { const v = L6C.E.view(); return v.partnerState[s] === 'left' && /has left the contest/.test(document.body.innerText) ? { m: L6C.E.seatState(s).m, a: L6C.E.seatState(s).a, q: v.q } : false; }, seatB, { timeout: 15000 }).then(h => h.jsonValue(), () => null);
+  must(!!seen, 'Anya\'s screen says Cara has left the contest' + (seen ? ' (at question ' + (seen.q + 1) + ')' : ''));
+  await shot(A, 'A-partner-left');
+  const wr = await pa;
+  must(wr === true, 'Anya finished the contest on her own, with Bernadette answering for Cara');
+  const endB = await wa.evaluate(s => L6C.E.seatState(s), seatB).catch(() => null);
+  note('Cara\'s column on Anya\'s PC: a ' + (endB && endB.a) + ' m ' + (endB && endB.m));
+  must(!!endB && endB.m.slice(0, 5) === '00000' && /^3+$/.test(endB.m.slice(5)) && endB.a.indexOf('-') === -1, 'Cara\'s first five answers are her own; Bernadette answered the rest with the reason "left" (' + (endB && endB.m) + ')');
+  /* Cara reloads: she comes back to the extra jobs, never the contest */
+  await B.reload({ waitUntil: 'domcontentloaded' }); await sleep(2500);
+  if (await chunkNow(B) !== 'extras') { await openLesson6(B); await sleep(2500); }
+  must(await chunkNow(B) === 'extras', 'after a reload Cara is back on the extra jobs (' + await chunkNow(B) + ')');
+  await Promise.all([chunkChange(A, 'c3', 10000)]);
+  const [wka, wkb] = await Promise.all([toTheEnd(A, 'A'), toTheEnd(B, 'B')]);
+  note('A walked ' + wka.join(' ') + ' · B walked ' + wkb.join(' '));
+  for (const [p, tag] of [[A, 'A'], [B, 'B']]) must(await p.evaluate(() => !!document.querySelector('.exit-done')), tag + ' reaches the done card');
+  const [ra, rbr] = [await record6(A, WHO.anya), await record6(B, WHO.cara)];
+  note('records A ' + JSON.stringify(ra) + ' · B ' + JSON.stringify(rbr));
+  /* the record keeps no badge id: the badge shows as its XP and the chunk's own detail ("contest" for a finisher, "contest=left" for a leaver) */
+  const BXP = (() => { try { const L = JSON.parse(fs.readFileSync('/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src/j1/lessons/j1-06.json', 'utf8')); const c = L.chunks.find(c => c.badge && c.badge.id === 'l6-ward'); return c ? Number(c.badge.xp) : null; } catch (e) { return null; } })();
+  const sent = p => p.evaluate(() => JSON.parse(sessionStorage.getItem('qa-ev') || '[]').filter(e => /^contest/.test(e[1])));
+  const [sa, sb] = [await sent(A), await sent(B)];
+  note('contest saves sent: A ' + JSON.stringify(sa) + ' · B ' + JSON.stringify(sb));
+  const has = (l, xp, d) => l.some(e => e[0] === xp && e[1] === d);
+  must(BXP > 0 && has(sa, BXP, 'contest') && !sa.some(e => e[1] === 'contest=left') && has(sb, 0, 'contest=left') && !sb.some(e => e[1] === 'contest' || e[0] > 0), 'Anya\'s PC sends the contest badge (+' + BXP + ' XP, "contest"); Cara\'s PC sends "contest=left" with 0 XP and never the badge');
+  must(!!ra && !!rbr && /(^|;)contest(;|$)/.test(ra[2]) && /(^|;)contest=left(;|$)/.test(rbr[2]) && !/(^|;)contest(;|$)/.test(rbr[2]), 'the records agree: Anya "contest", Cara "contest=left" and no "contest" (' + (ra && rbr ? ra[2] + ' · ' + rbr[2] : 'no record') + ')');
+  must(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 6).join(' | ') : ''));
+  await ctx.close();
+}
+
 (async () => {
   const browser = await chromium.launch();
-  const run = { pair: scenPair, gone: scenGone, midop: scenMidop, blocked: scenBlocked, reload: scenReload, trio: scenTrio };
+  const run = { pair: scenPair, gone: scenGone, midop: scenMidop, blocked: scenBlocked, reload: scenReload, trio: scenTrio, leave: scenLeave };
   const list = SCEN === 'all' ? Object.keys(run) : SCEN.split(',');
   for (const s of list) {
     SCEN_NOW = s; console.log('\n=== ' + s + ' ===');

@@ -21,12 +21,12 @@ function controlMustFail(name, fn) { var failed = false; try { if (fn() === fals
 function eq(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 
 /* ---- harness ---- */
-function world(seats, seed, extra) {
+function world(seats, seed, extra, mod) { /* mod: another contest.js (G12 runs V96's as its control) */
   var T = 0, log = [], engines = {}, connected = {}, queue = [], lastBeat = 0;
   function flush() { while (queue.length) { var m = queue.shift(); Object.keys(engines).forEach(function (s) { if (s !== m.seat && connected[s]) engines[s].receive(m); }); } }
   function make(seat, opts) {
     var o = Object.assign({ seat: seat, seats: seats, seed: seed, now: function () { return T; }, send: function (m) { if (!connected[seat]) return; log.push(m); queue.push(m); } }, extra || {}, opts || {});
-    var E = C.makeEngine(o); engines[seat] = E; connected[seat] = true; return E;
+    var E = (mod || C).makeEngine(o); engines[seat] = E; connected[seat] = true; return E;
   }
   return {
     engines: engines, make: make, flush: flush, now: function () { return T; },
@@ -230,6 +230,53 @@ function g4(goneMs) {
     var B5 = C.makeEngine({ seat: 'B', seats: ['A', 'B'], seed: 'g11', now: w.now }); B5.receive(bad);
     return B5.seatState('B').m[9] === '2';
   });
+})();
+
+/* ---- G12 (V97, his ask 27 Nov 2026): LEAVE THE CONTEST part-way. The partner who stays gets Bernadette at once, never
+   after 30 s, with the reason "left" (flag 3) worked out the same on every PC; the leaver's own answers stay hers.
+   The control runs the same walk on V96's contest.js (commit 0285a1b8), which had no way out, and must fail. ---- */
+function v96Engine() {
+  var src = cp.execSync('git -C ' + JSON.stringify(ROOT) + ' show 0285a1b8:ks3-dt/platform/assets/l6/contest.js', { encoding: 'utf8' });
+  var Mod = require('module'), m = new Mod(path.join(L6, 'contest-v96.js')); m._compile(src, path.join(L6, 'contest-v96.js')); return m.exports;
+}
+function g12pair(mod, quit) {
+  var w = world(['A', 'B'], 'g12', null, mod); w.make('A'); w.make('B');
+  var A = w.engines.A, B = w.engines.B;
+  playBoth(w, 4);
+  A.answer(5, right(5)); w.flush();
+  var leaveSnap = quit(w, B); w.flush(); w.advance(1000);
+  var five = A.revealed(5) && A.seatState('B').a[5] === mod.standIn('g12', 'B', 5) && A.seatState('B').m[5] === '3';
+  var state = A.view().partnerState.B === 'left';
+  var rest = true;
+  for (var i = 6; i < N; i++) { A.next(); A.answer(i, right(i)); w.flush(); w.advance(1000); if (!A.revealed(i) || A.seatState('B').m[i] !== '3' || A.seatState('B').a[i] !== mod.standIn('g12', 'B', i)) { rest = false; break; } }
+  A.next();
+  var own = A.seatState('B').m.slice(0, 5) === '00000' && A.seatState('B').a.slice(0, 5) === B.seatState('B').a.slice(0, 5);
+  var done = A.view().done;
+  var once = B.leave() === null;
+  return { ok: five && state && rest && own && done && once, note: 'five ' + five + ' state ' + state + ' rest ' + rest + ' own ' + own + ' done ' + done + ' once ' + once, snap: leaveSnap };
+}
+(function () {
+  var r = g12pair(C, function (w, B) { B.leave(); return B.snapshot(); });
+  ok('G12 Leave the contest at question 6: Bernadette answers for her within 1 s, flag 3, to the end; her five answers stay hers', r.ok, r.note);
+  var wire = LIVE.codec.encode(r.snap), back = LIVE.codec.decode(wire);
+  var A2 = C.makeEngine({ seat: 'A', seats: ['A', 'B'], seed: 'g12', now: function () { return 0; } }); A2.receive(back);
+  ok('G12 the leave crosses the real wire (live.js codec): q ' + C.LEFT + ' survives, the other PC sees "left"', back.q === C.LEFT && A2.hasLeft('B') && A2.view().partnerState.B === 'left' && wire.length < 200, wire);
+  controlMustFail('G12 V96 contest.js (no way out): the same walk', function () { return g12pair(v96Engine(), function (w, B) { B.leave(); return B.snapshot(); }).ok; });
+  controlMustFail('G12 a pupil who just closes her PC (no leave message): no stand-in for 30 s', function () { return g12pair(C, function (w, B) { w.drop('B'); return B.snapshot(); }).ok; });
+})();
+(function () { /* trio: C leaves at 13; A and B show the same stand-ins with the same reason */
+  var w = world(['A', 'B', 'C'], 'g12t'); w.make('A'); w.make('B'); w.make('C');
+  var E = w.engines;
+  for (var i = 0; i <= 11; i++) { ['A', 'B', 'C'].forEach(function (s) { E[s].answer(i, right(i)); }); w.flush(); ['A', 'B', 'C'].forEach(function (s) { E[s].next(); }); w.flush(); }
+  E.A.answer(12, right(12)); w.flush();
+  E.C.leave(); w.flush();
+  E.B.answer(12, wrong(12)); w.flush(); w.advance(1000);
+  var same = true;
+  for (var j = 13; j < N; j++) { E.A.next(); E.B.next(); w.flush(); E.A.answer(j, right(j)); E.B.answer(j, right(j)); w.flush(); w.advance(1000); }
+  E.A.next(); E.B.next(); w.flush();
+  var a = E.A.seatState('C'), b = E.B.seatState('C');
+  same = a.a === b.a && a.m === b.m && a.m === '000000000000' + '33333' && E.A.view().partnerState.C === 'left' && E.B.view().partnerState.C === 'left' && E.A.view().done && E.B.view().done && E.A.score('C') === E.B.score('C');
+  ok('G12 trio, one leaves at 13: both other PCs show the same stand-ins with the same reason (left) and the same score', same, a.a + '/' + a.m + ' vs ' + b.a + '/' + b.m);
 })();
 
 /* =================== STRINGS =================== */

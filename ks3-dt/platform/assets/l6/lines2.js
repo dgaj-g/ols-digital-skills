@@ -19,7 +19,7 @@
     team: 'You are {p}.',
     teamWith: '{p} works on {me} with you.',
     teamWith3: '{p} and {q} work on {me} with you.',
-    teamAlone: 'You work on {me} on your own.',
+    teamAlone: 'You work alone on {me}.',
     tour: [
       { at: 'facecol', say: 'This is {me}. Watch {his} face and read what {pro} says.' },
       { at: 'case',    say: '{His} parts are inside here. Click one to take it out.' },
@@ -35,7 +35,7 @@
     tourStart: 'Start',
     tourAgain: 'Show me around again',
     together3: '{p} and {q} are at the same table. You work on {me} together.',
-    alone: 'You work on {me} on your own.',
+    alone: 'You work alone on {me}.',
     pull: 'Click a part to take it out.',
     card: 'Pick the job that part was doing.',
     cardBoard: 'That one stays in. Pick the job it does.',

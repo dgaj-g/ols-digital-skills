@@ -1,9 +1,9 @@
-/* J1 L6 V2 THE CONTEST — the page (Version 96).
+/* J1 L6 V2 THE CONTEST — the page (Version 96; V97 adds Leave the contest, the way out part-way).
    Built from J1_L6_REDESIGN/prototype/contest-ui.js. The rules live in contest.js (window.L6CONTEST); every word in
    cstrings.js (window.L6C_STRINGS); the live link is OPLIVE.makeFireBus (live.js), the same one the operation uses.
    The lesson (Engines.operation) opens this page in a frame with a hash:
      {stage:'contest', seat, seats, room, seed, names, contest: <the saved opC or null>, fallback?}
-   and listens for {op:1, type: ready | save(opC) | fallback | alone | done}.
+   and listens for {op:1, type: ready | save(opC) | fallback | alone | done (left:1 when she pressed Leave the contest)}.
    Modes, each announced on screen: pair (the live link), solo (no partner: against Bernadette), team (the link could
    not start: two pupils at one PC against Bernadette), alone (the link died mid-contest: carry on against Bernadette).
    Gates: tools/record-tutorial/l6-contest-test.js (strings, engine) and l6-contest-look.js (this page, live). */
@@ -70,17 +70,17 @@
   /* ---- the engine ---- */
   var bus = null, db = null, E = null, ended = false;
   var link = { ever: false, downAt: 0 };
-  var ui = { ph: 'begin', introDone: [0, 0, 0, 0], film: false, playing: false, beat: -1, fs: false, nt: {}, fin: false, arr: null, arrQ: -1, focusK: null, away: false, backAt: {}, help: false, spot: false };
+  var ui = { ph: 'begin', introDone: [0, 0, 0, 0], film: false, playing: false, beat: -1, fs: false, nt: {}, fin: false, arr: null, arrQ: -1, focusK: null, away: false, backAt: {}, help: false, spot: false, leave: false, left: false };
   if (saved) {
     ui.ph = saved.ph || 'begin'; ui.introDone = (saved.introDone || ui.introDone).slice(); ui.fs = !!saved.fs;
-    ui.nt = saved.nt || {}; ui.fin = !!saved.fin;
+    ui.nt = saved.nt || {}; ui.fin = !!saved.fin; ui.left = !!saved.left;
   }
   function onChange(ev) { if (ev && ev.back) ui.backAt[ev.back] = Date.now(); queueSave(); }
   function makeE(m) {
     var pair = m === 'pair';
     return C.makeEngine({
       seat: seat, seats: pair ? origSeats : [seat], seed: seed,
-      send: pair ? function (msg) { if (bus) bus.send(msg.type, msg); } : null,
+      send: pair ? function (msg) { if (bus) return bus.send(msg.type, msg); } : null,
       presence: pair ? function (o) { return bus ? bus.quietFor(o) : Infinity; } : null,
       onChange: onChange
     });
@@ -132,6 +132,8 @@
 
   /* ---- which screen ---- */
   function phaseOf(v) {
+    if (ui.left) return 'leaving';
+    if (ui.leave) return 'leave';
     if (ui.away) return 'away';
     if (ui.ph === 'begin') return 'begin';
     if (ui.ph === 'result' || v.q >= N) return 'result';
@@ -193,7 +195,7 @@
     return html;
   }
   function waitLine(v) {
-    var pend = E.others.filter(function (o) { return E.seatState(o).a[v.q] === '-'; });
+    var pend = E.others.filter(function (o) { return E.seatState(o).a[v.q] === '-' && !E.hasLeft(o); });
     if (!pend.length) return '';
     var t = pend[0] === 'Z' ? S.wait.bernadette : pend.length > 1 ? S.wait.others : fill(S.wait.partner, { partner: callsign(pend[0]) });
     return '<div class="waitline"><span class="pulse"></span>' + esc(t) + '</div>';
@@ -252,6 +254,28 @@
     return kicker(S.fixes.team) + '<p class="headline">' + esc(me) + '</p><p class="headline">' + esc(S.fixes.fallbackSit) + '</p>' + actions(btn('together', S.fixes.fallbackButton));
   }
 
+  /* ---- Leave the contest (V97): a card that says what happens, then the way out ---- */
+  function pairLive() { return mode === 'pair' && !ui.away && !E.solo; }
+  function leaveHTML() {
+    return '<h1 class="title">' + esc(S.leave.title) + '</h1>' + list(pairLive() ? S.leave.pair : S.leave.alone) +
+      actions(btn('leaveyes', S.leave.yes) + btn('leaveno', S.leave.no, 'ghost'));
+  }
+  function leavingHTML() {
+    return '<h1 class="title">' + esc(S.leave.title) + '</h1>' + list(pairLive() ? S.leave.pair : S.leave.alone) +
+      actions('<button class="btn busy" type="button" disabled aria-busy="true"><span class="spin" aria-hidden="true"></span>' + esc(S.leave.busy) + '</button>');
+  }
+  var leaveSent = false;
+  function leaveNow() {
+    if (leaveSent) return; leaveSent = true;
+    var p = null;
+    if (mode === 'pair' && !ui.away && bus) { try { p = E.leave(); } catch (e) { p = null; } }
+    else E.leave();
+    ended = true; ui.left = true; ui.leave = false; closeHelp(); flushSave(); render();
+    var go = function () { if (go.done) return; go.done = true; try { if (bus) bus.close(); } catch (e) { } post('done', { left: 1 }); };
+    if (p && typeof p.then === 'function') { p.then(go, go); setTimeout(go, 4000); }
+    else setTimeout(go, 300);
+  }
+
   /* ---- the film (round 3): built once, then moved in place beat by beat ---- */
   var filmTimer = null, filmShown = false;
   function filmHTML() {
@@ -306,6 +330,7 @@
     var out = [];
     E.others.forEach(function (o) {
       var st = v.partnerState[o], m = { partner: callsign(o) }, os = E.seatState(o);
+      if (st === 'left') { out.push(fill(S.score.left, m) + (ph !== 'result' && os.a.indexOf('-') !== -1 ? ' ' + fill(S.wait.left, m) : '')); return; }
       if (st === 'gone') { if (os.q < N && !ended) out.push(fill(S.score.gone, m) + ' ' + fill(S.wait.gone, m)); return; }
       if (ui.backAt[o] && Date.now() - ui.backAt[o] < 10000) { out.push(fill(S.wait.back, m)); return; }
       if (ph !== 'q') return;
@@ -354,6 +379,8 @@
       case 'notice': return fill(S.job.notice, { btn: S.rev.next });
       case 'result': return S.job.result;
       case 'away': return S.job.away;
+      case 'leave': return S.job.leave;
+      case 'leaving': return S.job.leaving;
     }
     return '';
   }
@@ -365,6 +392,7 @@
       case 'q': return v.revealed ? S.help.more : mode === 'team' ? S.help.team : E.solo ? S.help.solo : S.help.pair;
       case 'result': return S.help.more;
       case 'away': return S.help.away.map(function (l) { return fill(l, { name: partnerFirst() }); }).filter(function (l) { return !unfilled(l); });
+      case 'leave': case 'leaving': return S.help.leave;
     }
     return [];
   }
@@ -435,7 +463,7 @@
   }
   function renderTop(v, ph) {
     var pl = partnerLabel(), where;
-    if (ph === 'begin' || ph === 'away') where = fill(S.top.begin, { partner: pl });
+    if (ph === 'begin' || ph === 'away' || ph === 'leave' || ph === 'leaving') where = fill(S.top.begin, { partner: pl });
     else if (ph === 'result') where = fill(S.top.result, { partner: pl });
     else if (ph === 'film') where = fill(S.top.film, { partner: pl });
     else if (ph === 'intro') where = fill(S.top.roundIntro, { n: v.round.n, roundName: v.round.name, partner: pl });
@@ -444,6 +472,8 @@
     if (w !== lastWhere) { $('where').innerHTML = w; lastWhere = w; }
     var y = (mode === 'team' ? esc(S.top.team) : esc(fill(S.top.you, { me: callsign(seat) }))).replace(/^(You are )(.+)$/, '$1<b>$2</b>');
     if (y !== lastYou) { $('you').innerHTML = y; lastYou = y; }
+    var lb = $('leaveBtn'), showLeave = ph !== 'result' && ph !== 'leave' && ph !== 'leaving';
+    if (lb && lb.hidden === showLeave) lb.hidden = !showLeave;
   }
   function render() {
     if (!E) return;
@@ -458,7 +488,7 @@
     } else {
       if (filmShown) { filmShown = false; clearTimeout(filmTimer); ui.playing = false; }
       document.body.dataset.beat = '';
-      changed = setCard(ph === 'begin' ? beginHTML() : ph === 'intro' ? introHTML(v) : ph === 'notice' ? noticeHTML(v) : ph === 'result' ? resultHTML(v) : ph === 'away' ? awayHTML() : qHTML(v));
+      changed = setCard(ph === 'leave' ? leaveHTML() : ph === 'leaving' ? leavingHTML() : ph === 'begin' ? beginHTML() : ph === 'intro' ? introHTML(v) : ph === 'notice' ? noticeHTML(v) : ph === 'result' ? resultHTML(v) : ph === 'away' ? awayHTML() : qHTML(v));
     }
     var sh = sideHTML(v, ph);
     if (sh !== lastSide) { $('side').innerHTML = sh; lastSide = sh; changed = true; }
@@ -476,7 +506,7 @@
   function opC() {
     var os = {};
     if (mode === 'pair') E.others.forEach(function (o) { var s = E.seatState(o); os[o] = { q: s.q, a: s.a, m: s.m }; });
-    return { v: 1, mode: mode, snap: E.snapshot(), os: os, ph: ui.ph, introDone: ui.introDone, fs: ui.fs, nt: ui.nt, fin: ui.fin };
+    return { v: 1, mode: mode, snap: E.snapshot(), os: os, ph: ui.ph, introDone: ui.introDone, fs: ui.fs, nt: ui.nt, fin: ui.fin, left: ui.left ? 1 : 0 };
   }
   function flushSave() { clearTimeout(saveT); var o = opC(), j = JSON.stringify(o); if (j === lastSaved) return; lastSaved = j; post('save', { opC: o }); }
   function queueSave() { clearTimeout(saveT); saveT = setTimeout(flushSave, 400); }
@@ -501,6 +531,9 @@
       case 'together': if (mode === 'pair') switchSolo('team'); ui.away = false; ui.ph = 'begin'; break;
       case 'alone': if (mode === 'pair') { switchSolo('alone'); post('alone'); } break;
       case 'cont': ui.fin = true; flushSave(); post('done'); return;
+      case 'leave': if (ended) return; ui.leave = true; break;
+      case 'leaveno': ui.leave = false; break;
+      case 'leaveyes': leaveNow(); return;
       default: return;
     }
     closeHelp(); queueSave(); render();
@@ -508,7 +541,7 @@
   document.addEventListener('click', function (e) {
     poke();
     var b = e.target.closest && e.target.closest('[data-act]'); if (!b || b.disabled) return;
-    if (!b.closest('#card') && !b.closest('#side')) return;
+    if (!b.closest('#card') && !b.closest('#side') && !b.closest('#top')) return;
     act(b.dataset.act, b);
   });
   document.addEventListener('pointerdown', poke);
@@ -526,12 +559,15 @@
   window.addEventListener('resize', function () { if (filmShown) { placeFilm(); updateFilm(); } if (ui.spot) applySpot(); });
 
   $('helpBtn').textContent = S.layer.helpBtn;
+  if ($('leaveBtn')) $('leaveBtn').textContent = S.top.leave;
   $('helpClose').textContent = S.layer.helpBack;
   $('helpStuck').textContent = S.layer.helpStuck;
   C.PARTS.forEach(function (k) { var im = new Image(); im.src = '../img/l6/' + k + '.jpg'; });
 
-  if (mode === 'pair') startBus();
+  if (mode === 'pair' && !ui.left) startBus();
   render();
   post('ready'); document.title = 'ready';   /* the test hook every L6 page sets (ui2.js, ward2.js, extras.js) */
+  /* she pressed Leave the contest and the page came back (a reload, or the lesson opened again): out again, nothing sent */
+  if (ui.left) { leaveSent = true; ended = true; setTimeout(function () { post('done', { left: 1 }); }, 300); }
   setInterval(function () { if (!E) return; if (!ended) E.tick(); idleCheck(); render(); }, 500);
 })();

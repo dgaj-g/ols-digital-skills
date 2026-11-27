@@ -109,12 +109,14 @@ async function fit(p) {
   });
 }
 const seen = new Set();
+const TX = []; /* V97: every screen's words, for the cold-read transcript (--transcript <file>) */
 async function look(p, name, tag) { /* words at the current size, fit at all four, one picture per screen */
   const m = await measure(p);
   const w = wordsOk(m);
   const key = name;
   if (!seen.has(key)) {
     seen.add(key);
+    TX.push({ name, tag: tag || 'A', m });
     gate('WORDS ' + name, w.length === 0, w.join('; ') || `${W(m.card)} words · job ${W(m.job)}`);
     const vp = p.viewportSize(); const fails = [];
     for (const [wd, ht] of SIZES) { await p.setViewportSize({ width: wd, height: ht }); await sleep(120); const f = fitOk(await fit(p)); if (f.length) fails.push(`${wd}×${ht}: ${f.join(', ')}`); if (wd === 1366 && ht === 681) await p.screenshot({ path: path.join(SHOTS, (tag || 'A') + '-' + name.replace(/[^a-z0-9]+/gi, '-') + '.png') }); }
@@ -310,6 +312,42 @@ async function answer(p, i, rightOne, how) {
     await c5.close();
   }
 
+  /* ===== V97 T-leave: Leave the contest part-way (his STOP ask, 27 Nov 2026) ===== */
+  if (run('leave')) {
+    const R = code(), ca = await browser.newContext(), cb = await browser.newContext();
+    const A = await open(ca, H('A', R), [1366, 681]), B = await open(cb, H('B', R), [1366, 681]);
+    await connected(A); await connected(B);
+    await act(A, 'start'); await act(B, 'start'); await act(A, 'introgo'); await act(B, 'introgo');
+    await phase(A, 'q'); await phase(B, 'q');
+    await answer(A, 0, true); await answer(B, 0, false); await revealed(A); await revealed(B);
+    const lb = await B.evaluate(() => { const b = document.getElementById('leaveBtn'); if (!b || b.offsetParent === null) return null; const r = b.getBoundingClientRect(); const hit = Array.from(document.querySelectorAll('#top > *, #top button')).filter(e => e !== b && !b.contains(e) && !e.contains(b) && e.offsetParent !== null).some(e => { const q = e.getBoundingClientRect(); return q.width && q.height && r.left < q.right - 1 && q.left < r.right - 1 && r.top < q.bottom - 1 && q.top < r.bottom - 1; }); return { text: b.textContent.trim(), hit }; });
+    gate('T-leave the top bar shows Leave the contest, clear of the other top items', lb && lb.text === S.top.leave && !lb.hit, JSON.stringify(lb));
+    await B.click('#leaveBtn'); await phase(B, 'leave');
+    const ml = await look(B, 'leave confirm card (pair)', 'B');
+    gate('T-leave the confirm card asks the button\'s words back and says Bernadette answers for her', ml.card.indexOf(S.leave.title) !== -1 && ml.card.indexOf(S.leave.pair[0]) !== -1, ml.card.replace(/\n/g, ' / '));
+    await act(B, 'leaveno'); const back = await phase(B, 'q');
+    gate('T-leave Stay in the contest goes back to the question', back);
+    await B.click('#leaveBtn'); await phase(B, 'leave');
+    await act(B, 'leaveyes');
+    const gone = await B.waitForFunction(() => (window.__posted || []).some(m => m.type === 'done' && m.left), null, { timeout: 8000 }).then(() => true, () => false);
+    gate('T-leave the lesson is told she left (done, left: 1)', gone);
+    await act(A, 'next'); await phase(A, 'q');
+    await answer(A, 1, true);
+    const ra = await revealed(A, 8000);
+    const mA = await measure(A);
+    gate('T-leave her partner\'s screen goes on: Bernadette answers and the state line says she has left', ra && /has left the contest/.test(mA.side), mA.side);
+    await look(A, 'reveal after the partner left');
+    await A.evaluate(() => L6C.bus && L6C.bus.destroy && L6C.bus.destroy()).catch(() => {});
+    await B.evaluate(() => L6C.bus && L6C.bus.destroy && L6C.bus.destroy()).catch(() => {});
+    await ca.close(); await cb.close();
+    const c6 = await browser.newContext(), P = await open(c6, hash({ stage: 'contest', seat: 'A', seats: ['A'], room: '', seed: 'solo2', names: ['Aoife Testpupil'] }), [1366, 681]);
+    await phase(P, 'begin'); await act(P, 'start'); await act(P, 'introgo'); await phase(P, 'q');
+    await P.click('#leaveBtn'); await phase(P, 'leave');
+    const mo = await look(P, 'leave confirm card (on her own)');
+    gate('T-leave alone the card says the contest stops here for her', mo.card.indexOf(S.leave.alone[0]) !== -1 && mo.card.indexOf(S.leave.pair[0]) === -1, mo.card.replace(/\n/g, ' / '));
+    await c6.close();
+  }
+
   /* ===== the checkers' own controls ===== */
   control('a 30-word card is caught', wordsOk({ card: 'one two three four five six seven eight nine ten. one two three four five six seven eight nine ten. one two three four five six seven eight nine ten.', job: 'Click it.', help: true, side: '' }).length > 0);
   control('a screen with no job line is caught', wordsOk({ card: 'Hello.', job: '', help: true, side: '' }).length > 0);
@@ -319,6 +357,7 @@ async function answer(p, i, rightOne, how) {
 
   gate('no page errors', errs.length === 0, errs.slice(0, 4).join(' | '));
   await browser.close();
+  if (args.indexOf('--transcript') !== -1) fs.writeFileSync(args[args.indexOf('--transcript') + 1], TX.map(t => '--- ' + t.name + ' (seat ' + t.tag + ')\nTOP: ' + t.m.top.replace(/\s+/g, ' ').trim() + '\nCARD:\n' + t.m.card + '\nSIDE: ' + t.m.side.replace(/\n/g, ' / ') + '\nJOB: ' + t.m.job + '\n').join('\n'));
   console.log(rows.join('\n'));
   console.log(`\nl6-contest-look: ${rows.length} checks, ${bad} failed`);
   process.exit(bad ? 1 : 0);

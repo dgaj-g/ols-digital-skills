@@ -18993,7 +18993,8 @@ window.OLS_TRANSPORT = {
      carries the moves (Firebase, no sign-in, nothing that names a pupil \u2014 DFM 325).
      frame \u2192 here: {op:1, type: ready|begin|done|save|next|fallback|wardDone|alone}; here \u2192 frame: {op:1, type:'names'}.
      THE CONTEST (V2, stage 'contest'): the whole contest rides on draft.opC (the page's own save, handed back in the hash
-     as H.contest), so a reload carries on where she was; 'done' ends the chunk; 'alone' is the page carrying on against
+     as H.contest), so a reload carries on where she was; 'done' ends the chunk ('done' with left:1 = Leave the contest:
+     the chunk ends with no badge, V97); 'alone' is the page carrying on against
      Bernadette when the link dies (it saves its own opC). */
   /* The lesson's own pairing words sit on its first chunk. Every stage passes them, so a later stage's brief wait never
      flashes the Vault's words (J1 L6, J3 L5). */
@@ -19030,7 +19031,7 @@ window.OLS_TRANSPORT = {
         }).join('');
         var c = el('<div class="card pyrun-hub op-hub"><span class="intro-kicker">' + esc(cfg.kicker || '') + '</span><h2>' + esc(cfg.title || '') + '</h2>' +
           '<p class="intro-lead">' + esc(lead).replace(/\n\n/g, '<br><br>') + '</p><div class="pyrun-jobs">' + jobs + '</div>' +
-          '<div class="rung-actions pyrun-exit-row"><button class="btn btn-primary pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
+          '<div class="rung-actions pyrun-exit-row"><button class="primary-btn pyrun-finish" type="button">' + esc(cfg.finishLabel || '') + '</button></div></div>');
         host.appendChild(c);
         c.querySelectorAll('.pyrun-job').forEach(function (b) {
           App.armButton(b, function () {
@@ -19091,6 +19092,8 @@ window.OLS_TRANSPORT = {
           else if (stage === 'contest' && m.type === 'done') {
             gone = true; window.removeEventListener('message', onMsg);
             if (ctx.review) { ctx.next(); return; }
+            /* V97: Leave the contest (the way out part-way, when the teacher says STOP): the chunk is done, no badge */
+            if (m.left) { finishChunk(ctx, 'contest=left', 0, false); return; }
             finishChunk(ctx, 'contest');
           }
           else if (stage === 'contest' && m.type === 'alone') { save(); }

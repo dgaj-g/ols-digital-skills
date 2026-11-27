@@ -21,8 +21,11 @@ Where a pupil could still stall:
   scrolls. This is the V1 layout, untouched by this build.
 - At 683 × 768 the fourth option of round 2's question sits right at the card's foot. It is visible and clickable.
 - Preview only (teachers, never pupils): the "PREVIEW · Anya" badge covers the second line of a two-line job bar at 683.
-- STOP while a pair is still in the contest: there is no way out part-way. The pair finishes the contest, then the next
-  screen shows Finish the lesson (the brief's "goes wrong" row says so). His call whether that is enough.
+- STOP while a pair is still in the contest (V97, fixed): Leave the contest sits in the top bar on every contest screen.
+  It asks "Leave the contest?" first, with Stay in the contest beside it, then goes to the extra jobs, where Finish the
+  lesson waits. Her partner's screen says she has left, and Bernadette answers for her from then on, with that reason on
+  the partner's screen. A pupil who leaves gets no contest badge. Gated by l6-contest-test G12 (the V96 engine is the
+  control that must fail), l6-contest-look T-leave and qa-l6-paired --scenario leave.
 - Between the operation and the contest the platform shows its own pairing card ("Finding your table partner.")
   for a moment while it checks the pair, as it did before V1's ward. A pupil working alone sees it too. It clears by
   itself.
