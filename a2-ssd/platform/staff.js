@@ -20,15 +20,18 @@
   const mins = (n) => (n < 60 ? T('staff.act.min', { n }) : T('staff.act.hm', { h: Math.floor(n / 60), m: n % 60 }));
   const marked = (n) => T(n === 1 ? 'staff.act.marked1' : 'staff.act.marked', { n });
   let app, ME = '', OWNER = false, TAB = 'live', CLS = '', CLASSES = [], timer = null;
+  let VIEW = 0;   // bumped whenever the staff view changes (tab, class, Live topic): a reply that lands after its view has gone is dropped, never painted into the new tab (v28)
   const sel = (k) => { try { return localStorage.getItem('a2staff:' + k) || ''; } catch (e) { return ''; } };
   const keep = (k, v) => { try { localStorage.setItem('a2staff:' + k, v); } catch (e) {} };
 
   function call(req) {
+    const v = VIEW, gone = () => new Promise(() => {});
     return window.OLS_TRANSPORT.call('apiStaff', req).then((r) => {
+      if (v !== VIEW) return gone();
       if (!r || r.ok === false) { const e = new Error((r && r.error) || 'error'); e.code = (r && r.error) || 'error'; throw e; }
       const box = app && app.querySelector('[data-msg]'); if (box) box.hidden = true;   // a call that lands clears any earlier "could not reach" line, so a refresh that works never sits under a stale error (v20)
       return r;
-    });
+    }, (e) => { if (v !== VIEW) return gone(); throw e; });
   }
   function frame(inner) {
     app.innerHTML = '<header class="bar"><span class="title">' + h(T('staff.title')) + '</span><span class="who">' + h(ME) + '</span></header><div id="sys"></div><main class="staff">' + inner + '</main>';
@@ -91,7 +94,7 @@
     });
   }
   function paint() {
-    clearInterval(timer); timer = null;
+    clearInterval(timer); timer = null; VIEW++;
     const tabs = [['classes', 'staff.tabClasses'], ['papers', 'staff.tabPapers'], ['live', 'staff.tabLive'], ['coursework', 'staff.tabCoursework'], ['export', 'staff.tabExport']];
     if (!CLASSES.length) TAB = 'classes';
     const pick = TAB !== 'classes' && CLASSES.length ? '<span class="cls"><label for="cls">' + h(T('staff.class')) + '</label><select id="cls">' +
@@ -229,7 +232,7 @@
   // ---------- Live · Normalisation (spec §9) ----------
   let TOPIC = ['norm', 'init'].includes(sel('topic')) ? sel('topic') : 'sql', NSEL = sel('npaper'), ISUB = sel('isub') === 'icase' ? 'icase' : 'igrid';
   const topicSwitch = () => '<div class="ttabs" role="group">' + [['sql', 'staff.n.sql'], ['norm', 'staff.n.norm'], ['init', 'Reasons for systems development']].map(([k, s]) => '<button data-topic="' + k + '"' + (k === TOPIC ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + h(k === 'init' ? s : T(s)) + '</button>').join('') + '</div>';
-  const wireTopic = () => pane().querySelectorAll('[data-topic]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.topic === TOPIC) return; TOPIC = b.dataset.topic; keep('topic', TOPIC); clearInterval(timer); timer = null; const d = app.querySelector('.drawer'); if (d) d.remove(); vLive(); }));
+  const wireTopic = () => pane().querySelectorAll('[data-topic]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.topic === TOPIC) return; TOPIC = b.dataset.topic; keep('topic', TOPIC); clearInterval(timer); timer = null; const d = app.querySelector('.drawer'); if (d) d.remove(); VIEW++; vLive(); }));
   const nParts = (pid) => window.NORM.partsOf(window.NORM.paperOf(pid));
   function nPaperSum(pu, pid) {
     let first = 0, best = 0, n = 0, cold = true, seen = false, flag = false; const parts = nParts(pid), P = pu.N.P;
