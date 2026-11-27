@@ -114,7 +114,7 @@ async function doorState(fr) {
   return fr.evaluate(() => { const b = document.getElementById('beginbtn'); const d = document.getElementById('door');
     const vis = el => { if (!el) return false; const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.hidden; };
     const btns = [...document.querySelectorAll('button')].filter(x => vis(x) && !x.disabled).map(x => (x.id || x.className) + ':' + x.textContent.trim().slice(0, 40));
-    return { door: !!(d && d.classList.contains('on')), begin: !!(b && !b.disabled && vis(b)), together: (document.getElementById('together') || {}).textContent || '',
+    return { door: !!(d && d.classList.contains('on')), begin: !!(b && !b.disabled && vis(b)) || vis(document.getElementById('doornext')), /* V2: the door has two cards; the first ends in Next */ together: (document.getElementById('together') || {}).textContent || '',
       away: vis(document.getElementById('away')), awaysay: (document.getElementById('awaysay') || {}).textContent || '', buttons: btns, stage: window.OPUI && OPUI.S ? OPUI.S.stage : null }; }).catch(e => ({ err: String(e) }));
 }
 /* c2 opens straight at the table (no door): wait until the operation is running */
@@ -324,7 +324,7 @@ async function scenPair(browser) {
   note('Begin ready after ' + ((Date.now() - tb) / 1000).toFixed(1) + ' s · A: ' + da.together + ' · B: ' + db.together);
   must(da.begin && db.begin, 'Begin is pressable on both doors once both are here');
   await shot(A, 'A-door'); await shot(B, 'B-door');
-  await fclick(fa, '#beginbtn'); await sleep(900); await fclick(fb, '#beginbtn');
+  await fclick(fa, '#doornext'); await sleep(400); await fclick(fa, '#beginbtn'); await sleep(900); await fclick(fb, '#doornext'); await sleep(400); await fclick(fb, '#beginbtn');
   const [ca, cb] = await Promise.all([chunkChange(A, 'c1', 10000), chunkChange(B, 'c1', 10000)]);
   must(ca === 'c2' && cb === 'c2', 'both moved on to the operation (' + ca + ', ' + cb + ')');
   await Promise.all([watchMount(A, 'A c2', 8000), watchMount(B, 'B c2', 8000)]);
@@ -388,14 +388,14 @@ async function scenGone(browser) {
   let wayOn = false;
   if (!wayOn) { const own = d.buttons.find(b => /own/i.test(b)); if (own) { await fclick(fa, '#' + own.split(':')[0]); wayOn = true; } }
   if (wayOn) {
-    if (d.begin) await fclick(fa, '#beginbtn');
+    if (d.begin) { await fclick(fa, '#doornext'); await sleep(400); await fclick(fa, '#beginbtn'); }
     await sleep(1500);
     const fr2 = await frameReady(A, 15000);
     const st = fr2 ? await doorState(fr2) : null;
     note('after the way on: chunk ' + await chunkNow(A) + ' ' + JSON.stringify(st));
     /* she must get through the whole operation on her own */
     let c = await chunkNow(A);
-    if (c === 'c1') { const b2 = await waitBegin(fr2, 10000); if (b2.begin) await fclick(fr2, '#beginbtn'); c = await chunkChange(A, 'c1', 10000); }
+    if (c === 'c1') { const b2 = await waitBegin(fr2, 10000); if (b2.begin) { await fclick(fr2, '#doornext'); await sleep(400); await fclick(fr2, '#beginbtn'); } c = await chunkChange(A, 'c1', 10000); }
     must(c === 'c2', 'Anya reached the operation (' + c + ')');
     const op = await frameReady(A, 20000);
     if (op) {
@@ -417,7 +417,7 @@ async function scenMidop(browser) {
   const [fa, fb] = await Promise.all([frameReady(A, 30000), frameReady(B, 30000)]);
   if (!must(!!fa && !!fb, 'both door frames opened')) { await ctx.close(); return; }
   await Promise.all([waitBegin(fa, 30000), waitBegin(fb, 30000)]);
-  await fclick(fa, '#beginbtn'); await fclick(fb, '#beginbtn');
+  await fclick(fa, '#doornext'); await sleep(400); await fclick(fa, '#beginbtn'); await fclick(fb, '#doornext'); await sleep(400); await fclick(fb, '#beginbtn');
   await Promise.all([chunkChange(A, 'c1', 10000), chunkChange(B, 'c1', 10000)]);
   const [oa, ob] = await Promise.all([frameReady(A, 20000), frameReady(B, 20000)]);
   for (const fr of [oa, ob]) await fr.waitForFunction(() => window.OPUI && OPUI.S, null, { timeout: 10000 });
@@ -481,7 +481,7 @@ async function scenReload(browser) {
   const [fa, fb] = await Promise.all([frameReady(A, 30000), frameReady(B, 30000)]);
   if (!must(!!fa && !!fb, 'both door frames opened')) { await ctx.close(); return; }
   await Promise.all([waitBegin(fa, 30000), waitBegin(fb, 30000)]);
-  await fclick(fa, '#beginbtn'); await fclick(fb, '#beginbtn');
+  await fclick(fa, '#doornext'); await sleep(400); await fclick(fa, '#beginbtn'); await fclick(fb, '#doornext'); await sleep(400); await fclick(fb, '#beginbtn');
   await Promise.all([chunkChange(A, 'c1', 10000), chunkChange(B, 'c1', 10000)]);
   let [oa, ob] = await Promise.all([frameReady(A, 20000), frameReady(B, 20000)]);
   for (const fr of [oa, ob]) await fr.waitForFunction(() => window.OPUI && OPUI.S, null, { timeout: 10000 });
@@ -528,7 +528,7 @@ async function scenTrio(browser) {
   if (trio) {
     const ds = await Promise.all(frs.map(f => waitBegin(f, 30000)));
     must(ds.every(d => d.begin), 'Begin is pressable on all three doors');
-    for (const f of frs) await fclick(f, '#beginbtn');
+    for (const f of frs) await fclick(f, '#doornext'); await sleep(400); await fclick(f, '#beginbtn');
     await Promise.all(pages.map(p => chunkChange(p, 'c1', 10000)));
     const ops = await Promise.all(pages.map(p => frameReady(p, 20000)));
     for (const fr of ops) await fr.waitForFunction(() => window.OPUI && OPUI.S, null, { timeout: 10000 });

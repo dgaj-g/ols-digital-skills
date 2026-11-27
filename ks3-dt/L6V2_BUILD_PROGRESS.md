@@ -54,3 +54,4 @@ Target: Apps Script Version 96, contentVersion 2026-11-27a.
 - 09:42 D1-D9 recorded; editing op page now.
 - 09:49 cstrings V2 op/hub/find/cust/own strings + frozen live lines sources; STRINGS gate green with controls. Next: operation.html + ui2.js.
 - 10:25 Op page V2 wired: two-card door, job line + Stuck? Show me, fluff stays (clean), PC not laptop, H-mode done screen; engines.js hub (ShowMe ring) + job routing (next ticks, xback, xfinish); extras.js find/customers/own; letter as a job (two columns, top bar, job bar). New gate l6-jobs-look.js PASS at 4 frame sizes, 4 controls caught; find boxes checked by overlay + zoom on case.jpg. Next: laptop grep, tests click #doornext, j1-06.json.
+- 10:26 Old gates moved to the two-card door + fluff clean: l6-harness 101/0, l6-look OK, l6-tour PASS, l6-engine 105. Next: j1-06.json + brief, pack, l6-walk V2.

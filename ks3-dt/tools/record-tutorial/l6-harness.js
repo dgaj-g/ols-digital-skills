@@ -17,7 +17,7 @@ const st = p => p.evaluate(() => { const S = OPUI.S, pr = OPUI.E.prompt(), sv = 
   return { stage: S.stage, pid: S.pid, round: S.round, myOut: S.my.out, wrongs: S.my.wrongs, parts: Object.fromEntries(Object.keys(S.parts).map(k => [k, S.parts[k].status + ':' + (S.parts[k].by || '') + (S.parts[k].told ? ':told' : '')])), sealed: OPUI.E.sealedCount(), counts: S.counts, chart: S.chart.join(','),
     prompt: pr.kind, text: pr.text, bar: document.getElementById('instr').textContent, sting: document.getElementById('instr').classList.contains('sting'), pulse: document.getElementById('instr').classList.contains('pulse'),
     face: sv ? sv.getAttribute('class') : '', strip: document.getElementById('strip').textContent, say: document.getElementById('say').textContent, cards: document.getElementById('cards').classList.contains('on'), cardh: document.getElementById('cardh').textContent, cardcap: document.getElementById('cardcap').textContent, ncards: document.querySelectorAll('#cardlist .card').length, nwrong: document.querySelectorAll('#cardlist .card.wrong').length,
-    fluff: S.fluff, fluffGone: document.querySelector('.slot[data-part="fluff"]').classList.contains('gone'), nsaid: S.said.length, lastSaid: last.text, lastTag: last.tag, here: S.others.every(o => S.presence[o] && S.presence[o].here), stats: S.stats, door: document.getElementById('door').classList.contains('on'), beginOn: document.getElementById('begin').classList.contains('on'), doneOn: document.getElementById('done').classList.contains('on'), donep: document.getElementById('donep').textContent, donereveal: document.getElementById('donereveal').textContent, appHidden: document.getElementById('app').hidden }; });
+    fluff: S.fluff, fluffGone: document.querySelector('.slot[data-part="fluff"]').classList.contains('clean'), nsaid: S.said.length, lastSaid: last.text, lastTag: last.tag, here: S.others.every(o => S.presence[o] && S.presence[o].here), stats: S.stats, door: document.getElementById('door').classList.contains('on'), beginOn: document.getElementById('begin').classList.contains('on'), doneOn: document.getElementById('done').classList.contains('on'), donep: document.getElementById('donep').textContent, donereveal: document.getElementById('donereveal').textContent, appHidden: document.getElementById('app').hidden }; });
 const slotCls = (p, part) => p.$eval(`.slot[data-part="${part}"]`, e => e.className + '|' + (e.querySelector('.badge') ? e.querySelector('.badge').textContent + ':' + e.querySelector('.badge').style.display : ''));
 const chartLine = (p, i) => p.$eval(`#lines .ln:nth-child(${i})`, e => ({ body: e.querySelector('.body').textContent.trim(), job: (e.querySelector('.job') || {}).textContent || '', tag: !!e.querySelector('.job .tag'), by: (e.querySelector('.by') || {}).textContent || '', byMe: !!(e.querySelector('.by') && e.querySelector('.by').classList.contains('me')) }));
 const over = p => p.evaluate(() => { const W = document.documentElement.clientWidth, H = document.documentElement.clientHeight, out = [];
@@ -44,9 +44,13 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   gate('both windows find each other within 6 s', Date.now() - tJoin < 6000, (Date.now() - tJoin) + ' ms');
   let sA = await st(A), sB = await st(B); gate('door: app hidden, door on, both', sA.door && sB.door && sA.appHidden, sA.door + '/' + sB.door);
   await A.waitForSelector('#begin.on', { timeout: 20000 }); await B.waitForSelector('#begin.on', { timeout: 20000 }); await shot(A, '10_door_A');
-  const together = await A.$eval('#together', e => e.textContent); gate('door names the partner and the shared patient', /Dr Custard is at the same table. You work on Bernadette together./.test(together), together);
-  const goal = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); gate('door says the goal in three lines', /This is Bernadette. She is a computer. \| Seven parts inside her each do one job.*\| Click a part to take it out. See what goes wrong. Fill in her chart./.test(goal), goal.slice(0, 200));
-  await A.click('#beginbtn'); await B.click('#beginbtn'); await sleep(400); sA = await st(A); sB = await st(B);
+  /* V2 door (D1): card 1 says who she is, with Next; card 2 says what is inside her and who is at the table, with Begin */
+  const goal1 = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); const kick = await A.$eval('#doorkick', e => e.textContent);
+  gate('door card 1: who she is, the mode line names me', /^This is Bernadette\. She is a computer\.$/.test(goal1.trim()) && kick === 'With your partner · You are Dr Marmalade', goal1.slice(0, 200) + ' · ' + kick);
+  await A.click('#doornext'); await sleep(300);
+  const together = await A.$eval('#together', e => e.textContent); gate('door card 2 names the partner at the same table', together === 'Dr Custard is at the same table.', together);
+  const goal = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); gate('door card 2 says what is inside her', /^Inside her are seven parts\. One thing inside her is not a part\.$/.test(goal.trim()), goal.slice(0, 200));
+  await A.click('#beginbtn'); await B.click('#doornext'); await B.click('#beginbtn'); await sleep(400); sA = await st(A); sB = await st(B);
   gate('begin: both tables open, door gone', sA.stage === 'op' && sB.stage === 'op' && !sA.door && !sB.door && !sA.appHidden, sA.stage + '/' + sB.stage);
   gate('bar names the exact gesture', sA.bar === 'Click a part to take it out.', sA.bar);
   await sleep(1500); await A.mouse.move(2, 2); await shot(A, '11_table_A_683'); await shot(B, '11_table_B_683'); fs.copyFileSync(path.join(SHOTS, '11_table_A_683.png'), path.join(SHOTS, 'stranger_X.png'));
@@ -110,8 +114,8 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   await loser.click('.card[data-key="board"]'); await sleep(200); sX = await st(loser); gate('board sealed by the loser', /^sealed:/.test(sX.parts.board), sX.parts.board);
   const n0 = sX.sealed; await loser.click('.slot[data-part="fluff"]'); let fOk = false, fT = Date.now();
   while (Date.now() - fT < 2000) { sX = await st(loser); fOk = sX.fluff === 'gone' && sX.fluffGone && sX.sealed === n0 && !sX.cards && sX.lastTag === 'fluff'; if (fOk) break; await sleep(50); }
-  gate('fluff: a joke, the slot goes, no chart line, no cards', fOk, 'fluff=' + sX.fluff + ' gone=' + sX.fluffGone + ' sealed=' + sX.sealed + '/' + n0 + ' cards=' + sX.cards + ' tag=' + sX.lastTag + ' · ' + sX.lastSaid);
-  await sleep(2400); gate('fluff gone on the partner\'s window too', (await st(W)).fluffGone, '');
+  gate('fluff: a joke, the slot says Cleaned, no chart line, no cards', fOk, 'fluff=' + sX.fluff + ' gone=' + sX.fluffGone + ' sealed=' + sX.sealed + '/' + n0 + ' cards=' + sX.cards + ' tag=' + sX.lastTag + ' · ' + sX.lastSaid);
+  await sleep(2400); gate('fluff cleaned on the partner\'s window too', (await st(W)).fluffGone, '');
   await W.click('.slot[data-part="psu"]'); await sleep(200); let sW = await st(W);
   gate('power supply: face goes dark, the patient says nothing, grey "has gone quiet"', sW.face === 'm-psu' && sW.lastTag === 'quiet' && sW.lastSaid === '', sW.face + ' / ' + sW.lastSaid);
   await W.waitForFunction(() => document.getElementById('bubble').classList.contains('quiet'), null, { timeout: 15000 }).catch(() => {}); await shot(W, '19_psu_quiet');
@@ -142,7 +146,7 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   /* ---------- 9. layout at four sizes: door, table, cards, done ---------- */
   for (const [w, h] of [[683, 768], [746, 897], [1366, 768], [1920, 1080]]) {
     const tag = w + 'x' + h; const P = await page(ctx, PAGE + '?solo=1&bot=1&fast=1&seed=5&still=1', w, h, errs); await P.waitForSelector('#begin.on', { timeout: 20000 });
-    const dOff = await P.evaluate(() => { const r = document.getElementById('beginbtn').getBoundingClientRect(); return r.bottom <= innerHeight && r.top >= 0; }); gate(`door ${tag}: begin button on screen`, dOff, '');
+    await P.click('#doornext'); await sleep(300); const dOff = await P.evaluate(() => { const r = document.getElementById('beginbtn').getBoundingClientRect(); return r.bottom <= innerHeight && r.top >= 0; }); gate(`door ${tag}: begin button on screen`, dOff, '');
     await P.click('#beginbtn'); await sleep(400); let o = await over(P); gate(`table ${tag}: nothing off screen or clipped`, o.length === 0, o.join(' '));
     await P.click('.slot[data-part="fan"]'); await sleep(400); o = await over(P); gate(`cards ${tag}: seven cards visible, nothing clipped`, o.length === 0 && (await st(P)).ncards === 7, o.join(' '));
     await P.goto(PAGE + '?solo=1&bot=1&fast=1&seed=5&still=1&at=done'); await P.waitForFunction(() => document.title === 'ready'); await sleep(400); o = await over(P);
@@ -171,8 +175,9 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   const SB = await page(ctx, PAGE + `?seat=B&room=${rS}&fast=1&tour=1`, 1366, 768, errs);
   await Promise.all([SA, SB].map(p => p.waitForFunction(() => OPUI.S.others.every(o => OPUI.S.presence[o] && OPUI.S.presence[o].here), null, { timeout: 15000 }).catch(() => {})));
   await Promise.all([SA, SB].map(p => p.waitForSelector('#begin.on', { timeout: 20000 })));
+  await SA.click('#doornext'); await sleep(300);
   const tog = await SA.$eval('#together', e => ({ t: e.textContent, fs: parseFloat(getComputedStyle(e).fontSize), bold: e.querySelectorAll('b').length }));
-  gate('door says who she is and who she is with, in big words', tog.t === 'You are Dr Marmalade. Dr Custard is at the same table. You work on Bernadette together.' && tog.fs >= 16 && tog.bold === 2, tog.t + ' · ' + tog.fs + 'px');
+  gate('door says who she is with, in big words', tog.t === 'Dr Custard is at the same table.' && tog.fs >= 16 && tog.bold === 1, tog.t + ' · ' + tog.fs + 'px');
   await shot(SA, '25_door_team_A');
   await SA.click('#beginbtn'); await sleep(500);
   const team = await SA.$eval('#team', e => ({ t: e.textContent, fs: parseFloat(getComputedStyle(e).fontSize), h: e.getBoundingClientRect().height }));
@@ -191,13 +196,13 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   gate('tour: step counter, Next, last button Start', walk.length === 6 && walk[0].step === 'Step 1 of 6' && walk[0].btn === 'Next' && walk[5].btn === 'Start', (walk[0] || {}).step + '/' + (walk[5] || {}).btn);
   const gone = await SA.$eval('#tour', e => e.hidden); await SA.click('.slot[data-part="cpu"]'); await sleep(300); const sU = await st(SA);
   gate('after Start: tour gone and a tap takes a part out', gone && sU.myOut === 'cpu', String(sU.myOut));
-  await SB.click('#beginbtn'); await sleep(400); const teamB = await SB.$eval('#team', e => e.textContent);
+  await SB.click('#doornext'); await SB.click('#beginbtn'); await sleep(400); const teamB = await SB.$eval('#team', e => e.textContent);
   gate('partner window mirrors the team line', teamB === 'You are Dr Custard. Dr Marmalade works on Bernadette with you.', teamB);
-  await SA.goto(PAGE + `?solo=1&fast=1`); await SA.waitForSelector('#begin.on', { timeout: 20000 }); await SA.click('#beginbtn'); await sleep(400);
+  await SA.goto(PAGE + `?solo=1&fast=1`); await SA.waitForSelector('#begin.on', { timeout: 20000 }); await SA.click('#doornext'); await SA.click('#beginbtn'); await sleep(400);
   gate('tour runs once: a second visit opens straight on the table', await SA.$eval('#tour', e => e.hidden), '');
   await SA.click('#touragain'); await sleep(300); gate('"Show me around again" reopens the tour', await SA.$eval('#tour', e => !e.hidden), '');
   await SA.close(); await SB.close();
-  const SS = await page(ctx, PAGE + '?solo=1&fast=1&tour=1', 683, 768, errs); await SS.waitForSelector('#begin.on', { timeout: 20000 }); await SS.click('#beginbtn'); await sleep(400);
+  const SS = await page(ctx, PAGE + '?solo=1&fast=1&tour=1', 683, 768, errs); await SS.waitForSelector('#begin.on', { timeout: 20000 }); await SS.click('#doornext'); await SS.click('#beginbtn'); await sleep(400);
   const solo = await SS.evaluate(() => ({ n: OPUI.tour.steps().length, team: document.getElementById('team').textContent, fs: parseFloat(getComputedStyle(document.getElementById('team')).fontSize) }));
   gate('solo at 683: five steps (no partner step), team line says on your own, ≥15 px', solo.n === 5 && solo.team === 'You are Dr Marmalade. You work on Bernadette on your own.' && solo.fs >= 15, JSON.stringify(solo));
   const walkS = []; for (let k = 0; k < 6; k++) { const d = await tourState(SS); if (!d) break; walkS.push(d); if (d.at === 'case') await shot(SS, '29_tour_case_683'); if (d.at === 'chart') await shot(SS, '30_tour_chart_683'); await SS.click('#tournext'); await sleep(450); }

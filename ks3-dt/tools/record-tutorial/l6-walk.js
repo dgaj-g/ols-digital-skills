@@ -109,6 +109,7 @@ const fclick = (fr, sel) => fr.evaluate(s => { const b = document.querySelector(
 async function door(page) {
   const fr = await frameReady(page); if (!fr) return false;
   await sleep(1500); await look(page, 'c1');
+  await fclick(fr, '#doornext'); await new Promise(r => setTimeout(r, 400));
   const ok = await fclick(fr, '#beginbtn');
   if (!ok) console.log('  door: begin not clickable', await fr.evaluate(() => { const b = document.getElementById('beginbtn'); return JSON.stringify({ b: b && { d: b.disabled, h: b.hidden }, hash: location.hash.slice(0, 200), door: !!document.querySelector('#begin.on') }); }));
   return ok;
