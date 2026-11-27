@@ -11942,11 +11942,15 @@
 
 
   /* THE OPERATION (J1 L6, spec §3.1–3.3, §3.9, §7). One engine, four stages by chunk.config.stage:
-     door | op | ward | letter. The page (assets/l6/operation.html) runs in a frame, as the Rescue does;
+     door | op | ward | letter | contest. The page (assets/l6/operation.html; the contest: assets/l6/contest.html, V2)
+     runs in a frame, as the Rescue does;
      this side owns the pairing (PairKit, per lesson, quiet), the saves and the partner reveal.
      The frame is told its seat, the seats at the table and the live room by its hash; the live room
      carries the moves (Firebase, no sign-in, nothing that names a pupil — DFM 325).
-     frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone}; here → frame: {op:1, type:'names'}. */
+     frame → here: {op:1, type: ready|begin|done|save|next|fallback|wardDone|alone}; here → frame: {op:1, type:'names'}.
+     THE CONTEST (V2, stage 'contest'): the whole contest rides on draft.opC (the page's own save, handed back in the hash
+     as H.contest), so a reload carries on where she was; 'done' ends the chunk; 'alone' is the page carrying on against
+     Bernadette when the link dies (it saves its own opC). */
   /* The lesson's own pairing words sit on its first chunk. Every stage passes them, so a later stage's brief wait never
      flashes the Vault's words (J1 L6, J3 L5). */
   function lessonPairWords(cfg, ctx) {
@@ -11998,6 +12002,7 @@
           names: paired && st.names ? st.names : null,
           round: Number(draft.opRound || 0), fallback: paired && st.room && draft.opFallback === st.room ? 1 : 0 };
         if (stage === 'letter') H.letter = draft.op || null;
+        if (stage === 'contest') H.contest = draft.opC || null;
         if (stage === 'door' && paired && pw && pw.waitOwnLabel) H.alone = { say: pw.waitLongSay || '', label: pw.waitOwnLabel };
         if (stage === 'ward' && !ctx.review && draft.ward) H.wardDone = 1;
         if (job) H.extras = { back: cfg.backLabel || '', finish: cfg.finishLabel || '' };
@@ -12026,7 +12031,14 @@
           if (!frame.isConnected) { window.removeEventListener('message', onMsg); return; }
           var m = e.data;
           if (e.source !== frame.contentWindow || !m || m.op !== 1 || gone) return;
-          if (m.type === 'ready') { if (stage === 'letter') sendNames(); }
+          if (m.type === 'ready') { if (stage === 'letter' || stage === 'contest') sendNames(); }
+          else if (stage === 'contest' && m.type === 'save' && m.opC) { draft.opC = m.opC; save(); }
+          else if (stage === 'contest' && m.type === 'done') {
+            gone = true; window.removeEventListener('message', onMsg);
+            if (ctx.review) { ctx.next(); return; }
+            finishChunk(ctx, 'contest');
+          }
+          else if (stage === 'contest' && m.type === 'alone') { save(); }
           else if (job && (m.type === 'next' || m.type === 'xfinish')) {
             gone = true; window.removeEventListener('message', onMsg);
             if (m.type === 'next') { draft.opExtras = draft.opExtras || {}; draft.opExtras[job] = 1; save(); hub(); } else finishExtras();
@@ -12042,7 +12054,7 @@
             if (paired && st.room) { draft.opAlone = st.room; save(); }
             finishChunk(ctx, stage);
           }
-          else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } }
+          else if (m.type === 'fallback') { if (paired && st.room) { draft.opFallback = st.room; save(); } if (stage === 'contest') sendNames(); }
           else if (m.type === 'save') { draft.opRound = Number(m.round || 0); save(); }
           else if (m.type === 'done' && m.save) {
             draft.op = m.save; draft.opRound = Number(m.save.round || 0);
