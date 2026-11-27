@@ -246,6 +246,7 @@
   function draftGet(id) { try { return JSON.parse(localStorage.getItem(draftKey(id)) || 'null') || []; } catch (e) { return []; } }
   function draftPut(id, arr) { try { localStorage.setItem(draftKey(id), JSON.stringify(arr)); } catch (e) { /* no storage */ } }
   function storyText(q, boxes) { return q.fields.map((f, k) => f.lead + ' ' + (boxes[k] || '').trim()).join('\n'); }
+  const fullMarks = (q, v) => !!v && (q.kind === 'levels' ? v.mark >= q.pm : v.pts >= q.pm);
   function vTurn(q) {
     const id = q.id, p = rec(id), crumbs = partCrumbs(q).concat([{ t: q.kind === 'match' ? 'Your answer' : 'Your writing' }]);
     const shell = (job, inner) => { app.innerHTML = header(crumbs) + '<main class="init iturn"><h1>' + h(q.src) + '</h1><p class="job">' + h(job) + '</p>' + askCard(q, true) + inner + '</main>'; };
@@ -290,7 +291,7 @@
       if (cur.model) marks += '<div class="card exampl"><h2>The examiner’s answer</h2><p class="model">' + h(cur.model) + '</p></div>';
     } else if (p.a) marks = '<p class="hist">Marked ' + (p.a === 1 ? 'once' : p.a === 2 ? 'twice' : p.a + ' times') + ' before: first try ' + p.f + ' of ' + q.pm + ' · best ' + p.b + ' of ' + q.pm + '.</p>';
     const lockedBox = '<p class="lockedtext">' + h(S.text) + '</p>';
-    shell(JOB.marks, '<div class="card write locked"><p class="meta">Your answer, locked</p>' + lockedBox + '</div><div class="card tickcard"><h2>Tick the points you made</h2>' + ticks + (marked ? '' : '<div class="row"><button class="btn" data-mark>Mark my ticks</button><span class="why" data-noticks' + (cur.ticks.length ? ' hidden' : '') + '>No ticks yet: check your writing against each point.</span></div>' + errLine()) + '</div>' + marks + flagBtn(q));
+    shell(!marked ? JOB.marks : fullMarks(q, cur.verdict) ? JOB.markedFull : cur.model ? JOB.markedShown : JOB.marked, '<div class="card write locked"><p class="meta">Your answer, locked</p>' + lockedBox + '</div><div class="card tickcard"><h2>Tick the points you made</h2>' + ticks + (marked ? '' : '<div class="row"><button class="btn" data-mark>Mark my ticks</button><span class="why" data-noticks' + (cur.ticks.length ? ' hidden' : '') + '>No ticks yet: check your writing against each point.</span></div>' + errLine()) + '</div>' + marks + flagBtn(q));
     app.querySelectorAll('.ticks input').forEach((c) => c.addEventListener('change', () => { const i = +c.value; cur.ticks = cur.ticks.filter((x) => x !== i); if (c.checked) cur.ticks.push(i); const nt = app.querySelector('[data-noticks]'); if (nt) nt.hidden = cur.ticks.length > 0; }));
     const mk = app.querySelector('[data-mark]'); if (mk) mk.addEventListener('click', () => { icall({ op: 'mark', part: id, ticks: cur.ticks.slice().sort((a, b) => a - b) }, mk).then((r) => { cur.verdict = r.verdict; render(); app.querySelector('.card.marks').scrollIntoView(); }, fail); });
     const fx = app.querySelector('[data-fix]'); if (fx) fx.addEventListener('click', () => { cur.verdict = null; cur.model = null; render(); const tc = app.querySelector('.tickcard'); if (tc) tc.scrollIntoView(); });
@@ -384,7 +385,13 @@
     if (cur.k === 'ipart') {
       const kind = PART[cur.id] ? PART[cur.id].kind : 'prose';
       if (cur.beat === 'lesson') return 'lesson';
-      if (cur.beat === 'turn') return kind === 'story' ? 'story' : kind === 'match' ? (cur.verdict && cur.verdict.ok && cur.verdict.ok.every(Boolean) ? 'matchDone' : 'match') : 'beat3';
+      if (cur.beat === 'turn') {
+        if (kind === 'match') return cur.verdict && cur.verdict.ok && cur.verdict.ok.every(Boolean) ? 'matchDone' : 'match';
+        const S = ST[cur.id];
+        if (!(S && S.labels)) return kind === 'story' ? 'story' : 'beat3';
+        if (!cur.verdict) return 'ticks';
+        return fullMarks(PART[cur.id], cur.verdict) ? 'markedFull' : cur.model ? 'markedShown' : 'marked';
+      }
       return 'door';
     }
     return 'apply';
@@ -398,6 +405,7 @@
     story: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
     match: ['[data-check]:not([disabled])', 'select[data-row]', '[data-again]'],
     matchDone: ['.marks [data-go^="#ieval"]'],
+    ticks: ['[data-mark]', '.ticks input:not([disabled])'], marked: ['[data-show]'], markedShown: ['.marks [data-go^="#ieval"]'], markedFull: ['.marks [data-go^="#ieval"]'],
     march: ['.tasks', '[data-tielock]', '[data-tiemark]'], marchEmpty: ['[data-room=know]'],
     verdict: ['.seg button', '[data-send]'], sent: ['.sentcard .btn'], home: ['[data-room=know]']
   };
