@@ -532,6 +532,6 @@
 
   if (mode === 'pair') startBus();
   render();
-  post('ready');
+  post('ready'); document.title = 'ready';   /* the test hook every L6 page sets (ui2.js, ward2.js, extras.js) */
   setInterval(function () { if (!E) return; if (!ended) E.tick(); idleCheck(); render(); }, 500);
 })();

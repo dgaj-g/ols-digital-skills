@@ -5,7 +5,7 @@
  * ran the platform's own pairing (pairJoin -> room -> frame hash) with two accounts at once, so this does:
  * one browser, one shared dev store, one tab per pupil (?as=anya, ?as=cara, ?as=ryan), Firebase for real.
  *
- *   --scenario pair      both pupils from the tile to the done card, sharing the patient and the ward
+ *   --scenario pair      both pupils from the tile to the done card, sharing the patient, then the contest
  *   --scenario gone      paired, then Cara's laptop shuts before her page opens: Anya must still have a way on
  *   --scenario midop     paired, Cara pulls a part and her laptop shuts mid-operation: Anya must still finish
  *   --scenario blocked   Cara's live link is blocked (she is told to sit with Anya): Anya must still have a way on
@@ -170,13 +170,14 @@ async function alonePath(page, fr, tag) {
   await shot(page, tag + '-op-alone-done');
   await sleep(1200); await fclick(op, '#nextbtn');
   const c3 = await chunkChange(page, 'c2', 10000);
-  must(c3 === 'c3', tag + ' on to the ward (' + c3 + ')');
+  must(c3 === 'c3', tag + ' on to the contest (' + c3 + ')');
   await watchMount(page, tag + ' c3', 8000);
   const wf = await frameReady(page, 20000);
-  if (!must(!!wf, tag + ': the ward opened')) return false;
-  const wh = await hashOf(wf); must(wh && wh.seats.length === 1, tag + ': the ward is her own too (' + JSON.stringify(wh && wh.seats) + ')');
-  const nb = await wf.evaluate(() => OPWARDUI.W.S.order.length).catch(() => 0); must(nb === 6, tag + ' has the six beds of a pupil on her own (' + nb + ')');
-  must(await ward(page, wf), tag + ' finished the ward on her own');
+  if (!must(!!wf, tag + ': the contest opened')) return false;
+  const wh = await hashOf(wf); must(wh && wh.seats.length === 1, tag + ': the contest is her own too (' + JSON.stringify(wh && wh.seats) + ')');
+  await wf.waitForFunction(() => window.L6C && L6C.E, null, { timeout: 10000 }).catch(() => {});
+  const solo = await wf.evaluate(() => !!(L6C.E && L6C.E.solo)).catch(() => false); must(solo, tag + ' plays the contest against Bernadette');
+  must(await contest(page, wf), tag + ' finished the contest on her own');
   await chunkChange(page, 'c3', 10000);
   const wk = await toTheEnd(page, tag); note(tag + ' walked ' + wk.join(' '));
   const end = await page.evaluate(() => { const x = document.querySelector('.exit-done'); return x ? (x.querySelector('h2') || {}).textContent : null; });
@@ -228,7 +229,50 @@ async function chunkChange(page, from, ms) {
 }
 const shot = (page, name) => page.screenshot({ path: path.join(OUT, SCEN_NOW + '-' + name + '.png') }).catch(() => {});
 
-/* ---- the later stages, one pupil at a time (they are her own work; the ward is shared) ---- */
+/* ---- V2 (27 Nov): the contest (c3). One seat driven to its result, then Continue. Both seats of a pair run at once:
+   the answers show only when every seat has answered, so each seat waits for the other on its own. A partner who has
+   gone leaves the page on its away card: the seat takes "Carry on against Bernadette". Right answers come from the
+   page's own question file (assets/l6/contest.js), never from this test. ---- */
+const CQ = require('../../platform/assets/l6/contest.js');
+async function contest(page, fr, opts) {
+  opts = opts || {};
+  const up = await fr.waitForFunction(() => window.L6C && L6C.E && document.body.dataset.phase, null, { timeout: 15000 }).then(() => true, () => false);
+  if (!up) return false;
+  const sel = (a, v) => v == null ? '#card [data-act="' + a + '"]:not([disabled]), #side [data-act="' + a + '"]:not([disabled])' : '#card [data-act="' + a + '"][data-v="' + v + '"]:not([disabled])';
+  const has = (a, v) => fr.evaluate(x => !!document.querySelector(x), sel(a, v)).catch(() => false);
+  const act = async (a, v) => { await fr.waitForSelector(sel(a, v), { timeout: 8000 }); await fr.click(sel(a, v)); };
+  const st = () => fr.evaluate(() => ({ ph: document.body.dataset.phase || '', rev: document.body.dataset.rev === '1', q: L6C.E.view().q }));
+  if (opts.stagger) await sleep(opts.stagger);
+  let answered = -1;
+  const end = Date.now() + (opts.ms || 240000);
+  while (Date.now() < end) {
+    const v = await st().catch(() => null);
+    if (!v) return false;
+    try {
+      if (v.ph === 'begin') { if (await has('start')) await act('start'); }
+      else if (v.ph === 'away') { if (await has('alone')) { note('the contest away card: Carry on against Bernadette'); await act('alone'); } }
+      else if (v.ph === 'intro') { if (await has('filmplay')) await act('filmplay'); else if (await has('introgo')) await act('introgo'); }
+      else if (v.ph === 'film') { if (await has('filmgo')) await act('filmgo'); else { await sleep(1000); continue; } }
+      else if (v.ph === 'notice') { if (await has('noticeok')) await act('noticeok'); }
+      else if (v.ph === 'q' && v.rev) { if (await has('next')) await act('next'); }
+      else if (v.ph === 'q' && answered !== v.q) {
+        if (CQ.Q[v.q].kind === 'order') {
+          for (let g = 0; g < 12; g++) {
+            const cur = await fr.$eval('#card .order .block', bs => bs.map(b => +b.dataset.k));
+            const pos = [0, 1, 2, 3].findIndex((k, j) => cur[j] !== k); if (pos === -1) break;
+            await fr.click('#card .order .block[data-k="' + pos + '"] [data-act="up"]'); await sleep(80);
+          }
+          await act('lock');
+        } else await act('pick', CQ.rightChar(v.q));
+        answered = v.q;
+      }
+      else if (v.ph === 'result') { await sleep(600); await act('cont'); return true; }
+    } catch (e) { /* a button re-rendered under the click: look again */ }
+    await sleep(350);
+  }
+  return false;
+}
+/* the V1 ward, kept for reference only: V2 has no ward (c3 is the contest) */
 async function ward(page, fr, opts) {
   await fr.waitForFunction(() => window.OPWARDUI && OPWARDUI.W, null, { timeout: 10000 });
   const ids = await fr.evaluate(() => OPWARDUI.W.S.order.slice());
@@ -291,7 +335,7 @@ async function toTheEnd(page, tag) {
       if (ck !== 'c3') await watchMount(page, tag + ' ' + ck, 6000);
       const fr = await frameReady(page, 20000);
       if (!fr) { must(false, tag + ': the ' + ck + ' frame opened'); return walked; }
-      ok = ck === 'c3' ? await ward(page, fr) : ck === 'c4' ? await boss(fr) : await names(fr);
+      ok = ck === 'c3' ? await contest(page, fr) : ck === 'c4' ? await boss(fr) : await names(fr);
     } else if (ck === 'extras') ok = await extras(page);
     else ok = await platformStep(page, ck);
     if (!ok && await page.evaluate(() => !!document.querySelector('.exit-done'))) break;
@@ -358,13 +402,14 @@ async function scenPair(browser) {
   await sleep(1500);
   await fclick(oa, '#nextbtn'); await fclick(ob, '#nextbtn');
   const [c3a, c3b] = await Promise.all([chunkChange(A, 'c2', 10000), chunkChange(B, 'c2', 10000)]);
-  must(c3a === 'c3' && c3b === 'c3', 'both on to the ward (' + c3a + ', ' + c3b + ')');
+  must(c3a === 'c3' && c3b === 'c3', 'both on to the contest (' + c3a + ', ' + c3b + ')');
   await Promise.all([watchMount(A, 'A c3', 8000), watchMount(B, 'B c3', 8000)]);
-  /* the ward is shared: both at once */
+  /* the contest: both at once, the same question on both screens */
   const [wa, wb] = await Promise.all([frameReady(A, 20000), frameReady(B, 20000)]);
-  must(!!wa && !!wb, 'both ward frames opened');
-  const [wra, wrb] = await Promise.all([ward(A, wa), ward(B, wb, { stagger: 2500 })]);
-  must(wra && wrb, 'both finished the ward');
+  must(!!wa && !!wb, 'both contest frames opened');
+  if (wa && wb) { const [ha, hb] = [await hashOf(wa), await hashOf(wb)]; must(!!(ha && hb && ha.room && ha.room === hb.room && ha.seats.length === 2), 'both contest pages share one room (' + (ha && ha.room) + ', ' + (hb && hb.room) + ')'); }
+  const [wra, wrb] = await Promise.all([contest(A, wa), contest(B, wb, { stagger: 2500 })]);
+  must(wra && wrb, 'both finished the contest');
   await Promise.all([chunkChange(A, 'c3', 10000), chunkChange(B, 'c3', 10000)]);
   const [wka, wkb] = await Promise.all([toTheEnd(A, 'A'), toTheEnd(B, 'B')]);
   note('A walked ' + wka.join(' ') + ' · B walked ' + wkb.join(' '));
@@ -450,14 +495,13 @@ async function scenMidop(browser) {
   must(s.here && s.here.length === 1 && /:false$/.test(s.here[0]), 'Cara shows as away on Anya\'s laptop (' + (s.here || []).join(',') + ')');
   if (ok === true) {
     await sleep(1200); await fclick(oa, '#nextbtn');
-    const c3 = await chunkChange(A, 'c2', 10000); must(c3 === 'c3', 'Anya on to the ward (' + c3 + ')');
+    const c3 = await chunkChange(A, 'c2', 10000); must(c3 === 'c3', 'Anya on to the contest (' + c3 + ')');
     const wf = await frameReady(A, 20000);
     if (wf) {
-      const t = Date.now(); const wok = await ward(A, wf, { ms: 90000 });
-      const ws = await wf.evaluate(() => ({ cap: OPWARDUI.W.S.cap, beds: OPWARDUI.W.S.order.map(i => OPWARDUI.W.bed(i).done ? 'done:' + (OPWARDUI.W.bed(i).by || '') : 'open') })).catch(e => ({ err: String(e) }));
-      note('ward on her own after Cara left: ' + ((Date.now() - t) / 1000).toFixed(0) + ' s ' + JSON.stringify(ws));
-      await shot(A, 'A-ward-partner-gone');
-      must(wok, 'Anya finishes the shared ward when her partner has gone');
+      const t = Date.now(); const wok = await contest(A, wf, { ms: 240000 });
+      note('contest after Cara left: ' + ((Date.now() - t) / 1000).toFixed(0) + ' s');
+      await shot(A, 'A-contest-partner-gone');
+      must(wok, 'Anya finishes the contest when her partner has gone');
     }
   }
   must(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 6).join(' | ') : ''));
