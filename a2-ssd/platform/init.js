@@ -6,6 +6,9 @@
   const BULLETS = IC.bullets, BY = {}; BULLETS.forEach((b) => { BY[b.id] = b; });
   const LINE = {}; Object.keys(IC.pages).forEach((b) => IC.pages[b].sections.forEach((s) => s.lines.forEach((l) => { LINE[l[0]] = l[1]; })));
   const JOB = IC.JOB, HELP = IC.HELP;
+  // the first page not yet ticked (1-based), or 0 when all three are ticked: lines that say 'open page n' name it (27 Nov live walk, K11)
+  const firstOpen = () => { const i = BULLETS.findIndex((x) => !(IREC.G && IREC.G[x.id])); return i + 1; };
+  const fillN = (t) => String(t).replace('{n}', firstOpen() || 1);
   const NSLIDES = (IC.deckStates && IC.deckStates.length) || 46;
   const STATES = IC.deckStates || Array.from({ length: NSLIDES }, (_, i) => ({ slide: i + 1, states: 1 }));
   let A = null, IREC = { P: {}, G: {}, E: {} }, CS = null, EMAIL = '';
@@ -64,7 +67,7 @@
   }
   function deckJump(s) { deckSave({ s, k: 0 }); paintDeck(); }
   const atEnd = (p) => p.s >= NSLIDES && p.k + 1 >= statesOf(p.s);
-  function capText(p, n) { return atEnd(p) ? 'That’s the slides done. Now open page 1 below.' : 'Slide ' + p.s + ' of ' + NSLIDES + (n > 1 ? ' · ' + p.k + ' of ' + (n - 1) + ' reveals shown' : ''); }
+  function capText(p, n) { return atEnd(p) ? fillN(firstOpen() ? JOB.deckEnd : JOB.deckEndDone) : 'Slide ' + p.s + ' of ' + NSLIDES + (n > 1 ? ' · ' + p.k + ' of ' + (n - 1) + ' reveals shown' : ''); }
   const nextText = (p) => (atEnd(p) ? 'Go to the pages' : 'Next');
   function deckHtml() {
     const p = deckPos(), n = statesOf(p.s);
@@ -173,7 +176,7 @@
           }).join('') + '</ul>';
       }
     }
-    const job = room === 'know' ? (pagesDone === BULLETS.length ? JOB.knowDone : JOB.know) : room === 'apply' ? JOB.apply : CS ? JOB.march : JOB.marchEmpty;
+    const job = room === 'know' ? (pagesDone === BULLETS.length ? JOB.knowDone : fillN(JOB.know)) : room === 'apply' ? JOB.apply : CS ? JOB.march : JOB.marchEmpty;
     app.innerHTML = header(C0().slice(0, 1).concat([{ t: IC.topic.tile }])) + '<main class="init"><h1>' + h(IC.topic.tile) + '</h1><p class="sub">' + h(IC.topic.sub) + '</p>' + rooms + '<p class="job">' + h(job) + '</p>' + body + '</main>';
     if (room === 'know') { wireDeck(); paintDeck(); }
     // "Back to the pages" lands on the list, not the top of the deck (K4)
@@ -188,6 +191,9 @@
   }
   V.ipage = () => {
     const b = cur.b, page = IC.pages[b], Q = cur.quick;
+    // a ticked page says so and offers the next step: the first page not yet ticked, or Apply it when all are (K12)
+    const ticked = !!(IREC.G && IREC.G[b]), nextOpen = BULLETS.find((x) => x.id !== b && !(IREC.G && IREC.G[x.id]));
+    const nextBtnT = nextOpen ? '<button class="btn" data-nextpage data-go="#ipage/' + nextOpen.id + '">Next page: ' + h(nextOpen.short) + '</button>' : '<button class="btn" data-nextpage data-go="#init/apply">Try a past question</button>';
     let foot;
     if (!Q) foot = '<div class="card quickcard"><h2>Quick check</h2><p>' + h(IREC.G && IREC.G[b] ? IC.quickRule.lineDone : IC.quickRule.line) + '</p><div class="row"><button class="btn" data-quick>Start the quick check</button></div></div>';
     else {
@@ -202,7 +208,7 @@
       }
       foot = '<div class="card quick"><h2>Quick check</h2>' + items + (Q.result ? '' : '<div class="row"><button class="btn" data-qcheck' + (ready ? '' : ' disabled') + '>Check my three answers</button>' + (ready ? '' : '<span class="why">Pick one answer for each question first.</span>') + '</div>') + errLine() + res + '</div>';
     }
-    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>Page ' + b.slice(1) + ' of 3 · ' + h(BY[b].short) + '</h1><p class="spec">CCEA’s name for it: ' + h(BY[b].spec) + '</p><p class="job">' + h(Q ? JOB.quick : JOB.page) + '</p>' + sectionsHtml(b) + foot + (Q && Q.result && Q.result.pass ? '' : '<p class="pagefoot"><button class="btn ghost" data-go="#init/pages">Back to the pages</button></p>') + '</main>';
+    app.innerHTML = header(C0().concat([{ t: BY[b].short }])) + '<main class="init ipage"><h1>Page ' + b.slice(1) + ' of 3 · ' + h(BY[b].short) + '</h1><p class="spec">CCEA’s name for it: ' + h(BY[b].spec) + '</p><p class="job">' + h(Q ? JOB.quick : ticked ? (nextOpen ? JOB.pageDone : JOB.pageAllDone) : JOB.page) + '</p>' + sectionsHtml(b) + foot + (Q && Q.result && Q.result.pass ? '' : '<p class="pagefoot">' + (ticked && !Q ? nextBtnT : '') + '<button class="btn ghost" data-go="#init/pages">Back to the pages</button></p>') + '</main>';
     const start = app.querySelector('[data-quick]'); if (start) start.addEventListener('click', () => { cur.quick = { items: drawQuick(b), picks: [null, null, null], result: null }; render(); app.querySelector('.quick').scrollIntoView(); });
     if (Q) {
       app.querySelectorAll('.quick input[type=radio]').forEach((r) => r.addEventListener('change', () => { Q.picks[+r.name.slice(1)] = +r.value; const btn = app.querySelector('[data-qcheck]'); if (btn && Q.picks.every((x) => x != null)) { btn.disabled = false; const w = btn.parentElement.querySelector('.why'); if (w) w.remove(); } }));
@@ -373,7 +379,7 @@
     if (!cur) return 'home';
     if (cur.k === 'init') return cur.room === 'apply' ? 'apply' : cur.room === 'march' ? (CS ? 'march' : 'marchEmpty') : BULLETS.every((x) => IREC.G && IREC.G[x.id]) ? 'knowDone' : 'know';
     if (cur.k === 'ieval') return IREC.E && IREC.E[cur.id] ? 'sent' : 'verdict';
-    if (cur.k === 'ipage') return cur.quick ? 'quick' : 'page';
+    if (cur.k === 'ipage') return cur.quick ? 'quick' : !(IREC.G && IREC.G[cur.b]) ? 'page' : BULLETS.some((x) => x.id !== cur.b && !(IREC.G && IREC.G[x.id])) ? 'pageDone' : 'pageAllDone';
     if (cur.k === 'icase') return CS ? 'march' : 'marchEmpty';
     if (cur.k === 'ipart') {
       const kind = PART[cur.id] ? PART[cur.id].kind : 'prose';
@@ -385,7 +391,7 @@
   }
   // the thing to press next gets a gold ring while the help is open
   const RING = {
-    know: ['[data-deck-next]', '.ipages li:not(.done)'], page: ['[data-quick]'], knowDone: ['[data-room=apply]'],
+    know: ['[data-deck-next]', '.ipages li:not(.done)'], page: ['[data-quick]'], pageDone: ['[data-nextpage]'], pageAllDone: ['[data-nextpage]'], knowDone: ['[data-room=apply]'],
     quick: ['[data-qmore]', '.qresult .btn', '[data-qcheck]:not([disabled])', '.quick .item'],
     apply: ['.qs li.nt', '.qs li'], door: ['[data-door=learn]'], lesson: ['.foot .btn'],
     beat3: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
@@ -404,7 +410,7 @@
   function toggleHelp() {
     if (document.querySelector('.helppanel')) return closeHelp();
     const hd = document.querySelector('header.bar'); if (!hd) return;
-    hd.insertAdjacentHTML('afterend', '<aside class="helppanel" role="region" aria-label="Help"><ul>' + (HELP[helpKey()] || HELP.home).map((l) => '<li>' + h(l) + '</li>').join('') + '</ul><div class="row"><button class="btn sec" data-helpclose>' + h(HELP.close) + '</button></div></aside>');
+    hd.insertAdjacentHTML('afterend', '<aside class="helppanel" role="region" aria-label="Help"><ul>' + (HELP[helpKey()] || HELP.home).map((l) => '<li>' + h(fillN(l)) + '</li>').join('') + '</ul><div class="row"><button class="btn sec" data-helpclose>' + h(HELP.close) + '</button></div></aside>');
     const b = document.querySelector('[data-help]'); if (b) b.setAttribute('aria-expanded', 'true');
     ringOn(helpKey());
   }
@@ -440,5 +446,5 @@
     return '<button class="tile live" data-go="#init"><h2>' + h(IC.topic.tile) + '</h2><p>' + h(IC.topic.sub) + '</p><span class="state">' + h(state) + '</span></button>';
   }
   function mount(api, boot, email) { A = api; EMAIL = email || ''; if (boot) take(boot, {}); }
-  window.INIT = { mount, route, tileHtml, take, helpLines: () => HELP[helpKey()] || [] };
+  window.INIT = { mount, route, tileHtml, take, helpLines: () => (HELP[helpKey()] || []).map(fillN) };
 })();
