@@ -4,7 +4,7 @@
 <style>
 @font-face{font-family:"Space Grotesk";src:url(../fonts/space-grotesk.woff2) format("woff2");font-weight:300 700;font-display:block}
 @font-face{font-family:"Caveat";src:url(../fonts/caveat-bold.woff2) format("woff2");font-weight:700;font-display:block}
-:root{--bg:#0a1c21;--panel:#10292f;--panel2:#153238;--ink:#eaf2f2;--mute:#9bb3b6;--gold:#e4b824;--line:#24474f;--me:#8fb4ff;--them:#ffb3c7;--paper:#f6f1e6;--case:#2b3338;--case2:#1c2327;--slot:#0d1417}
+:root{--amber:#F2B544;--green:#3DD6A3;--chalk:#F4F1EA;--dim:#A7B4B8;--bg:#0a1c21;--panel:#10292f;--panel2:#153238;--ink:#eaf2f2;--mute:#9bb3b6;--gold:#e4b824;--line:#24474f;--me:#8fb4ff;--them:#ffb3c7;--paper:#f6f1e6;--case:#2b3338;--case2:#1c2327;--slot:#0d1417}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;overflow:hidden}
 button{font:inherit}
@@ -16,7 +16,6 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 #stages{display:flex;gap:6px;font-size:13px;white-space:nowrap}
 #stages span{padding:4px 11px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
 #stages span.lit{background:var(--gold);color:#1a1a1a;border-color:var(--gold);font-weight:700}
-#touragain{background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:4px 11px;font:inherit;font-size:13px;cursor:pointer}#touragain:hover{color:var(--ink);border-color:var(--mute)}
 #team{padding:7px 14px;background:var(--panel2);border-bottom:1px solid var(--line);font-size:clamp(16px,1.45vw,21px);line-height:1.25;color:var(--ink);font-weight:500}#team b.me{color:var(--me)}#team b.them{color:var(--them)}
 #tour{position:fixed;inset:0;z-index:40}#tour[hidden]{display:none}
 #spot{position:fixed;border-radius:12px;box-shadow:0 0 0 200vmax rgba(4,12,15,.8);outline:3px solid var(--gold);transition:left .35s,top .35s,width .35s,height .35s;pointer-events:none}
@@ -273,6 +272,89 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .xfinish{margin-top:10px}
 #xpaper .xfinish{align-self:flex-start}
 @media (max-width:760px){.xopts{grid-template-columns:1fr}.xmatch{grid-template-columns:1fr}}
+/* V2 extra jobs: find the parts in a real PC, the right part for three customers, your own PC */
+#xpaper.v2{max-width:900px;gap:8px;padding:14px 20px}
+#xpaper.v2 .kicker{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8a6412}
+#xpaper.v2 .xsay.good{color:#1f7a4a}
+#xpaper.v2 .xask[hidden],#xpaper.v2 .kicker[hidden]{display:none}
+/* the photo keeps its 4:3 shape so the boxes (% of the photo) sit on the parts; the line asking sits beside it */
+.xfind{display:flex;gap:18px;align-items:flex-start}
+.xfside{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.xphoto{flex:0 0 auto;position:relative;aspect-ratio:4/3;height:min(calc(100vh - var(--jbh,64px) - 124px),calc(.75 * (min(900px,100vw - 32px) - 300px)),600px);line-height:0;cursor:crosshair;border-radius:10px;overflow:hidden;box-shadow:0 0 0 2px #d8d2c4}
+.xphoto img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+@media (max-width:900px){.xfind{flex-direction:column;align-items:center}.xfside{align-self:stretch;padding-top:0;order:-1}.xphoto{height:min(calc(100vh - var(--jbh,64px) - 250px),calc(.75 * (100vw - 72px)))}.xfside #xnext{align-self:flex-start}}
+.xphoto.shake{animation:fshake2 .45s}
+.xspot{position:absolute;border:3px solid #2f9e62;border-radius:8px;box-sizing:border-box;pointer-events:none;background:rgba(47,158,98,.14)}
+.xspot.show{border-color:var(--gold);border-style:dashed;background:rgba(228,184,36,.18);animation:xpulse 1.2s ease-in-out infinite}
+.xspot.flash{animation:xflash .9s ease-out}
+.xlab{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(10,28,33,.88);color:#fff;font-size:13px;font-weight:700;line-height:1.2;padding:3px 7px;border-radius:6px;white-space:nowrap}
+@keyframes xpulse{50%{box-shadow:0 0 0 5px rgba(228,184,36,.35)}}
+@keyframes xflash{0%{background:rgba(47,158,98,.55)}100%{background:rgba(47,158,98,.14)}}
+.xcust{display:flex;flex-direction:column;gap:2px}
+.xneed{font-size:clamp(18px,1.6vw,23px);font-style:italic}
+.xneed.xdone{font-style:normal;font-weight:700}
+.xtray{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:4px}
+.xpart{font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border:2px solid #d8d2c4;border-radius:10px;padding:6px 4px 8px;cursor:pointer;color:#1a1a1a;min-width:0}
+.xpart img{width:100%;height:clamp(54px,9vh,84px);object-fit:contain;display:block;pointer-events:none}
+.xpart span{font-size:clamp(12px,1vw,15px);font-weight:600;text-align:center;line-height:1.15;overflow-wrap:anywhere}
+.xpart:hover:not(:disabled){border-color:var(--gold)}
+.xpart:disabled{cursor:default}
+.xpart.wrong{opacity:.4}
+.xpart.wrong span{text-decoration:line-through}
+.xpart.right{background:#dff5e7;border-color:#2f9e62;opacity:1}
+.xpart:disabled:not(.right):not(.wrong){opacity:.55}
+#xcnext,#xfnext{align-self:flex-start}
+#xcnext[hidden],#xfnext[hidden]{display:none}
+.xfact{display:flex;align-items:center;gap:20px;min-height:150px}
+.xfimg{flex:0 0 auto;width:150px;background:#fff;border:2px solid #d8d2c4;border-radius:10px;padding:8px;box-sizing:border-box}
+.xfimg:empty{display:none}
+.xfimg img{width:100%;height:110px;object-fit:contain;display:block}
+.xline.xbig{font-size:clamp(20px,1.9vw,27px);font-weight:600}
+@media (max-width:760px){.xtray{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* V2: the letter as an extra job sits between the top bar and the job bar: the seven lines in two columns */
+body.x #lpaper{max-width:1040px;padding:12px 22px}
+body.x #lhead{font-size:clamp(26px,2.4vw,36px)}
+body.x #ltop{grid-template-columns:70px 1fr;margin:2px 0 8px}
+body.x #llines{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;row-gap:4px;margin-bottom:6px}
+body.x #llines li{font-size:clamp(14px,1.05vw,17px)}
+body.x #lteam,body.x #lreveal{margin:4px 0}
+@media (max-width:700px){body.x #llines{grid-template-columns:1fr}}
+/* V2: a fluff tile she has cleaned stays in its slot, faint, with its name */
+.slot.clean img{opacity:.15}
+.slot.clean .name{position:absolute;left:0;right:0;bottom:0;background:rgba(10,15,18,.82);color:var(--ink);font-size:13px;font-weight:600;padding:4px 6px;text-align:center}
+/* V2: the platform's help layer (see/hour.html), copied as the contest page has it; the extra job's top bar */
+.jobline{display:flex;align-items:baseline;gap:8px;min-width:0}
+.joblead{color:var(--amber);font-weight:800;font-size:clamp(18px,1.6vw,26px);white-space:nowrap}
+.helpbtn,#helpBtn{background:var(--green);color:#06231b;font-size:18px;padding:10px 20px;white-space:nowrap;flex:0 0 auto;border:0;border-radius:11px;font-weight:800;cursor:pointer}
+#helpBtn.nudge,.helpbtn.nudge{animation:nudge .7s ease-in-out infinite alternate}
+@keyframes nudge{to{transform:scale(1.09);box-shadow:0 0 0 10px rgba(61,214,163,.28)}}
+.job{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#22332f;border-left:6px solid var(--amber);padding:8px 24px;font-size:20px;font-weight:800;display:none;align-items:center;justify-content:space-between;gap:18px;min-height:64px}
+.job.on{display:flex}
+.job #job b{color:var(--amber);font-weight:800}
+#help{position:fixed;top:0;left:0;right:0;background:#0e3b31;border-bottom:4px solid var(--green);display:flex;align-items:center;justify-content:space-between;gap:20px;padding:10px 24px;z-index:46}
+#help[hidden]{display:none}
+#help .kicker{color:var(--chalk);margin:0 0 6px;font-size:17px;font-weight:800}
+#helpText{margin:0;padding:0;list-style:none;display:flex;gap:8px 26px;flex-wrap:wrap;counter-reset:st;font-size:19px;font-weight:800}
+#helpText li{counter-increment:st}
+#helpText li::before{content:counter(st);display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:99px;background:var(--green);color:#06231b;margin-right:8px;font-size:16px;font-weight:900}
+#helpStuck{margin:6px 0 0;color:var(--dim);font-size:15px;font-weight:700}
+#helpClose{flex:0 0 auto;background:var(--green);color:#06231b;border:0;border-radius:11px;padding:10px 20px;font-size:18px;font-weight:800;cursor:pointer}
+.spot{outline:4px solid var(--green)!important;outline-offset:5px;border-radius:14px;animation:spot .8s ease-in-out infinite alternate}
+@keyframes spot{to{outline-offset:10px}}
+#tag{position:fixed;z-index:47;display:none;background:var(--green);color:#06231b;font-weight:900;font-size:16px;padding:3px 13px;border-radius:99px;pointer-events:none;white-space:nowrap}
+#xtop{position:fixed;top:0;left:0;right:0;height:52px;z-index:31;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:15px;white-space:nowrap}
+#xtop[hidden]{display:none}
+#xwhere{overflow:hidden;text-overflow:ellipsis;color:var(--gold);font-weight:600}
+#xtop .xbtns{display:flex;gap:8px;flex:0 0 auto}
+#xtop .btn{font-size:15px;padding:7px 14px}
+#doorkick{color:var(--mute);font-size:15px;font-weight:600}
+#doorkick:empty{display:none}
+#door.c2 #doorbubble{display:none}
+#letter,#extra{position:fixed;left:0;right:0;top:0;bottom:0;height:auto}
+#letter[hidden]{display:none}
+body.x #app,body.x #door,body.x #letter,body.x #extra{top:52px}
+body.jb #door,body.jb #letter,body.jb #extra{bottom:var(--jbh,64px)}
+@media (prefers-reduced-motion: reduce){.spot,#helpBtn.nudge,.helpbtn.nudge{animation:none}}
 .still *{transition:none!important;animation:none!important}
 #jump{font-size:12px;color:#3f5b63;margin-top:10px}
 #jump a{color:#5f7f88;text-decoration:none;margin-left:7px}
@@ -281,7 +363,7 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 <div id="lobby" class="on">
   <h1>The Operation</h1>
   <p id="lobbylab"></p>
-  <p>Mechanic test 2. One patient, two surgeons. Two windows on this screen stand for two laptops in the room.</p>
+  <p>Mechanic test 2. One patient, two surgeons. Two windows on this screen stand for two PCs in the room.</p>
   <div class="row"><button class="btn" id="openpair" type="button">Open my partner’s window</button><button class="btn ghost" id="openbot" type="button">Let the computer play my partner</button><button class="btn ghost" id="opensolo" type="button">Work on my own</button></div>
   <p id="lobbynote">Put the two windows side by side.</p>
   <div id="jump">Jump: <a href="?solo=1&fast=1">solo fast</a><a href="?solo=1&bot=1&fast=1">computer partner</a><a href="?solo=1&at=done">done</a><a href="?solo=1&bot=1&trio=1&fast=1">trio</a></div>
@@ -290,14 +372,15 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 <div id="door"><div id="doorbox">
   <div><div id="doorface"></div><div id="doorname"></div></div>
   <div id="doorright">
+    <div id="doorkick" class="kicker"></div>
     <div id="doorbubble"><span class="who" id="doorwho"></span><span id="doorsay"></span></div>
     <div id="goal"><p></p><p></p><p></p></div>
-    <div id="begin"><small id="together"></small><button class="btn" id="beginbtn" type="button"></button><button class="btn ghost" id="alonebtn" type="button" hidden></button></div>
+    <div id="begin"><small id="together"></small><button class="btn" id="doornext" type="button"></button><button class="btn" id="beginbtn" type="button"></button><button class="btn ghost" id="alonebtn" type="button" hidden></button></div>
   </div>
 </div></div>
 
 <div id="app" hidden>
-  <div id="top"><div id="stages"></div><button id="touragain" type="button"></button></div>
+  <div id="top"><div id="stages"></div></div>
   <div id="team"></div>
   <div id="livenote" hidden></div>
   <div id="main">
@@ -311,7 +394,7 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
     </div>
     <div id="chartcol"><div id="chart"><h2 id="charttitle"></h2><p id="chartsub"></p><div id="lines"></div><div id="count"></div></div><div id="strip"></div></div>
   </div>
-  <div id="bar"><div id="instr"></div><div id="hint"></div></div>
+  <div id="bar"><div class="jobline"><b class="joblead" id="joblead"></b><span id="instr"></span></div><div id="hint"></div><button id="touragain" class="helpbtn" type="button"></button></div>
 </div>
 <div id="tour" hidden><div id="spot"></div><div id="tourbox"><div id="tourstep"></div><p id="toursay"></p><button class="btn" id="tournext" type="button"></button></div></div>
 
@@ -333,17 +416,22 @@ img,svg{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   <button class="btn" id="lnext" type="button"></button>
 </div></div>
 <div id="extra" hidden><div id="xpaper"><div id="xhead"></div><div id="xbody"></div><button class="btn" id="xnext" type="button" hidden></button></div></div>
+<div id="xtop" hidden><span id="xwhere"></span><span class="xbtns"><button class="btn ghost" id="xback" type="button"></button><button class="btn ghost" id="xfin" type="button"></button></span></div>
+<div class="job" id="jobbar"><span id="job"></span><button id="helpBtn" type="button"></button></div>
+<div id="help" hidden><div><div class="kicker" id="helpHow"></div><ol id="helpText"></ol><p id="helpStuck"></p></div><button id="helpClose" type="button"></button></div>
+<div id="tag"></div>
 <script src="../../vendor/firebase-app-compat.js"></script>
 <script src="../../vendor/firebase-database-compat.js"></script>
 <script src="../../live-config.js"></script>
 <script src="live.js"></script>
+<script src="cstrings.js"></script>
 <script src="lines.js"></script>
 <script src="lines2.js"></script>
 <script src="engine2.js"></script>
 <script src="face.js"></script>
 <script src="wardengine.js"></script>
-<script src="ui2.js"></script>
 <script src="xjobs.js"></script>
+<script src="ui2.js"></script>
 <script src="ward2.js"></script>
 <script src="extras.js"></script>
 </body></html>

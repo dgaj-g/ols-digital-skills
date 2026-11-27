@@ -50,7 +50,7 @@
     function tap(part) {
       if (S.stage !== 'op') return 'nostage';
       S.lastAct = clock.now(); S.stats.taps++;
-      if (part === 'fluff') { if (S.fluff !== 'in') return 'gone'; S.fluff = 'gone'; say(P().pulled.fluff, 'fluff'); send('clean'); log('fluff'); return 'fluff'; }
+      if (part === 'fluff') { if (S.fluff !== 'in') return 'gone'; S.fluff = 'gone'; say(P().pulled.fluff, 'fluff'); send('clean'); if (L.ui2.fluffMe) notice('fluffMe'); log('fluff'); return 'fluff'; }
       var p = S.parts[part]; if (!p) return 'nopart';
       if (S.my.out) return 'busy';
       if (p.status === 'sealed') { notice('sealed'); return 'sealed'; }
@@ -88,7 +88,7 @@
           else if (x.status === 'out' && x.by === m.seat && q.status === 'in') { q.status = 'out'; q.by = m.seat; q.at = x.at; } });
         if (m.fluff === 'gone') S.fluff = 'gone'; return;
       }
-      if (m.type === 'clean') { S.fluff = 'gone'; pr.state = 'clean'; log('clean', m.seat); return; }
+      if (m.type === 'clean') { S.fluff = 'gone'; pr.state = 'clean'; if (L.ui2.fluffThem) notice('fluffThem', m.seat); log('clean', m.seat); return; }
       if (m.type === 'pull') {
         p = S.parts[m.part]; if (!p || p.status === 'sealed') return;
         pr.state = 'pull';
@@ -106,7 +106,7 @@
         pr.state = 'seal'; markSealed(m.part, m.seat, m.told); if (S.stage === 'done') pr.state = 'done'; return;
       }
     }
-    /* her partner's laptop went quiet (live.js quietFor): any part she had out goes back in, so the patient can
+    /* her partner's PC went quiet (live.js quietFor): any part she had out goes back in, so the patient can
        still be finished. If she comes back her next move marks her here again and the charts are swapped. */
     function gone(s) {
       var pr = S.presence[s]; if (!pr || pr.gone) return [];
@@ -128,7 +128,7 @@
       var U = L.ui2, now = clock.now();
       if (S.stage === 'door') return { kind: 'door', text: '' };
       if (S.stage === 'done') return { kind: 'done', text: U.done };
-      if (S.notice && now - S.notice.t < NOTICE_MS) return { kind: S.notice.key, text: fmt(U[S.notice.key], { p: S.notice.seat ? L.callsigns[S.notice.seat] : '' }) };
+      if (S.notice && now - S.notice.t < (/^fluff/.test(S.notice.key) ? 2 * NOTICE_MS : NOTICE_MS)) return { kind: S.notice.key, text: fmt(U[S.notice.key], { p: S.notice.seat ? L.callsigns[S.notice.seat] : '' }) };
       if (S.my.out) return S.my.out === 'board' ? { kind: 'cardBoard', text: U.cardBoard } : { kind: 'card', text: U.card };
       if (!free().length) return { kind: 'wait', text: U.wait };
       return { kind: 'pull', text: U.pull };

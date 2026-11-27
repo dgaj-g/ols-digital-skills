@@ -62,8 +62,8 @@
     opts = opts || {};
     var now = opts.now || function () { return Date.now(); };
     var hs = [], seen = {}, joined = now(), connected = false, onConn = [], timers = [], closed = false;
-    /* LAST SIGN OF LIFE per other seat, on OUR clock (never hers, so a skewed laptop cannot fake it): a fresh
-       presence beat or a move. A pupil whose laptop shut stops beating; the frames read quietFor() and let go. */
+    /* LAST SIGN OF LIFE per other seat, on OUR clock (never hers, so a skewed PC cannot fake it): a fresh
+       presence beat or a move. A pupil whose PC shut stops beating; the frames read quietFor() and let go. */
     var seenAt = {}, lastBeat = {};
     var ref = db.ref('rooms/' + room);
     function deliver(m) { hs.forEach(function (h) { h(m); }); }

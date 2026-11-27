@@ -21,7 +21,7 @@
   };
   function seeded(s) { s = s >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
   function shuffle(a, rnd) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  /* which beds a room sees: the same four on both laptops (seeded by the room), all six alone or as a three */
+  /* which beds a room sees: the same four on both PCs (seeded by the room), all six alone or as a three */
   function pickBeds(seats, seed) {
     var all = L.ward.map(function (b) { return b.id; });
     if (seats.length !== 2) return all;
@@ -79,14 +79,14 @@
         if (!before && doneAll()) say(W.done, 'done');
       }
     }
-    /* two hands on one bed: the earlier seat letter keeps it, the same answer on every laptop */
+    /* two hands on one bed: the earlier seat letter keeps it, the same answer on every PC */
     function claim(id, who) {
       var b = S.beds[id]; if (!b || b.done || !who) return;
       if (!b.by) { b.by = who; return; }
       if (b.by === who) return;
       if (who < b.by) { if (b.by === seat) { if (S.open === id) S.open = null; S.notice = { key: 'lost', seat: who }; } b.by = who; }
     }
-    /* a surgeon whose laptop went quiet (live.js quietFor): her unfinished beds are let go and the share is
+    /* a surgeon whose PC went quiet (live.js quietFor): her unfinished beds are let go and the share is
        counted again over the surgeons still here, so the ward round can always be finished */
     function recap() { if (o.cap != null || seats.length === 1) return; var n = seats.filter(function (s) { return s === seat || !S.presence[s].gone; }).length; cap = S.cap = Math.ceil(ids.length / n); }
     function gone(s) {

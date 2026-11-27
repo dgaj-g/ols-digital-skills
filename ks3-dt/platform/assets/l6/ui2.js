@@ -10,7 +10,12 @@
   if (!LOCAL) Q = {};
   if (H) { Q = {}; Q.at = H.stage === 'op' ? 'table' : null; if (H.seed != null) Q.seed = String(H.seed); }
   var STAGE = H ? (H.stage || 'door') : (Q.stage || 'door');
-  if (['ward', 'letter', 'boss', 'names', 'machine'].indexOf(STAGE) !== -1) { window.OPHASH = H || { stage: STAGE, seat: Q.seat || 'A', seats: (Q.seats || 'A').split(''), room: Q.room || null }; return; }
+  if (['ward', 'letter', 'find', 'customers', 'own', 'boss', 'names', 'machine'].indexOf(STAGE) !== -1) { window.OPHASH = H || { stage: STAGE, seat: Q.seat || 'A', seats: (Q.seats || 'A').split(''), room: Q.room || null }; return; }
+  /* V2 (spec §6): an extra job that is a second patient (Desmond, Nigel) is the same door and table, on her own, in
+     this window only; its top bar says where she is and keeps the way back to the jobs. C = the V2 strings (cstrings.js). */
+  var JOB = H && (STAGE === 'desmond' || STAGE === 'nigel') ? STAGE : null;
+  var C = window.L6C_STRINGS, LY = window.OPLAYER;
+  U.fluffMe = C.fixes.fluffMe; U.fluffThem = C.fixes.fluffThem.replace('{partner}', '{p}');
   function post(type, data) { if (window.parent === window) return; var m = { op: 1, type: type }; for (var k in data || {}) m[k] = data[k]; window.parent.postMessage(m, '*'); }
   var NAMES = (H && H.names) || null;
   var FAST = Q.fast === '1', PACE = FAST ? 0.3 : 1;
@@ -49,7 +54,14 @@
     return { on: function (h) { hs.push(h); }, send: function (type, data) { var m = Object.assign({ type: type, t: Date.now(), id: id + '-' + (++n) }, data); if (bc) bc.postMessage(m); try { localStorage.setItem(key, JSON.stringify(m)); } catch (_) { } } };
   }
   /* ---------- the live room (spec §4): Firebase, no sign-in; never a dead screen ---------- */
-  var FALLBACK = false, FB = { A: 'The live link is slow. Share one laptop and take turns.', B: 'Go and sit with {p}. You share one laptop.' };
+  /* the blocked link (spec §6.5): seat A's PC runs both surgeons; seat B is sent to A by her real first name */
+  var FALLBACK = false;
+  function firstOf(s) { var i = seats.indexOf(s), n = NAMES && NAMES[i]; return n ? String(n).trim().split(/\s+/)[0] : L.callsigns[s]; }
+  function fbText(w) { var F = C.fixes; return w === 'B' ? F.fallbackPC + ' ' + F.fallbackGo.replace('{name}', firstOf('A')) : F.fallbackMe.replace('{name}', firstOf('B')); }
+  function awayCard() {
+    $('awaysay').textContent = fbText('B'); $('awaybtn').textContent = C.fixes.fallbackButton;
+    if (LY) LY.job(C.job.intro.replace('{btn}', C.fixes.fallbackButton), C.help.opAway.map(function (l) { return l.replace('{name}', firstOf('A')); }), LY.press($('awaybtn')));
+  }
   function openLive() {
     var hs = [], fb = null, timer;
     var w = { on: function (h) { hs.push(h); }, send: function (t, d) { if (fb && !FALLBACK) fb.send(t, d); } };
@@ -68,8 +80,8 @@
   function goFallback() {
     if (FALLBACK) return; FALLBACK = true; post('fallback');
     if (window.OPBUS) window.OPBUS.close();
-    if (seat !== 'A') { $('door').classList.remove('on'); $('app').hidden = true; $('tour').hidden = true; $('away').hidden = false; $('awaysay').textContent = FB.B.replace('{p}', L.callsigns.A); document.title = 'ready'; return; }
-    /* seat A's laptop runs both surgeons, taking turns, part by part */
+    if (seat !== 'A') { $('door').classList.remove('on'); $('app').hidden = true; $('tour').hidden = true; $('away').hidden = false; awayCard(); document.title = 'ready'; return; }
+    /* seat A's PC runs both surgeons, taking turns, part by part */
     var pair = ['A', 'B'], lb = OP.makeLocalBus(150, clock), ea = lb.endpoint(), eb = lb.endpoint();
     var stage = S.stage; E = OP.makeEngine({ seat: 'A', seats: pair, bus: ea, rnd: rnd, clock: clock, idleMs: IDLE }); ea.on(E.receive);
     EB = OP.makeEngine({ seat: 'B', seats: pair, bus: eb, rnd: rnd, clock: clock, idleMs: IDLE }); eb.on(EB.receive);
@@ -77,7 +89,7 @@
     S = E.S; E.hello(); EB.hello(); turns.on = true; turns.n = 0; resetSpeech(); cardsFor = null; last.chart = ''; last.strip = ''; $('team').innerHTML = teamHTML(); render();
   }
   var turns = { on: false, n: 0 };
-  function turnTick() { /* the part is back in: hand the laptop to the other surgeon */
+  function turnTick() { /* the part is back in: hand the PC to the other surgeon */
     if (!turns.on || S.stage !== 'op' || S.my.out) return; var n = E.sealedCount(); if (n === turns.n) return; turns.n = n;
     var t = E; E = EB; EB = t; S = E.S; sp.seen = S.said.length; sp.q = []; cardsFor = null; last.chart = ''; last.strip = ''; $('team').innerHTML = teamHTML();
   }
@@ -90,7 +102,8 @@
   } else { bus = makeChannelBus(room, LAG); E = OP.makeEngine({ seat: seat, seats: seats, bus: bus, rnd: rnd, clock: clock, idleMs: IDLE }); bus.on(E.receive); }
   if (robotMe) robot = OP.makeRobot(E, rnd, clock, FAST ? 0.35 : 1);
   var S = E.S, P = function () { return L.patients[S.pid]; };
-  if (H && H.round > 0) E.setRound(+H.round);
+  if (JOB) { E.setRound(JOB === 'desmond' ? 1 : 2); if (LY) LY.top(H.extras && H.extras.title); }
+  else if (H && H.round > 0) E.setRound(+H.round);
   E.hello(); var helloTimer = setInterval(function () { if (S.others.every(function (s) { return S.presence[s].here; })) clearInterval(helloTimer); else E.hello(); }, 1500);
   /* ---------- face (carried from mechanic 1: it was never the fault) ---------- */
   var face = window.OPFACE;
@@ -100,7 +113,7 @@
   var ORDER = OP.shuffle(['mem', 'drive', 'cpu', 'gpu', 'fan', 'psu', 'board', 'fluff'], rnd);
   function build() {
     $('stages').innerHTML = U.stages.map(function (s, i) { return '<span data-i="' + i + '">' + s + '</span>'; }).join('');
-    $('team').innerHTML = teamHTML(); $('touragain').textContent = U.tourAgain; $('lobbylab').textContent = U.lobby.lab;
+    $('team').innerHTML = teamHTML(); $('touragain').textContent = C.layer.helpBtn; $('joblead').textContent = C.layer.jobLead; $('doornext').textContent = U.tourNext; $('lobbylab').textContent = U.lobby.lab;
     var h = ''; ORDER.forEach(function (p) {
       h += '<button class="slot" data-part="' + p + '" type="button" aria-label="' + (p === 'fluff' ? 'a bit of fluff' : 'a part') + '">' + '<img src="../img/l6/' + p + '.jpg" alt="" draggable="false">' + '<span class="badge"></span><span class="name"></span><span class="tick">✓</span></button>';
     }); $('slots').innerHTML = h;
@@ -123,35 +136,58 @@
   }
   function resetSpeech() { sp.q = []; sp.cur = null; sp.until = 0; sp.seen = 0; $('say').textContent = ''; $('bubble').classList.add('empty'); }
   /* ---------- door ---------- */
-  var door = { shown: false, t0: 0, timers: [] };
+  /* V2 (D1): two cards of 25 words or fewer. Card 1: who she is and the patient. Next. Card 2: what is inside, who is at
+     the table, Begin the operation. The help keeps the lines the cards dropped (help.door). */
+  var door = { shown: false, t0: 0, timers: [], card: 1 };
+  function doorKick() { if (JOB) return ''; var o = S.others.length; return (o === 0 ? C.top.solo : o === 1 ? C.top.pair : C.top.you).replace('{me}', S.me); }
   function showDoor() {
-    door.shown = true; door.t0 = clock.now(); door.timers.forEach(clearTimeout); door.timers = [];
-    $('door').classList.add('on'); $('app').hidden = true; resetSpeech();
+    door.shown = true; door.card = 1; door.t0 = clock.now(); door.timers.forEach(clearTimeout); door.timers = [];
+    $('door').classList.add('on'); $('door').classList.remove('c2'); $('app').hidden = true; resetSpeech();
     $('doorface').innerHTML = face('happy'); $('doorname').textContent = P().name; $('doorwho').textContent = P().name.toUpperCase(); $('doorsay').textContent = P().open[0];
-    var ps = $('goal').querySelectorAll('p'); ps.forEach(function (p) { p.classList.remove('on'); }); $('begin').classList.remove('on');
-    $('together').innerHTML = bold(E.fmt(U.team, { p: S.me }) + ' ' + E.fmt(S.others.length === 0 ? U.alone : S.others.length === 1 ? U.together : U.together3, { p: L.callsigns[S.others[0]], q: L.callsigns[S.others[1]] }));
-    var t = pace(P().open[0]) * 0.6;
-    door.ready = false; door.togetherHtml = $('together').innerHTML;
-    U.door.forEach(function (line, i) { var txt = E.fmt(line); door.timers.push(setTimeout(function () { ps[i].textContent = txt; ps[i].classList.add('on'); if (i === 2) door.ready = true; doorBegin(); }, t)); t += pace(txt); });
-    document.title = 'ready';
+    $('doorkick').textContent = doorKick();
+    var ps = $('goal').querySelectorAll('p'); ps.forEach(function (p) { p.classList.remove('on'); p.textContent = ''; }); $('begin').classList.remove('on');
+    $('together').hidden = true; $('beginbtn').hidden = true; $('alonebtn').hidden = true; $('doornext').hidden = false;
+    door.ready = false;
+    var txt = E.fmt(U.door[0]);
+    door.timers.push(setTimeout(function () { ps[0].textContent = txt; ps[0].classList.add('on'); door.ready = true; doorBegin(); }, pace(P().open[0]) * 0.6));
+    doorJob(); document.title = 'ready';
+  }
+  function doorCard2() {
+    door.card = 2; $('door').classList.add('c2');
+    var ps = $('goal').querySelectorAll('p'); ps[0].textContent = E.fmt(C.fixes.doorInside); ps[0].classList.add('on');
+    $('doornext').hidden = true; $('beginbtn').hidden = false; $('together').hidden = false;
+    var o = S.others;
+    door.togetherHtml = bold(E.fmt(o.length === 0 ? C.op.alone : o.length === 1 ? C.op.together : C.op.together3, { p: L.callsigns[o[0]], q: L.callsigns[o[1]] }));
+    $('together').innerHTML = door.togetherHtml;
+    doorBegin();
+  }
+  function doorJob() {
+    if (!LY || !door.shown) return;
+    var btn = door.card === 1 ? $('doornext') : (!$('alonebtn').hidden ? $('alonebtn') : $('beginbtn'));
+    var lines = C.help.door.map(function (l) { return E.fmt(l); });
+    if (S.others.length && !JOB) lines.push(E.fmt(C.help.doorPair));
+    LY.job(C.job.intro.replace('{btn}', btn.textContent), lines, LY.press(btn));
   }
   function allHere() { return solo || turns.on || S.others.every(function (s) { return S.presence[s].here || S.presence[s].gone; }); }
-  /* a partner the room has heard nothing from for LATE_MS: never arrived, or her laptop went (DFM: no one-way doors) */
+  /* a partner the room has heard nothing from for LATE_MS: never arrived, or her PC went (DFM: no one-way doors) */
   var LATE_MS = 40000;
   function late(s) { return !!(live && !FALLBACK && window.OPBUS && OPBUS.quietFor && !S.presence[s].here && OPBUS.quietFor(s) > LATE_MS); }
   function doorBegin() {
     if (!door.shown) return; var here = allHere();
+    cls($('begin'), 'on', door.ready);
+    if (door.card === 1) { $('doornext').disabled = !door.ready; doorJob(); return; }
     var away = S.others.filter(function (s) { return !S.presence[s].here; }), lateAll = !here && away.every(late);
     door.lateOk = lateAll && away.length < S.others.length; /* a trio: go on with the partner who is here */
     door.canAlone = lateAll && !door.lateOk && !!(H && H.alone && STAGE === 'door'); /* nobody came: the lesson's own way on */
-    cls($('begin'), 'on', door.ready);
     $('beginbtn').disabled = door.sent || !(here || door.lateOk);
     var ab = $('alonebtn'); ab.hidden = !door.canAlone; ab.disabled = !!door.sent; if (door.canAlone && ab.textContent !== H.alone.label) ab.textContent = H.alone.label;
     var html = !away.length ? door.togetherHtml : bold(away.map(function (s) { return E.fmt(U.presence.away, { p: L.callsigns[s] }); }).join(' ')) + (door.canAlone ? ' ' + esc(H.alone.say) : '');
     if ($('together').innerHTML !== html) $('together').innerHTML = html;
+    doorJob();
   }
+  $('doornext').onclick = function () { if (door.ready && door.card === 1) doorCard2(); };
   function esc(t) { return String(t || '').replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
-  function hideDoor() { door.shown = false; door.timers.forEach(clearTimeout); $('door').classList.remove('on'); $('app').hidden = false; $('bubble').classList.add('empty'); }
+  function hideDoor() { door.shown = false; door.timers.forEach(clearTimeout); if (LY) LY.off(); $('door').classList.remove('on'); $('app').hidden = false; $('bubble').classList.add('empty'); }
   function bold(t) { return t.replace(/Dr \w+/g, function (m) { return '<b class="' + (m === S.me ? 'me' : 'them') + '">' + m + '</b>'; }); }
   function teamHTML() { var o = S.others; return bold(E.fmt(U.team, { p: S.me }) + ' ' + E.fmt(o.length === 0 ? U.teamAlone : o.length === 1 ? U.teamWith : U.teamWith3, { p: L.callsigns[o[0]], q: L.callsigns[o[1]] })); }
   /* ---------- the spotlight tour (DFM 322): each area lit in turn, one sentence, Next; once, reopenable ---------- */
@@ -188,7 +224,7 @@
     return { enabled: enabled, start: start, end: end, next: next, active: function () { return on; }, step: function () { return i; }, steps: function () { return steps; } };
   })();
   $('beginbtn').onclick = function () {
-    if (door.sent || !(allHere() || door.lateOk)) return;
+    if (door.sent || door.card !== 2 || !(allHere() || door.lateOk)) return;
     if (H && STAGE === 'door') { door.sent = true; $('beginbtn').disabled = true; post('begin'); return; }
     if (turns.on && EB) EB.begin();
     if (E.begin()) { hideDoor(); render(); if (TOUR.enabled()) TOUR.start(); }
@@ -224,7 +260,7 @@
     /* slots */
     $('slots').querySelectorAll('.slot').forEach(function (b) {
       var p = b.dataset.part;
-      if (p === 'fluff') { cls(b, 'gone', S.fluff !== 'in'); return; }
+      if (p === 'fluff') { var cl = S.fluff !== 'in', nm = b.querySelector('.name'); cls(b, 'clean', cl); nm.style.display = cl ? '' : 'none'; if (cl && nm.textContent !== C.fixes.fluffTile) nm.textContent = C.fixes.fluffTile; return; }
       var x = S.parts[p]; var mineOut = x.status === 'out' && x.by === S.seat, theirs = x.status === 'out' && x.by !== S.seat, sealed = x.status === 'sealed';
       cls(b, 'out', mineOut && p !== 'board'); cls(b, 'theirs', theirs); cls(b, 'sealed', sealed); cls(b, 'told', sealed && x.told);
       var badge = b.querySelector('.badge'), name = b.querySelector('.name'), tick = b.querySelector('.tick');
@@ -246,7 +282,7 @@
     var n = E.sealedCount(); if (n !== last.count) { last.count = n; $('count').textContent = E.fmt(U.count, { n: n }); }
     /* strip */
     var strip = $('strip'); if (!S.others.length) strip.hidden = true; else {
-      var txt = S.stage === 'done' ? E.fmt(S.others.length === 1 ? U.reveal : U.reveal3) : E.presence().map(function (x) { return x.text; }).join('\n');
+      var txt = S.stage === 'done' && !H ? E.fmt(S.others.length === 1 ? U.reveal : U.reveal3) : E.presence().map(function (x) { return x.text; }).join('\n');
       if (txt !== last.strip) { last.strip = txt; strip.innerHTML = txt.split('\n').map(function (t) { return '<div>' + t.replace(/^(Dr \w+)/, '<b>$1</b>') + '</div>'; }).join(''); }
     }
     /* cards */
@@ -258,18 +294,23 @@
     }
     if (!showCards) cardsFor = null;
     /* bar */
-    if (pr.text !== last.bar) { last.bar = pr.text; $('instr').textContent = pr.text; cls($('instr'), 'sting', /again|lost|theirs|sealed/.test(pr.kind)); }
+    var barText = H && S.stage === 'done' ? C.job.intro.replace('{btn}', $('nextbtn').textContent) : pr.text;
+    if (barText !== last.bar) { last.bar = barText; $('instr').textContent = barText; cls($('instr'), 'sting', /again|lost|theirs|sealed/.test(pr.kind)); }
     /* done */
     var done = S.stage === 'done'; cls($('done'), 'on', done);
     if (done && last.stage !== 'done') {
-      $('doneh').textContent = U.done; $('donep').textContent = S.seats.map(function (s) { return E.fmt(U.found, { p: L.callsigns[s], n: S.counts[s] }); }).join(' ');
-      revealNames(); $('donenote').textContent = S.others.length && !H ? U.revealNote : '';
+      $('doneh').textContent = U.done;
+      /* V2 (D5): in the lesson her own count only (the names are revealed at the contest's result); taking turns, both */
+      if (H && !turns.on) $('donep').textContent = E.fmt(C.op.found, { p: 'You', n: S.counts[S.seat] });
+      else $('donep').textContent = S.seats.map(function (s) { return E.fmt(H ? C.op.found : U.found, { p: L.callsigns[s], n: S.counts[s] }); }).join(' ');
+      if (H) { $('donereveal').textContent = ''; $('againbtn').hidden = true; } else revealNames();
+      $('donenote').textContent = S.others.length && !H ? U.revealNote : '';
       post('done', { save: { pid: S.pid, round: S.round, seats: S.seats, counts: S.counts, chart: S.chart.map(function (p) { return { part: p, by: S.parts[p].by, told: !!S.parts[p].told }; }) } });
     }
     last.stage = S.stage;
     speechTick(now);
     var hint = S.others.length && !solo && !H ? U.lobby.note : ''; if ($('hint').textContent !== hint) $('hint').textContent = hint;
-    var ln = turns.on ? FB.A : ''; if ($('livenote').textContent !== ln) { $('livenote').textContent = ln; $('livenote').hidden = !ln; cls($('app'), 'fb', !!ln); }
+    var ln = turns.on ? fbText('A') : ''; if ($('livenote').textContent !== ln) { $('livenote').textContent = ln; $('livenote').hidden = !ln; cls($('app'), 'fb', !!ln); }
   }
   /* the real names, from the platform once the chart is complete (as Lesson 1's reveal) */
   function revealNames() {
@@ -281,9 +322,9 @@
   }
   window.addEventListener('message', function (e) {
     var m = e.data; if (e.source !== window.parent || !m || m.op !== 1) return;
-    if (m.type === 'names' && m.names) { NAMES = m.names; if (S.stage === 'done') revealNames(); }
+    if (m.type === 'names' && m.names) { NAMES = m.names; if (S.stage === 'done' && !H) revealNames(); if (FALLBACK && seat !== 'A') awayCard(); }
   });
-  if (H) { $('nextbtn').textContent = 'Continue'; $('nextbtn').hidden = false; $('nextbtn').onclick = function () { post('next'); }; $('awaybtn').textContent = 'Continue'; $('awaybtn').onclick = function () { post('next'); }; }
+  if (H) { $('nextbtn').textContent = JOB ? (H.extras && H.extras.back) || C.hub.back : C.fixes.opDone; $('nextbtn').hidden = false; $('nextbtn').onclick = function () { post('next'); }; $('awaybtn').textContent = C.fixes.fallbackButton; $('awaybtn').onclick = function () { post('next'); }; }
   build();
   var cardsOnce = false;
   /* mid-operation, a partner gone quiet for GONE_MS: the part in her hand goes back in, so the patient can still be finished */
@@ -298,7 +339,7 @@
   if (AT === 'done') { OP.PARTS.forEach(function (p) { E.tap(p); E.card(p); }); }
   render(); document.title = 'ready';
   /* the lesson route: her Begin was on the door page, so the tour Begin starts (spec §3.1, DFM 322) opens here, at the table.
-     After a beat, so a seat sent to her partner's laptop (goFallback, queued above) is not toured over the away card */
+     After a beat, so a seat sent to her partner's PC (goFallback, queued above) is not toured over the away card */
   if (H && AT === 'table') setTimeout(function () { if (!(FALLBACK && seat !== 'A') && S.stage === 'op' && TOUR.enabled()) TOUR.start(); }, 0);
   post('ready', { stage: STAGE });
   window.OPUI = { tour: TOUR, get E() { return E; }, get EB() { return EB; }, get S() { return S; }, fallback: function () { return FALLBACK; }, goFallback: goFallback, act: act, card: function (k) { var r = E.card(k); render(); return r; }, begin: function () { var r = E.begin(); render(); return r; }, render: render, speech: sp, Q: Q };
