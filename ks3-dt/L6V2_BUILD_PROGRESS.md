@@ -38,3 +38,4 @@ Target: Apps Script Version 96, contentVersion 2026-11-27a.
 - 27 Nov 08:29 context compacted; resuming contest-ui.js + contest.html (step 3).
 - 27 Nov 08:35 fallbackSit trimmed (accented name = 2 words); test model name Bríd. Writing contest.html + contest-ui.js.
 - 09:14 contest-ui.js written (full page script). Next: run l6-contest-test + l6-contest-look on :8126.
+- 11:05 contest page ALL LOOK GATES GREEN (solo 12/12, paired 197/0, fallback 15/0 after blockedNet exemption: the Firebase-blocked browser's own ERR_NAME_NOT_RESOLVED is expected there only). Step 4 next: op page (door trim, fluff notices, opDone, green Stuck? Show me = tour), extras find/customers/own, hub chunk via platform ShowMe (job/showMe/ring in chunk config, app.js 749/781, no app.js edit).

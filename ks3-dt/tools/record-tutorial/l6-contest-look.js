@@ -155,7 +155,8 @@ async function answer(p, i, rightOne, how) {
 (async () => {
   const browser = await chromium.launch();
   const errs = [];
-  async function open(ctx, h, size) { const p = await ctx.newPage(); await p.setViewportSize({ width: size[0], height: size[1] }); p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error' && !/favicon/.test(m.text())) errs.push('console: ' + m.text()); }); await p.goto(PAGE + h); return p; }
+  /* blockedNet: the T-fallback browser blocks Firebase on purpose, so its own name-not-resolved errors are expected there (and only there) */
+  async function open(ctx, h, size, blockedNet) { const p = await ctx.newPage(); await p.setViewportSize({ width: size[0], height: size[1] }); p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error' && !/favicon/.test(m.text()) && !(blockedNet && /ERR_NAME_NOT_RESOLVED/.test(m.text()))) errs.push('console: ' + m.text()); }); await p.goto(PAGE + h); return p; }
 
   /* ===== the main pair: begin → 17 questions → result → room gone ===== */
   if (run('main')) {
@@ -273,8 +274,8 @@ async function answer(p, i, rightOne, how) {
   if (run('fallback')) {
     const blocked = await chromium.launch({ args: ['--host-resolver-rules=MAP *.firebaseio.com ~NOTFOUND, MAP *.firebasedatabase.app ~NOTFOUND, EXCLUDE localhost'] });
     const R = code(), c3 = await blocked.newContext();
-    const FA = await open(c3, H('A', R, { fallback: 1 }), [1366, 681]);
-    const FB = await open(c3, H('B', R), [1366, 681]);
+    const FA = await open(c3, H('A', R, { fallback: 1 }), [1366, 681], true);
+    const FB = await open(c3, H('B', R), [1366, 681], true);
     const awayA = await phase(FA, 'away', 3000), awayB = await phase(FB, 'away', 16000);
     const ma = await measure(FA), mb = await measure(FB);
     gate('T-fallback both PCs show the sit-together card', awayA && awayB, `A ${awayA} · B ${awayB}`);
