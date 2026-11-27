@@ -59,3 +59,5 @@ Target: Apps Script Version 96, contentVersion 2026-11-27a.
 - D10 Deck rewritten to 8 slides (spec §11) BUT slides 2 and 3 swapped: qa-teacher-spine (DFM 219c) demands title then objectives. Run sheet updated (Slide 2 aims, Slide 3 what today is about). Objectives = spec §1 words on the deck; lesson JSON objectives untouched.
 - D11 .gs rebuilt from packed decks (walk-build first, then build-deck-gs, then real pack). REAL PACK GREEN, contentVersion 2026-11-27a, PathB_Index rebuilt.
 - Next: WIP push; l6-contest-test, l6-walk V2 + sit-wrongpath '6' landmarks; film check; gates; sit report; readers; Slides deck via Chrome; deploy V96.
+
+11:30 · l6-walk.js moved to V2: c1 door (two cards), c2 operation, c3 the contest solo vs Bernadette (17 questions, film to its end, one slip on Q2, result Continue), extras (own to its end, letter, Desmond left by the top bar's Back), c8, c9. LANDMARKS['6'] now 25 (11 on the contest). EXPECT['6'] re-pinned chunks 12→7, presses 103 (reported); xp 45, marks 45, badges 2 unchanged. Walk 46/46 PASS; --control --expect-fail CAUGHT (letter skipped + planted landmark).
