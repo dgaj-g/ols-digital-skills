@@ -163,7 +163,7 @@ function g4(goneMs) {
   var rightN = 0, total = 10000; for (var s = 0; s < total; s++) { var k = s % N; if (C.isRight(k, C.standIn('seed' + s, 'B', k))) rightN++; }
   var rate = rightN / total;
   ok('G7 stand-ins identical across two processes; right-rate 0.38–0.42', same && rate >= 0.38 && rate <= 0.42, 'rate ' + rate);
-  controlMustFail('G7 a stand-in made with Math.random', function () { var r1 = Math.random() < 0.4 ? right(3) : wrong(3), r2 = Math.random() < 0.4 ? right(3) : wrong(3), r3 = Math.random() < 0.4 ? right(3) : wrong(3); return r1 === r2 && r2 === r3 && Math.random() < 0.2; });
+  controlMustFail('G7 a stand-in made with Math.random', function () { for (var k = 0; k < 30; k++) { var r1 = Math.random() < 0.4 ? right(3) : wrong(3), r2 = Math.random() < 0.4 ? right(3) : wrong(3), r3 = Math.random() < 0.4 ? right(3) : wrong(3); if (!(r1 === r2 && r2 === r3)) return false; } return true; });  /* 30 draws, so the control fails every run (it was a 1-in-18 flake) */
 })();
 
 /* ---- G8 ---- */
