@@ -116,7 +116,7 @@ main.init .flag.busy{position:fixed}
 .lockedtext{white-space:pre-wrap;margin:6px 0 0;padding:12px 14px;background:var(--tint,#F4F6FA);border:1px solid var(--line);border-radius:8px;line-height:1.5}
 .ticks li.waits{opacity:.6}
 .parts.ipages li.done .name{color:var(--ok)}
-.pagefoot{margin-top:14px}
+.pagefoot{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
 /* walk 27 Nov: staff Reasons grid */
 .staff .igrid,.staff .igrid th,.staff .igrid td{font-family:inherit}
 .staff .igrid td:first-child,.staff .igrid th:first-child{position:sticky;left:0;background:var(--card);z-index:1}.staff .igrid th:first-child{background:var(--tint)}
