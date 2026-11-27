@@ -254,6 +254,8 @@
     paintSys();
   }
   function paint(html) { if (LESSON) { LESSON.destroy(); LESSON = null; } app.innerHTML = html; paintSys(); }
+  // a lost boot: the centre says so, with Try again there (a reload); no "work is kept" bar before any work exists (27 Nov live walk, L1)
+  function guardLost() { app.innerHTML = '<div id="sys"></div><div class="guard"><div class="box"><p>' + h(T('guard.lost')) + '</p><button class="btn" data-sys="reload">' + h(T('sys.retry')) + '</button></div></div>'; }
   function guard(text, dots) { app.innerHTML = '<div id="sys"></div><div class="guard"><div class="box"><p>' + h(text) + (dots ? '<span class="dots"></span>' : '') + '</p></div></div>'; paintSys(); }
   const paperTitle = (p) => T('map.paper', { year: p.year, title: p.title });
   const crumbSql = () => ({ t: T('map.crumb'), go: '#sql' });
@@ -916,9 +918,9 @@
     // Watchdog: a first google.script.run call can hang on Google's side and never answer (seen live 18 Nov 2026, v15: doGet ran, apiBoot never arrived).
     // After 20 s a pupil gets the offline bar with Try again (a reload) instead of a dead end; a late answer still boots as normal.
     let booted = false;
-    const slow = setTimeout(() => { if (!booted) { SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; paintSys(); } }, 20000);
+    const slow = setTimeout(() => { if (!booted) guardLost(); }, 20000);
     window.OLS_TRANSPORT.call('apiBoot', { cls }).then((r) => {
-      booted = true; clearTimeout(slow); if (SYS.offline) { SYS.offline = false; SYS.retry = null; }
+      booted = true; clearTimeout(slow);
       if (r && r.v && BUILD && r.v !== BUILD) SYS.stale = true;
       if (!r || r.ok === false) {
         const code = r && r.error;
@@ -927,7 +929,7 @@
       }
       if (r.staff) { window.Staff.boot(app, r); return; }
       if (r.needName) askName(r); else start(r);
-    }, () => { booted = true; clearTimeout(slow); SYS.offline = true; SYS.retry = () => { reloadPage(); return Promise.resolve(); }; guard(T('guard.signing'), true); paintSys(); });
+    }, () => { booted = true; clearTimeout(slow); guardLost(); });
   }
   window.App = { boot, T, h, NOTICE };
 })();

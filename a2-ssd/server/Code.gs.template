@@ -741,9 +741,10 @@ function apiInit(req) {
     var mv = InitJudge.match(id, choices);
     var mres = withLock_(function () {
       var rec = readInit_(cls, email), p = rec.P[id] || {}, first = p.f == null;
-      if (first) { p.k = p.k || tmin_(); p.d = req.door === 1 ? 1 : 0; p.f = mv.score; p.b = mv.score; p.a = 1; }
+      if (first) { p.k = p.k || tmin_(); p.fm = tmin_(); p.d = req.door === 1 ? 1 : 0; p.f = mv.score; p.b = mv.score; p.a = 1; }
       else { p.a = num_(p.a) + 1; if (mv.score > num_(p.b)) { p.b = mv.score; if (p.s) p.sb = 1; } }
       p.c = choices;   // her last choices, for the teacher's drawer
+      p.lm = tmin_();  // last check, for the activity timeline (27 Nov live walk)
       rec.P[id] = p; writeInit_(cls, email, rec);
       return { first: first, part: p };
     });
@@ -773,7 +774,7 @@ function apiInit(req) {
       var first = p.f == null, now = tmin_();
       var same = !first && p.lm != null && now - p.lm <= 2 && JSON.stringify(p.t || []) === JSON.stringify(idx);
       if (same) return { first: false, part: p };   // the same ticks again within two minutes is a retried call (a lost response), not a second attempt (v18)
-      if (first) { p.f = total; p.b = total; p.a = 1; }
+      if (first) { p.f = total; p.b = total; p.a = 1; p.fm = now; }
       else { p.a = num_(p.a) + 1; if (total > num_(p.b)) { p.b = total; if (p.s) p.sb = 1; } }
       p.t = idx; p.lm = now; rec.P[id] = p; writeInit_(cls, email, rec);
       return { first: first, part: p };
@@ -1150,6 +1151,18 @@ function apiStaff(req) {
       if (q.fl && q.fl.m) evs.push({ m: q.fl.m, k: 'f', part: pid, b: q.fl.b, topic: 'norm' });
     });
     Object.keys(NR.E).forEach(function (pid) { var e = NR.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'e', paper: pid, topic: 'norm' }); });
+    // Reasons for systems development: its work showed as 'Nothing marked' before (27 Nov live walk)
+    var IR = readInit_(name, ue);
+    Object.keys(IR.P).forEach(function (pid) {
+      var q = IR.P[pid] || {};
+      if (q.f != null && (q.fm || q.k)) evs.push({ m: q.fm || q.k, k: 'ia', part: pid, f: q.f, d: q.d === 1 ? 1 : 0 });
+      if (num_(q.a) > 1) evs.push({ m: q.lm || q.fm || q.k, k: 'ib', part: pid, a: num_(q.a), b: q.b });
+      if (num_(q.s) > 1) evs.push({ m: q.s, k: 'is', part: pid });
+      if (q.tf != null && q.tk) evs.push({ m: q.tk, k: 'it', part: pid, a: num_(q.ta) || 1, b: q.tb });
+      if (q.fl && q.fl.m) evs.push({ m: q.fl.m, k: 'if', part: pid, b: q.fl.b });
+    });
+    Object.keys(IR.G).forEach(function (gb) { if (num_(IR.G[gb]) > 1) evs.push({ m: IR.G[gb], k: 'ig', b: gb }); });
+    Object.keys(IR.E).forEach(function (pid) { var e = IR.E[pid]; if (e && e.t) evs.push({ m: e.t, k: 'ie', part: pid, v: e.v }); });
     if (ur.j) evs.push({ m: ur.j, k: 'j' });
     ((jget_(sp_(), wKey_(name, ue), {}) || {}).e || []).forEach(function (x) { evs.push({ m: x[0], k: 'cw', c: x[1], x: x[2] }); });
     evs.sort(function (x, y) { return x.m - y.m; });

@@ -173,11 +173,11 @@
           }).join('') + '</ul>';
       }
     }
-    const job = room === 'know' ? JOB.know : room === 'apply' ? JOB.apply : CS ? JOB.march : JOB.marchEmpty;
+    const job = room === 'know' ? (pagesDone === BULLETS.length ? JOB.knowDone : JOB.know) : room === 'apply' ? JOB.apply : CS ? JOB.march : JOB.marchEmpty;
     app.innerHTML = header(C0().slice(0, 1).concat([{ t: IC.topic.tile }])) + '<main class="init"><h1>' + h(IC.topic.tile) + '</h1><p class="sub">' + h(IC.topic.sub) + '</p>' + rooms + '<p class="job">' + h(job) + '</p>' + body + '</main>';
     if (room === 'know') { wireDeck(); paintDeck(); }
     // "Back to the pages" lands on the list, not the top of the deck (K4)
-    if (room === 'know' && cur.toPages) { cur.toPages = false; const pl = app.querySelector('.ipages'); if (pl) pl.scrollIntoView(); }
+    if (room === 'know' && cur.toPages) { cur.toPages = false; setTimeout(() => { const pl = app.querySelector('.ipages'); if (pl) pl.scrollIntoView(); }, 0); }   // after the router's scroll-to-top, or the jump is undone (27 Nov live walk)
   };
 
   // #ipage/<b> — the examiner's points and the quick check
@@ -189,7 +189,7 @@
   V.ipage = () => {
     const b = cur.b, page = IC.pages[b], Q = cur.quick;
     let foot;
-    if (!Q) foot = '<div class="card quickcard"><h2>Quick check</h2><p>' + h(IC.quickRule.line) + '</p><div class="row"><button class="btn" data-quick>Start the quick check</button></div></div>';
+    if (!Q) foot = '<div class="card quickcard"><h2>Quick check</h2><p>' + h(IREC.G && IREC.G[b] ? IC.quickRule.lineDone : IC.quickRule.line) + '</p><div class="row"><button class="btn" data-quick>Start the quick check</button></div></div>';
     else {
       const items = Q.items.map((qi, k) => { const q = IC.quick[b][qi]; return '<div class="item" data-i="' + qi + '"><p class="q"><b>' + (k + 1) + '.</b> ' + h(q.q) + '</p><div class="opts">' + q.o.map((o, j) => '<label><input type="radio" name="q' + k + '" value="' + j + '"' + (Q.picks[k] === j ? ' checked' : '') + (Q.result ? ' disabled' : '') + '> ' + h(o) + '</label>').join('') + '</div></div>'; }).join('');
       const ready = Q.picks.every((x) => x != null);
@@ -295,10 +295,11 @@
     const id = q.id, p = rec(id), picks = cur.picks || (cur.picks = q.rows.map(() => null));
     if (cur.verdict) {
       const v = cur.verdict;
-      shell(JOB.checked, '<div class="card marks"><h2>Your marks</h2><p class="score">' + v.score + ' <small>of ' + q.pm + ' marks</small></p><ul class="check">' + q.rows.map((r, i) => '<li class="' + (v.ok[i] ? 'hit' : 'miss') + '"><b>' + h(r.text) + ':</b> ' + h(r.opts[picks[i]]) + (v.ok[i] ? '' : (v.hints && v.hints[i] ? ' — ' + h(v.hints[i]) : '')) + '</li>').join('') + '</ul>'
+      const all = v.ok.every(Boolean);   // full marks: nothing to change, so no Try again and no 'change any wrong row' (27 Nov live walk)
+      shell(all ? JOB.checkedAll : JOB.checked, '<div class="card marks"><h2>Your marks</h2><p class="score">' + v.score + ' <small>of ' + q.pm + ' marks</small></p><ul class="check">' + q.rows.map((r, i) => '<li class="' + (v.ok[i] ? 'hit' : 'miss') + '"><b>' + h(r.text) + ':</b> ' + h(r.opts[picks[i]]) + (v.ok[i] ? '' : (v.hints && v.hints[i] ? ' — ' + h(v.hints[i]) : '')) + '</li>').join('') + '</ul>'
         + '<p class="hist">' + (p.a === 1 ? 'Checked once.' : 'Checked ' + p.a + ' times · first try ' + p.f + ' of ' + q.pm + ' · best ' + p.b + ' of ' + q.pm + '.') + '</p>'
-        + '<div class="row"><button class="btn sec" data-again>Try again</button><button class="btn ghost" data-go="#ipart/' + id + '/more">Another question</button><button class="btn ghost" data-go="#ieval/' + id + '">How did it go?</button></div></div>' + flagBtn(q));
-      app.querySelector('[data-again]').addEventListener('click', () => { const ok = v.ok || []; cur.verdict = null; cur.picks = picks.map((x, i) => (ok[i] ? x : null)); render(); });
+        + '<div class="row">' + (all ? '<button class="btn sec" data-go="#ieval/' + id + '">How did it go?</button><button class="btn ghost" data-go="#ipart/' + id + '/more">Another question</button>' : '<button class="btn sec" data-again>Try again</button><button class="btn ghost" data-go="#ipart/' + id + '/more">Another question</button><button class="btn ghost" data-go="#ieval/' + id + '">How did it go?</button>') + '</div></div>' + flagBtn(q));
+      if (!all) app.querySelector('[data-again]').addEventListener('click', () => { const ok = v.ok || []; cur.verdict = null; cur.picks = picks.map((x, i) => (ok[i] ? x : null)); render(); });
       wireFlag(q, 'turn'); return;
     }
     const rows = q.rows.map((r, i) => '<div class="mrow"><label for="m' + i + '">' + h(r.text) + '</label><select data-row="' + i + '" id="m' + i + '"><option value="">Choose…</option>' + r.opts.map((o, j) => '<option value="' + j + '"' + (picks[i] === j ? ' selected' : '') + '>' + h(o) + '</option>').join('') + '</select></div>').join('');
@@ -370,26 +371,27 @@
   // ---------- help (the same panel as the other topics, with this topic's lines) ----------
   function helpKey() {
     if (!cur) return 'home';
-    if (cur.k === 'init') return cur.room === 'apply' ? 'apply' : cur.room === 'march' ? (CS ? 'march' : 'marchEmpty') : 'know';
+    if (cur.k === 'init') return cur.room === 'apply' ? 'apply' : cur.room === 'march' ? (CS ? 'march' : 'marchEmpty') : BULLETS.every((x) => IREC.G && IREC.G[x.id]) ? 'knowDone' : 'know';
     if (cur.k === 'ieval') return IREC.E && IREC.E[cur.id] ? 'sent' : 'verdict';
     if (cur.k === 'ipage') return cur.quick ? 'quick' : 'page';
     if (cur.k === 'icase') return CS ? 'march' : 'marchEmpty';
     if (cur.k === 'ipart') {
       const kind = PART[cur.id] ? PART[cur.id].kind : 'prose';
       if (cur.beat === 'lesson') return 'lesson';
-      if (cur.beat === 'turn') return kind === 'story' ? 'story' : kind === 'match' ? 'match' : 'beat3';
+      if (cur.beat === 'turn') return kind === 'story' ? 'story' : kind === 'match' ? (cur.verdict && cur.verdict.ok && cur.verdict.ok.every(Boolean) ? 'matchDone' : 'match') : 'beat3';
       return 'door';
     }
     return 'apply';
   }
   // the thing to press next gets a gold ring while the help is open
   const RING = {
-    know: ['[data-deck-next]', '.ipages li:not(.done)'], page: ['[data-quick]'],
+    know: ['[data-deck-next]', '.ipages li:not(.done)'], page: ['[data-quick]'], knowDone: ['[data-room=apply]'],
     quick: ['[data-qmore]', '.qresult .btn', '[data-qcheck]:not([disabled])', '.quick .item'],
     apply: ['.qs li.nt', '.qs li'], door: ['[data-door=learn]'], lesson: ['.foot .btn'],
     beat3: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
     story: ['[data-lock]:not([disabled])', 'textarea[data-write]:not([readonly])', '[data-mark]', '[data-show]'],
     match: ['[data-check]:not([disabled])', 'select[data-row]', '[data-again]'],
+    matchDone: ['.marks [data-go^="#ieval"]'],
     march: ['.tasks', '[data-tielock]', '[data-tiemark]'], marchEmpty: ['[data-room=know]'],
     verdict: ['.seg button', '[data-send]'], sent: ['.sentcard .btn'], home: ['[data-room=know]']
   };
@@ -420,7 +422,7 @@
   function route(k, bits) {
     closeHelp();
     const same = cur && cur.k === k && cur.id === bits[1] && cur.beat === (bits[2] || null);
-    if (k === 'init') { cur = { k, room: bits[1] === 'apply' ? 'apply' : bits[1] === 'march' ? 'march' : 'know', toPages: bits[1] === 'pages' }; render(); icall({ op: 'state' }).then(() => { if (cur && cur.k === 'init') render(); }, () => {}); return; }
+    if (k === 'init') { cur = { k, room: bits[1] === 'apply' ? 'apply' : bits[1] === 'march' ? 'march' : 'know', toPages: bits[1] === 'pages' }; render(); icall({ op: 'state' }).then(() => { if (cur && cur.k === 'init') { const m = app.querySelector('main'), y = m ? m.scrollTop : 0; render(); const m2 = app.querySelector('main'); if (m2) m2.scrollTop = y; } }, () => {}); return; }   // the repaint after a slow state call keeps the pupil's place (27 Nov live walk: Back to the pages landed at the top)
     if (k === 'ipage') { if (!IC.pages[bits[1]]) return A.go('#init'); cur = { k, b: bits[1], quick: null }; return render(); }
     if (!PART[bits[1]]) return A.go('#init/apply');
     if (k === 'ipart') {
