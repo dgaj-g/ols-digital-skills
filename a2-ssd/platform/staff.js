@@ -43,12 +43,15 @@
     const box = app.querySelector('[data-msg]');
     if (box) { box.textContent = failText(e); box.hidden = false; }
   }
-  function loading() { const p = pane(); if (p) p.innerHTML = '<p class="note">Loading<span class="dots"></span></p>'; }   // a pane is never blank while its first call is out (v21)
+  // on Live the topic buttons stay up while a topic loads or fails, so the teacher can change topic at once (v29: found live, the bar vanished for the whole call)
+  const liveBar = () => (TAB === 'live' ? topicSwitch() : '');
+  const wireBar = () => { if (TAB === 'live') wireTopic(); };
+  function loading() { const p = pane(); if (p) { p.innerHTML = liveBar() + '<p class="note">Loading<span class="dots"></span></p>'; wireBar(); } }   // a pane is never blank while its first call is out (v21)
   function retryCard(load) {   // a lost first load paints Try again in the pane, never a blank pane under a red line; a lost refresh keeps the grid and shows the line (v21)
     return (e) => {
       const p = pane();
       if (p && !p.querySelector('[data-refresh]')) {
-        p.innerHTML = '<div class="card"><p>' + h(failText(e)) + '</p><button class="btn" data-retry>' + h(T('sys.retry')) + '</button></div>';
+        p.innerHTML = liveBar() + '<div class="card"><p>' + h(failText(e)) + '</p><button class="btn" data-retry>' + h(T('sys.retry')) + '</button></div>'; wireBar();
         p.querySelector('[data-retry]').addEventListener('click', () => { loading(); load(); });
       } else fail(e);
     };
