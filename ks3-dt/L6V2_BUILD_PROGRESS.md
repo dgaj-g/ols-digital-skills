@@ -39,3 +39,16 @@ Target: Apps Script Version 96, contentVersion 2026-11-27a.
 - 27 Nov 08:35 fallbackSit trimmed (accented name = 2 words); test model name Bríd. Writing contest.html + contest-ui.js.
 - 09:14 contest-ui.js written (full page script). Next: run l6-contest-test + l6-contest-look on :8126.
 - 11:05 contest page ALL LOOK GATES GREEN (solo 12/12, paired 197/0, fallback 15/0 after blockedNet exemption: the Firebase-blocked browser's own ERR_NAME_NOT_RESOLVED is expected there only). Step 4 next: op page (door trim, fluff notices, opDone, green Stuck? Show me = tour), extras find/customers/own, hub chunk via platform ShowMe (job/showMe/ring in chunk config, app.js 749/781, no app.js edit).
+
+## Op page + extras calls (27 Nov, step 4) — record in DFM 390-400 + sit report
+- D1 Door = two cards <=25 words each. Card 1: kicker 'With your partner · You are {me}' (REWRITE; alone 'On your own · You are {me}'), face, name, bubble open[0], door[0], button Next. Card 2: fixes.doorInside (trim) + together cut ('{p} is at the same table.' / trio / alone 'You work on {me} on your own.'), button Begin the operation. door[1] replaced by doorInside; door[2] + 'Each part does one job.' + 'You work on {me} together.' -> help.door. Bottom job bar + green Stuck? Show me (non-blocking help box, rings active button 'Press this').
+- D2 Table counted by zones; chrome uncounted (#top #team #count #strip #caselab slot names #lines rows #cardlist choices #hint; #instr = job line <=14). Zones: patient (#bwho #say #cardh #cardcap), chart head, done card, #livenote.
+- D3 Green Stuck? Show me in #bar right (starts the tour); 'Your job now: ' lead span before #instr.
+- D4 Fluff: tap -> fixes.fluffMe; partner's -> fixes.fluffThem; slot shows fixes.fluffTile 'Cleaned'.
+- D5 Done in platform: againbtn hidden; nextbtn = fixes.opDone (main) or hub.back (desmond/nigel); donep = her own found line only; donereveal hidden (reveal is at the contest result).
+- D6 Fallback strings = contest fixes.fallbackMe/fallbackSit/fallbackButton (op + ward2).
+- D7 Desmond/Nigel extras = local op run with setRound(1/2); fixed top bar #xtop: top.job + Back to the extra jobs (xback) + Finish the lesson (xfinish).
+- D8 extras.js rewritten: find (case photo hotspots, motherboard last), customers (3 people, tray of 7 parts), own (one fact at a time). End button = hub.back posting next (marks job done).
+- D9 Hub: title + intro (15 words); kicker/buttons chrome; job 'Click a job to start it.'; ring the job buttons.
+- Live V1 lines.js/lines2.js frozen into l6v2-src/ as extra STRINGS sources (op-page cuts of live strings pass).
+- 09:42 D1-D9 recorded; editing op page now.
