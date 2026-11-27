@@ -73,7 +73,24 @@ const frameOf = async page => { const h = await page.$('#chunk-host iframe.rescu
 const VISIBLE = sel => { const els = document.querySelectorAll(sel); for (const e of els) { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); if (r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none') return true; } return false; };
 
 /* stand on whatever landmarks this chunk owns that are on screen now, on the page or inside the frame */
+/* --transcript <file>: every distinct screen's visible words, in her order, for the cold readers (DFM 270) */
+const TX = argOf('--transcript', '');
+let txLast = '';
+async function tx(page, ck) {
+  if (!TX) return;
+  const vis = () => { const out = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) { const e = n.parentElement; if (!e || !n.textContent.trim()) continue; if (/^(SCRIPT|STYLE|NOSCRIPT)$/.test(e.tagName)) continue;
+      const r = e.getBoundingClientRect(), cs = getComputedStyle(e); if (r.width <= 0 || r.height <= 0 || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+      out.push(n.textContent.replace(/\s+/g, ' ').trim()); }
+    return out.join('\n'); };
+  const top = await page.evaluate(vis).catch(() => '');
+  const fr = await frameOf(page); const inner = fr ? await fr.evaluate(vis).catch(() => '') : '';
+  const text = (inner ? inner + '\n[platform around the frame]\n' : '') + top;
+  if (text === txLast) return; txLast = text;
+  fs.appendFileSync(TX, '\n----- screen (' + ck + ') -----\n' + text + '\n');
+}
 async function look(page, ck) {
+  await tx(page, ck);
   const fr = await frameOf(page);
   for (const [label, sel, at] of LANDMARKS) {
     if (at !== ck || stood[label]) continue;

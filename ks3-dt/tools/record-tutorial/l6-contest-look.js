@@ -187,7 +187,7 @@ async function answer(p, i, rightOne, how) {
           await act(A, 'filmplay'); await act(B, 'filmplay');
           await phase(A, 'film');
           const beats = [];
-          for (let k = 0; k < 7; k++) { await A.waitForFunction(k => +document.body.dataset.beat >= k, k, { timeout: 6000 }).catch(() => {}); beats.push(await A.evaluate(() => +document.body.dataset.beat)); await look(A, 'film beat ' + (k + 1)); }
+          for (let k = 0; k < 7; k++) { await A.waitForFunction(k => +document.body.dataset.beat >= k, k, { timeout: 9000 }).catch(() => {}); beats.push(await A.evaluate(() => +document.body.dataset.beat)); await look(A, 'film beat ' + (k + 1)); }
           gate('T-r3 the film plays seven beats', beats[6] === 6, beats.join(','));
           await A.waitForSelector('#card [data-act="filmgo"]:not([disabled])', { timeout: 8000 });
           await look(A, 'film ended');

@@ -48,8 +48,8 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   const goal1 = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); const kick = await A.$eval('#doorkick', e => e.textContent);
   gate('door card 1: who she is, the mode line names me', /^This is Bernadette\. She is a computer\.$/.test(goal1.trim()) && kick === 'With your partner · You are Dr Marmalade', goal1.slice(0, 200) + ' · ' + kick);
   await A.click('#doornext'); await sleep(300);
-  const together = await A.$eval('#together', e => e.textContent); gate('door card 2 names the partner at the same table', together === 'Dr Custard is at the same table.', together);
-  const goal = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); gate('door card 2 says what is inside her', /^Inside her are seven parts\. One thing inside her is not a part\.$/.test(goal.trim()), goal.slice(0, 200));
+  const together = await A.$eval('#together', e => e.textContent); gate('door card 2 names the partner at another PC', together === 'Dr Custard is your partner, at another PC in this room.', together);
+  const goal = await A.$eval('#goal', e => e.innerText.replace(/\n+/g, ' | ')); gate('door card 2 says what is inside her', /^There are seven parts inside her\. One thing inside her is not a part\.$/.test(goal.trim()), goal.slice(0, 200));
   await A.click('#beginbtn'); await B.click('#doornext'); await B.click('#beginbtn'); await sleep(400); sA = await st(A); sB = await st(B);
   gate('begin: both tables open, door gone', sA.stage === 'op' && sB.stage === 'op' && !sA.door && !sB.door && !sA.appHidden, sA.stage + '/' + sB.stage);
   gate('bar names the exact gesture', sA.bar === 'Click a part to take it out.', sA.bar);
@@ -177,7 +177,7 @@ async function drag(p, sel) { const b = await p.$eval(sel, e => { const r = e.ge
   await Promise.all([SA, SB].map(p => p.waitForSelector('#begin.on', { timeout: 20000 })));
   await SA.click('#doornext'); await sleep(300);
   const tog = await SA.$eval('#together', e => ({ t: e.textContent, fs: parseFloat(getComputedStyle(e).fontSize), bold: e.querySelectorAll('b').length }));
-  gate('door says who she is with, in big words', tog.t === 'Dr Custard is at the same table.' && tog.fs >= 16 && tog.bold === 1, tog.t + ' · ' + tog.fs + 'px');
+  gate('door says who she is with, in big words', tog.t === 'Dr Custard is your partner, at another PC in this room.' && tog.fs >= 16 && tog.bold === 1, tog.t + ' · ' + tog.fs + 'px');
   await shot(SA, '25_door_team_A');
   await SA.click('#beginbtn'); await sleep(500);
   const team = await SA.$eval('#team', e => ({ t: e.textContent, fs: parseFloat(getComputedStyle(e).fontSize), h: e.getBoundingClientRect().height }));

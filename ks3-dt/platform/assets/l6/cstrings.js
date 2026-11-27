@@ -67,7 +67,7 @@
       others: 'Wait for the others to answer.',
       behind: '{partner} has not reached this question yet.',
       bernadette: 'Bernadette is thinking.',
-      gone: 'Bernadette answers for {partner} until the link is back.',
+      gone: '{partner}\'s PC has gone quiet. Bernadette answers for {partner} until that PC is back.',
       late: '{partner} took too long. Bernadette answered instead.',
       back: "{partner}'s PC is linked to yours again.",
       partnerAnswered: '{partner} has answered this one.',
@@ -117,7 +117,7 @@
       /* the operation (operation.html) */
       fallbackPC: "This PC cannot link to your partner's PC.",
       fallbackGo: 'Go and sit with {name}.',
-      doorInside: 'Inside {him} are seven parts. One thing inside {him} is not a part.', /* 'Each part does one job.' moved to help.door */
+      doorInside: 'There are seven parts inside {him}. One thing inside {him} is not a part.', /* 'Each part does one job.' moved to help.door */
       fluffMe: 'That was fluff, not a part. Dust stops the fan from cooling the PC.',
       fluffThem: '{partner} cleaned out the fluff.',
       fluffTile: 'Cleaned',
@@ -131,11 +131,11 @@
     hub: {
       kicker: 'On your own · Extra jobs',
       title: 'Six extra jobs. Do any, in any order.',
-      intro: 'The lesson stops when your teacher says STOP.', /* 'Leave a job at any moment with the Back button at the top.' moved to help.hub */
+      intro: 'The lesson stops when your teacher says STOP.', /* the leave-a-job line moved to help.hub */
       jobs: [
         { id: 'desmond', title: 'Operate on Desmond', whiff: 'Desmond is a second patient. You take out all seven parts by yourself.' },
         { id: 'nigel', title: 'Operate on Nigel', whiff: 'Nigel is a third patient. He talks more than the other patients.' },
-        { id: 'find', title: 'Find the parts in a real PC', whiff: 'You see a photo of an open PC. A line names one part. Click that part in the photo.' },
+        { id: 'find', title: 'Find the parts in a real PC', whiff: 'You see a photo of a PC with its case open. The screen names one part. Click that part in the photo.' },
         { id: 'customers', title: 'The right part for three customers', whiff: 'Three customers in a computer shop say what their PC needs. Click the part to add to each PC.' },
         { id: 'own', title: 'Your own PC', whiff: 'You see three facts about the PC you are sitting at.' },
         { id: 'letter', title: 'The discharge letter', whiff: "This is Bernadette's letter home. It lists what you did today." }
@@ -157,12 +157,12 @@
       right: 'Yes. {why}', wrong: 'That is not the right part. Read what the customer says again.', done: 'You have helped all three customers.', next: 'Next customer'
     },
     /* the operation's own lines, cut from the live V1 lines2.js (frozen copy in tools/record-tutorial/l6v2-src) */
-    op: { together: '{p} is at the same table.', together3: '{p} and {q} are at the same table.', alone: 'You work on {me} on your own.', found: '{p} found {n} of the 7 jobs.' },
+    op: { together: '{p} is your partner, at another PC in this room.', together3: '{p} and {q} are your partners, at other PCs in this room.', alone: 'You work on {me} on your own.', found: '{p} found {n} of the 7 jobs.' },
     parts: { mem: 'memory', drive: 'storage drive', cpu: 'processor', gpu: 'graphics card', fan: 'fan', psu: 'power supply', board: 'motherboard' },
     /* THE HELP LIST per screen ("Do this"): the screen's job line first, then the lines the trims moved off the card,
        then the mode's own help. Every line is a sentence of the source, cut down only. */
     help: {
-      begin: ['The same question comes up on both screens.', 'Nobody sees your answer yet.', 'Whoever has the most points at the end is head surgeon.'],
+      begin: ['The same question comes up on both screens.', 'Your partner cannot see your answer until you have both answered.', 'Whoever has the most points at the end is head surgeon.'],
       beginSolo: ['You play four rounds.', 'You and Bernadette get the same question each time.', 'Whoever has the most points at the end is head surgeon.'],
       beginTeam: ['Agree each answer together, then click it.', 'One point for each right answer.', 'Whoever has the most points at the end is head surgeon.'],
       rounds: [
@@ -175,13 +175,13 @@
       solo: ['Answer on your own.', 'When you click, Bernadette answers too. Then you see both answers.'],
       team: ['Agree each answer together, then click it.', 'Bernadette answers too. Then you see both answers.'],
       more: ['You get one point for each right answer.', 'Whoever has the most points at the end is head surgeon.'],
-      away: ['Your partner is {name}.', 'You play as a team.', 'Press We are together. Carry on.'],
+      away: ['Your partner is {name}.', 'You play as a team.', 'Press the button "We are together. Carry on".'],
       /* the operation and the extra jobs */
-      door: ['Each part does one job.', 'Click a part to take it out.', 'See what goes wrong.', 'Fill in {his} chart.'],
+      door: ['Each part does one job.', 'Click a part to take it out.', 'Read what {me} says next.', 'Click the job that part did. It goes in {his} chart.'],
       doorPair: 'You work on {me} together.',
-      opAway: ['Your partner is {name}.', 'Press We are together. Carry on.'],
-      hub: ['Click a job to start it.', 'Leave a job at any moment with the Back button at the top.'],
-      find: ['A line names one part.', 'Click that part in the photo.'],
+      opAway: ['Your partner is {name}.', 'Press the button "We are together. Carry on".'],
+      hub: ['Click a job to start it.', 'You can leave a job at any time. Press "Back to the extra jobs" at the top.'],
+      find: ['The words on the screen name one part.', 'Click that part in the photo.'],
       cust: ['Read what the customer says.', 'Click the part to add to each PC.'],
       own: ['GB is how memory is measured.', 'More GB means more room.']
     },
@@ -197,8 +197,18 @@
     'Move the four steps into the right order, then press Lock in this order.': 'source "then press Lock in." names a button that is called Lock in this order',
     'Read the card, then press {btn}.': 'source "Read the card, then press the button." names the button, as the begin line does',
     'Wait for the others to answer.': 'trio form of wait.partner (two seats still to answer)',
-    'Windows is the boss program. It starts every program and shares out the parts.': 'Q8 why (contest.js): the source\'s four sentences (25 words) cannot sit beside the answer chips; the question is hidden on the reveal, so "It" needs its noun',
-    'Press We are together. Carry on.': 'the help names the fallback button by its words (feedback: buttons named by their words)',
+    'Windows is the operating system, the boss program. It starts programs and shares the PC\'s parts between them.': 'Q8 why (contest.js): the source\'s four sentences (25 words) cannot sit beside the answer chips; cold readers r1 (27 Nov 2026), both readers failed it: "boss program" came without its real name, and "shares out the parts" was too vague to picture',
+    'Press the button "We are together. Carry on".': 'the help names the fallback button by its words, never by colour (26 Nov); cold readers r1 (27 Nov 2026), both readers failed it: the button\'s own full stop split the line into two sentences, so its words now sit in quotes',
+    '{partner}\'s PC has gone quiet. Bernadette answers for {partner} until that PC is back.': 'cold readers r1 (27 Nov 2026), both readers failed it: "the link" is a word she was never given; the line now says whose PC went quiet',
+    'Your partner cannot see your answer until you have both answered.': 'cold readers r1 (27 Nov 2026), both readers failed it: "Nobody sees your answer yet" left who, and until when, open',
+    'There are seven parts inside {him}. One thing inside {him} is not a part.': 'cold readers r1 (27 Nov 2026), both readers failed it: "Inside her are seven parts" turns the sentence round and had to be read twice',
+    '{p} is your partner, at another PC in this room.': 'cold readers r1 (27 Nov 2026), both readers failed it: "at the same table" read as a real table, but the partner sits at another PC in the room',
+    '{p} and {q} are your partners, at other PCs in this room.': 'cold readers r1 (27 Nov 2026), both readers failed it: the team-of-three form of the line above, same fault',
+    'Read what {me} says next.': 'cold readers r1 (27 Nov 2026), both readers failed it: "See what goes wrong" did not say where to look; the patient\'s words are the clue',
+    'Click the job that part did. It goes in {his} chart.': 'cold readers r1 (27 Nov 2026), both readers failed it: "Fill in" said she writes, but she clicks a job card and the chart fills itself',
+    'You can leave a job at any time. Press "Back to the extra jobs" at the top.': 'cold readers r1 (27 Nov 2026), both readers failed it: "the Back button" is not the button\'s name, and "at any moment" is an idiom',
+    'The words on the screen name one part.': 'cold readers r1 (27 Nov 2026), both readers failed it: "A line" is not a thing she has met',
+    'You see a photo of a PC with its case open. The screen names one part. Click that part in the photo.': 'cold readers r1 (27 Nov 2026), both readers failed it: "an open PC" and "A line" did not say what she sees (kept the same as the lesson card)',
     'You are a team · Against Bernadette': 'team kicker: fixes.team + the mode line (modes announce themselves)',
     'Question {k} of {total} · The answer': 'reveal kicker: the top bar\'s question count + "The answer" from rev.answer',
     'Answer four marked questions on your own.': 'exit check job line (lesson JSON c8): the live line "Answer three marked questions on your own." with the count moved from three to four (spec §2, §5.9: x5 joins)',

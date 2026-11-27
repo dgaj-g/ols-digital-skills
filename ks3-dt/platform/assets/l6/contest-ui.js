@@ -91,7 +91,7 @@
     var os = saved.os || {};
     Object.keys(os).forEach(function (o) { if (o !== 'Z' && E.seatState(o)) E.receive({ type: 'cstate', seat: o, q: os[o].q, a: os[o].a, m: os[o].m, s: {} }); });
   }
-  window.L6C = { E: E, ui: ui, bus: null, render: render };
+  window.L6C = { E: E, ui: ui, bus: null, render: render, filmHold: filmHold };
 
   /* pair → team / alone: keep my answers, Bernadette takes the other side from here */
   function switchSolo(m) {
@@ -287,12 +287,14 @@
     renderJob(E.view(), 'film');
     if (ui.spot) applySpot();
   }
+  /* each beat stays up long enough to read: 1.2 s + 0.35 s a word, never under 3.8 s (DFM 289e/309, spec §10) */
+  function filmHold(k) { var w = String(S.film[k] || '').split(/\s+/).filter(Boolean).length; return Math.max(3800, Math.round((1.2 + 0.35 * w) * 1000)); }
   function playFilm() {
     clearTimeout(filmTimer); ui.playing = true; ui.beat = -1; updateFilm();
     function step() {
       ui.beat++;
       if (ui.beat >= S.film.length - 1) { ui.beat = S.film.length - 1; ui.playing = false; ui.fs = true; queueSave(); updateFilm(); return; }
-      updateFilm(); filmTimer = setTimeout(step, ui.beat === 0 ? 2000 : 2600);
+      updateFilm(); filmTimer = setTimeout(step, filmHold(ui.beat));
     }
     filmTimer = setTimeout(step, 300);
   }

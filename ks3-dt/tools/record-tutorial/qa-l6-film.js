@@ -1,55 +1,58 @@
 #!/usr/bin/env node
-/* qa-l6-film.js — the L6 film "Inside her head" is short, paced and captioned, measured in the
-   finished file (DFM 139 silent, 289e/309 pacing, spec §3.5 ≤ 60 s).
-   (1) the file is ≤ 60 s and silent; (2) every beat holds ≥ 1.2 s + 0.35 s a word; (3) the beats
-   burned in are the scene's own words, in order; (4) a caption is really on screen in every beat
-   (bottom band has text pixels); (5) the lesson serves this file and its poster.
-   CONTROLS (must FAIL): a 70 s film · a rushed beat · a changed caption · a blank caption band.
-   node qa-l6-film.js */
+/* qa-l6-film.js — the L6 V2 film "Inside Bernadette's head" is short, paced and captioned (DFM 139 silent,
+   289e/309 pacing, spec §3.5 ≤ 60 s, spec §10 seven beats). V2 plays the film inside the contest card, built
+   from cstrings.js S.film and paced by contest-ui.js filmHold(); the V1 recording (l6-inside.mp4) is no longer
+   served (build decision 27 Nov, PROGRESS line 20).
+   (1) seven beats, each one caption; (2) every beat holds ≥ 1.2 s + 0.35 s a word, read from the page's own
+   filmHold(); (3) the whole film is ≤ 60 s; (4) the film is silent (no audio or video element in the card);
+   (5) the lesson serves no stale film (no 'video' chunk pointing at the V1 file).
+   CONTROLS (must FAIL): a 70 s film · a rushed beat · a lost beat · a video chunk left in the lesson.
+   NODE_PATH=$(npm root -g) node qa-l6-film.js --base http://localhost:8126 */
 'use strict';
-const fs = require('fs'), path = require('path'), os = require('os');
-const { execFileSync } = require('child_process');
-const A = path.join(__dirname, '..', '..', 'platform', 'assets');
-const MP4 = path.join(A, 'video', 'l6', 'l6-inside.mp4');
-const { BEATS } = require('./scenes/l6.js');
+const fs = require('fs'), path = require('path');
+const puppeteer = require('puppeteer');
+const argOf = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
+const BASE = argOf('--base', 'http://localhost:8126');
 const LESSON = path.join(process.env.KS3DT_CONTENT_SRC || '/Users/damiengartland/Desktop/Claude Work/KS3 DT Platform/content-src', 'j1', 'lessons', 'j1-06.json');
-let fails = 0; const out = [];
-function judge(m) {   // m = {dur, audio, beats:[{say,hold}], band:[number]} → list of FAIL lines
+let fails = 0;
+function check(ok, label) { console.log((ok ? '  PASS  ' : '  FAIL  ') + label); if (!ok) fails++; }
+function judge(m) {   // m = {beats:[{say,hold}], media:n, video:bool} → list of FAIL lines
   const f = [];
-  if (!(m.dur <= 60)) f.push('film is ' + m.dur.toFixed(1) + ' s, over 60 s');
-  if (m.audio) f.push('film has an audio track; it must be silent');
-  m.beats.forEach((b, i) => { const need = 1.2 + 0.35 * b.say.split(/\s+/).length; if (b.hold < need) f.push('beat ' + (i + 1) + ' holds ' + b.hold + ' s, needs ' + need.toFixed(2) + ' s'); });
-  if (m.beats.map(b => b.say).join('|') !== BEATS.map(b => b.say).join('|')) f.push('burned captions differ from scenes/l6.js');
-  const sum = m.beats.reduce((s, b) => s + b.hold, 0); if (Math.abs(sum - m.dur) > 0.5) f.push('beat holds add to ' + sum.toFixed(1) + ' s but the film is ' + m.dur.toFixed(1) + ' s');
-  m.band.forEach((v, i) => { if (v < 0.004) f.push('beat ' + (i + 1) + ' has no caption on screen'); });
+  if (m.beats.length !== 7) f.push('the film has ' + m.beats.length + ' beats, the spec has 7');
+  m.beats.forEach((b, i) => { const need = 1.2 + 0.35 * b.say.split(/\s+/).filter(Boolean).length; if (b.hold < need - 0.01) f.push('beat ' + (i + 1) + ' holds ' + b.hold.toFixed(2) + ' s, needs ' + need.toFixed(2) + ' s'); });
+  const sum = m.beats.reduce((s, b) => s + b.hold, 0); if (!(sum <= 60)) f.push('film is ' + sum.toFixed(1) + ' s, over 60 s');
+  if (m.media) f.push('the film card has ' + m.media + ' audio/video element(s); it must be silent');
+  if (m.video) f.push('the lesson still serves a video chunk (' + m.video + ')');
   return f;
 }
-function check(ok, label) { console.log((ok ? '  PASS  ' : '  FAIL  ') + label); if (!ok) fails++; }
-const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', MP4]).toString());
-const dur = +probe.format.duration, audio = probe.streams.some(s => s.codec_type === 'audio');
-const beats = JSON.parse(fs.readFileSync(MP4.replace(/\.mp4$/, '.beats.json'), 'utf8'));
-/* caption band: fraction of light pixels in the bottom 150 px, mid-beat */
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'l6film-'));
-function bandAt(t) {
-  const f = path.join(tmp, 'f.gray');
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', MP4, '-frames:v', '1', '-vf', 'crop=1280:150:0:570,format=gray', '-f', 'rawvideo', f]);
-  const px = fs.readFileSync(f); let n = 0; for (const v of px) if (v > 200) n++; return n / px.length;
-}
-let t = 0; const band = beats.map(b => { const v = bandAt(t + b.hold / 2); t += b.hold; return v; });
-const real = { dur, audio, beats, band };
-const got = judge(real);
-check(got.length === 0, 'the film: ' + dur.toFixed(1) + ' s, silent, ' + beats.length + ' beats paced, captions on screen' + (got.length ? ' — ' + got.join('; ') : ''));
-const L = JSON.parse(fs.readFileSync(LESSON, 'utf8'));
-const v = (L.chunks || []).find(c => c.engine === 'video') || {}; const cfg = v.config || {};
-check(cfg.src === 'assets/video/l6/l6-inside.mp4' && fs.existsSync(path.join(A, '..', cfg.poster || 'x')), 'the lesson serves the film and its poster exists');
-/* controls: each mutation must be caught */
-const clone = () => JSON.parse(JSON.stringify(real));
-const C = [
-  ['a 70 s film', m => { m.dur = 70; m.beats[5].hold += 70 - dur; }],
-  ['a rushed beat (1.0 s)', m => { m.dur -= m.beats[2].hold - 1; m.beats[2].hold = 1; }],
-  ['a changed caption', m => { m.beats[1].say = 'Her memory keeps the step.'; }],
-  ['a blank caption band', m => { m.band[3] = bandAt(0.01) * 0; }]
-];
-C.forEach(([name, mut]) => { const m = clone(); mut(m); const r = judge(m); check(r.length > 0, 'CONTROL ' + name + ' is caught' + (r.length ? ' (FAIL ' + r[0] + ')' : ' — NOT CAUGHT')); });
-console.log(fails ? '\nqa-l6-film: ' + fails + ' FAIL' : '\nqa-l6-film: all green');
-process.exit(fails ? 1 : 0);
+(async () => {
+  const browser = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox'] });
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1366, height: 768 });
+  await page.goto(BASE + '/ks3-dt/platform/assets/l6/contest.html', { waitUntil: 'load' });
+  await page.waitForFunction(() => window.L6C && window.L6C.filmHold && window.L6C_STRINGS, { timeout: 15000 });
+  const got = await page.evaluate(() => {
+    const S = window.L6C_STRINGS;
+    return { beats: S.film.map((say, k) => ({ say, hold: window.L6C.filmHold(k) / 1000 })),
+             media: document.querySelectorAll('#film audio, #film video, audio, video').length };
+  });
+  await browser.close();
+  /* the last beat has no timer (the caption stays up until she presses on); judge it at the same rule */
+  const L = JSON.parse(fs.readFileSync(LESSON, 'utf8'));
+  const v = (L.chunks || []).find(c => c.engine === 'video');
+  const real = { beats: got.beats, media: got.media, video: v ? (v.config && v.config.src) || v.id : '' };
+  const r = judge(real);
+  const tot = real.beats.reduce((s, b) => s + b.hold, 0);
+  check(r.length === 0, 'the film: ' + real.beats.length + ' beats, ' + tot.toFixed(1) + ' s, silent, every beat held long enough to read, no stale video chunk' + (r.length ? ' — ' + r.join('; ') : ''));
+  real.beats.forEach((b, i) => console.log('        beat ' + (i + 1) + ' ' + b.hold.toFixed(2) + ' s · ' + b.say));
+  const clone = () => JSON.parse(JSON.stringify(real));
+  const C = [
+    ['a 70 s film', m => { m.beats[6].hold += 70; }],
+    ['a rushed beat (2.6 s on 14 words)', m => { m.beats[5].hold = 2.6; }],
+    ['a lost beat', m => { m.beats.pop(); }],
+    ['a video chunk left in the lesson', m => { m.video = 'assets/video/l6/l6-inside.mp4'; }]
+  ];
+  C.forEach(([name, mut]) => { const m = clone(); mut(m); const x = judge(m); check(x.length > 0, 'CONTROL ' + name + ' is caught' + (x.length ? ' (FAIL ' + x[0] + ')' : ' — NOT CAUGHT')); });
+  console.log(fails ? '\nqa-l6-film: ' + fails + ' FAIL' : '\nqa-l6-film: all green');
+  process.exit(fails ? 1 : 0);
+})().catch(e => { console.error(e); process.exit(2); });

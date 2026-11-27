@@ -86,9 +86,12 @@ const refused = r => r.status === 401 || r.status === 403;
   await sleep(12000);
   const fa = await FA.evaluate(() => ({ fb: OPUI.fallback && OPUI.fallback(), note: document.getElementById('livenote').textContent, shown: !document.getElementById('livenote').hidden }));
   const fbB = await FB.evaluate(() => ({ away: !document.getElementById('away').hidden, say: document.getElementById('awaysay').textContent }));
-  const LINE = 'The live link is slow. Share one laptop and take turns.';
-  gate('blocked: seat A falls back and its bar says the fallback line', fa.fb && fa.shown && fa.note === LINE, JSON.stringify(fa));
-  gate('blocked: seat B is sent to sit with seat A', fbB.away && /^Go and sit with Dr \w+\. You share one laptop\.$/.test(fbB.say), fbB.say);
+  /* V2 (27 Nov): the lines are the spec's fallback lines, read from the page's own cstrings.js; {name} is the partner
+     (the real first name live, the callsign in this test, which has no class record) */
+  const FX = await FA.evaluate(() => window.L6C_STRINGS.fixes);
+  const rx = t => new RegExp('^' + t.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\\?\{name\\?\}/g, '(Dr )?\\w+') + '$');
+  gate('blocked: seat A falls back and its bar says the fallback line', fa.fb && fa.shown && rx(FX.fallbackMe).test(fa.note), JSON.stringify(fa));
+  gate('blocked: seat B is sent to sit with seat A', fbB.away && rx(FX.fallbackPC + ' ' + FX.fallbackGo).test(fbB.say.trim()), fbB.say);
   await ctx3.close(); await blocked.close();
   const R4 = code(), ctx4 = await browser.newContext();
   const CA = await open(ctx4, hash({ stage: 'door', seat: 'A', seats: ['A', 'B'], room: R4 }));
