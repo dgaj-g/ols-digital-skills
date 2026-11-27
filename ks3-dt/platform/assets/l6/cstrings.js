@@ -201,7 +201,9 @@
     'Press We are together. Carry on.': 'the help names the fallback button by its words (feedback: buttons named by their words)',
     'You are a team · Against Bernadette': 'team kicker: fixes.team + the mode line (modes announce themselves)',
     'Question {k} of {total} · The answer': 'reveal kicker: the top bar\'s question count + "The answer" from rev.answer',
-    'Go and sit with {name}.': 'the operation\'s blocked link runs both surgeons on seat A\'s PC (as V1), so seat B is sent to A by her real name: the live V1 line "Go and sit with {p}." with its second sentence dropped'
+    'Answer four marked questions on your own.': 'exit check job line (lesson JSON c8): the live line "Answer three marked questions on your own." with the count moved from three to four (spec §2, §5.9: x5 joins)',
+    'Four questions before you finish': 'exit check card title (lesson JSON c8): the live "Three questions before you finish" with the count moved to four (spec §5.9)',
+    'Go and sit with {name}.':'the operation\'s blocked link runs both surgeons on seat A\'s PC (as V1), so seat B is sent to A by her real name: the live V1 line "Go and sit with {p}." with its second sentence dropped'
   };
   root.L6C_STRINGS = S;
   if (typeof module !== 'undefined' && module.exports) module.exports = S;

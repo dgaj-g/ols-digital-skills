@@ -37,7 +37,7 @@
  * their existing names exactly — they are in his run log and in the handover
  * file — and every new year is named for its year.
  *
- * Built 2026-11-26 from contentVersion 2026-11-26u.
+ * Built 2026-11-27 from contentVersion 2026-11-27a.
  */
 
 var PAGES_IMG = "https://dgaj-g.github.io/ols-digital-skills/ks3-dt/platform/assets/img/";
@@ -1222,39 +1222,52 @@ var DECKS = {
    {
     "id": "opening",
     "chunk": "c1",
-    "label": "The opening and scrubbing in",
+    "label": "The opening and getting started",
     "slides": [
      {
       "kind": "title",
       "bg": "title",
       "kicker": "OUR LADY'S GRAMMAR SCHOOL · DIGITAL TECHNOLOGY",
-      "heading": "Lesson 6 · Inside the Machine",
-      "sub": "You are the surgeons. A computer is the patient. — J1 · Lesson 6 of 17",
-      "notes": "WHERE THE CLASS IS: coming in, sitting beside their partner, logging in.\n\nSAY: welcome them in. Today they take a computer apart and put it right.\n\nWHEN TO MOVE: when most pupils are logged in, stop the room. Eyes front."
+      "heading": "Inside the Machine",
+      "sub": "KS3 Digital Technology · J1 · Lesson 6",
+      "notes": "WHERE THE CLASS IS: coming in, sitting at any PC and logging in.\n\nSAY: welcome them in. Ask them to log in and open the class link.\n\nWHEN TO MOVE: when most pupils are logged in, stop the room. Eyes front."
      },
      {
       "kind": "objectives",
       "bg": "section",
       "heading": "In this lesson you will…",
       "bullets": [
-       "Name the seven main parts inside a computer from their photographs.",
-       "Say the job of each part in one plain sentence.",
-       "Say what goes wrong when a part is missing, and which part a broken computer needs."
+       "Name the seven main parts inside a computer and say what each one does.",
+       "Say what the operating system is and what it does.",
+       "Say how the processor and memory work together, step after step."
       ],
-      "notes": "SAY: read the three lines slowly. The third is the one that matters most.\n\nWHEN TO MOVE: straight on."
+      "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: read the three aims slowly.\n\nWHEN TO MOVE: straight on."
      },
      {
       "kind": "bullets",
       "bg": "section",
-      "heading": "Scrub in",
+      "heading": "What today is about",
       "size": 15,
       "bullets": [
-       "You work in a pair, on two laptops.",
-       "One of you is Dr Marmalade. The other is Dr Custard.",
-       "A computer lies on the table. It can talk.",
-       "Press Begin when your partner is there."
+       "A computer is a box of parts. Each part has one job.",
+       "Today you open one up, on screen, and fix it.",
+       "Then you find out who tells the parts what to do.",
+       "You work with a partner. The website picks your partner."
       ],
-      "notes": "WHERE THE CLASS IS: eyes front, about to open the lesson.\n\nSAY: read the four lines. If the class is an odd number, say that the last three work as a team of three. If the link between the two laptops is slow, the screen says: Share one laptop and take turns. That is fine.\n\nWHEN TO MOVE: send them in. The room now runs itself."
+      "notes": "WHERE THE CLASS IS: eyes front.\n\nSAY: read the four lines. A computer is a box of parts. Each part has one job. Today you open one up, on screen, and fix it.\n\nWHEN TO MOVE: straight on."
+     },
+     {
+      "kind": "bullets",
+      "bg": "section",
+      "heading": "Getting started",
+      "size": 15,
+      "bullets": [
+       "Sign in to the class website.",
+       "Open Lesson 6.",
+       "The website finds your partner. Wait for the screen to say who.",
+       "Do not log in on two PCs."
+      ],
+      "notes": "WHERE THE CLASS IS: at their PCs, about to open Lesson 6.\n\nSAY: read the four lines. The website pairs pupils in the order they arrive. If the class is an odd number, the last three work as a team of three.\n\nWHEN TO MOVE: when every pair has pressed Begin and the patient is on the table. The room now runs itself."
      }
     ]
    },
@@ -1269,92 +1282,31 @@ var DECKS = {
       "heading": "The operation",
       "size": 15,
       "bullets": [
-       "Click a part to take it out of the patient.",
-       "Listen to what the patient says.",
-       "Then click the job card that matches.",
-       "Take your time. Your patient will tell you."
+       "Seven parts come out. Each one has a job card.",
+       "You and your partner share one patient and take turns.",
+       "Read what the patient says on screen. There is no sound."
       ],
-      "notes": "WHERE THE CLASS IS: working in pairs on the operating table, for about eighteen minutes.\n\nSAY: nothing, once they are in. Walk round and ask one question: what did the patient just say? Never tell them which card is right.\n\nWHEN TO MOVE: when most pairs show the chart complete, move on. Pairs who finish early can operate on a second patient."
+      "notes": "WHERE THE CLASS IS: working in pairs on the operating table, for about sixteen minutes.\n\nSAY: nothing, once they are in. Walk round and ask one question: what did the patient just say? Never tell them which card is right.\n\nWHEN TO MOVE: when most pairs are on the contest."
      }
     ]
    },
    {
-    "id": "ward",
+    "id": "contest",
     "chunk": "c3",
-    "label": "Ward round",
+    "label": "The contest",
     "slides": [
      {
       "kind": "bullets",
       "bg": "section",
-      "heading": "Ward round",
+      "heading": "The contest",
       "size": 15,
       "bullets": [
-       "Six broken computers are waiting for you.",
-       "Each one is missing one part.",
-       "Read what it says, then click the part it needs.",
-       "You have two tries on each one."
+       "Four rounds against your partner.",
+       "The same question on both screens.",
+       "Nobody sees your answer until you have both answered.",
+       "One point for each right answer."
       ],
-      "notes": "WHERE THE CLASS IS: the operation is done. They now open the ward round on their own screens.\n\nSAY: read the four lines. This is the same skill again, but now the patient is a computer in the real world.\n\nWHEN TO MOVE: send them in. About ten minutes."
-     }
-    ]
-   },
-   {
-    "id": "boss",
-    "chunk": "c4",
-    "label": "Who is in charge",
-    "slides": [
-     {
-      "kind": "bullets",
-      "bg": "section",
-      "heading": "Who is in charge?",
-      "size": 15,
-      "bullets": [
-       "You know the seven parts.",
-       "But someone has to tell them what to do.",
-       "Read the three lines on your screen.",
-       "Then answer one question on your own."
-      ],
-      "notes": "WHERE THE CLASS IS: the ward round is finished. They open a short card with three lines and one question.\n\nSAY: read the four lines. Say nothing more. The answer is on their screens and not on yours.\n\nWHEN TO MOVE: send them in. Five minutes."
-     }
-    ]
-   },
-   {
-    "id": "head",
-    "chunk": "c5",
-    "label": "Inside her head",
-    "slides": [
-     {
-      "kind": "bullets",
-      "bg": "section",
-      "heading": "Inside her head",
-      "size": 15,
-      "bullets": [
-       "Watch a short film. It has no sound.",
-       "Read the captions as it plays.",
-       "You can watch it again as often as you like.",
-       "Then you will put four steps in order."
-      ],
-      "notes": "WHERE THE CLASS IS: opening a film on their own screens, then a puzzle. About eight minutes in all.\n\nSAY: read the four lines. If the film will not play for a pupil, show it on the board. Do not read out the steps.\n\nWHEN TO MOVE: send them in."
-     }
-    ]
-   },
-   {
-    "id": "names",
-    "chunk": "c7",
-    "label": "The names",
-    "slides": [
-     {
-      "kind": "bullets",
-      "bg": "section",
-      "heading": "The names",
-      "size": 15,
-      "bullets": [
-       "You know the jobs. Now learn the real names.",
-       "Match each job to its name.",
-       "Place all seven, then check.",
-       "RAM, CPU, GPU and PSU are short names you will hear."
-      ],
-      "notes": "WHERE THE CLASS IS: the film and the puzzle are done. They open the matching screen.\n\nSAY: read the four lines. Do not say which name goes with which job.\n\nWHEN TO MOVE: send them in. Five minutes."
+      "notes": "WHERE THE CLASS IS: each pupil playing against the partner, for about twenty-four minutes.\n\nSAY: read the four lines. A pupil who answers fast waits for the partner. Encourage the slower one, not the fast one.\n\nWHEN TO MOVE: about minute 45, or when most pairs are on the extra jobs. Pupils who finish the contest do the extra jobs until you call STOP."
      }
     ]
    },
@@ -1368,15 +1320,13 @@ var DECKS = {
       "kind": "stop",
       "bg": "stop",
       "beacon": "1",
-      "heading": "STOP — Exit check",
+      "heading": "STOP · Exit check",
       "size": 15,
       "bullets": [
-       "Answer on your own now.",
-       "Your partner cannot help you.",
-       "Four questions about today.",
-       "Then finish How did it go? before you leave."
+       "Four questions, on your own.",
+       "Then How did it go?"
       ],
-      "notes": "WHERE THE CLASS IS: the names are matched. Eyes front for one minute.\n\nSAY: read the four lines. Remind them these questions are marked and you can see every answer. Tell them the extra jobs are there for anyone who finishes early.\n\nWHEN TO MOVE: send them in. As they finish, put the last slide up."
+      "notes": "WHERE THE CLASS IS: on the extra jobs, or finishing the contest. Stop the room. Eyes front for one minute.\n\nSAY: STOP. Click Finish the lesson. These four questions are on your own. They are marked, and you see every answer on your Live tab. A pair still in the contest finishes it first. Their next screen shows Finish the lesson.\n\nWHEN TO MOVE: send them in. As they finish How did it go?, put the last slide up."
      }
     ]
    },
@@ -1389,14 +1339,11 @@ var DECKS = {
       "kind": "closer",
       "bg": "closer",
       "heading": "Before you leave",
-      "sub": "See you in a fortnight.",
       "bullets": [
-       "Sign out properly. If you stay signed in, the next person to use this laptop can see your work.",
-       "Push your chair in. Tidy your area.",
-       "Today you took a computer apart and put it right.",
-       "Finish How did it go? before you go."
+       "Sign out.",
+       "Leave the PC as you found it."
       ],
-      "notes": "SAY: end on the achievement. Six lessons in, they can now name every main part inside a computer and say what it does.\n\nBefore anyone leaves, check that every pupil has finished How did it go?"
+      "notes": "WHERE THE CLASS IS: finishing How did it go?\n\nSAY: end on what they achieved. Today you took a computer apart and put it right. See you in a fortnight.\n\nWHEN TO MOVE: before anyone leaves, check that every pupil has finished How did it go? and signed out."
      }
     ]
    }

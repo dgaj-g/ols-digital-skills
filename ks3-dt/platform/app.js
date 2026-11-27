@@ -717,6 +717,7 @@
       diagnostic: [['.seal-card .primary-btn', 'press']],
       codename: [['#cn-keep', 'press'], ['.oath-sign', 'press'], ['.belonging-card .primary-btn', 'press']],
       tournament: [['.rally-transmit', 'press'], ['.rally-confirm', 'press'], ['.rally-step', 'press'], ['.rally-timer-btn', 'press']],
+      operation: [['.op-hub .pyrun-job', 'click', 1]],
       casework: [['.case-close-btn', 'press'], ['textarea.case-log-input', 'type', 0, 'empty'], ['.case-file:not(.sealed):not(.closed)', 'click', 1]],
       studio: [['#std-name', 'type', 0, 'empty'], ['.std-sign', 'press'], ['.std-enter', 'press'], ['.std-kit-confirm', 'press'],
         ['.std-qa-outcomes .std-outcome', 'choose', 1], ['.std-qa-row:not(.pass) .std-qa-run', 'press'], ['.std-ready-btn.lit', 'press'],
