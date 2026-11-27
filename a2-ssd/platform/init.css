@@ -15,7 +15,8 @@ main.init .foot{margin-top:1rem}
 /* the deck */
 .card.deck{padding:.9rem}
 .card.deck h2{margin:0 0 .5rem}
-.deck img.slide{display:block;width:auto;max-width:100%;max-height:calc(100vh - 170px);margin:0 auto;height:auto;aspect-ratio:16/9;border:1px solid var(--line);border-radius:8px;background:#fff}
+/* the slide's width is fixed before the picture loads, so the page never grows under the pupil (27 Nov live walk, K4) */
+.deck img.slide{display:block;width:min(100%,calc((100vh - 170px) * 16 / 9));max-width:100%;max-height:calc(100vh - 170px);margin:0 auto;height:auto;aspect-ratio:16/9;border:1px solid var(--line);border-radius:8px;background:#fff}
 .deck .deckrow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.6rem 0 .4rem;flex-wrap:wrap}
 .deck .cap{color:var(--mute);font-size:.95rem}
 .deck .dots{display:flex;flex-wrap:wrap;gap:4px;margin:.2rem 0 0}
@@ -28,7 +29,7 @@ main.init .foot{margin-top:1rem}
 .parts.ipages .n{font-weight:800;color:var(--navy);font-size:1.2rem}
 .parts.ipages .name small,.parts.qs .name small{display:block;color:var(--mute);font-weight:400}
 .parts.ipages .state.done{color:var(--ok);font-weight:700}
-.parts.qs li{grid-template-columns:110px 1fr 150px auto;align-items:center}
+.parts.qs li{grid-template-columns:110px 1fr 150px 250px;align-items:center}   /* fixed status column: with auto, a long "best" status pushed that row's marks out of line (27 Nov live walk) */
 .parts.qs .src{color:var(--navy);font-weight:700;font-size:.9rem}
 .parts.qs .marks{color:var(--mute);font-size:.9rem}
 .parts.qs .state{font-size:.9rem}

@@ -34,7 +34,7 @@
     app.innerHTML = '<header class="bar"><span class="title">' + h(T('staff.title')) + '</span><span class="who">' + h(ME) + '</span></header><div id="sys"></div><main class="staff">' + inner + '</main>';
   }
   function failText(e) {
-    return e.code === 'offline' || !e.code || e.code === 'error' ? T('sys.offline') : e.code === 'owner-only' ? T('staff.ownerOnly') : e.code === 'not-staff' ? T('staff.bad') : T('sys.offline');
+    return e.code === 'owner-only' ? T('staff.ownerOnly') : e.code === 'not-staff' ? T('staff.bad') : T('staff.offline');   // staff wording, never the pupil "work is kept" line (L1)
   }
   function fail(e) {
     const box = app.querySelector('[data-msg]');
@@ -514,6 +514,7 @@
     if (e.k === 'j') return T('staff.ev.joined');
     if (e.k === 'cw') return cwEvText(e);
     if (e.k === 'e') return T('staff.ev.eval', { paper: PAPERS[e.paper] ? PAPERS[e.paper].year : e.paper });
+    if (/^i[abstfge]$/.test(e.k)) return iEvText(e);
     const x = PART[e.part]; if (!x) return e.part;
     const part = T('staff.ev.part', { year: x.p.year, label: label(x.q) }), tw = e.id && C.twins[e.id];
     if (e.k === 'a') return e.n === 0 ? T('staff.ev.first', { part, t: e.t, of: x.q.marks, door: T(e.d === 1 ? 'door.cold' : 'door.learn') }) : T('staff.ev.again', { part, t: e.t, of: x.q.marks });
@@ -521,6 +522,19 @@
     if (e.k === 's') return T('staff.ev.sawAnswer', { part });
     if (e.k === 'w') return T('staff.ev.sawWorked', { part, id: tw ? tw.id : e.id });
     if (e.k === 'f') return T('staff.ev.flag', { part, beat: T('staff.beat.' + e.b) });
+    return '';
+  }
+  // Reasons events in the activity timeline (27 Nov live walk: its work showed as 'Nothing marked')
+  function iEvText(e) {
+    if (e.k === 'ig') { const bs = IC().bullets, i = bs.findIndex((b) => b.id === e.b); return 'Reasons · ticked Know it page ' + (i + 1) + (i >= 0 ? ' (' + bs[i].short + ')' : ''); }
+    const q = IC().parts.find((x) => x.id === e.part); if (!q) return e.part;
+    const part = 'Reasons ' + q.src.replace(/^(Summer|Winter) /, '') + ' · ';
+    if (e.k === 'ia') return part + 'first answer ' + e.f + ' / ' + q.pm + ' · ' + (e.d === 1 ? (q.kind === 'match' ? 'answered it straight away' : 'wrote it straight away') : 'learnt it first');
+    if (e.k === 'ib') return part + 'tried again · ' + e.a + ' tries in all · best ' + e.b + ' / ' + q.pm;
+    if (e.k === 'is') return part + 'opened the examiner’s answer';
+    if (e.k === 'it') return part + 'March mark · best ' + e.b + ' / ' + q.marks;
+    if (e.k === 'if') return part + 'asked for help while ' + (e.b === 'turn' && q.kind === 'match' ? 'choosing the answers' : (I_BEAT[e.b] || e.b));
+    if (e.k === 'ie') return part + 'How did it go? ' + (I_EVAL[e.v] || e.v);
     return '';
   }
   function timeline(r) {
@@ -532,11 +546,12 @@
     ses.sort((x, y) => y.a - x.a);
     const d = at(r.now); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
     const ws = Math.floor((d.getTime() - EPOCH) / 60000), wk = ses.filter((s) => s.a >= ws);
-    const isMark = (e) => e.k === 'a' || e.k === 't';
-    const time = wk.reduce((t, s) => t + (s.rough ? 0 : s.act), 0), nMarked = r.events.filter((e) => isMark(e) && e.m >= ws).length;
+    // marks an event stands for: one each, except a Reasons 'tried again' line (every try after the first) and a March line (every tie mark)
+    const isMark = (e) => (e.k === 'a' || e.k === 't' || e.k === 'ia' ? 1 : e.k === 'ib' ? e.a - 1 : e.k === 'it' ? e.a : 0);
+    const time = wk.reduce((t, s) => t + (s.rough ? 0 : s.act), 0), nMarked = r.events.filter((e) => e.m >= ws).reduce((n, e) => n + isMark(e), 0);
     const stat = (v, k) => '<div class="stat"><b>' + h(v) + '</b><span>' + h(T(k)) + '</span></div>';
     const head = (s) => {
-      const day = dayName(s.a, r.now), n = s.ev.filter(isMark).length;
+      const day = dayName(s.a, r.now), n = s.ev.reduce((k, e) => k + isMark(e), 0);
       const t = s.rough ? (s.a === s.b ? T('staff.act.headAboutAt', { day, at: hm(s.a) }) : T('staff.act.headAbout', { day, from: hm(s.a), to: hm(s.b) }))
         : T('staff.act.head', { day, from: hm(s.a), to: hm(s.b), time: mins(s.act) });
       return t + (n ? ' · ' + marked(n) : '');
